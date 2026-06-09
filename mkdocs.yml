@@ -1,0 +1,64 @@
+site_name: Fate's Hand — Player's Handbook
+site_description: The Fate's Hand 5+ house rules — an expansion of D&D 2024.
+docs_dir: docs
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: brown
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - toc.follow
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.emoji
+
+plugins:
+  - search
+
+nav:
+  - Welcome: index.md
+  - Creating a Character:
+    - Ability Scores: chapters/ability-scores.md
+    - Species: chapters/species.md
+    - Skills & Tools: chapters/skills-and-tools.md
+    - Feats: chapters/feats.md
+  - Playing the Game:
+    - Skills, Synergies & DCs: chapters/skills-synergies.md
+    - The Fate's Hand Mechanic: chapters/fates-hand-mechanic.md
+    - Battlefield Rules: chapters/battlefield.md
+    - Dungeoneering: chapters/dungeoneering.md
+  - Character Options:
+    - Classes: chapters/classes.md
+    - Spells: chapters/spells.md
+  - Reference:
+    - The 22 Major Arcana: chapters/major-arcana.md
+    - Chaos Tables: chapters/chaos-tables.md
+  - Tools:
+    - Skill-Point Builder: builder.md

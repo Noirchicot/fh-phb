@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fate's Hand — Skill Point Builder</title>
+<style>
+  :root{
+    --bg:#1a1614; --panel:#241f1b; --ink:#ece3d4; --muted:#9c9081;
+    --line:#3a322b; --gold:#c8a24a; --good:#5fa86b; --warn:#d98c3a; --bad:#c5524a;
+    --half:#6b8caf; --prof:#5fa86b; --exp:#c8a24a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Iowan Old Style","Palatino",Georgia,serif}
+  header{padding:18px 22px;border-bottom:2px solid var(--gold);background:var(--panel)}
+  h1{margin:0;font-size:22px;color:var(--gold);letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:12px;margin-top:3px}
+  main{max-width:1100px;margin:0 auto;padding:18px 22px 80px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:18px}
+  .card h2{margin:0 0 12px;font-size:15px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-family:system-ui,sans-serif}
+  label{font-size:12px;color:var(--muted);display:block;margin-bottom:3px;font-family:system-ui,sans-serif}
+  select,input[type=number],input[type=text]{background:#15110e;color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:6px 8px;font:13px system-ui,sans-serif}
+  .row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+  .row > div{display:flex;flex-direction:column}
+  .chk{flex-direction:row!important;align-items:center;gap:6px}
+  .chk input{width:auto}
+  /* budget bar */
+  .budget{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+  .stat{display:flex;flex-direction:column;align-items:center;min-width:80px}
+  .stat .v{font-size:28px;font-weight:700;font-family:system-ui,sans-serif}
+  .stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:system-ui,sans-serif}
+  .bar{flex:1;min-width:200px;height:14px;background:#15110e;border-radius:7px;overflow:hidden;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;background:var(--good);width:0;transition:width .2s,background .2s}
+  .pool-break{font-size:12px;color:var(--muted);margin-top:8px;font-family:system-ui,sans-serif}
+  .pool-break b{color:var(--ink)}
+  /* grid */
+  table{width:100%;border-collapse:collapse;font-family:system-ui,sans-serif}
+  th{text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;border-bottom:1px solid var(--line)}
+  td{padding:4px 8px;border-bottom:1px solid #2a241f}
+  tr.tool td:first-child{color:var(--muted)}
+  tr.fhonly .nm::after{content:" ◆";color:var(--gold);font-size:10px}
+  tr.locked-warn{background:rgba(197,82,74,.12)}
+  .nm{font-weight:600}
+  .dsc{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.25;max-width:340px}
+  .reminders{background:#15110e;border:1px solid var(--gold);border-radius:6px;padding:10px 12px;margin:0 0 12px;font:12px system-ui,sans-serif;color:var(--ink)}
+  .reminders > b{color:var(--gold);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-size:11px}
+  .reminders div{padding:2px 0;color:var(--muted)}
+  .reminders b{color:var(--ink)}
+  .info{display:inline-block;margin-left:5px;font-size:12px;cursor:pointer;vertical-align:middle;opacity:.85}
+  .info:hover{opacity:1}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .modal-box{background:var(--panel);border:1px solid var(--gold);border-radius:10px;max-width:560px;width:100%;max-height:82vh;overflow:auto;padding:22px 24px;position:relative;font-family:system-ui,sans-serif;font-size:13px;color:var(--ink);line-height:1.5}
+  .modal-box #modalClose{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+  .modal-box h3{margin:0 0 10px;color:var(--gold)}
+  .modal-box b{color:inherit;font-weight:700}
+  .modal-box ul{margin:8px 0;padding-left:18px}
+  .modal-box li{margin:5px 0}
+  .ab{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:1px 4px;margin-left:6px}
+  .tiers{display:flex;gap:4px}
+  .tiers button{background:#15110e;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:4px 9px;cursor:pointer;font:11px system-ui,sans-serif;min-width:34px}
+  .tiers button.on[data-t=half]{background:var(--half);color:#fff;border-color:var(--half)}
+  .tiers button.on[data-t=prof]{background:var(--prof);color:#fff;border-color:var(--prof)}
+  .tiers button.on[data-t=exp]{background:var(--exp);color:#1a1614;border-color:var(--exp);font-weight:700}
+  .tiers button.on[data-t=non]{background:#3a322b;color:var(--ink)}
+  .lock select{padding:3px 4px;font-size:11px}
+  .cost{font-size:11px;color:var(--muted);width:34px;text-align:right;display:inline-block}
+  .filter{margin:0 0 10px}
+  .filter input{width:220px}
+  .filter button{background:#15110e;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:6px 10px;cursor:pointer;font:12px system-ui,sans-serif}
+  .warns{font-family:system-ui,sans-serif;font-size:12px}
+  .warns div{padding:4px 0;color:var(--warn)}
+  .warns .ok{color:var(--good)}
+  textarea{width:100%;min-height:180px;background:#15110e;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px;font:12px ui-monospace,Menlo,monospace}
+  .btn{background:var(--gold);color:#1a1614;border:none;border-radius:6px;padding:9px 16px;font:13px system-ui,sans-serif;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+  .legend{font-size:11px;color:var(--muted);font-family:system-ui,sans-serif;margin-top:6px}
+  .sticky{position:sticky;top:0;z-index:5}
+  .note{font-size:11px;color:var(--warn);font-family:system-ui,sans-serif;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>⛓ Fate's Hand — Skill Point Builder</h1>
+  <div class="sub">26 skills + 36 tools dans une liste unique · Non / Half(1) / Proficient(2) / Expertise(4) · pool calculé classe·race·feats·niveau (canonique Revisited corrigé)</div>
+</header>
+<main>
+
+  <!-- ============ PARAMÈTRES PERSO ============ -->
+  <div class="card">
+    <h2>Personnage</h2>
+    <div class="row">
+      <div><label>Nom</label><input id="charName" type="text" placeholder="Nodren…" style="width:160px"></div>
+      <div><label>Classe</label>
+        <select id="cls"></select>
+      </div>
+      <div><label>Niveau</label><input id="lvl" type="number" min="1" max="8" value="1" style="width:64px"></div>
+      <div><label>Espèce</label><select id="race"></select></div>
+      <div><label>Pts race en + (custom)</label><input id="raceP" type="number" min="0" value="0" style="width:64px"></div>
+      <div class="chk"><input id="skilled" type="checkbox"><label style="margin:0">Feat « Skilled » (+6, dont 2 en tools)</label></div>
+      <div><label>Autres pts feat</label><input id="featP" type="number" min="0" value="0" style="width:64px"></div>
+      <div><label>Langues achetées (1 pt/niv.)</label><input id="langPts" type="number" min="0" value="0" style="width:64px"></div>
+      <div><label>Bonus niv.1 (déjà inclus=0)</label><input id="bonus1" type="number" min="0" value="0" style="width:64px"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div><label>Importer un perso DDB (seed JSON de ddb-load.mjs)</label><input id="importSeed" type="file" accept=".json,application/json"></div>
+      <div style="justify-content:flex-end"><button class="btn ghost" id="clearImport" style="padding:6px 12px">Repasser en mode manuel</button></div>
+    </div>
+    <div class="note" id="importNote"></div>
+    <div class="note" id="ruleNote"></div>
+  </div>
+
+  <!-- ============ BUDGET ============ -->
+  <div class="card sticky">
+    <div class="budget">
+      <div class="stat"><span class="v" id="vPool" style="color:var(--gold)">0</span><span class="l">Pool</span></div>
+      <div class="stat"><span class="v" id="vSpent">0</span><span class="l">Dépensé</span></div>
+      <div class="stat"><span class="v" id="vLeft" style="color:var(--good)">0</span><span class="l">Restant</span></div>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+    <div class="pool-break" id="poolBreak"></div>
+    <div class="warns" id="warns"></div>
+  </div>
+
+  <!-- ============ LISTE UNIFIÉE ============ -->
+  <div class="card">
+    <h2>Compétences &amp; Tools</h2>
+    <div class="reminders">
+      <b>Rappels de règles</b>
+      <div>• <b>Langues</b> : gratuites à la création (aucun point). Aux niveaux suivants, <b>1 point = 1 langue</b>.</div>
+      <div>• <b>À chaque niveau</b> : tu peux déplacer <b>1 point</b> d'une compétence/tool à une autre — tant que tu gardes au moins <b>½ sur les skills ET tools natifs</b>.</div>
+      <div>• <b>Tous les 4 niveaux</b> : +2 points à dépenser (½ = 1 pt · proficient = 2 · expertise = 4).</div>
+    </div>
+    <div class="filter">
+      <input id="search" type="text" placeholder="Filtrer (ex. craft, INT, tactics)…">
+      <button id="reset">Tout remettre à Non</button>
+      <span class="legend">◆ = skill FH-only (pas de case native DDB) · « Tool - X » = outil</span>
+    </div>
+    <table>
+      <thead><tr><th style="width:38%">Compétence / Tool</th><th>Départ (verrou)</th><th>Niveau</th><th style="text-align:right">Coût</th></tr></thead>
+      <tbody id="grid"></tbody>
+    </table>
+  </div>
+
+  <!-- ============ EXPORT ============ -->
+  <div class="card">
+    <h2>Export</h2>
+    <button class="btn" id="genExport">Générer le récap</button>
+    <button class="btn ghost" id="copyExport">Copier</button>
+    <button class="btn ghost" id="dlPayload">⬇ Télécharger payload DDB (.json)</button>
+    <p class="legend">Le récap sépare ce qui se coche nativement sur DDB (16 skills officiels) de ce qui ira en bloc <b>Notes / Other Proficiencies</b> (skills FH-only ◆ + tous les tools).</p>
+    <textarea id="export" placeholder="Le récap apparaîtra ici…"></textarea>
+  </div>
+</main>
+
+<div id="modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <button id="modalClose" aria-label="Fermer">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ---------- DONNÉES (extraites du vault : "5X Skills and Tools 1.0" + "3. Skill points per class") ----------
+// Bases = ancien bonus + le +2 universel de largeur (décision 2026-06-08). Artificier = Fighter/Cleric.
+const CLASS_BASE = {Artificer:8,Barbarian:8,Bard:10,Cleric:8,Druid:8,Fighter:8,Monk:8,Paladin:8,Ranger:10,Rogue:12,Sorcerer:8,Warlock:8,Wizard:8};
+const BACKGROUND = 6;
+// classes "à skills" (base élevée, expertise création, progression accélérée)
+const SKILL_CLASSES = new Set(["Bard","Ranger","Rogue","Wizard"]);
+// niveaux où la classe gagne +2 (au-delà du niv.1)
+const LVL_BONUS = {
+  Bard:[3,4,5,7,8], Ranger:[3,4,5,7,8], Rogue:[3,4,5,7,8], Wizard:[3,4,5,7,8],
+  _default:[4,8]
+};
+// Bonus d'espèce (règle Revisited) — create = à la création, levels = +2 à ces niveaux, toolsOnly = doit aller en tools
+const RACE = {
+  "—":           {create:0, levels:[],     toolsOnly:false},
+  "Human":       {create:2, levels:[3,6],  toolsOnly:false},
+  "Half-Elf":    {create:2, levels:[3,6],  toolsOnly:false},
+  "Elf":         {create:0, levels:[],     toolsOnly:false},
+  "Dwarf":       {create:2, levels:[],     toolsOnly:true},
+  "Autre / 0":   {create:0, levels:[],     toolsOnly:false}
+};
+const DDB_SKILLS = new Set(["Acrobatics","Animal Handling","Arcana","Athletics","Deception","History","Insight","Intimidation","Investigation","Medicine","Nature","Performance","Persuasion","Religion","Sleight of Hand","Stealth","Survival"]);
+// 26 skills — canonique Revisited (17 officiels conservés + 9 nouveaux ; Perception splittée)
+const SKILLS = [
+  ["Academics","INT","Étude formelle & recherche : déchiffrer un manuscrit, consulter des archives, comptabilité"],
+  ["Acrobatics","DEX","Équilibre, voltige, agilité : marcher sur une corniche, rouler entre des ennemis"],
+  ["Animal Handling","WIS","Bêtes : compréhension, dressage, interaction (calmer, apprivoiser, diriger). ⚠ Monter une créature = jet sous le tool Mount ; Animal Handling n'ajoute qu'une synergie."],
+  ["Appraise","INT","Estimer valeur, authenticité, qualité : repérer une fausse gemme, évaluer une relique"],
+  ["Arcana","INT","Théorie magique : identifier une rune, analyser un enchantement. · Créatures : Aberrations, Élémentaires, Fées (Study en combat = leurs capacités)."],
+  ["Athletics","STR","Effort physique agile : grimper, nager, lutter (grapple)"],
+  ["Deception","CHA","Tromper & fabriquer : faux alibi, bluffer un garde"],
+  ["Delve","WIS","Explorer l'urbain/les ruines/structures bâties : passages secrets, naviguer dedans"],
+  ["History","INT","Se rappeler événements, cultures, guerres, figures notables. · Créatures : Humanoïdes (lore/cultures)."],
+  ["Hunting","WIS","Chasse : pister, dépecer, et se camoufler à l'immobilité (affût/embuscade). Synergise avec Stealth sur la discrétion."],
+  ["Insight","WIS","Lire les intentions : détecter un mensonge, sentir la peur"],
+  ["Intimidation","CHA","Contraindre par la menace : faire céder, forcer la retraite"],
+  ["Investigation","INT","Analyser des indices : reconstituer une scène, comprendre un mécanisme. · Créatures : Artificiels (Constructs)."],
+  ["Leadership","CHA","Coordonner & inspirer : rallier, donner des ordres. · Règle de commandement (DC 12, +2 coopératif, réactions en combat, effet de masse avec Battlefield Tactician) — voir le doc Skills."],
+  ["Medicine","WIS","Soigner blessures & toxines : stabiliser, diagnostiquer un poison. · Créatures : Géants, Humanoïdes (anatomie), Morts-vivants."],
+  ["Might","STR","Force brute : tordre des barreaux, défoncer une porte (vs l'agilité d'Athletics)"],
+  ["Nature","INT","Flore, faune, météo : identifier une plante, prévoir un orage. · Créatures : Vases, Plantes."],
+  ["Performance","CHA","Divertir & capter l'attention : scène, discours public"],
+  ["Persuasion","CHA","Influencer & négocier : conclure un marché, apaiser un conflit"],
+  ["Religion","INT","Savoir divin & rites : identifier un rituel, reconnaître une secte. · Créatures : Célestes, Fiélons."],
+  ["Sleight of Hand","DEX","Finesse manuelle : escamoter une clé, substituer un objet"],
+  ["Stealth","DEX","Discrétion en mouvement : se faufiler, passer un garde. Synergise avec Hunting pour rester caché à l'arrêt."],
+  ["Streetwise","CHA","Survie urbaine : trouver un receleur, repérer un gang, marché noir"],
+  ["Survival","WIS","Endurance en nature sauvage : pister, faire un feu, fourrager, s'abriter. · Créatures : Bêtes, Dragons, Monstruosités."],
+  ["Tactics","INT","Planification stratégique : préparer une embuscade, jauger une menace. · Study (action ; BA si feat Battlefield Tactician) = révèle la puissance d'une force adverse."],
+  ["Vigilance","WIS","Détecter le danger immédiat : remarquer une embuscade, scruter l'horizon"]
+];
+// 37 tools (Garrot inclus) — affichés "Tool - X"
+const TOOLS = [
+  ["Alchemist's","INT","Artisanat alchimique : acide, feu, potions"],["Brewer's","INT","Raffinage d'alcool ; détecter un poison"],
+  ["Calligrapher's","DEX","Écriture fine & parchemins (scrolls)"],["Carpenter's","STR","Construction bois : réparer, renforcer"],
+  ["Card Set","WIS","Jeu de cartes : compter, lire les tells"],["Cartographer's","WIS","Cartographie : tracer une carte"],
+  ["Cobbler's","DEX","Cordonnerie : réparer/modifier des chaussures"],["Cook's","WIS","Cuisine & conservation des vivres"],
+  ["Dice Set","WIS","Jeu de dés : dés pipés, calcul des cotes"],["Disguise Kit","CHA","Déguisement : altérer son identité"],
+  ["Dragonchess","WIS","Jeu de plateau stratégique"],["Forgery Kit","DEX","Faux documents, sceaux, contrats"],
+  ["Garrot","DEX","Arme de finesse améliorant l'Étranglement (Strangle) — cible surprise, 0 dégât (fatigue). Achat 2 pts (tier Prof) ; gratuit Assassin niv.3."],
+  ["Glassblower's","INT","Soufflage du verre : flacons, lentilles"],["Herbalism Kit","INT","Remèdes végétaux : onguents, potions"],
+  ["Inst. (Other)","CHA","Instrument : percussions/claviers"],["Inst. (Strings)","CHA","Instrument à cordes"],
+  ["Inst. (Wind)","CHA","Instrument à vent"],["Jeweler's","INT","Joaillerie : sertir, inspecter une gemme"],
+  ["Leatherworker's","INT","Travail du cuir : sangles, pochettes"],["Mason's","INT","Maçonnerie : murs, blocs, structures"],
+  ["Mount (Air)","WIS","Monter une créature volante — le JET de monte se fait ici (Animal Handling = synergie)"],["Mount (Land)","WIS","Monter une créature terrestre — le JET de monte se fait ici (Animal Handling = synergie)"],
+  ["Mount (Water)","WIS","Monter une créature aquatique — le JET de monte se fait ici (Animal Handling = synergie)"],["Navigator's","WIS","Orientation : étoiles, cap, position"],
+  ["Painter's","WIS","Art visuel : héraldique, portrait, fresque"],["Poisoner's","INT","Toxicologie : distiller, enduire une lame"],
+  ["Potter's","WIS","Poterie : tourner, cuire, réparer"],["Smith's","STR","Forge : armes, armures, rivets"],
+  ["Thieves'","DEX","Serrures & pièges : crocheter, désarmer"],["Three-Dragon","WIS","Jeu d'argent stratégique (cartes)"],
+  ["Tinker's","INT","Mécanismes : réparer, bricoler un gadget"],["Veh. (Air)","INT","Piloter un véhicule aérien"],
+  ["Veh. (Land)","DEX","Conduire un véhicule terrestre"],["Veh. (Water)","DEX","Piloter une embarcation"],
+  ["Weaver's","DEX","Tissage : vêtements, bannières"],["Woodcarver's","DEX","Sculpture sur bois : figurines, manches"]
+];
+const COST = {non:0, half:1, prof:2, exp:4};
+const TIER_LABEL = {non:"—", half:"½", prof:"Prof", exp:"Exp"};
+
+// Règles détaillées (popup ⓘ) pour les skills complexes
+const DETAILS = {
+"Leadership": `<b>Coût</b> : action <b>Utilize</b> — action <b>bonus</b> en combat si feat <i>Battlefield Tactician</i>, ou si tu es <b>expert</b> dans le skill demandé. Toucher <b>plus d'une personne</b> coûte <b>1 point de Destinée</b> / utilisation.
+<ul>
+<li><b>Prérequis</b> : leader ET cible au moins <b>½-compétents</b> dans le skill / l'attaque / le sort — sinon inefficace.</li>
+<li><b>Jet</b> : <b>DC 12</b>, rayon <b>30 pieds</b>. Cibles : 1 au DC 12, puis <b>+1 par tranche de 2</b> (14→2, 16→3, 18→4…).</li>
+<li><b>Sur un skill</b> : <b>+2</b> coopératif à tous les alliés touchés.</li>
+<li><b>En combat (ton tour)</b> : donne une <b>réaction</b> aux alliés pour exécuter l'action ordonnée (les deux compétents) :
+<ul><li><b>Attaque</b> : seulement si l'arme est maîtrisée (par toi aussi), sinon inefficace.</li>
+<li><b>Sort</b> : possible si les deux ont le <b>même sort</b>.</li>
+<li><b>Compétence</b> : possible, mais <b>sans le +2</b>.</li></ul></li>
+<li><b>Effet de masse</b> (feat <i>Battlefield Master</i>, qui améliore Battlefield Tactician) : commander d'autres leaders <b>qui sont eux-mêmes Battlefield Tacticians ou experts</b> → bonus de synergie sur LEURS jets de Leadership → <b>cascade</b> (combat de masse).</li>
+<li>Peut synergiser avec <b>Tactics</b>.</li>
+</ul>`,
+"Tactics": `<b>Action « Study »</b> (action ; <b>bonus</b> si feat <i>Battlefield Tactician</i>).
+<ul>
+<li>Révèle la <b>puissance d'une force adverse</b> (échelle du groupe / de la troupe).</li>
+<li>Pour les <b>capacités d'un ennemi précis</b>, utilise plutôt le skill de savoir correspondant à son <b>type</b> (Arcana / Survival / Religion / Investigation / Medicine / Nature / History).</li>
+<li>Peut servir de synergie à un jet de <b>Leadership</b>.</li>
+</ul>`,
+"Animal Handling": `<b>Animal Handling ≠ monter</b>
+<ul>
+<li>Animal Handling = <b>comprendre, dresser, interagir</b> avec les bêtes.</li>
+<li>Pour <b>monter</b> une créature, le jet se fait sous le tool <b>Mount (Air / Land / Water)</b> ; Animal Handling n'ajoute qu'une <b>synergie</b> (+2).</li>
+</ul>`,
+"Delve": `<b>Découpe de Perception</b> — l'ancienne Perception est scindée en 3 selon le contexte :
+<ul>
+<li><b>Delve</b> (SAG) : milieu <b>bâti / urbain</b>, ruines, donjons — terrain, passages cachés.</li>
+<li><b>Survival</b> (SAG) : idem en milieu <b>naturel</b> (nature sauvage, traces, météo).</li>
+<li><b>Vigilance</b> (SAG) : <b>danger immédiat</b> (embuscade, menace présente).</li>
+</ul>`,
+"Hunting": `<b>Synergie avec Stealth (à l'immobilité)</b>
+<ul>
+<li>En te déplaçant d'un couvert à l'autre : jet de <b>Stealth DC 14</b> — le mouvement ne donne <b>aucun bonus</b> (ça reste 14).</li>
+<li>Dès que tu t'<b>arrêtes</b> à couvert : Hunting donne sa <b>synergie +2</b> (camouflage), tant que tu ne bouges pas.</li>
+<li>Hunting couvre aussi <b>pister</b> et <b>dépecer</b>. Stealth seul n'a jamais le +2 en mouvement.</li>
+</ul>`,
+"History": `<b>Connaissance des créatures par type</b> (à coupler avec l'action <b>Study</b>) — le skill dépend du <b>type</b> :
+<ul>
+<li><b>History</b> : Humanoïdes (lore / cultures).</li>
+<li><b>Arcana</b> : Aberrations, Élémentaires, Fées · <b>Survival</b> : Bêtes, Dragons, Monstruosités · <b>Religion</b> : Célestes, Fiélons · <b>Investigation</b> : Artificiels · <b>Medicine</b> : Géants, Humanoïdes (anatomie), Morts-vivants · <b>Nature</b> : Vases, Plantes.</li>
+</ul>`,
+"Garrot": `<b>Garrot</b> — arme de <b>finesse</b> améliorant l'<b>Étranglement</b> (Strangle ; voir Battlefield Rules). Achat <b>2 points</b> (tier Prof) ; gratuit pour l'<b>Assassin</b> niv.3.
+<ul>
+<li><b>0 dégât</b> (sauf feat Grappler) — uniquement de la <b>fatigue</b>.</li>
+<li>Utilisable seulement sur une cible <b>surprise</b> ; pas de malus −2 au toucher.</li>
+<li>DC d'évasion : <b>10 + FOR + PB</b> (DEX pour les roublards) — plus dur à briser qu'un étranglement à mains nues (8 + FOR + PB).</li>
+</ul>`
+};
+DETAILS["Survival"] = DETAILS["Vigilance"] = DETAILS["Delve"];
+
+// ---------- ÉTAT ----------
+let IMPORTED = null;          // seed DDB importé (null = mode manuel)
+const items = [];
+SKILLS.forEach(([n,a,d])=>items.push({name:n, ability:a, desc:d, type:"skill", ddb:DDB_SKILLS.has(n), fhonly:!DDB_SKILLS.has(n), tier:"non", lock:"non"}));
+TOOLS.forEach(([n,a,d])=>items.push({name:n, ability:a, desc:d, type:"tool", ddb:false, fhonly:false, tier:"non", lock:"non"}));
+
+// ---------- INIT UI ----------
+const cls = document.getElementById('cls');
+Object.keys(CLASS_BASE).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cls.appendChild(o);});
+cls.value="Rogue";
+const raceSel = document.getElementById('race');
+Object.keys(RACE).forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;raceSel.appendChild(o);});
+
+function poolBreakdown(){
+  const c = cls.value, lvl = +document.getElementById('lvl').value||1;
+  const base = CLASS_BASE[c];
+  const bonusLvls = LVL_BONUS[c]||LVL_BONUS._default;
+  const lvlPts = bonusLvls.filter(L=>L<=lvl).length*2;
+  const rdef = RACE[document.getElementById('race').value]||RACE["—"];
+  const raceLvl = rdef.create + rdef.levels.filter(L=>L<=lvl).length*2;
+  const raceCustom = +document.getElementById('raceP').value||0;
+  const race = raceLvl + raceCustom;
+  const skilled = document.getElementById('skilled').checked?6:0;
+  const feat = (+document.getElementById('featP').value||0)+skilled;
+  const exp2 = +document.getElementById('bonus1').value||0;
+  const total = base+BACKGROUND+lvlPts+race+feat+exp2;
+  return {c,lvl,base,bg:BACKGROUND,lvlPts,race,feat,exp2,total,raceToolsOnly:rdef.toolsOnly,raceToolsPts:rdef.toolsOnly?raceLvl:0};
+}
+
+function renderGrid(){
+  const q = (document.getElementById('search').value||"").toLowerCase();
+  const g = document.getElementById('grid'); g.innerHTML="";
+  items.forEach((it,i)=>{
+    const disp = it.type==="tool" ? "Tool - "+it.name : it.name;
+    if(q && !(disp.toLowerCase().includes(q)||it.ability.toLowerCase().includes(q))) return;
+    const tr=document.createElement('tr');
+    tr.className=(it.type==="tool"?"tool ":"")+(it.fhonly?"fhonly ":"")+(belowLock(it)?"locked-warn":"");
+    tr.dataset.i=i;
+    tr.innerHTML=`
+      <td><span class="nm">${disp}</span><span class="ab">${it.ability}</span>${DETAILS[it.name]?`<span class="info" data-info="${it.name}" title="Règle détaillée (complexe)">📖</span>`:""}${it.desc?`<div class="dsc">${it.desc}</div>`:""}</td>
+      <td class="lock"><select data-lock="${i}">
+        ${["non","half","prof","exp"].map(t=>`<option value="${t}"${it.lock===t?" selected":""}>${TIER_LABEL[t]}</option>`).join("")}
+      </select></td>
+      <td><div class="tiers">
+        ${["non","half","prof","exp"].map(t=>`<button data-t="${t}" data-i="${i}" class="${it.tier===t?"on":""}">${TIER_LABEL[t]}</button>`).join("")}
+      </div></td>
+      <td style="text-align:right"><span class="cost">${COST[it.tier]}</span></td>`;
+    g.appendChild(tr);
+  });
+}
+function belowLock(it){return COST[it.tier] < COST[it.lock];}
+
+function recalc(){
+  const pb = poolBreakdown();
+  let spent=0, toolPts=0;
+  items.forEach(it=>{spent+=COST[it.tier]; if(it.type==="tool") toolPts+=COST[it.tier];});
+  const langPts = +document.getElementById('langPts').value||0;
+  spent += langPts;
+  // si un perso DDB est importé, son pool (calcul multiclasse de ddb-load.mjs) fait foi
+  const total = IMPORTED ? IMPORTED.pool.total : pb.total;
+  const lvl = IMPORTED ? IMPORTED.pool.charLevel : pb.lvl;
+  const c = IMPORTED ? IMPORTED.pool.startingClass : pb.c;
+  const raceToolsOnly = IMPORTED ? IMPORTED.pool.raceToolsOnly : pb.raceToolsOnly;
+  const raceToolsPts = IMPORTED ? (IMPORTED.pool.raceToolsOnly?2:0) : pb.raceToolsPts;
+  const left = total-spent;
+  document.getElementById('vPool').textContent=total;
+  document.getElementById('vSpent').textContent=spent;
+  const vl=document.getElementById('vLeft'); vl.textContent=left;
+  vl.style.color = left<0?"var(--bad)":left===0?"var(--muted)":"var(--good)";
+  const fill=document.getElementById('barFill');
+  fill.style.width=Math.min(100,total?spent/total*100:0)+"%";
+  fill.style.background = spent>total?"var(--bad)":"var(--good)";
+  document.getElementById('poolBreak').innerHTML= IMPORTED
+    ? `<b>${IMPORTED.name||"DDB"}</b> (importé) — Pool ${total} = ${IMPORTED.pool.breakdown}`
+    : `Pool = classe <b>${pb.base}</b> + background <b>${pb.bg}</b> + niveaux <b>${pb.lvlPts}</b> + race <b>${pb.race}</b> + feats <b>${pb.feat}</b> + bonus niv.1 <b>${pb.exp2}</b> = <b>${total}</b>`;
+  // warnings
+  const W=[];
+  if(left<0) W.push(["", `Dépassement du pool de ${-left} pt(s).`]);
+  if(toolPts<1) W.push(["", `Règle FH : au moins 1 pt en tools à la création (actuel : ${toolPts}).`]);
+  if(raceToolsOnly && toolPts<raceToolsPts) W.push(["", `Nain : les ${raceToolsPts} pts d'espèce doivent aller en tools (actuel en tools : ${toolPts}).`]);
+  const expEarly = items.filter(it=>it.tier==="exp"&&lvl<4&&!SKILL_CLASSES.has(c));
+  if(expEarly.length) W.push(["", `Expertise au niv.${lvl} réservée Bard/Ranger/Rogue/Wizard — ${expEarly.length} ligne(s) hors règle.`]);
+  const below = items.filter(belowLock);
+  if(below.length) W.push(["", `${below.length} ligne(s) sous leur niveau de départ verrouillé.`]);
+  if(!W.length) W.push(["ok","✓ Aucune alerte — répartition conforme."]);
+  document.getElementById('warns').innerHTML=W.map(([k,t])=>`<div class="${k}">${t}</div>`).join("");
+  document.getElementById('ruleNote').textContent =
+    "Canonique : 26 skills · bases INCLUANT le bonus (Barbarian/Fighter/Cleric/Artificier 6, Bard/Ranger 8, Rogue 10) → aucun bonus en plus · classes-skills Bard/Ranger/Rogue/Wizard (expertise création, +2 niv.3/5/7) · min. 1 tool + 1 langue. Races avec bonus : Humain et Demi-Elfe = +2 création puis +2 aux niv.3/6 ; Nain = +2 (tools). Toutes les autres espèces (Elfe inclus) = 0.";
+}
+
+function refresh(){renderGrid();recalc();}
+
+// ---------- EVENTS ----------
+document.getElementById('grid').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-t]'); if(!b)return;
+  const it=items[+b.dataset.i]; it.tier=b.dataset.t; refresh();
+});
+document.getElementById('grid').addEventListener('change',e=>{
+  const s=e.target.closest('select[data-lock]'); if(!s)return;
+  const it=items[+s.dataset.lock]; it.lock=s.value;
+  if(COST[it.tier]<COST[it.lock]) it.tier=it.lock; // remonte au minimum
+  refresh();
+});
+["cls","lvl","race","raceP","skilled","featP","bonus1","langPts","charName"].forEach(id=>{
+  document.getElementById(id).addEventListener('input',recalc);
+  document.getElementById(id).addEventListener('change',recalc);
+});
+document.getElementById('search').addEventListener('input',renderGrid);
+document.getElementById('reset').addEventListener('click',()=>{items.forEach(it=>it.tier=it.lock);refresh();});
+
+// ---------- POPUP RÈGLES (ⓘ) ----------
+const modal = document.getElementById('modal');
+document.getElementById('grid').addEventListener('click',e=>{
+  const b=e.target.closest('.info'); if(!b) return;
+  e.stopPropagation();
+  document.getElementById('modalBody').innerHTML = `<h3>${b.dataset.info}</h3>` + (DETAILS[b.dataset.info]||"");
+  modal.style.display='flex';
+});
+document.getElementById('modalClose').addEventListener('click',()=>modal.style.display='none');
+modal.addEventListener('click',e=>{ if(e.target===modal) modal.style.display='none'; });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') modal.style.display='none'; });
+
+// ---------- IMPORT DDB ----------
+function applySeed(data){
+  items.forEach(it=>{it.tier="non"; it.lock="non";});           // reset
+  const byDisp = {};
+  items.forEach(it=>{ byDisp[it.type==="tool"?"Tool - "+it.name:it.name] = it; });
+  const missing=[];
+  for(const [k,v] of Object.entries(data.seed||{})){
+    const it = byDisp[k] || byDisp["Tool - "+k] || byDisp[k.replace(/^Tool - /,"")];
+    if(it){ it.tier=v.tier||"non"; it.lock=v.lock||"non"; } else missing.push(k);
+  }
+  IMPORTED = data;
+  if(data.name) document.getElementById('charName').value = data.name.trim();
+  // reflète le perso importé dans les champs (cosmétique — le pool vient du JSON DDB)
+  if(data.pool?.charLevel) document.getElementById('lvl').value = data.pool.charLevel;
+  if(data.pool?.startingClass && CLASS_BASE[data.pool.startingClass])
+    document.getElementById('cls').value = data.pool.startingClass;
+  const um = (data.unmapped||[]).concat(missing.map(m=>`${m} → aucune ligne correspondante dans le builder`));
+  document.getElementById('importNote').innerHTML =
+    `✅ Importé : <b>${(data.name||"DDB").trim()}</b> — ${(data.classes||[]).map(x=>x.name+" "+x.level).join(" / ")} · pool DDB <b>${data.pool?.total}</b>, ${data.invested} investis → ${data.remaining} à placer.`
+    + (um.length ? `<br>🔧 À régler à la main :<br>• ${um.join("<br>• ")}` : " ✓ tout mappé.");
+  refresh();
+}
+document.getElementById('importSeed').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ applySeed(JSON.parse(r.result)); }catch(err){ alert("JSON invalide : "+err.message); } };
+  r.readAsText(f);
+});
+document.getElementById('clearImport').addEventListener('click',()=>{
+  IMPORTED=null; document.getElementById('importNote').innerHTML="";
+  document.getElementById('importSeed').value="";
+  items.forEach(it=>{it.tier="non"; it.lock="non";});
+  refresh();
+});
+
+const STAT_ID={STR:1,DEX:2,CON:3,INT:4,WIS:5,CHA:6};
+const PROF_ID={non:1,half:2,prof:3,exp:4};   // DDB proficiencyLevel : 1=none 2=½ 3=prof 4=exp
+// payload pour ddb-write.mjs :
+//  - TOUS les skills FH-only ◆ (même à « non » → visibles sur la fiche, niveau none)
+//  - les tools UNIQUEMENT s'ils ont une compétence (½/prof/exp)
+//  - jamais les natifs ; exclut ce qui est déjà sur la fiche (seed) → zéro doublon
+//  - trié alphabétiquement
+function buildDDBPayload(){
+  const seeded = IMPORTED ? new Set(Object.keys(IMPORTED.seed||{})) : new Set();
+  const fhSkills = items.filter(it => it.type==="skill" && it.fhonly);          // les 9, tout niveau
+  const tools    = items.filter(it => it.type==="tool" && it.tier!=="non");     // tools avec compétence
+  return [...fhSkills, ...tools]
+    .map(it => ({ disp: it.type==="tool"?"Tool - "+it.name:it.name, it }))
+    .filter(x => !seeded.has(x.disp))
+    .map(({disp,it}) => ({ name: disp, type:1, statId:STAT_ID[it.ability], proficiencyLevel:PROF_ID[it.tier] }))
+    .sort((a,b) => a.name.localeCompare(b.name));
+}
+document.getElementById('genExport').addEventListener('click',()=>{
+  const chosen=items.filter(it=>it.tier!=="non");
+  const payload = buildDDBPayload();
+  // skills natifs à prof/exp : cochables dans le builder DDB
+  const asNative = chosen.filter(it => it.type==="skill" && it.ddb && it.tier!=="half");
+  const charName=(document.getElementById('charName').value||"(sans nom)").trim();
+  let out =`// FATE'S HAND → D&D BEYOND — ${charName}\n`;
+  out+=`// ${chosen.length} compétences/tools · dépensé ${chosen.reduce((s,it)=>s+COST[it.tier],0)}\n\n`;
+  out+=`// (1) customProficiencies à CRÉER (FH-only + tools + natifs à ½) — ${payload.length}\n`;
+  out+=JSON.stringify(payload, null, 2);
+  out+=`\n\n// (2) Skills natifs à mettre Proficient/Expertise sur DDB — ${asNative.length}\n`;
+  out+= asNative.length ? asNative.map(it=>`${it.name} → ${it.tier==="exp"?"Expertise":"Proficient"} (${it.ability})`).join("\n") : "(aucun)";
+  document.getElementById('export').value=out;
+});
+document.getElementById('copyExport').addEventListener('click',()=>{
+  const t=document.getElementById('export'); t.select(); document.execCommand('copy');
+});
+document.getElementById('dlPayload').addEventListener('click',()=>{
+  const payload = buildDDBPayload();
+  const name = (document.getElementById('charName').value||"perso").trim().replace(/[^\w-]+/g,"_");
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `payload-${name}.json`; a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+refresh();
+</script>
+</body>
+</html>
