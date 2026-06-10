@@ -1,67 +1,45 @@
 # Ability Scores
 
-#### 3d6 × 10 Method vs. Point Buy / Standard Array
+In Fate's Hand you **roll** your ability scores rather than using Point Buy or the Standard Array — kept fair by a floor rule, but with the thrill of a possible **17 or 18** at level 1.
 
->
-Below is a concise comparison of the **3d6 × 10 method (5+ rules)** vs. **Point Buy / Standard Array (D&D 2024)**. This includes a **3d6 probability table** to highlight the possibility of rolling a **17 or 18** at character creation—an exciting chance that static methods like Standard Array or strict Point Buy can’t replicate.
+## The 3d6 × 10 method
 
----
+1. Roll **3d6**, ten times.
+2. Keep your **six highest** results — but only if at least one of them is **15 or higher**. If not, reroll the whole set.
+3. That set averages about **11** per ability.
+4. Add your **+4 to +6** background and racial points across your six scores. This brings the average to roughly **11.7–12** — on par with the Standard Array.
 
-#### **1. D&D 2024: Point Buy / Standard Array**
-1. **Base Average**  
-   - Point Buy or Standard Array typically yields an average ~12 per ability.  
-2. **Add +3 Background Points**  
-   - The 2024 rules commonly add +3 background points to distribute.  
-   - This boosts the final average to around **12.5**.
+> [!note] Caps
+> After all racial and background bonuses at creation, an ability can reach at most **18 + racial bonus**. At higher levels the cap rises to **20 + racial bonus**. Backgrounds never raise the cap.
 
----
+## Why roll?
 
-#### **2. 5X Rules: 3d6 × 10 Method**
-1. **Roll 3d6 Ten Times**  
-   - Choose your **6 highest results**, but only keep the set if at least one roll is **15 or higher**.  
-   - This set typically averages around **11 per ability score**.  
-2. **Add +4 to +6 Extra Points (Background & Race)**  
-   - Add bonus points to your 6 chosen scores.  
-   - This pushes the final average up to **~11.7 to 12 overall**—close to the Standard Array average.
+| Method | Average per ability |
+|---|---|
+| D&D 2024 Point Buy / Standard Array (+3 background) | ~**12.5** |
+| Fate's Hand 3d6 × 10 (+4–6 points) | ~**11.7–12** |
 
----
+The two land in the same ballpark — but rolling can spike high (or low), which static methods can't. The "keep only if a 15+" rule guards against an all-low set, so you get fairness *and* the excitement of a standout score.
 
-#### **Fun Fact**
-- You can still roll **17** or **18** right out of the gate:  
-  - **17 occurs with a ~1.39% chance** per 3d6 roll.  
-  - **18 occurs with a ~0.46% chance** per 3d6 roll.  
-  - Across ten rolls, there’s a real (though small) chance to land a very high attribute—something impossible with a strict Standard Array.
+## 3d6 probability
 
----
+A single 3d6 roll lands a **17** about **1.39 %** of the time and an **18** about **0.46 %** — small odds, but across ten rolls there's a real chance of a high result.
 
-#### **3. 3d6 Probability Table**
-
-| **Sum** | **Ways** | **Percentage** |
-|---------|----------|----------------|
-| 3       | 1/216    | 0.46%          |
-| 4       | 3/216    | 1.39%          |
-| 5       | 6/216    | 2.78%          |
-| 6       | 10/216   | 4.63%          |
-| 7       | 15/216   | 6.94%          |
-| 8       | 21/216   | 9.72%          |
-| 9       | 25/216   | 11.57%         |
-| 10      | 27/216   | 12.50%         |
-| 11      | 27/216   | 12.50%         |
-| 12      | 25/216   | 11.57%         |
-| 13      | 21/216   | 9.72%          |
-| 14      | 15/216   | 6.94%          |
-| 15      | 10/216   | 4.63%          |
-| 16      | 6/216    | 2.78%          |
-| 17      | 3/216    | 1.39%          |
-| 18      | 1/216    | 0.46%          |
-
----
-
-#### **4. Final Takeaway**
-- **D&D 2024 Point Buy/Standard Array** + background points yields an **~12.5 average per stat**.  
-- **5X 3d6 × 10** + 4–6 bonus points ends around **11.7 to 12 average**—but with the added excitement of potentially rolling **17s or 18s** at character creation.
-
----
-
-### **Conclusion**
-The 3d6 × 10 method is an appealing middle ground for groups seeking both fairness (to avoid all-low sets) and the thrill of high rolls, offering flexibility while keeping gameplay balanced.
+| Sum | Ways | Chance |
+|:---:|:---:|:---:|
+| 3 | 1 / 216 | 0.46 % |
+| 4 | 3 / 216 | 1.39 % |
+| 5 | 6 / 216 | 2.78 % |
+| 6 | 10 / 216 | 4.63 % |
+| 7 | 15 / 216 | 6.94 % |
+| 8 | 21 / 216 | 9.72 % |
+| 9 | 25 / 216 | 11.57 % |
+| 10 | 27 / 216 | 12.50 % |
+| 11 | 27 / 216 | 12.50 % |
+| 12 | 25 / 216 | 11.57 % |
+| 13 | 21 / 216 | 9.72 % |
+| 14 | 15 / 216 | 6.94 % |
+| 15 | 10 / 216 | 4.63 % |
+| 16 | 6 / 216 | 2.78 % |
+| 17 | 3 / 216 | 1.39 % |
+| 18 | 1 / 216 | 0.46 % |

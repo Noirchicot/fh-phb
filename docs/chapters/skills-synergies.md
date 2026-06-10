@@ -7,7 +7,8 @@ At levels **1–4**, the base **DC** for most challenging skill checks is **16**
 2. **Cooperative Synergy** — another proficient ally (or their tool) assists.
 3. **Situational Synergy** — the environment or story context favors you.
 
-**Important:** You may benefit from **one** synergy bonus for **+2**, or **two** synergy bonuses for **Advantage** (instead of a bigger flat bonus). This rule encourages teamwork and clever use of the environment.
+> [!note] One synergy or two
+> You may take **one** synergy bonus for **+2**, or **two** synergy bonuses for **Advantage** (instead of a bigger flat bonus). This rewards teamwork and clever use of the environment.
 
 ---
 
