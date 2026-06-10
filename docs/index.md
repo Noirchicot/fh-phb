@@ -4,6 +4,8 @@ hide:
   - toc
 ---
 
+![Fate's Hand — the Demon Forest](assets/img/hero-foret-des-demons.jpg){ .fh-banner }
+
 # Fate's Hand
 
 <div class="fh-hero" markdown>

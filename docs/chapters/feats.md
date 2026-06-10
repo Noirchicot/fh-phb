@@ -1,7 +1,5 @@
 # Feats — Fate's Hand modifications
 
-*(new)* marks a Fate's Hand addition to the 2024 rules.
-
 **[Observant](https://www.dndbeyond.com/sources/dnd/phb-2024/feats#Observant)** — also lets you add either your **Intelligence** or **Wisdom** modifier to **Survival**, **Delve** and **Vigilance** checks.
 
 **[Keen Mind](https://www.dndbeyond.com/sources/dnd/phb-2024/feats#KeenMind)** — also lets you add either your **Intelligence** or **Wisdom** modifier to **Insight** and **Investigation** checks.
@@ -13,7 +11,7 @@
 **[Spell Sniper](https://www.dndbeyond.com/feats/1789201-spell-sniper)**
 - Cast in melee.
 - Increased range.
-- **Critical range +1** *(new)*.
+- **Critical range +1**.
 - Cancels the chance of friendly spell-fire on allies in the melee.
 - Cancels the rest.
 
@@ -30,7 +28,7 @@
 - With **Nick** — which folds the off-hand light-weapon attack into your **Attack** action, freeing your bonus action — and **Vex**, this yields a third attack with a shield up. Full walkthrough: `8. Other rules/Shield dual wield 3 attacks.md`.
 
 **[Sharpshooter](https://www.dndbeyond.com/feats/1789187-sharpshooter)**
-- Adds your **proficiency bonus** to damage *(new)*.
+- Adds your **proficiency bonus** to damage.
 - Fire in melee without **disadvantage**.
 - Increased range.
 - Cancels the chance of friendly ranged fire on allies in the melee.
