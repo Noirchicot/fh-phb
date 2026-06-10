@@ -1,100 +1,74 @@
 # Battlefield Rules
 
-Fate's Hand combat house-rules. *(new)* marks a Fate's Hand addition to the 2024 rule.
-
----
+Fate's Hand combat house-rules. *(new)* marks a change from the 2024 rules.
 
 ## Combat ranges
 
-**Grappling range (0 ft)** *(new)*
-- Grappling, Strangling, Lock and Garrot.
-- All  weapons that are not **light, natural or unarmed** have disadvantage 
-- Ranged attacks against grappling characters have an **equal chance of hitting either** combatant.
-
-**Melee range (5 ft)**
-- If your ranged shot **misses by 2**, you hit the **closest individual** in the melee instead *(Sharpshooter cancels this)*.
-- **Flanking**: **+2 to hit** when two or more attackers focus one target.
-
-**Ranged (more than 5 ft)**
-- Shooting from **high ground** grants **+2 to hit**.
-
----
+| Range | Rules |
+|---|---|
+| **Grappling (0 ft)** *(new)* | Grapple, Strangle, Lock and Garrot happen here. Weapons that aren't **light**, **natural** or **unarmed** attack at **disadvantage**. A ranged attack into a grapple has an equal chance of hitting either combatant. |
+| **Melee (5 ft)** | A ranged shot that misses by 2 hits the closest ally in the melee instead *(Sharpshooter cancels this)*. **Flanking**: +2 to hit when two or more attackers focus one target. |
+| **Ranged (over 5 ft)** | Shooting from **high ground** grants +2 to hit. |
 
 ## Surprise
-*(Surprise, but **not** a surprise round — rules reminder.)*
-- **Advantage** to players on initiative.
-- **Advantage** on all attacks if you act **before the monster's turn**.
-- Monsters take a **flat 8** on initiative *(new)*.
+*Surprise — but there is **no** surprise round.*
 
----
+- The surprised side grants the others **advantage** on initiative.
+- **Advantage** on every attack made before the monster's turn.
+- Monsters roll a flat **8** on initiative *(new)*.
 
 ## Strategy
-- A successful **Tactics** check via a **Study** action informs you of the **opposing faction's power**.
-- **Study action** — depending on the foe's type (per the rules: **History, Nature, Religion, Arcana**): reveals the **nature of the foe and its powers**. May **synergize with Tactics** rolls.
-
----
+- A **Tactics** check (via the **Study** action) reveals an opposing force's power.
+- The **Study** action against a specific foe — using the skill for its type (**History**, **Nature**, **Religion**, **Arcana**) — reveals its nature and abilities, and can feed a **Tactics** roll.
 
 ## Fatigue
-- The **Chaos Effect** generates fatigue — or much worse in certain cases.
-- You may, **only once** until you have fully recovered, regain **1 fatigue after a short rest**.
-- After that, normal rules apply: lose **one fatigue per long rest**.
-- **Strangling** generates fatigue.
+- The **Chaos Effect** inflicts **exhaustion** — or worse.
+- Once, until you have fully recovered, you may shed **1 exhaustion** on a short rest. After that the normal rule applies: **1 per long rest**.
+- **Strangling** also inflicts exhaustion.
 
----
-
-## Falling in combat or Dying
-- **Death saves → CON saves** *(new)*. (Concentration is likewise a CON save.)
-- **Monsters** do not automatically die; they make **one** CON save.
-- A character who **falls to 0** in combat and is then healed must make a **CON save (DC 8 + Overreach)**, or take **1 fatigue** and be **incapacitated until the end of their next turn**.
-
----
+## Falling & dying
+- **Death saves** (and concentration) are **CON saves** *(new)*.
+- A monster doesn't die automatically — it makes **one** CON save.
+- A character healed from **0 HP** must make a **CON save** (**DC 8 + Overreach**) or gain **1 exhaustion** and be **incapacitated** until the end of their next turn.
 
 ## Grappling-range maneuvers
 
-If you hit with an **unarmed strike**, you may inflict **Damage**, a **Shove**, or start a **Grapple**.
+A hit with an **unarmed strike** lets you deal damage, **Shove**, or start a **Grapple**.
+
+> [!note] The grappling save
+> Grapple, Strangle and Lock all use a **Strength or Dexterity save** vs **DC 8 + STR + PB** (use **DEX** if you are a **Monk**). The **Garrot** raises this DC to **10**.
 
 ### Grapple
-*You must have at least one **free hand**, and your target can be **no more than one size larger** than you.*
-- The target makes a **Strength or Dexterity save** vs **DC 8 + STR + PB** *(DEX if you are a Monk)*. On a failure it gains the **Grappled** condition:
-  - Its **speed is 0** and can't increase.
-  - **Disadvantage** on all attacks except against the grappler.
-  - It can be **moved at half the grappler's speed**.
-  - Two characters in a grapple may only use **light weapons or melee attacks** *(new)*.
-  - Ranged attacks on grappling targets have an **equal chance of hitting both** *(new)*.
+Requires one **free hand**, against a target no more than **one size larger** than you. On a failed save the target is **Grappled**:
+
+- **Speed 0** (can't increase).
+- **Disadvantage** on attacks, except against you.
+- You can drag it at **half your speed**.
+- In the grapple, both of you may use only **light** or **unarmed** weapons *(new)*.
+- A ranged attack into the grapple hits either combatant equally *(new)*.
 
 ### Strangle *(new)*
-**A two-handed, full-round attack action.**
+A **two-handed, full-round attack**. You strike at **−2 to hit**; on a hit, the target makes the save.
 
-**Round 1**
-- You must hit your target, **with a −2 penalty**.
-- The target makes a **STR or DEX save (DC 8 + STR + PB; DEX if Monk)**. On a failure:
-  - **Outcome 1** — the target is **silenced** until the end of its next turn.
-  - **Outcome 2** — the target is **grappled** (to break free: succeed an **Acrobatics, Might or Athletics** check vs the same DC).
+| Round | On a failed save | Escape (on its turn) |
+|---|---|---|
+| **1** | **Silenced** until end of its next turn, **and Grappled** | Acrobatics, Might or Athletics vs the DC |
+| **2** | **Grappled**, **+1 exhaustion**, silenced | same check **at −2** |
+| **3+** | **+1 exhaustion** each round, silenced | same check, **−2 per exhaustion** |
 
-**Round 2+** (continue as an attack action on your turn)
-- The target is **grappled**, gains **1 exhaustion**, and is **silenced** until the end of its next turn.
-- To free itself: **Athletics, Might or Acrobatics** check **at −2** (exhaustion).
-
-**Further rounds**
-- Target grappled, **2 exhaustion** (round 3), silenced until end of its next turn.
-- To free itself: the same check **at −4** (exhaustion).
-
-**The end** — strangling ends when:
-- the target frees itself, **or**
-- it reaches **5 exhaustion** → unconscious for one minute, **or**
-- it reaches **6 exhaustion** → it dies.
+> [!danger] Choking out
+> At **5 exhaustion** the target falls **unconscious** for 1 minute; at **6 exhaustion** it **dies**.
 
 ### The Lock *(new)*
-**A two-handed, full attack action.** Can be attempted on the round **after a successful Grapple or Strangle**.
-- Characters in **heavy armor are immune** to this move.
-- On your turn, impose a **STR or DEX save (DC 8 + STR + PB; DEX if Monk)**. On a failure the target is **Locked**:
-  - To free itself: an **Acrobatics, Might or Athletics** check vs the same DC.
-  - Each **failed** escape attempt deals **(Grappler level + STR)** blunt damage.
-  - The grappler spends a **full attack action** to maintain the Lock and can move the victim at **half speed**.
-  - The locked foe has **speed 0** and **disadvantage on all attacks**.
+A **two-handed, full attack** usable the round **after a successful Grapple or Strangle**. Foes in **heavy armor** are immune. On a failed save the target is **Locked**:
+
+- **Speed 0** and **disadvantage** on all attacks.
+- Escape with **Acrobatics**, **Might** or **Athletics** vs the DC; each failed attempt takes **(your level + STR)** bludgeoning damage.
+- You spend a **full attack** each round to hold it, and may move it at **half speed**.
 
 ### The Garrot *(new)*
-A **finesse** weapon that improves **Strangling**. Bought through the **skill pool for 2 points**; the **Assassin** gains it free at level 3. The garrot deals **no damage** (unless you have the Grappler feat) — **only exhaustion**.
-- Usable **only if the target is surprised**.
-- The attacker does **not** take the **−2 Strangling penalty** to hit.
-- The target's DC is **10 + STR + PB** (**DEX for Rogues**).
+A **finesse** weapon that improves **Strangling** — bought for **2 points**; free for the **Assassin** at level 3. It deals **no damage** — only **exhaustion** (unless you have the **Grappler** feat).
+
+- Works **only against a surprised target**.
+- You take **no −2** Strangling penalty to hit.
+- The escape DC is higher: **10 + STR + PB** (**DEX** for **Rogues**).

@@ -1,15 +1,15 @@
 # Fate's Hand 5+ — Skills & Tools: Player Guide
 
-A plain-language guide to **how skill points work** and **what every skill and tool does**.
+A plain-language guide to how skill points work and what every skill and tool does.
 Rules source of truth: `Skill chapters/D&G 5+ Revisited Skills.md` (canonical block). Distribution tool: `~/tools/fh-skills/fh-skill-builder.html`.
 
 ---
 
 ## 1. The quick version
 
-- Fate's Hand replaces the 17-skill list with **26 skills**, and folds **tools** into the same point system.
-- You get a **pool of skill points** and spend them to raise skills and tools to one of four tiers.
-- **Tiers & cost:** None `0` · **Half `1 pt`** · **Proficient `2 pts`** · **Expertise `4 pts`**.
+- Fate's Hand replaces the 17-skill list with **26 skills**, and folds tools into the same point pool.
+- You spend points to raise skills and tools to one of four tiers.
+- **Tiers & cost:** None `0` · **Half** `1 pt` · **Proficient** `2 pts` · **Expertise** `4 pts`.
 - *(Half = half your proficiency bonus, rounded down. Expertise = double proficiency.)*
 
 ---
@@ -38,10 +38,10 @@ Pool = Class base  +  Background (6)  +  Race bonus  +  Feats (e.g. Skilled +6)
 | All others (Elf included) | 0 | — |
 
 ### Rules at creation
-- **Minimum 1 point in a tool.**
-- **Languages are free at creation** — they cost nothing.
-- **Expertise** is only available at creation to the four **skill classes** (Bard, Ranger, Rogue, Wizard). Everyone else can buy expertise from **level 4**.
-- The breadth points are **free to place** — no forced spread. The one standing rule is the conservation rule (§3).
+- At least **1 point** must go into a tool.
+- Languages are free at creation — they cost nothing.
+- **Expertise** at creation is reserved for the four **skill classes** (Bard, Ranger, Rogue, Wizard); everyone else can buy it from level 4.
+- The breadth points are free to place — no forced spread. The one standing rule is the conservation rule (§3).
 
 > *Examples:* Talia (Human Ranger, lvl 1) = 10 + 6 + 2 = **18 pts** · Kai (Fighter, lvl 1) = 8 + 6 = **14 pts** · a Human Rogue lvl 1 = 12 + 6 + 2 = **20 pts**.
 
@@ -54,7 +54,8 @@ Pool = Class base  +  Background (6)  +  Race bonus  +  Feats (e.g. Skilled +6)
 - **Buying languages later:** after creation, a new language costs **1 point**.
 - **Moving a point:** each time you gain points (a level-up), you may **shift a point from one skill/tool to another** — as long as you respect the conservation rule below.
 
-> **⚖️ Conservation rule (the only hard constraint):** you must keep **at least Half** on **every native skill AND every native tool** your class/background/species granted. You can drop a native from Proficient down to Half to free a point, but never below Half.
+> [!note] Conservation rule — the only hard constraint
+> You must keep at least **Half** on every native skill and every native tool your class, background or species granted. You may drop a native from **Proficient** to **Half** to free a point — but never below **Half**.
 
 ### Multiclassing
 - Your **base** comes from your **starting class only** (no second base).
@@ -195,23 +196,41 @@ Identifying a creature and recalling its traits uses the skill matching the crea
 - **History** — Humanoids *(lore & cultures — the peoples/history angle)*
 
 ### Leadership
-A CHA skill to **coordinate and command** allies. Both the **leader and the led must be at least Half-proficient** in the skill/action being directed.
+A CHA skill to coordinate and command allies.
 
-- **Cost**: a **Utilize action** (a **bonus action** if you have the *Battlefield Tactician* feat, or are an **expert** in the required skill). Affecting **more than one person** costs **1 Destiny Point** per use.
-- **Leadership check (DC 12)** within a **30-ft** radius: you affect **+1 person per increment of 2** over the DC → **12 = 1**, **14 = 2**, **16 = 3**, **18 = 4**, etc.
+> [!note] Prerequisite
+> The leader and the target must each be at least **Half-proficient** in the skill, attack, or spell being directed — otherwise the order has no effect.
 
-**For skills (outside combat)**
-- A success grants **+2 to everyone affected**.
+- **Cost:** a **Utilize action** — a **bonus action** if you have the **Battlefield Tactician** feat, or have **Expertise** in the required skill.
+- **Destiny:** affecting more than one person costs **1 Destiny Point** per use.
+- **Check:** DC 12, all targets within a 30-ft radius.
 
-**In combat** (on the leader's turn)
-- Affected allies gain a **reaction** to perform the action the leader directs — both parties must be competent:
-  - **Attack** — only if the weapon is proficient **for both** (else ineffective).
-  - **Spell** — only if **both** know the **same** spell.
-  - **Skill** — allowed, but **without** the +2.
+You affect more people the higher you beat the DC (+1 per 2 points):
 
-**Mass effect** (the *Battlefield Master* feat)
-- **Battlefield Master** is a feat that **improves Battlefield Tactician**. It lets you **lead other leaders** — but only those who are themselves **Battlefield Tacticians or experts** in the directed action (and whom you can see / who can see you).
-- On a success, each of those sub-leaders gains a **synergy bonus on their own Leadership rolls**, which they then apply to **their** group. Command therefore **cascades** (you → tacticians/experts → their squads), scaling Leadership up to a whole formation.
+| Leadership result | People affected |
+|:---:|:---:|
+| 12 | 1 |
+| 14 | 2 |
+| 16 | 3 |
+| 18 | 4 |
+| each +2 | +1 |
+
+#### Outside combat (skills)
+A success grants +2 to everyone affected.
+
+#### In combat — on the leader's turn
+Affected allies gain a **reaction** to perform the directed action. Both parties must be competent:
+
+| Directed action | Condition |
+|---|---|
+| Attack | only if the weapon is proficient for both (else ineffective) |
+| Spell | only if both know the same spell |
+| Skill | allowed, but without the +2 |
+
+#### Mass effect — the Battlefield Master feat
+**Battlefield Master** may improve sub-leaders who are themselves **Battlefield Tacticians** or have **Expertise** in the required course of action; they must be able to see each other. The check is DC 12, affecting one additional group per increment of 2 (12 = 1 group, 14 = 2, 16 = 3…).
+
+On a success, each sub-leader gains a **synergy bonus** on their **Leadership** rolls, applied to their group for one minute.
 
 ### The Garrot
 A **finesse weapon** (DEX) that improves **Strangling** (see Battlefield Rules). Bought through the skill pool for **2 points**; the **Assassin** gets it free at level 3.

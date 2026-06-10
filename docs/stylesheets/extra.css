@@ -1,0 +1,144 @@
+/* ===== Fate's Hand PHB — theming ===== */
+/* ---- Self-hosted PHB-clone fonts (Homebrewery 5e set) ---- */
+@font-face{font-family:"Bookinsanity";src:url("../fonts/Bookinsanity.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Bookinsanity";src:url("../fonts/Bookinsanity Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Bookinsanity";src:url("../fonts/Bookinsanity Italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Bookinsanity";src:url("../fonts/Bookinsanity Bold Italic.woff2") format("woff2");font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:"Nodesto Caps Condensed";src:url("../fonts/Nodesto Caps Condensed.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Nodesto Caps Condensed";src:url("../fonts/Nodesto Caps Condensed Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Mr Eaves Small Caps";src:url("../fonts/Mr Eaves Small Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Scaly Sans";src:url("../fonts/Scaly Sans.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Scaly Sans";src:url("../fonts/Scaly Sans Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Scaly Sans Caps";src:url("../fonts/Scaly Sans Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Solbera Imitation";src:url("../fonts/Solbera Imitation Tweak.woff2") format("woff2");font-weight:400;font-display:swap}
+
+/* ---- Palette: parchment + leather + gold ---- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #5c4326;   /* leather brown */
+  --md-primary-fg-color--light: #6b4f2a;
+  --md-primary-fg-color--dark:  #3f2e18;
+  --md-accent-fg-color:         #9c6b16;   /* burnished gold */
+  --md-default-bg-color:        #f5edda;   /* parchment */
+  --md-default-fg-color:        #2b2118;
+  --md-typeset-a-color:         #8a5a1f;
+  --fh-gold:                    #9c6b16;
+  --fh-red:                     #58180d;   /* D&D oxblood */
+  --fh-rule:                    rgba(92,67,38,.30);
+}
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color:        #1b1712;   /* dark leather */
+  --md-default-fg-color:        #e7dcc4;
+  --md-primary-fg-color:        #241c14;
+  --md-accent-fg-color:         #d8b65a;
+  --md-typeset-a-color:         #d8b65a;
+  --fh-gold:                    #d8b65a;
+  --fh-red:                     #c97a5f;   /* lighter brick for dark bg */
+  --fh-rule:                    rgba(216,182,90,.28);
+  --md-code-bg-color:           #2a2018;
+}
+
+/* ---- Fonts ---- */
+.md-typeset, .md-nav { font-family: "Bookinsanity", Georgia, serif; }
+.md-typeset { font-size: .85rem; line-height: 1.32; }
+.md-typeset p { margin: .35em 0; }
+.md-typeset ul, .md-typeset ol { margin: .3em 0; }
+.md-typeset li { margin: 0; }
+.md-typeset table:not([class]) td,
+.md-typeset table:not([class]) th { padding: .3em .6em; line-height: 1.25; }
+.md-header__title, .md-typeset h1, .md-typeset h2 {
+  font-family: "Nodesto Caps Condensed", "Cinzel", serif; letter-spacing: .01em;
+}
+.md-typeset h3, .md-typeset h4, .md-tabs__link {
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif; letter-spacing: .02em;
+}
+
+/* ---- Headings ---- */
+.md-typeset h1 {
+  color: var(--fh-gold); font-weight: 600; font-size: 1.95rem;
+  text-align: center; margin-bottom: .6em;
+  border-bottom: 2px solid var(--fh-rule); padding-bottom: .25em;
+}
+.md-typeset h2 {
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+  border-bottom: 1px solid var(--fh-rule); padding-bottom: .2em; margin-top: 1.8em;
+}
+[data-md-color-scheme="slate"] .md-typeset h2 { color: var(--fh-gold); }
+.md-typeset h3 {
+  color: var(--fh-gold); font-weight: 600; font-size: 1.55rem;
+  margin-top: 1.8em; padding-bottom: .15em;
+  border-bottom: 1px solid var(--fh-rule);
+}
+.md-typeset h4 {
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+  font-weight: 600; font-size: 1.02rem; margin-top: 1.25em; margin-bottom: .3em;
+}
+[data-md-color-scheme="slate"] .md-typeset h4 { color: var(--fh-gold); }
+
+/* small decorative flourish under each H1 */
+.md-typeset h1::after {
+  content: "✦"; display: block; text-align: center; color: var(--fh-gold);
+  font-size: .7rem; margin-top: .3em; opacity: .8;
+}
+
+/* ---- Tables: bordered, tinted header (rulebook stat-block feel) ---- */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--fh-rule); border-radius: 6px; overflow: hidden;
+  font-family: "Scaly Sans", sans-serif; font-size: .8rem;
+}
+.md-typeset table:not([class]) th {
+  background: var(--md-primary-fg-color); color: #f5edda;
+  font-family: "Scaly Sans Caps", "Scaly Sans", sans-serif; font-weight: 600; letter-spacing: .02em;
+}
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th { color: var(--fh-gold); }
+.md-typeset table:not([class]) tr:nth-child(even) { background: rgba(156,107,22,.06); }
+
+/* ---- Links & emphasis ---- */
+.md-typeset a { text-decoration-color: var(--fh-rule); }
+.md-typeset a:hover { text-decoration-color: currentColor; }
+
+/* ---- Blockquotes as illuminated callouts ---- */
+.md-typeset blockquote {
+  border-left: 3px solid var(--fh-gold);
+  background: rgba(156,107,22,.07); border-radius: 0 6px 6px 0; font-style: italic;
+}
+
+/* ---- Top nav tabs ---- */
+.md-tabs { background: var(--md-primary-fg-color--dark, var(--md-primary-fg-color)); }
+.md-tabs__link { font-family: "Mr Eaves Small Caps", serif; font-size: .74rem; letter-spacing: .03em; opacity: .9; }
+.md-tabs__link--active, .md-tabs__link:hover { opacity: 1; }
+
+/* ---- Landing-page hero ---- */
+.fh-hero { text-align: center; margin: 1.5rem 0 2.5rem; }
+.fh-hero .fh-sub { font-style: italic; color: var(--fh-gold); font-size: 1rem; }
+
+/* ---- Callouts / admonitions: classy rulebook aside ---- */
+.md-typeset .admonition,
+.md-typeset details {
+  border: 1px solid var(--fh-red) !important;
+  border-left: 4px solid var(--fh-red) !important;
+  border-radius: 6px;
+  background: rgba(88,24,13,.05) !important;
+  box-shadow: none !important;
+  font-size: .82rem;
+}
+.md-typeset .admonition > .admonition-title,
+.md-typeset details > summary {
+  background: rgba(88,24,13,.09) !important;
+  font-family: "Mr Eaves Small Caps", serif;
+  color: var(--fh-red) !important;
+  font-weight: 600; letter-spacing: .02em;
+  border: 0 !important; margin: 0;
+  padding: .45em .9em .35em .9em;
+}
+/* drop the loud per-type icon */
+.md-typeset .admonition-title::before,
+.md-typeset summary::before { display: none !important; }
+.md-typeset .admonition-title::after,
+.md-typeset summary::after { color: var(--fh-red); }
+
+/* ---- Grid cards ---- */
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--fh-rule); border-radius: 8px; background: rgba(156,107,22,.05);
+  transition: border-color .2s, transform .2s;
+}
+.md-typeset .grid.cards > ul > li:hover { border-color: var(--fh-gold); transform: translateY(-2px); }

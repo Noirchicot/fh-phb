@@ -5,6 +5,9 @@ docs_dir: docs
 theme:
   name: material
   language: en
+  icon:
+    logo: material/dice-d20
+  font: false   # use self-hosted PHB-clone fonts from extra.css
   palette:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
@@ -21,6 +24,8 @@ theme:
         icon: material/weather-night
         name: Dark mode
   features:
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.top
     - navigation.indexes
@@ -29,9 +34,13 @@ theme:
     - search.suggest
     - search.highlight
 
+extra_css:
+  - stylesheets/extra.css
+
 markdown_extensions:
   - admonition
   - attr_list
+  - md_in_html
   - tables
   - toc:
       permalink: true
@@ -40,6 +49,7 @@ markdown_extensions:
   - pymdownx.emoji
 
 plugins:
+  - callouts
   - search
 
 nav:

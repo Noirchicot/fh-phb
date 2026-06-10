@@ -56,19 +56,14 @@ def convert_wikilinks(s: str) -> str:
 
 
 def strip_callouts(text: str) -> str:
+    """Drop only the editorial CANONICAL callout blocks; pass every other
+    Obsidian callout through verbatim so the mkdocs-callouts plugin renders it."""
     out, i, lines = [], 0, text.splitlines()
-    callout = re.compile(r"^>\s*\[!(\w+)\][+-]?\s*(.*)$")
+    head = re.compile(r"^>\s*\[!\w+\]")
     while i < len(lines):
-        m = callout.match(lines[i])
-        if m:
-            title = m.group(2).strip()
-            drop = "CANONICAL" in title.upper()
-            if not drop:
-                out.append(f"> **{title}**" if title else ">")
+        if head.match(lines[i]) and "CANONICAL" in lines[i].upper():
             i += 1
             while i < len(lines) and lines[i].lstrip().startswith(">"):
-                if not drop:
-                    out.append(lines[i])
                 i += 1
         else:
             out.append(lines[i]); i += 1
