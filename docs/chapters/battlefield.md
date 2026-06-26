@@ -5,21 +5,18 @@ Fate's Hand combat house-rules. *(new)* marks a Fate's Hand addition to the 2024
 ---
 ## Combat ranges
 
-Everything is classified by the **distance to your target**. Each band lists the baseline reminder first, then the Fate's Hand additions *(new)*.
+Everything is classified by the **distance to your target** — the baseline reminder first, then the Fate's Hand additions *(new)*.
 
-### 0 ft — Grappling range
-- **What happens here:** Grapple, Strangle, Lock and Garrot (see *Grappling-range maneuvers* below).
-- *(new)* Any weapon that is **not light, natural, or unarmed** is wielded at **disadvantage** at this range.
-- *(new)* **Shooting into a grapple** — a ranged attack at one of two grappling combatants has an **equal 50% chance of hitting either** of them: resolve the attack, then **roll randomly** to see which combatant it lands on.
-
-### 5 ft — Melee range
-- **Reminder:** melee weapons reach **5 ft** (reach weapons **10 ft**). Making a **ranged** attack while a hostile creature is within 5 ft of you is at **disadvantage** (RAW).
-- *(new)* **Shooting into a melee** — if your ranged shot **misses by 2**, you hit the **closest individual** in the melee instead *(Sharpshooter cancels this)*.
-- *(new)* **Flanking:** **+2 to hit** when two or more attackers focus one target.
-
-### Beyond 5 ft — Ranged
-- **Reminder:** a ranged weapon attacks at **normal range**; beyond that, out to **long range**, the attack is at **disadvantage**, and past long range it cannot be made.
-- *(new)* **High ground:** shooting from above grants **+2 to hit**.
+- **0 ft — Grappling range** *(Grapple, Strangle, Lock, Garrot — see below).*
+    - *(new)* Any weapon that is **not light, natural, or unarmed** is wielded at **disadvantage**.
+    - *(new)* **Shooting into a grapple** — a ranged attack at one of two grappling combatants has an **equal 50% chance of hitting either**: resolve the attack, then **roll randomly** for which one it lands on.
+- **5 ft — Melee range**
+    - Melee weapons reach **5 ft** (reach weapons **10 ft**); a **ranged** attack while a hostile is within 5 ft is at **disadvantage** (RAW).
+    - *(new)* **Shooting into a melee** — a ranged shot that **misses by 2** hits the **closest individual** instead *(Sharpshooter cancels this)*.
+    - *(new)* **Flanking** — **+2 to hit** when two or more attackers focus one target.
+- **Beyond 5 ft — Ranged**
+    - **Normal range**; beyond it, out to **long range**, at **disadvantage**; past long range, not at all.
+    - *(new)* **High ground** — **+2 to hit** when shooting from above.
 
 ---
 ## Surprise
