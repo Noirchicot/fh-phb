@@ -42,6 +42,7 @@ Everything is classified by the **distance to your target** — the baseline rem
 ## Falling in combat or Dying
 - **Death saves → CON saves** *(new)*. (Concentration is likewise a CON save.)
 - **Monsters** do not automatically die; they make **one** CON save.
+- **Strike to not kill** *(new)* — you may declare a **non-lethal** blow as you bring a creature to 0 HP: it makes **no CON save to survive** — it simply drops, alive. **Unarmed strike:** guaranteed. **Weapon:** strike at **disadvantage**, then guaranteed. *(This is also how you down a creature intact to harvest its parts — the cleaner the drop, the more you can take.)*
 - A character who **falls to 0** in combat and is then healed must make a **CON save (DC 8 + Overreach)**, or take **1 fatigue** and be **incapacitated until the end of their next turn**.
 
 ---
