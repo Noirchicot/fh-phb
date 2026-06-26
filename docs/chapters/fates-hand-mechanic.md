@@ -1,5 +1,4 @@
-# The Fate's Hand Mechanic
-
+# Destiny System
 
 ---
 
@@ -19,15 +18,14 @@ Glimmers of true power flicker beyond mortal sight, revealing a grand tapestry o
 - **Proficiency** — add your proficiency bonus.
 - **Innate** — race base (table below), background, feats (e.g. *Lucky*), and your Major Arcana.
 - **Glory / Damnation** — deeds that shift your standing among hidden powers (honor raises it, villainy taints it).
+- **Other** — a feat (e.g. *Skilled*), a magic item, a boon, or some subclasses may also influence the score.
 
 > *Example — Sir Gawain (5th-level Human Knight): proficiency +3, Human birthright +3, Lucky +2, Arcana boon +1, chivalric deed +1 → **Destiny Score 10**.*
 
-### Destiny Dice — thresholds, cycling & stacking
-You gain a Destiny Die each time your **Destiny Points** reach a new **even** total. The dice cycle **d4 → d6 → d8 → d10 → d12**, then repeat from d4 — so you can hold **several dice of the same size**:
+### Destiny Dice — slots & stacking
+Each time your **Destiny Points** reach an **even** total, you gain a Destiny Die in the **lowest slot available** — d4 first, then d6, d8, d10, d12. Only once **all slots up to d12 are full** does the next even total start a **second round**: a 2nd d4, then a 2nd d6, and so on — so you can hold **several dice of the same size**.
 
-| Points | 4 | 6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 | 22 | … |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| Die gained | d4 | d6 | d8 | d10 | d12 | d4 (2nd) | d6 (2nd) | d8 (2nd) | d10 (2nd) | d12 (2nd) | … |
+Your Points go **up and down** in play, so there is no fixed link between a Points total and a die size — only the lowest empty slot matters. *You may wake up at 8 Points one morning and the first open slot is a d6.*
 
 ### Arcane Critical
 A **max roll** on a Destiny Die (e.g. a 12 on a d12) is an **automatic Natural 20**, at a cost of only **−1 Destiny Point** — no Arcane Awakening.
@@ -53,7 +51,7 @@ A **max roll** on a Destiny Die (e.g. a 12 on a d12) is an **automatic Natural 2
 - **Even total → die back:** each time your Points reach an even number, regain the **lowest missing** die.
 - **Cap & overflow:** long rest and most recovery **cannot exceed your Score**. The exceptions — **Arcana cards** and **Natural 1s** — grant *temporary* points that **may push you above your Score**.
 - **Natural 20 (on a d20):** −1 Destiny Point. If this brings you to **0**, trigger an **Arcane Awakening** (§5).
-- **Natural 1 (on a d20):** either **Accept** (fail, +1 *temporary* point) **or Invoke Chaos** (Points → 0, the failure becomes a critical success, then roll **2d6** on the Chaos Table).
+- **Natural 1 (on a d20):** either **Accept** (fail, +1 *temporary* point) **or Invoke Chaos** (Points → 0, the failure becomes a critical success, then roll **2d6** on the [Chaos Table](chaos-tables.md)).
 - Other sources of temporary points: the **[Ceremony](https://www.dndbeyond.com/spells/14760-ceremony)** spell (once per long rest; better with a richer sacrifice), and **Minor Arcana** drawn on an Awakening.
 
 > "When fortune smiles, it always demands a price. When it frowns, you must risk even more to survive."
@@ -78,11 +76,11 @@ Chaos occurs when spending a die brings your Destiny Points to **0 or below**.
 1. **Overreach** — how far below 0 you land (Points 6, roll 8 → Overreach 2).
 2. **Overreach Save** — save with the **same ability** vs **DC = 10 + Overreach**.
 3. **Success** — suffer **1 level of Exhaustion**.
-4. **Failure** — roll **1d6 + Overreach** on the Chaos Table for that ability. The higher the result, the worse (injuries, lasting handicaps, madness tied to the ability used).
+4. **Failure** — roll **1d6 + Overreach** on the [Chaos Table](chaos-tables.md) for that ability. The higher the result, the worse (injuries, lasting handicaps, madness tied to the ability used).
 
-A **Natural 1** on a d20 may instead **force destiny** — turning the failure into a critical success (Natural 20) at the cost of a **2d6** Chaos roll.
+A **Natural 1** on a d20 may instead **force destiny** — turning the failure into a critical success (Natural 20) at the cost of a **2d6** [Chaos roll](chaos-tables.md).
 
-> *Example — Karnos (Points 4) hurls a d10 at a foe, rolling 9 → Overreach 5. He fails his Strength save (DC 15) and consults the Chaos Table: a fractured arm robs half his strength, but his blow lands with earth-shattering force.*
+> *Example — Karnos (Points 4) hurls a d10 at a foe, rolling 9 → Overreach 5. He fails his Strength save (DC 15) and consults the [Chaos Table](chaos-tables.md#strength-str): a fractured arm robs half his strength, but his blow lands with earth-shattering force.*
 
 ---
 

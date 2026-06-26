@@ -1,4 +1,6 @@
-# Skill-Point Builder
+<a class="fh-home" href="../">&#8962; Home</a>
+
+# 5.5 Sheet → 5+ Converter
 
 Use this tool to distribute your Fate's Hand skill & tool points: set your **class, level and species**, then spend your pool across the tiers (**½ / Prof / Exp**). Click any **📖** for the complex-rule popups, and use **⬇ Download payload** to export your choices.
 

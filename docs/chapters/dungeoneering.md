@@ -1,5 +1,9 @@
 # Dungeoneering
 
-- In built environments, the **Delve** skill (**WIS**) is required to spot traps and passages.
-- **Investigation** (**INT**) helps you work out how to avoid or disable them.
-- **Thieves' Tools** (**DEX**) disable a trap or open a lock.
+In built environments and dungeons, specific skills govern traps, locks and hidden passages.
+
+| Task | Skill | Ability |
+| --- | --- | --- |
+| Spot traps and hidden passages | **Delve** | WIS |
+| Work out how to avoid or disable them | **Investigation** | INT |
+| Disable a trap or open a lock | **Thieves' Tools** | DEX |

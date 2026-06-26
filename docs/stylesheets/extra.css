@@ -108,6 +108,21 @@
 .md-tabs__link { font-family: "Mr Eaves Small Caps", serif; font-size: .74rem; letter-spacing: .03em; opacity: .9; }
 .md-tabs__link--active, .md-tabs__link:hover { opacity: 1; }
 
+/* ---- Landing cover title (big, above the banner) ---- */
+.md-typeset h1.fh-cover-title {
+  font-size: 3.4rem; line-height: 1.05;
+  margin: .2rem 0 1rem; padding-bottom: 0;
+  border-bottom: none;
+}
+.md-typeset h1.fh-cover-title::after { content: none; }
+@media screen and (max-width: 44.9em) {
+  .md-typeset h1.fh-cover-title { font-size: 2.3rem; }
+}
+/* On the landing page, hide the top header bar (title now sits above the
+   image) and drop the decorative d20 logo everywhere. */
+body.fh-home-page .md-header { display: none; }
+.md-header__button.md-logo { display: none; }
+
 /* ---- Landing hero banner ---- */
 .md-typeset .fh-banner {
   display: block; width: 100%; height: auto;
@@ -151,3 +166,186 @@
   transition: border-color .2s, transform .2s;
 }
 .md-typeset .grid.cards > ul > li:hover { border-color: var(--fh-gold); transform: translateY(-2px); }
+
+/* ---- Phase 4: spacing polish ---- */
+/* tame the wide default rule the vault chapters use as separators */
+.md-typeset hr {
+  margin: 1.1em 0;
+  border-bottom: 1px solid var(--fh-rule);
+}
+/* an hr immediately before a bordered heading is redundant — hide it */
+.md-typeset hr + h2,
+.md-typeset hr + h3 { margin-top: .8em; }
+/* tables shouldn't float with big gaps */
+.md-typeset table:not([class]) { margin: .8em 0; }
+/* tighten inside callouts */
+.md-typeset .admonition > :not(.admonition-title),
+.md-typeset details > :not(summary) { margin-top: .4em; margin-bottom: .4em; }
+.md-typeset .admonition > :last-child,
+.md-typeset details > :last-child { margin-bottom: .6em; }
+/* blockquotes a touch tighter */
+.md-typeset blockquote { padding: .2em .9em; margin: .8em 0; }
+/* first heading after H1 flourish shouldn't push down hard */
+.md-typeset h1 + h2 { margin-top: 1em; }
+
+/* ---- Landing contents cartouche ---- */
+.md-typeset .fh-toc.grid.cards > ul > li {
+  background: rgba(156,107,22,.045);
+  border: 1px solid var(--fh-rule);
+  border-top: 3px solid var(--fh-gold);
+  border-radius: 8px;
+  padding: .8rem 1rem .7rem;
+}
+.md-typeset .fh-toc.grid.cards > ul > li > p:first-child {
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: 1.15rem; letter-spacing: .03em;
+  color: var(--fh-red); margin: 0 0 .2em;
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-toc.grid.cards > ul > li > p:first-child {
+  color: var(--fh-gold);
+}
+.md-typeset .fh-toc.grid.cards > ul > li hr {
+  margin: .3em 0 .45em; border-bottom: 1px solid var(--fh-rule);
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul {
+  list-style: none; margin: 0; padding: 0;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul li {
+  margin: 0; padding: .12em 0;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul li::before {
+  content: "✦"; color: var(--fh-gold); font-size: .6rem;
+  margin-right: .55em; vertical-align: .12em;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul a {
+  color: var(--md-typeset-color); text-decoration: none;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul a:hover {
+  color: var(--fh-red); text-decoration: underline;
+  text-decoration-color: var(--fh-rule);
+}
+
+/* ---- "⌂ Home" breadcrumb on every page ---- */
+.md-typeset .fh-home {
+  display: inline-block;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: .78rem; letter-spacing: .04em;
+  color: var(--fh-gold); text-decoration: none;
+  border: 1px solid var(--fh-rule); border-radius: 999px;
+  padding: .05em .75em .1em; margin-bottom: .4em;
+  background: rgba(156,107,22,.05);
+}
+.md-typeset .fh-home:hover {
+  color: var(--fh-red); border-color: var(--fh-gold);
+}
+.md-typeset .fh-home + .fh-home { margin-left: .35em; }
+/* variant injected at the top of the table of contents (right sidebar) */
+.md-nav .fh-home--toc {
+  display: inline-block;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: .72rem; letter-spacing: .04em;
+  color: var(--fh-gold); text-decoration: none;
+  border: 1px solid var(--fh-rule); border-radius: 999px;
+  padding: .02em .7em .08em; margin: 0 0 .45em .2em;
+  background: rgba(156,107,22,.05);
+}
+.md-nav .fh-home--toc:hover { color: var(--fh-red); border-color: var(--fh-gold); }
+
+/* ---- Destiny-group cross TOC (injected by fh-home.js) ---- */
+.md-nav .fh-group { margin-top: .15rem; }
+.md-nav .fh-group__h1 {
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: .8rem; letter-spacing: .03em; font-weight: 700;
+  color: var(--fh-red);
+}
+[data-md-color-scheme="slate"] .md-nav .fh-group__h1 { color: var(--fh-gold); }
+.md-nav .fh-group__h1--current {
+  border-bottom: 1px solid var(--fh-rule);
+}
+.md-nav .fh-group__subs { padding-left: .55rem; margin-bottom: .4rem; }
+/* chapter's landing-card title at the top of the TOC */
+.md-nav a.fh-group__card {
+  display: block;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: .92rem; letter-spacing: .04em; font-weight: 700;
+  color: var(--fh-red); text-decoration: none;
+  margin: .25rem 0 .5rem; padding-bottom: .3rem;
+  border-bottom: 2px solid var(--fh-gold);
+}
+[data-md-color-scheme="slate"] .md-nav a.fh-group__card { color: var(--fh-gold); }
+.md-nav a.fh-group__card:hover { color: var(--fh-gold); }
+
+/* ---- Lunar Sorcerer "Roll the sky" widget ---- */
+.md-typeset .fh-sky__roll {
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  letter-spacing: .03em; color: #f5edda;
+  background: var(--md-primary-fg-color); border: 1px solid var(--fh-rule);
+  border-radius: 6px; padding: .4em 1em; cursor: pointer; margin: .4rem 0 .9rem;
+  transition: filter .15s;
+}
+.md-typeset .fh-sky__roll:hover { filter: brightness(1.12); }
+.fh-sky__grid { display: flex; flex-wrap: wrap; gap: 1rem; margin: .2rem 0 1rem; }
+.fh-moon { width: 5rem; text-align: center; }
+.fh-moon__disc {
+  width: 4rem; height: 4rem; margin: 0 auto; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Nodesto Caps Condensed", serif; font-size: 1.9rem; color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.65);
+  border: 2px solid rgba(0,0,0,.25); box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  transition: box-shadow .2s, filter .2s, opacity .2s;
+}
+.fh-moon__name { font-family: "Mr Eaves Small Caps", serif; font-size: .82rem; margin-top: .3em; }
+.fh-moon__state { font-size: .72rem; font-style: italic; opacity: .85; min-height: 1em; }
+.fh-moon--absent .fh-moon__disc { filter: grayscale(.85) brightness(.7); opacity: .4; }
+.fh-moon--absent .fh-moon__state { color: #9a958a; }
+.fh-moon--dominant .fh-moon__disc { box-shadow: 0 0 0 3px var(--fh-gold), 0 0 16px var(--fh-gold); }
+.fh-moon--dominant .fh-moon__state { color: var(--fh-gold); font-weight: 700; font-style: normal; }
+
+/* ---- No boxy inline code: this is a rulebook, not code ---- */
+/* any stray inline `code` blends into the parchment (no white square) */
+.md-typeset :not(pre) > code {
+  background: transparent !important; border: 0 !important;
+  padding: 0 !important; box-shadow: none !important;
+  color: inherit; font-size: inherit; font-family: inherit;
+}
+
+/* ---- Feats: the FH5+ edition tag under each feat heading ---- */
+.md-typeset .fh-edition { color: var(--fh-red); font-style: italic; font-size: .9em; letter-spacing: .01em; }
+[data-md-color-scheme="slate"] .md-typeset .fh-edition { color: var(--fh-gold); }
+
+/* ---- Feats: inline Fate's Hand change + superseded note ---- */
+.md-typeset .fh-add { color: var(--fh-red); font-weight: 700; letter-spacing: .01em; }
+[data-md-color-scheme="slate"] .md-typeset .fh-add { color: var(--fh-gold); }
+.md-typeset .fh-obsolete { opacity: .45; font-style: italic; font-size: .92em; }
+/* a RAW line that Fate's Hand cancels — greyed italic, smaller, ⊘ marker */
+.md-typeset .fh-cancelled { color: #9a958a; font-style: italic; font-size: .88em; }
+[data-md-color-scheme="slate"] .md-typeset .fh-cancelled { color: #6c675c; }
+.md-typeset .fh-cancelled::before {
+  content: "\2298";   /* ⊘ removed/cancelled */
+  font-style: normal; margin-right: .35em; opacity: .85;
+}
+/* collapsible flap that hides the lines Fate's Hand removes */
+.md-typeset details.fh-removed {
+  border: 0 !important; background: transparent !important; box-shadow: none !important;
+  margin: .1em 0 .4em; padding: 0; color: #9a958a;
+}
+[data-md-color-scheme="slate"] .md-typeset details.fh-removed { color: #6c675c; }
+.md-typeset details.fh-removed > summary {
+  background: transparent !important; border: 0 !important; padding: 0 !important;
+  color: inherit; font-family: "Bookinsanity", Georgia, serif !important;
+  font-style: italic; font-weight: 400; font-size: .85em; cursor: pointer; list-style: none;
+}
+.md-typeset details.fh-removed > summary::-webkit-details-marker { display: none; }
+.md-typeset details.fh-removed > summary::before { content: "" !important; margin: 0 !important; }
+.md-typeset details.fh-removed > summary::after { content: "" !important; display: none !important; -webkit-mask-image: none !important; mask-image: none !important; background: none !important; }
+.md-typeset details.fh-removed > summary { text-decoration: underline; text-decoration-color: var(--fh-rule); text-underline-offset: 2px; }
+.md-typeset details.fh-removed > div { font-style: italic; font-size: .88em; margin: .2em 0 0 1.4em; }
+[data-md-color-scheme="slate"] .md-nav a.fh-group__card:hover { color: #f0d98a; }
+
+/* ---- Hide the left navigation sidebar everywhere ---- */
+.md-sidebar--primary { display: none !important; }
+/* reclaim the space so content stays centred */
+.md-header__button.md-icon[for="__drawer"] { display: none; }
+@media screen and (min-width: 76.25em) {
+  .md-content { margin-left: auto; margin-right: auto; }
+}

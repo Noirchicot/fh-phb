@@ -24,9 +24,8 @@ theme:
         icon: material/weather-night
         name: Dark mode
   features:
-    - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.expand
     - navigation.top
     - navigation.indexes
     - toc.follow
@@ -36,6 +35,10 @@ theme:
 
 extra_css:
   - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/fh-home.js
+  - javascripts/fh-sky.js
 
 markdown_extensions:
   - admonition
@@ -57,20 +60,22 @@ plugins:
 nav:
   - Welcome: index.md
   - Creating a Character:
-    - Ability Scores: chapters/ability-scores.md
+    - Rolling Ability Scores: chapters/ability-scores.md
+    - Backgrounds: chapters/backgrounds.md
     - Species: chapters/species.md
     - Skills & Tools: chapters/skills-and-tools.md
     - Feats: chapters/feats.md
-  - Playing the Game:
-    - Skills, Synergies & DCs: chapters/skills-synergies.md
-    - The Fate's Hand Mechanic: chapters/fates-hand-mechanic.md
-    - Battlefield Rules: chapters/battlefield.md
-    - Dungeoneering: chapters/dungeoneering.md
-  - Character Options:
-    - Classes: chapters/classes.md
-    - Spells: chapters/spells.md
-  - Reference:
-    - The 22 Major Arcana: chapters/major-arcana.md
+  - The Destiny System:
+    - Destiny System: chapters/fates-hand-mechanic.md
+    - Arcana: chapters/major-arcana.md
     - Chaos Tables: chapters/chaos-tables.md
+  - Playing the Game:
+    - Synergies: chapters/skills-synergies.md
+    - Battlefield: chapters/battlefield.md
+    - Dungeoneering: chapters/dungeoneering.md
+    - Spells: chapters/spells.md
+  - Classes & Subclasses:
+    - Class Modifications: chapters/classes.md
+    - Lunar Sorcerer: chapters/lunar-sorcerer.md
   - Tools:
-    - Skill-Point Builder: builder.md
+    - 5.5 Sheet → 5+ Converter: builder.md

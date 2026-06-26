@@ -1,56 +1,48 @@
 # Spells
 
-### **Bless (Revised for "Fate’s Hand")**
+Fate's Hand revisions and new spells. Only the **changes** to existing spells are listed; everything else works as printed.
 
-- **Level:** 1st
-- **School:** Enchantment
-- **Casting Time:** 1 action
-- **Range:** 30 feet
-- **Components:** V, S, M (a sprinkle of holy water)
-- **Duration:** Concentration, up to 1 minute
+## Bless
+*Revised for Fate's Hand.*
 
-**Additional effect**
-If the caster spends one destiny point. 
-for the creatures affected by the spell the cost of fate is reduced by one for the duration of the spell. Except on critical rolls. 
+- **Level:** 1st
+- **School:** Enchantment
+- **Casting Time:** 1 action
+- **Range:** 30 feet
+- **Components:** V, S, M (a sprinkle of holy water)
+- **Duration:** Concentration, up to 1 minute
 
+**Additional effect** — if the caster spends one **Destiny Point**, the cost of fate is reduced by one for the creatures affected by the spell, for its duration. Except on critical rolls.
 
----
+## Guidance
+*Revised for Fate's Hand.*
 
-### **Guidance (Revised for "Fate’s Hand")**
+- **Level:** Cantrip
+- **School:** Divination
+- **Casting Time:** 1 action
+- **Range:** Touch
+- **Components:** V, S
+- **Duration:** Concentration, up to 1 minute
 
-- **Level:** Cantrip
-- **School:** Divination
-- **Casting Time:** 1 action
-- **Range:** Touch
-- **Components:** V, S
-- **Duration:** Concentration, up to 1 minute
+**Effect** — either the usual 2024 effect, **or** the optional effect below.
 
-Either usual 2024 effect
+**Optional effect** — you touch one willing creature and grant it **1 temporary Destiny Point** for the duration of the spell. A single creature can only benefit from this effect once per long rest.
 
-**Or optional effect**  
-You touch one willing creature you grant it **1 temporary Destiny Point** for the duration of the spell.
-A single creature can only benefit from this effect once per long rest.
+## Appease the Chaos
 
----
+- **Level:** 3rd (Abjuration)
+- **Casting Time:** 1 action
+- **Range:** 30 feet
+- **Components:** V, S
+- **Duration:** Instantaneous
+- **Classes:** Cleric, Druid
 
-### **Appease the Chaos**
+**Effect** — you spend a **Destiny Point** to appease the wrath of the forces of chaos on the targeted creature, within 1 round following a Chaos Effect. You reduce the potency of the effect by a number equal to your proficiency bonus.
 
-- **Level:** 3rd-level Abjuration
-- **Casting Time:** 1 action
-- **Range:** 30 feet.
-- **Components:** V, S
-- **Duration:** Instantaneous
-- **Classes:** Cleric, Druid
+> [!example] Example
+> Bruggar rolled 10 on the *[Strength Chaos table](chaos-tables.md#strength-str)*; Awki has a PB of 3. The roll is reduced to **7**.
 
-**Effect:** 
-you spend a destiny point. 
-You appease the wrath of the forces of chaos on the targeted creature. 
-Within 1 round following a Chaos Effect. Your reduce the potency of the effect by a number equivalent to your proficiency bonus. 
-*Example : Bruggar rolled 10 on the “strength chaos table” , Awki has a PB of 3. The roll is reduced to 7.*
-
----
-
-### **Devil-Vision**
+## Devil-Vision
 
 - **Level:** 2nd
 - **Casting Time:** 1 action
@@ -58,12 +50,10 @@ Within 1 round following a Chaos Effect. Your reduce the potency of the effect b
 - **Components:** V, S
 - **Duration:** Concentration, up to 10 minutes
 
-**Effect:** The target can see through **magical and normal darkness** out to **60 feet**. **No upcasting.**
+**Effect** — the target can see through **magical and normal darkness** out to **60 feet**. **No upcasting.**
 
----
-
-### **Consecration**
+## Consecration
 
 - **Classes:** Cleric, Paladin
 
-**Effect:** Can be cast to **regain 1 one extra Destiny Point after a long rest**.
+**Effect** — can be cast to **regain 1 extra Destiny Point after a long rest**.

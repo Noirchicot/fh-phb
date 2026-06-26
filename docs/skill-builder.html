@@ -102,7 +102,16 @@
       <div><label>Bonus niv.1 (déjà inclus=0)</label><input id="bonus1" type="number" min="0" value="0" style="width:64px"></div>
     </div>
     <div class="row" style="margin-top:10px">
-      <div><label>Importer un perso DDB (seed JSON de ddb-load.mjs)</label><input id="importSeed" type="file" accept=".json,application/json"></div>
+      <div style="flex:1 1 100%">
+        <label>Charger ta fiche depuis son URL D&amp;D Beyond <span style="opacity:.7">(fiche en partage public)</span></label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="ddbUrl" type="text" placeholder="https://www.dndbeyond.com/characters/147791758" style="flex:1">
+          <button class="btn" id="loadUrl" style="padding:6px 16px;white-space:nowrap">Charger</button>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div><label>…ou importer un seed JSON (ddb-load.mjs)</label><input id="importSeed" type="file" accept=".json,application/json"></div>
       <div style="justify-content:flex-end"><button class="btn ghost" id="clearImport" style="padding:6px 12px">Repasser en mode manuel</button></div>
     </div>
     <div class="note" id="importNote"></div>
@@ -443,20 +452,146 @@ document.getElementById('clearImport').addEventListener('click',()=>{
   refresh();
 });
 
+// ---------- CHARGER DEPUIS L'URL DDB (port de ddb-load.mjs) ----------
+// Le proxy relaie character-service avec CORS (fiche en partage public requise).
+const FH_PROXY = "https://dice-mcp-production.up.railway.app";
+const buildSeedFromDDB = (function(){
+  // Canon FH (identique à ddb-load.mjs) — scopé dans l'IIFE, aucune collision.
+  const CLASS_BASE = { Artificer:8, Barbarian:8, Bard:10, Cleric:8, Druid:8, Fighter:8,
+    Monk:8, Paladin:8, Ranger:10, Rogue:12, Sorcerer:8, Warlock:8, Wizard:8 };
+  const SKILL_CLASSES = new Set(["Bard","Ranger","Rogue","Wizard"]);
+  const lvlThresholds = cls => SKILL_CLASSES.has(cls) ? [3,4,5,7,8] : [4,8];
+  const BACKGROUND = 6;
+  const RACE_RULES = {
+    human:     { create:2, levels:[3,6], toolsOnly:false },
+    "half-elf":{ create:2, levels:[3,6], toolsOnly:false },
+    dwarf:     { create:2, levels:[],    toolsOnly:true  },
+  };
+  const STAT = { 1:"STR", 2:"DEX", 3:"CON", 4:"INT", 5:"WIS", 6:"CHA" };
+  const COST = { non:0, half:1, prof:2, exp:4 };
+  const FH_SKILLS = {
+    "Academics":"INT","Acrobatics":"DEX","Animal Handling":"WIS","Appraise":"INT","Arcana":"INT",
+    "Athletics":"STR","Deception":"CHA","Delve":"WIS","History":"INT","Hunting":"WIS",
+    "Insight":"WIS","Intimidation":"CHA","Investigation":"INT","Leadership":"CHA","Medicine":"WIS",
+    "Might":"STR","Nature":"INT","Performance":"CHA","Persuasion":"CHA","Religion":"INT",
+    "Sleight of Hand":"DEX","Stealth":"DEX","Streetwise":"CHA","Survival":"WIS","Tactics":"INT","Vigilance":"WIS"
+  };
+  const DDB_NATIVE = new Set(["Acrobatics","Animal Handling","Arcana","Athletics","Deception","History",
+    "Insight","Intimidation","Investigation","Medicine","Nature","Performance","Persuasion","Religion",
+    "Sleight of Hand","Stealth","Survival"]);
+  const TOOL_RX = /tool|kit|supplies|instrument|vehicle|gaming set|dice set|playing card|navigator|thieves|disguise|forgery|herbalism/i;
+
+  function raceRule(raceName){
+    const n = (raceName||"").toLowerCase();
+    if (n.includes("half-elf") || n.includes("half elf")) return RACE_RULES["half-elf"];
+    if (n.includes("dwarf")) return RACE_RULES["dwarf"];
+    if (n.includes("human")) return RACE_RULES["human"];
+    return { create:0, levels:[], toolsOnly:false };
+  }
+  function computePool(classes, raceName, feats){
+    const start = classes.find(c => c.starting) || classes[0] || {name:"", level:0};
+    const base = CLASS_BASE[start.name] ?? 6;
+    const charLevel = classes.reduce((s,c)=>s+c.level,0);
+    let levelBonus = 0;
+    for (const c of classes) levelBonus += lvlThresholds(c.name).filter(t => t <= c.level).length * 2;
+    const rr = raceRule(raceName);
+    const race = rr.create + rr.levels.filter(t => t <= charLevel).length * 2;
+    const feat = (feats||[]).some(f => /skilled/i.test(f)) ? 6 : 0;
+    const total = base + BACKGROUND + levelBonus + race + feat;
+    return { base, background:BACKGROUND, levelBonus, race, feat, total,
+      raceToolsOnly: rr.toolsOnly, startingClass:start.name, charLevel,
+      breakdown:`base ${base} (${start.name}) + background ${BACKGROUND} + niveaux ${levelBonus} + race ${race} + feats ${feat} = ${total}` };
+  }
+  const mTypeOf = tier => tier==="exp"?"expertise":tier==="half"?"half-proficiency":"proficiency";
+  function parseCharacter(root){
+    const d = root.data || root;
+    const classes = (d.classes||[]).map(c => ({
+      name: c.definition?.name, level: c.level,
+      subclass: c.subclassDefinition?.name || null, starting: !!c.isStartingClass }));
+    const raceName = d.race?.fullName || d.race?.baseName || "";
+    const background = d.background?.definition?.name || null;
+    const feats = (d.feats||[]).map(f => f.definition?.name).filter(Boolean);
+    const ab = {}; for (const s of (d.stats||[])) ab[STAT[s.id]] = s.value;
+    const groups = d.modifiers || {};
+    const profs = {};
+    const rank = { "half-proficiency":1, proficiency:2, expertise:3 };
+    for (const key of Object.keys(groups)){
+      for (const m of (groups[key]||[])){
+        if (!["proficiency","expertise","half-proficiency"].includes(m.type)) continue;
+        const name = (m.friendlySubtypeName || m.subType || "").trim();
+        if (!name) continue;
+        const tier = m.type==="expertise" ? "exp" : m.type==="half-proficiency" ? "half" : "prof";
+        const cur = profs[name];
+        if (!cur || rank[mTypeOf(cur)] < rank[m.type]) profs[name] = tier;
+      }
+    }
+    return { name:d.name, classes, raceName, background, feats, abilityScores:ab, profsRaw:profs };
+  }
+  function buildSeed(profsRaw){
+    const seed = {}; const unmapped = [];
+    for (const [name, tier] of Object.entries(profsRaw)){
+      if (/^choose/i.test(name)){
+        unmapped.push(`${name} → choix DDB non résolu : résous-le sur la fiche puis recharge`);
+      } else if (DDB_NATIVE.has(name) || FH_SKILLS[name]){
+        seed[name] = { tier, lock:"half" };
+      } else if (name === "Perception"){
+        unmapped.push(`Perception (${tier}) → à répartir entre Vigilance / Survival / Delve / Hunting`);
+      } else if (TOOL_RX.test(name)){
+        seed[`Tool - ${name.replace(/\s*Tools?$/i,"").trim()}`] = { tier, lock:"half" };
+      }
+    }
+    return { seed, unmapped };
+  }
+  // root (JSON DDB brut) → objet seed identique à la sortie de ddb-load.mjs
+  return function(root){
+    const c = parseCharacter(root);
+    const pool = computePool(c.classes, c.raceName, c.feats);
+    const { seed, unmapped } = buildSeed(c.profsRaw);
+    const spent = Object.values(seed).reduce((s,e)=>s+COST[e.tier],0);
+    return { name:c.name, classes:c.classes, race:c.raceName, background:c.background,
+      feats:c.feats, abilityScores:c.abilityScores, pool, seed,
+      invested:spent, remaining:pool.total-spent, unmapped };
+  };
+})();
+
+document.getElementById('loadUrl').addEventListener('click', async ()=>{
+  const v = (document.getElementById('ddbUrl').value||"").trim();
+  const m = v.match(/(\d{6,})/);
+  const note = document.getElementById('importNote');
+  if(!m){ note.innerHTML = "⚠ Colle l'URL de ta fiche D&amp;D Beyond (elle contient un numéro, ex. .../characters/<b>147791758</b>)."; return; }
+  note.innerHTML = "⏳ Chargement de la fiche…";
+  try{
+    const res = await fetch(`${FH_PROXY}/ddb/${m[1]}`, { headers:{ "Accept":"application/json" } });
+    const root = await res.json();
+    if(!res.ok || root.success===false){
+      note.innerHTML = `⚠ ${root.message || "Fiche introuvable. Active le partage public sur D&D Beyond (Character Settings → Privacy → Public)."}`;
+      return;
+    }
+    applySeed(buildSeedFromDDB(root));
+  }catch(err){ note.innerHTML = "⚠ Erreur réseau : "+err.message; }
+});
+document.getElementById('ddbUrl').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('loadUrl').click(); } });
+
 const STAT_ID={STR:1,DEX:2,CON:3,INT:4,WIS:5,CHA:6};
 const PROF_ID={non:1,half:2,prof:3,exp:4};   // DDB proficiencyLevel : 1=none 2=½ 3=prof 4=exp
 // payload pour ddb-write.mjs :
 //  - TOUS les skills FH-only ◆ (même à « non » → visibles sur la fiche, niveau none)
-//  - les tools UNIQUEMENT s'ils ont une compétence (½/prof/exp)
-//  - jamais les natifs ; exclut ce qui est déjà sur la fiche (seed) → zéro doublon
+//  - TOUS les tools avec une compétence (½/prof/exp), MÊME natifs : en FH les tools
+//    s'inscrivent dans la liste des skills (règle de conservation : un tool de
+//    l'encart natif devient gérable → on peut le garder à prof ou le passer à ½
+//    et redistribuer). Le natif reste binaire dans l'encart, le custom porte le tier FH.
+//  - skills natifs : jamais réécrits (DDB ne les baisse pas) → exclus s'ils sont déjà sur la fiche
 //  - trié alphabétiquement
 function buildDDBPayload(){
   const seeded = IMPORTED ? new Set(Object.keys(IMPORTED.seed||{})) : new Set();
-  const fhSkills = items.filter(it => it.type==="skill" && it.fhonly);          // les 9, tout niveau
-  const tools    = items.filter(it => it.type==="tool" && it.tier!=="non");     // tools avec compétence
-  return [...fhSkills, ...tools]
-    .map(it => ({ disp: it.type==="tool"?"Tool - "+it.name:it.name, it }))
-    .filter(x => !seeded.has(x.disp))
+  const skillEntries = items
+    .filter(it => it.type==="skill" && it.fhonly)                 // les 9 FH-only, tout niveau
+    .map(it => ({ disp: it.name, it }))
+    .filter(x => !seeded.has(x.disp));                            // pas de doublon avec un natif
+  const toolEntries = items
+    .filter(it => it.type==="tool" && it.tier!=="non")            // tous les tools avec compétence
+    .map(it => ({ disp: "Tool - "+it.name, it }));                // (inclus les natifs : gérés en FH)
+  return [...skillEntries, ...toolEntries]
     .map(({disp,it}) => ({ name: disp, type:1, statId:STAT_ID[it.ability], proficiencyLevel:PROF_ID[it.tier] }))
     .sort((a,b) => a.name.localeCompare(b.name));
 }

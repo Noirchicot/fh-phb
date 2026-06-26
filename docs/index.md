@@ -4,12 +4,12 @@ hide:
   - toc
 ---
 
+# Fate's Hand — Player's Handbook { .fh-cover-title }
+
 ![Fate's Hand — the Demon Forest](assets/img/hero-foret-des-demons.jpg){ .fh-banner }
 
-# Fate's Hand
-
 <div class="fh-hero" markdown>
-<span class="fh-sub">A Player's Handbook for the Fate's Hand 5+ house rules — an expansion of **D&D 2024**.</span>
+<span class="fh-sub">House rules for the Fate's Hand 5+ system — an expansion of **D&D 2024**.</span>
 </div>
 
 > *"There are more worlds than you know. Tread carefully, lest you rouse the powers that shape them."*
@@ -22,39 +22,53 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
 
 …plus tightened rules for **combat, grappling, feats and exploration**.
 
-<div class="grid cards" markdown>
+<div class="grid cards fh-toc" markdown>
 
 -   :material-account-plus:{ .lg .middle } &nbsp;**Creating a Character**
 
     ---
 
-    Build a character step-by-step: ability scores, species, skills & tools, feats.
+    - [Rolling Ability Scores](chapters/ability-scores.md)
+    - [Backgrounds](chapters/backgrounds.md)
+    - [Species](chapters/species.md)
+    - [Skills & Tools](chapters/skills-and-tools.md)
+    - [Feats](chapters/feats.md)
 
-    [:octicons-arrow-right-24: Start building](chapters/ability-scores.md)
+-   :material-cards-playing:{ .lg .middle } &nbsp;**Destiny Mechanics**
+
+    ---
+
+    - [Destiny System](chapters/fates-hand-mechanic.md)
+    - [Arcana](chapters/major-arcana.md)
+    - [Chaos Tables](chapters/chaos-tables.md)
 
 -   :material-sword-cross:{ .lg .middle } &nbsp;**Playing the Game**
 
     ---
 
-    The systems you use at the table: skills & synergies, the Destiny mechanic, battlefield rules.
+    - [Synergies](chapters/skills-synergies.md)
+    - [Battlefield](chapters/battlefield.md)
+    - [Dungeoneering](chapters/dungeoneering.md)
+    - [Spells](chapters/spells.md)
 
-    [:octicons-arrow-right-24: Learn to play](chapters/skills-synergies.md)
-
--   :material-cards-playing:{ .lg .middle } &nbsp;**The Major Arcana**
-
-    ---
-
-    Draw your destiny — 22 cards, each with its own power and vibration.
-
-    [:octicons-arrow-right-24: Read the cards](chapters/major-arcana.md)
-
--   :material-calculator-variant:{ .lg .middle } &nbsp;**Skill-Point Builder**
+-   :material-school:{ .lg .middle } &nbsp;**Classes & Subclasses**
 
     ---
 
-    Distribute your skill & tool points interactively, then export to D&D Beyond.
+    - [Class Modifications](chapters/classes.md)
+    - [Lunar Sorcerer](chapters/lunar-sorcerer.md)
 
-    [:octicons-arrow-right-24: Open the builder](builder.md)
+-   :material-calculator-variant:{ .lg .middle } &nbsp;**Tools**
+
+    ---
+
+    - [5.5 Sheet → 5+ Converter](builder.md)
+
+-   :material-earth:{ .lg .middle } &nbsp;**World**
+
+    ---
+
+    *Implemented later — the world of Fate's Hand: lands, moons and powers.*
 
 </div>
 
