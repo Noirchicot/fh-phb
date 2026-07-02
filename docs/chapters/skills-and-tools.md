@@ -233,7 +233,7 @@ Affected allies gain a reaction to perform the directed action. Both parties mus
 On a success, each sub-leader gains a synergy bonus on their Leadership rolls, applied to their group for one minute.
 
 ### The Garrot
-A finesse weapon (DEX) that improves [Strangling](battlefield.md#strangle-new) (see [Battlefield Rules](battlefield.md)). Bought through the skill pool for 2 points; the Assassin gets it free at level 3.
+A finesse weapon (DEX) that improves Strangling (see ../8. Adventuring/Battlefield Rules). Bought through the skill pool for 2 points; the Assassin gets it free at level 3.
 
 - Deals no damage (unless you have the Grappler feat) — only exhaustion.
 - Usable only against a surprised target.

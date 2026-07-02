@@ -50,6 +50,7 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
     - [Battlefield](chapters/battlefield.md)
     - [Dungeoneering](chapters/dungeoneering.md)
     - [Spells](chapters/spells.md)
+    - [Soulforge Crafting](chapters/soulforge-crafting.md)
 
 -   :material-school:{ .lg .middle } &nbsp;**Classes & Subclasses**
 
@@ -63,6 +64,7 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
     ---
 
     - [5.5 Sheet → 5+ Converter](builder.md)
+    - [Soulforge Workshop](soulforge.md)
 
 -   :material-earth:{ .lg .middle } &nbsp;**World**
 

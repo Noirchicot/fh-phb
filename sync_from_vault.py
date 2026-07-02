@@ -24,16 +24,17 @@ BUILDER_DST = ROOT / "docs" / "skill-builder.html"
 MAP = {
     "ability-scores.md":      ("1. Character Creation Rolls/D&D 5+ Character stat generation.md", "Ability Scores"),
     "backgrounds.md":         ("1. Character Creation Rolls/Backgrounds.md",                      "Backgrounds"),
-    "lunar-sorcerer.md":      ("7. Classes/Lunar Sorcery revised.md",                             "Lunar Sorcerer"),
+    "lunar-sorcerer.md":      ("7. Classes & Subclasses/Lunar Sorcery revised.md",                "Lunar Sorcerer"),
     "species.md":             ("2. Species Modifications/D&D 5+ Races & Species.md",              "Species"),
     "skills-and-tools.md":    ("4. Skills/Skills & Tools — Player Guide.md",                       "Skills & Tools"),
     "feats.md":               ("5. Feats/Feats.md",                                                "Feats"),
     "skills-synergies.md":    ("4. Skills/Skill chapters/4. Skills and synergies.md",              "Skills, Synergies & DCs"),
     "fates-hand-mechanic.md": ("3. Arcane Destinies/D&D 5+ Fate’s Hand Mechanic.md",               "Destiny System"),
-    "battlefield.md":         ("8. Other rules/Battlefield Rules.md",                              "Battlefield Rules"),
-    "dungeoneering.md":       ("8. Other rules/Dungeoneering.md",                                  "Dungeoneering"),
-    "classes.md":             ("7. Classes/Class Modifications.md",                                "Classes"),
-    "spells.md":              ("6. Spells/Fate’s Hand Spells.md",                                  "Spells"),
+    "battlefield.md":         ("8. Adventuring/Battlefield Rules.md",                              "Battlefield Rules"),
+    "dungeoneering.md":       ("8. Adventuring/Dungeoneering.md",                                  "Dungeoneering"),
+    "classes.md":             ("7. Classes & Subclasses/Class Modifications.md",                   "Classes"),
+    "spells.md":              ("6. Spells & Magic/Fate’s Hand Spells.md",                          "Spells"),
+    "soulforge-crafting.md":  ("6. Spells & Magic/Soulforge Crafting.md",                          "Soulforge Crafting"),
     "major-arcana.md":        ("3. Arcane Destinies/The Major Arcana.md",                          "Arcana"),
     "chaos-tables.md":        ("3. Arcane Destinies/Tables de Fatalité par Attribut.md",           "Chaos Tables"),
 }
@@ -74,8 +75,14 @@ PATH_TO_CHAPTER = {
     "5. Feats/Feats.md":                 ("feats.md",            "Feats"),
     "8. Other rules/Battlefield Rules.md": ("battlefield.md",     "Battlefield Rules"),
     "8. Other rules/Dungeoneering.md":   ("dungeoneering.md",    "Dungeoneering"),
+    "8. Adventuring/Battlefield Rules.md": ("battlefield.md",     "Battlefield Rules"),
+    "8. Adventuring/Dungeoneering.md":   ("dungeoneering.md",    "Dungeoneering"),
     "7. Classes/Class Modifications.md": ("classes.md",          "Classes"),
+    "7. Classes & Subclasses/Class Modifications.md": ("classes.md", "Classes"),
     "6. Spells/Fate's Hand Spells.md":   ("spells.md",           "Spells"),
+    "6. Spells & Magic/Fate's Hand Spells.md": ("spells.md",     "Spells"),
+    "6. Spells & Magic/Soulforge Crafting.md": ("soulforge-crafting.md", "Soulforge Crafting"),
+    "8. Tools/Soulforge Ingredients (FH).json": ("soulforge-crafting.md", "Soulforge Crafting"),
 }
 
 
@@ -222,6 +229,29 @@ def main():
     if BUILDER_SRC.exists():
         shutil.copy(BUILDER_SRC, BUILDER_DST)
         print(f"  ok  skill-builder.html      <- {BUILDER_SRC.name}")
+    build_soulforge_data()
+
+
+# Soulforge workshop data: bundle the vault JSONs into one JS file the
+# static tool can load without fetch/CORS issues.
+SF_TOOLS = pathlib.Path("/Users/Eric/obsidian-vault/5.RPG/Fate's Hand/8. Tools")
+SF_CATALYSTS = SF_TOOLS / "LLM Soulforge engine" / "Soulforge Catalysts v3 (FH).json"
+SF_INGREDIENTS = SF_TOOLS / "Soulforge Ingredients (FH).json"
+SF_DATA_DST = ROOT / "docs" / "soulforge-data.js"
+
+
+def build_soulforge_data():
+    import json
+    if not (SF_CATALYSTS.exists() and SF_INGREDIENTS.exists()):
+        print("  !! MISSING soulforge JSONs — soulforge-data.js not rebuilt")
+        return
+    data = {
+        "catalysts": json.loads(SF_CATALYSTS.read_text(encoding="utf-8"))["catalysts"],
+        "ingredients": json.loads(SF_INGREDIENTS.read_text(encoding="utf-8"))["ingredients"],
+    }
+    js = "window.SF_DATA = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n"
+    SF_DATA_DST.write_text(js, encoding="utf-8")
+    print(f"  ok  soulforge-data.js       <- {SF_CATALYSTS.name} + {SF_INGREDIENTS.name}")
 
 
 if __name__ == "__main__":

@@ -120,3 +120,17 @@ Fate's Hand tweaks a handful of feats. Each entry shows its FH5+ rules; unfold *
 - The order is a DC 12 Leadership check, affecting one additional group per increment of 2 (12 = 1 group, 14 = 2, 16 = 3…).
 - On a success, each sub-leader gains a synergy bonus on the Leadership rolls they apply to their own group, for one minute.
 - Full Leadership mechanics: see the [Leadership rules](skills-and-tools.md#leadership).
+
+## Soulforge feats
+
+### Body Forge Adept
+<span class="fh-edition">FH5+ — General feat.</span>
+
+- +1 Constitution or Wisdom *(will)* (max 20).
+- You gain a **4th attunement slot** that can hold **only a body-forged gem** (see [Body Forging](soulforge-crafting.md#body-forging-fuse-a-gem-into-your-flesh)) — letting you bear a **second** gem in your flesh.
+- *No feat is needed for your first body-forged gem — anyone may bear one, in a normal attunement slot.*
+
+**Attunement at a glance**
+
+- *Without the feat:* slots 1–3 — each may hold a normal magic item, a Soulforged item, or your body-forged gem.
+- *With the feat:* slots 1–3 as above · slot 4 — **body-forged gem only**.
