@@ -131,6 +131,17 @@
       document.body.classList.add("fh-home-page");
     }
 
+    /* floating ⌂ button back to the menu — mobile, where the TOC is hidden */
+    var logoBtn = document.querySelector(".md-header__button.md-logo");
+    if (!document.querySelector(".fh-toc")) {
+      var fab = document.createElement("a");
+      fab.className = "fh-home--fab";
+      fab.href = logoBtn ? logoBtn.href : "/";
+      fab.setAttribute("aria-label", "Home");
+      fab.innerHTML = "&#8962;";
+      document.body.appendChild(fab);
+    }
+
     var toc = document.querySelector(".md-sidebar--secondary .md-nav--secondary");
     if (!toc) return;
 

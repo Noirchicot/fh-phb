@@ -349,3 +349,19 @@ body.fh-home-page .md-header { display: none; }
 @media screen and (min-width: 76.25em) {
   .md-content { margin-left: auto; margin-right: auto; }
 }
+
+/* ---- Floating "⌂" button back to the menu (mobile / narrow screens) ---- */
+.fh-home--fab {
+  position: fixed; right: .9rem; bottom: .9rem; z-index: 4;
+  display: none; align-items: center; justify-content: center;
+  width: 2.6rem; height: 2.6rem; border-radius: 50%;
+  font-size: 1.25rem; line-height: 1; text-decoration: none;
+  color: var(--fh-gold); background: var(--md-default-bg-color);
+  border: 1px solid var(--fh-gold);
+  box-shadow: 0 2px 10px rgba(0,0,0,.45);
+}
+.fh-home--fab:hover { color: var(--fh-red); border-color: var(--fh-red); }
+/* show it only when the right TOC (which carries ⌂ Home) is hidden */
+@media screen and (max-width: 59.9843em) {
+  body:not(.fh-home-page) .fh-home--fab { display: flex; }
+}
