@@ -284,7 +284,7 @@ $("#btnBackup").addEventListener("click",()=>{
 function partLine(p){
   const idTag = p.role==="Catalyst" ? (p.identified?`<span class="pill okp">identified</span>`:`<span class="pill warnp">unidentified — cast <i>Identify</i></span>`) : "";
   const craft = p.role==="Structure" ? (p.crafted?`<span class="pill okp">crafted body${p.baseItem?": "+esc(p.baseItem):""}</span>`:`<span class="pill">raw part</span>`) : "";
-  const pw = p.role==="Catalyst"&&p.identified&&p.power ? `<div class="dsc"><b>${esc(p.power.name)}</b>${p.power.uses?` · ${p.power.uses}/rest`:""} — ${esc(p.power.text||"")}</div>` : "";
+  const pw = p.role==="Catalyst"&&p.identified&&p.power ? `<div class="dsc"><b>${esc(p.power.name)}</b>${p.power.family==="Flat"?" · passive":(p.power.uses?` · ${p.power.uses}/rest`:"")} — ${esc(p.power.text||"")}</div>` : "";
   return `<span class="nm">${esc(p.name||p.creature+" "+p.role.toLowerCase())}</span>
     <span class="pill role-${p.role}">${p.role}</span> ${ppPill(p.pp)}
     <span class="pill">${esc(p.ctype)} · CR ${esc(p.cr)}</span>
@@ -479,10 +479,10 @@ function manualItemModal(){
       <div><label>Creature</label><input type="text" value="${esc(c.creature)}" data-c="${i}:creature" list="creatureList"></div>
       <div><label>Type</label><select data-c="${i}:ctype">${TYPES.map(t=>`<option ${t===c.ctype?"selected":""}>${t}</option>`).join("")}</select></div>
       <div><label>PP</label><input type="number" min="1" max="11" value="${c.pp}" data-c="${i}:pp"></div>
-      <div><label>Uses/rest</label><input type="number" min="1" max="3" value="${c.uses}" data-c="${i}:uses"></div></div>`).join("");
+      ${c.family==="Flat"?`<div><label>Uses/rest</label><span class="pill okp" style="margin:0">passive</span></div>`:`<div><label>Uses/rest</label><input type="number" min="1" max="3" value="${c.uses}" data-c="${i}:uses"></div>`}</div>`).join("");
     m.querySelectorAll("[data-g]").forEach(el=>el.onchange=()=>{ const[i,k]=el.dataset.g.split(":"); gems[+i][k]= k==="pp"?+el.value:el.value; });
     m.querySelectorAll("[data-c]").forEach(el=>el.onchange=()=>{ const[i,k]=el.dataset.c.split(":"); cats[+i][k]= (k==="pp"||k==="uses")?+el.value:el.value;
-      if(k==="creature"&&CREATURES[el.value]){const e=CREATURES[el.value].entries[0]; cats[+i].ctype=CREATURES[el.value].type; cats[+i].pp=e.power.pp; cats[+i].name=cats[+i].name||e.power.name; rrow();} });
+      if(k==="creature"&&CREATURES[el.value]){const e=CREATURES[el.value].entries[0]; cats[+i].ctype=CREATURES[el.value].type; cats[+i].pp=e.power.pp; cats[+i].name=cats[+i].name||e.power.name; cats[+i].family=e.power.family; if(e.power.family==="Flat")cats[+i].uses=1; rrow();} });
   };
   m.querySelector("#miAddGem").onclick=()=>{ if(gems.length>=3){alert("Max 3 Soulgems.");return;} gems.push({gemName:"Gem",creature:"",ctype:"Beast",pp:1}); rrow(); };
   m.querySelector("#miAddCat").onclick=()=>{ cats.push({name:"",creature:"",ctype:"Beast",pp:1,uses:1}); rrow(); };
@@ -491,7 +491,7 @@ function manualItemModal(){
     const scr=m.querySelector("#miSCr").value.trim()||"Unknown", sty=m.querySelector("#miSTy").value, scrv=m.querySelector("#miSCrv").value;
     const it={id:uid(),name,baseItem:m.querySelector("#miBase").value.trim(),
       structure:{creature:scr,ctype:sty,cr:scrv,pp:ppFromCr(scrv)},
-      soulgems:gems.map(g=>({id:uid(),...g})), catalysts:cats.map(c=>({id:uid(),...c,identified:true,power:{name:c.name,pp:c.pp,uses:c.uses,text:""}})),
+      soulgems:gems.map(g=>({id:uid(),...g})), catalysts:cats.map(c=>({id:uid(),...c,identified:true,power:{name:c.name,pp:c.pp,uses:c.uses,family:c.family,text:""}})),
       boons:[],flaws:[],history:[{d:today(),e:"registered manually"}]};
     const laws=checkLaws(it.structure.pp,it.soulgems,it.catalysts,0);
     if(!(laws.law1.ok&&laws.law2.ok&&laws.law3.ok)&&!confirm("⚠ This item breaks the three laws of equilibrium:\n"+[laws.law1,laws.law2,laws.law3].filter(l=>!l.ok).map(l=>"• "+l.txt).join("\n")+"\n\nRegister anyway?")) return;
@@ -672,7 +672,7 @@ function renderForge(){
   if(FORGE_SEL.body&&!bodies.find(b=>b.id===FORGE_SEL.body)) FORGE_SEL.body=null;
   const body=bodies.find(b=>b.id===FORGE_SEL.body)||null;
   const selGems=FORGE_SEL.gems.map(id=>findIn(inv,"soulgems",id));
-  const selCats=FORGE_SEL.cats.map(id=>inv.parts.find(p=>p.id===id)).map(p=>({...p,pp:p.power.pp,uses:p.power.uses||1,name:p.name||p.power.name}));
+  const selCats=FORGE_SEL.cats.map(id=>inv.parts.find(p=>p.id===id)).map(p=>({...p,pp:p.power.pp,uses:p.power.uses||1,family:p.power.family,name:p.name||p.power.name}));
   const laws = body?checkLaws(body.pp,selGems,selCats,0):null;
   const highest = selCats.reduce((m,x)=>Math.max(m,x.pp),1);
   const provenance = body?[{creature:body.creature,ctype:body.ctype},...selGems.map(g=>({creature:g.creature,ctype:g.ctype})),...selCats.map(x=>({creature:x.creature,ctype:x.ctype}))]:[];
@@ -691,7 +691,7 @@ function renderForge(){
       </div>
       <div>
         <h3>Catalysts</h3>
-        ${cats.length?cats.map(p=>`<label class="chk"><input type="checkbox" data-fgcat="${p.id}" ${FORGE_SEL.cats.includes(p.id)?"checked":""}> <b>${esc(p.power.name)}</b> — ${p.power.pp} PP${(p.power.uses||1)>1?` · ${p.power.uses}/rest`:""} (${esc(p.creature)})</label>`).join("")
+        ${cats.length?cats.map(p=>`<label class="chk"><input type="checkbox" data-fgcat="${p.id}" ${FORGE_SEL.cats.includes(p.id)?"checked":""}> <b>${esc(p.power.name)}</b> — ${p.power.pp} PP${p.power.family==="Flat"?" · passive":((p.power.uses||1)>1?` · ${p.power.uses}/rest`:"")} (${esc(p.creature)})</label>`).join("")
           :`<div class="empty">No identified catalyst.</div>`}
         ${unid.length?`<div class="warnline">⚠ ${unid.length} unidentified catalyst${unid.length>1?"s":""} in inventory — cast <i>Identify</i> (Preparation) before forging.</div>`:""}
       </div>
@@ -746,7 +746,7 @@ function buildItem(name,body,selGems,selCats,charName){
   return { id:uid(), name, baseItem:body.baseItem,
     structure:{creature:body.creature,ctype:body.ctype,cr:body.cr,pp:body.pp},
     soulgems:selGems.map(g=>({id:uid(),gemName:g.gemName,value:g.value,creature:g.creature,ctype:g.ctype,pp:g.pp,upgraded:!!g.upgraded})),
-    catalysts:selCats.map(x=>({id:uid(),name:x.name,creature:x.creature,ctype:x.ctype,pp:x.pp,uses:x.uses||1,text:x.power?x.power.text:(x.text||""),usesUpgrades:0})),
+    catalysts:selCats.map(x=>({id:uid(),name:x.name,creature:x.creature,ctype:x.ctype,pp:x.pp,uses:x.uses||1,family:x.family||(x.power?x.power.family:undefined),text:x.power?x.power.text:(x.text||""),usesUpgrades:0})),
     boons:[],flaws:[],supplyBonus:0,attunedTo:charName,history:[{d:today(),e:"forged by "+charName}] };
 }
 function consumeForgeParts(inv,body,selGems,selCats){
@@ -869,7 +869,7 @@ function itemCard(it,withExport){
     </div>
     <div class="sec"><b>Structure:</b> ${esc(it.structure.creature)} (${esc(it.structure.ctype)}, CR ${esc(it.structure.cr)}) — ${it.structure.pp} PP frame</div>
     <div class="sec"><b>Soulgems (${it.soulgems.length}/3):</b> ${it.soulgems.map(g=>`${esc(g.gemName)} ${g.pp} PP (${esc(g.creature)})${g.upgraded?" ⬆":""}`).join(" · ")||"—"}${it.supplyBonus?` · <span class="boon">+${it.supplyBonus} PP overcharge</span>`:""}</div>
-    <div class="sec"><b>Catalysts:</b><br>${it.catalysts.map(c=>`• <b>${esc(c.name)}</b> — ${c.pp} PP, ${c.uses}×/rest${c.effBind?' <span class="boon">(efficient bind −1 PP)</span>':""}${c.text?`<span class="dsc">${esc(c.text)}</span>`:""}`).join("<br>")||"—"}</div>
+    <div class="sec"><b>Catalysts:</b><br>${it.catalysts.map(c=>`• <b>${esc(c.name)}</b> — ${c.pp} PP, ${c.family==="Flat"?"passive":`${c.uses}×/rest`}${c.effBind?' <span class="boon">(efficient bind −1 PP)</span>':""}${c.text?`<span class="dsc">${esc(c.text)}</span>`:""}`).join("<br>")||"—"}</div>
     ${it.boons.length?`<div class="sec boon"><b>Boons:</b> ${it.boons.map(esc).join(" · ")}</div>`:""}
     ${it.flaws.length?`<div class="sec flaw"><b>Flaws:</b> ${it.flaws.map(esc).join(" · ")}</div>`:""}
     ${it.history?.length?`<div class="sec hint">${it.history.map(h=>`${h.d} — ${esc(h.e)}`).join("<br>")}</div>`:""}
@@ -887,7 +887,7 @@ window.exportItem=function(id){
 };
 window.ddbPrompt=function(id){
   const it=findItemAnywhere(id); if(!it)return;
-  const txt=`Create a homebrew magic item on D&D Beyond named "${it.name} (fh)" — base item: ${it.baseItem||"wondrous item"}, rarity ${tierName(itemHighestCat(it))}, requires attunement. Soulforged item (Fate's Hand): frame ${it.structure.creature} (${it.structure.pp} PP), Power Supply ${itemSupply(it)} PP. Powers: ${it.catalysts.map(c=>`${c.name} (${c.uses}×/rest): ${c.text||c.name}`).join(" | ")}. ${it.boons.length?"Boons: "+it.boons.join("; ")+". ":""}${it.flaws.length?"Flaws: "+it.flaws.join("; ")+".":""}`;
+  const txt=`Create a homebrew magic item on D&D Beyond named "${it.name} (fh)" — base item: ${it.baseItem||"wondrous item"}, rarity ${tierName(itemHighestCat(it))}, requires attunement. Soulforged item (Fate's Hand): frame ${it.structure.creature} (${it.structure.pp} PP), Power Supply ${itemSupply(it)} PP. Powers: ${it.catalysts.map(c=>`${c.name} (${c.family==="Flat"?"passive":`${c.uses}×/rest`}): ${c.text||c.name}`).join(" | ")}. ${it.boons.length?"Boons: "+it.boons.join("; ")+". ":""}${it.flaws.length?"Flaws: "+it.flaws.join("; ")+".":""}`;
   navigator.clipboard.writeText(txt);
   alert("Request copied — paste it to Claude (ddb-homebrew skill) to create the item on D&D Beyond.");
 };
@@ -1012,8 +1012,8 @@ function growAction(host,c,it,action){
   }
   if(action==="upcat"){
     host.innerHTML=`<h3>Improve a catalyst — more uses per rest, never at-will</h3>`;
-    const eligible=it.catalysts.filter(x=>(x.uses||1)<3);
-    if(!eligible.length){ host.innerHTML+=`<div class="badline">✗ BLOCKED — every catalyst is already at 3 uses/rest (the maximum; a catalyst's power itself never rises).</div>`; return; }
+    const eligible=it.catalysts.filter(x=>(x.uses||1)<3&&x.family!=="Flat");
+    if(!eligible.length){ host.innerHTML+=`<div class="badline">✗ BLOCKED — every catalyst is either passive (always on — no uses to improve) or already at 3 uses/rest (the maximum; a catalyst's power itself never rises).</div>`; return; }
     host.innerHTML+=`<div class="row"><div><label>Catalyst</label><select id="ucCat">${eligible.map(x=>`<option value="${x.id}">${esc(x.name)} — ${x.pp} PP, currently ${x.uses||1}×/rest${(x.usesUpgrades||0)>0?" (already improved)":""}</option>`).join("")}</select></div></div><div id="ucInfo"></div>`;
     const sel=host.querySelector("#ucCat");
     const info=()=>{ const x=it.catalysts.find(k=>k.id===sel.value);
@@ -1074,9 +1074,9 @@ function growAction(host,c,it,action){
         validate:()=>({ok:laws.law1.ok&&laws.law3.ok,msgs:[{ok:laws.law1.ok,txt:laws.law1.txt},{ok:laws.law3.ok,txt:laws.law3.txt}]}),
         apply:item=>{
           if(remC){ item.catalysts=item.catalysts.filter(x=>x.id!==remC.id);
-            inv.parts.push({id:uid(),creature:remC.creature||"?",ctype:remC.ctype||item.structure.ctype,cr:"?",role:"Catalyst",pp:remC.pp,identified:true,name:remC.name,power:{name:remC.name,pp:remC.pp,uses:1,text:remC.text||""}}); }
+            inv.parts.push({id:uid(),creature:remC.creature||"?",ctype:remC.ctype||item.structure.ctype,cr:"?",role:"Catalyst",pp:remC.pp,identified:true,name:remC.name,power:{name:remC.name,pp:remC.pp,uses:1,family:remC.family,text:remC.text||""}}); }
           if(addP){ removeFrom(inv,"parts",addP.id);
-            item.catalysts.push({id:uid(),name:addP.power.name,creature:addP.creature,ctype:addP.ctype,pp:addP.power.pp,uses:addP.power.uses||1,text:addP.power.text||"",usesUpgrades:0}); }
+            item.catalysts.push({id:uid(),name:addP.power.name,creature:addP.creature,ctype:addP.ctype,pp:addP.power.pp,uses:addP.power.uses||1,family:addP.power.family,text:addP.power.text||"",usesUpgrades:0}); }
         },
         onDestroy:()=>{ if(addP)removeFrom(inv,"parts",addP.id); if(remC) it.catalysts=it.catalysts.filter(x=>x.id!==remC.id); }
       });
