@@ -79,6 +79,8 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
 
 -   :material-calculator-variant:{ .lg .middle } &nbsp;**Tools**
 
+    ![](assets/img/card-tools.jpg){ .fh-card-img }
+
     ---
 
     - [5.5 Sheet → 5+ Converter](builder.md)
