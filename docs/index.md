@@ -6,7 +6,7 @@ hide:
 
 # Fate's Hand — Player's Handbook { .fh-cover-title }
 
-![Fate's Hand — the Demon Forest](assets/img/hero-foret-des-demons.jpg){ .fh-banner }
+![Fate's Hand — a hand of fate over the Demon Forest](assets/img/cover-fates-hand.jpg){ .fh-banner }
 
 <div class="fh-hero" markdown>
 <span class="fh-sub">House rules for the Fate's Hand 5+ system — an expansion of **D&D 2024**.</span>
@@ -26,6 +26,8 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
 
 -   :material-account-plus:{ .lg .middle } &nbsp;**Creating a Character**
 
+    ![](assets/img/card-creating.jpg){ .fh-card-img }
+
     ---
 
     - [Rolling Ability Scores](chapters/ability-scores.md)
@@ -36,6 +38,8 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
 
 -   :material-cards-playing:{ .lg .middle } &nbsp;**Destiny Mechanics**
 
+    ![](assets/img/card-destiny.jpg){ .fh-card-img }
+
     ---
 
     - [Destiny System](chapters/fates-hand-mechanic.md)
@@ -44,6 +48,8 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
 
 -   :material-sword-cross:{ .lg .middle } &nbsp;**Playing the Game**
 
+    ![](assets/img/card-playing.jpg){ .fh-card-img }
+
     ---
 
     - [Synergies](chapters/skills-synergies.md)
@@ -51,6 +57,8 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
     - [Dungeoneering](chapters/dungeoneering.md)
 
 -   :material-fire:{ .lg .middle } &nbsp;**Spells & Magic**
+
+    ![](assets/img/card-magic.jpg){ .fh-card-img }
 
     ---
 
@@ -61,6 +69,8 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
     - [Magic Items](chapters/magic-items.md)
 
 -   :material-school:{ .lg .middle } &nbsp;**Classes & Subclasses**
+
+    ![](assets/img/card-classes.jpg){ .fh-card-img }
 
     ---
 
@@ -75,6 +85,8 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
     - [Soulforge Workshop](soulforge.md)
 
 -   :material-earth:{ .lg .middle } &nbsp;**World**
+
+    ![](assets/img/card-world.jpg){ .fh-card-img }
 
     ---
 

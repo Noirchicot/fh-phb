@@ -75,6 +75,42 @@ def convert_wikilinks(s: str) -> str:
     return s
 
 
+# site-only illustrations: dest chapter -> [(heading line prefix, image markdown)]
+# inserted after the heading (and its italic subtitle line, if any) on sync,
+# so the vault files stay image-free.
+CHAPTER_IMAGES = {
+    "primordial-forces.md": [
+        ("## Part 1 — The White Void",
+         "![The White Void](../assets/img/world-white-void.jpg){ .fh-illus }"),
+        ("## Part 2 — The Crimson Shroud",
+         "![The Crimson Shroud](../assets/img/world-crimson-shroud.jpg){ .fh-illus }"),
+    ],
+}
+
+
+def insert_images(text: str, dest: str) -> str:
+    rules = CHAPTER_IMAGES.get(dest)
+    if not rules:
+        return text
+    lines, out, i = text.splitlines(), [], 0
+    pending = dict(rules)
+    while i < len(lines):
+        ln = lines[i]
+        out.append(ln)
+        i += 1
+        for head, img in list(pending.items()):
+            if ln.startswith(head):
+                del pending[head]
+                if i < len(lines) and lines[i].strip().startswith("*("):
+                    out.append(lines[i])   # keep the italic subtitle above
+                    i += 1
+                out.append("")
+                out.append(img)
+    for img in pending.values():
+        print(f"  !! image anchor not found in {dest}: {img}")
+    return "\n".join(out)
+
+
 # vault path (as it appears in a `code span`) -> (dest chapter file, label)
 PATH_TO_CHAPTER = {
     "5. Feats/Feats.md":                 ("feats.md",            "Feats"),
@@ -251,6 +287,7 @@ def main():
         body = convert_wikilinks(body)
         body = normalize_headings(body)
         body = ensure_h1(body, title)
+        body = insert_images(body, dest)
         body = space_before_lists(body)
         body = collapse_blanks(body)
         (DOCS / dest).write_text(body, encoding="utf-8")

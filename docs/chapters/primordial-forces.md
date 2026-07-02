@@ -8,6 +8,8 @@ The Third Age is shaped by Nymedes's **two opposed primordial forces**. This pag
 ## Part 1 — The White Void
 *(Le Blanc Néant — ÂNON)*
 
+![The White Void](../assets/img/world-white-void.jpg){ .fh-illus }
+
 ÂNON's mist **remakes the world** through the dreams of the Awakened. Mechanically it is the world-facing side of an **Arcane Awakening** (full subsystem: [D&D 5+ Fate’s Hand Mechanic](fates-hand-mechanic.md)).
 
 - **Trigger.** A character rolls a **Natural 20** that brings their **Destiny Points to 0** → an **Arcane Awakening**: they draw a Tarot card.
@@ -21,6 +23,8 @@ The Third Age is shaped by Nymedes's **two opposed primordial forces**. This pag
 
 ## Part 2 — The Crimson Shroud
 *(Le Suaire Pourpre — Karagall)* 🟣
+
+![The Crimson Shroud](../assets/img/world-crimson-shroud.jpg){ .fh-illus }
 
 Karagall's **soul-devouring mist** — the physical body of the Reaper (Arcane XV, The Devil), dissolved into bloody fog. A pocket may be **raised from red sand** by the *Conjure Minor / Major Crimson Shroud* rites ([Dark Rituals](dark-rituals.md)), or **drift up on its own** around inhabited land. Each pocket **varies in size**.
 

@@ -365,3 +365,16 @@ body.fh-home-page .md-header { display: none; }
 @media screen and (max-width: 59.9843em) {
   body:not(.fh-home-page) .fh-home--fab { display: flex; }
 }
+
+/* ---- landing-card banner images & in-chapter illustrations ---- */
+.md-typeset .fh-toc img.fh-card-img {
+  display: block; width: 100%; height: auto;
+  border-radius: 6px; margin: .5rem 0 .2rem;
+  border: 1px solid var(--fh-rule);
+}
+.md-typeset img.fh-illus {
+  display: block; width: 100%; height: auto;
+  border-radius: 8px; margin: .9rem 0 1.2rem;
+  border: 1px solid var(--fh-rule);
+  box-shadow: 0 6px 22px rgba(0,0,0,.28);
+}
