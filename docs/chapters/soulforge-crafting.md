@@ -1,15 +1,9 @@
 # Soulforge Crafting
-
----
-tags: [règle, artisanat, objet-magique, âme, fate-hand]
----
-
-# Soulforge Crafting
 *(La Forge des Esprits — système de craft itératif)*
 
 The **Soulforge** presses power into matter, binding monster parts to the **soul-stuff of the slain**. What it produces is always a **soulforged item**.
 
-Kin to the Moisson and the Calice de Moisson. Among the Ghost Tribe, **Calendir** keeps a gentler form — his nightly soul-cleansing rite (see Personnages de la Tribu Fantôme).
+Kin to the Moisson and the [Calice de Moisson](magic-items.md#harvest-chalice). Among the Ghost Tribe, **Calendir** keeps a gentler form — his nightly soul-cleansing rite (see Personnages de la Tribu Fantôme).
 
 > [!important] Items evolve — they are never replaced
 > A Soulforge item is **grown** across a campaign — new parts, stronger essence, fresh craft — **keeping every power it has** while gaining more.
@@ -140,7 +134,7 @@ One **Soulforging Tools (CHA)** check against the Soulforge DC finishes a piece 
 
 > **Before you roll** — check the **[three laws of equilibrium](#the-three-laws-of-equilibrium)**: frame ≥ every part · max 3 gems · Supply ≥ Consumption.
 
-**Who forges.** Soulforging is a **dark ritual**. A lone forger handles the lower tiers; the higher ones call for a **circle pooling its levels**. Unlike other Dark Rituals it resolves on **a single roll**: the **Soulforger** makes the check, while the **PC the item is for** stands as **secondary** — lending their level to the pool and receiving the item's **attunement** (the forger does not). If that PC is **proficient with Soulforging Tools**, they may **Help** for **advantage**. See **Soulforge an Item** for the ritual frame (Life cost, casting time).
+**Who forges.** Soulforging is a **dark ritual**. A lone forger handles the lower tiers; the higher ones call for a **circle pooling its levels**. Unlike other Dark Rituals it resolves on **a single roll**: the **Soulforger** makes the check, while the **PC the item is for** stands as **secondary** — lending their level to the pool and receiving the item's **attunement** (the forger does not). If that PC is **proficient with Soulforging Tools**, they may **Help** for **advantage**. See **[Soulforge an Item](dark-rituals.md#soulforge-an-item)** for the ritual frame (Life cost, casting time).
 
 **Roll modifiers**
 
@@ -165,7 +159,7 @@ One **Soulforging Tools (CHA)** check against the Soulforge DC finishes a piece 
 > | 2 | A **catalyst is destroyed** — the item finishes without that power. |
 > | 3 | The **essence is wasted** (gem spent), but the body survives — re-infuse to try again. |
 > | 4 | The item is **cursed** with a fitting drawback *(GM)* until remade. |
-> | 5 | **Volatile bind** — the **first use each day** forces a **Chaos roll**. |
+> | 5 | **Volatile bind** — the **first use each day** forces a **[Chaos](fates-hand-mechanic.md) roll**. |
 > | 6 | A **shred of soul lingers** — the item attunes only to a bearer it deems worthy *(GM)*. |
 > | 7 | **Overreach** — the forger suffers a **Chaos effect** ([D&D 5+ Fate’s Hand Mechanic](fates-hand-mechanic.md)). |
 > | 8 | **Brittle work** — the item breaks on a natural 1, or sheds a charge unbidden. |
@@ -183,7 +177,7 @@ One **Soulforging Tools (CHA)** check against the Soulforge DC finishes a piece 
 > | 6 | **Thrifty forge** — **half the forge cost** is refunded. |
 > | 7 | **Self-mending** — the item repairs minor damage over a long rest. |
 > | 8 | A **second minor property** emerges for free (within the item's theme). |
-> | 9 | **Willing soul** — once/day the item grants a small **Destiny** boon (e.g. reroll a 1). |
+> | 9 | **Willing soul** — once/day the item grants a small **[Destiny](fates-hand-mechanic.md)** boon (e.g. reroll a 1). |
 > | 10 | **Masterwork** — the item's save DC / attack bonus is **+1** above normal. |
 
 ---
@@ -265,6 +259,3 @@ Each **creature type** gives **one signature Essence organ** (the soul-carrier y
 - The **signature organ** is the part you infuse (phase 3). Fail to recover it and that kill yields **no essence**.
 - A **Celestial or Fiend** slain off its home plane (and outside a *magic circle*) collapses to a **pouch of dust** — no soul, no essence.
 - **Ingredient inventory** (210 entries — 14 types × {Essence · Structure · Catalyst} × 5 tiers; Soulgems are catalog gems by value, not homebrew): [Soulforge Crafting](soulforge-crafting.md).
-
-## Liens
-- Catalyst Deduction Engine (FH) · Magic Items · Dark Rituals · Circle Magic · Harvesting · Peuples de la forêt des démons · L'Éveil & Ascension des Eluzi · [The Major Arcana](major-arcana.md) · Karagall - le Moissonneur · [D&D 5+ Fate’s Hand Mechanic](fates-hand-mechanic.md)

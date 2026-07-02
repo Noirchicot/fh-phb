@@ -1,11 +1,5 @@
-# Spells
-
----
-tags: [règle, sort, fate-hand]
----
-
-# Spells
-*(Sorts — révisions Fate's Hand)*
+# New Spells
+*(Sorts — révisions & nouveaux sorts Fate's Hand)*
 
 Fate's Hand revisions and new spells. Only the **changes** to existing spells are listed; everything else works as printed.
 
@@ -81,12 +75,12 @@ Fate's Hand revisions and new spells. Only the **changes** to existing spells ar
 - **Level:** 1st
 - **School:** Transmutation
 - **Casting Time:** 1 action
-- **Range:** Touch — a creature **slain within the last minute**
+- **Range:** Touch — a creature **slain within the hour** (*Gentle Repose* → 10 hours)
 - **Components:** V, S, M (a **gemstone**, which the spell fills)
 - **Duration:** Instantaneous
 - **Classes:** Wizard, Cleric, Druid, Warlock
 
-**Effect** — you draw the **Essence** of a **freshly slain creature** into a **gemstone** you hold. The gem must be of a rarity able to hold that Essence (Uncommon→Frail … Legendary→Mythic — see [the gem table](soulforge-crafting.md#3-recovering-materials-from-a-creature)). The transfer **automatically succeeds**.
+**Effect** — you draw the **Essence** of a **freshly slain creature** into a **gemstone** you hold. The gem's **value** must meet the essence's PP — from 50 gp (1 PP) to 50,000 gp (11 PP); see [the gem table](soulforge-crafting.md#3-preparation-craft-infuse-ready). The transfer **automatically succeeds**.
 
 *In the **Demon Forest** this spell is needless — those beasts already carry their essence in the gems crusting their bodies; simply take the gem.*
 

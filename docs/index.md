@@ -20,7 +20,7 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
 - **The Fate's Hand mechanic** — a **Destiny Score** and **Destiny Dice** that bend fate at a price, with **Chaos** when you overreach.
 - **The Major Arcana** — a tarot-drawn destiny granting a signature power.
 
-…plus tightened rules for **combat, grappling, feats and exploration**.
+…plus tightened rules for **combat, grappling, feats and exploration** — and a whole new crafting system, **[Soulforging](chapters/soulforge-crafting.md)**, where magic items are forged from monster parts and the souls of the slain, then **grown** across the campaign.
 
 <div class="grid cards fh-toc" markdown>
 
@@ -49,15 +49,23 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
     - [Synergies](chapters/skills-synergies.md)
     - [Battlefield](chapters/battlefield.md)
     - [Dungeoneering](chapters/dungeoneering.md)
-    - [Spells](chapters/spells.md)
-    - [Soulforge Crafting](chapters/soulforge-crafting.md)
+
+-   :material-fire:{ .lg .middle } &nbsp;**Spells & Magic**
+
+    ---
+
+    - [New Spells](chapters/spells.md)
+    - [Dark Rituals](chapters/dark-rituals.md)
+    - [Circle Magic](chapters/circle-magic.md)
+    - [Soulforging](chapters/soulforge-crafting.md)
+    - [Magic Items](chapters/magic-items.md)
 
 -   :material-school:{ .lg .middle } &nbsp;**Classes & Subclasses**
 
     ---
 
     - [Class Modifications](chapters/classes.md)
-    - [Lunar Sorcerer](chapters/lunar-sorcerer.md)
+    - [Moonkeeper](chapters/moonkeeper.md)
 
 -   :material-calculator-variant:{ .lg .middle } &nbsp;**Tools**
 
@@ -70,7 +78,9 @@ Fate's Hand keeps everything you know from D&D 2024 and layers three things on t
 
     ---
 
-    *Implemented later — the world of Fate's Hand: lands, moons and powers.*
+    - [Primordial Forces](chapters/primordial-forces.md)
+
+    *More to come — the world of Fate's Hand: lands, moons and powers.*
 
 </div>
 

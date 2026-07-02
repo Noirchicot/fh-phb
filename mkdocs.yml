@@ -73,11 +73,17 @@ nav:
     - Synergies: chapters/skills-synergies.md
     - Battlefield: chapters/battlefield.md
     - Dungeoneering: chapters/dungeoneering.md
-    - Spells: chapters/spells.md
-    - Soulforge Crafting: chapters/soulforge-crafting.md
+  - Spells & Magic:
+    - New Spells: chapters/spells.md
+    - Dark Rituals: chapters/dark-rituals.md
+    - Circle Magic: chapters/circle-magic.md
+    - Soulforging: chapters/soulforge-crafting.md
+    - Magic Items: chapters/magic-items.md
   - Classes & Subclasses:
     - Class Modifications: chapters/classes.md
-    - Lunar Sorcerer: chapters/lunar-sorcerer.md
+    - Moonkeeper: chapters/moonkeeper.md
+  - World:
+    - Primordial Forces: chapters/primordial-forces.md
   - Tools:
     - 5.5 Sheet → 5+ Converter: builder.md
     - Soulforge Workshop: soulforge.md

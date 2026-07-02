@@ -136,6 +136,7 @@ Tools use the same tiers and point costs as skills. (* = Fate's Hand additions �
 | Poisoner's | INT | Toxicology — venoms, dosage |
 | Potter's | WIS | Clay shaping |
 | Smith's | STR | Metal forging & armor repair |
+| [Soulforging](soulforge-crafting.md) ✦ | CHA | The Soulforging check that fuses structure, Soulgem & catalyst into a **soulforged item** (full system: *Soulforge Crafting*) |
 | Thieves' | DEX | Locks & traps |
 | Three-Dragon Ante | WIS | Strategic gambling |
 | Tinker's | INT | Mechanical devices & gadgets |

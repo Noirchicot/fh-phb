@@ -24,7 +24,7 @@ BUILDER_DST = ROOT / "docs" / "skill-builder.html"
 MAP = {
     "ability-scores.md":      ("1. Character Creation Rolls/D&D 5+ Character stat generation.md", "Ability Scores"),
     "backgrounds.md":         ("1. Character Creation Rolls/Backgrounds.md",                      "Backgrounds"),
-    "lunar-sorcerer.md":      ("7. Classes & Subclasses/Lunar Sorcery revised.md",                "Lunar Sorcerer"),
+    "moonkeeper.md":          ("7. Classes & Subclasses/Lunar Sorcery revised.md",                "Moonkeeper"),
     "species.md":             ("2. Species Modifications/D&D 5+ Races & Species.md",              "Species"),
     "skills-and-tools.md":    ("4. Skills/Skills & Tools — Player Guide.md",                       "Skills & Tools"),
     "feats.md":               ("5. Feats/Feats.md",                                                "Feats"),
@@ -33,8 +33,12 @@ MAP = {
     "battlefield.md":         ("8. Adventuring/Battlefield Rules.md",                              "Battlefield Rules"),
     "dungeoneering.md":       ("8. Adventuring/Dungeoneering.md",                                  "Dungeoneering"),
     "classes.md":             ("7. Classes & Subclasses/Class Modifications.md",                   "Classes"),
-    "spells.md":              ("6. Spells & Magic/Fate’s Hand Spells.md",                          "Spells"),
+    "spells.md":              ("6. Spells & Magic/Fate’s Hand Spells.md",                          "New Spells"),
     "soulforge-crafting.md":  ("6. Spells & Magic/Soulforge Crafting.md",                          "Soulforge Crafting"),
+    "dark-rituals.md":        ("6. Spells & Magic/Dark Rituals.md",                                "Dark Rituals"),
+    "circle-magic.md":        ("6. Spells & Magic/Circle Magic.md",                                "Circle Magic"),
+    "magic-items.md":         ("6. Spells & Magic/Magic Items.md",                                 "Magic Items"),
+    "primordial-forces.md":   ("6. Spells & Magic/Nymedes's Primordial Forces.md",                 "Nymedes's Primordial Forces"),
     "major-arcana.md":        ("3. Arcane Destinies/The Major Arcana.md",                          "Arcana"),
     "chaos-tables.md":        ("3. Arcane Destinies/Tables de Fatalité par Attribut.md",           "Chaos Tables"),
 }
@@ -59,6 +63,7 @@ def convert_wikilinks(s: str) -> str:
 
     def xnote(m):
         target, anchor, label = m.group(1).strip(), m.group(2), m.group(3)
+        target = target.rstrip("\\").strip()  # table-escaped pipe: [[Note\|Label]]
         dest = NOTE_TO_CHAPTER.get(target)
         text = label or anchor or target
         if dest:  # published chapter -> real relative link (+optional anchor)
@@ -197,6 +202,28 @@ def strip_callouts(text: str) -> str:
 #  table of contents, injected by docs/javascripts/fh-home.js.)
 
 
+def strip_frontmatter(text: str) -> str:
+    """Drop the Obsidian YAML frontmatter (tags…) — otherwise ensure_h1
+    prefixes the H1 above it and the raw YAML renders on the page."""
+    m = re.match(r"^---\n.*?\n---\n", text, flags=re.DOTALL)
+    return text[m.end():].lstrip("\n") if m else text
+
+
+def strip_liens(text: str) -> str:
+    """Drop the vault-internal '## Liens' cross-reference sections — most of
+    their wikilinks point at unpublished notes and would render as dead text."""
+    out, skip = [], False
+    for ln in text.splitlines():
+        if re.match(r"^#{1,6}\s+Liens\b", ln):
+            skip = True
+            continue
+        if skip and ln.startswith("#"):
+            skip = False
+        if not skip:
+            out.append(ln)
+    return "\n".join(out)
+
+
 def ensure_h1(text: str, title: str) -> str:
     for ln in text.splitlines():
         if ln.strip() == "":
@@ -217,7 +244,9 @@ def main():
             print(f"  !! MISSING {src}")
             continue
         body = src.read_text(encoding="utf-8")
+        body = strip_frontmatter(body)
         body = strip_callouts(body)
+        body = strip_liens(body)
         body = fix_path_refs(body)
         body = convert_wikilinks(body)
         body = normalize_headings(body)

@@ -1,6 +1,6 @@
-# Lunar Sorcerer
+# Moonkeeper
 
-*A Fate's Hand Sorcerer subclass.* Your magic waxes and wanes with the moons' phases, drawing unique power from their changing faces. You gain subclass features at **3rd, 6th, 14th** and **18th level**.
+*A Fate's Hand Sorcerer subclass — the Lunar Sorcery tradition.* Your magic waxes and wanes with the moons' phases, drawing unique power from their changing faces. You gain subclass features at **3rd, 6th, 14th** and **18th level**.
 
 ## Level 3 — Lunar Embodiment
 

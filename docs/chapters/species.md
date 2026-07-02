@@ -106,7 +106,7 @@ All the racial modifiers for Fate's Hand 5+ — racial characteristic modifiers,
 The **Araags** are the tieflings of Nymedes — born of Karagall's dying followers as his Moisson collapsed the human population. Mechanically they are a **Tiefling** (Cha +2, Int +1) whose **Fiendish Legacy traces to Karagall — The Devil (Arcana XV)** by default; a few have **corrupted the rite** to take a different legacy. Lore: L’Empire Araag · L'Éveil & Ascension des Eluzi.
 
 ## Eluzi *(Aberration — an ascended state, not a starting species)*
-The **Eluzi** are not born — they are **made**. A being who drinks **1,000 souls** undergoes the **Crimson Awakening** (see the Calice de Moisson): it awakens to **The Devil — Arcana XV** and its body **mutates into an Aberration** — white-skinned and masked, a **race apart**. It keeps the memory of what it was and becomes something else; from here the road of cumulative torpor leads, for a rare handful, to **Somatic Ascension** (pure energy in a corporeal shell).
+The **Eluzi** are not born — they are **made**. A being who drinks **1,000 souls** undergoes the **Crimson Awakening** (see the [Calice de Moisson](magic-items.md#harvest-chalice)): it awakens to **The Devil — Arcana XV** and its body **mutates into an Aberration** — white-skinned and masked, a **race apart**. It keeps the memory of what it was and becomes something else; from here the road of cumulative torpor leads, for a rare handful, to **Somatic Ascension** (pure energy in a corporeal shell).
 
 - **Creature type becomes Aberration.** It retains its original species' traits unless the table rules otherwise.
 - **Reached through play**, not chosen at creation — any species, including Araags, can in the Third Age potentially awaken to AvA and become Eluzi.

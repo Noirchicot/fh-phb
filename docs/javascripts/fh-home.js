@@ -27,7 +27,8 @@
       { slug: "feats", title: "Feats", items: [
         ["Skill feats", "skill-feats"],
         ["Combat feats", "combat-feats"],
-        ["Command feats", "command-feats"]
+        ["Command feats", "command-feats"],
+        ["Soulforge feats", "soulforge-feats"]
       ]}
     ],
     [ /* The Destiny System */
@@ -61,13 +62,38 @@
         ["Falling in combat or Dying", "falling-in-combat-or-dying"],
         ["Grappling-range maneuvers", "grappling-range-maneuvers"]
       ]},
-      { slug: "dungeoneering", title: "Dungeoneering", items: [] },
-      { slug: "spells", title: "Spells", items: [
+      { slug: "dungeoneering", title: "Dungeoneering", items: [] }
+    ],
+    [ /* Spells & Magic */
+      { slug: "spells", title: "New Spells", items: [
         ["Bless", "bless"],
         ["Guidance", "guidance"],
         ["Appease the Chaos", "appease-the-chaos"],
         ["Devil-Vision", "devil-vision"],
-        ["Consecration", "consecration"]
+        ["Consecration", "consecration"],
+        ["Transfer Essence", "transfer-essence"],
+        ["Identify", "identify"],
+        ["Gentle Repose", "gentle-repose"]
+      ]},
+      { slug: "dark-rituals", title: "Dark Rituals", items: [
+        ["How a ritual resolves", "1-how-a-ritual-resolves-the-template"],
+        ["The Rituals", "2-the-rituals"]
+      ]},
+      { slug: "circle-magic", title: "Circle Magic", items: [
+        ["How a Circle Spell is cast", "how-a-circle-spell-is-cast"],
+        ["Circle Casting Options", "circle-casting-options-choose-one"]
+      ]},
+      { slug: "soulforge-crafting", title: "Soulforging", items: [
+        ["Power Budget & Item Equilibrium", "power-budget-item-equilibrium"],
+        ["The four phases", "the-four-phases"],
+        ["Soulforge mishaps & boons", "soulforge-mishaps-boons"],
+        ["Growing an item", "growing-an-item-evolve-never-replace"],
+        ["Attunement & reanimation", "attunement-reanimation"],
+        ["Body Forging", "body-forging-fuse-a-gem-into-your-flesh"],
+        ["Appendix — components", "appendix-components-by-creature-type"]
+      ]},
+      { slug: "magic-items", title: "Magic Items", items: [
+        ["Harvest Chalice", "harvest-chalice"]
       ]}
     ],
     [ /* Classes & Subclasses */
@@ -77,11 +103,17 @@
         ["Monk", "monk"],
         ["Assassin (Rogue)", "assassin-rogue"]
       ]},
-      { slug: "lunar-sorcerer", title: "Lunar Sorcerer", items: [
+      { slug: "moonkeeper", title: "Moonkeeper", items: [
         ["Level 3 — Lunar Embodiment", "level-3-lunar-embodiment"],
         ["Level 6", "level-6"],
         ["Level 14", "level-14"],
         ["Level 18", "level-18"]
+      ]}
+    ],
+    [ /* World */
+      { slug: "primordial-forces", title: "Primordial Forces", items: [
+        ["Part 1 — The White Void", "part-1-the-white-void"],
+        ["Part 2 — The Crimson Shroud", "part-2-the-crimson-shroud"]
       ]}
     ]
   ];
@@ -89,7 +121,9 @@
   GROUPS[0].name = "Creating a Character";
   GROUPS[1].name = "Destiny Mechanics";
   GROUPS[2].name = "Playing the Game";
-  GROUPS[3].name = "Classes & Subclasses";
+  GROUPS[3].name = "Spells & Magic";
+  GROUPS[4].name = "Classes & Subclasses";
+  GROUPS[5].name = "World";
 
   document.addEventListener("DOMContentLoaded", function () {
     /* landing page (has the contents cartouche) → hide the header bar */
