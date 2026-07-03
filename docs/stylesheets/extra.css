@@ -384,21 +384,14 @@ body.fh-home-page .md-header { display: none; }
 .md-typeset .fh-cover { position: relative; margin: 0 0 1.2rem; }
 .md-typeset .fh-cover .fh-banner { margin: 0; }
 .md-typeset .fh-cover::after {
-  content: ""; position: absolute; left: 1px; right: 1px; top: 1px;
-  height: 42%; border-radius: 8px 8px 0 0; pointer-events: none;
-  background: linear-gradient(to bottom, rgba(10,7,4,.78) 0%, rgba(10,7,4,.30) 55%, transparent 100%);
+  content: none;
 }
 .md-typeset .fh-cover h1.fh-cover-title {
-  position: absolute; left: 0; right: 0; top: .9rem; z-index: 2;
-  margin: 0; padding: 0 1rem;
-  text-align: center; font-size: 2.15rem;
-  font-family: "Cinzel Decorative", "Cinzel", serif; font-weight: 700;
-  color: #f0dfae;
-  text-shadow: 0 2px 6px rgba(0,0,0,.95), 0 0 28px rgba(0,0,0,.7);
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
 @media screen and (max-width: 44.9em) {
-  .md-typeset .fh-cover h1.fh-cover-title { font-size: 1.05rem; top: .45rem; }
-  .md-typeset .fh-cover::after { height: 52%; }
+
 }
 
 /* ---- landing cards: title overlaid on the card banner ---- */
