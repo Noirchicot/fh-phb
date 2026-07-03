@@ -1,10 +1,13 @@
 site_name: Fate's Hand — Player's Handbook
 site_description: The Fate's Hand 5+ house rules — an expansion of D&D 2024.
+site_url: https://noirchicot.github.io/fh-phb/
 docs_dir: docs
 
 theme:
   name: material
   language: en
+  custom_dir: overrides
+  favicon: assets/img/favicon.png
   icon:
     logo: material/dice-d20
   font: false   # use self-hosted PHB-clone fonts from extra.css
