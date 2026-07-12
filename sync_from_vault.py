@@ -19,6 +19,8 @@ ROOT = pathlib.Path(__file__).parent
 DOCS = ROOT / "docs" / "chapters"
 BUILDER_SRC = pathlib.Path("/Users/Eric/tools/fh-skills/fh-skill-builder.html")
 BUILDER_DST = ROOT / "docs" / "skill-builder.html"
+ROLLER_SRC = pathlib.Path("/Users/Eric/tools/fh-skills/stat-roller.html")
+ROLLER_DST = ROOT / "docs" / "stat-roller.html"
 
 # dest filename : (source relative to VAULT, H1 title to guarantee)
 MAP = {
@@ -75,15 +77,22 @@ def convert_wikilinks(s: str) -> str:
     return s
 
 
-# site-only illustrations: dest chapter -> [(heading line prefix, image markdown)]
+# site-only inserts: dest chapter -> [(heading line prefix, markdown block)]
 # inserted after the heading (and its italic subtitle line, if any) on sync,
-# so the vault files stay image-free.
+# so the vault files stay free of site-specific images/tool links.
 CHAPTER_IMAGES = {
     "primordial-forces.md": [
         ("## Part 1 — The White Void",
          "![The White Void](../assets/img/world-white-void.jpg){ .fh-illus }"),
         ("## Part 2 — The Crimson Shroud",
          "![The Crimson Shroud](../assets/img/world-crimson-shroud.jpg){ .fh-illus }"),
+    ],
+    "ability-scores.md": [
+        ("## The 3d6 × 10 method",
+         '!!! tip "Try it live"\n'
+         "    Real crypto-RNG rolls, the reroll rule enforced automatically, and a spot to assign your\n"
+         "    six kept scores before you open the D&D Beyond builder.\n\n"
+         "    [Open the Ability Score Roller ↗](../stat-roller.html){ .md-button target=_blank }"),
     ],
 }
 
@@ -295,6 +304,9 @@ def main():
     if BUILDER_SRC.exists():
         shutil.copy(BUILDER_SRC, BUILDER_DST)
         print(f"  ok  skill-builder.html      <- {BUILDER_SRC.name}")
+    if ROLLER_SRC.exists():
+        shutil.copy(ROLLER_SRC, ROLLER_DST)
+        print(f"  ok  stat-roller.html        <- {ROLLER_SRC.name}")
     build_soulforge_data()
 
 

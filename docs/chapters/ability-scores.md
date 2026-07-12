@@ -4,6 +4,12 @@ In Fate's Hand you **roll** your ability scores rather than using Point Buy or t
 
 ## The 3d6 × 10 method
 
+!!! tip "Try it live"
+    Real crypto-RNG rolls, the reroll rule enforced automatically, and a spot to assign your
+    six kept scores before you open the D&D Beyond builder.
+
+    [Open the Ability Score Roller ↗](../stat-roller.html){ .md-button target=_blank }
+
 1. Roll **3d6**, ten times.
 2. Keep your **six highest** results — but only if at least one of them is **15 or higher**. If not, reroll the whole set.
 3. That set averages about **11** per ability.

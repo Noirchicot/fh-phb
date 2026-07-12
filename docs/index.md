@@ -64,6 +64,7 @@ hide:
 
     - [5.5 Sheet → 5+ Converter](builder.md)
     - [Soulforge Workshop](soulforge.md)
+    - [Ability Score Roller](dice-roller.md)
 
 -   <span class="fh-card-hero"><img src="assets/img/card-world.jpg" alt="World"><span class="fh-card-title">World</span></span>
 
