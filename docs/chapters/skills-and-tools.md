@@ -32,8 +32,7 @@ One number per class — your **background is already included** (its 2 skills +
 
 | Species | At creation | Later |
 |---|---|---|
-| Araag | +2 | +2 at levels **3** and **6** |
-| Human | — | +2 at levels **3** and **6** |
+| Araag, Human | +2 | +2 at levels **3** and **6** |
 | All others (Elf and Dwarf included) | 0 | — |
 
 ### Your background
@@ -45,7 +44,7 @@ Your background is **made to measure**: pick its **2 skills and 1 tool** (they a
 - Languages are free at creation — they cost nothing.
 - Once everything is placed, you must keep **at least 1 point (Half)** in every **imposed** skill and tool (class specials, background picks) — see the conservation rule (§3).
 
-> *Examples:* Talia (Human Ranger, lvl 1) = **14 pts** · Kai (Orc Fighter, lvl 1) = **12 pts** · an Araag Rogue lvl 1 = 18 + 2 = **20 pts**.
+> *Examples:* Talia (Human Ranger, lvl 1) = 14 + 2 = **16 pts** · Kai (Orc Fighter, lvl 1) = **12 pts** · an Araag Rogue lvl 1 = 18 + 2 = **20 pts**.
 
 ---
 

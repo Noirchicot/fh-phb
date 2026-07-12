@@ -8,7 +8,7 @@ The species of Fate's Hand 5+ — traits, Base Destiny and skill-point bumps. Th
 > *Looking for the older species (Aasimar, Half-Elf, Half-Orc, Eladrin, Firbolg) and the old racial modifiers? They live on in the archive for existing tables: Species — archived version.*
 
 > [!info] Skill-oriented species
-> Only the **Araag** and the **Human** gain [skill points](skills-and-tools.md): **+2 at levels 3 and 6** (the Araag also gains **+2 at creation**). No other species grants skill points.
+> Only the **Araag** and the **Human** gain [skill points](skills-and-tools.md): **+2 at creation, and +2 at levels 3 and 6**. No other species grants skill points.
 
 ## [Dragonborn](https://www.dndbeyond.com/species/1751435-dragonborn)
 - **Base Destiny:** 2
@@ -39,7 +39,7 @@ The species of Fate's Hand 5+ — traits, Base Destiny and skill-point bumps. Th
 - **Base Destiny:** 3 — *Thirst for Success: recovers 2 Destiny Points per day.*
 - **Abilities** *(SRD 5.2, FH-adjusted)*:
   - Resourceful (Heroic Inspiration on each long rest)
-  - ~~Skillful~~ → replaced by the FH skill bumps: **+2 Skill Points at levels 3 and 6**
+  - ~~Skillful~~ → replaced by the FH skill bumps: **+2 Skill Points at creation, +2 at levels 3 and 6**
   - ~~Versatile~~ *(removed — in FH every character chooses an Origin Feat through their background)*
 
 ## [Orc](https://www.dndbeyond.com/species/1751442-orc)
