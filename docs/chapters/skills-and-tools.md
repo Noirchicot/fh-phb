@@ -17,48 +17,56 @@ A plain-language guide to how skill points work and what every skill and tool do
 
 ### Your starting pool
 
-Your pool = Class base + Background (6) + Race bonus + Feats (e.g. Skilled +6).
+One number per class — your **background is already included** (its 2 skills + 1 tool are imposed picks inside the pool). Add only species bumps and feats (e.g. Skilled +6) on top.
 
-**Class base** (the "+2 breadth" bonus is already baked in — don't add it again):
-
-| Class | Base |
+| Class | Level-1 pool |
 |---|---|
-| Bard, Ranger | **10** |
-| Rogue | **12** |
-| Everyone else (Barbarian, Cleric, Druid, Fighter, Monk, Paladin, Sorcerer, Warlock, Wizard, **Artificer**) | **8** |
+| Rogue | **18** |
+| Bard | **16** |
+| Druid, Monk, Ranger | **14** |
+| Barbarian, Cleric, Fighter, Paladin, Sorcerer, Warlock, Wizard, Artificer | **12** |
 
-**Race bonus** — only three species give points:
+*Classes whose 5e kit carries native tools (Rogue's thieves' tools, Bard's instrument, Druid's herbalism kit, Monk's artisan tool or instrument) have that compensation baked into their pool.*
+
+**Species bumps** — only two species give points:
 
 | Species | At creation | Later |
 |---|---|---|
-| Human, Half-Elf | +2 | +2 at levels **3** and **6** |
-| Dwarf | +2 *(tools only)* | — |
-| All others (Elf included) | 0 | — |
+| Araag | +2 | +2 at levels **3** and **6** |
+| Human | — | +2 at levels **3** and **6** |
+| All others (Elf and Dwarf included) | 0 | — |
+
+### Your background
+
+Your background is **made to measure**: pick its **2 skills and 1 tool** (they are imposed picks inside your pool), **choose your Origin Feat**, and take its ability score increases (+2/+1 or +1/+1/+1 on three abilities of your choice). You are trusted to keep the story coherent with your picks.
 
 ### Rules at creation
 - At least **1 point** must go into a tool.
 - Languages are free at creation — they cost nothing.
-- **Expertise** at creation is reserved for the four **skill classes** (Bard, Ranger, Rogue, Wizard); everyone else can buy it from level 4.
-- The breadth points are free to place — no forced spread. The one standing rule is the conservation rule (§3).
+- Once everything is placed, you must keep **at least 1 point (Half)** in every **imposed** skill and tool (class specials, background picks) — see the conservation rule (§3).
 
-> *Examples:* Talia (Human Ranger, lvl 1) = 10 + 6 + 2 = **18 pts** · Kai (Fighter, lvl 1) = 8 + 6 = **14 pts** · a Human Rogue lvl 1 = 12 + 6 + 2 = **20 pts**.
+> *Examples:* Talia (Human Ranger, lvl 1) = **14 pts** · Kai (Orc Fighter, lvl 1) = **12 pts** · an Araag Rogue lvl 1 = 18 + 2 = **20 pts**.
 
 ---
 
 ## 3. Levelling up & evolution
 
 - **+2 points every 4 levels** for all classes (levels **4** and **8**).
-- **Skill classes** (Bard, Ranger, Rogue, Wizard) get **extra +2 at levels 3, 5 and 7** — so they bump at 3, 4, 5, 7, 8.
+- **Bard** — Jack of All Trades is replaced: the Bard gains **+1 point at every level from level 2**.
+- Class features keep their normal 5e progression on top of the pool (Rogue and Bard **Expertises**, Ranger's Deft Explorer, etc.) — nothing to convert, they apply as written.
+- **Buying Expertise with points** (4 pts total) is available to everyone **from level 4**.
 - **Buying languages later:** after creation, a new language costs **1 point**.
 - **Moving a point:** each time you gain points (a level-up), you may **shift a point from one skill/tool to another** — as long as you respect the conservation rule below.
 
 > [!note] Conservation rule — the only hard constraint
-> You must keep at least **Half** on every native skill and every native tool your class, background or species granted. You may drop a native from **Proficient** to **Half** to free a point — but never below **Half**.
+> You must keep at least **Half (1 point)** on every **imposed** skill and tool — your background picks, your class specials and anything your species imposes. You may drop one from **Proficient** to **Half** to free a point — but never below **Half**.
 
 ### Multiclassing
-- Your **base** comes from your **starting class only** (no second base).
+- Your **pool** comes from your **starting class only** (no second pool).
 - **Level bonuses stack per class**, by the thresholds you actually reach in each.
-  > *Akbal (Warlock 5 / Monk 4): base 8 + background 6 + Warlock@4 (+2) + Monk@4 (+2) = **18 pts**.*
+  > *Akbal (Warlock 5 / Monk 4): pool 12 + Warlock@4 (+2) + Monk@4 (+2) = **16 pts**.*
+
+> *Older characters built on the pre-2026-07 pools (class base + separate background 6 + skill-class bumps at 3/5/7): see the archived rules.*
 
 ---
 

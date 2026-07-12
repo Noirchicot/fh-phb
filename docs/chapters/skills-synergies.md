@@ -2,7 +2,7 @@
 
 ## Overview
 
-At levels **1–4**, the base **DC** for most challenging skill checks is **16** (the full tiered DC table is in the Revisited doc). This higher DC keeps challenges interesting while rewarding creative teamwork. You can gain a synergy bonus in three ways:
+At levels **1–4**, the base **DC** for most challenging skill checks is **16**, rising with tier at higher levels (DM's tiered table). This higher DC keeps challenges interesting while rewarding creative teamwork. You can gain a synergy bonus in three ways:
 
 | Synergy | Granted when… |
 | --- | --- |

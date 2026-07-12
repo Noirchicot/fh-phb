@@ -12,7 +12,7 @@ At 3rd level, choose one of the lunar embodiments:
 | **Ur-Nozgul** *(far side of Telva)* | Grey | Illusion / Enchantment | Larger spell pool (2 schools) |
 | **Forgon** | Red | Evocation | +1 per damage die on evocation spells |
 | **Trien** | Green | Transmutation / Conjuration | Larger spell pool (2 schools) |
-| **Ono** | Blue | Divination | PB ×2 when calculating Destiny Points |
+| **Ono** | Blue | Divination | PB ×2 when calculating your **Destiny Score** |
 | **Cerkato** | Black | Necromancy | Undead ×2 when casting *Create Undead*, *Raise Undead* |
 
 ### Lunar spells
@@ -53,7 +53,7 @@ With *X* = your proficiency bonus, you may exchange up to *X* spells, choosing f
 ## Level 14
 
 ### Lunar Ascendance
-**Bonus Action** — once per long rest, or by spending **5 Sorcery Points**:
+**Bonus Action.** Each moon's effect has its own frequency (listed below). Once expended, you may use it again early by spending **5 Sorcery Points**:
 
 | Moon | Effect |
 | --- | --- |

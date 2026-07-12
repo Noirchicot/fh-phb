@@ -16,7 +16,7 @@ Glimmers of true power flicker beyond mortal sight, revealing a grand tapestry o
 
 ### Calculating your Destiny Score
 - **Proficiency** — add your proficiency bonus.
-- **Innate** — race base (table below), background, feats (e.g. *Lucky*), and your Major Arcana.
+- **Innate** — species base (table below), background, feats (e.g. *Lucky*), and your Major Arcana.
 - **Glory / Damnation** — deeds that shift your standing among hidden powers (honor raises it, villainy taints it).
 - **Other** — a feat (e.g. *Skilled*), a magic item, a boon, or some subclasses may also influence the score.
 
@@ -30,18 +30,19 @@ Your Points go **up and down** in play, so there is no fixed link between a Poin
 ### Arcane Critical
 A **max roll** on a Destiny Die (e.g. a 12 on a d12) is an **automatic Natural 20**, at a cost of only **−1 Destiny Point** — no Arcane Awakening.
 
-### Race — Base Destiny
+### Species — Base Destiny
 
-| Race | Base | Race | Base |
+| Species | Base | Species | Base |
 |---|---|---|---|
-| Halfling | 4 | Aasimar | 2 |
-| Human | 3 | Dragonborn | 2 |
-| Half-Elf | 3 | Gnome | 2 |
-| Half-Orc | 3 | Elf | 1 |
-| | | Dwarf | 1 |
-| | | Orc | 1 |
+| Halfling | 4 | Dragonborn | 2 |
+| Human | 3 | Gnome | 2 |
+| Elf | 1 | Goliath | 2 |
+| Dwarf | 1 | Tiefling | 2 |
+| Orc | 1 | Araag | 2 |
 
-> *Younger races burn brighter in the tapestry; older lineages must work harder to reignite their spark.*
+> *Younger species burn brighter in the tapestry; older lineages must work harder to reignite their spark.*
+>
+> *Full traits for each species: see [Species](species.md). The **Eluzi** (an ascended state, not a starting species) keep the Base Destiny of what they were. Older species (Aasimar, Half-Elf, Half-Orc, Eladrin, Firbolg): see the archive.*
 
 ---
 
