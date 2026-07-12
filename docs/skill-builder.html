@@ -76,12 +76,22 @@
   .legend{font-size:11px;color:var(--muted);font-family:system-ui,sans-serif;margin-top:6px}
   .sticky{position:sticky;top:0;z-index:5}
   .note{font-size:11px;color:var(--warn);font-family:system-ui,sans-serif;margin-top:6px}
+  .arc-detail{background:#15110e;border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:10px 0 0;font:12px system-ui,sans-serif}
+  .arc-title{color:var(--gold);font-weight:700;margin-bottom:6px}
+  .arc-impact{font-size:11px;color:var(--muted);font-weight:400;margin-left:8px}
+  .arc-line{padding:2px 0;color:var(--muted)}
+  .arc-line b{color:var(--ink)}
+  .destiny-out{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .destiny-out .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:system-ui,sans-serif}
+  .destiny-score{font-size:30px;font-weight:700;color:var(--gold);font-family:system-ui,sans-serif}
+  .ok-note{color:var(--good)!important}
+  #abBoosts > div{min-width:70px}
 </style>
 </head>
 <body>
 <header>
   <h1>⛓ Fate's Hand — Skill Point Builder</h1>
-  <div class="sub">26 skills + 36 tools dans une liste unique · Non / Half(1) / Proficient(2) / Expertise(4) · pool calculé classe·race·feats·niveau (canonique Revisited corrigé)</div>
+  <div class="sub">Transformation FH complète : Arcane · Destiny Score · Blank Background · skills (pools 2026-07-12) → export JSON unifié pour ddb-apply.mjs</div>
 </header>
 <main>
 
@@ -90,6 +100,7 @@
     <h2>Personnage</h2>
     <div class="row">
       <div><label>Nom</label><input id="charName" type="text" placeholder="Nodren…" style="width:160px"></div>
+      <div><label>DDB ID (fiche)</label><input id="ddbId" type="number" placeholder="150544157" style="width:120px"></div>
       <div><label>Classe</label>
         <select id="cls"></select>
       </div>
@@ -116,6 +127,37 @@
     </div>
     <div class="note" id="importNote"></div>
     <div class="note" id="ruleNote"></div>
+  </div>
+
+  <!-- ============ ARCANE & DESTINÉE ============ -->
+  <div class="card">
+    <h2>Arcane Majeur &amp; Destinée</h2>
+    <div class="row">
+      <div><label>Arcane Majeur (tiré à la création)</label><select id="arcana" style="min-width:220px"></select></div>
+      <div class="chk"><input id="featLucky" type="checkbox"><label style="margin:0">Lucky (+2)</label></div>
+      <div class="chk"><input id="featDestinyTouched" type="checkbox"><label style="margin:0">Destiny Touched (+2)</label></div>
+      <div><label>Glory / Damnation</label><input id="destGlory" type="number" value="0" style="width:80px"></div>
+      <div><label>Autres (item/boon/subclass)</label><input id="destOther" type="number" value="0" style="width:80px"></div>
+    </div>
+    <div id="arcanaCard" class="arc-detail" style="display:none"></div>
+    <div class="destiny-out">
+      <span class="l">DESTINY SCORE</span><span class="destiny-score" id="destScore">?</span>
+      <span class="pool-break" id="destBreak" style="margin:0"></span>
+    </div>
+    <label style="margin-top:10px">Bloc note « Extra » (→ DDB otherNotes) — repris dans le JSON</label>
+    <textarea id="destNotes" readonly placeholder="Le bloc note Destinée apparaîtra ici…" style="min-height:200px"></textarea>
+  </div>
+
+  <!-- ============ BACKGROUND BLANK ============ -->
+  <div class="card">
+    <h2>Background — Blank (fh) &amp; bonus de caracs</h2>
+    <p class="legend">Le background officiel de la fiche est remplacé par <b>Blank Background (fh)</b> (neutralise ses octrois). Choisis les bonus de caracs du background sur mesure : <b>+2/+1 sur 2 caracs</b> ou <b>+1/+1/+1 sur 3 caracs</b> → traduits en feats <b>Ability Boost (fh)</b>.</p>
+    <div class="row" id="abBoosts"></div>
+    <div class="note" id="abNote"></div>
+    <div style="margin-top:12px">
+      <label>Histoire du personnage (→ backstory DDB)</label>
+      <textarea id="story" placeholder="Raconte l'histoire du perso…" style="min-height:120px"></textarea>
+    </div>
   </div>
 
   <!-- ============ BUDGET ============ -->
@@ -153,10 +195,11 @@
   <!-- ============ EXPORT ============ -->
   <div class="card">
     <h2>Export</h2>
-    <button class="btn" id="genExport">Générer le récap</button>
-    <button class="btn ghost" id="copyExport">Copier</button>
-    <button class="btn ghost" id="dlPayload">⬇ Télécharger payload DDB (.json)</button>
-    <p class="legend">Le récap sépare ce qui se coche nativement sur DDB (16 skills officiels) de ce qui ira en bloc <b>Notes / Other Proficiencies</b> (skills FH-only ◆ + tous les tools).</p>
+    <button class="btn" id="dlUnified">⬇ Télécharger le JSON FH unifié (.fh.json)</button>
+    <button class="btn ghost" id="genExport">Récap skills (texte)</button>
+    <button class="btn ghost" id="copyExport">Copier le récap</button>
+    <button class="btn ghost" id="dlPayload">⬇ payload skills seul (.json)</button>
+    <p class="legend">Le <b>JSON FH unifié</b> (character · destiny · background · skills · destinyFeats) est le contrat pour <code>ddb-apply.mjs</code>. Le récap texte reste dispo pour vérifier à l'œil.</p>
     <textarea id="export" placeholder="Le récap apparaîtra ici…"></textarea>
   </div>
 </main>
@@ -169,26 +212,67 @@
 </div>
 
 <script>
-// ---------- DONNÉES (extraites du vault : "5X Skills and Tools 1.0" + "3. Skill points per class") ----------
-// Bases = ancien bonus + le +2 universel de largeur (décision 2026-06-08). Artificier = Fighter/Cleric.
-const CLASS_BASE = {Artificer:8,Barbarian:8,Bard:10,Cleric:8,Druid:8,Fighter:8,Monk:8,Paladin:8,Ranger:10,Rogue:12,Sorcerer:8,Warlock:8,Wizard:8};
-const BACKGROUND = 6;
-// classes "à skills" (base élevée, expertise création, progression accélérée)
-const SKILL_CLASSES = new Set(["Bard","Ranger","Rogue","Wizard"]);
-// niveaux où la classe gagne +2 (au-delà du niv.1)
-const LVL_BONUS = {
-  Bard:[3,4,5,7,8], Ranger:[3,4,5,7,8], Rogue:[3,4,5,7,8], Wizard:[3,4,5,7,8],
-  _default:[4,8]
+// ---------- DONNÉES — pools canoniques REWORK 2026-07-12 (background inclus) ----------
+// Un seul pool niveau 1 par classe (background 6 fondu dedans). Cf. "D&G 5+ Revisited Skills" bloc CANONICAL 2026-07-12.
+const CLASS_POOL = {Artificer:12,Barbarian:12,Bard:16,Cleric:12,Druid:14,Fighter:12,Monk:14,Paladin:12,Ranger:14,Rogue:18,Sorcerer:12,Warlock:12,Wizard:12};
+// +2 universel aux niv. 4 et 8 (toutes classes). Barde : Jack of All Trades -> +1 pt/niv des le 2 (en plus).
+const TIER_LEVELS = [4,8];
+// Especes : `destiny` = base pour le Destiny Score (table du Mechanic, TOUTES les especes) ;
+// `skillCreate`/`skillLevels` = points de skills — seuls Araag & Humain en donnent (+2 @1/3/6).
+const SPECIES = {
+  "—":          {destiny:0, skillCreate:0, skillLevels:[]},
+  "Human":      {destiny:3, skillCreate:2, skillLevels:[3,6]},
+  "Araag":      {destiny:2, skillCreate:2, skillLevels:[3,6]},
+  "Halfling":   {destiny:4, skillCreate:0, skillLevels:[]},
+  "Dragonborn": {destiny:2, skillCreate:0, skillLevels:[]},
+  "Gnome":      {destiny:2, skillCreate:0, skillLevels:[]},
+  "Goliath":    {destiny:2, skillCreate:0, skillLevels:[]},
+  "Tiefling":   {destiny:2, skillCreate:0, skillLevels:[]},
+  "Elf":        {destiny:1, skillCreate:0, skillLevels:[]},
+  "Dwarf":      {destiny:1, skillCreate:0, skillLevels:[]},
+  "Orc":        {destiny:1, skillCreate:0, skillLevels:[]}
 };
-// Bonus d'espèce (règle Revisited) — create = à la création, levels = +2 à ces niveaux, toolsOnly = doit aller en tools
-const RACE = {
-  "—":           {create:0, levels:[],     toolsOnly:false},
-  "Human":       {create:2, levels:[3,6],  toolsOnly:false},
-  "Half-Elf":    {create:2, levels:[3,6],  toolsOnly:false},
-  "Elf":         {create:0, levels:[],     toolsOnly:false},
-  "Dwarf":       {create:2, levels:[],     toolsOnly:true},
-  "Autre / 0":   {create:0, levels:[],     toolsOnly:false}
+// Feats Ability Boost (fh) — IDs DDB (Roadmap 2026-07-12) : +1 / +2 par carac.
+const ABILITY_BOOST_FEATS = {
+  STR:{1:2379975,2:2379989}, DEX:{1:2379985,2:2379986}, CON:{1:2379983,2:2379984},
+  INT:{1:2379987,2:2379988}, WIS:{1:2379990,2:2379991}, CHA:{1:2379981,2:2379982}
 };
+// Feats Destiny (fh) — enumeres sur DDB le 2026-07-13. Le "Destiny Score" n'est PAS un feat :
+// c'est un nombre, materialise uniquement dans le bloc otherNotes. Seuls les 5 des existent en feats.
+const DESTINY_FEATS = {
+  diceFeats: [
+    {name:"Destiny Dice - d4",  id:1927834},
+    {name:"Destiny Dice - d6",  id:1927924},
+    {name:"Destiny Dice - d8",  id:1927926},
+    {name:"Destiny Dice - d10", id:1927927},
+    {name:"Destiny Dice - d12", id:1927928}
+  ]
+};
+// 22 Arcanes Majeurs (donnees : "The Major Arcana.md").
+const ARCANA = [
+{id:"0",name:"The Fool",impact:2,meaning:`innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.`,power:`once per long rest, roll 2 Destiny dice at once, take the total of both as a bonus, and pay only the price of the highest.`,vibration:`luck effect (Bless or Guidance depending on level).`},
+{id:"I",name:"The Magician",impact:1,meaning:`ingenuity, creativity, mastery of tools. The intellect shapes reality. The initiator of change through willpower.`,power:`once per long rest, adjust the size of a Destiny die of a willing creature (d4 into d12 or vice-versa).`,vibration:`minor illusion effect (Silent Image).`},
+{id:"II",name:"The High Priestess",impact:1,meaning:`hidden knowledge, intuition, mystery. Inner wisdom, revelation through patient study. Silence and secrets of the soul.`,power:`roll a Destiny die in secret and store it; you may use the result before the end of the next long rest.`,vibration:`divination effect (Detect Evil and Good, Augury).`},
+{id:"III",name:"The Empress",impact:2,meaning:`fertility, abundance, growth, prosperity. Support, harmony, generosity.`,power:`recover an additional Destiny Point after a long rest if you have 2 or less.`,vibration:`healing or reinforcement (Cure Wounds, Heroism).`},
+{id:"IV",name:"The Emperor",impact:1,meaning:`authority, order, stable power. Construction, organization, protection.`,power:`once per long rest, sacrifice a die to obtain the highest possible bonus non-critical result.`,vibration:`defensive effect (Mage Armor, Shield minor effect).`},
+{id:"V",name:"The Hierophant",impact:2,meaning:`tradition, teaching, spiritual guidance. Faith, rituals, sacred order.`,power:`once per short rest, as a reaction within 30 feet, convert one of your Destiny dice into healing and add it to one individual short-rest dice (+ Constitution bonus), with no cost in Destiny Points.`,vibration:`sacred blessing (Bless, Protection from Evil and Good).`},
+{id:"VI",name:"The Lovers",impact:2,meaning:`choice, harmony, relationships, moral dilemmas. Union, sacrifice, cooperation.`,power:`once per long rest, as a reaction, roll a Destiny die to the benefit of one party member within 30 ft of you, while another (including you) suffers the cost.`,vibration:`social charm / inspiration (Charm Person).`},
+{id:"VII",name:"The Chariot",impact:1,meaning:`victory, determination, triumph. Active control, moving toward success.`,power:`once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.`,vibration:`acceleration (Longstrider, Expeditious Retreat).`},
+{id:"VIII",name:"Strength",impact:0,meaning:`courage, mastery of instincts, perseverance, moral and physical endurance.`,power:`the critical range of your Destiny dice is doubled (3 or 4 on a d4, 5 or 6 on a d6).`,vibration:`physical enhancement (Enhance Ability — Strength).`},
+{id:"IX",name:"The Hermit",impact:2,meaning:`introspection, solitude, search for truth. Knowledge found in inner calm.`,power:`once per long rest, store the result of your lowest available Destiny die and use it later.`,vibration:`clairvoyance / guidance (e.g. Guidance).`},
+{id:"X",name:"Wheel of Fortune",impact:1,meaning:`change, unstable destiny, opportunity, unpredictability. Embracing the cycle of ups and downs.`,power:`on the first Destiny roll of the day choose advantage or disadvantage, then a cycle is in place. That same day, any individual (including you) within 30 ft rolling a Destiny die rolls with advantage if you chose disadvantage, or the contrary.`,vibration:`random yet beneficial effect (e.g. advantage on the next roll).`},
+{id:"XI",name:"Justice",impact:1,meaning:`fairness, responsibility, moral order. Evaluating, assuming responsibility, restoring balance.`,power:`after a long rest, transfer up to 2 Destiny Points and 2 Destiny dice from the strongest to the weakest. Recipients may be willing or not. You may freely rule on ties. Up to 4 individuals.`,vibration:`restore balance (e.g. Lesser Restoration).`},
+{id:"XII",name:"The Hanged Man",impact:1,meaning:`sacrifice, letting go, new perspective. Renouncing to gain understanding.`,power:`if you invoke Chaos on a natural 1, you do not lose but immediately regain 2 Destiny Points and just roll 1d6 on the Chaos table.`,vibration:`neutralization (e.g. targeted Slow).`},
+{id:"XIII",name:"Death",impact:0,meaning:`transformation, end of a cycle, rebirth. Radical change, not absolute finality.`,power:`you are immune to everything above 6 on the Chaos table, and trigger an Awakening on a 12.`,vibration:`survival / minor necromancy effect (e.g. False Life).`},
+{id:"XIV",name:"Temperance",impact:2,meaning:`moderation, harmony, compromise. Finding balance and the right measure.`,power:`once per long rest, in a 30 ft radius, as a reaction roll a Destiny die that acts as a buffer limiting the Destiny cost.`,vibration:`purification (e.g. Protection from Poison).`},
+{id:"XV",name:"The Devil",impact:0,meaning:`temptation, illusions, voluntary servitude. Power at the cost of freedom.`,power:`once per short rest, roll a Destiny die in advance if you have one, and give it to anyone within 30 ft. It costs the recipient one Destiny Point; you collect this as a temporary Destiny Point, and your die is blocked until they use it or their next long rest ends. When used it acts as their own; your die then resets. An infernal Awakening may have strange consequences.`,vibration:`minor curse (e.g. Bane).`},
+{id:"XVI",name:"The Tower",impact:0,meaning:`shock, collapse, brutal revelation. Destruction to rebuild on truth.`,power:`once per long rest, as a reaction, sacrifice all your Destiny Points to transform any successful roll into a critical failure within 30 ft. Ignore the Chaos Effect.`,vibration:`controlled destruction (e.g. Thunderwave).`},
+{id:"XVII",name:"The Star",impact:2,meaning:`hope, inspiration, celestial guidance. A beacon in the night, trust in the future.`,power:`once per long rest, take the average (rounded up) of a Destiny die instead of rolling.`,vibration:`minor inspiration / healing (e.g. Healing Word, Guidance).`},
+{id:"XVIII",name:"The Moon",impact:2,meaning:`illusions, dreams, nocturnal mysteries. The unconscious mind, distorted perception.`,power:`except for a critical Fail / Success, the Destiny cost is reduced by 1.`,vibration:`illusion (e.g. Silent Image).`},
+{id:"XIX",name:"The Sun",impact:1,meaning:`success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.`,power:`once per short rest, add +2 to the result of a Destiny die without any additional cost.`,vibration:`minor light and healing (e.g. Light + small heal).`},
+{id:"XX",name:"Judgement",impact:0,meaning:`rebirth, higher calling, final reckoning. Weighing the past, offering redemption or judgment.`,power:`once per short rest, spend a Destiny die with no cost in Destiny Points to replace any d20 roll by a 10.`,vibration:`moral command (e.g. Command).`},
+{id:"XXI",name:"The World",impact:1,meaning:`accomplishment, wholeness, unity. The end of one cycle, opening to a new beginning.`,power:`after a long rest, restore one Destiny Point to group members excluding yourself. Roll a die: 1d4 for 1-4 people, 1d6 for 5-6, 1d8 for 7-8, 1d10 for 9-10, 1d12 for 11-12. You pay the price rolled.`,vibration:`versatile beneficial effect (small global buff).`}
+];
 const DDB_SKILLS = new Set(["Acrobatics","Animal Handling","Arcana","Athletics","Deception","History","Insight","Intimidation","Investigation","Medicine","Nature","Performance","Persuasion","Religion","Sleight of Hand","Stealth","Survival"]);
 // 26 skills — canonique Revisited (17 officiels conservés + 9 nouveaux ; Perception splittée)
 const SKILLS = [
@@ -304,25 +388,28 @@ TOOLS.forEach(([n,a,d])=>items.push({name:n, ability:a, desc:d, type:"tool", ddb
 
 // ---------- INIT UI ----------
 const cls = document.getElementById('cls');
-Object.keys(CLASS_BASE).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cls.appendChild(o);});
+Object.keys(CLASS_POOL).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cls.appendChild(o);});
 cls.value="Rogue";
 const raceSel = document.getElementById('race');
-Object.keys(RACE).forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;raceSel.appendChild(o);});
+Object.keys(SPECIES).forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;raceSel.appendChild(o);});
+const arcanaSel = document.getElementById('arcana');
+{const o=document.createElement('option');o.value="";o.textContent="— aucun —";arcanaSel.appendChild(o);}
+ARCANA.forEach(a=>{const o=document.createElement('option');o.value=a.id;o.textContent=`${a.id}. ${a.name} (+${a.impact})`;arcanaSel.appendChild(o);});
 
 function poolBreakdown(){
   const c = cls.value, lvl = +document.getElementById('lvl').value||1;
-  const base = CLASS_BASE[c];
-  const bonusLvls = LVL_BONUS[c]||LVL_BONUS._default;
-  const lvlPts = bonusLvls.filter(L=>L<=lvl).length*2;
-  const rdef = RACE[document.getElementById('race').value]||RACE["—"];
-  const raceLvl = rdef.create + rdef.levels.filter(L=>L<=lvl).length*2;
+  const base = CLASS_POOL[c]||12;
+  const tierPts = TIER_LEVELS.filter(L=>L<=lvl).length*2;
+  const bardPts = c==="Bard" ? Math.max(0,lvl-1) : 0;
+  const sp = SPECIES[document.getElementById('race').value]||SPECIES["—"];
+  const raceLvl = sp.skillCreate + sp.skillLevels.filter(L=>L<=lvl).length*2;
   const raceCustom = +document.getElementById('raceP').value||0;
   const race = raceLvl + raceCustom;
   const skilled = document.getElementById('skilled').checked?6:0;
   const feat = (+document.getElementById('featP').value||0)+skilled;
   const exp2 = +document.getElementById('bonus1').value||0;
-  const total = base+BACKGROUND+lvlPts+race+feat+exp2;
-  return {c,lvl,base,bg:BACKGROUND,lvlPts,race,feat,exp2,total,raceToolsOnly:rdef.toolsOnly,raceToolsPts:rdef.toolsOnly?raceLvl:0};
+  const total = base+tierPts+bardPts+race+feat+exp2;
+  return {c,lvl,base,tierPts,bardPts,race,feat,exp2,total};
 }
 
 function renderGrid(){
@@ -357,9 +444,6 @@ function recalc(){
   // si un perso DDB est importé, son pool (calcul multiclasse de ddb-load.mjs) fait foi
   const total = IMPORTED ? IMPORTED.pool.total : pb.total;
   const lvl = IMPORTED ? IMPORTED.pool.charLevel : pb.lvl;
-  const c = IMPORTED ? IMPORTED.pool.startingClass : pb.c;
-  const raceToolsOnly = IMPORTED ? IMPORTED.pool.raceToolsOnly : pb.raceToolsOnly;
-  const raceToolsPts = IMPORTED ? (IMPORTED.pool.raceToolsOnly?2:0) : pb.raceToolsPts;
   const left = total-spent;
   document.getElementById('vPool').textContent=total;
   document.getElementById('vSpent').textContent=spent;
@@ -370,20 +454,20 @@ function recalc(){
   fill.style.background = spent>total?"var(--bad)":"var(--good)";
   document.getElementById('poolBreak').innerHTML= IMPORTED
     ? `<b>${IMPORTED.name||"DDB"}</b> (importé) — Pool ${total} = ${IMPORTED.pool.breakdown}`
-    : `Pool = classe <b>${pb.base}</b> + background <b>${pb.bg}</b> + niveaux <b>${pb.lvlPts}</b> + race <b>${pb.race}</b> + feats <b>${pb.feat}</b> + bonus niv.1 <b>${pb.exp2}</b> = <b>${total}</b>`;
+    : `Pool = classe <b>${pb.base}</b> (background inclus) + niveaux <b>${pb.tierPts+pb.bardPts}</b> + espèce <b>${pb.race}</b> + feats <b>${pb.feat}</b> + bonus <b>${pb.exp2}</b> = <b>${total}</b>`;
   // warnings
   const W=[];
   if(left<0) W.push(["", `Dépassement du pool de ${-left} pt(s).`]);
   if(toolPts<1) W.push(["", `Règle FH : au moins 1 pt en tools à la création (actuel : ${toolPts}).`]);
-  if(raceToolsOnly && toolPts<raceToolsPts) W.push(["", `Nain : les ${raceToolsPts} pts d'espèce doivent aller en tools (actuel en tools : ${toolPts}).`]);
-  const expEarly = items.filter(it=>it.tier==="exp"&&lvl<4&&!SKILL_CLASSES.has(c));
-  if(expEarly.length) W.push(["", `Expertise au niv.${lvl} réservée Bard/Ranger/Rogue/Wizard — ${expEarly.length} ligne(s) hors règle.`]);
+  const expEarly = items.filter(it=>it.tier==="exp"&&lvl<4);
+  if(expEarly.length) W.push(["", `Expertise achetée réservée au niv.4+ (rework 2026-07-12) — ${expEarly.length} ligne(s) au niv.${lvl}.`]);
   const below = items.filter(belowLock);
   if(below.length) W.push(["", `${below.length} ligne(s) sous leur niveau de départ verrouillé.`]);
   if(!W.length) W.push(["ok","✓ Aucune alerte — répartition conforme."]);
   document.getElementById('warns').innerHTML=W.map(([k,t])=>`<div class="${k}">${t}</div>`).join("");
   document.getElementById('ruleNote').textContent =
-    "Canonique : 26 skills · bases INCLUANT le bonus (Barbarian/Fighter/Cleric/Artificier 6, Bard/Ranger 8, Rogue 10) → aucun bonus en plus · classes-skills Bard/Ranger/Rogue/Wizard (expertise création, +2 niv.3/5/7) · min. 1 tool + 1 langue. Races avec bonus : Humain et Demi-Elfe = +2 création puis +2 aux niv.3/6 ; Nain = +2 (tools). Toutes les autres espèces (Elfe inclus) = 0.";
+    "Canonique 2026-07-12 : pool niv.1 background inclus (Rogue 18 · Bard 16 · Druide/Moine/Rôdeur 14 · autres 12) · +2 aux niv.4/8 · Barde +1/niv dès le 2 · espèces à skills = Araag & Humain (+2 aux niv.1/3/6) · expertise achetée dès niv.4 pour tous · min. 1 tool, langues gratuites à la création.";
+  updateDestiny();
 }
 
 function refresh(){renderGrid();recalc();}
@@ -402,6 +486,10 @@ document.getElementById('grid').addEventListener('change',e=>{
 ["cls","lvl","race","raceP","skilled","featP","bonus1","langPts","charName"].forEach(id=>{
   document.getElementById(id).addEventListener('input',recalc);
   document.getElementById(id).addEventListener('change',recalc);
+});
+["arcana","featLucky","featDestinyTouched","destGlory","destOther"].forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener('input',updateDestiny); el.addEventListener('change',updateDestiny);
 });
 document.getElementById('search').addEventListener('input',renderGrid);
 document.getElementById('reset').addEventListener('click',()=>{items.forEach(it=>it.tier=it.lock);refresh();});
@@ -432,8 +520,11 @@ function applySeed(data){
   if(data.name) document.getElementById('charName').value = data.name.trim();
   // reflète le perso importé dans les champs (cosmétique — le pool vient du JSON DDB)
   if(data.pool?.charLevel) document.getElementById('lvl').value = data.pool.charLevel;
-  if(data.pool?.startingClass && CLASS_BASE[data.pool.startingClass])
+  if(data.pool?.startingClass && CLASS_POOL[data.pool.startingClass])
     document.getElementById('cls').value = data.pool.startingClass;
+  const spKey = speciesKeyFromName(data.race||"");
+  if(spKey) document.getElementById('race').value = spKey;
+  if(data.ddbId) document.getElementById('ddbId').value = data.ddbId;
   const um = (data.unmapped||[]).concat(missing.map(m=>`${m} → aucune ligne correspondante dans le builder`));
   document.getElementById('importNote').innerHTML =
     `✅ Importé : <b>${(data.name||"DDB").trim()}</b> — ${(data.classes||[]).map(x=>x.name+" "+x.level).join(" / ")} · pool DDB <b>${data.pool?.total}</b>, ${data.invested} investis → ${data.remaining} à placer.`
@@ -458,15 +549,11 @@ document.getElementById('clearImport').addEventListener('click',()=>{
 const FH_PROXY = "https://dice-mcp-production.up.railway.app";
 const buildSeedFromDDB = (function(){
   // Canon FH (identique à ddb-load.mjs) — scopé dans l'IIFE, aucune collision.
-  const CLASS_BASE = { Artificer:8, Barbarian:8, Bard:10, Cleric:8, Druid:8, Fighter:8,
-    Monk:8, Paladin:8, Ranger:10, Rogue:12, Sorcerer:8, Warlock:8, Wizard:8 };
-  const SKILL_CLASSES = new Set(["Bard","Ranger","Rogue","Wizard"]);
-  const lvlThresholds = cls => SKILL_CLASSES.has(cls) ? [3,4,5,7,8] : [4,8];
-  const BACKGROUND = 6;
+  const CLASS_POOL = { Artificer:12, Barbarian:12, Bard:16, Cleric:12, Druid:14, Fighter:12,
+    Monk:14, Paladin:12, Ranger:14, Rogue:18, Sorcerer:12, Warlock:12, Wizard:12 };
   const RACE_RULES = {
-    human:     { create:2, levels:[3,6], toolsOnly:false },
-    "half-elf":{ create:2, levels:[3,6], toolsOnly:false },
-    dwarf:     { create:2, levels:[],    toolsOnly:true  },
+    human: { create:2, levels:[3,6] },
+    araag: { create:2, levels:[3,6] },
   };
   const STAT = { 1:"STR", 2:"DEX", 3:"CON", 4:"INT", 5:"WIS", 6:"CHA" };
   const COST = { non:0, half:1, prof:2, exp:4 };
@@ -484,24 +571,26 @@ const buildSeedFromDDB = (function(){
 
   function raceRule(raceName){
     const n = (raceName||"").toLowerCase();
-    if (n.includes("half-elf") || n.includes("half elf")) return RACE_RULES["half-elf"];
-    if (n.includes("dwarf")) return RACE_RULES["dwarf"];
+    if (n.includes("araag")) return RACE_RULES["araag"];
     if (n.includes("human")) return RACE_RULES["human"];
-    return { create:0, levels:[], toolsOnly:false };
+    return { create:0, levels:[] };
   }
   function computePool(classes, raceName, feats){
     const start = classes.find(c => c.starting) || classes[0] || {name:"", level:0};
-    const base = CLASS_BASE[start.name] ?? 6;
+    const base = CLASS_POOL[start.name] ?? 12;
     const charLevel = classes.reduce((s,c)=>s+c.level,0);
     let levelBonus = 0;
-    for (const c of classes) levelBonus += lvlThresholds(c.name).filter(t => t <= c.level).length * 2;
+    for (const c of classes){
+      levelBonus += [4,8].filter(t => t <= c.level).length * 2;      // +2 universel par classe
+      if (c.name === "Bard") levelBonus += Math.max(0, c.level - 1); // Jack of All Trades -> +1/niv des 2
+    }
     const rr = raceRule(raceName);
     const race = rr.create + rr.levels.filter(t => t <= charLevel).length * 2;
     const feat = (feats||[]).some(f => /skilled/i.test(f)) ? 6 : 0;
-    const total = base + BACKGROUND + levelBonus + race + feat;
-    return { base, background:BACKGROUND, levelBonus, race, feat, total,
-      raceToolsOnly: rr.toolsOnly, startingClass:start.name, charLevel,
-      breakdown:`base ${base} (${start.name}) + background ${BACKGROUND} + niveaux ${levelBonus} + race ${race} + feats ${feat} = ${total}` };
+    const total = base + levelBonus + race + feat;
+    return { base, levelBonus, race, feat, total,
+      raceToolsOnly:false, startingClass:start.name, charLevel,
+      breakdown:`pool ${base} (${start.name}, background inclus) + niveaux ${levelBonus} + espèce ${race} + feats ${feat} = ${total}` };
   }
   const mTypeOf = tier => tier==="exp"?"expertise":tier==="half"?"half-proficiency":"proficiency";
   function parseCharacter(root){
@@ -568,10 +657,134 @@ document.getElementById('loadUrl').addEventListener('click', async ()=>{
       note.innerHTML = `⚠ ${root.message || "Fiche introuvable. Active le partage public sur D&D Beyond (Character Settings → Privacy → Public)."}`;
       return;
     }
-    applySeed(buildSeedFromDDB(root));
+    const seed = buildSeedFromDDB(root); seed.ddbId = +m[1];
+    document.getElementById('ddbId').value = m[1];
+    applySeed(seed);
   }catch(err){ note.innerHTML = "⚠ Erreur réseau : "+err.message; }
 });
 document.getElementById('ddbUrl').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('loadUrl').click(); } });
+
+// ---------- ARCANE / DESTINÉE / BACKGROUND (Session B, 2026-07-12) ----------
+const ABILS = ["STR","DEX","CON","INT","WIS","CHA"];
+function speciesKeyFromName(n){
+  n=(n||"").toLowerCase();
+  if(n.includes("half-orc")||n.includes("half orc")) return "Orc";
+  for(const k of Object.keys(SPECIES)){ if(k!=="—" && n.includes(k.toLowerCase())) return k; }
+  return "";
+}
+function currentArcana(){ const v=document.getElementById('arcana').value; return v==="" ? null : (ARCANA.find(a=>a.id===v)||null); }
+// Des de Destinee de DEPART = floor(score/2)-1 (plancher 0, plafond 5), en remplissant d4->d12.
+// score 4->d4 · 6->d4,d6 · 8->d4,d6,d8 · 10->+d10 · 12->les 5.
+function startingDice(score){
+  const n = Math.max(0, Math.min(5, Math.floor((score||0)/2) - 1));
+  return DESTINY_FEATS.diceFeats.slice(0, n);
+}
+function computeDestiny(){
+  const lvl = IMPORTED ? (IMPORTED.pool.charLevel||+document.getElementById('lvl').value||1) : (+document.getElementById('lvl').value||1);
+  const pb = Math.floor((lvl-1)/4)+2;
+  const spKey = document.getElementById('race').value;
+  const sp = SPECIES[spKey]||SPECIES["—"];
+  const spName = spKey==="—" ? "Espèce" : spKey;
+  const arc = currentArcana();
+  const lucky = document.getElementById('featLucky').checked?2:0;
+  const dTouched = document.getElementById('featDestinyTouched').checked?2:0;
+  const glory = +document.getElementById('destGlory').value||0;
+  const other = +document.getElementById('destOther').value||0;
+  const rows=[];
+  rows.push(["PB", pb]);
+  rows.push([spName, sp.destiny]);
+  if(arc) rows.push([`Arcana ${arc.id}`, arc.impact]);
+  if(lucky) rows.push(["Lucky", lucky]);
+  if(dTouched) rows.push(["Destiny Touched", dTouched]);
+  if(glory) rows.push([glory>0?"Glory":"Damnation", glory]);
+  if(other) rows.push(["Autres", other]);
+  const score = rows.reduce((s,r)=>s+r[1],0);
+  return {score, rows, arc, lvl, pb};
+}
+function destinyNotes(){
+  const {score, rows, arc} = computeDestiny();
+  let t = `DESTINY SCORE : ${score}\n`;
+  t += rows.map(r=>`${r[0]} : ${r[1]}`).join("\n");
+  if(arc){
+    t += `\n\n${arc.id}. ${arc.name}\n`;
+    t += `* Meaning — ${arc.meaning}\n`;
+    t += `* Destiny Impact — +${arc.impact}\n`;
+    t += `* Power — ${arc.power}\n`;
+    t += `* Vibration — ${arc.vibration}`;
+  }
+  return t;
+}
+function updateDestiny(){
+  const {rows, arc, score} = computeDestiny();
+  document.getElementById('destScore').textContent = score;
+  const dice = startingDice(score).map(f=>f.name.replace("Destiny Dice - ","")).join(", ") || "aucun";
+  document.getElementById('destBreak').innerHTML = rows.map(r=>`${r[0]} <b>${r[1]>=0?'+':''}${r[1]}</b>`).join(" · ")
+    + ` &nbsp;·&nbsp; <span style="color:var(--gold)">Dés de départ : ${dice}</span>`;
+  const box=document.getElementById('arcanaCard');
+  if(arc){
+    box.style.display='block';
+    box.innerHTML = `<div class="arc-title">${arc.id}. ${arc.name} <span class="arc-impact">Destiny Impact +${arc.impact}</span></div>`
+      + `<div class="arc-line"><b>Meaning</b> — ${arc.meaning}</div>`
+      + `<div class="arc-line"><b>Power</b> — ${arc.power}</div>`
+      + `<div class="arc-line"><b>Vibration</b> — ${arc.vibration}</div>`;
+  } else box.style.display='none';
+  document.getElementById('destNotes').value = destinyNotes();
+}
+function initAbilityBoosts(){
+  const wrap=document.getElementById('abBoosts');
+  wrap.innerHTML = ABILS.map(a=>`<div><label>${a}</label><select data-ab="${a}"><option value="0">—</option><option value="1">+1</option><option value="2">+2</option></select></div>`).join("");
+  wrap.addEventListener('change', updateAbilityBoosts);
+  updateAbilityBoosts();
+}
+function readAbilityBoosts(){
+  const picks={};
+  document.querySelectorAll('#abBoosts select').forEach(sel=>{ const v=+sel.value; if(v>0) picks[sel.dataset.ab]=v; });
+  return picks;
+}
+function abilityBoostFeatIds(){
+  const picks=readAbilityBoosts(); const ids=[];
+  for(const a of Object.keys(picks)) ids.push(ABILITY_BOOST_FEATS[a][picks[a]]);
+  return ids;
+}
+function updateAbilityBoosts(){
+  const picks=readAbilityBoosts();
+  const abils=Object.keys(picks); const vals=abils.map(a=>picks[a]);
+  const sum=vals.reduce((s,v)=>s+v,0);
+  const note=document.getElementById('abNote');
+  const twoPlusOne = abils.length===2 && vals.includes(2) && vals.includes(1);
+  const threeOnes = abils.length===3 && vals.every(v=>v===1);
+  if(abils.length===0){ note.className="note"; note.textContent="Choisis +2/+1 sur 2 caracs, ou +1/+1/+1 sur 3 caracs."; }
+  else if(twoPlusOne||threeOnes){ note.className="note ok-note"; note.textContent=`✓ ${abils.map(a=>a+' +'+picks[a]).join(', ')} → ${abils.length} feats Ability Boost (fh).`; }
+  else { note.className="note"; note.textContent=`⚠ Combinaison hors règle (total ${sum} sur ${abils.length} carac). Attendu : +2/+1 (2 caracs) ou +1/+1/+1 (3 caracs).`; }
+}
+function buildUnifiedJSON(){
+  const name=(document.getElementById('charName').value||"").trim();
+  const idField=+document.getElementById('ddbId').value||0;
+  const ddbId = idField || (IMPORTED&&IMPORTED.ddbId) || null;
+  const {score, rows, arc} = computeDestiny();
+  return {
+    character:{ ddbId, name },
+    destiny:{
+      score,
+      arcana: arc ? {id:arc.id,name:arc.name,impact:arc.impact,power:arc.power,vibration:arc.vibration,meaning:arc.meaning} : null,
+      breakdown: rows.map(r=>({label:r[0],value:r[1]})),
+      notesText: destinyNotes()
+    },
+    background:{
+      replaceWithBlank:true,
+      abilityBoostFeatIds: abilityBoostFeatIds(),
+      story: document.getElementById('story').value||""
+    },
+    skills: buildDDBPayload(),
+    destinyFeats:{ diceFeats:startingDice(score), score }
+  };
+}
+document.getElementById('dlUnified').addEventListener('click',()=>{
+  const data=buildUnifiedJSON();
+  const nm=((document.getElementById('charName').value||"perso").trim().replace(/[^\w-]+/g,"_"))||"perso";
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`${nm}.fh.json`; a.click(); URL.revokeObjectURL(a.href);
+});
 
 const STAT_ID={STR:1,DEX:2,CON:3,INT:4,WIS:5,CHA:6};
 const PROF_ID={non:1,half:2,prof:3,exp:4};   // DDB proficiencyLevel : 1=none 2=½ 3=prof 4=exp
@@ -622,6 +835,7 @@ document.getElementById('dlPayload').addEventListener('click',()=>{
   URL.revokeObjectURL(a.href);
 });
 
+initAbilityBoosts();
 refresh();
 </script>
 </body>
