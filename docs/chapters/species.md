@@ -27,7 +27,7 @@ The species of Fate's Hand 5+ — traits, Base Destiny and skill-point bumps. Th
   - **Elven Lineage** — Drow, High Elf or Wood Elf
   - **Fey Ancestry** — advantage against being charmed; magic can't put you to sleep
   - **Trance** — 4 hours of light meditation replace a long rest's sleep
-  - **Keen Senses** — proficiency in Perception
+  - **Keen Senses** — proficiency in Survival, Delve, or Vigilance
   - **Darkvision** — 60 ft
 - **Destiny chosen — elf:** +2 to your Destiny pool.
 
@@ -86,7 +86,7 @@ The **Elestu** are the demi-elves of Theymoron — a small but present minority,
 - **Abilities** *(canon de travail)*:
   - **Fey Ancestry** — advantage on saves against being Charmed; magic can't put you to sleep.
   - **Trance** — 4 hours of light meditation replace a long rest's sleep.
-  - **Keen Senses** — proficiency in Perception.
+  - **Keen Senses** — proficiency in Survival, Delve, or Vigilance.
   - **Darkvision** — 60 ft
   - **Fast Learner** — +2 skill points at levels 3 and 6 *(recurring — see [skill points](skills-and-tools.md))*
 
