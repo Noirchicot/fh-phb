@@ -32,16 +32,8 @@ A **max roll** on a Destiny Die (e.g. a 12 on a d12) is an **automatic Natural 2
 
 ### Species — Base Destiny
 
-| Species | Base | Species | Base |
-|---|---|---|---|
-| Halfling | 4 | Dragonborn | 2 |
-| Human | 3 | Gnome | 2 |
-| Elf | 1 | Goliath | 2 |
-| Dwarf | 1 | Tiefling | 2 |
-| Orc | 1 | Araag | 2 |
+**Base Destiny is 2 for every species.** A handful get a dedicated **Destiny-chosen power** on top of that flat 2 — currently **Elf** (+2 to the Destiny pool), **Human** (+1 Destiny Point/day) and **Halfling** (advantage on Chaos rolls). No other species has one yet.
 
-> *Younger species burn brighter in the tapestry; older lineages must work harder to reignite their spark.*
->
 > *Full traits for each species: see [Species](species.md). The **Eluzi** (an ascended state, not a starting species) keep the Base Destiny of what they were. Older species (Aasimar, Half-Elf, Half-Orc, Eladrin, Firbolg): see the archive.*
 
 ---

@@ -217,20 +217,22 @@
 const CLASS_POOL = {Artificer:12,Barbarian:12,Bard:16,Cleric:12,Druid:14,Fighter:12,Monk:14,Paladin:12,Ranger:14,Rogue:18,Sorcerer:12,Warlock:12,Wizard:12};
 // +2 universel aux niv. 4 et 8 (toutes classes). Barde : Jack of All Trades -> +1 pt/niv des le 2 (en plus).
 const TIER_LEVELS = [4,8];
-// Especes : `destiny` = base pour le Destiny Score (table du Mechanic, TOUTES les especes) ;
-// `skillCreate`/`skillLevels` = points de skills — seuls Araag & Humain en donnent (+2 @1/3/6).
+// Especes : `destiny` = base pour le Destiny Score (table du Mechanic, flat 2 pour TOUTES les especes) ;
+// `skillCreate`/`skillLevels` = points de skills recurrents (Fast Learner) — seuls Araag & Elestu en donnent (+2 @3/6, rien a la creation).
 const SPECIES = {
   "—":          {destiny:0, skillCreate:0, skillLevels:[]},
-  "Human":      {destiny:3, skillCreate:2, skillLevels:[3,6]},
-  "Araag":      {destiny:2, skillCreate:2, skillLevels:[3,6]},
-  "Halfling":   {destiny:4, skillCreate:0, skillLevels:[]},
+  "Human":      {destiny:2, skillCreate:0, skillLevels:[]},
+  "Araag":      {destiny:2, skillCreate:0, skillLevels:[3,6]},
+  "Halfling":   {destiny:2, skillCreate:0, skillLevels:[]},
   "Dragonborn": {destiny:2, skillCreate:0, skillLevels:[]},
   "Gnome":      {destiny:2, skillCreate:0, skillLevels:[]},
   "Goliath":    {destiny:2, skillCreate:0, skillLevels:[]},
   "Tiefling":   {destiny:2, skillCreate:0, skillLevels:[]},
-  "Elf":        {destiny:1, skillCreate:0, skillLevels:[]},
-  "Dwarf":      {destiny:1, skillCreate:0, skillLevels:[]},
-  "Orc":        {destiny:1, skillCreate:0, skillLevels:[]}
+  "Elf":        {destiny:2, skillCreate:0, skillLevels:[]},
+  "Dwarf":      {destiny:2, skillCreate:0, skillLevels:[]},
+  "Orc":        {destiny:2, skillCreate:0, skillLevels:[]},
+  "Loroka":     {destiny:2, skillCreate:0, skillLevels:[]},
+  "Elestu":     {destiny:2, skillCreate:0, skillLevels:[3,6]}
 };
 // Feats Ability Boost (fh) — IDs DDB (Roadmap 2026-07-12) : +1 / +2 par carac.
 const ABILITY_BOOST_FEATS = {
@@ -466,7 +468,7 @@ function recalc(){
   if(!W.length) W.push(["ok","✓ Aucune alerte — répartition conforme."]);
   document.getElementById('warns').innerHTML=W.map(([k,t])=>`<div class="${k}">${t}</div>`).join("");
   document.getElementById('ruleNote').textContent =
-    "Canonique 2026-07-12 : pool niv.1 background inclus (Rogue 18 · Bard 16 · Druide/Moine/Rôdeur 14 · autres 12) · +2 aux niv.4/8 · Barde +1/niv dès le 2 · espèces à skills = Araag & Humain (+2 aux niv.1/3/6) · expertise achetée dès niv.4 pour tous · min. 1 tool, langues gratuites à la création.";
+    "Canonique 2026-07-13 : pool niv.1 background inclus (Rogue 18 · Bard 16 · Druide/Moine/Rôdeur 14 · autres 12) · +2 aux niv.4/8 · Barde +1/niv dès le 2 · espèces à skills récurrents = Araag & Elestu (+2 aux niv.3/6, rien à la création) · expertise achetée dès niv.4 pour tous · min. 1 tool, langues gratuites à la création.";
   updateDestiny();
 }
 
@@ -552,8 +554,8 @@ const buildSeedFromDDB = (function(){
   const CLASS_POOL = { Artificer:12, Barbarian:12, Bard:16, Cleric:12, Druid:14, Fighter:12,
     Monk:14, Paladin:12, Ranger:14, Rogue:18, Sorcerer:12, Warlock:12, Wizard:12 };
   const RACE_RULES = {
-    human: { create:2, levels:[3,6] },
-    araag: { create:2, levels:[3,6] },
+    araag: { create:0, levels:[3,6] },
+    elestu: { create:0, levels:[3,6] },
   };
   const STAT = { 1:"STR", 2:"DEX", 3:"CON", 4:"INT", 5:"WIS", 6:"CHA" };
   const COST = { non:0, half:1, prof:2, exp:4 };
@@ -572,7 +574,7 @@ const buildSeedFromDDB = (function(){
   function raceRule(raceName){
     const n = (raceName||"").toLowerCase();
     if (n.includes("araag")) return RACE_RULES["araag"];
-    if (n.includes("human")) return RACE_RULES["human"];
+    if (n.includes("elestu")) return RACE_RULES["elestu"];
     return { create:0, levels:[] };
   }
   function computePool(classes, raceName, feats){
@@ -668,7 +670,10 @@ document.getElementById('ddbUrl').addEventListener('keydown', e=>{ if(e.key==='E
 const ABILS = ["STR","DEX","CON","INT","WIS","CHA"];
 function speciesKeyFromName(n){
   n=(n||"").toLowerCase();
-  if(n.includes("half-orc")||n.includes("half orc")) return "Orc";
+  if(n.includes("half-orc")||n.includes("half orc")) return "Loroka";
+  if(n.includes("half-elf")||n.includes("half elf")) return "Elestu";
+  if(n.includes("loroka")) return "Loroka";
+  if(n.includes("elestu")) return "Elestu";
   for(const k of Object.keys(SPECIES)){ if(k!=="—" && n.includes(k.toLowerCase())) return k; }
   return "";
 }
