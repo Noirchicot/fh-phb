@@ -1,18 +1,22 @@
 # Species
 
+![The peoples of Nymedes](../assets/img/species-banner.jpg){ .fh-illus .fh-banner }
+
 ## The Species of Nymedes
 
-Nymedes carries the familiar peoples of the SRD — and three of its own, born of the world's strange history: the **[Araags](#araag)**, fiend-marked children of the Harvest; the **[Loroka](#loroka)**, the demi-orc old blood of the Theymoron highlands; and the **[Elestu](#elestu)**, the rare demi-elves born of elven unions with humans or Araags.
+Nymedes carries the familiar peoples of fantasy — and three of its own, born of the world's strange history: the **[Araags](#araag)**, fiend-marked children of the Harvest; the **[Loroka](#loroka)**, the demi-orc old blood of the Theymoron highlands; and the **[Elestu](#elestu)**, the rare demi-elves born of elven unions with humans or Araags.
+
+Make no mistake about who owns this continent: the **Araags** do, millions strong under their Empire's shadow, with the **Loroka** beside them as the great labouring people of the highlands. Everyone else lives in the margins. **Dwarves** hold their mountain seams — some free, some in chains under the giants. **Humans** are a young, loud handful, a century out of the White Void and already everywhere. **Halflings** farm their quiet valleys and outlast everyone. The rest are rarities: **dragonborn** a striking minority in the free cities, **orcs** and **tieflings** scattered and stared at, **goliaths** a hunted tribe in the far forests, **gnomes** hidden so well most people doubt they exist — and **elves**, with their **Elestu** children, so few that meeting one is a story you tell for years.
 
 Species grant no ability modifiers — ability score increases come from your **background**. Every species speaks two languages (Common plus one of your choice) and keeps its standard speed.
 
 ## Araag
 
-<div class="fh-portrait" data-species="araag"></div>
+![Araag](../assets/img/species-araag.jpg){ .fh-portrait }
 
 Marked by the Harvest that unmade the last free humans, the Araags were once mistaken for tieflings — a resemblance that never sat easy with either people. They are common as dust within the Empire that shares their name, and stared at everywhere else: soul-touched, unmistakably other, and never quite trusted to explain why.
 
-### Abilities
+**Abilities**
 
 - **Skillful** — proficiency in one skill of your choice
 - **Fast Learner** — +2 [skill points](skills-and-tools.md) at levels 3 and 6
@@ -25,11 +29,11 @@ Marked by the Harvest that unmade the last free humans, the Araags were once mis
 
 ## [Dragonborn](https://www.dndbeyond.com/species/1751435-dragonborn)
 
-<div class="fh-portrait" data-species="dragonborn"></div>
+![Dragonborn](../assets/img/species-dragonborn.jpg){ .fh-portrait }
 
 Dragon-blooded wanderers whose scales mark them from birth as heirs to something older than any empire on Nymedes. Most trace their line to no living dragon at all — only to the breath that still wakes in their chest when they are cornered.
 
-### Abilities
+**Abilities**
 
 - **Draconic Ancestry** — choose a dragon type
 - **Breath Weapon**
@@ -42,11 +46,11 @@ Dragon-blooded wanderers whose scales mark them from birth as heirs to something
 
 ## [Dwarf](https://www.dndbeyond.com/species/1751436-dwarf)
 
-<div class="fh-portrait" data-species="dwarf"></div>
+![Dwarf](../assets/img/species-dwarf.jpg){ .fh-portrait }
 
 Stone-patient and clannish, the dwarves of Nymedes measure history in seams of ore rather than reigns of kings. Their halls survived the ages the surface did not; what they found down there, they rarely discuss with outsiders.
 
-### Abilities
+**Abilities**
 
 - **Dwarven Resilience** — poison resistance, advantage vs Poisoned
 - **Dwarven Toughness** — +1 HP per level
@@ -58,11 +62,11 @@ Stone-patient and clannish, the dwarves of Nymedes measure history in seams of o
 
 ## Elestu
 
-<div class="fh-portrait" data-species="elestu"></div>
+![Elestu](../assets/img/species-elestu.jpg){ .fh-portrait }
 
 Children of scattered pairings between elves and humans — or elves and Araags — the Elestu are what an elven union actually bears: too mortal for the elves, too strange for everyone else. In Theymoron they gravitate to the university quarter and the Moonkeeper circles, and built their own quiet place between both worlds. Most end up bards, scholars, or both at once.
 
-### Abilities
+**Abilities**
 
 - **Fey Ancestry** — advantage against being charmed; magic can't put you to sleep
 - **Trance** — 4 hours of light meditation replace a long rest's sleep
@@ -75,11 +79,11 @@ Children of scattered pairings between elves and humans — or elves and Araags 
 
 ## [Elf](https://www.dndbeyond.com/species/1751437-elf)
 
-<div class="fh-portrait" data-species="elf"></div>
+![Elf](../assets/img/species-elf.jpg){ .fh-portrait }
 
 Elves are truly immortal — and vanishingly rare, for elves cannot conceive with one another. Only a union with a human or an Araag quickens an elven womb, and what is born is Elestu, not elf. The oldest among them eventually withdraw from the world: some slip into centuries-long sleep, others into a quiet madness no healer's art can touch. A dying elf's soulgem is said to be the finest a soulforger will ever hold — old traditions name the elves the children of a sleeping god, and whisper that such a gem still carries a splinter of his memory, sealed away since the First Age. Scholars, as ever, disagree.
 
-### Abilities (SRD 5.2)
+**Abilities**
 
 - **Elven Lineage** — Drow, High Elf or Wood Elf
 - **Fey Ancestry** — advantage against being charmed; magic can't put you to sleep
@@ -92,11 +96,11 @@ Elves are truly immortal — and vanishingly rare, for elves cannot conceive wit
 
 ## [Gnome](https://www.dndbeyond.com/species/1751438-gnome)
 
-<div class="fh-portrait" data-species="gnome"></div>
+![Gnome](../assets/img/species-gnome.jpg){ .fh-portrait }
 
-Curious, quick-fingered and immune to boredom, gnomes treat the world as a mechanism that simply hasn't been taken apart yet. Where a settlement has a workshop, a printing press or an argument about magical theory, a gnome is usually at the middle of it.
+Most people on Nymedes have never seen a gnome, and plenty insist nobody has. The Hoddon live hidden beneath the great weeping willows of the deep forests, a dozen to a family-hold, and they are the last keepers of the old human technology the Araags banned and burned: construct-craft, and the grey orb a Hoddon sets in place of an eye at adulthood, opening onto a silent matrix of stored knowledge no book has ever held. Their constructs tend the fields and guard the willows. A gnome on the road is a rare thing — quiet, watchful, and carrying more forbidden knowledge behind that grey eye than any imperial archive.
 
-### Abilities
+**Abilities**
 
 - **Gnomish Cunning** — advantage on INT/WIS/CHA saves
 - **Gnomish Lineage** — Forest / Rock
@@ -107,11 +111,11 @@ Curious, quick-fingered and immune to boredom, gnomes treat the world as a mecha
 
 ## [Goliath](https://www.dndbeyond.com/species/1751439-goliath)
 
-<div class="fh-portrait" data-species="goliath"></div>
+![Goliath](../assets/img/species-goliath.jpg){ .fh-portrait }
 
-Giant-blooded highlanders bred by altitudes that kill lesser travelers, goliaths count worth in deeds carried, loads borne and storms outlasted. They descend to the lowlands as caravan guards and siege-breakers — and go home when the air gets too thick.
+The goliaths of Nymedes are a people without a hearth. In the giant-ruled forests of the far north, the fire giants of Jaar hunt them for slaves and the hill giant hordes burn what little they build — so the Ghost Tribe sleeps in dug-out caches and forgotten ruins, moves like fog between the trees, and carries its history as scars and murmured songs rather than stone. Stone giant prophets are said to guide them; the forest's spirits sometimes hide their tracks. Every goliath met abroad is a survivor of that long hunt, and carries its patience — and its dream of one day building a house in the light.
 
-### Abilities
+**Abilities**
 
 - **Giant Ancestry** — choose a boon
 - **Large Form** *(level 5)*
@@ -123,11 +127,11 @@ Giant-blooded highlanders bred by altitudes that kill lesser travelers, goliaths
 
 ## [Halfling](https://www.dndbeyond.com/species/1751440-halfling)
 
-<div class="fh-portrait" data-species="halfling"></div>
+![Halfling](../assets/img/species-halfling.jpg){ .fh-portrait }
 
 Small, unhurried, and hard to rattle — halfling communities tend to outlast the empires around them, quietly farming the same valley for a thousand years while dynasties rise and fall on the other side of the ridge. Luck, they'll tell you, is just what patience looks like from the outside.
 
-### Abilities
+**Abilities**
 
 - **Brave**
 - **Halfling Nimbleness**
@@ -139,11 +143,11 @@ Small, unhurried, and hard to rattle — halfling communities tend to outlast th
 
 ## Human
 
-<div class="fh-portrait" data-species="human"></div>
+![Human](../assets/img/species-human.jpg){ .fh-portrait }
 
 Humanity vanished from Nymedes at the end of the First Age — and a century ago, ten thousand souls walked back out of the White Void, refusing to vanish a second time. Their cities rose fast and argue loudly: Theymoron's terraces, Dreideldorf's workshops, Atalante's harbors. Wherever Nymedes still has room to grow, a human got there first and started arguing about who owns it.
 
-### Abilities (SRD 5.2)
+**Abilities**
 
 - **Skillful** — proficiency in one skill of your choice
 - **Versatile** — gain an Origin feat of your choice
@@ -153,11 +157,11 @@ Humanity vanished from Nymedes at the end of the First Age — and a century ago
 
 ## Loroka
 
-<div class="fh-portrait" data-species="loroka"></div>
+![Loroka](../assets/img/species-loroka.jpg){ .fh-portrait }
 
 The old blood of the Theymoron highlands — farmers, drovers and terrace-workers who worked these valleys long before the Marche had a name. Once the plurality of a conquered people, drawn heavily from the Sira low caste of the Empire, they are now the plurality of a free city: soldiers when the Front calls for it, but merchants, roofers and rice-growers the rest of the year.
 
-### Abilities
+**Abilities**
 
 - **Relentless Endurance** — once per long rest, when reduced to 0 HP but not killed outright, drop to 1 HP instead
 - **Versatile** — gain an Origin feat of your choice
@@ -168,11 +172,11 @@ The old blood of the Theymoron highlands — farmers, drovers and terrace-worker
 
 ## [Orc](https://www.dndbeyond.com/species/1751442-orc)
 
-<div class="fh-portrait" data-species="orc"></div>
+![Orc](../assets/img/species-orc.jpg){ .fh-portrait }
 
 The full-blooded kin of the Loroka, orcs endure where the land gives nothing back — hard plains, cold passes, borders nobody else wants. Their reputation for ferocity is mostly other people's word for stamina: an orc simply does not stop first.
 
-### Abilities
+**Abilities**
 
 - **Adrenaline Rush**
 - **Relentless Endurance**
@@ -183,11 +187,11 @@ The full-blooded kin of the Loroka, orcs endure where the land gives nothing bac
 
 ## Tiefling
 
-<div class="fh-portrait" data-species="tiefling"></div>
+![Tiefling](../assets/img/species-tiefling.jpg){ .fh-portrait }
 
 Fiend-touched by pact, curse or ancestry, tieflings are forever being mistaken for Araags — and correcting people, wearily, that their mark is older and came by a different road. Most learn young to be twice as charming as anyone expects, because they'll be trusted half as much.
 
-### Abilities
+**Abilities**
 
 - **Fiendish Legacy** — Abyssal / Chthonic / Infernal
 - **Otherworldly Presence** — Thaumaturgy
