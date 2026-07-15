@@ -225,7 +225,7 @@ const SPECIES = {
   "Araag":      {destiny:2, skillCreate:0, skillLevels:[3,6]},
   "Halfling":   {destiny:2, skillCreate:0, skillLevels:[]},
   "Dragonborn": {destiny:2, skillCreate:0, skillLevels:[]},
-  "Gnome":      {destiny:2, skillCreate:0, skillLevels:[]},
+  "Hoddon":     {destiny:2, skillCreate:0, skillLevels:[]},
   "Goliath":    {destiny:2, skillCreate:0, skillLevels:[]},
   "Tiefling":   {destiny:2, skillCreate:0, skillLevels:[]},
   "Elf":        {destiny:2, skillCreate:0, skillLevels:[]},
@@ -674,6 +674,7 @@ function speciesKeyFromName(n){
   if(n.includes("half-elf")||n.includes("half elf")) return "Elestu";
   if(n.includes("loroka")) return "Loroka";
   if(n.includes("elestu")) return "Elestu";
+  if(n.includes("gnome")) return "Hoddon";
   for(const k of Object.keys(SPECIES)){ if(k!=="—" && n.includes(k.toLowerCase())) return k; }
   return "";
 }

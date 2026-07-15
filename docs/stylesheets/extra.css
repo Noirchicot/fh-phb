@@ -428,14 +428,3 @@ body.fh-home-page .md-header { display: none; }
 .md-typeset img.fh-banner {
   margin: .4rem 0 1.4rem;
 }
-
-/* Destiny inserts (info admonitions) — steel-blue, per the approved mockup */
-.md-typeset .admonition.info {
-  border-color: #5b769c !important;
-  background: rgba(61, 79, 107, .10) !important;
-}
-.md-typeset .info > .admonition-title {
-  color: #8fa9cf !important;
-  background: rgba(91, 118, 156, .14) !important;
-}
-.md-typeset .info > .admonition-title::after { color: #8fa9cf; }
