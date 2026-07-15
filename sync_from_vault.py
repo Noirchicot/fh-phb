@@ -87,6 +87,21 @@ CHAPTER_IMAGES = {
         ("## Part 2 — The Crimson Shroud",
          "![The Crimson Shroud](../assets/img/world-crimson-shroud.jpg){ .fh-illus }"),
     ],
+    # species portraits — 4:5 placeholders until Eric drops the real images
+    "species.md": [
+        ("## Araag",        '<div class="fh-portrait" data-species="araag"></div>'),
+        ("## [Dragonborn",  '<div class="fh-portrait" data-species="dragonborn"></div>'),
+        ("## [Dwarf",       '<div class="fh-portrait" data-species="dwarf"></div>'),
+        ("## Elestu",       '<div class="fh-portrait" data-species="elestu"></div>'),
+        ("## [Elf",         '<div class="fh-portrait" data-species="elf"></div>'),
+        ("## [Gnome",       '<div class="fh-portrait" data-species="gnome"></div>'),
+        ("## [Goliath",     '<div class="fh-portrait" data-species="goliath"></div>'),
+        ("## [Halfling",    '<div class="fh-portrait" data-species="halfling"></div>'),
+        ("## Human",        '<div class="fh-portrait" data-species="human"></div>'),
+        ("## Loroka",       '<div class="fh-portrait" data-species="loroka"></div>'),
+        ("## [Orc",         '<div class="fh-portrait" data-species="orc"></div>'),
+        ("## Tiefling",     '<div class="fh-portrait" data-species="tiefling"></div>'),
+    ],
     "ability-scores.md": [
         ("## The 3d6 × 10 method",
          '!!! tip "Try it live"\n'

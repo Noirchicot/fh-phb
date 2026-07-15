@@ -411,3 +411,33 @@ body.fh-home-page .md-header { display: none; }
   font-size: 1.02rem; font-weight: 700; letter-spacing: .06em;
   color: #f0dfae; text-shadow: 0 1px 4px rgba(0,0,0,.9);
 }
+
+/* --- species portraits (4:5) — placeholders until the art lands --- */
+.md-typeset .fh-portrait {
+  float: right;
+  width: min(220px, 42%);
+  aspect-ratio: 4 / 5;
+  margin: .3rem 0 .9rem 1.1rem;
+  border-radius: 8px;
+  border: 1px dashed var(--fh-rule);
+  background:
+    repeating-linear-gradient(45deg, transparent 0 12px, rgba(128,128,128,.05) 12px 24px);
+}
+.md-typeset img.fh-portrait {
+  border-style: solid;
+  object-fit: cover;
+  height: auto;
+  box-shadow: 0 6px 22px rgba(0,0,0,.28);
+}
+.md-typeset h2 { clear: both; }
+
+/* Destiny inserts (info admonitions) — steel-blue, per the approved mockup */
+.md-typeset .admonition.info {
+  border-color: #5b769c !important;
+  background: rgba(61, 79, 107, .10) !important;
+}
+.md-typeset .info > .admonition-title {
+  color: #8fa9cf !important;
+  background: rgba(91, 118, 156, .14) !important;
+}
+.md-typeset .info > .admonition-title::after { color: #8fa9cf; }
