@@ -43,7 +43,13 @@
   /* ===== app frame ===== */
   .app{max-width:1440px;margin:0 auto;padding:16px 18px 90px;display:flex;gap:16px;align-items:flex-start}
   .side{width:330px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow-y:auto;padding-right:2px;transition:width .25s ease}
-  .app[data-step="skills"] .side{width:720px}
+  .app[data-step="skills"] .side{width:720px;overflow:hidden}
+  .app[data-step="skills"] .side > *{flex-shrink:0}
+  .app[data-step="skills"] #panel{flex:1 1 auto;min-height:0;overflow-y:auto}
+  .skill-budget{position:sticky;top:-14px;z-index:5;background:var(--parchment);margin:-6px -8px 10px;padding:8px 10px;border-bottom:2px solid var(--rule);font:13px var(--sans);display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;box-shadow:0 4px 8px -6px rgba(0,0,0,.4)}
+  .skill-budget b{font-size:16px}
+  .skill-budget .sb-left{margin-left:auto;font-family:var(--caps);letter-spacing:.06em;font-size:15px}
+  .feat-card.dis{opacity:.45;pointer-events:none}
   .sheet-col{flex:1;min-width:0}
   .card{background:var(--parchment);border:1px solid var(--leather-dark);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.45);padding:14px 16px}
   .card > h2{margin:0 0 10px;font-family:var(--caps);font-size:19px;color:var(--oxblood);letter-spacing:.05em;border-bottom:2px solid var(--rule);padding-bottom:4px;font-weight:400}
@@ -318,23 +324,36 @@
         <p class="note" style="color:var(--muted)">Bard gains +1 point per level from level 2 (Jack of All Trades). Every class gains +2 points at levels 4 and 8.</p>
       </div>
 
-      <!-- STEP 5 · BACKGROUND -->
+      <!-- STEP 5 · BACKGROUND & ORIGIN -->
       <div class="pane" data-step="background">
-        <p class="lead">Your sheet's background is replaced by <b>Blank Background (fh)</b>. Pick its ability bonuses here: <b>+2/+1</b> on two abilities, or <b>+1/+1/+1</b> on three.</p>
+        <p class="lead">Your sheet's background is replaced by <b>Blank Background (fh)</b>. It gives your <b>ability bonuses</b>, your <b>Origin feat</b> and your <b>story</b>.</p>
+        <label>Ability bonuses — <b>+2/+1</b> on two abilities, or <b>+1/+1/+1</b> on three</label>
         <div id="abBoosts"></div>
         <div class="note" id="abNote"></div>
+        <div class="fld" style="margin-top:14px"><label>Origin feat</label>
+          <div class="featpick" id="featPick"></div>
+          <p class="note" style="color:var(--muted)">Lucky (2024) does not exist in Fate's Hand — it is replaced by <b>Destiny Touched (fh)</b>. Destiny Touched and Skilled feed directly into character creation (Destiny score / skill points).</p>
+        </div>
+        <div class="fld" id="featPick2Wrap" style="display:none;margin-top:10px"><label>Species bonus — extra Origin feat</label>
+          <div class="featpick" id="featPick2"></div>
+          <p class="note" style="color:var(--muted)" id="featPick2Note"></p>
+        </div>
+        <div class="fld" style="margin-top:10px"><label>Other Origin feat (free text — the GM sets it up on D&amp;D Beyond)</label>
+          <input id="originOther" type="text" placeholder="e.g. Alert, Magic Initiate…" autocomplete="off"></div>
         <div class="fld" style="margin-top:14px"><label>Backstory</label>
           <textarea id="story" placeholder="Tell the character's story…"></textarea></div>
       </div>
 
       <!-- STEP 6 · DESTINY -->
       <div class="pane" data-step="destiny">
-        <p class="lead">Draw your Major Arcana, then choose your Origin feat.</p>
-        <div class="fld"><label>Major Arcana (drawn at creation)</label><select id="arcana"></select></div>
-        <div id="arcanaCard" class="arc-detail" style="display:none"></div>
-        <div class="fld" style="margin-top:12px"><label>Origin feat</label>
-          <div class="featpick" id="featPick"></div>
+        <p class="lead">Destiny is a random draw among the 22 Major Arcana — let fate decide, or set the card you drew at the table.</p>
+        <div class="fld"><label>Major Arcana (drawn at creation)</label>
+          <div class="row2">
+            <select id="arcana" style="flex:1"></select>
+            <button class="btn gold small" id="arcRandom" style="flex:0 0 auto" title="True random draw, 1 in 22">🎲 Draw</button>
+          </div>
         </div>
+        <div id="arcanaCard" class="arc-detail" style="display:none"></div>
         <div class="row2">
           <div class="fld"><label>Glory / Damnation</label><input id="destGlory" type="number" value="0"></div>
           <div class="fld"><label>Other (item / boon)</label><input id="destOther" type="number" value="0"></div>
@@ -345,6 +364,7 @@
 
       <!-- STEP 7 · SKILLS -->
       <div class="pane" data-step="skills">
+        <div class="skill-budget" id="skillBudget"></div>
         <details class="reminders" style="margin-bottom:10px">
           <summary>Rule reminders</summary>
           <div>• <b>Starting floor</b> = what you already own (species, imported sheet) — you can never invest below it. <b>Invested tier</b> = where your points go now.</div>
@@ -475,6 +495,7 @@
 <select id="cls" style="display:none"></select>
 <select id="race" style="display:none"></select>
 <select id="originFeat" style="display:none"></select>
+<select id="originFeat2" style="display:none"></select>
 
 <script>
 // ================= DATA — canonical pools, REWORK 2026-07-12 (background included) =================
@@ -504,18 +525,18 @@ const SPECIES_IMG = {
 // Species trait lines — verbatim from the canonical "D&D 5+ Races & Species" vault doc.
 const SPECIES_TRAITS = {
   "—": [],
-  "Human": ["Skillful — proficiency in one skill of your choice", "Versatile — gain an Origin feat of your choice", "Destiny — Base 2 · human chosen: +1 Destiny Point per day"],
+  "Human": ["Skillful — proficiency in one skill of your choice", "Versatile — +2 skill points at creation (ability tweak) and an extra Origin feat of your choice", "Destiny — Base 2 · human chosen: +1 Destiny Point per day"],
   "Araag": ["Skillful — proficiency in one skill of your choice", "Fast Learner — +2 skill points at levels 3 and 6", "Soulforged Affinity — Body Forge a Soulgem into your own flesh at no HP cost", "Necrotic Resistance", "Darkvision 60 ft", "Destiny — Base 2"],
   "Halfling": ["Brave — advantage on saves against being Frightened", "Halfling Nimbleness — move through the space of any larger creature", "Luck — reroll any 1 on a d20 test", "Naturally Stealthy — hide behind anything bigger than you, including people", "Destiny — Base 2 · halfling chosen: advantage on Chaos rolls"],
   "Dragonborn": ["Draconic Ancestry — choose a dragon type; sets your breath and resistance", "Breath Weapon", "Damage Resistance to your ancestry's type", "Draconic Flight — at level 5, spectral wings for short flights", "Darkvision 60 ft", "Destiny — Base 2"],
   "Hoddon": ["Hoddon Cunning — advantage on Intelligence, Wisdom and Charisma saves", "Hoddon Lineage — Forest or Rock; a knack of small illusions or small machines", "Darkvision 60 ft", "Destiny — Base 2"],
   "Goliath": ["Giant Ancestry — choose a giant's boon, a once-per-turn combat knack", "Large Form — at level 5, grow Large for a minute", "Powerful Build — advantage against grapples; carry like a larger creature", "Speed 35 ft", "Destiny — Base 2"],
   "Tiefling": ["Fiendish Legacy — Abyssal, Chthonic or Infernal; a resistance and a thread of spells", "Otherworldly Presence — know the Thaumaturgy cantrip", "Darkvision 60 ft", "Destiny — Base 2"],
-  "Elf": ["Elven Lineage — Drow, High Elf or Wood Elf; each its own thread of magic", "Fey Ancestry — advantage against being charmed; can't be magically put to sleep", "Trance — 4 hrs light meditation replaces a long rest's sleep", "Keen Senses — proficiency in Survival, Delve, or Vigilance (auto-granted ½ Vigilance/Survival)", "Darkvision 60 ft", "Destiny — Base 2 · elf chosen: +2 to Destiny pool"],
+  "Elf": ["Elven Lineage — Drow, High Elf or Wood Elf; each its own thread of magic", "Fey Ancestry — advantage against being charmed; can't be magically put to sleep", "Trance — 4 hrs light meditation replaces a long rest's sleep", "Keen Senses — proficiency in Survival, Delve, or Vigilance (ability tweak: ½ Vigilance/Survival pre-invested — 2 pts counted in your pool)", "Darkvision 60 ft", "Destiny — Base 2 · elf chosen: +2 to Destiny pool"],
   "Dwarf": ["Dwarven Resilience — poison resistance, advantage against being Poisoned", "Dwarven Toughness — +1 HP per level", "Stonecunning — Tremorsense 60 ft on stone, a few times/day", "Darkvision 120 ft", "Destiny — Base 2"],
   "Orc": ["Adrenaline Rush — Dash as a bonus action, gain temporary HP", "Relentless Endurance — once per long rest, drop to 1 HP instead of 0", "Darkvision 120 ft", "Destiny — Base 2"],
-  "Loroka": ["Relentless Endurance — once per long rest, drop to 1 HP instead of 0", "Versatile — gain an Origin feat of your choice", "Darkvision 120 ft", "Destiny — Base 2"],
-  "Elestu": ["Fey Ancestry — advantage against being charmed; can't be magically put to sleep", "Trance — 4 hrs light meditation replaces a long rest's sleep", "Keen Senses — proficiency in Survival, Delve, or Vigilance (auto-granted ½ Vigilance/Survival)", "Fast Learner — +2 skill points at levels 3 and 6", "Darkvision 60 ft", "Destiny — Base 2"]
+  "Loroka": ["Relentless Endurance — once per long rest, drop to 1 HP instead of 0", "Versatile — gain an extra Origin feat of your choice", "Darkvision 120 ft", "Destiny — Base 2"],
+  "Elestu": ["Fey Ancestry — advantage against being charmed; can't be magically put to sleep", "Trance — 4 hrs light meditation replaces a long rest's sleep", "Keen Senses — proficiency in Survival, Delve, or Vigilance (ability tweak: ½ Vigilance/Survival pre-invested — 2 pts counted in your pool)", "Fast Learner — +2 skill points at levels 3 and 6", "Darkvision 60 ft", "Destiny — Base 2"]
 };
 // Ability Boost (fh) feats — DDB IDs (2026-07-12 roadmap): +1 / +2 per ability.
 const ABILITY_BOOST_FEATS = {
@@ -532,10 +553,21 @@ const DESTINY_FEATS = {
     {name:"Destiny Dice - d12", id:1927928}
   ]
 };
+// Lucky (2024) does NOT exist in FH — replaced by Destiny Touched (fh). Old saves with
+// origin "lucky" fall back to destinyTouched on load.
 const ORIGIN_FEATS = {
-  lucky:          {label:"Lucky", id:1789160, destiny:2, skillPts:0, desc:"+2 Destiny · Luck points, as the 2024 rules"},
-  destinyTouched: {label:"Destiny Touched (fh)", id:2383104, destiny:2, skillPts:0, desc:"+2 Destiny · fate leans toward you"},
+  destinyTouched: {label:"Destiny Touched (fh)", id:2383104, destiny:2, skillPts:0, desc:"+2 Destiny · fate leans toward you (replaces Lucky)"},
   skilled:        {label:"Skilled (fh)", id:2383105, destiny:0, skillPts:6, desc:"+6 skill points to spend in the pool"}
+};
+// Species perks around feats & points (Eric 2026-07-17):
+// - extraOrigin : the species grants a SECOND Origin feat slot (Human, Loroka).
+// - tweakPts    : "ability tweak" species feat adding points to the creation pool,
+//                 NOT an Origin feat (Human "Versatile" = +2).
+// - Keen Senses (Elf/Elestu) : 2 points auto-invested (½ Vigilance + ½ Survival) that
+//   now COUNT in the pool total (species +2) and start as spent — no longer "outside the pool".
+const SPECIES_PERKS = {
+  Human:  { extraOrigin:true, tweakPts:2, tweakName:"Versatile" },
+  Loroka: { extraOrigin:true },
 };
 const KEEN_SENSES_SPECIES = new Set(["Elf","Elestu"]);
 const KEEN_SENSES_SKILLS = ["Vigilance","Survival"];
@@ -692,8 +724,11 @@ Object.keys(CLASS_POOL).forEach(c=>{const o=document.createElement('option');o.v
 $('cls').value="Rogue";
 Object.keys(SPECIES).forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;$('race').appendChild(o);});
 $('race').value="—";
-{const o=document.createElement('option');o.value="";o.textContent="—";$('originFeat').appendChild(o);}
-Object.keys(ORIGIN_FEATS).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;$('originFeat').appendChild(o);});
+["originFeat","originFeat2"].forEach(id=>{
+  const s=$(id);
+  {const o=document.createElement('option');o.value="";o.textContent="—";s.appendChild(o);}
+  Object.keys(ORIGIN_FEATS).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;s.appendChild(o);});
+});
 const arcanaSel = $('arcana');
 {const o=document.createElement('option');o.value="";o.textContent="— not drawn yet —";arcanaSel.appendChild(o);}
 ARCANA.forEach(a=>{const o=document.createElement('option');o.value=a.id;o.textContent=`${a.id}. ${a.name} (+${a.impact})`;arcanaSel.appendChild(o);});
@@ -713,11 +748,14 @@ const STEP_DEFS = [
     done:()=>visited.has("class")||!!IMPORTED,
     hint:()=>$('cls').value},
   {id:"background",n:5, name:"Background",
-    done:()=>boostComboValid() && overCapAbilities().length===0,
+    done:()=>boostComboValid() && overCapAbilities().length===0 && !!$('originFeat').value && (!speciesExtraOrigin() || !!$('originFeat2').value),
     warn:()=>overCapAbilities().length>0,
-    hint:()=>{const over=overCapAbilities(); if(over.length) return "cap 18!"; const p=readAbilityBoosts();const k=Object.keys(p);return k.length?k.map(a=>a+"+"+p[a]).join(" "):"";}},
+    hint:()=>{const over=overCapAbilities(); if(over.length) return "cap 18!";
+      if(!$('originFeat').value) return boostComboValid()?"origin feat!":"";
+      if(speciesExtraOrigin() && !$('originFeat2').value) return "2nd origin feat!";
+      const p=readAbilityBoosts();const k=Object.keys(p);return k.length?k.map(a=>a+"+"+p[a]).join(" "):"";}},
   {id:"destiny",   n:6, name:"Destiny",
-    done:()=>!!currentArcana() && !!$('originFeat').value,
+    done:()=>!!currentArcana(),
     hint:()=>{const a=currentArcana();return a? a.name : "";}},
   {id:"skills",    n:7, name:"Skills & tools",
     done:()=>{const {left}=spentLeft(); return left===0 && !items.some(belowLock);},
@@ -763,21 +801,26 @@ function poolBreakdown(){
   const base = CLASS_POOL[c]||12;
   const tierPts = TIER_LEVELS.filter(L=>L<=lvl).length*2;
   const bardPts = c==="Bard" ? Math.max(0,lvl-1) : 0;
-  const sp = SPECIES[$('race').value]||SPECIES["—"];
+  const spKey = $('race').value;
+  const sp = SPECIES[spKey]||SPECIES["—"];
+  const perks = SPECIES_PERKS[spKey]||{};
   const raceLvl = sp.skillCreate + sp.skillLevels.filter(L=>L<=lvl).length*2;
-  const race = raceLvl + (+$('raceP').value||0);
-  const originKey = $('originFeat').value;
-  const skilled = (originKey && ORIGIN_FEATS[originKey]) ? ORIGIN_FEATS[originKey].skillPts : 0;
+  const tweak = perks.tweakPts||0;                                   // Human Versatile +2
+  const keen = KEEN_SENSES_SPECIES.has(spKey) ? 2 : 0;               // Keen Senses pre-invested, counted
+  const race = raceLvl + tweak + keen + (+$('raceP').value||0);
+  const skilled = ["originFeat","originFeat2"].reduce((s,id)=>{
+    const k=$(id).value; return s + ((k && ORIGIN_FEATS[k]) ? ORIGIN_FEATS[k].skillPts : 0); },0);
   const feat = (+$('featP').value||0)+skilled;
   const exp2 = +$('bonus1').value||0;
   const total = base+tierPts+bardPts+race+feat+exp2;
-  return {c,lvl,base,tierPts,bardPts,race,feat,exp2,total};
+  return {c,lvl,base,tierPts,bardPts,race,tweak,keen,feat,exp2,total};
 }
 function spentLeft(){
   const pb=poolBreakdown();
   let spent=0, toolPts=0;
   items.forEach(it=>{
-    spent += Math.max(0, COST[it.tier]-COST[it.autoTier||"non"]);
+    // Keen Senses auto-½ counts as SPENT (the +2 species points cover it) — no discount.
+    spent += COST[it.tier];
     if(it.type==="tool") toolPts+=COST[it.tier];
   });
   spent += +$('langPts').value||0;
@@ -803,7 +846,7 @@ function renderGrid(){
       <td><div class="tiers">
         ${["non","half","prof","exp"].map(t=>`<button data-t="${t}" data-i="${i}" class="${it.tier===t?"on":""}">${TIER_LABEL[t]}</button>`).join("")}
       </div></td>
-      <td style="text-align:right"><span class="cost">${Math.max(0,COST[it.tier]-COST[it.autoTier||"non"])}</span>${it.autoTier&&it.autoTier!=="non"?`<span class="auto-tag" title="Automatic species floor, outside the pool">auto ${TIER_LABEL[it.autoTier]}</span>`:""}</td>`;
+      <td style="text-align:right"><span class="cost">${COST[it.tier]}</span>${it.autoTier&&it.autoTier!=="non"?`<span class="auto-tag" title="Species floor, pre-invested — its cost is counted and covered by the species points">auto ${TIER_LABEL[it.autoTier]}</span>`:""}</td>`;
     g.appendChild(tr);
   });
 }
@@ -843,6 +886,10 @@ function recalc(){
   $('poolBreak').innerHTML= IMPORTED
     ? `<b>${IMPORTED.name||"DDB"}</b> (imported) — pool ${total} = ${IMPORTED.pool.breakdown}`
     : `Pool = class ${pb.base} (background included) + levels ${pb.tierPts+pb.bardPts} + species ${pb.race} + feats ${pb.feat} + bonus ${pb.exp2} = ${total}`;
+  // Sticky budget strip above the skills grid — live countdown, detailed sources.
+  $('skillBudget').innerHTML = IMPORTED
+    ? `<span>pool <b>${total}</b> (imported)</span><span>spent <b>${spent}</b></span><span class="sb-left" style="color:${left<0?"var(--bad)":left===0?"var(--good)":"var(--ink)"}">${left<0?`${-left} OVER!`:left===0?"BALANCED ✓":`${left} LEFT`}</span>`
+    : `<span>class <b>${pb.base+pb.tierPts+pb.bardPts}</b></span><span>species <b>${pb.race}</b></span><span>feats <b>${pb.feat+pb.exp2}</b></span><span>= total <b>${total}</b></span><span>spent <b>${spent}</b></span><span class="sb-left" style="color:${left<0?"var(--bad)":left===0?"var(--good)":"var(--ink)"}">${left<0?`${-left} OVER!`:left===0?"BALANCED ✓":`${left} LEFT`}</span>`;
   const W=computeWarnings();
   const bw=$('bmWarn');
   if(!W.length){ bw.className="bm-warn ok"; bw.textContent="✓ Allocation valid — all points placed."; }
@@ -975,7 +1022,7 @@ function renderSpecies(){
 $('spGrid').addEventListener('click',e=>{
   const b=e.target.closest('.sp-card'); if(!b) return;
   $('race').value=b.dataset.sp;
-  renderSpecies(); applyKeenSenses(); updatePreview(); scheduleAutosave();
+  renderSpecies(); renderFeatPick(); applyKeenSenses(); updatePreview(); scheduleAutosave();
 });
 function renderClasses(){
   const cur=$('cls').value;
@@ -1069,15 +1116,15 @@ function computeDestiny(){
   const sp = SPECIES[spKey]||SPECIES["—"];
   const spName = spKey==="—" ? "Species" : spKey;
   const arc = currentArcana();
-  const originKey = $('originFeat').value;
-  const origin = originKey ? ORIGIN_FEATS[originKey] : null;
+  const origins = ["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean)
+    .map(k=>ORIGIN_FEATS[k]).filter(Boolean);
   const glory = +$('destGlory').value||0;
   const other = +$('destOther').value||0;
   const rows=[];
   rows.push(["PB", pb]);
   rows.push([spName, sp.destiny]);
   if(arc) rows.push([`Arcana ${arc.id}`, arc.impact]);
-  if(origin && origin.destiny) rows.push([origin.label, origin.destiny]);
+  origins.forEach(o=>{ if(o.destiny) rows.push([o.label, o.destiny]); });
   if(glory) rows.push([glory>0?"Glory":"Damnation", glory]);
   if(other) rows.push(["Other", other]);
   const score = rows.reduce((s,r)=>s+r[1],0);
@@ -1112,15 +1159,39 @@ function updateDestiny(){
   } else box.style.display='none';
   updatePreview();
 }
+function speciesExtraOrigin(){ return !!(SPECIES_PERKS[$('race').value]||{}).extraOrigin; }
 function renderFeatPick(){
-  const cur=$('originFeat').value;
-  $('featPick').innerHTML = Object.entries(ORIGIN_FEATS).map(([k,f])=>
-    `<div class="feat-card${cur===k?" sel":""}" data-feat="${k}"><div class="fn">${f.label}</div><div class="fd">${f.desc}</div></div>`).join("");
+  const cur=$('originFeat').value, cur2=$('originFeat2').value;
+  const cards=(sel,other)=>Object.entries(ORIGIN_FEATS).map(([k,f])=>
+    `<div class="feat-card${sel===k?" sel":""}${other===k&&sel!==k?" dis":""}" data-feat="${k}"><div class="fn">${f.label}</div><div class="fd">${f.desc}</div></div>`).join("");
+  $('featPick').innerHTML = cards(cur,cur2);
+  const extra=speciesExtraOrigin();
+  $('featPick2Wrap').style.display = extra ? "block" : "none";
+  if(!extra && cur2){ $('originFeat2').value=""; }
+  if(extra){
+    $('featPick2').innerHTML = cards(cur2,cur);
+    $('featPick2Note').textContent = `${$('race').value} (Versatile) grants a second Origin feat — the same feat can't be taken twice.`;
+  }
+}
+function pickOrigin(selId, otherId, key){
+  if($(otherId).value===key) return;                         // no duplicate feat across the two slots
+  $(selId).value = ($(selId).value===key) ? "" : key;
+  renderFeatPick(); recalc(); scheduleAutosave();
 }
 $('featPick').addEventListener('click',e=>{
   const c=e.target.closest('.feat-card'); if(!c) return;
-  $('originFeat').value = ($('originFeat').value===c.dataset.feat) ? "" : c.dataset.feat;
-  renderFeatPick(); recalc(); scheduleAutosave();
+  pickOrigin('originFeat','originFeat2',c.dataset.feat);
+});
+$('featPick2').addEventListener('click',e=>{
+  const c=e.target.closest('.feat-card'); if(!c) return;
+  pickOrigin('originFeat2','originFeat',c.dataset.feat);
+});
+$('originOther').addEventListener('input',()=>{updatePreview();scheduleAutosave();});
+// Random Arcana draw — true RNG, 1 in 22.
+$('arcRandom').addEventListener('click',()=>{
+  const u=new Uint32Array(1); crypto.getRandomValues(u);
+  arcanaSel.value = ARCANA[u[0]%ARCANA.length].id;
+  updateDestiny(); renderSteps(); scheduleAutosave();
 });
 arcanaSel.addEventListener('change',()=>{updateDestiny();renderSteps();scheduleAutosave();});
 ["destGlory","destOther"].forEach(id=>{ $(id).addEventListener('input',()=>{updateDestiny();scheduleAutosave();}); });
@@ -1203,8 +1274,12 @@ function buildUnifiedJSON(){
   const idField=+$('ddbId').value||0;
   const ddbId = idField || (IMPORTED&&IMPORTED.ddbId) || null;
   const {score, rows, arc} = computeDestiny();
+  const originFeats = ["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean)
+    .map(k=>({key:k, label:ORIGIN_FEATS[k].label, id:ORIGIN_FEATS[k].id}));
   return {
-    character:{ ddbId, name, campaign:($('campaign').value||"").trim(), abilityScores: finalAbilityScores() },
+    character:{ ddbId, name, campaign:($('campaign').value||"").trim(),
+      abilityScores: finalAbilityScores(),
+      abilityScoresRaw: baseAbilityScores() },   // RAW (no boosts) — what ddb-apply writes to DDB
     destiny:{
       score,
       arcana: arc ? {id:arc.id,name:arc.name,impact:arc.impact,power:arc.power,vibration:arc.vibration,meaning:arc.meaning} : null,
@@ -1214,6 +1289,8 @@ function buildUnifiedJSON(){
     background:{
       replaceWithBlank:true,
       abilityBoostFeatIds: abilityBoostFeatIds(),
+      originFeats,                                          // 1-2 slots (species may grant a 2nd)
+      otherOriginFeat: ($('originOther').value||"").trim(), // free text — GM sets it up manually
       story: $('story').value||""
     },
     skills: buildDDBPayload(),
@@ -1223,7 +1300,8 @@ function buildUnifiedJSON(){
     destinyFeats:{
       diceFeats: DESTINY_FEATS.diceFeats,   // ALWAYS all 5 — ddb-apply applies them unconditionally
       score,
-      originFeatId: (function(){ const k=$('originFeat').value; return k ? ORIGIN_FEATS[k].id : null; })()
+      originFeatId: originFeats.length ? originFeats[0].id : null,   // legacy single-slot field
+      originFeatIds: originFeats.map(f=>f.id)                        // v3.1 — all slots
     },
     meta:{ builder:"fh-builder-v3", savedAt:new Date().toISOString(), species:$('race').value,
            class:$('cls').value, level:+$('lvl').value||1 },
@@ -1242,6 +1320,7 @@ function serializeState(){
     langPts:$('langPts').value, bonus1:$('bonus1').value,
     ab:{mode:AB_STATE.mode, set:AB_STATE.set, assign:AB_STATE.assign, manual:AB_STATE.manual},
     boosts:readAbilityBoosts(), arcana:arcanaSel.value, origin:$('originFeat').value,
+    origin2:$('originFeat2').value, originOther:$('originOther').value,
     glory:$('destGlory').value, other:$('destOther').value, story:$('story').value,
     tiers
   };
@@ -1263,7 +1342,11 @@ function applyState(s){
   }
   setAbilityBoosts(s.boosts||{});
   arcanaSel.value = s.arcana||"";
-  $('originFeat').value = s.origin||"";
+  // "lucky" no longer exists in FH — old saves fall back to Destiny Touched (same +2 Destiny).
+  const mapOrigin = k => ORIGIN_FEATS[k] ? k : (k==="lucky" ? "destinyTouched" : "");
+  $('originFeat').value = mapOrigin(s.origin||"");
+  $('originFeat2').value = mapOrigin(s.origin2||"");
+  $('originOther').value = s.originOther||"";
   $('destGlory').value=s.glory||0; $('destOther').value=s.other||0;
   $('story').value=s.story||"";
   items.forEach(it=>{
@@ -1329,7 +1412,11 @@ function renderSaveRecap(){
   const scores=finalAbilityScores();
   const {left,total}=spentLeft();
   const arc=currentArcana();
-  const origin=$('originFeat').value?ORIGIN_FEATS[$('originFeat').value]:null;
+  const origins=["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean).map(k=>ORIGIN_FEATS[k]);
+  const originOK = origins.length>=1 && (!speciesExtraOrigin() || origins.length>=2);
+  const originTxt = (origins.map(o=>o.label).join(" + ")||"no origin feat")
+    + (($('originOther').value||"").trim()?` + ${$('originOther').value.trim()} (GM)`:"")
+    + (speciesExtraOrigin()&&origins.length<2?" — species 2nd slot empty!":"");
   const lines=[
     [!!$('charName').value.trim(), "Name", $('charName').value.trim()||"missing"],
     [!!$('campaign').value.trim(), "Campaign", $('campaign').value.trim()||"none — the GM will ask", "meh"],
@@ -1340,7 +1427,8 @@ function renderSaveRecap(){
       overCapAbilities().length ? `${overCapAbilities().join(", ")} over the creation cap of 18!`
       : boostComboValid()? Object.entries(readAbilityBoosts()).map(([a,v])=>a+" +"+v).join(", ") : "invalid or missing",
       overCapAbilities().length?"ko":undefined],
-    [!!arc && !!origin, "Destiny", (arc?arc.name:"no arcana")+" · "+(origin?origin.label:"no origin feat")],
+    [originOK, "Origin feat(s)", originTxt],
+    [!!arc, "Destiny", arc?arc.name:"no arcana drawn"],
     [left===0 && !items.some(belowLock), "Skill points", left===0?`all ${total} placed ✓`:(left<0?`${-left} over budget!`:`${left} left unspent`), left<0?"ko":"meh"]
   ];
   $('saveRecap').innerHTML = lines.map(([ok,label,txt,soft])=>{
@@ -1356,6 +1444,8 @@ $('saveChar').addEventListener('click', async ()=>{
   if(left<0){ alert(`Over budget by ${-left} point(s) — fix the skills before saving.`); setStep("skills"); return; }
   if(left>0 && !confirm(`${left} skill point(s) are still unspent — a silent leftover is how a skill ends up at zero.\n\nSave anyway?`)) return;
   if(!$('charName').value.trim()){ alert("Give your character a name first."); setStep("identity"); return; }
+  if(!$('originFeat').value){ alert("No Origin feat chosen — the background grants one (step 5)."); setStep("background"); return; }
+  if(speciesExtraOrigin() && !$('originFeat2').value && !confirm(`${$('race').value} grants a SECOND Origin feat (Versatile) — it is still empty.\n\nSave anyway?`)) { setStep("background"); return; }
   const data=buildUnifiedJSON();
   const code=await encodeBuild(data);
   $('buildCode').textContent=code;
@@ -1424,8 +1514,8 @@ function updatePreview(){
   const boosts = readAbilityBoosts();
   const overCapSet = new Set(overCapAbilities());
   const {total, spent, left} = spentLeft();
-  const originKey = $('originFeat').value;
-  const origin = originKey ? ORIGIN_FEATS[originKey] : null;
+  const pvOrigins = ["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean).map(k=>ORIGIN_FEATS[k]);
+  const pvOriginOther = ($('originOther').value||"").trim();
   const {score:destScore, arc} = computeDestiny();
   const dice = startingDice(destScore).map(f=>f.name.replace("Destiny Dice - ",""));
 
@@ -1457,7 +1547,10 @@ function updatePreview(){
     : `<ul>${traits.map(t=>`<li>${tHtml(t)}</li>`).join("")}</ul>`;
 
   const featLines = [];
-  featLines.push(origin ? `<b>Origin feat</b> — ${origin.label} <span class="pv-skill-cols abt">(${origin.desc})</span>` : `<b>Origin feat</b> — <span class="pv-empty">none chosen (step 6)</span>`);
+  if(pvOrigins.length){
+    pvOrigins.forEach((o,n)=>featLines.push(`<b>Origin feat${n>0?" (species bonus)":""}</b> — ${o.label} <span class="pv-skill-cols abt">(${o.desc})</span>`));
+  } else featLines.push(`<b>Origin feat</b> — <span class="pv-empty">none chosen (step 5)</span>`);
+  if(pvOriginOther) featLines.push(`<b>Other Origin feat</b> — ${pvOriginOther.replace(/</g,"&lt;")} <span class="pv-skill-cols abt">(set up by the GM on D&amp;D Beyond)</span>`);
   const abKeys = Object.keys(boosts);
   featLines.push(abKeys.length ? `<b>Ability Boost (fh)</b> — ${abKeys.map(a=>a+" +"+boosts[a]).join(", ")}` : `<b>Ability Boost (fh)</b> — <span class="pv-empty">none chosen (step 5)</span>`);
   featLines.push(dice.length ? `<b>Destiny dice</b> — ${dice.join(", ")}` : `<b>Destiny dice</b> — <span class="pv-empty">none (score too low)</span>`);
