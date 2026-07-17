@@ -1,0 +1,380 @@
+{
+  "character": {
+    "ddbId": null,
+    "name": "Shuko Akalad",
+    "campaign": "The Guild Path",
+    "abilityScores": {
+      "STR": 13,
+      "DEX": 17,
+      "CON": 14,
+      "INT": 13,
+      "WIS": 13,
+      "CHA": 12
+    },
+    "abilityScoresRaw": {
+      "STR": 13,
+      "DEX": 15,
+      "CON": 13,
+      "INT": 13,
+      "WIS": 13,
+      "CHA": 12
+    }
+  },
+  "destiny": {
+    "score": 5,
+    "arcana": {
+      "id": "XII",
+      "name": "The Hanged Man",
+      "impact": 1,
+      "power": "if you invoke Chaos on a natural 1, you do not lose but immediately regain 2 Destiny Points and just roll 1d6 on the Chaos table.",
+      "vibration": "neutralization (e.g. targeted Slow).",
+      "meaning": "sacrifice, letting go, new perspective. Renouncing to gain understanding."
+    },
+    "breakdown": [
+      {
+        "label": "PB",
+        "value": 2
+      },
+      {
+        "label": "Araag",
+        "value": 2
+      },
+      {
+        "label": "Arcana XII",
+        "value": 1
+      }
+    ],
+    "notesText": "DESTINY SCORE : 5\nPB : 2\nAraag : 2\nArcana XII : 1\n\nXII. The Hanged Man\n* Meaning — sacrifice, letting go, new perspective. Renouncing to gain understanding.\n* Destiny Impact — +1\n* Power — if you invoke Chaos on a natural 1, you do not lose but immediately regain 2 Destiny Points and just roll 1d6 on the Chaos table.\n* Vibration — neutralization (e.g. targeted Slow)."
+  },
+  "background": {
+    "replaceWithBlank": true,
+    "abilityBoostFeatIds": [
+      2379986,
+      2379983
+    ],
+    "originFeats": [
+      {
+        "key": "skilled",
+        "label": "Skilled (fh)",
+        "id": 2383105
+      }
+    ],
+    "otherOriginFeat": "",
+    "story": ""
+  },
+  "skills": [
+    {
+      "name": "Academics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Appraise",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Delve",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Hunting",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Leadership",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Might",
+      "type": 1,
+      "statId": 1,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Streetwise",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tactics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Tool - Thieves'",
+      "type": 1,
+      "statId": 2,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Tool - Veh. (Air)",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Vigilance",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    }
+  ],
+  "nativeSkillTiers": {
+    "Acrobatics": "proficient",
+    "Athletics": "proficient",
+    "Deception": "proficient",
+    "Investigation": "proficient",
+    "Sleight of Hand": "proficient",
+    "Stealth": "proficient",
+    "Survival": "proficient"
+  },
+  "destinyFeats": {
+    "diceFeats": [
+      {
+        "name": "Destiny Dice - d4",
+        "id": 1927834
+      },
+      {
+        "name": "Destiny Dice - d6",
+        "id": 1927924
+      },
+      {
+        "name": "Destiny Dice - d8",
+        "id": 1927926
+      },
+      {
+        "name": "Destiny Dice - d10",
+        "id": 1927927
+      },
+      {
+        "name": "Destiny Dice - d12",
+        "id": 1927928
+      }
+    ],
+    "score": 5,
+    "originFeatId": 2383105,
+    "originFeatIds": [
+      2383105
+    ]
+  },
+  "meta": {
+    "builder": "fh-builder-v3",
+    "savedAt": "2026-07-17T23:44:13.803Z",
+    "species": "Araag",
+    "class": "Rogue",
+    "level": 1
+  },
+  "builderState": {
+    "v": 3,
+    "name": "Shuko Akalad",
+    "campaign": "The Guild Path",
+    "cls": "Rogue",
+    "race": "Araag",
+    "lvl": 1,
+    "ddbId": "",
+    "raceP": "0",
+    "featP": "0",
+    "langPts": "0",
+    "bonus1": "0",
+    "ab": {
+      "mode": "roll",
+      "set": {
+        "rolls": [
+          {
+            "dice": [
+              1,
+              3,
+              3
+            ],
+            "total": 7
+          },
+          {
+            "dice": [
+              5,
+              3,
+              5
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              5,
+              4,
+              6
+            ],
+            "total": 15
+          },
+          {
+            "dice": [
+              1,
+              6,
+              6
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              6,
+              1,
+              3
+            ],
+            "total": 10
+          },
+          {
+            "dice": [
+              4,
+              4,
+              1
+            ],
+            "total": 9
+          },
+          {
+            "dice": [
+              6,
+              1,
+              6
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              5,
+              3,
+              5
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              4,
+              6,
+              2
+            ],
+            "total": 12
+          },
+          {
+            "dice": [
+              3,
+              6,
+              3
+            ],
+            "total": 12
+          }
+        ],
+        "keptIdx": [
+          2,
+          1,
+          3,
+          6,
+          7,
+          8
+        ],
+        "kept": [
+          15,
+          13,
+          13,
+          13,
+          13,
+          12
+        ],
+        "rerolls": 3
+      },
+      "assign": {
+        "STR": 2,
+        "DEX": 0,
+        "CON": 1,
+        "INT": 3,
+        "WIS": 4,
+        "CHA": 5
+      },
+      "manual": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    "boosts": {
+      "DEX": 2,
+      "CON": 1
+    },
+    "arcana": "XII",
+    "origin": "skilled",
+    "origin2": "",
+    "originOther": "",
+    "glory": "0",
+    "other": "0",
+    "story": "",
+    "tiers": {
+      "Academics": {
+        "t": "half",
+        "l": "non"
+      },
+      "Acrobatics": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Athletics": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Deception": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Delve": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Hunting": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Investigation": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Sleight of Hand": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Stealth": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Survival": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tactics": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Vigilance": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Thieves'": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Veh. (Air)": {
+        "t": "half",
+        "l": "non"
+      }
+    }
+  }
+}
