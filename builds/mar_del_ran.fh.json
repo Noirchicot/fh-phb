@@ -1,0 +1,351 @@
+{
+  "character": {
+    "ddbId": null,
+    "name": "Mar del Ran",
+    "campaign": "The Guild Path",
+    "abilityScores": {
+      "STR": 11,
+      "DEX": 15,
+      "CON": 12,
+      "INT": 14,
+      "WIS": 14,
+      "CHA": 11
+    }
+  },
+  "destiny": {
+    "score": 7,
+    "arcana": {
+      "id": "VII",
+      "name": "The Chariot",
+      "impact": 1,
+      "power": "once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.",
+      "vibration": "acceleration (Longstrider, Expeditious Retreat).",
+      "meaning": "victory, determination, triumph. Active control, moving toward success."
+    },
+    "breakdown": [
+      {
+        "label": "PB",
+        "value": 2
+      },
+      {
+        "label": "Elestu",
+        "value": 2
+      },
+      {
+        "label": "Arcana VII",
+        "value": 1
+      },
+      {
+        "label": "Destiny Touched (fh)",
+        "value": 2
+      }
+    ],
+    "notesText": "DESTINY SCORE : 7\nPB : 2\nElestu : 2\nArcana VII : 1\nDestiny Touched (fh) : 2\n\nVII. The Chariot\n* Meaning — victory, determination, triumph. Active control, moving toward success.\n* Destiny Impact — +1\n* Power — once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.\n* Vibration — acceleration (Longstrider, Expeditious Retreat)."
+  },
+  "background": {
+    "replaceWithBlank": true,
+    "abilityBoostFeatIds": [
+      2379983,
+      2379987,
+      2379990
+    ],
+    "story": "Mar comes from the lower quarter of Theymoron"
+  },
+  "skills": [
+    {
+      "name": "Academics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Appraise",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Delve",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Hunting",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Leadership",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Might",
+      "type": 1,
+      "statId": 1,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Streetwise",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Tactics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tool - Forgery Kit",
+      "type": 1,
+      "statId": 2,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Tool - Thieves'",
+      "type": 1,
+      "statId": 2,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Vigilance",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 2
+    }
+  ],
+  "nativeSkillTiers": {
+    "Survival": "half"
+  },
+  "destinyFeats": {
+    "diceFeats": [
+      {
+        "name": "Destiny Dice - d4",
+        "id": 1927834
+      },
+      {
+        "name": "Destiny Dice - d6",
+        "id": 1927924
+      },
+      {
+        "name": "Destiny Dice - d8",
+        "id": 1927926
+      },
+      {
+        "name": "Destiny Dice - d10",
+        "id": 1927927
+      },
+      {
+        "name": "Destiny Dice - d12",
+        "id": 1927928
+      }
+    ],
+    "score": 7,
+    "originFeatId": 2383104
+  },
+  "meta": {
+    "builder": "fh-builder-v3",
+    "savedAt": "2026-07-17T02:05:31.810Z",
+    "species": "Elestu",
+    "class": "Rogue",
+    "level": 1
+  },
+  "builderState": {
+    "v": 3,
+    "name": "Mar del Ran",
+    "campaign": "The Guild Path",
+    "cls": "Rogue",
+    "race": "Elestu",
+    "lvl": 1,
+    "ddbId": "",
+    "raceP": "0",
+    "featP": "0",
+    "langPts": "0",
+    "bonus1": "0",
+    "ab": {
+      "mode": "roll",
+      "set": {
+        "rolls": [
+          {
+            "dice": [
+              3,
+              4,
+              4
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              1,
+              5,
+              1
+            ],
+            "total": 7
+          },
+          {
+            "dice": [
+              3,
+              5,
+              3
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              1,
+              5,
+              1
+            ],
+            "total": 7
+          },
+          {
+            "dice": [
+              5,
+              5,
+              5
+            ],
+            "total": 15
+          },
+          {
+            "dice": [
+              3,
+              5,
+              5
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              5,
+              2,
+              3
+            ],
+            "total": 10
+          },
+          {
+            "dice": [
+              6,
+              3,
+              4
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              1,
+              6,
+              4
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              2,
+              1,
+              5
+            ],
+            "total": 8
+          }
+        ],
+        "keptIdx": [
+          4,
+          5,
+          7,
+          0,
+          2,
+          8
+        ],
+        "kept": [
+          15,
+          13,
+          13,
+          11,
+          11,
+          11
+        ],
+        "rerolls": 0
+      },
+      "assign": {
+        "STR": 5,
+        "DEX": 0,
+        "CON": 4,
+        "INT": 1,
+        "WIS": 2,
+        "CHA": 3
+      },
+      "manual": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    "boosts": {
+      "CON": 1,
+      "INT": 1,
+      "WIS": 1
+    },
+    "arcana": "VII",
+    "origin": "destinyTouched",
+    "glory": "0",
+    "other": "0",
+    "story": "Mar comes from the lower quarter of Theymoron",
+    "tiers": {
+      "Academics": {
+        "t": "half",
+        "l": "non"
+      },
+      "Appraise": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Athletics": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Deception": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Delve": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Hunting": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Investigation": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Streetwise": {
+        "t": "half",
+        "l": "non"
+      },
+      "Survival": {
+        "t": "prof",
+        "l": "half"
+      },
+      "Vigilance": {
+        "t": "half",
+        "l": "half"
+      },
+      "Tool - Forgery Kit": {
+        "t": "half",
+        "l": "non"
+      },
+      "Tool - Thieves'": {
+        "t": "prof",
+        "l": "non"
+      }
+    }
+  }
+}
