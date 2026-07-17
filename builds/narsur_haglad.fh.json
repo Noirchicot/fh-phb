@@ -1,1 +1,366 @@
-{"character":{"ddbId":null,"name":"Narsur Haglad","campaign":"The Guild Path","abilityScores":{"STR":11,"DEX":14,"CON":12,"INT":17,"WIS":13,"CHA":12},"abilityScoresRaw":{"STR":11,"DEX":13,"CON":12,"INT":15,"WIS":13,"CHA":12}},"destiny":{"score":4,"arcana":{"id":"XIII","name":"Death","impact":0,"power":"you are immune to everything above 6 on the Chaos table, and trigger an Awakening on a 12.","vibration":"survival / minor necromancy effect (e.g. False Life).","meaning":"transformation, end of a cycle, rebirth. Radical change, not absolute finality."},"breakdown":[{"label":"PB","value":2},{"label":"Human","value":2},{"label":"Arcana XIII","value":0}],"notesText":"DESTINY SCORE : 4\nPB : 2\nHuman : 2\nArcana XIII : 0\n\nXIII. Death\n* Meaning — transformation, end of a cycle, rebirth. Radical change, not absolute finality.\n* Destiny Impact — +0\n* Power — you are immune to everything above 6 on the Chaos table, and trigger an Awakening on a 12.\n* Vibration — survival / minor necromancy effect (e.g. False Life)."},"background":{"replaceWithBlank":true,"abilityBoostFeatIds":[2379985,2379988],"originFeats":[{"key":"skilled","label":"Skilled (fh)","id":2383105}],"otherOriginFeat":"Alert","story":""},"skills":[{"name":"Academics","type":1,"statId":4,"proficiencyLevel":3},{"name":"Appraise","type":1,"statId":4,"proficiencyLevel":3},{"name":"Delve","type":1,"statId":5,"proficiencyLevel":1},{"name":"Hunting","type":1,"statId":5,"proficiencyLevel":1},{"name":"Leadership","type":1,"statId":6,"proficiencyLevel":2},{"name":"Might","type":1,"statId":1,"proficiencyLevel":1},{"name":"Streetwise","type":1,"statId":6,"proficiencyLevel":1},{"name":"Tactics","type":1,"statId":4,"proficiencyLevel":1},{"name":"Tool - Cartographer's","type":1,"statId":5,"proficiencyLevel":3},{"name":"Vigilance","type":1,"statId":5,"proficiencyLevel":2}],"nativeSkillTiers":{},"destinyFeats":{"diceFeats":[{"name":"Destiny Dice - d4","id":1927834},{"name":"Destiny Dice - d6","id":1927924},{"name":"Destiny Dice - d8","id":1927926},{"name":"Destiny Dice - d10","id":1927927},{"name":"Destiny Dice - d12","id":1927928}],"score":4,"originFeatId":2383105,"originFeatIds":[2383105]},"meta":{"builder":"fh-builder-v3","savedAt":"2026-07-17T22:22:07.489Z","species":"Human","class":"Wizard","level":1},"builderState":{"v":3,"name":"Narsur Haglad","campaign":"The Guild Path","cls":"Wizard","race":"Human","lvl":1,"ddbId":"","raceP":"0","featP":"0","langPts":"0","bonus1":"0","ab":{"mode":"roll","set":{"rolls":[{"dice":[1,6,6],"total":13},{"dice":[1,6,2],"total":9},{"dice":[2,4,4],"total":10},{"dice":[4,2,6],"total":12},{"dice":[3,5,3],"total":11},{"dice":[3,2,3],"total":8},{"dice":[6,6,1],"total":13},{"dice":[2,4,3],"total":9},{"dice":[4,6,5],"total":15},{"dice":[2,5,5],"total":12}],"keptIdx":[8,0,6,3,9,4],"kept":[15,13,13,12,12,11],"rerolls":0},"assign":{"STR":5,"DEX":1,"CON":3,"INT":0,"WIS":2,"CHA":4},"manual":{"STR":10,"DEX":10,"CON":10,"INT":10,"WIS":10,"CHA":10}},"boosts":{"DEX":1,"INT":2},"arcana":"XIII","origin":"skilled","origin2":"","originOther":"Alert","glory":"0","other":"0","story":"","tiers":{"Academics":{"t":"prof","l":"non"},"Appraise":{"t":"prof","l":"non"},"Athletics":{"t":"prof","l":"non"},"History":{"t":"prof","l":"non"},"Insight":{"t":"prof","l":"non"},"Intimidation":{"t":"half","l":"non"},"Investigation":{"t":"prof","l":"non"},"Leadership":{"t":"half","l":"non"},"Persuasion":{"t":"prof","l":"non"},"Survival":{"t":"half","l":"half"},"Vigilance":{"t":"half","l":"half"},"Tool - Cartographer's":{"t":"prof","l":"non"}}}}
+{
+  "character": {
+    "ddbId": null,
+    "name": "Narsur Haglad",
+    "campaign": "The Guild Path",
+    "abilityScores": {
+      "STR": 11,
+      "DEX": 14,
+      "CON": 12,
+      "INT": 17,
+      "WIS": 13,
+      "CHA": 12
+    },
+    "abilityScoresRaw": {
+      "STR": 11,
+      "DEX": 13,
+      "CON": 12,
+      "INT": 15,
+      "WIS": 13,
+      "CHA": 12
+    }
+  },
+  "destiny": {
+    "score": 4,
+    "arcana": {
+      "id": "XIII",
+      "name": "Death",
+      "impact": 0,
+      "power": "you are immune to everything above 6 on the Chaos table, and trigger an Awakening on a 12.",
+      "vibration": "survival / minor necromancy effect (e.g. False Life).",
+      "meaning": "transformation, end of a cycle, rebirth. Radical change, not absolute finality."
+    },
+    "breakdown": [
+      {
+        "label": "PB",
+        "value": 2
+      },
+      {
+        "label": "Human",
+        "value": 2
+      },
+      {
+        "label": "Arcana XIII",
+        "value": 0
+      }
+    ],
+    "notesText": "DESTINY SCORE : 4\nPB : 2\nHuman : 2\nArcana XIII : 0\n\nXIII. Death\n* Meaning — transformation, end of a cycle, rebirth. Radical change, not absolute finality.\n* Destiny Impact — +0\n* Power — you are immune to everything above 6 on the Chaos table, and trigger an Awakening on a 12.\n* Vibration — survival / minor necromancy effect (e.g. False Life)."
+  },
+  "background": {
+    "replaceWithBlank": true,
+    "abilityBoostFeatIds": [
+      2379985,
+      2379988
+    ],
+    "originFeats": [
+      {
+        "key": "skilled",
+        "label": "Skilled (fh)",
+        "id": 2383105
+      }
+    ],
+    "otherOriginFeat": "Alert",
+    "story": ""
+  },
+  "skills": [
+    {
+      "name": "Academics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Appraise",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Delve",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Hunting",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Leadership",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Might",
+      "type": 1,
+      "statId": 1,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Streetwise",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tactics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tool - Cartographer's",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Vigilance",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 2
+    }
+  ],
+  "nativeSkillTiers": {
+    "Athletics": "proficient",
+    "History": "proficient",
+    "Insight": "proficient",
+    "Intimidation": "half",
+    "Investigation": "proficient",
+    "Persuasion": "proficient",
+    "Survival": "half"
+  },
+  "destinyFeats": {
+    "diceFeats": [
+      {
+        "name": "Destiny Dice - d4",
+        "id": 1927834
+      },
+      {
+        "name": "Destiny Dice - d6",
+        "id": 1927924
+      },
+      {
+        "name": "Destiny Dice - d8",
+        "id": 1927926
+      },
+      {
+        "name": "Destiny Dice - d10",
+        "id": 1927927
+      },
+      {
+        "name": "Destiny Dice - d12",
+        "id": 1927928
+      }
+    ],
+    "score": 4,
+    "originFeatId": 2383105,
+    "originFeatIds": [
+      2383105
+    ]
+  },
+  "meta": {
+    "builder": "fh-builder-v3",
+    "savedAt": "2026-07-17T22:22:07.489Z",
+    "species": "Human",
+    "class": "Wizard",
+    "level": 1
+  },
+  "builderState": {
+    "v": 3,
+    "name": "Narsur Haglad",
+    "campaign": "The Guild Path",
+    "cls": "Wizard",
+    "race": "Human",
+    "lvl": 1,
+    "ddbId": "",
+    "raceP": "0",
+    "featP": "0",
+    "langPts": "0",
+    "bonus1": "0",
+    "ab": {
+      "mode": "roll",
+      "set": {
+        "rolls": [
+          {
+            "dice": [
+              1,
+              6,
+              6
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              1,
+              6,
+              2
+            ],
+            "total": 9
+          },
+          {
+            "dice": [
+              2,
+              4,
+              4
+            ],
+            "total": 10
+          },
+          {
+            "dice": [
+              4,
+              2,
+              6
+            ],
+            "total": 12
+          },
+          {
+            "dice": [
+              3,
+              5,
+              3
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              3,
+              2,
+              3
+            ],
+            "total": 8
+          },
+          {
+            "dice": [
+              6,
+              6,
+              1
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              2,
+              4,
+              3
+            ],
+            "total": 9
+          },
+          {
+            "dice": [
+              4,
+              6,
+              5
+            ],
+            "total": 15
+          },
+          {
+            "dice": [
+              2,
+              5,
+              5
+            ],
+            "total": 12
+          }
+        ],
+        "keptIdx": [
+          8,
+          0,
+          6,
+          3,
+          9,
+          4
+        ],
+        "kept": [
+          15,
+          13,
+          13,
+          12,
+          12,
+          11
+        ],
+        "rerolls": 0
+      },
+      "assign": {
+        "STR": 5,
+        "DEX": 1,
+        "CON": 3,
+        "INT": 0,
+        "WIS": 2,
+        "CHA": 4
+      },
+      "manual": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    "boosts": {
+      "DEX": 1,
+      "INT": 2
+    },
+    "arcana": "XIII",
+    "origin": "skilled",
+    "origin2": "",
+    "originOther": "Alert",
+    "glory": "0",
+    "other": "0",
+    "story": "",
+    "tiers": {
+      "Academics": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Appraise": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Athletics": {
+        "t": "prof",
+        "l": "non"
+      },
+      "History": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Insight": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Intimidation": {
+        "t": "half",
+        "l": "non"
+      },
+      "Investigation": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Leadership": {
+        "t": "half",
+        "l": "non"
+      },
+      "Persuasion": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Survival": {
+        "t": "half",
+        "l": "half"
+      },
+      "Vigilance": {
+        "t": "half",
+        "l": "half"
+      },
+      "Tool - Cartographer's": {
+        "t": "prof",
+        "l": "non"
+      }
+    }
+  }
+}
