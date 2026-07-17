@@ -1303,9 +1303,17 @@ function buildUnifiedJSON(){
       story: $('story').value||""
     },
     skills: buildDDBPayload(),
-    // Exceptions to the "mirror every native to none" rule — only Keen Senses (Elf/Elestu):
-    // native Survival stays at ½ (neutralized but not zeroed).
-    nativeSkillTiers: KEEN_SENSES_SPECIES.has($('race').value) ? {Survival:"half"} : {},
+    // Invested tiers on NATIVE skills (typeId 26 mirror on DDB) — every native at half/prof/exp
+    // is exported by name; the rest default to "none" on apply. Fix 2026-07-17 (bug: only the
+    // Keen Senses Survival exception was exported, all other native picks were zeroed on DDB).
+    nativeSkillTiers: (function(){
+      const TIER_EXPORT = { half:"half", prof:"proficient", exp:"expert" };
+      const out = {};
+      items.forEach(it=>{
+        if(it.type==="skill" && it.ddb && TIER_EXPORT[it.tier]) out[it.name] = TIER_EXPORT[it.tier];
+      });
+      return out;
+    })(),
     destinyFeats:{
       diceFeats: DESTINY_FEATS.diceFeats,   // ALWAYS all 5 — ddb-apply applies them unconditionally
       score,
