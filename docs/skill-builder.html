@@ -279,7 +279,9 @@
   <!-- ================= LEFT COLUMN ================= -->
   <aside class="side">
 
-    <nav class="card steps"><ol id="stepList"></ol></nav>
+    <nav class="card steps"><ol id="stepList"></ol>
+      <button class="btn ghost small" id="quickReset" style="width:100%;margin-top:8px;color:var(--bad);border-color:var(--bad)">↺ Start a new character</button>
+    </nav>
 
     <section class="card" id="panel">
 
@@ -748,11 +750,10 @@ const STEP_DEFS = [
     done:()=>visited.has("class")||!!IMPORTED,
     hint:()=>$('cls').value},
   {id:"background",n:5, name:"Background",
-    done:()=>boostComboValid() && overCapAbilities().length===0 && !!$('originFeat').value && (!speciesExtraOrigin() || !!$('originFeat2').value),
+    done:()=>boostComboValid() && overCapAbilities().length===0 && originCount()>=originNeeded(),
     warn:()=>overCapAbilities().length>0,
     hint:()=>{const over=overCapAbilities(); if(over.length) return "cap 18!";
-      if(!$('originFeat').value) return boostComboValid()?"origin feat!":"";
-      if(speciesExtraOrigin() && !$('originFeat2').value) return "2nd origin feat!";
+      if(originCount()<originNeeded()) return boostComboValid()?(originCount()<1?"origin feat!":"2nd origin feat!"):"";
       const p=readAbilityBoosts();const k=Object.keys(p);return k.length?k.map(a=>a+"+"+p[a]).join(" "):"";}},
   {id:"destiny",   n:6, name:"Destiny",
     done:()=>!!currentArcana(),
@@ -1160,6 +1161,10 @@ function updateDestiny(){
   updatePreview();
 }
 function speciesExtraOrigin(){ return !!(SPECIES_PERKS[$('race').value]||{}).extraOrigin; }
+// The free-text "Other Origin feat" counts as a valid Origin choice — a player is never
+// forced to take Destiny Touched or Skilled.
+function originCount(){ return ["originFeat","originFeat2"].filter(id=>$(id).value).length + ((($('originOther')&&$('originOther').value)||"").trim()?1:0); }
+function originNeeded(){ return 1 + (speciesExtraOrigin()?1:0); }
 function renderFeatPick(){
   const cur=$('originFeat').value, cur2=$('originFeat2').value;
   const cards=(sel,other)=>Object.entries(ORIGIN_FEATS).map(([k,f])=>
@@ -1186,7 +1191,7 @@ $('featPick2').addEventListener('click',e=>{
   const c=e.target.closest('.feat-card'); if(!c) return;
   pickOrigin('originFeat2','originFeat',c.dataset.feat);
 });
-$('originOther').addEventListener('input',()=>{updatePreview();scheduleAutosave();});
+$('originOther').addEventListener('input',()=>{renderSteps();updatePreview();scheduleAutosave();});
 // Random Arcana draw — true RNG, 1 in 22.
 $('arcRandom').addEventListener('click',()=>{
   const u=new Uint32Array(1); crypto.getRandomValues(u);
@@ -1413,10 +1418,11 @@ function renderSaveRecap(){
   const {left,total}=spentLeft();
   const arc=currentArcana();
   const origins=["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean).map(k=>ORIGIN_FEATS[k]);
-  const originOK = origins.length>=1 && (!speciesExtraOrigin() || origins.length>=2);
-  const originTxt = (origins.map(o=>o.label).join(" + ")||"no origin feat")
-    + (($('originOther').value||"").trim()?` + ${$('originOther').value.trim()} (GM)`:"")
-    + (speciesExtraOrigin()&&origins.length<2?" — species 2nd slot empty!":"");
+  const originOK = originCount()>=originNeeded();
+  const parts = origins.map(o=>o.label);
+  if(($('originOther').value||"").trim()) parts.push(`${$('originOther').value.trim()} (GM)`);
+  const originTxt = (parts.join(" + ")||"no origin feat")
+    + (!originOK && originCount()>=1 ? " — species 2nd feat missing!" : "");
   const lines=[
     [!!$('charName').value.trim(), "Name", $('charName').value.trim()||"missing"],
     [!!$('campaign').value.trim(), "Campaign", $('campaign').value.trim()||"none — the GM will ask", "meh"],
@@ -1444,8 +1450,8 @@ $('saveChar').addEventListener('click', async ()=>{
   if(left<0){ alert(`Over budget by ${-left} point(s) — fix the skills before saving.`); setStep("skills"); return; }
   if(left>0 && !confirm(`${left} skill point(s) are still unspent — a silent leftover is how a skill ends up at zero.\n\nSave anyway?`)) return;
   if(!$('charName').value.trim()){ alert("Give your character a name first."); setStep("identity"); return; }
-  if(!$('originFeat').value){ alert("No Origin feat chosen — the background grants one (step 5)."); setStep("background"); return; }
-  if(speciesExtraOrigin() && !$('originFeat2').value && !confirm(`${$('race').value} grants a SECOND Origin feat (Versatile) — it is still empty.\n\nSave anyway?`)) { setStep("background"); return; }
+  if(originCount()<1){ alert("No Origin feat chosen — the background grants one (step 5). Pick one, or write it in the free-text box."); setStep("background"); return; }
+  if(originCount()<originNeeded() && !confirm(`${$('race').value} grants a SECOND Origin feat (Versatile) — only ${originCount()} chosen.\n\nSave anyway?`)) { setStep("background"); return; }
   const data=buildUnifiedJSON();
   const code=await encodeBuild(data);
   $('buildCode').textContent=code;
@@ -1497,11 +1503,13 @@ $('genRecap').addEventListener('click',()=>{
   out+= asNative.length ? asNative.map(it=>`${it.name} → ${it.tier==="exp"?"Expertise":"Proficient"} (${it.ability})`).join("\n") : "(none)";
   navigator.clipboard.writeText(out).then(()=>{ $('genRecap').textContent="Copied ✓"; setTimeout(()=>$('genRecap').textContent="Text recap → clipboard",1400); });
 });
-$('fullReset').addEventListener('click',()=>{
-  if(!confirm("Reset the whole builder? Saved characters are kept.")) return;
+function resetBuilder(){
+  if(!confirm("Start a new character? The current (unsaved) build is discarded — saved characters are kept.")) return;
   localStorage.removeItem('fh-builder-autosave');
   location.reload();
-});
+}
+$('fullReset').addEventListener('click',resetBuilder);
+$('quickReset').addEventListener('click',resetBuilder);
 
 // ================= CHARACTER SHEET (preview) =================
 function updatePreview(){
