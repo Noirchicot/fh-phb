@@ -1,0 +1,346 @@
+{
+  "character": {
+    "ddbId": null,
+    "name": "Skrall Oksa",
+    "campaign": "The Guild Path",
+    "abilityScores": {
+      "STR": 11,
+      "DEX": 14,
+      "CON": 14,
+      "INT": 11,
+      "WIS": 11,
+      "CHA": 17
+    },
+    "abilityScoresRaw": {
+      "STR": 11,
+      "DEX": 13,
+      "CON": 14,
+      "INT": 11,
+      "WIS": 11,
+      "CHA": 15
+    }
+  },
+  "destiny": {
+    "score": 8,
+    "arcana": {
+      "id": "V",
+      "name": "The Hierophant",
+      "impact": 2,
+      "power": "once per short rest, as a reaction within 30 feet, convert one of your Destiny dice into healing and add it to one individual short-rest dice (+ Constitution bonus), with no cost in Destiny Points.",
+      "vibration": "sacred blessing (Bless, Protection from Evil and Good).",
+      "meaning": "tradition, teaching, spiritual guidance. Faith, rituals, sacred order."
+    },
+    "breakdown": [
+      {
+        "label": "PB",
+        "value": 2
+      },
+      {
+        "label": "Dragonborn",
+        "value": 2
+      },
+      {
+        "label": "Arcana V",
+        "value": 2
+      },
+      {
+        "label": "Destiny Touched (fh)",
+        "value": 2
+      }
+    ],
+    "notesText": "DESTINY SCORE : 8\nPB : 2\nDragonborn : 2\nArcana V : 2\nDestiny Touched (fh) : 2\n\nV. The Hierophant\n* Meaning — tradition, teaching, spiritual guidance. Faith, rituals, sacred order.\n* Destiny Impact — +2\n* Power — once per short rest, as a reaction within 30 feet, convert one of your Destiny dice into healing and add it to one individual short-rest dice (+ Constitution bonus), with no cost in Destiny Points.\n* Vibration — sacred blessing (Bless, Protection from Evil and Good)."
+  },
+  "background": {
+    "replaceWithBlank": true,
+    "abilityBoostFeatIds": [
+      2379985,
+      2379982
+    ],
+    "originFeats": [
+      {
+        "key": "destinyTouched",
+        "label": "Destiny Touched (fh)",
+        "id": 2383104
+      }
+    ],
+    "otherOriginFeat": "",
+    "story": ""
+  },
+  "skills": [
+    {
+      "name": "Academics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Appraise",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Delve",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Hunting",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Leadership",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Might",
+      "type": 1,
+      "statId": 1,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Streetwise",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tactics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Vigilance",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 2
+    }
+  ],
+  "nativeSkillTiers": {
+    "Arcana": "half",
+    "Deception": "proficient",
+    "Intimidation": "proficient",
+    "Persuasion": "proficient",
+    "Stealth": "proficient"
+  },
+  "destinyFeats": {
+    "diceFeats": [
+      {
+        "name": "Destiny Dice - d4",
+        "id": 1927834
+      },
+      {
+        "name": "Destiny Dice - d6",
+        "id": 1927924
+      },
+      {
+        "name": "Destiny Dice - d8",
+        "id": 1927926
+      },
+      {
+        "name": "Destiny Dice - d10",
+        "id": 1927927
+      },
+      {
+        "name": "Destiny Dice - d12",
+        "id": 1927928
+      }
+    ],
+    "score": 8,
+    "originFeatId": 2383104,
+    "originFeatIds": [
+      2383104
+    ]
+  },
+  "meta": {
+    "builder": "fh-builder-v3",
+    "savedAt": "2026-07-17T23:29:28.115Z",
+    "species": "Dragonborn",
+    "class": "Sorcerer",
+    "level": 1
+  },
+  "builderState": {
+    "v": 3,
+    "name": "Skrall Oksa",
+    "campaign": "The Guild Path",
+    "cls": "Sorcerer",
+    "race": "Dragonborn",
+    "lvl": 1,
+    "ddbId": "",
+    "raceP": "0",
+    "featP": "0",
+    "langPts": "0",
+    "bonus1": "0",
+    "ab": {
+      "mode": "roll",
+      "set": {
+        "rolls": [
+          {
+            "dice": [
+              4,
+              3,
+              4
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              6,
+              6,
+              2
+            ],
+            "total": 14
+          },
+          {
+            "dice": [
+              5,
+              2,
+              1
+            ],
+            "total": 8
+          },
+          {
+            "dice": [
+              5,
+              6,
+              4
+            ],
+            "total": 15
+          },
+          {
+            "dice": [
+              4,
+              1,
+              1
+            ],
+            "total": 6
+          },
+          {
+            "dice": [
+              4,
+              2,
+              5
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              6,
+              6,
+              1
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              5,
+              1,
+              5
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              3,
+              1,
+              1
+            ],
+            "total": 5
+          },
+          {
+            "dice": [
+              5,
+              1,
+              1
+            ],
+            "total": 7
+          }
+        ],
+        "keptIdx": [
+          3,
+          1,
+          6,
+          0,
+          5,
+          7
+        ],
+        "kept": [
+          15,
+          14,
+          13,
+          11,
+          11,
+          11
+        ],
+        "rerolls": 0
+      },
+      "assign": {
+        "STR": 5,
+        "DEX": 2,
+        "CON": 1,
+        "INT": 3,
+        "WIS": 4,
+        "CHA": 0
+      },
+      "manual": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    "boosts": {
+      "DEX": 1,
+      "CHA": 2
+    },
+    "arcana": "V",
+    "origin": "destinyTouched",
+    "origin2": "",
+    "originOther": "",
+    "glory": "0",
+    "other": "0",
+    "story": "",
+    "tiers": {
+      "Academics": {
+        "t": "half",
+        "l": "non"
+      },
+      "Appraise": {
+        "t": "half",
+        "l": "non"
+      },
+      "Arcana": {
+        "t": "half",
+        "l": "non"
+      },
+      "Deception": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Intimidation": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Persuasion": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Stealth": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Vigilance": {
+        "t": "half",
+        "l": "non"
+      }
+    }
+  }
+}
