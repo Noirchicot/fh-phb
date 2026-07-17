@@ -88,6 +88,6 @@ nav:
   - World:
     - Primordial Forces: chapters/primordial-forces.md
   - Tools:
-    - 5.5 Sheet → 5+ Converter: builder.md
+    - Character Builder: builder.md
     - Soulforge Workshop: soulforge.md
     - Ability Score Roller: dice-roller.md
