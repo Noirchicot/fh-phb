@@ -527,8 +527,8 @@ const SPECIES_IMG = {
 // Species trait lines — verbatim from the canonical "D&D 5+ Races & Species" vault doc.
 const SPECIES_TRAITS = {
   "—": [],
-  "Human": ["Skillful — proficiency in one skill of your choice", "Versatile — +2 skill points at creation (ability tweak) and an extra Origin feat of your choice", "Destiny — Base 2 · human chosen: +1 Destiny Point per day"],
-  "Araag": ["Skillful — proficiency in one skill of your choice", "Fast Learner — +2 skill points at creation (skill tweak) and at levels 3 and 6", "Soulforged Affinity — Body Forge a Soulgem into your own flesh at no HP cost", "Necrotic Resistance", "Darkvision 60 ft", "Destiny — Base 2"],
+  "Human": ["Skillful — +2 skill points at creation (skill tweak: a proficiency of your choice)", "Versatile — gain an extra Origin feat of your choice", "Destiny — Base 2 · human chosen: +1 Destiny Point per day"],
+  "Araag": ["Skillful — +2 skill points at creation (skill tweak: a proficiency of your choice)", "Fast Learner — +2 skill points at levels 3 and 6 (added later on your sheet)", "Soulforged Affinity — Body Forge a Soulgem into your own flesh at no HP cost", "Necrotic Resistance", "Darkvision 60 ft", "Destiny — Base 2"],
   "Halfling": ["Brave — advantage on saves against being Frightened", "Halfling Nimbleness — move through the space of any larger creature", "Luck — reroll any 1 on a d20 test", "Naturally Stealthy — hide behind anything bigger than you, including people", "Destiny — Base 2 · halfling chosen: advantage on Chaos rolls"],
   "Dragonborn": ["Draconic Ancestry — choose a dragon type; sets your breath and resistance", "Breath Weapon", "Damage Resistance to your ancestry's type", "Draconic Flight — at level 5, spectral wings for short flights", "Darkvision 60 ft", "Destiny — Base 2"],
   "Hoddon": ["Hoddon Cunning — advantage on Intelligence, Wisdom and Charisma saves", "Hoddon Lineage — Forest or Rock; a knack of small illusions or small machines", "Darkvision 60 ft", "Destiny — Base 2"],
@@ -567,10 +567,13 @@ const ORIGIN_FEATS = {
 //                 NOT an Origin feat (Human "Versatile" = +2).
 // - Keen Senses (Elf/Elestu) : 2 points auto-invested (½ Vigilance + ½ Survival) that
 //   now COUNT in the pool total (species +2) and start as spent — no longer "outside the pool".
+// Skillful (Human & Araag) = skill tweak feat: +2 pool at creation (a proficiency of your choice).
+// Versatile (Human & Loroka) = extra Origin feat slot. Fast Learner (Araag/Elestu) = +2 @ levels
+// 3/6 only (skillLevels) — handled later by the player on their sheet, nothing at creation.
 const SPECIES_PERKS = {
-  Human:  { extraOrigin:true, tweakPts:2, tweakName:"Versatile" },
+  Human:  { extraOrigin:true, tweakPts:2, tweakName:"Skillful" },
   Loroka: { extraOrigin:true },
-  Araag:  { tweakPts:2, tweakName:"Fast Learner" },   // skill tweak feat: +2 pool at creation (then +2 @ 3/6 via skillLevels)
+  Araag:  { tweakPts:2, tweakName:"Skillful" },
 };
 const KEEN_SENSES_SPECIES = new Set(["Elf","Elestu"]);
 const KEEN_SENSES_SKILLS = ["Vigilance","Survival"];
