@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fate's Hand — GM Builds</title>
+<style>
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity%20Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+  @font-face{font-family:"Nodesto Caps Condensed";src:url("fonts/Nodesto%20Caps%20Condensed.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Mr Eaves Small Caps";src:url("fonts/Mr%20Eaves%20Small%20Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Scaly Sans";src:url("fonts/Scaly%20Sans.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Scaly Sans";src:url("fonts/Scaly%20Sans%20Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+  @font-face{font-family:"Scaly Sans Caps";src:url("fonts/Scaly%20Sans%20Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+  :root{
+    --parchment:#f5edda; --parchment-2:#efe4c9; --ink:#2b2118; --muted:#7a6b55;
+    --leather:#5c4326; --leather-dark:#3f2e18; --gold:#9c6b16; --gold-bright:#c8942a;
+    --oxblood:#58180d; --rule:rgba(92,67,38,.30); --rule-soft:rgba(92,67,38,.16);
+    --good:#3e6b34; --bad:#8e2318;
+    --serif:"Bookinsanity",Georgia,serif;
+    --caps:"Mr Eaves Small Caps","Cinzel",serif;
+    --title:"Nodesto Caps Condensed","Cinzel",serif;
+    --sans:"Scaly Sans","Gill Sans",system-ui,sans-serif;
+    --capsans:"Scaly Sans Caps","Scaly Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#211910;color:var(--ink);font:15px/1.4 var(--serif);min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:34px 18px 90px}
+  h1{margin:0 0 2px;font-family:var(--title);font-weight:400;font-size:46px;line-height:1;color:#f0dfae;text-align:center;letter-spacing:.02em}
+  .sub{font-family:var(--caps);font-size:16px;color:#d8b65a;text-align:center;letter-spacing:.14em;margin-bottom:26px}
+  .card{background:var(--parchment);border:1px solid var(--leather-dark);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.45);padding:16px 18px;margin-bottom:14px}
+  .card h2{margin:0 0 10px;font-family:var(--caps);font-size:19px;color:var(--oxblood);letter-spacing:.05em;border-bottom:2px solid var(--rule);padding-bottom:4px;font-weight:400}
+  label{font-family:var(--capsans);font-size:12px;color:var(--leather);display:block;margin-bottom:3px;letter-spacing:.05em}
+  input{background:#fffdf5;color:var(--ink);border:1px solid var(--rule);border-radius:5px;padding:7px 9px;font:13.5px var(--sans);width:100%}
+  input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(156,107,22,.22)}
+  .row2{display:flex;gap:10px}.row2>*{flex:1}
+  .btn{background:var(--leather);color:#f0dfae;border:1px solid var(--leather-dark);border-radius:6px;padding:9px 16px;font:15px var(--caps);letter-spacing:.06em;cursor:pointer;transition:filter .15s}
+  .btn:hover{filter:brightness(1.15)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn.small{padding:5px 11px;font-size:13px}
+  .btn.ghost{background:transparent;color:var(--leather);border-color:var(--rule)}
+  .note{font:12.5px var(--sans);margin:8px 0 0}
+  .note.ok{color:var(--good)} .note.err{color:var(--bad)}
+  table{width:100%;border-collapse:collapse;font:13.5px var(--sans)}
+  th{font-family:var(--capsans);font-size:12px;color:var(--leather);text-align:left;letter-spacing:.05em;border-bottom:2px solid var(--rule);padding:5px 6px}
+  td{padding:7px 6px;border-bottom:1px solid var(--rule-soft);vertical-align:middle}
+  td.nm{font-weight:700;font-size:14.5px}
+  td.dt{color:var(--muted);font-size:12px;white-space:nowrap}
+  .empty{color:var(--muted);font-style:italic;font:13.5px var(--serif);padding:10px 2px}
+  .actions{display:flex;gap:6px;justify-content:flex-end}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Fate's Hand</h1>
+  <div class="sub">GM · PLAYER BUILDS</div>
+
+  <div class="card">
+    <h2>GM access</h2>
+    <div class="row2">
+      <div style="flex:2"><label>GM token (kept in this browser)</label>
+        <input id="token" type="password" placeholder="paste your GM token once" autocomplete="off"></div>
+      <div><label>Campaign (empty = all)</label>
+        <input id="campaign" type="text" placeholder="e.g. Fates Hand"></div>
+    </div>
+    <button class="btn" id="refresh" style="margin-top:12px;width:100%">List builds</button>
+    <p class="note" id="note"></p>
+  </div>
+
+  <div class="card">
+    <h2>Builds received</h2>
+    <div id="list"><div class="empty">Nothing loaded yet — paste your token and hit “List builds”.</div></div>
+  </div>
+</div>
+
+<script>
+const API="https://fh-builds.noirchicot.workers.dev";
+const $=id=>document.getElementById(id);
+const note=(cls,msg)=>{ const n=$('note'); n.className="note "+cls; n.textContent=msg; };
+try{
+  $('token').value = localStorage.getItem('fh-gm-token')||"";
+  $('campaign').value = localStorage.getItem('fh-gm-campaign')||"";
+}catch(e){}
+
+async function api(path){
+  const r=await fetch(API+path,{headers:{Authorization:"Bearer "+$('token').value.trim()}});
+  if(r.status===401) throw new Error("unauthorized — check the GM token.");
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+
+async function refresh(){
+  const token=$('token').value.trim();
+  if(!token) return note("err","Paste the GM token first.");
+  const camp=$('campaign').value.trim();
+  const btn=$('refresh'); btn.disabled=true;
+  try{
+    const {builds}=await api("/builds"+(camp?"?campaign="+encodeURIComponent(camp):""));
+    try{
+      localStorage.setItem('fh-gm-token',token);
+      localStorage.setItem('fh-gm-campaign',camp);
+    }catch(e){}
+    builds.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
+    $('list').innerHTML = builds.length ? `<table>
+      <tr><th>Player</th><th>Campaign</th><th>Last sent</th><th></th></tr>
+      ${builds.map(b=>`<tr>
+        <td class="nm">${esc(b.pseudo)}</td>
+        <td>${esc(b.campaign)}</td>
+        <td class="dt">${(b.updatedAt||"").slice(0,16).replace("T"," ")}</td>
+        <td class="actions"><button class="btn ghost small" data-dl="${esc(b.campaign)}|${esc(b.pseudo)}">Download .fh.json</button></td>
+      </tr>`).join("")}
+    </table>`
+    : `<div class="empty">No builds${camp?` for campaign “${esc(camp)}”`:""} yet.</div>`;
+    note("ok",`✓ ${builds.length} build(s)${camp?` — campaign “${camp}”`:""}.`);
+  }catch(err){ note("err","Could not list: "+err.message); }
+  finally{ btn.disabled=false; }
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$('refresh').addEventListener('click',refresh);
+$('token').addEventListener('keydown',e=>{ if(e.key==="Enter") refresh(); });
+$('campaign').addEventListener('keydown',e=>{ if(e.key==="Enter") refresh(); });
+
+$('list').addEventListener('click', async e=>{
+  const b=e.target.closest('button[data-dl]'); if(!b) return;
+  const [camp,pseudo]=b.dataset.dl.split("|");
+  b.disabled=true; const old=b.textContent; b.textContent="…";
+  try{
+    const rec=await api(`/builds/${encodeURIComponent(camp)}/${encodeURIComponent(pseudo)}`);
+    // the file ddb-apply consumes is the build itself (same shape as the builder's "Download .fh.json")
+    const blob=new Blob([JSON.stringify(rec.build,null,2)],{type:"application/json"});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`${pseudo.replace(/[^\w-]+/g,"_")}.fh.json`;
+    a.click(); URL.revokeObjectURL(a.href);
+    note("ok",`✓ Downloaded "${pseudo}" (${camp}) — sent ${(rec.updatedAt||"").slice(0,16).replace("T"," ")}.`);
+  }catch(err){ note("err","Download failed: "+err.message); }
+  finally{ b.disabled=false; b.textContent=old; }
+});
+</script>
+</body>
+</html>
