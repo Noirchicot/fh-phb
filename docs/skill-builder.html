@@ -403,7 +403,7 @@
             <label>Or send it online — straight to your GM's table</label>
             <div class="row2">
               <input id="sendPseudo" type="text" placeholder="Your player name" maxlength="40">
-              <input id="sendTableCode" type="text" placeholder="Table code (ask your GM)">
+              <input id="sendCampCode" type="text" placeholder="Campaign code (ask your GM)" maxlength="40">
             </div>
             <button class="btn small" id="sendGM" style="margin-top:8px;width:100%">Send to GM</button>
             <p class="note" id="sendNote"></p>
@@ -1490,39 +1490,38 @@ $('copyCode').addEventListener('click',()=>{
 
 // ================= SEND TO GM (fh-builds Worker) =================
 // Additive: the FH1 copy-paste code above stays the offline fallback.
+// The campaign code (given by the GM, e.g. "FH1") IS the campaign identifier — one code per table.
 const BUILDS_API="https://fh-builds.noirchicot.workers.dev";
 // mirrors the Worker's `clean()` rule — letters, digits, spaces, - and _ (max 40)
 const validWireId = s => /^[\p{L}\p{N} _-]{1,40}$/u.test(s);
 try{
   $('sendPseudo').value = localStorage.getItem('fh-send-pseudo')||"";
-  $('sendTableCode').value = localStorage.getItem('fh-send-tablecode')||"";
+  $('sendCampCode').value = localStorage.getItem('fh-send-campcode')||"";
 }catch(e){}
 $('sendGM').addEventListener('click', async ()=>{
   const note=$('sendNote');
   const fail=msg=>{ note.className="note err"; note.textContent=msg; };
   const pseudo=$('sendPseudo').value.trim();
-  const tableCode=$('sendTableCode').value.trim();
-  const campaign=($('campaign').value||"").trim();
+  const campCode=$('sendCampCode').value.trim();
   if(!validWireId(pseudo)) return fail("Player name — 1-40 characters: letters, digits, spaces, - or _.");
-  if(!campaign) return fail("Fill in the campaign name first (step 1 · Identity).");
-  if(!validWireId(campaign)) return fail("Campaign name can only use letters, digits, spaces, - and _ to be sent online — adjust it in step 1 (the FH1 code has no such limit).");
-  if(!tableCode) return fail("Table code missing — your GM gives it to you.");
+  if(!campCode) return fail("Campaign code missing — your GM gives it to you.");
+  if(!validWireId(campCode)) return fail("Campaign code — letters, digits, spaces, - or _ only.");
   const btn=$('sendGM');
   btn.disabled=true; btn.textContent="Sending…";
   try{
     const r=await fetch(BUILDS_API+"/builds",{
       method:"POST",
-      headers:{"Content-Type":"application/json","X-Campaign-Code":tableCode},
-      body:JSON.stringify({pseudo, campaign, build:buildUnifiedJSON()})
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({pseudo, campaign:campCode, build:buildUnifiedJSON()})
     });
     const res=await r.json().catch(()=>({}));
-    if(!r.ok) throw new Error(r.status===403 ? "wrong table code — ask your GM." : (res.error||("HTTP "+r.status)));
+    if(!r.ok) throw new Error(r.status===403 ? "unknown campaign code — ask your GM." : (res.error||("HTTP "+r.status)));
     try{
       localStorage.setItem('fh-send-pseudo',pseudo);
-      localStorage.setItem('fh-send-tablecode',tableCode);
+      localStorage.setItem('fh-send-campcode',campCode);
     }catch(e){}
     note.className="note ok";
-    note.textContent=`✓ Sent — "${pseudo}" @ ${campaign}, ${res.updatedAt.slice(0,16).replace("T"," ")} UTC. Sending again overwrites this build.`;
+    note.textContent=`✓ Sent — "${pseudo}" @ ${campCode}, ${res.updatedAt.slice(0,16).replace("T"," ")} UTC. Sending again overwrites this build.`;
   }catch(err){
     fail("Could not send: "+err.message+" The FH1 code above still works as fallback.");
   }finally{
