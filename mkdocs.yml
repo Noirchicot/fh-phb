@@ -42,6 +42,7 @@ extra_css:
 extra_javascript:
   - javascripts/fh-home.js
   - javascripts/fh-sky.js
+  - javascripts/fh-mychar.js
 
 markdown_extensions:
   - admonition
@@ -63,11 +64,16 @@ plugins:
 nav:
   - Welcome: index.md
   - Creating a Character:
+    - Create a Character: builder.md
     - Rolling Ability Scores: chapters/ability-scores.md
-    - Backgrounds: chapters/backgrounds.md
     - Species: chapters/species.md
     - Skills & Tools: chapters/skills-and-tools.md
     - Feats: chapters/feats.md
+    - Class Modifications: chapters/classes.md
+    - Moonkeeper: chapters/moonkeeper.md
+    - Ability Score Roller: dice-roller.md
+  - My Character:
+    - Party Inventory: inventory.md
   - The Destiny System:
     - Destiny System: chapters/fates-hand-mechanic.md
     - Arcana: chapters/major-arcana.md
@@ -82,12 +88,6 @@ nav:
     - Circle Magic: chapters/circle-magic.md
     - Soulforging: chapters/soulforge-crafting.md
     - Magic Items: chapters/magic-items.md
-  - Classes & Subclasses:
-    - Class Modifications: chapters/classes.md
-    - Moonkeeper: chapters/moonkeeper.md
+    - Soulforge Workshop: soulforge.md
   - World:
     - Primordial Forces: chapters/primordial-forces.md
-  - Tools:
-    - Character Builder: builder.md
-    - Soulforge Workshop: soulforge.md
-    - Ability Score Roller: dice-roller.md

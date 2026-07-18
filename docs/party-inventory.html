@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fate's Hand — Party Inventory</title>
+<style>
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity%20Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+  @font-face{font-family:"Nodesto Caps Condensed";src:url("fonts/Nodesto%20Caps%20Condensed.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Mr Eaves Small Caps";src:url("fonts/Mr%20Eaves%20Small%20Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Scaly Sans";src:url("fonts/Scaly%20Sans.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Scaly Sans";src:url("fonts/Scaly%20Sans%20Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+  @font-face{font-family:"Scaly Sans Caps";src:url("fonts/Scaly%20Sans%20Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+  :root{
+    --parchment:#f5edda; --parchment-2:#efe4c9; --ink:#2b2118; --muted:#7a6b55;
+    --leather:#5c4326; --leather-dark:#3f2e18; --gold:#9c6b16; --gold-bright:#c8942a;
+    --oxblood:#58180d; --rule:rgba(92,67,38,.30); --rule-soft:rgba(92,67,38,.16);
+    --good:#3e6b34; --bad:#8e2318;
+    --serif:"Bookinsanity",Georgia,serif;
+    --caps:"Mr Eaves Small Caps","Cinzel",serif;
+    --title:"Nodesto Caps Condensed","Cinzel",serif;
+    --sans:"Scaly Sans","Gill Sans",system-ui,sans-serif;
+    --capsans:"Scaly Sans Caps","Scaly Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#211910;color:var(--ink);font:15px/1.4 var(--serif);min-height:100vh}
+  .wrap{max-width:820px;margin:0 auto;padding:30px 18px 90px}
+  h1{margin:0 0 2px;font-family:var(--title);font-weight:400;font-size:44px;line-height:1;color:#f0dfae;text-align:center;letter-spacing:.02em}
+  .sub{font-family:var(--caps);font-size:16px;color:#d8b65a;text-align:center;letter-spacing:.14em;margin-bottom:24px}
+  .card{background:var(--parchment);border:1px solid var(--leather-dark);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.45);padding:16px 18px;margin-bottom:14px}
+  .card h2{margin:0 0 10px;font-family:var(--caps);font-size:19px;color:var(--oxblood);letter-spacing:.05em;border-bottom:2px solid var(--rule);padding-bottom:4px;font-weight:400}
+  label{font-family:var(--capsans);font-size:12px;color:var(--leather);display:block;margin-bottom:3px;letter-spacing:.05em}
+  input,select{background:#fffdf5;color:var(--ink);border:1px solid var(--rule);border-radius:5px;padding:7px 9px;font:13.5px var(--sans)}
+  input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(156,107,22,.22)}
+  .top{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+  .top .fld{flex:1;min-width:150px}
+  .top input{width:100%}
+  .btn{background:var(--leather);color:#f0dfae;border:1px solid var(--leather-dark);border-radius:6px;padding:8px 15px;font:14.5px var(--caps);letter-spacing:.06em;cursor:pointer;transition:filter .15s;text-decoration:none;display:inline-block}
+  .btn:hover{filter:brightness(1.15)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn.small{padding:4px 10px;font-size:12.5px}
+  .btn.ghost{background:transparent;color:var(--leather);border-color:var(--rule)}
+  .btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+  .note{font:12.5px var(--sans);margin:8px 0 0}
+  .note.ok{color:var(--good)} .note.err{color:var(--bad)}
+  .grp{font-family:var(--caps);font-size:16.5px;color:var(--oxblood);letter-spacing:.05em;border-bottom:1px solid var(--rule);padding:10px 0 3px;margin-bottom:2px}
+  .grp:first-child{padding-top:0}
+  .item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--rule-soft);font:13.5px var(--sans)}
+  .item .nm{font-weight:700;font-size:14.5px}
+  .item .qty{color:var(--muted)}
+  .item .nt{color:var(--muted);font-style:italic;font-family:var(--serif)}
+  .item .sp{flex:1}
+  .item select{max-width:150px}
+  .empty{color:var(--muted);font-style:italic;font:13.5px var(--serif);padding:10px 2px}
+  .homelink{display:block;text-align:center;margin-top:18px;font-family:var(--caps);color:#d8b65a;text-decoration:none;letter-spacing:.08em}
+  .homelink:hover{color:#f0dfae}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Fate's Hand</h1>
+  <div class="sub">PARTY INVENTORY</div>
+
+  <div class="card">
+    <div class="top">
+      <div class="fld"><label>Campaign code</label>
+        <input id="code" type="text" placeholder="e.g. FH1" autocomplete="off"></div>
+      <button class="btn" id="load">Load</button>
+      <a class="btn ghost" href="soulforge/" target="_top">Go to the Soulforge →</a>
+    </div>
+    <p class="note" id="note"></p>
+  </div>
+
+  <div class="card">
+    <h2>The party's haul</h2>
+    <div id="list"><div class="empty">Enter your campaign code above.</div></div>
+  </div>
+
+  <a class="homelink" href="./" target="_top">⌂ Back to the Handbook</a>
+</div>
+
+<script>
+const API="https://fh-builds.noirchicot.workers.dev";
+const $=id=>document.getElementById(id);
+const note=(cls,msg)=>{ const n=$('note'); n.className="note "+cls; n.textContent=msg; };
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let PARTY=[];   // pseudos of the campaign
+let CODE="";
+
+async function api(path, opts){
+  const r=await fetch(API+path, opts);
+  if(r.status===403) throw new Error("unknown campaign code — ask your GM.");
+  if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.error||("HTTP "+r.status)); }
+  return r.json();
+}
+
+function itemRow(it){
+  const opts = ['<option value="">Party stash</option>']
+    .concat(PARTY.map(p=>`<option value="${esc(p)}"${it.owner===p?" selected":""}>${esc(p)}</option>`))
+    .join("");
+  return `<div class="item" data-id="${it.id}">
+    <span class="nm">${esc(it.name)}</span>
+    ${it.qty>1?`<span class="qty">×${it.qty}</span>`:""}
+    ${it.note?`<span class="nt">${esc(it.note)}</span>`:""}
+    <span class="sp"></span>
+    <select data-move title="Move to…">${opts}</select>
+    <button class="btn small danger" data-del>Delete</button>
+  </div>`;
+}
+
+function render(items){
+  if(!items.length){ $('list').innerHTML=`<div class="empty">Nothing yet — the GM drops the loot here.</div>`; return; }
+  const stash=items.filter(i=>!i.owner);
+  const owners=[...new Set(items.filter(i=>i.owner).map(i=>i.owner))].sort();
+  let html="";
+  html+=`<div class="grp">Party stash</div>`;
+  html+= stash.length ? stash.map(itemRow).join("") : `<div class="empty">Empty.</div>`;
+  owners.forEach(o=>{
+    html+=`<div class="grp">${esc(o)}</div>`+items.filter(i=>i.owner===o).map(itemRow).join("");
+  });
+  $('list').innerHTML=html;
+}
+
+async function load(){
+  CODE=$('code').value.trim();
+  if(!CODE) return note("err","Enter your campaign code.");
+  try{
+    const [party, inv] = await Promise.all([api("/party/"+encodeURIComponent(CODE)), api("/inv/"+encodeURIComponent(CODE))]);
+    PARTY = party.builds.map(b=>b.pseudo).sort();
+    try{ localStorage.setItem('fh-my-campcode',CODE); }catch(e){}
+    render(inv.items);
+    note("ok",`✓ ${inv.items.length} item(s).`);
+  }catch(err){ note("err","Could not load: "+err.message); }
+}
+
+$('load').addEventListener('click',load);
+$('code').addEventListener('keydown',e=>{ if(e.key==="Enter") load(); });
+
+$('list').addEventListener('change', async e=>{
+  const sel=e.target.closest('select[data-move]'); if(!sel) return;
+  const id=sel.closest('.item').dataset.id;
+  try{
+    await api(`/inv/${encodeURIComponent(CODE)}/${id}`,{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({owner: sel.value||null})
+    });
+    note("ok",`✓ Moved to ${sel.value||"the party stash"}.`);
+    load();
+  }catch(err){ note("err","Move failed: "+err.message); }
+});
+
+$('list').addEventListener('click', async e=>{
+  const b=e.target.closest('button[data-del]'); if(!b) return;
+  const row=b.closest('.item');
+  const nm=row.querySelector('.nm').textContent;
+  if(!confirm(`Delete "${nm}"? This is for consumed / sold / discarded items.`)) return;
+  try{
+    await api(`/inv/${encodeURIComponent(CODE)}/${row.dataset.id}`,{method:"DELETE"});
+    note("ok",`✓ "${nm}" removed.`);
+    load();
+  }catch(err){ note("err","Delete failed: "+err.message); }
+});
+
+try{ $('code').value = localStorage.getItem('fh-my-campcode')||""; }catch(e){}
+if($('code').value) load();
+</script>
+</body>
+</html>

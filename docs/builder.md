@@ -1,6 +1,6 @@
 <a class="fh-home" href="../">&#8962; Home</a>
 
-# Character Builder
+# Create a Character
 
 Build your **level 1 Fate's Hand character** from scratch: roll your abilities (**3d6 × 10, keep the six highest**), choose species and class, pick your background bonuses, draw your Major Arcana, and spend your skill pool — the **character sheet preview** fills in live as you go.
 

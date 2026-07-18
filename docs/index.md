@@ -29,11 +29,17 @@ hide:
 
 -   <span class="fh-card-hero"><img src="assets/img/card-creating.jpg" alt="Creating a Character"><span class="fh-card-title">Creating a Character</span></span>
 
+    - [**Create a Character**](builder.md){ .fh-hot }
     - [Rolling Ability Scores](chapters/ability-scores.md)
-    - [Backgrounds](chapters/backgrounds.md)
     - [Species](chapters/species.md)
     - [Skills & Tools](chapters/skills-and-tools.md)
     - [Feats](chapters/feats.md)
+    - [Class Modifications](chapters/classes.md)
+    - [Moonkeeper](chapters/moonkeeper.md)
+
+-   <span class="fh-card-hero"><img src="assets/img/card-tools.jpg" alt="My Character"><span class="fh-card-title">My Character</span></span>
+
+    <span class="fh-mychar" id="fhMyChar"></span>
 
 -   <span class="fh-card-hero"><img src="assets/img/card-destiny.jpg" alt="Destiny Mechanics"><span class="fh-card-title">Destiny Mechanics</span></span>
 
@@ -54,17 +60,7 @@ hide:
     - [Circle Magic](chapters/circle-magic.md)
     - [Soulforging](chapters/soulforge-crafting.md)
     - [Magic Items](chapters/magic-items.md)
-
--   <span class="fh-card-hero"><img src="assets/img/card-classes.jpg" alt="Classes & Subclasses"><span class="fh-card-title">Classes &amp; Subclasses</span></span>
-
-    - [Class Modifications](chapters/classes.md)
-    - [Moonkeeper](chapters/moonkeeper.md)
-
--   <span class="fh-card-hero"><img src="assets/img/card-tools.jpg" alt="Tools"><span class="fh-card-title">Tools</span></span>
-
-    - [5.5 Sheet → 5+ Converter](builder.md)
     - [Soulforge Workshop](soulforge.md)
-    - [Ability Score Roller](dice-roller.md)
 
 -   <span class="fh-card-hero"><img src="assets/img/card-world.jpg" alt="World"><span class="fh-card-title">World</span></span>
 

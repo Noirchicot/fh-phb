@@ -13,7 +13,6 @@
         ["Why roll?", "why-roll"],
         ["3d6 probability", "3d6-probability"]
       ]},
-      { slug: "backgrounds", title: "Backgrounds", items: [] },
       { slug: "species", title: "Species", items: [] },
       { slug: "skills-and-tools", title: "Skills & Tools", items: [
         ["1. The quick version", "1-the-quick-version"],
@@ -29,6 +28,18 @@
         ["Combat feats", "combat-feats"],
         ["Command feats", "command-feats"],
         ["Soulforge feats", "soulforge-feats"]
+      ]},
+      { slug: "classes", title: "Class Modifications", items: [
+        ["Rogue", "rogue"],
+        ["Fighter, Ranger & Paladin", "fighter-ranger-paladin"],
+        ["Monk", "monk"],
+        ["Assassin (Rogue)", "assassin-rogue"]
+      ]},
+      { slug: "moonkeeper", title: "Moonkeeper", items: [
+        ["Level 3 — Lunar Embodiment", "level-3-lunar-embodiment"],
+        ["Level 6", "level-6"],
+        ["Level 14", "level-14"],
+        ["Level 18", "level-18"]
       ]}
     ],
     [ /* The Destiny System */
@@ -96,20 +107,6 @@
         ["Harvest Chalice", "harvest-chalice"]
       ]}
     ],
-    [ /* Classes & Subclasses */
-      { slug: "classes", title: "Class Modifications", items: [
-        ["Rogue", "rogue"],
-        ["Fighter, Ranger & Paladin", "fighter-ranger-paladin"],
-        ["Monk", "monk"],
-        ["Assassin (Rogue)", "assassin-rogue"]
-      ]},
-      { slug: "moonkeeper", title: "Moonkeeper", items: [
-        ["Level 3 — Lunar Embodiment", "level-3-lunar-embodiment"],
-        ["Level 6", "level-6"],
-        ["Level 14", "level-14"],
-        ["Level 18", "level-18"]
-      ]}
-    ],
     [ /* World */
       { slug: "primordial-forces", title: "Primordial Forces", items: [
         ["Part 1 — The White Void", "part-1-the-white-void"],
@@ -122,8 +119,7 @@
   GROUPS[1].name = "Destiny Mechanics";
   GROUPS[2].name = "Playing the Game";
   GROUPS[3].name = "Spells & Magic";
-  GROUPS[4].name = "Classes & Subclasses";
-  GROUPS[5].name = "World";
+  GROUPS[4].name = "World";
 
   document.addEventListener("DOMContentLoaded", function () {
     /* landing page (has the contents cartouche) → hide the header bar */

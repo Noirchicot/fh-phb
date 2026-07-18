@@ -71,6 +71,18 @@
     <h2>Builds received</h2>
     <div id="list"><div class="empty">Nothing loaded yet — paste your token and hit “List builds”.</div></div>
   </div>
+
+  <div class="card">
+    <h2>Drop loot → party inventory</h2>
+    <div class="row2">
+      <div style="flex:0 0 110px"><label>Campaign code</label><input id="lootCode" type="text" placeholder="FH1"></div>
+      <div style="flex:2"><label>Item</label><input id="lootName" type="text" placeholder="Wand of the War Mage +1" maxlength="80"></div>
+      <div style="flex:0 0 64px"><label>Qty</label><input id="lootQty" type="number" min="1" max="999" value="1"></div>
+    </div>
+    <div style="margin-top:8px"><label>Note (optional)</label><input id="lootNote" type="text" placeholder="found in the crypt under Varithond" maxlength="80"></div>
+    <button class="btn" id="lootAdd" style="margin-top:12px;width:100%">Add to party inventory</button>
+    <p class="note" id="lootNote2"></p>
+  </div>
 </div>
 
 <script>
@@ -118,6 +130,27 @@ async function refresh(){
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 $('refresh').addEventListener('click',refresh);
+
+$('lootAdd').addEventListener('click', async ()=>{
+  const n=$('lootNote2'), code=$('lootCode').value.trim(), name=$('lootName').value.trim();
+  const say=(cls,msg)=>{ n.className="note "+cls; n.textContent=msg; };
+  if(!code) return say("err","Campaign code required.");
+  if(!name) return say("err","Item name required.");
+  const btn=$('lootAdd'); btn.disabled=true;
+  try{
+    const r=await fetch(API+"/inv/"+encodeURIComponent(code),{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name, qty:+$('lootQty').value||1, note:$('lootNote').value.trim()})
+    });
+    const res=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(r.status===403?"unknown campaign code.":(res.error||("HTTP "+r.status)));
+    try{ localStorage.setItem('fh-gm-lootcode',code); }catch(e){}
+    say("ok",`✓ "${res.item.name}"${res.item.qty>1?" ×"+res.item.qty:""} dropped into ${code}'s party stash.`);
+    $('lootName').value=""; $('lootQty').value=1; $('lootNote').value="";
+  }catch(err){ say("err","Could not add: "+err.message); }
+  finally{ btn.disabled=false; }
+});
+try{ $('lootCode').value = localStorage.getItem('fh-gm-lootcode') || localStorage.getItem('fh-gm-campaign') || ""; }catch(e){}
 $('token').addEventListener('keydown',e=>{ if(e.key==="Enter") refresh(); });
 $('campaign').addEventListener('keydown',e=>{ if(e.key==="Enter") refresh(); });
 
