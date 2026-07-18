@@ -65,8 +65,9 @@
   .itemcard .sec{margin:6px 0 0;font:12px system-ui,sans-serif}
   .itemcard .sec b{color:var(--ink)}
   .boon{color:var(--good)} .flaw{color:var(--bad)}
-  .charbar{display:flex;gap:8px;align-items:center;font-family:system-ui,sans-serif}
+  .charbar{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;font-family:system-ui,sans-serif}
   .charbar select{min-width:140px}
+  .charbar input{width:105px}
   /* dice overlay */
   #diceOverlay{position:fixed;inset:0;background:rgba(10,7,5,.88);display:none;align-items:center;justify-content:center;z-index:99;flex-direction:column;text-align:center}
   #diceOverlay.show{display:flex}
@@ -103,25 +104,19 @@
     <div class="sub">Craft, forge and grow <b>soulforged items</b> — Fate's Hand · Soulforge Crafting</div>
   </div>
   <div class="charbar">
-    <label style="margin:0">Forger</label>
-    <select id="charSel"></select>
-    <button class="btn small ghost" id="btnNewChar">+ New</button>
-    <button class="btn small ghost" id="btnBackup">Backup</button>
+    <div><label>Campaign</label><input id="campaignCode" placeholder="FH1"></div>
+    <button class="btn small ghost" id="btnLoad">Load</button>
+    <div><label>Forger</label><select id="charSel"><option>— load campaign —</option></select></div>
+    <a class="btn small ghost" id="inventoryLink" href="party-inventory.html">Party Inventory</a>
   </div>
 </header>
 <main>
   <nav class="tabs" id="tabs">
-    <button data-tab="forgers" class="on">Forgers &amp; Inventory</button>
-    <button data-tab="party">Party Stash</button>
-    <button data-tab="ingredients">Add Ingredients</button>
-    <button data-tab="prep">Preparation</button>
+    <button data-tab="workbench" class="on">Workbench</button>
     <button data-tab="forge">Soulforging</button>
     <button data-tab="grow">Growing an Item</button>
   </nav>
-  <div id="tab-forgers"></div>
-  <div id="tab-party" style="display:none"></div>
-  <div id="tab-ingredients" style="display:none"></div>
-  <div id="tab-prep" style="display:none"></div>
+  <div id="tab-workbench"></div>
   <div id="tab-forge" style="display:none"></div>
   <div id="tab-grow" style="display:none"></div>
 </main>
@@ -212,33 +207,81 @@ CATS.forEach(c=>{ (CREATURES[c.creature] ||= {type:c.type, cr:c.cr, entries:[]})
 const CREATURE_NAMES = Object.keys(CREATURES).sort();
 
 /* ================= State ================= */
-const KEY="fh-soulforge-v1";
-let S = load();
-function load(){
-  try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.characters) return s; }catch(e){}
-  return { characters:[], party:{parts:[],gems:[],soulgems:[],items:[]}, activeChar:null, seq:1 };
-}
-function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
-function uid(){ return "sf"+(S.seq++); }
+const API="https://fh-builds.noirchicot.workers.dev";
+let CODE="", SERVER_ITEMS=[], PARTY=[], ACTIVE_BUILD=null, BUILD_CACHE={};
+let S={characters:[],party:newInv(),activeChar:null};
+function save(){} /* inventory source of truth is the campaign Worker, never localStorage */
+function uid(){ return crypto.randomUUID(); }
 function activeChar(){ return S.characters.find(c=>c.id===S.activeChar)||null; }
 function newInv(){ return {parts:[],gems:[],soulgems:[],items:[]}; }
-/* parts cover Structure / Essence / Catalyst raw parts; bodies = Structure parts with crafted=true */
+async function api(path,opts){
+  const r=await fetch(API+path,opts);
+  if(r.status===403) throw new Error("unknown campaign code — ask your GM");
+  if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.error||("HTTP "+r.status)); }
+  return r.json();
+}
+async function post(path,body){ return api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); }
+function clone(x){ return JSON.parse(JSON.stringify(x)); }
+function roleName(partType){ return ({structure:"Structure",essence:"Essence",catalyst:"Catalyst"})[partType]||partType; }
+function serverInventory(items){
+  const inv=newInv();
+  items.forEach(x=>{
+    if(x.kind==="raw"||x.kind==="part"){
+      if(x.stage==="soulgem"){
+        inv.soulgems.push({id:x.id,server:x,gemName:x.gemName||x.name,value:x.valueGp||0,creature:x.creature,ctype:x.creatureType,cr:x.cr,pp:x.pp,upgraded:!!x.upgraded,owner:x.owner});
+      }else{
+        inv.parts.push({id:x.id,server:x,name:x.name,creature:x.creature,ctype:x.creatureType,cr:x.cr,role:roleName(x.partType),pp:x.pp,ppCap:x.ppCap,crafted:x.stage==="body",baseItem:x.baseItem,identified:x.stage==="identified",power:x.power||null,owner:x.owner});
+      }
+      return;
+    }
+    if(x.kind==="other"&&x.subtype==="gem"){
+      inv.gems.push({id:x.id,server:x,name:x.name,value:x.valueGp||0,qty:x.qty||1,owner:x.owner});
+      return;
+    }
+    if(x.kind==="other"&&x.subtype==="soulforged"&&x.soulforge){
+      inv.items.push({id:x.id,name:x.name,owner:x.owner,server:x,...clone(x.soulforge)});
+    }
+  });
+  return inv;
+}
+function proficiencyBonus(level){ return 2+Math.floor((Math.max(1,+level||1)-1)/4); }
+function ritualLevelFor(pp){ return pp<=3?5:pp<=5?10:pp<=7?15:30; }
+function soulforgingScore(record){
+  const b=record?.build||record||{};
+  const cha=+(b.character?.abilityScores?.CHA??10);
+  const mod=Math.floor((cha-10)/2);
+  const level=+(b.meta?.level??b.builderState?.lvl??1);
+  const pb=proficiencyBonus(level);
+  const skill=(b.skills||[]).find(s=>String(s.name).toLowerCase()==="soulforging");
+  const proficiency=+skill?.proficiencyLevel||1; /* builder: 1 none, 2 half, 3 prof, 4 expertise */
+  const trained=proficiency===2?Math.floor(pb/2):proficiency===3?pb:proficiency>=4?pb*2:0;
+  const tier=proficiency===2?"½ proficiency":proficiency===3?"proficient":proficiency>=4?"expertise":"untrained";
+  return {bonus:mod+trained,cha,mod,pb,tier,level};
+}
+function rebuildState(){
+  const inv=serverInventory(SERVER_ITEMS);
+  const previous=S.activeChar;
+  S.party=inv;
+  S.characters=PARTY.map(p=>({id:p,name:p,bonus:0,score:null,inventory:inv}));
+  S.activeChar=S.characters.some(c=>c.id===previous)?previous:(S.characters[0]?.id||null);
+  const c=activeChar();
+  if(c&&ACTIVE_BUILD){ c.score=soulforgingScore(ACTIVE_BUILD); c.bonus=c.score.bonus; }
+}
 
 /* ================= UI plumbing ================= */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-let TAB="forgers";
+let TAB="workbench";
 $("#tabs").addEventListener("click",e=>{
   const b=e.target.closest("button"); if(!b)return;
   TAB=b.dataset.tab; $$("#tabs button").forEach(x=>x.classList.toggle("on",x===b));
   renderAll();
 });
-function show(tab){ ["forgers","party","ingredients","prep","forge","grow"].forEach(t=>{ $("#tab-"+t).style.display = t===tab?"":"none"; }); }
+function show(tab){ ["workbench","forge","grow"].forEach(t=>{ $("#tab-"+t).style.display = t===tab?"":"none"; }); }
 function renderAll(){
   renderCharSel();
   show(TAB);
-  ({forgers:renderForgers,party:renderParty,ingredients:renderIngredients,prep:renderPrep,forge:renderForge,grow:renderGrow})[TAB]();
-  save();
+  ({workbench:renderWorkbench,forge:renderForge,grow:renderGrow})[TAB]();
 }
 function modal(html){
   const ov=document.createElement("div"); ov.className="modal-overlay";
@@ -251,34 +294,54 @@ function ppPill(pp){ return `<span class="pill pp">${pp} PP · ${tierName(pp)}</
 /* ================= Characters ================= */
 function renderCharSel(){
   const sel=$("#charSel");
-  sel.innerHTML = S.characters.map(c=>`<option value="${c.id}" ${c.id===S.activeChar?"selected":""}>${esc(c.name)}</option>`).join("") || `<option value="">— no forger —</option>`;
+  sel.innerHTML = S.characters.map(c=>`<option value="${esc(c.id)}" ${c.id===S.activeChar?"selected":""}>${esc(c.name)}</option>`).join("") || `<option value="">— no character —</option>`;
 }
-$("#charSel").addEventListener("change",e=>{ S.activeChar=e.target.value; renderAll(); });
-$("#btnNewChar").addEventListener("click",()=>{
-  const m=modal(`<h3>New forger</h3>
-    <div class="row"><div><label>Character name</label><input type="text" id="ncName"></div>
-    <div><label>Soulforging bonus (prof + CHA)</label><input type="number" id="ncBonus" value="0"></div></div>
-    <button class="btn" id="ncGo">Create</button>`);
-  m.querySelector("#ncGo").onclick=()=>{
-    const name=m.querySelector("#ncName").value.trim(); if(!name)return;
-    const c={id:uid(),name,bonus:+m.querySelector("#ncBonus").value||0,inventory:newInv()};
-    S.characters.push(c); S.activeChar=c.id; m.remove(); renderAll();
-  };
-});
-$("#btnBackup").addEventListener("click",()=>{
-  const m=modal(`<h3>Backup / restore</h3>
-    <p class="hint">All data lives in this browser (localStorage). Copy this JSON to move it to another device, or paste a backup below and restore.</p>
-    <textarea id="bkTxt">${esc(JSON.stringify(S))}</textarea>
-    <div class="row" style="margin-top:10px">
-      <button class="btn ghost" id="bkCopy">Copy</button>
-      <button class="btn danger" id="bkRestore">Restore from pasted JSON</button>
-    </div>`);
-  m.querySelector("#bkCopy").onclick=()=>navigator.clipboard.writeText(m.querySelector("#bkTxt").value);
-  m.querySelector("#bkRestore").onclick=()=>{
-    try{ const s=JSON.parse(m.querySelector("#bkTxt").value); if(!s.characters) throw 0; S=s; m.remove(); renderAll(); }
-    catch(e){ alert("Invalid JSON"); }
-  };
-});
+async function loadActiveBuild(){
+  const c=activeChar(); ACTIVE_BUILD=null;
+  if(c) ACTIVE_BUILD=await loadBuild(c.id);
+  rebuildState();
+}
+async function loadBuild(pseudo){
+  if(!pseudo)return null;
+  if(!BUILD_CACHE[pseudo]) BUILD_CACHE[pseudo]=await api(`/party/${encodeURIComponent(CODE)}/${encodeURIComponent(pseudo)}`);
+  return BUILD_CACHE[pseudo];
+}
+async function loadCampaign(){
+  CODE=$("#campaignCode").value.trim(); if(!CODE)return;
+  const btn=$("#btnLoad"); btn.disabled=true; btn.textContent="Loading…";
+  try{
+    const [party,inv]=await Promise.all([api(`/party/${encodeURIComponent(CODE)}`),api(`/inv/${encodeURIComponent(CODE)}`)]);
+    PARTY=party.builds.map(b=>b.pseudo).sort(); SERVER_ITEMS=inv.items; BUILD_CACHE={};
+    let last=""; try{ last=localStorage.getItem("fh-my-pseudo")||""; localStorage.setItem("fh-my-campcode",CODE); }catch(e){}
+    S.activeChar=PARTY.includes(S.activeChar)?S.activeChar:(PARTY.includes(last)?last:(PARTY[0]||null));
+    rebuildState(); await loadActiveBuild();
+    $("#inventoryLink").href=`party-inventory.html?campaign=${encodeURIComponent(CODE)}`;
+    applyIncomingPart(); renderAll();
+  }catch(err){ alert("Could not load the campaign: "+err.message); }
+  finally{ btn.disabled=false; btn.textContent="Load"; }
+}
+$("#charSel").addEventListener("change",async e=>{ S.activeChar=e.target.value; try{localStorage.setItem("fh-my-pseudo",S.activeChar)}catch(x){} try{await loadActiveBuild();renderAll()}catch(err){alert("Could not load character: "+err.message)} });
+$("#btnLoad").addEventListener("click",loadCampaign);
+$("#campaignCode").addEventListener("keydown",e=>{if(e.key==="Enter")loadCampaign()});
+
+function renderWorkbench(){
+  const box=$("#tab-workbench"),c=activeChar(),inv=S.party;
+  const parts=[...inv.parts.filter(p=>(p.role==="Structure"&&p.crafted)||(p.role==="Catalyst"&&p.identified)),...inv.soulgems];
+  box.innerHTML=`<div class="card"><h2>Campaign Workbench</h2>
+    <p class="hint">The campaign inventory is the only source of truth. Prepare raw ingredients in <a href="${esc($("#inventoryLink").href)}" style="color:var(--gold)">Party Inventory</a>, then select the ready parts here or in the Soulforging tab.</p>
+    ${c?`<div class="reminders"><b>Active forger</b><b>${esc(c.name)}</b> · Soulforging ${c.score?.tier||"untrained"} · CHA ${c.score?.cha??10} · PB ${c.score?.pb??2} → <b>${c.bonus>=0?"+":""}${c.bonus}</b></div>`:`<div class="badline">Load a campaign with at least one character build.</div>`}
+    ${parts.length?`<table><tr><th>Forgable part</th><th>Owner</th><th></th></tr>${parts.map(p=>`<tr><td>${p.gemName?soulgemLine(p):partLine(p)}</td><td>${esc(p.owner||"Party stash")}</td><td><button class="btn small soul" data-workpart="${p.id}">Set in forge</button></td></tr>`).join("")}</table>`:`<div class="empty">No prepared parts yet. Craft, infuse or identify ingredients in Party Inventory.</div>`}
+  </div>`;
+  box.querySelectorAll("[data-workpart]").forEach(b=>b.onclick=()=>{ selectWorkbenchPart(b.dataset.workpart); TAB="forge"; $$("#tabs button").forEach(x=>x.classList.toggle("on",x.dataset.tab==="forge")); renderAll(); });
+}
+function selectWorkbenchPart(id){
+  const inv=S.party,p=inv.parts.find(x=>x.id===id),g=inv.soulgems.find(x=>x.id===id);
+  if(g&&!FORGE_SEL.gems.includes(id))FORGE_SEL.gems.push(id);
+  if(p?.role==="Structure"&&p.crafted)FORGE_SEL.body=id;
+  if(p?.role==="Catalyst"&&p.identified&&!FORGE_SEL.cats.includes(id))FORGE_SEL.cats.push(id);
+}
+let INCOMING_APPLIED=false;
+function applyIncomingPart(){ if(INCOMING_APPLIED)return; const id=new URLSearchParams(location.search).get("part"); if(id){selectWorkbenchPart(id);TAB="forge"; $$("#tabs button").forEach(x=>x.classList.toggle("on",x.dataset.tab==="forge"));} INCOMING_APPLIED=true; }
 
 /* ---- inventory rendering (shared for char & party) ---- */
 function partLine(p){
@@ -596,11 +659,18 @@ function bonusPanel(idPrefix, provenance){
     : same===2?`<span class="okline">+2 — all parts share one creature type (${esc(types[0])})</span>`
     : `<span class="hint">+0 — mixed creatures and types</span>`;
   return {same, html:`
-    <h3>Bonuses</h3>
+    <h3>Modifiers</h3>
     <div class="laws">
       <div>Parts provenance: ${sameTxt}</div>
-      <label class="chk"><input type="checkbox" id="${idPrefix}Help"> Help action (a Soulforging-proficient ally, e.g. the future owner) → <b>advantage</b></label>
-      <div class="row" style="margin-top:6px"><div><label>Other bonuses (GM)</label><input type="number" id="${idPrefix}Other" value="0"></div></div>
+      <div class="row" style="margin-top:8px">
+        <div><label>Help / Leadership / Synergy</label><select id="${idPrefix}Fixed">
+          <option value="flat">Flat</option><option value="disadvantage">Disadvantage</option>
+          <option value="plus2">+2</option><option value="advantage">Advantage</option>
+        </select></div>
+        <div><label>Bonus die 1</label><select id="${idPrefix}Die1"><option value="0">— none —</option>${[4,6,8,10,12].map(n=>`<option value="${n}">1d${n}</option>`).join("")}</select></div>
+        <div><label>Bonus die 2</label><select id="${idPrefix}Die2"><option value="0">— none —</option>${[4,6,8,10,12].map(n=>`<option value="${n}">1d${n}</option>`).join("")}</select></div>
+      </div>
+      <div class="okline" id="${idPrefix}Formula"></div>
     </div>`};
 }
 function rollPanel(idPrefix){
@@ -611,13 +681,25 @@ function rollPanel(idPrefix){
         <option value="auto">Roll for me (workshop dice)</option>
         <option value="manual">I rolled my own d20 — enter it</option>
       </select></div>
-      <div id="${idPrefix}ManualBox" style="display:none"><label>Natural d20 (two rolls if advantage)</label>
-        <span><input type="number" id="${idPrefix}Nat1" min="1" max="20" style="width:64px"> <input type="number" id="${idPrefix}Nat2" min="1" max="20" style="width:64px" placeholder="adv."></span></div>
+      <div id="${idPrefix}ManualBox" style="display:none"><label>Natural d20 (two rolls with advantage/disadvantage)</label>
+        <span><input type="number" id="${idPrefix}Nat1" min="1" max="20" style="width:64px"> <input type="number" id="${idPrefix}Nat2" min="1" max="20" style="width:64px" placeholder="second"></span></div>
     </div>`;
 }
 function wireRollMode(box,idPrefix){
   const sel=box.querySelector(`#${idPrefix}Mode`);
   sel.onchange=()=>{ box.querySelector(`#${idPrefix}ManualBox`).style.display = sel.value==="manual"?"":"none"; };
+}
+function readModifiers(box,idPrefix){
+  const mode=box.querySelector(`#${idPrefix}Fixed`)?.value||"flat";
+  const dice=[+box.querySelector(`#${idPrefix}Die1`)?.value||0,+box.querySelector(`#${idPrefix}Die2`)?.value||0].filter(Boolean);
+  return {mode,fixed:mode==="plus2"?2:0,dice};
+}
+function wireModifierPanel(box,idPrefix,skillBonus,provenanceBonus){
+  const getSkill=typeof skillBonus==="function"?skillBonus:()=>skillBonus;
+  const update=()=>{ const m=readModifiers(box,idPrefix); const sign=n=>n>=0?`+ ${n}`:`− ${Math.abs(n)}`;
+    box.querySelector(`#${idPrefix}Formula`).innerHTML=`Total: <b>d20${m.mode==="advantage"?" with advantage":m.mode==="disadvantage"?" with disadvantage":""}</b> ${sign(getSkill())} skill ${sign(provenanceBonus)} provenance${m.fixed?` ${sign(m.fixed)} fixed`:""}${m.dice.length?` + ${m.dice.map(n=>`1d${n}`).join(" + ")}`:""}.`; };
+  [`${idPrefix}Fixed`,`${idPrefix}Die1`,`${idPrefix}Die2`].forEach(id=>box.querySelector(`#${id}`)?.addEventListener("change",update)); update();
+  return update;
 }
 function d(n){ return 1+Math.floor(Math.random()*n); }
 function burst(color,n=26){
@@ -627,8 +709,8 @@ function burst(color,n=26){
     s.style.setProperty("--dx",(Math.random()*260-130)+"px"); s.style.setProperty("--dy",(Math.random()*260-130)+"px");
     d20.appendChild(s); setTimeout(()=>s.remove(),1000); }
 }
-/* animated d20 → resolves with natural roll(s) */
-function animateRoll(opts){ /* {advantage, manual:[n1,n2]|null, bonus, dc, onDone(outcome)} */
+/* animated d20 + up to two bonus dice */
+function animateRoll(opts){ /* {rollMode, manual:[n1,n2]|null, bonus, bonusDice, dc, onDone} */
   const ov=$("#diceOverlay"), num=$("#d20num"), msg=$("#diceMsg"), btns=$("#diceBtns");
   ov.classList.add("show"); msg.innerHTML=""; btns.innerHTML="";
   $("#d20").classList.add("rolling");
@@ -637,18 +719,22 @@ function animateRoll(opts){ /* {advantage, manual:[n1,n2]|null, bonus, dc, onDon
     clearInterval(iv); $("#d20").classList.remove("rolling");
     let n1,n2=null;
     if(opts.manual){ n1=opts.manual[0]; n2=opts.manual[1]; }
-    else{ n1=d(20); if(opts.advantage) n2=d(20); }
-    const nat = n2!=null?Math.max(n1,n2):n1;
+    else{ n1=d(20); if(opts.rollMode==="advantage"||opts.rollMode==="disadvantage") n2=d(20); }
+    const nat = n2!=null?(opts.rollMode==="disadvantage"?Math.min(n1,n2):Math.max(n1,n2)):n1;
     num.textContent=nat;
-    const total=nat+opts.bonus;
+    const diceRolls=(opts.bonusDice||[]).map(sides=>({sides,value:d(sides)}));
+    const diceTotal=diceRolls.reduce((s,r)=>s+r.value,0);
+    const total=nat+opts.bonus+diceTotal;
     const margin=total-opts.dc;
     let kind; /* boon | success | mishap | destroy */
     if(nat===20||margin>=5) kind = margin>=0 ? "boon" : (nat===20?"boon":"mishap"); /* nat20 also needs success? doc: beat by 5+ or nat 20 → boon (on success) */
     if(nat===20&&margin<0) kind="mishap"; /* a nat 20 that still fails: treat as narrow failure */
     if(kind===undefined) kind = margin>=0 ? "success" : (margin<=-5 ? "destroy" : "mishap");
     if(margin<=-5) kind="destroy";
-    const detail = `${n2!=null?`d20: ${n1} / ${n2} (adv.) → <b>${nat}</b>`:`d20: <b>${nat}</b>`} + ${opts.bonus} = <b>${total}</b> vs DC <b>${opts.dc}</b>`;
-    opts.onDone({kind,nat,total,margin,detail});
+    const modeTxt=opts.rollMode==="disadvantage"?"dis.":"adv.";
+    const diceTxt=diceRolls.length?` + ${diceRolls.map(r=>`d${r.sides}: ${r.value}`).join(" + ")}`:"";
+    const detail = `${n2!=null?`d20: ${n1} / ${n2} (${modeTxt}) → <b>${nat}</b>`:`d20: <b>${nat}</b>`} + ${opts.bonus}${diceTxt} = <b>${total}</b> vs DC <b>${opts.dc}</b>`;
+    opts.onDone({kind,nat,total,margin,detail,diceRolls});
   }, 1300);
 }
 function closeDice(){ $("#diceOverlay").classList.remove("show"); }
@@ -659,7 +745,7 @@ function diceResult(kindClass, title, detail, body, buttons){
 }
 
 /* ================= Soulforging tab ================= */
-let FORGE_SEL={body:null,gems:[],cats:[]};
+let FORGE_SEL={body:null,gems:[],cats:[]}, FORGE_OWNER=null;
 function renderForge(){
   const box=$("#tab-forge"); const c=activeChar();
   if(!c){ box.innerHTML=`<div class="card"><div class="empty">Select a forger first.</div></div>`; return; }
@@ -675,25 +761,30 @@ function renderForge(){
   const selCats=FORGE_SEL.cats.map(id=>inv.parts.find(p=>p.id===id)).map(p=>({...p,pp:p.power.pp,uses:p.power.uses||1,family:p.power.family,name:p.name||p.power.name}));
   const laws = body?checkLaws(body.pp,selGems,selCats,0):null;
   const highest = selCats.reduce((m,x)=>Math.max(m,x.pp),1);
+  FORGE_OWNER=PARTY.includes(FORGE_OWNER)?FORGE_OWNER:c.name;
+  const ownerScore=FORGE_OWNER===c.name?c.score:(BUILD_CACHE[FORGE_OWNER]?soulforgingScore(BUILD_CACHE[FORGE_OWNER]):null);
+  const forgerLevel=c.score?.level||1, ownerLevel=ownerScore?.level||0;
+  const pooledLevel=forgerLevel+(FORGE_OWNER!==c.name?ownerLevel:0), requiredLevel=ritualLevelFor(highest);
   const provenance = body?[{creature:body.creature,ctype:body.ctype},...selGems.map(g=>({creature:g.creature,ctype:g.ctype})),...selCats.map(x=>({creature:x.creature,ctype:x.ctype}))]:[];
   const bp=bonusPanel("fg",provenance);
-  const ready = body&&selGems.length>0&&selCats.length>0&&laws.law1.ok&&laws.law2.ok&&laws.law3.ok;
+  const levelReady=pooledLevel>=requiredLevel;
+  const ready = body&&selGems.length>0&&selCats.length>0&&laws.law1.ok&&laws.law2.ok&&laws.law3.ok&&levelReady;
   box.innerHTML=`
   <div class="card"><h2>Assemble the piece</h2>
     <div class="grid2">
       <div>
         <h3>Body (crafted Structure)</h3>
         ${bodies.length?bodies.map(b=>`<label class="chk"><input type="radio" name="fgBody" value="${b.id}" ${FORGE_SEL.body===b.id?"checked":""}> <b>${esc(b.baseItem)}</b> — ${esc(b.creature)} frame, ${b.pp} PP</label>`).join("")
-          :`<div class="empty">No crafted body — craft a Structure part in Preparation.</div>`}
+          :`<div class="empty">No crafted body — craft a Structure part in Party Inventory.</div>`}
         <h3>Soulgems (max 3)</h3>
         ${inv.soulgems.length?inv.soulgems.map(g=>`<label class="chk"><input type="checkbox" data-fggem="${g.id}" ${FORGE_SEL.gems.includes(g.id)?"checked":""}> ${esc(g.gemName)} — ${g.pp} PP (${esc(g.creature)})</label>`).join("")
-          :`<div class="empty">No Soulgem — infuse an Essence in Preparation.</div>`}
+          :`<div class="empty">No Soulgem — infuse an Essence in Party Inventory.</div>`}
       </div>
       <div>
         <h3>Catalysts</h3>
         ${cats.length?cats.map(p=>`<label class="chk"><input type="checkbox" data-fgcat="${p.id}" ${FORGE_SEL.cats.includes(p.id)?"checked":""}> <b>${esc(p.power.name)}</b> — ${p.power.pp} PP${p.power.family==="Flat"?" · passive":((p.power.uses||1)>1?` · ${p.power.uses}/rest`:"")} (${esc(p.creature)})</label>`).join("")
           :`<div class="empty">No identified catalyst.</div>`}
-        ${unid.length?`<div class="warnline">⚠ ${unid.length} unidentified catalyst${unid.length>1?"s":""} in inventory — cast <i>Identify</i> (Preparation) before forging.</div>`:""}
+        ${unid.length?`<div class="warnline">⚠ ${unid.length} unidentified catalyst${unid.length>1?"s":""} in inventory — identify it in Party Inventory before forging.</div>`:""}
       </div>
     </div>
     ${body?`<div class="laws">
@@ -702,6 +793,7 @@ function renderForge(){
       <div class="${laws.law3.ok?"ok":"ko"}">${laws.law3.ok?"✓":"✗"} Law 3 · ${laws.law3.txt}</div>
       ${selGems.length?"":'<div class="ko">✗ At least one Soulgem — the item needs a Power Supply</div>'}
       ${selCats.length?"":'<div class="ko">✗ At least one catalyst — the item needs a power</div>'}
+      <div class="${levelReady?"ok":"ko"}">${levelReady?"✓":"✗"} Ritual level pool ${pooledLevel}/${requiredLevel} — forger ${forgerLevel}${FORGE_OWNER!==c.name?` + future owner ${ownerLevel}`:" (forger is also owner)"}</div>
     </div>`:""}
   </div>
   ${body&&selCats.length?`<div class="card"><h2>The ritual</h2>
@@ -712,14 +804,19 @@ function renderForge(){
       <div class="stat"><span class="v" style="font-size:15px;padding-top:6px">${gp(costFor(highest))}</span><span class="l">Forge cost</span></div>
       <div class="stat"><span class="v" style="font-size:15px;padding-top:6px">${selGems.length?Math.max(...selGems.map(g=>g.pp)):1}d6</span><span class="l">Life cost (necrotic)</span></div>
     </div>
-    <p class="hint">Dark ritual — one roll. The forger makes the check; the future owner stands secondary (lends their level, receives attunement) and may <b>Help</b> if proficient with Soulforging Tools.</p>
+    <p class="hint">Dark ritual — one roll. The forger makes the check; the future owner stands secondary, lends their level and receives attunement. If proficient with Soulforging Tools, they may Help; choose Advantage below.</p>
+    <div class="row">
+      <div><label>Future owner / attunement</label><select id="fgOwner">${PARTY.map(p=>`<option value="${esc(p)}" ${p===FORGE_OWNER?"selected":""}>${esc(p)}</option>`).join("")}</select></div>
+      <div class="meter" style="margin:0"><div class="stat"><span class="v">${pooledLevel}/${requiredLevel}</span><span class="l">Level pool</span></div></div>
+    </div>
     ${bp.html}
     ${rollPanel("fg")}
     <div class="row">
       <div><label>Item name</label><input type="text" id="fgName" placeholder="e.g. Fang of the Red Mist" style="min-width:240px"></div>
-      <div><label>Forger bonus</label><input type="number" id="fgBonus" value="${c.bonus}"></div>
+      <div><label>Forger bonus</label><input type="number" id="fgBonus" value="${c.bonus}" readonly></div>
+      <label class="chk"><input type="checkbox" id="fgOverride"> Use another forger's bonus</label>
     </div>
-    <button class="btn" id="fgRoll" ${ready?"":"disabled"}>⚒ Make the Soulforging check</button>
+    <button class="btn" id="fgRoll" ${ready?"":"disabled"}>⚒ Forge — review bonuses and roll</button>
     ${ready?"":'<div class="badline">Blocked — fix the laws / selection above first.</div>'}
   </div>`:""}`;
   box.querySelectorAll("input[name=fgBody]").forEach(r=>r.onchange=()=>{ FORGE_SEL.body=r.value; renderForge(); });
@@ -729,25 +826,63 @@ function renderForge(){
     if(cb.checked)FORGE_SEL.cats.push(id); else FORGE_SEL.cats=FORGE_SEL.cats.filter(x=>x!==id); renderForge(); });
   if(body&&selCats.length){
     wireRollMode(box,"fg");
+    const updateFormula=wireModifierPanel(box,"fg",()=>+box.querySelector("#fgBonus").value||0,bp.same);
+    box.querySelector("#fgOverride").onchange=e=>{ box.querySelector("#fgBonus").readOnly=!e.target.checked; updateFormula(); };
+    box.querySelector("#fgBonus").oninput=updateFormula;
+    box.querySelector("#fgOwner").onchange=async e=>{ FORGE_OWNER=e.target.value; try{await loadBuild(FORGE_OWNER);renderForge()}catch(err){alert("Could not load future owner: "+err.message)} };
     box.querySelector("#fgRoll").onclick=()=>{
       const name=box.querySelector("#fgName").value.trim(); if(!name){alert("Name the item first.");return;}
-      const adv=box.querySelector("#fgHelp").checked;
-      const bonus=(+box.querySelector("#fgBonus").value||0)+bp.same+(+box.querySelector("#fgOther").value||0);
+      const mod=readModifiers(box,"fg");
+      const bonus=(+box.querySelector("#fgBonus").value||0)+bp.same+mod.fixed;
       let manual=null;
       if(box.querySelector("#fgMode").value==="manual"){
         const n1=+box.querySelector("#fgNat1").value; if(!(n1>=1&&n1<=20)){alert("Enter your natural d20.");return;}
-        const n2=+box.querySelector("#fgNat2").value||null; manual=[n1,adv?(n2||n1):null];
+        const needsTwo=mod.mode==="advantage"||mod.mode==="disadvantage";
+        const n2=+box.querySelector("#fgNat2").value||null;
+        if(needsTwo&&!(n2>=1&&n2<=20)){alert("Enter both natural d20 rolls for advantage/disadvantage.");return;}
+        manual=[n1,needsTwo?n2:null];
       }
-      runForgeRitual({name,body,selGems,selCats,adv,bonus,manual,dc:dcFor(highest),highest,char:c,rerolled:false});
+      runForgeRitual({name,body,selGems,selCats,owner:FORGE_OWNER,rollMode:mod.mode,bonusDice:mod.dice,bonus,manual,dc:dcFor(highest),highest,char:c,rerolled:false});
     };
   }
 }
-function buildItem(name,body,selGems,selCats,charName){
+function buildItem(name,body,selGems,selCats,forgerName,ownerName=forgerName){
   return { id:uid(), name, baseItem:body.baseItem,
     structure:{creature:body.creature,ctype:body.ctype,cr:body.cr,pp:body.pp},
     soulgems:selGems.map(g=>({id:uid(),gemName:g.gemName,value:g.value,creature:g.creature,ctype:g.ctype,pp:g.pp,upgraded:!!g.upgraded})),
     catalysts:selCats.map(x=>({id:uid(),name:x.name,creature:x.creature,ctype:x.ctype,pp:x.pp,uses:x.uses||1,family:x.family||(x.power?x.power.family:undefined),text:x.power?x.power.text:(x.text||""),usesUpgrades:0})),
-    boons:[],flaws:[],supplyBonus:0,attunedTo:charName,history:[{d:today(),e:"forged by "+charName}] };
+    boons:[],flaws:[],supplyBonus:0,attunedTo:ownerName,forgedBy:forgerName,history:[{d:today(),e:"forged by "+forgerName}] };
+}
+async function refreshInventory(){
+  const inv=await api(`/inv/${encodeURIComponent(CODE)}`);
+  SERVER_ITEMS=inv.items; rebuildState();
+}
+async function consumeServer(ids){
+  const unique=[...new Set(ids.filter(Boolean))];
+  if(unique.length) await post(`/inv/${encodeURIComponent(CODE)}/consume`,{ids:unique});
+  await refreshInventory();
+}
+async function commitForge(ctx,opts={}){
+  const gems=opts.gems||ctx.selGems, cats=opts.cats||ctx.selCats;
+  const result=await post(`/inv/${encodeURIComponent(CODE)}/forge`,{
+    name:ctx.name, owner:ctx.owner, forgedBy:ctx.char.name,
+    bodyId:ctx.body.id, soulgemIds:gems.map(g=>g.id), catalystIds:cats.map(c=>c.id),
+    extraConsumeIds:opts.extraConsumeIds||[], allowNoCatalyst:!!opts.allowNoCatalyst,
+    boons:opts.boons||[], flaws:opts.flaws||[], supplyBonus:opts.supplyBonus||0,
+    efficientCatalystIndex:opts.efficientCatalystIndex,
+    preserveCatalystId:opts.preserveCatalystId||null
+  });
+  const item=serverInventory([result.item]).items[0];
+  await refreshInventory(); FORGE_SEL={body:null,gems:[],cats:[]};
+  return item;
+}
+async function guardedServerAction(fn){
+  try{return await fn();}
+  catch(err){
+    await refreshInventory().catch(()=>{});
+    alert("The campaign inventory changed or the server rejected the action: "+err.message);
+    closeDice(); renderAll(); return null;
+  }
 }
 function consumeForgeParts(inv,body,selGems,selCats){
   removeFrom(inv,"parts",body.id);
@@ -761,26 +896,28 @@ function applyBoon(it,roll){
   return b;
 }
 function runForgeRitual(ctx){
-  animateRoll({advantage:ctx.adv,manual:ctx.manual,bonus:ctx.bonus,dc:ctx.dc,onDone:out=>{
-    const inv=ctx.char.inventory;
+  animateRoll({rollMode:ctx.rollMode,manual:ctx.manual,bonus:ctx.bonus,bonusDice:ctx.bonusDice,dc:ctx.dc,onDone:async out=>{
     if(out.kind==="boon"||out.kind==="success"){
-      const it=buildItem(ctx.name,ctx.body,ctx.selGems,ctx.selCats,ctx.char.name);
-      let boonHtml="";
+      let boonHtml="", forgeOpts={};
       if(out.kind==="boon"){
-        const br=d(10); const b=applyBoon(it,br);
+        const br=d(10), b=BOONS[br-1]; forgeOpts.boons=[b];
+        if(br===1)forgeOpts.efficientCatalystIndex=0;
+        if(br===2)forgeOpts.supplyBonus=1;
+        if(br===3)forgeOpts.preserveCatalystId=ctx.selCats[0]?.id||null;
         boonHtml=`<div class="okline" style="margin-top:8px">✨ <b>Boon (d10: ${br})</b> — ${esc(b)}</div>`;
         burst("#c8a24a",40);
       } else burst("#5fa86b",24);
-      consumeForgeParts(inv,ctx.body,ctx.selGems,ctx.selCats);
-      inv.items.push(it); FORGE_SEL={body:null,gems:[],cats:[]}; save();
+      const it=await guardedServerAction(()=>commitForge(ctx,forgeOpts)); if(!it)return;
       diceResult(out.kind==="boon"?"boon":"success", out.kind==="boon"?"FORGED — the souls sing true":"FORGED", out.detail,
-        `<p><b>${esc(it.name)}</b> leaves the forge, already attuned to ${esc(ctx.char.name)}.</p>${boonHtml}`,
+        `<p><b>${esc(it.name)}</b> leaves the forge, forged by ${esc(ctx.char.name)} and attuned to ${esc(ctx.owner)}.</p>${boonHtml}`,
         [["View item","",()=>{closeDice(); modal(itemCard(it,true)); renderAll();}],["Done","ghost",()=>{closeDice(); renderAll();}]]);
     }
     else if(out.kind==="destroy"){
       document.body.classList.add("quake"); setTimeout(()=>document.body.classList.remove("quake"),600);
       burst("#c5524a",44);
-      consumeForgeParts(ctx.char.inventory,ctx.body,ctx.selGems,ctx.selCats); FORGE_SEL={body:null,gems:[],cats:[]}; save();
+      const ids=[ctx.body.id,...ctx.selGems.map(g=>g.id),...ctx.selCats.map(c=>c.id)];
+      const ok=await guardedServerAction(()=>consumeServer(ids)); if(ok===null)return;
+      FORGE_SEL={body:null,gems:[],cats:[]};
       diceResult("destroy","DESTRUCTION — failed by 5 or more",out.detail,
         `<p>The bind collapses. <b>Everything is lost</b>: the crafted body, ${ctx.selGems.length} Soulgem${ctx.selGems.length>1?"s":""} and ${ctx.selCats.length} catalyst${ctx.selCats.length>1?"s":""} are consumed by the forge. The gold and time are spent.</p>`,
         [["Accept the loss","danger",()=>{closeDice(); renderAll();}]]);
@@ -809,29 +946,22 @@ function mishapHint(mr){
   }[mr];
 }
 function mishapButtons(mr,ctx,out){
-  const inv=ctx.char.inventory;
   const btns=[];
-  const finishWithFlaw=(flaw,dropCatalyst,dropGem)=>{
-    const gems=dropGem?ctx.selGems.slice(1):ctx.selGems;   /* first gem spent */
-    const cats=dropCatalyst?ctx.selCats.slice(1):ctx.selCats; /* first catalyst destroyed */
-    if(dropGem&&ctx.selGems.length){ removeFrom(inv,"soulgems",ctx.selGems[0].id); }
-    if(dropCatalyst&&ctx.selCats.length){ removeFrom(inv,"parts",ctx.selCats[0].id); }
-    if(dropGem&&gems.length===0){ /* no supply left → item cannot finish; parts stay */
-      diceResult("mishap","The essence is gone",out.detail,`<p>The only Soulgem is spent — the piece cannot finish. Body and catalysts survive in the inventory.</p>`,[["Close","ghost",()=>{closeDice();renderAll();}]]);
-      save(); return;
-    }
-    const it=buildItem(ctx.name,ctx.body,gems,cats,ctx.char.name);
-    if(flaw) it.flaws.push(flaw);
-    consumeForgeParts(inv,ctx.body,gems,cats);
-    inv.items.push(it); FORGE_SEL={body:null,gems:[],cats:[]}; save();
-    closeDice(); modal(itemCard(it,true)); renderAll();
+  const finishWithFlaw=async(flaw,dropCatalyst=false)=>{
+    const cats=dropCatalyst?ctx.selCats.slice(1):ctx.selCats;
+    const dropped=dropCatalyst?ctx.selCats[0]:null;
+    const it=await guardedServerAction(()=>commitForge(ctx,{
+      cats, extraConsumeIds:dropped?[dropped.id]:[], allowNoCatalyst:cats.length===0,
+      flaws:flaw?[flaw]:[]
+    }));
+    if(!it)return; closeDice(); modal(itemCard(it,true)); renderAll();
   };
   if(!ctx.rerolled) btns.push(["↻ Reroll once (second chance)","soul",()=>{ runForgeRitual({...ctx,rerolled:true}); }]);
   switch(mr){
     case 1: case 3:
-      btns.push(["Lose the Soulgem — keep body & catalysts","",()=>{
-        if(ctx.selGems.length){ removeFrom(inv,"soulgems",ctx.selGems[0].id); }
-        save(); closeDice(); renderAll();
+      btns.push(["Lose the Soulgem — keep body & catalysts","",async()=>{
+        const ok=await guardedServerAction(()=>consumeServer([ctx.selGems[0]?.id])); if(ok===null)return;
+        FORGE_SEL.gems=FORGE_SEL.gems.filter(id=>id!==ctx.selGems[0]?.id); closeDice(); renderAll();
         modal(`<h3>Essence lost</h3><p>The ${esc(ctx.selGems[0]?.gemName||"gem")} is spent${mr===1?" — and the forger takes <b>4d10 necrotic</b>":""}. Body and catalysts survive — re-infuse and try again.</p>`);
       }]); break;
     case 2:
@@ -843,12 +973,12 @@ function mishapButtons(mr,ctx,out){
     case 8: btns.push(["Finish it — brittle","",()=>finishWithFlaw("Brittle — breaks on a natural 1, or sheds a charge unbidden.")]); break;
     case 9:
       btns.push([`Pay ${gp(costFor(ctx.highest))} again & finish`,"",()=>finishWithFlaw(null)]);
-      btns.push(["Refuse — lose everything","danger",()=>{ consumeForgeParts(inv,ctx.body,ctx.selGems,ctx.selCats); FORGE_SEL={body:null,gems:[],cats:[]}; save(); closeDice(); renderAll(); }]);
+      btns.push(["Refuse — lose everything","danger",async()=>{ const ok=await guardedServerAction(()=>consumeServer([ctx.body.id,...ctx.selGems.map(g=>g.id),...ctx.selCats.map(c=>c.id)])); if(ok===null)return; FORGE_SEL={body:null,gems:[],cats:[]}; closeDice(); renderAll(); }]);
       break;
     case 10:
-      btns.push(["Catastrophe — all is dust","danger",()=>{
+      btns.push(["Catastrophe — all is dust","danger",async()=>{
         document.body.classList.add("quake"); setTimeout(()=>document.body.classList.remove("quake"),600);
-        consumeForgeParts(inv,ctx.body,ctx.selGems,ctx.selCats); FORGE_SEL={body:null,gems:[],cats:[]}; save(); closeDice(); renderAll();
+        const ok=await guardedServerAction(()=>consumeServer([ctx.body.id,...ctx.selGems.map(g=>g.id),...ctx.selCats.map(c=>c.id)])); if(ok===null)return; FORGE_SEL={body:null,gems:[],cats:[]}; closeDice(); renderAll();
       }]); break;
   }
   btns.push(["Cancel (resolve at the table)","ghost",()=>{closeDice();}]);
@@ -916,7 +1046,7 @@ function renderGrow(){
     <div id="gwBody"></div>
   </div>`;
   if(inv.items.length){
-    box.querySelector("#gwItem").onchange=e=>{ GROW.itemId=e.target.value||null; GROW.action=""; renderGrow(); };
+    box.querySelector("#gwItem").onchange=async e=>{ GROW.itemId=e.target.value||null; GROW.action=""; const chosen=inv.items.find(i=>i.id===GROW.itemId); if(chosen?.attunedTo)await loadBuild(chosen.attunedTo).catch(()=>{}); renderGrow(); };
     const a=box.querySelector("#gwAction"); if(a) a.onchange=e=>{ GROW.action=e.target.value; renderGrow(); };
   }
   if(it&&GROW.action) growAction(box.querySelector("#gwBody"),c,it,GROW.action);
@@ -927,46 +1057,82 @@ function growCostLine(it,extra){
     One change = one Soulforging roll (mishaps apply). Gold: <b>${gp(goldHalf)}</b> (half the item's forge cost). ${extra}
     On a failure by 5+, <b>the parts being moved are destroyed</b>.</div>`;
 }
+function soulforgePayload(it){
+  return clone({baseItem:it.baseItem,structure:it.structure,soulgems:it.soulgems,catalysts:it.catalysts,
+    boons:it.boons||[],flaws:it.flaws||[],supplyBonus:it.supplyBonus||0,attunedTo:it.attunedTo,
+    forgedBy:it.forgedBy,history:it.history||[]});
+}
+function inventoryIds(inv){ return new Set([...inv.parts,...inv.gems,...inv.soulgems].map(x=>x.id)); }
+function returnedItemPayload(x,kind,owner){
+  if(kind==="gems")return {name:x.name,owner,kind:"other",subtype:"gem",stage:"ready",qty:x.qty||1,valueGp:x.value||0};
+  if(kind==="soulgems")return {name:`Soulgem — ${x.gemName}`,owner,kind:"part",partType:"essence",stage:"soulgem",creature:x.creature,creatureType:x.ctype,cr:x.cr||"?",pp:x.pp,gemName:x.gemName,valueGp:x.value||0,upgraded:!!x.upgraded};
+  const partType=String(x.role||"").toLowerCase();
+  const stage=partType==="structure"?(x.crafted?"body":"raw"):(partType==="catalyst"&&x.identified?"identified":"raw");
+  return {name:x.name||`${x.creature} ${partType}`,owner,kind:stage==="raw"?"raw":"part",partType,stage,
+    creature:x.creature,creatureType:x.ctype,cr:x.cr,pp:x.pp,ppCap:x.ppCap||x.pp,baseItem:x.baseItem,
+    identified:!!x.identified,power:x.power||null};
+}
+async function commitGrowMutation(ctx,mutate,{destroyItem=false,allowDormant=false}={}){
+  const inv=ctx.c.inventory, before=inventoryIds(inv), itemId=ctx.it.id;
+  mutate();
+  const after=inventoryIds(inv), consumeIds=[...before].filter(id=>!after.has(id));
+  const returnItems=[];
+  [["parts",inv.parts],["gems",inv.gems],["soulgems",inv.soulgems]].forEach(([kind,list])=>{
+    list.filter(x=>!before.has(x.id)).forEach(x=>returnItems.push(returnedItemPayload(x,kind,ctx.it.attunedTo||ctx.it.owner||null)));
+  });
+  await post(`/inv/${encodeURIComponent(CODE)}/grow`,{itemId,consumeIds,returnItems,destroyItem,allowDormant,soulforge:soulforgePayload(ctx.it)});
+  await refreshInventory();
+  return S.party.items.find(i=>i.id===itemId)||null;
+}
 function growRitualUI(host,c,it,cfg){
   /* cfg: {desc, provenance, changeParts:[names], validate():{ok,msgs[]}, apply(item), onDestroy(), ppCost, dcPP} */
   const val=cfg.validate();
+  const ownerScore=it.attunedTo===c.name?c.score:(BUILD_CACHE[it.attunedTo]?soulforgingScore(BUILD_CACHE[it.attunedTo]):null);
+  const pooledLevel=(c.score?.level||1)+(it.attunedTo&&it.attunedTo!==c.name?(ownerScore?.level||0):0);
+  const requiredLevel=ritualLevelFor(cfg.dcPP), levelReady=pooledLevel>=requiredLevel;
+  val.msgs.push({ok:levelReady,txt:`Ritual level pool ${pooledLevel}/${requiredLevel} — forger${it.attunedTo&&it.attunedTo!==c.name?` + owner ${it.attunedTo}`:" is also owner"}`});
+  val.ok=val.ok&&levelReady;
   const bp=bonusPanel("gw",cfg.provenance);
   host.insertAdjacentHTML("beforeend",`
     ${cfg.costHtml||""}
     <div class="laws">${val.msgs.map(m=>`<div class="${m.ok?"ok":"ko"}">${m.ok?"✓":"✗"} ${m.txt}</div>`).join("")}</div>
     ${bp.html}${rollPanel("gw")}
-    <div class="row"><div><label>Forger bonus</label><input type="number" id="gwBonus" value="${c.bonus}"></div>
+    <div class="row"><div><label>Forger bonus</label><input type="number" id="gwBonus" value="${c.bonus}" readonly></div>
+      <label class="chk"><input type="checkbox" id="gwOverride"> Use another forger's bonus</label>
       <div class="meter" style="margin:0"><div class="stat"><span class="v">${dcFor(cfg.dcPP)}</span><span class="l">DC</span></div></div></div>
     <button class="btn" id="gwRoll" ${val.ok?"":"disabled"}>⚒ Make the Soulforging check</button>
     ${val.ok?"":'<div class="badline">Blocked — fix the issues above.</div>'}`);
   wireRollMode(host,"gw");
+  const updateFormula=wireModifierPanel(host,"gw",()=>+host.querySelector("#gwBonus").value||0,bp.same);
+  host.querySelector("#gwOverride").onchange=e=>{host.querySelector("#gwBonus").readOnly=!e.target.checked;updateFormula();};
+  host.querySelector("#gwBonus").oninput=updateFormula;
   host.querySelector("#gwRoll").onclick=()=>{
-    const adv=host.querySelector("#gwHelp").checked;
-    const bonus=(+host.querySelector("#gwBonus").value||0)+bp.same+(+host.querySelector("#gwOther").value||0);
+    const mod=readModifiers(host,"gw");
+    const bonus=(+host.querySelector("#gwBonus").value||0)+bp.same+mod.fixed;
     let manual=null;
     if(host.querySelector("#gwMode").value==="manual"){
       const n1=+host.querySelector("#gwNat1").value; if(!(n1>=1&&n1<=20)){alert("Enter your natural d20.");return;}
-      manual=[n1,adv?(+host.querySelector("#gwNat2").value||n1):null];
+      const needsTwo=mod.mode==="advantage"||mod.mode==="disadvantage", n2=+host.querySelector("#gwNat2").value||null;
+      if(needsTwo&&!(n2>=1&&n2<=20)){alert("Enter both natural d20 rolls for advantage/disadvantage.");return;}
+      manual=[n1,needsTwo?n2:null];
     }
-    runGrowRitual({c,it,cfg,adv,bonus,manual,dc:dcFor(cfg.dcPP),rerolled:false});
+    runGrowRitual({c,it,cfg,rollMode:mod.mode,bonusDice:mod.dice,bonus,manual,dc:dcFor(cfg.dcPP),rerolled:false});
   };
 }
 function runGrowRitual(ctx){
-  animateRoll({advantage:ctx.adv,manual:ctx.manual,bonus:ctx.bonus,dc:ctx.dc,onDone:out=>{
+  animateRoll({rollMode:ctx.rollMode,manual:ctx.manual,bonus:ctx.bonus,bonusDice:ctx.bonusDice,dc:ctx.dc,onDone:async out=>{
     if(out.kind==="boon"||out.kind==="success"){
-      ctx.cfg.apply(ctx.it);
-      ctx.it.history.push({d:today(),e:ctx.cfg.desc});
-      let boonHtml="";
-      if(out.kind==="boon"){ const br=d(10); const b=applyBoon(ctx.it,br); boonHtml=`<div class="okline" style="margin-top:8px">✨ <b>Boon (d10: ${br})</b> — ${esc(b)}</div>`; burst("#c8a24a",40); }
+      let boonHtml="", br=null;
+      if(out.kind==="boon"){ br=d(10); boonHtml=`<div class="okline" style="margin-top:8px">✨ <b>Boon (d10: ${br})</b> — ${esc(BOONS[br-1])}</div>`; burst("#c8a24a",40); }
       else burst("#5fa86b",24);
-      GROW.action=""; save();
-      diceResult(out.kind==="boon"?"boon":"success","THE ITEM GROWS",out.detail,`<p><b>${esc(ctx.it.name)}</b> — ${esc(ctx.cfg.desc)}.</p>${boonHtml}`,
-        [["View item","",()=>{closeDice(); modal(itemCard(ctx.it,true)); renderAll();}],["Done","ghost",()=>{closeDice(); renderAll();}]]);
+      const updated=await guardedServerAction(()=>commitGrowMutation(ctx,()=>{ctx.cfg.apply(ctx.it);ctx.it.history.push({d:today(),e:ctx.cfg.desc});if(br)applyBoon(ctx.it,br);})); if(!updated)return;
+      GROW.action="";
+      diceResult(out.kind==="boon"?"boon":"success","THE ITEM GROWS",out.detail,`<p><b>${esc(updated.name)}</b> — ${esc(ctx.cfg.desc)}.</p>${boonHtml}`,
+        [["View item","",()=>{closeDice(); modal(itemCard(updated,true)); renderAll();}],["Done","ghost",()=>{closeDice(); renderAll();}]]);
     } else if(out.kind==="destroy"){
       document.body.classList.add("quake"); setTimeout(()=>document.body.classList.remove("quake"),600); burst("#c5524a",44);
-      ctx.cfg.onDestroy();
-      ctx.it.history.push({d:today(),e:"failed change — "+ctx.cfg.desc+" (parts destroyed)"});
-      GROW.action=""; save();
+      const updated=await guardedServerAction(()=>commitGrowMutation(ctx,()=>{ctx.cfg.onDestroy();ctx.it.history.push({d:today(),e:"failed change — "+ctx.cfg.desc+" (parts destroyed)"});},{allowDormant:true})); if(updated===null&&S.party.items.some(i=>i.id===ctx.it.id))return;
+      GROW.action="";
       diceResult("destroy","DESTRUCTION — failed by 5 or more",out.detail,
         `<p>The forge devours <b>the parts being moved</b>: ${ctx.cfg.changeParts.map(esc).join(", ")}. The item itself survives, unchanged (its mounted gems and catalysts hold).</p>`,
         [["Accept the loss","danger",()=>{closeDice(); renderAll();}]]);
@@ -975,11 +1141,11 @@ function runGrowRitual(ctx){
       const btns=[];
       if(!ctx.rerolled) btns.push(["↻ Reroll once (second chance)","soul",()=>runGrowRitual({...ctx,rerolled:true})]);
       btns.push(["Resolve at the table — no change","ghost",()=>{closeDice(); renderAll();}]);
-      if(mr>=4&&mr<=8){ btns.unshift(["Apply anyway + record flaw","",()=>{
-          ctx.cfg.apply(ctx.it); const fl={4:"Cursed — a fitting drawback (GM) until remade.",5:"Volatile bind — first use each day forces a Chaos roll.",6:"A shred of soul lingers — chooses its bearer (GM).",7:null,8:"Brittle — breaks on a natural 1, or sheds a charge unbidden."}[mr];
-          if(fl)ctx.it.flaws.push(fl); ctx.it.history.push({d:today(),e:ctx.cfg.desc+" (with mishap)"}); GROW.action=""; save(); closeDice(); renderAll(); }]); }
-      if(mr===10){ btns.unshift(["Catastrophe — item and parts destroyed","danger",()=>{
-          const c=ctx.c; ctx.cfg.onDestroy(); removeFrom(c.inventory,"items",ctx.it.id); GROW={itemId:null,action:""}; save(); closeDice(); renderAll(); }]); }
+      if(mr>=4&&mr<=8){ btns.unshift(["Apply anyway + record flaw","",async()=>{
+          const fl={4:"Cursed — a fitting drawback (GM) until remade.",5:"Volatile bind — first use each day forces a Chaos roll.",6:"A shred of soul lingers — chooses its bearer (GM).",7:null,8:"Brittle — breaks on a natural 1, or sheds a charge unbidden."}[mr];
+          const updated=await guardedServerAction(()=>commitGrowMutation(ctx,()=>{ctx.cfg.apply(ctx.it);if(fl)ctx.it.flaws.push(fl);ctx.it.history.push({d:today(),e:ctx.cfg.desc+" (with mishap)"});})); if(!updated)return; GROW.action=""; closeDice(); renderAll(); }]); }
+      if(mr===10){ btns.unshift(["Catastrophe — item and parts destroyed","danger",async()=>{
+          const ok=await guardedServerAction(()=>commitGrowMutation(ctx,()=>ctx.cfg.onDestroy(),{destroyItem:true,allowDormant:true})); if(ok===null&&S.party.items.some(i=>i.id===ctx.it.id))return; GROW={itemId:null,action:""}; closeDice(); renderAll(); }]); }
       diceResult("mishap",`MISHAP — failed by ${Math.abs(out.margin)} (d10: ${mr})`,out.detail,
         `<p>${esc(MISHAPS[mr-1])}</p>`,btns);
     }
@@ -1116,8 +1282,10 @@ function growAction(host,c,it,action){
 }
 
 /* ================= boot ================= */
-if(!S.characters.length){ /* first run: gentle empty state, no auto character */ }
-renderAll();
+let initialCode=new URLSearchParams(location.search).get("campaign")||"";
+try{initialCode=initialCode||localStorage.getItem("fh-my-campcode")||""}catch(e){}
+$("#campaignCode").value=initialCode;
+if(initialCode)loadCampaign();else renderAll();
 </script>
 </body>
 </html>

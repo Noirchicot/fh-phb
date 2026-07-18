@@ -8,7 +8,7 @@ only if one is 15+) is enforced for you.
 
 <iframe src="../stat-roller.html" style="width:100%;height:82vh;border:1px solid var(--md-default-fg-color--lighter);border-radius:8px"></iframe>
 
-[Open the roller full-screen ↗](../stat-roller.html){ .md-button target=_blank }
+[Open the roller full-screen ↗](stat-roller.html){ .md-button target=_blank }
 
 !!! tip "The rule"
     Roll 3d6 ten times, keep the six highest sums — but only if at least one of them is 15 or higher.

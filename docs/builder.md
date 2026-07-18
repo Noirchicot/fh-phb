@@ -8,7 +8,7 @@ When you're done, hit **Save character**: your build is kept in your browser *an
 
 <iframe src="../skill-builder.html" style="width:100%;height:85vh;border:1px solid var(--md-default-fg-color--lighter);border-radius:8px"></iframe>
 
-[Open the builder full-screen ↗](../skill-builder.html){ .md-button target=_blank }
+[Open the builder full-screen ↗](skill-builder.html){ .md-button target=_blank }
 
 !!! tip "No D&D Beyond account? No problem."
     The sheet preview **is** your character sheet — print it (Print button, top right) or transcribe it by hand. The D&D Beyond push is just the automated version of what you see.
