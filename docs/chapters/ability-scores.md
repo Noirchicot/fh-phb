@@ -16,7 +16,7 @@ In Fate's Hand you **roll** your ability scores rather than using Point Buy or t
 4. Add your **+4 to +6** background and racial points across your six scores. This brings the average to roughly **11.7–12** — on par with the Standard Array.
 
 > [!note] Caps
-> After all racial and background bonuses at creation, an ability can reach at most **18 + racial bonus**. At higher levels the cap rises to **20 + racial bonus**. Backgrounds never raise the cap.
+> At creation, an ability can reach at most **18, all bonuses included**. In play the ceiling is **20** — only **boons** can push a score beyond it.
 
 ## Why roll?
 

@@ -134,12 +134,21 @@ One **Soulforging Tools (CHA)** check against the Soulforge DC finishes a piece 
 
 > **Before you roll** — check the **[three laws of equilibrium](#the-three-laws-of-equilibrium)**: frame ≥ every part · max 3 gems · Supply ≥ Consumption.
 
-**Who forges.** Soulforging is a **dark ritual**. A lone forger handles the lower tiers; the higher ones call for a **circle pooling its levels**. Unlike other Dark Rituals it resolves on **a single roll**: the **Soulforger** makes the check, while the **PC the item is for** stands as **secondary** — lending their level to the pool and receiving the item's **attunement** (the forger does not). If that PC is **proficient with Soulforging Tools**, they may **Help** for **advantage**. See **[Soulforge an Item](dark-rituals.md#soulforge-an-item)** for the ritual frame (Life cost, casting time).
+**Who forges.** Soulforging is a **dark ritual**. A lone forger handles the lower tiers; the higher ones call for a **circle pooling its levels**. Unlike other Dark Rituals it resolves on **a single roll**: the **Soulforger** who leads the rite makes the check — **Soulforging Tools (CHA) vs the Soulforge DC**.
 
-**Roll modifiers**
+- The **attunee** is the one the finished item binds to. They lend their level to the pool and **may be the Soulforger themselves** — a forger is free to keep what they make.
+- Everyone else in the circle must be **proficient with Soulforging Tools**. The **attunee alone may be exempt**: they are there to receive the bind, not to work it. If the attunee is not the one rolling and *is* proficient, they may **Help** for **advantage**.
+- The **Soulsmith** — the forge's owner — may lead the rite, assist it, or stay **outside it entirely** if the parties agree.
 
-- All parts from **one creature type** (e.g. all Undead) → **+2**.
-- All parts from **one single creature** (e.g. all from one ghoul) → **+4** *(does not stack with the +2)*.
+See **[Soulforge an Item](dark-rituals.md#soulforge-an-item)** for the ritual frame (Life cost, casting time).
+
+**Roll modifiers.** Three bonuses stack on top of the Soulforger's own Soulforging Tools bonus:
+
+- **Purity bonus** — all parts from **one creature type** (e.g. all Undead) → **+2** ; all parts from **one single creature** (e.g. all from one ghoul) → **+4** *(does not stack with the +2)*.
+- **Static bonus** — Help, Leadership, the assistants' synergy or anything else the GM rules: **disadvantage / 0 / +2 / advantage**.
+- **Dice bonus** — up to **two dice** (Bardic Inspiration, Destiny, other).
+
+**Life cost.** **Nd6 necrotic** (N = the PP of the highest Soulgem), rolled as **one pool** once the outcome is known. The **Soulforger distributes it as they see fit** among the assistants and the attunee.
 
 **Success & failure**
 

@@ -659,16 +659,16 @@ function bonusPanel(idPrefix, provenance){
     : same===2?`<span class="okline">+2 — all parts share one creature type (${esc(types[0])})</span>`
     : `<span class="hint">+0 — mixed creatures and types</span>`;
   return {same, html:`
-    <h3>Modifiers</h3>
+    <h3>Roll modifiers</h3>
     <div class="laws">
-      <div>Parts provenance: ${sameTxt}</div>
+      <div><b>Purity bonus:</b> ${sameTxt}</div>
       <div class="row" style="margin-top:8px">
-        <div><label>Help / Leadership / Synergy</label><select id="${idPrefix}Fixed">
-          <option value="flat">Flat</option><option value="disadvantage">Disadvantage</option>
+        <div><label>Static bonus <span class="hint">(Help / Leadership / synergy — GM call)</span></label><select id="${idPrefix}Fixed">
+          <option value="flat">0 — none</option><option value="disadvantage">Disadvantage</option>
           <option value="plus2">+2</option><option value="advantage">Advantage</option>
         </select></div>
-        <div><label>Bonus die 1</label><select id="${idPrefix}Die1"><option value="0">— none —</option>${[4,6,8,10,12].map(n=>`<option value="${n}">1d${n}</option>`).join("")}</select></div>
-        <div><label>Bonus die 2</label><select id="${idPrefix}Die2"><option value="0">— none —</option>${[4,6,8,10,12].map(n=>`<option value="${n}">1d${n}</option>`).join("")}</select></div>
+        <div><label>Dice bonus 1 <span class="hint">(Bardic Insp. / Destiny)</span></label><select id="${idPrefix}Die1"><option value="0">— none —</option>${[4,6,8,10,12].map(n=>`<option value="${n}">1d${n}</option>`).join("")}</select></div>
+        <div><label>Dice bonus 2 <span class="hint">(two dice max)</span></label><select id="${idPrefix}Die2"><option value="0">— none —</option>${[4,6,8,10,12].map(n=>`<option value="${n}">1d${n}</option>`).join("")}</select></div>
       </div>
       <div class="okline" id="${idPrefix}Formula"></div>
     </div>`};
@@ -697,7 +697,8 @@ function readModifiers(box,idPrefix){
 function wireModifierPanel(box,idPrefix,skillBonus,provenanceBonus){
   const getSkill=typeof skillBonus==="function"?skillBonus:()=>skillBonus;
   const update=()=>{ const m=readModifiers(box,idPrefix); const sign=n=>n>=0?`+ ${n}`:`− ${Math.abs(n)}`;
-    box.querySelector(`#${idPrefix}Formula`).innerHTML=`Total: <b>d20${m.mode==="advantage"?" with advantage":m.mode==="disadvantage"?" with disadvantage":""}</b> ${sign(getSkill())} skill ${sign(provenanceBonus)} provenance${m.fixed?` ${sign(m.fixed)} fixed`:""}${m.dice.length?` + ${m.dice.map(n=>`1d${n}`).join(" + ")}`:""}.`; };
+    const flat=getSkill()+provenanceBonus+m.fixed;
+    box.querySelector(`#${idPrefix}Formula`).innerHTML=`<b>Total bonuses: ${flat>=0?"+":"−"}${Math.abs(flat)}</b>${m.dice.length?` + ${m.dice.map(n=>`1d${n}`).join(" + ")}`:""} — d20${m.mode==="advantage"?" with advantage":m.mode==="disadvantage"?" with disadvantage":""} ${sign(getSkill())} skill ${sign(provenanceBonus)} purity${m.fixed?` ${sign(m.fixed)} static`:""}.`; };
   [`${idPrefix}Fixed`,`${idPrefix}Die1`,`${idPrefix}Die2`].forEach(id=>box.querySelector(`#${id}`)?.addEventListener("change",update)); update();
   return update;
 }
@@ -746,6 +747,17 @@ function diceResult(kindClass, title, detail, body, buttons){
 
 /* ================= Soulforging tab ================= */
 let FORGE_SEL={body:null,gems:[],cats:[]}, FORGE_OWNER=null;
+/* Ritual participants (canon: Soulforge Crafting § Who forges).
+   The leader makes the single check and may be the attunee. The level pool is typed in by
+   hand — a circle can include NPCs whose sheets the table does not have. */
+/* These values travel to the Worker, whose clean() only allows letters, digits, space, _ and -.
+   Keep them punctuation-free; the explanatory wording lives in the option label instead. */
+const SMITH="Soulforge Smith", SMITH_LABEL="Soulforge Smith — the forge owner";
+const OTHER_ATTUNEE="Other", OTHER_LABEL="Other — NPC outside the party";
+let FORGE_LEADER=null, FORGE_LEVELS=null, FORGE_SMITH_BONUS=0, FORGE_OWNER_NAME="";
+/* Once the table has typed a pool, never overwrite it by re-suggesting. */
+let FORGE_LEVELS_SET=false;
+let GROW_LEVELS=null; /* reset each time a growth action panel is opened */
 function renderForge(){
   const box=$("#tab-forge"); const c=activeChar();
   if(!c){ box.innerHTML=`<div class="card"><div class="empty">Select a forger first.</div></div>`; return; }
@@ -761,10 +773,18 @@ function renderForge(){
   const selCats=FORGE_SEL.cats.map(id=>inv.parts.find(p=>p.id===id)).map(p=>({...p,pp:p.power.pp,uses:p.power.uses||1,family:p.power.family,name:p.name||p.power.name}));
   const laws = body?checkLaws(body.pp,selGems,selCats,0):null;
   const highest = selCats.reduce((m,x)=>Math.max(m,x.pp),1);
-  FORGE_OWNER=PARTY.includes(FORGE_OWNER)?FORGE_OWNER:c.name;
-  const ownerScore=FORGE_OWNER===c.name?c.score:(BUILD_CACHE[FORGE_OWNER]?soulforgingScore(BUILD_CACHE[FORGE_OWNER]):null);
-  const forgerLevel=c.score?.level||1, ownerLevel=ownerScore?.level||0;
-  const pooledLevel=forgerLevel+(FORGE_OWNER!==c.name?ownerLevel:0), requiredLevel=ritualLevelFor(highest);
+  FORGE_OWNER=(PARTY.includes(FORGE_OWNER)||FORGE_OWNER===OTHER_ATTUNEE)?FORGE_OWNER:c.name;
+  FORGE_LEADER=(PARTY.includes(FORGE_LEADER)||FORGE_LEADER===SMITH)?FORGE_LEADER:c.name;
+  const leaderIsSmith=FORGE_LEADER===SMITH, attuneeIsOther=FORGE_OWNER===OTHER_ATTUNEE;
+  /* The leader's Soulforging bonus comes from their build; the Smith is an NPC, so it is typed. */
+  const leaderScore=leaderIsSmith?null:(FORGE_LEADER===c.name?c.score:(BUILD_CACHE[FORGE_LEADER]?soulforgingScore(BUILD_CACHE[FORGE_LEADER]):null));
+  const leaderBonus=leaderIsSmith?FORGE_SMITH_BONUS:(leaderScore?leaderScore.bonus:c.bonus);
+  const ownerScore=attuneeIsOther?null:(FORGE_OWNER===c.name?c.score:(BUILD_CACHE[FORGE_OWNER]?soulforgingScore(BUILD_CACHE[FORGE_OWNER]):null));
+  const requiredLevel=ritualLevelFor(highest);
+  /* Suggest leader + attunee, then let the table raise it for a full circle (NPCs included). */
+  const suggestedLevel=(leaderScore?.level||0)+(FORGE_OWNER!==FORGE_LEADER?(ownerScore?.level||0):0);
+  if(FORGE_LEVELS===null) FORGE_LEVELS=suggestedLevel;
+  const pooledLevel=Math.max(0,+FORGE_LEVELS||0);
   const provenance = body?[{creature:body.creature,ctype:body.ctype},...selGems.map(g=>({creature:g.creature,ctype:g.ctype})),...selCats.map(x=>({creature:x.creature,ctype:x.ctype}))]:[];
   const bp=bonusPanel("fg",provenance);
   const levelReady=pooledLevel>=requiredLevel;
@@ -793,7 +813,7 @@ function renderForge(){
       <div class="${laws.law3.ok?"ok":"ko"}">${laws.law3.ok?"✓":"✗"} Law 3 · ${laws.law3.txt}</div>
       ${selGems.length?"":'<div class="ko">✗ At least one Soulgem — the item needs a Power Supply</div>'}
       ${selCats.length?"":'<div class="ko">✗ At least one catalyst — the item needs a power</div>'}
-      <div class="${levelReady?"ok":"ko"}">${levelReady?"✓":"✗"} Ritual level pool ${pooledLevel}/${requiredLevel} — forger ${forgerLevel}${FORGE_OWNER!==c.name?` + future owner ${ownerLevel}`:" (forger is also owner)"}</div>
+      <div class="${levelReady?"ok":"ko"}">${levelReady?"✓":"✗"} Ritual level pool ${pooledLevel}/${requiredLevel} — leader, attunee and assistants combined${levelReady?"":" · a lone forger only reaches the lower tiers"}</div>
     </div>`:""}
   </div>
   ${body&&selCats.length?`<div class="card"><h2>The ritual</h2>
@@ -802,19 +822,25 @@ function renderForge(){
       <div class="stat"><span class="v">${highest}</span><span class="l">Highest catalyst PP</span></div>
       <div class="stat"><span class="v" style="font-size:15px;padding-top:6px">${timeFor(highest)}</span><span class="l">Casting time</span></div>
       <div class="stat"><span class="v" style="font-size:15px;padding-top:6px">${gp(costFor(highest))}</span><span class="l">Forge cost</span></div>
-      <div class="stat"><span class="v" style="font-size:15px;padding-top:6px">${selGems.length?Math.max(...selGems.map(g=>g.pp)):1}d6</span><span class="l">Life cost (necrotic)</span></div>
+      <div class="stat"><span class="v" style="font-size:15px;padding-top:6px">${selGems.length?Math.max(...selGems.map(g=>g.pp)):1}d6</span><span class="l">Life cost — split by the leader</span></div>
     </div>
-    <p class="hint">Dark ritual — one roll. The forger makes the check; the future owner stands secondary, lends their level and receives attunement. If proficient with Soulforging Tools, they may Help; choose Advantage below.</p>
+    <p class="hint">Dark ritual — <b>one roll</b>. The <b>Soulforge leader</b> makes the check and may keep the item themselves. Everyone lending their level must be proficient with Soulforging Tools — <b>the attunee alone may be exempt</b>. The Life cost is rolled once the outcome is known, and the leader splits it as they see fit.</p>
+    <h3>Who forges</h3>
     <div class="row">
-      <div><label>Future owner / attunement</label><select id="fgOwner">${PARTY.map(p=>`<option value="${esc(p)}" ${p===FORGE_OWNER?"selected":""}>${esc(p)}</option>`).join("")}</select></div>
+      <div><label>Soulforge leader <span class="hint">(makes the roll)</span></label><select id="fgLeader">${[...PARTY,SMITH].map(p=>`<option value="${esc(p)}" ${p===FORGE_LEADER?"selected":""}>${esc(p===SMITH?SMITH_LABEL:p)}</option>`).join("")}</select></div>
+      <div><label>Soulforger skill bonus</label><input type="number" id="fgBonus" value="${leaderBonus}" ${leaderIsSmith?"":"readonly"} style="width:90px"></div>
+      ${leaderIsSmith?`<div class="hint" style="align-self:end">The Smith is an NPC — type their bonus.</div>`:`<label class="chk"><input type="checkbox" id="fgOverride"> Override</label>`}
+    </div>
+    <div class="row">
+      <div><label>Assistants &amp; leader levels total <span class="hint">(the circle, NPCs included)</span></label><input type="number" id="fgLevels" min="0" value="${pooledLevel}" style="width:110px"></div>
       <div class="meter" style="margin:0"><div class="stat"><span class="v">${pooledLevel}/${requiredLevel}</span><span class="l">Level pool</span></div></div>
+      <div><label>Soulforge attunee <span class="hint">(may be the leader)</span></label><select id="fgOwner">${[...PARTY,OTHER_ATTUNEE].map(p=>`<option value="${esc(p)}" ${p===FORGE_OWNER?"selected":""}>${esc(p===OTHER_ATTUNEE?OTHER_LABEL:p)}</option>`).join("")}</select></div>
+      ${attuneeIsOther?`<div><label>Attunee name</label><input type="text" id="fgOwnerName" value="${esc(FORGE_OWNER_NAME)}" placeholder="e.g. Sister Vell" maxlength="40"></div>`:""}
     </div>
     ${bp.html}
     ${rollPanel("fg")}
     <div class="row">
       <div><label>Item name</label><input type="text" id="fgName" placeholder="e.g. Fang of the Red Mist" style="min-width:240px"></div>
-      <div><label>Forger bonus</label><input type="number" id="fgBonus" value="${c.bonus}" readonly></div>
-      <label class="chk"><input type="checkbox" id="fgOverride"> Use another forger's bonus</label>
     </div>
     <button class="btn" id="fgRoll" ${ready?"":"disabled"}>⚒ Forge — review bonuses and roll</button>
     ${ready?"":'<div class="badline">Blocked — fix the laws / selection above first.</div>'}
@@ -827,9 +853,22 @@ function renderForge(){
   if(body&&selCats.length){
     wireRollMode(box,"fg");
     const updateFormula=wireModifierPanel(box,"fg",()=>+box.querySelector("#fgBonus").value||0,bp.same);
-    box.querySelector("#fgOverride").onchange=e=>{ box.querySelector("#fgBonus").readOnly=!e.target.checked; updateFormula(); };
-    box.querySelector("#fgBonus").oninput=updateFormula;
-    box.querySelector("#fgOwner").onchange=async e=>{ FORGE_OWNER=e.target.value; try{await loadBuild(FORGE_OWNER);renderForge()}catch(err){alert("Could not load future owner: "+err.message)} };
+    box.querySelector("#fgOverride")?.addEventListener("change",e=>{ box.querySelector("#fgBonus").readOnly=!e.target.checked; updateFormula(); });
+    box.querySelector("#fgBonus").oninput=e=>{ if(leaderIsSmith) FORGE_SMITH_BONUS=+e.target.value||0; updateFormula(); };
+    /* The typed pool is the table's word — only re-suggested when a participant changes. */
+    box.querySelector("#fgLevels").oninput=e=>{ FORGE_LEVELS=+e.target.value||0; FORGE_LEVELS_SET=true; };
+    box.querySelector("#fgLevels").onchange=()=>renderForge();
+    box.querySelector("#fgOwnerName")?.addEventListener("input",e=>{ FORGE_OWNER_NAME=e.target.value; });
+    box.querySelector("#fgLeader").onchange=async e=>{
+      FORGE_LEADER=e.target.value; if(!FORGE_LEVELS_SET)FORGE_LEVELS=null;
+      if(FORGE_LEADER!==SMITH){ try{await loadBuild(FORGE_LEADER)}catch(err){alert("Could not load the leader: "+err.message)} }
+      renderForge();
+    };
+    box.querySelector("#fgOwner").onchange=async e=>{
+      FORGE_OWNER=e.target.value; if(!FORGE_LEVELS_SET)FORGE_LEVELS=null;
+      if(FORGE_OWNER!==OTHER_ATTUNEE){ try{await loadBuild(FORGE_OWNER)}catch(err){alert("Could not load the attunee: "+err.message)} }
+      renderForge();
+    };
     box.querySelector("#fgRoll").onclick=()=>{
       const name=box.querySelector("#fgName").value.trim(); if(!name){alert("Name the item first.");return;}
       const mod=readModifiers(box,"fg");
@@ -842,7 +881,15 @@ function renderForge(){
         if(needsTwo&&!(n2>=1&&n2<=20)){alert("Enter both natural d20 rolls for advantage/disadvantage.");return;}
         manual=[n1,needsTwo?n2:null];
       }
-      runForgeRitual({name,body,selGems,selCats,owner:FORGE_OWNER,rollMode:mod.mode,bonusDice:mod.dice,bonus,manual,dc:dcFor(highest),highest,char:c,rerolled:false});
+      const attunee=attuneeIsOther?(box.querySelector("#fgOwnerName")?.value||"").trim():FORGE_OWNER;
+      if(attuneeIsOther&&!attunee){alert("Name the attunee — the item binds to someone.");return;}
+      /* Mirror the Worker's clean(): anything else is silently dropped server-side. */
+      if(attuneeIsOther&&!/^[\p{L}\p{N} _-]{1,40}$/u.test(attunee)){
+        alert("The attunee's name may only use letters, digits, spaces, hyphens and underscores (40 max).");return;}
+      if(!levelReady&&!confirm(`The level pool is only ${pooledLevel}/${requiredLevel}. Forge anyway?`))return;
+      const lifeDice=selGems.length?Math.max(...selGems.map(g=>g.pp)):1;
+      runForgeRitual({name,body,selGems,selCats,owner:attunee,forger:FORGE_LEADER,lifeDice,
+        rollMode:mod.mode,bonusDice:mod.dice,bonus,manual,dc:dcFor(highest),highest,char:c,rerolled:false});
     };
   }
 }
@@ -865,7 +912,7 @@ async function consumeServer(ids){
 async function commitForge(ctx,opts={}){
   const gems=opts.gems||ctx.selGems, cats=opts.cats||ctx.selCats;
   const result=await post(`/inv/${encodeURIComponent(CODE)}/forge`,{
-    name:ctx.name, owner:ctx.owner, forgedBy:ctx.char.name,
+    name:ctx.name, owner:ctx.owner, forgedBy:ctx.forger||ctx.char.name,
     bodyId:ctx.body.id, soulgemIds:gems.map(g=>g.id), catalystIds:cats.map(c=>c.id),
     extraConsumeIds:opts.extraConsumeIds||[], allowNoCatalyst:!!opts.allowNoCatalyst,
     boons:opts.boons||[], flaws:opts.flaws||[], supplyBonus:opts.supplyBonus||0,
@@ -895,6 +942,17 @@ function applyBoon(it,roll){
   if(roll===2) it.supplyBonus=(it.supplyBonus||0)+1;
   return b;
 }
+/* Life cost — Nd6 necrotic, N = PP of the highest Soulgem. Rolled as one pool once the
+   outcome is known; the leader splits it among the assistants and the attunee (canon). */
+function lifeCostHtml(ctx){
+  if(!ctx.life){
+    const n=Math.max(1,ctx.lifeDice||1), rolls=Array.from({length:n},()=>d(6));
+    ctx.life={n,rolls,total:rolls.reduce((a,b)=>a+b,0)}; /* one casting = one pool, reroll included */
+  }
+  const lc=ctx.life;
+  return `<div class="warnline" style="margin-top:8px">🩸 <b>Life cost — ${lc.total} necrotic to split</b>
+    <span class="hint">(${lc.n}d6: ${lc.rolls.join(" + ")}) — ${esc(ctx.forger||ctx.char.name)} divides it among the assistants and ${esc(ctx.owner)}.</span></div>`;
+}
 function runForgeRitual(ctx){
   animateRoll({rollMode:ctx.rollMode,manual:ctx.manual,bonus:ctx.bonus,bonusDice:ctx.bonusDice,dc:ctx.dc,onDone:async out=>{
     if(out.kind==="boon"||out.kind==="success"){
@@ -909,7 +967,7 @@ function runForgeRitual(ctx){
       } else burst("#5fa86b",24);
       const it=await guardedServerAction(()=>commitForge(ctx,forgeOpts)); if(!it)return;
       diceResult(out.kind==="boon"?"boon":"success", out.kind==="boon"?"FORGED — the souls sing true":"FORGED", out.detail,
-        `<p><b>${esc(it.name)}</b> leaves the forge, forged by ${esc(ctx.char.name)} and attuned to ${esc(ctx.owner)}.</p>${boonHtml}`,
+        `<p><b>${esc(it.name)}</b> leaves the forge, forged by ${esc(ctx.forger||ctx.char.name)} and attuned to ${esc(ctx.owner)}.</p>${boonHtml}${lifeCostHtml(ctx)}`,
         [["View item","",()=>{closeDice(); modal(itemCard(it,true)); renderAll();}],["Done","ghost",()=>{closeDice(); renderAll();}]]);
     }
     else if(out.kind==="destroy"){
@@ -919,14 +977,14 @@ function runForgeRitual(ctx){
       const ok=await guardedServerAction(()=>consumeServer(ids)); if(ok===null)return;
       FORGE_SEL={body:null,gems:[],cats:[]};
       diceResult("destroy","DESTRUCTION — failed by 5 or more",out.detail,
-        `<p>The bind collapses. <b>Everything is lost</b>: the crafted body, ${ctx.selGems.length} Soulgem${ctx.selGems.length>1?"s":""} and ${ctx.selCats.length} catalyst${ctx.selCats.length>1?"s":""} are consumed by the forge. The gold and time are spent.</p>`,
+        `<p>The bind collapses. <b>Everything is lost</b>: the crafted body, ${ctx.selGems.length} Soulgem${ctx.selGems.length>1?"s":""} and ${ctx.selCats.length} catalyst${ctx.selCats.length>1?"s":""} are consumed by the forge. The gold and time are spent.</p>${lifeCostHtml(ctx)}`,
         [["Accept the loss","danger",()=>{closeDice(); renderAll();}]]);
     }
     else { /* mishap — fail by less than 5 */
       const mr=d(10);
       burst("#d98c3a",30);
       diceResult("mishap",`MISHAP — failed by ${Math.abs(out.margin)} (d10: ${mr})`,out.detail,
-        `<p>${esc(MISHAPS[mr-1])}</p><p class="hint">${mishapHint(mr)}</p>`,
+        `<p>${esc(MISHAPS[mr-1])}</p><p class="hint">${mishapHint(mr)}</p>${lifeCostHtml(ctx)}`,
         mishapButtons(mr,ctx,out));
     }
   }});
@@ -1046,8 +1104,8 @@ function renderGrow(){
     <div id="gwBody"></div>
   </div>`;
   if(inv.items.length){
-    box.querySelector("#gwItem").onchange=async e=>{ GROW.itemId=e.target.value||null; GROW.action=""; const chosen=inv.items.find(i=>i.id===GROW.itemId); if(chosen?.attunedTo)await loadBuild(chosen.attunedTo).catch(()=>{}); renderGrow(); };
-    const a=box.querySelector("#gwAction"); if(a) a.onchange=e=>{ GROW.action=e.target.value; renderGrow(); };
+    box.querySelector("#gwItem").onchange=async e=>{ GROW.itemId=e.target.value||null; GROW.action=""; GROW_LEVELS=null; const chosen=inv.items.find(i=>i.id===GROW.itemId); if(chosen?.attunedTo)await loadBuild(chosen.attunedTo).catch(()=>{}); renderGrow(); };
+    const a=box.querySelector("#gwAction"); if(a) a.onchange=e=>{ GROW.action=e.target.value; GROW_LEVELS=null; renderGrow(); };
   }
   if(it&&GROW.action) growAction(box.querySelector("#gwBody"),c,it,GROW.action);
 }
@@ -1088,17 +1146,21 @@ function growRitualUI(host,c,it,cfg){
   /* cfg: {desc, provenance, changeParts:[names], validate():{ok,msgs[]}, apply(item), onDestroy(), ppCost, dcPP} */
   const val=cfg.validate();
   const ownerScore=it.attunedTo===c.name?c.score:(BUILD_CACHE[it.attunedTo]?soulforgingScore(BUILD_CACHE[it.attunedTo]):null);
-  const pooledLevel=(c.score?.level||1)+(it.attunedTo&&it.attunedTo!==c.name?(ownerScore?.level||0):0);
+  /* Same ritual, same rule: the circle's pooled level is entered by hand (NPCs included). */
+  const suggested=(c.score?.level||1)+(it.attunedTo&&it.attunedTo!==c.name?(ownerScore?.level||0):0);
+  if(GROW_LEVELS===null) GROW_LEVELS=suggested;
+  const pooledLevel=Math.max(0,+GROW_LEVELS||0);
   const requiredLevel=ritualLevelFor(cfg.dcPP), levelReady=pooledLevel>=requiredLevel;
-  val.msgs.push({ok:levelReady,txt:`Ritual level pool ${pooledLevel}/${requiredLevel} — forger${it.attunedTo&&it.attunedTo!==c.name?` + owner ${it.attunedTo}`:" is also owner"}`});
+  val.msgs.push({ok:levelReady,txt:`Ritual level pool ${pooledLevel}/${requiredLevel} — leader, attunee and assistants combined`});
   val.ok=val.ok&&levelReady;
   const bp=bonusPanel("gw",cfg.provenance);
   host.insertAdjacentHTML("beforeend",`
     ${cfg.costHtml||""}
     <div class="laws">${val.msgs.map(m=>`<div class="${m.ok?"ok":"ko"}">${m.ok?"✓":"✗"} ${m.txt}</div>`).join("")}</div>
     ${bp.html}${rollPanel("gw")}
-    <div class="row"><div><label>Forger bonus</label><input type="number" id="gwBonus" value="${c.bonus}" readonly></div>
-      <label class="chk"><input type="checkbox" id="gwOverride"> Use another forger's bonus</label>
+    <div class="row"><div><label>Soulforger skill bonus</label><input type="number" id="gwBonus" value="${c.bonus}" readonly style="width:90px"></div>
+      <label class="chk"><input type="checkbox" id="gwOverride"> Override</label>
+      <div><label>Assistants &amp; leader levels total</label><input type="number" id="gwLevels" min="0" value="${pooledLevel}" style="width:110px"></div>
       <div class="meter" style="margin:0"><div class="stat"><span class="v">${dcFor(cfg.dcPP)}</span><span class="l">DC</span></div></div></div>
     <button class="btn" id="gwRoll" ${val.ok?"":"disabled"}>⚒ Make the Soulforging check</button>
     ${val.ok?"":'<div class="badline">Blocked — fix the issues above.</div>'}`);
@@ -1106,6 +1168,7 @@ function growRitualUI(host,c,it,cfg){
   const updateFormula=wireModifierPanel(host,"gw",()=>+host.querySelector("#gwBonus").value||0,bp.same);
   host.querySelector("#gwOverride").onchange=e=>{host.querySelector("#gwBonus").readOnly=!e.target.checked;updateFormula();};
   host.querySelector("#gwBonus").oninput=updateFormula;
+  host.querySelector("#gwLevels").oninput=e=>{ GROW_LEVELS=+e.target.value||0; };
   host.querySelector("#gwRoll").onclick=()=>{
     const mod=readModifiers(host,"gw");
     const bonus=(+host.querySelector("#gwBonus").value||0)+bp.same+mod.fixed;

@@ -12,4 +12,4 @@ Select the campaign's prepared **bodies, Soulgems and identified catalysts**, as
     The full system lives in the [Soulforge Crafting](chapters/soulforge-crafting.md) chapter. A finished item can be **exported as JSON**, or copied as a request for Claude's **ddb-homebrew** skill to create it on D&D Beyond.
 
 !!! info "Shared campaign data"
-    The workshop reads and consumes parts from the campaign server. The active character supplies the default Soulforging bonus; choose the future owner separately for ritual level and attunement.
+    The workshop reads and consumes parts from the campaign server. Pick the **Soulforge leader** who rolls (a character, or the Soulsmith who owns the forge), enter the **pooled level** of the circle, and name the **attunee** — who may be the leader themselves.
