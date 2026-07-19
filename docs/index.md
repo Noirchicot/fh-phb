@@ -4,6 +4,8 @@ hide:
   - toc
 ---
 
+<a class="fh-dm-button" href="gm.html" title="Open DM Control">DM</a>
+
 <div class="fh-cover" markdown>
 
 ![Fate's Hand — a hand of fate over the Demon Forest](assets/img/cover-fates-hand.jpg){ .fh-banner }

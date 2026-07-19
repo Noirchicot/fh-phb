@@ -38,7 +38,7 @@
   var persistTimer = null;
   var state = {
     code:"", pseudo:"", party:[], record:null, profile:null, character:null,
-    destiny:null, history:[], prefs:{bardicSides:6}, rollConfig:null,
+    destiny:null, history:[], prefs:{bardicSides:6}, rollConfig:null, trayPrompt:null,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,
     loading:false, message:"", messageKind:""
   };
@@ -102,7 +102,7 @@
     catch (error) { throw new Error("Paste a valid D&D Beyond character link."); }
     var host = parsed.hostname.toLowerCase().replace(/^www\./, "");
     var match = parsed.pathname.match(/(?:^|\/)characters\/(\d+)(?:\/[a-z0-9_-]+)?(?:\/|$)/i);
-    if (host !== "dndbeyond.com" || !match) throw new Error("Use a public D&D Beyond character link.");
+    if (parsed.protocol !== "https:" || host !== "dndbeyond.com" || !match) throw new Error("Use a public HTTPS D&D Beyond character link.");
     return "https://www.dndbeyond.com/characters/" + match[1];
   }
   function emptyProfile() {
@@ -182,8 +182,8 @@
 
   function storageKey() { return "fh-player-v2:" + state.code + ":" + state.pseudo; }
   function makeDestinySlots(score, points) {
-    var slotCount = Math.max(5, Math.ceil(Math.max(0, Number(score)||0)/2), Math.ceil(Math.max(0, Number(points)||0)/2));
-    var fullCount = Math.max(0, Math.floor((Number(points)||0)/2));
+    var slotCount = Math.min(15, Math.max(5, Math.ceil(Math.max(0, Number(score)||0)/2), Math.ceil(Math.max(0, Number(points)||0)/2)));
+    var fullCount = Math.min(15, Math.max(0, Math.floor((Number(points)||0)/2)));
     var slots = [];
     for (var i=0;i<slotCount;i++) slots.push({id:uuid(),sides:DIE_SEQUENCE[i%DIE_SEQUENCE.length],available:i<fullCount});
     return slots;
@@ -193,9 +193,10 @@
     raw = raw && typeof raw === "object" ? raw : {};
     var score = raw.score != null ? Number(raw.score) : buildScore;
     var points = raw.points != null ? Number(raw.points) : score;
+    var counts = {};
     var dice = Array.isArray(raw.dice) ? raw.dice.map(function (die,i) {
       return {id:die.id || uuid(),sides:DIE_SEQUENCE.indexOf(Number(die.sides))>=0?Number(die.sides):DIE_SEQUENCE[i%DIE_SEQUENCE.length],available:!!die.available};
-    }) : makeDestinySlots(score,points);
+    }).filter(function (die) { counts[die.sides]=(counts[die.sides]||0)+1;return counts[die.sides]<=3; }) : makeDestinySlots(score,points);
     if (!dice.length) dice = makeDestinySlots(score,points);
     return {score:score,points:points,dice:dice,lastChange:raw.lastChange || null};
   }
@@ -227,9 +228,25 @@
   function recoverLowestDie() {
     var missing = state.destiny.dice.find(function (die) { return !die.available; });
     if (missing) { missing.available = true; return missing; }
-    var index = state.destiny.dice.length;
-    var die = {id:uuid(),sides:DIE_SEQUENCE[index%DIE_SEQUENCE.length],available:true};
-    state.destiny.dice.push(die); return die;
+    for (var round=0;round<3;round++) for (var i=0;i<DIE_SEQUENCE.length;i++) {
+      var sides=DIE_SEQUENCE[i],count=state.destiny.dice.filter(function(die){return die.sides===sides;}).length;
+      if(count<=round){var die={id:uuid(),sides:sides,available:true};state.destiny.dice.push(die);return die;}
+    }
+    return null;
+  }
+  function adjustDestinyDie(sides, direction) {
+    sides=Number(sides);direction=Number(direction);
+    var matching=state.destiny.dice.filter(function(die){return die.sides===sides;});
+    if(direction>0){
+      var spent=matching.find(function(die){return !die.available;});
+      if(spent)spent.available=true;
+      else if(matching.length<3)state.destiny.dice.push({id:uuid(),sides:sides,available:true});
+    }else{
+      var full=matching.slice().reverse().find(function(die){return die.available;});
+      if(full)full.available=false;
+    }
+    state.destiny.lastChange={reason:"Manual d"+sides+" pool correction",at:new Date().toISOString()};
+    persistPlayState();render();
   }
   function setDestinyPoints(next, reason, recover) {
     var before = Number(state.destiny.points)||0;
@@ -251,7 +268,7 @@
     options = options || {};
     return {
       name:name,ability:ability,baseBonus:Number(bonus)||0,d20Mode:options.mode || "flat",plusTwo:!!options.plusTwo,
-      guidance:false,bardic:false,bardicSides:Number(state.prefs.bardicSides)||6,destinyDieId:"",custom:0,
+      guidance:false,bardic:false,bardicSides:Number(state.prefs.bardicSides)||6,destinyDieId:"",destinyConfirmed:false,custom:0,
       dc:options.dc != null ? String(options.dc) : "",note:options.note || "",editingId:null
     };
   }
@@ -266,7 +283,7 @@
     if (entry.destiny && entry.destiny.criticalSuccess) return "Critical success";
     if (entry.natChoice === "chaos") return "Critical success · Chaos";
     if (entry.natural === 20) return "Natural 20";
-    if (entry.natural === 1) return entry.natChoice === "accept" ? "Natural 1 · accepted" : "Natural 1 · choose fate";
+    if (entry.natural === 1) return entry.natChoice === "accept" ? "Critical failure · Fate accepted" : "Natural 1 · choose fate";
     if (entry.dc !== "" && isFinite(Number(entry.dc))) return entry.total >= Number(entry.dc) ? "Success" : "Failure";
     return "";
   }
@@ -299,12 +316,13 @@
     var entry = {id:uuid(),kind:"d20",name:name,ability:ability,baseBonus:Number(bonus)||0,d20Mode:"flat",d20s:[natural],kept:natural,natural:natural,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",note:note||"",createdAt:new Date().toISOString(),adjusted:false};
     entry.total = entryTotal(entry); naturalDestiny(entry); entry.outcome=outcomeFor(entry); addHistory(entry);
     state.message = name+": "+natural+" "+signed(entry.baseBonus)+" = "+entry.total+(entry.outcome?" · "+entry.outcome:"");
-    state.messageKind = natural===20?"success":natural===1?"danger":"roll"; render();
+    state.messageKind = natural===20?"success":natural===1?"danger":"roll"; render();announceRoll(entry);
   }
   function runConfiguredRoll() {
     syncConsoleInputs();
     var cfg = state.rollConfig;
     if (!cfg) return;
+    if(cfg.destinyDieId&&!cfg.destinyConfirmed){confirmDestinyUse(cfg.destinyDieId,"Add this die to "+cfg.name,function(){cfg.destinyConfirmed=true;runConfiguredRoll();});return;}
     if (cfg.editingId) { applyHistoryAdjustment(cfg); return; }
     var d20s = cfg.d20Mode === "flat" ? [rollDie(20)] : [rollDie(20),rollDie(20)];
     var kept = cfg.d20Mode === "advantage" ? Math.max.apply(Math,d20s) : cfg.d20Mode === "disadvantage" ? Math.min.apply(Math,d20s) : d20s[0];
@@ -313,7 +331,7 @@
     entry.bardic = cfg.bardic ? {sides:cfg.bardicSides,result:rollDie(cfg.bardicSides)} : null;
     entry.destiny = cfg.destinyDieId ? spendDestinyDie(cfg.destinyDieId) : null;
     entry.total=entryTotal(entry); naturalDestiny(entry); entry.outcome=outcomeFor(entry); addHistory(entry);
-    state.rollConfig=configFromEntry(entry); state.message=""; render();
+    state.rollConfig=configFromEntry(entry); state.message=""; render();announceRoll(entry);
   }
   function applyHistoryAdjustment(cfg) {
     var entry = state.history.find(function (item) { return item.id === cfg.editingId; });
@@ -335,8 +353,9 @@
   function resolveNatOne(id, choice) {
     var entry=state.history.find(function (item) { return item.id===id; }); if(!entry||entry.natural!==1||entry.natChoice)return;
     if(choice==="accept") { var before=state.destiny.points; setDestinyPoints(before+1,"Natural 1 accepted",true); entry.natChoice="accept"; entry.destinyPointChange={before:before,after:state.destiny.points,reason:"Natural 1 accepted"}; }
-    else { entry.natChoice="chaos"; entry.chaosRoll=[rollDie(6),rollDie(6)]; setDestinyPoints(0,"Invoked Chaos",false); }
+    else { entry.natChoice="chaos";entry.originalKept=entry.kept;entry.transformed=true;entry.kept=20;entry.chaosRoll=[rollDie(6),rollDie(6)];setDestinyPoints(0,"Invoked Chaos",false);entry.total=entryTotal(entry); }
     entry.outcome=outcomeFor(entry); persistPlayState(); render();
+    if(choice==="chaos"&&root)window.setTimeout(function(){showChaosModal(entry);},80);
   }
 
   function skillRow(info, compactName) {
@@ -358,16 +377,56 @@
   }
   function renderSkills(ch) {
     var columns=[SKILLS.slice(0,9),SKILLS.slice(9,18),SKILLS.slice(18,26)];
-    var skillColumns=columns.map(function(column,index){return "<div class=\"fh-ps-skill-col\"><h3>Skills "+(index+1)+"</h3>"+column.map(function(entry){return skillRow(skillInfo(entry[0],ch));}).join("")+"</div>";}).join("");
+    var skillColumns=columns.map(function(column){return "<div class=\"fh-ps-skill-col\">"+column.map(function(entry){return skillRow(skillInfo(entry[0],ch));}).join("")+"</div>";}).join("");
     var tools=Object.keys(ch.skills).map(function(name){return skillInfo(name,ch);}).filter(function(info){return info.name.indexOf("Tool - ")===0&&info.tier!=="none";}).sort(function(a,b){return a.name.localeCompare(b.name);});
     var toolHtml=tools.length?tools.map(function(info){return skillRow(info,info.name.replace(/^Tool - /,""));}).join(""):"<p class=\"fh-ps-no-tools\">No purchased tools.</p>";
-    return "<section class=\"fh-ps-skill-board fh-ps-card\"><div class=\"fh-ps-board-title\"><div><p>ALL CHECKS</p><h2>Skills &amp; purchased tools</h2></div><span>Click a row to roll normally · ⚙ for options</span></div><div class=\"fh-ps-four-columns\">"+skillColumns+"<div class=\"fh-ps-skill-col fh-ps-tools-col\"><h3>Purchased Tools</h3>"+toolHtml+"</div></div></section>";
+    return "<section class=\"fh-ps-skill-board fh-ps-card\"><div class=\"fh-ps-board-title\"><div><p>ALL 26 CHECKS + PURCHASED TOOLS</p><h2>Skills</h2></div><span>Click = flat roll · ⚙ = advanced roll</span></div><div class=\"fh-ps-four-columns\">"+skillColumns+"<div class=\"fh-ps-skill-col fh-ps-tools-col\">"+toolHtml+"</div></div></section>";
+  }
+  function renderDiceStage(entry,cfg) {
+    var dice=[];
+    if(entry&&entry.kind==="destiny"){
+      dice.push("<span class=\"fh-ps-visual-die is-destiny "+(entry.destiny.criticalSuccess?"is-nat20":entry.destiny.criticalFailure?"is-nat1":"")+"\"><small>d"+entry.destiny.sides+"</small><b>"+entry.destiny.result+"</b></span>");
+    }else if(entry&&entry.kind==="d20"){
+      var keptIndex=0;
+      if(entry.d20Mode==="advantage")keptIndex=entry.d20s.indexOf(Math.max.apply(Math,entry.d20s));
+      else if(entry.d20Mode==="disadvantage")keptIndex=entry.d20s.indexOf(Math.min.apply(Math,entry.d20s));
+      (entry.d20s||[]).forEach(function(value,index){
+        var classes=index===keptIndex?"is-kept":"is-dropped";
+        if(value===1)classes+=" is-nat1";if(value===20)classes+=" is-nat20";
+        dice.push("<span class=\"fh-ps-visual-die "+classes+"\"><small>d20</small><b>"+value+"</b></span>");
+      });
+      if(entry.transformed)dice.push("<i class=\"fh-ps-fate-arrow\">→</i><span class=\"fh-ps-visual-die is-kept is-nat20 is-transformed\"><small>FATE</small><b>20</b></span>");
+    }else{
+      var count=cfg&&cfg.d20Mode!=="flat"?2:1;
+      for(var i=0;i<count;i++)dice.push("<span class=\"fh-ps-visual-die is-ready\"><small>d20</small><b>?</b></span>");
+    }
+    var label=entry?(entry.name+" · "+(entry.outcome||("Total "+entry.total))):"Ready to roll";
+    return "<div class=\"fh-ps-dice-stage\" aria-live=\"polite\"><div>"+dice.join("")+"</div><p>"+esc(label)+"</p></div>";
+  }
+  function renderDiceTray() {
+    var latest=state.history[0]||null;
+    var prompt=state.trayPrompt,body;
+    if(prompt&&prompt.type==="destiny"){
+      var die=state.destiny.dice.find(function(item){return item.id===prompt.dieId&&item.available;});
+      body=die?"<div class=\"fh-ps-tray-prompt is-destiny\"><div class=\"fh-ps-tray-symbol\">d"+die.sides+"</div><div><b>Spend this Destiny die?</b><small>Points "+state.destiny.points+" · result changes the score</small></div><div class=\"fh-ps-tray-actions\"><button data-tray-cancel>Cancel</button><button class=\"is-primary\" data-tray-confirm-destiny>Roll d"+die.sides+"</button></div></div>":renderDiceStage(latest,null);
+    }else if(prompt&&prompt.type==="nat1"){
+      body="<div class=\"fh-ps-tray-prompt is-nat1\"><div class=\"fh-ps-tray-symbol\">1</div><div><b>Do you accept your fate?</b><small>Yes: critical failure +1 Destiny · No: turn it into 20 and face Chaos</small></div><div class=\"fh-ps-tray-actions\"><button data-tray-accept-fate>Yes · accept</button><button class=\"is-danger\" data-tray-refuse-fate>No · defy</button></div></div>";
+    }else if(prompt&&prompt.type==="chaos"){
+      var chaosEntry=state.history.find(function(item){return item.id===prompt.entryId;}),roll=chaosEntry&&chaosEntry.chaosRoll||[0,0],chaosTotal=roll[0]+roll[1];
+      body="<div class=\"fh-ps-tray-prompt is-chaos\"><div class=\"fh-ps-tray-chaos-dice\"><b>"+roll[0]+"</b><b>"+roll[1]+"</b><strong>"+chaosTotal+"</strong></div><div><b>Chaos has noticed.</b><small>The d20 becomes 20 · Destiny becomes 0</small></div><div class=\"fh-ps-tray-actions\"><a href=\"../chapters/chaos-tables/\">Chaos table</a><button data-tray-close>Close</button></div></div>";
+    }else if(prompt&&prompt.type==="awakening"){
+      var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};
+      body="<div class=\"fh-ps-tray-prompt is-awakening\"><div class=\"fh-ps-awakening-mark\">✦</div><div><b>Arcane Awakening</b><small>Natural 20 · Destiny 0 · "+esc(arcana.name||"Major Arcana")+"</small></div><div class=\"fh-ps-tray-actions\"><button class=\"is-primary\" data-tray-close>Continue</button></div></div>";
+    }else body=renderDiceStage(latest,null);
+    return "<section class=\"fh-ps-dice-tray fh-ps-card\" aria-live=\"polite\"><div class=\"fh-ps-dice-tray-head\"><div><p>DICE TRAY</p><h2>"+(prompt?"Fate in motion":"Last roll")+"</h2></div><button type=\"button\" data-open-console=\"1\">Advanced roller</button></div>"+body+"</section>";
   }
   function renderDestiny(ch) {
     var arcana=ch.destinyBuild&&ch.destinyBuild.arcana||{};
-    var dice=state.destiny.dice.map(function(die){return "<button type=\"button\" class=\"fh-ps-destiny-die "+(die.available?"is-full":"is-empty")+"\" data-destiny-die=\""+die.id+"\" "+(die.available?"":"disabled")+" aria-label=\""+(die.available?"Roll":"Spent")+" Destiny d"+die.sides+"\"><span>d"+die.sides+"</span></button>";}).join("");
-    var spells=ch.spells.length?ch.spells.map(function(spell){return "<span>"+esc(spell.name)+(spell.level!=null?" · "+(spell.level?"L"+spell.level:"Cantrip"):"")+"</span>";}).join(""):"<em>No essential spells recorded.</em>";
-    return "<section class=\"fh-ps-lower-grid\"><div class=\"fh-ps-destiny fh-ps-card\"><div class=\"fh-ps-destiny-head\"><div><p>DESTINY</p><h2>"+esc(arcana.name||"Major Arcana")+"</h2></div><button type=\"button\" id=\"fhPsLongRest\">Long rest +1</button></div><div class=\"fh-ps-destiny-values\"><label><span>Current Points</span><div><button data-destiny-step=\"points:-1\">−</button><input data-destiny-field=\"points\" type=\"number\" value=\""+state.destiny.points+"\"><button data-destiny-step=\"points:1\">+</button></div></label><label><span>Maximum Score</span><div><button data-destiny-step=\"score:-1\">−</button><input data-destiny-field=\"score\" type=\"number\" value=\""+state.destiny.score+"\"><button data-destiny-step=\"score:1\">+</button></div></label></div><div class=\"fh-ps-destiny-dice\">"+dice+"</div><p class=\"fh-ps-arcana-power\"><b>"+esc(arcana.power?"Power":"Arcana")+"</b> "+esc(arcana.power||"Destiny state is editable and saved separately from D&D Beyond.")+"</p></div><div class=\"fh-ps-spells fh-ps-card\"><p>SOULFORGING SPELLS</p><h2>Prepared magic</h2><div>"+spells+"</div></div></section>";
+    var dice=DIE_SEQUENCE.map(function(sides){
+      var matching=state.destiny.dice.filter(function(die){return die.sides===sides;}),available=matching.filter(function(die){return die.available;}),die=available[0];
+      return "<div class=\"fh-ps-destiny-group\"><button type=\"button\" class=\"fh-ps-pool-step\" data-destiny-pool=\""+sides+":-1\" "+(available.length?"":"disabled")+" aria-label=\"Remove one d"+sides+"\">−</button><button type=\"button\" class=\"fh-ps-destiny-die "+(die?"is-full":"is-empty")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Roll":"No")+" Destiny d"+sides+"\"><span>d"+sides+"</span>"+(available.length>1?"<b>×"+available.length+"</b>":"")+"</button><button type=\"button\" class=\"fh-ps-pool-step\" data-destiny-pool=\""+sides+":1\" "+(available.length>=3?"disabled":"")+" aria-label=\"Add one d"+sides+"\">+</button></div>";
+    }).join("");
+    return "<section class=\"fh-ps-lower-grid\"><div class=\"fh-ps-destiny fh-ps-card\"><div class=\"fh-ps-destiny-head\"><div><p>DESTINY · "+esc(arcana.name||"Major Arcana")+"</p><h2>Pool &amp; score</h2></div><button type=\"button\" id=\"fhPsLongRest\">Rest +1</button></div><div class=\"fh-ps-destiny-values\"><label><span>Points</span><div><button data-destiny-step=\"points:-1\">−</button><input data-destiny-field=\"points\" type=\"number\" value=\""+state.destiny.points+"\"><button data-destiny-step=\"points:1\">+</button></div></label><label><span>Max</span><div><button data-destiny-step=\"score:-1\">−</button><input data-destiny-field=\"score\" type=\"number\" value=\""+state.destiny.score+"\"><button data-destiny-step=\"score:1\">+</button></div></label></div><div class=\"fh-ps-destiny-dice\">"+dice+"</div></div>"+renderDiceTray()+"</section>";
   }
   function renderHistoryEntry(entry) {
     var dice=entry.kind==="d20"?(entry.d20s||[]).join("/"):"d"+(entry.destiny&&entry.destiny.sides||"");
@@ -375,7 +434,7 @@
     return "<button type=\"button\" class=\"fh-ps-history-row\" data-history-id=\""+entry.id+"\" "+(entry.kind==="d20"?"":"disabled")+"><time>"+nowLabel(entry.createdAt)+"</time><span><b>"+esc(entry.name)+"</b><small>"+esc(badges.join(" · ")||dice)+"</small></span><strong>"+entry.total+"</strong><i>"+esc(entry.outcome||"")+"</i></button>";
   }
   function configFromEntry(entry) {
-    return {editingId:entry.id,name:entry.name,ability:entry.ability,baseBonus:entry.baseBonus,d20Mode:entry.d20Mode||"flat",plusTwo:!!entry.plusTwo,guidance:!!entry.guidance,bardic:!!entry.bardic,bardicSides:entry.bardic?entry.bardic.sides:Number(state.prefs.bardicSides)||6,destinyDieId:"",custom:Number(entry.custom)||0,dc:entry.dc,note:entry.note||""};
+    return {editingId:entry.id,name:entry.name,ability:entry.ability,baseBonus:entry.baseBonus,d20Mode:entry.d20Mode||"flat",plusTwo:!!entry.plusTwo,guidance:!!entry.guidance,bardic:!!entry.bardic,bardicSides:entry.bardic?entry.bardic.sides:Number(state.prefs.bardicSides)||6,destinyDieId:"",destinyConfirmed:false,custom:Number(entry.custom)||0,dc:entry.dc,note:entry.note||""};
   }
   function renderConsole() {
     var cfg=state.rollConfig,entry=cfg&&cfg.editingId?state.history.find(function(item){return item.id===cfg.editingId;}):null;
@@ -384,18 +443,18 @@
     var locked=!!entry;
     var mode=cfg.d20Mode==="flat"&&cfg.plusTwo?"plus2":cfg.d20Mode;
     var modeButtons=[["disadvantage","Disadv."],["flat","Flat"],["plus2","+2"],["advantage","Advantage"]].map(function(item){return "<button type=\"button\" data-roll-mode=\""+item[0]+"\" class=\""+(mode===item[0]?"is-on":"")+"\" "+(locked?"disabled":"")+">"+item[1]+"</button>";}).join("");
-    var availableDice=state.destiny.dice.filter(function(die){return die.available;});
-    var destinyOptions="<option value=\"\">No Destiny die</option>"+availableDice.map(function(die){return "<option value=\""+die.id+"\" "+(cfg.destinyDieId===die.id?"selected":"")+">d"+die.sides+" · available</option>";}).join("");
+    var availableDice=DIE_SEQUENCE.map(function(sides){return state.destiny.dice.filter(function(die){return die.available&&die.sides===sides;});}).filter(function(group){return group.length;});
+    var destinyOptions="<option value=\"\">No Destiny die</option>"+availableDice.map(function(group){var die=group[0];return "<option value=\""+die.id+"\" "+(cfg.destinyDieId===die.id?"selected":"")+">d"+die.sides+(group.length>1?" ×"+group.length:"")+" · available</option>";}).join("");
     if(entry&&entry.destiny)destinyOptions="<option selected value=\"\">d"+entry.destiny.sides+" = "+entry.destiny.result+" · spent</option>";
-    var d20Display=entry?"<div class=\"fh-ps-locked-dice\"><span>🔒 d20 "+entry.d20s.join(" / ")+"</span><b>Kept "+entry.kept+"</b></div>":"";
+    var d20Display=entry?"<div class=\"fh-ps-locked-dice\"><span>🔒 Original d20 "+entry.d20s.join(" / ")+(entry.transformed?" · Fate changed 1 → 20":"")+"</span><b>Kept "+entry.kept+"</b></div>":"";
     var breakdown=entry?renderBreakdown(entry):"";
-    return "<section class=\"fh-ps-roll-zone fh-ps-card is-open\"><div class=\"fh-ps-console-head\"><div><p>ROLL CONSOLE</p><h2>"+esc(cfg.name)+" <strong>"+signed(cfg.baseBonus)+"</strong></h2><small>"+esc(cfg.note||cfg.ability||"")+"</small></div><button id=\"fhPsCloseConsole\" type=\"button\" aria-label=\"Close roll console\">×</button></div>"+d20Display+"<div class=\"fh-ps-roll-modes\">"+modeButtons+"</div><div class=\"fh-ps-extras\"><label><input id=\"fhPsPlusTwo\" type=\"checkbox\" "+(cfg.plusTwo?"checked":"")+"> FH bonus <b>+2</b></label><label><input id=\"fhPsGuidance\" type=\"checkbox\" "+(cfg.guidance?"checked":"")+"> Guidance <b>d4"+(entry&&entry.guidance?" = "+entry.guidance.result:"")+"</b></label><label><input id=\"fhPsBardic\" type=\"checkbox\" "+(cfg.bardic?"checked":"")+"> Bardic <select id=\"fhPsBardicSides\" "+(entry&&entry.bardic?"disabled":"")+">"+[6,8,10,12].map(function(s){return "<option value=\""+s+"\" "+(cfg.bardicSides===s?"selected":"")+">d"+s+(entry&&entry.bardic&&entry.bardic.sides===s?" = "+entry.bardic.result:"")+"</option>";}).join("")+"</select></label><label>Destiny <select id=\"fhPsDestinyDie\" "+(entry&&entry.destiny?"disabled":"")+">"+destinyOptions+"</select></label><label>Modifier <input id=\"fhPsCustom\" type=\"number\" value=\""+cfg.custom+"\"></label><label>DC <input id=\"fhPsDc\" type=\"number\" min=\"0\" value=\""+esc(cfg.dc)+"\" placeholder=\"—\"></label></div><div class=\"fh-ps-console-actions\"><button class=\"fh-ps-roll-button\" id=\"fhPsRunRoll\" type=\"button\">"+(locked?"Apply adjustments":"Roll")+"</button>"+(locked?"<button id=\"fhPsRepeatRoll\" type=\"button\">Repeat setup</button>":"")+"</div>"+breakdown+"<div class=\"fh-ps-history\"><h3>Recent rolls <small>d20s stay locked when edited</small></h3>"+history+"</div></section>";
+    return "<section class=\"fh-ps-roll-zone fh-ps-card is-open\"><div class=\"fh-ps-console-head\"><div><p>ROLL CONSOLE</p><h2>"+esc(cfg.name)+" <strong>"+signed(cfg.baseBonus)+"</strong></h2><small>"+esc(cfg.note||cfg.ability||"")+"</small></div><button id=\"fhPsCloseConsole\" type=\"button\" aria-label=\"Close roll console\">×</button></div>"+renderDiceStage(entry,cfg)+d20Display+"<div class=\"fh-ps-roll-modes\">"+modeButtons+"</div><div class=\"fh-ps-extras\"><label><input id=\"fhPsPlusTwo\" type=\"checkbox\" "+(cfg.plusTwo?"checked":"")+"> FH bonus <b>+2</b></label><label><input id=\"fhPsGuidance\" type=\"checkbox\" "+(cfg.guidance?"checked":"")+"> Guidance <b>d4"+(entry&&entry.guidance?" = "+entry.guidance.result:"")+"</b></label><label><input id=\"fhPsBardic\" type=\"checkbox\" "+(cfg.bardic?"checked":"")+"> Bardic <select id=\"fhPsBardicSides\" "+(entry&&entry.bardic?"disabled":"")+">"+[6,8,10,12].map(function(s){return "<option value=\""+s+"\" "+(cfg.bardicSides===s?"selected":"")+">d"+s+(entry&&entry.bardic&&entry.bardic.sides===s?" = "+entry.bardic.result:"")+"</option>";}).join("")+"</select></label><label>Destiny <select id=\"fhPsDestinyDie\" "+(entry&&entry.destiny?"disabled":"")+">"+destinyOptions+"</select></label><label>Modifier <input id=\"fhPsCustom\" type=\"number\" value=\""+cfg.custom+"\"></label><label>DC <input id=\"fhPsDc\" type=\"number\" min=\"0\" value=\""+esc(cfg.dc)+"\" placeholder=\"—\"></label></div><div class=\"fh-ps-console-actions\"><button class=\"fh-ps-roll-button\" id=\"fhPsRunRoll\" type=\"button\">"+(locked?"Apply adjustments":"Roll")+"</button>"+(locked?"<button id=\"fhPsRepeatRoll\" type=\"button\">Repeat setup</button>":"")+"</div>"+breakdown+"<div class=\"fh-ps-history\"><h3>Recent rolls <small>d20s stay locked when edited</small></h3>"+history+"</div></section>";
   }
   function renderBreakdown(entry) {
     var lines=["<span><small>Kept d20</small><b>"+entry.kept+"</b></span>","<span><small>Base bonus</small><b>"+signed(entry.baseBonus)+"</b></span>"];
     if(entry.plusTwo)lines.push("<span><small>FH bonus</small><b>+2</b></span>");if(entry.custom)lines.push("<span><small>Manual</small><b>"+signed(entry.custom)+"</b></span>");
     if(entry.guidance)lines.push("<span><small>Guidance d4</small><b>+"+entry.guidance.result+"</b></span>");if(entry.bardic)lines.push("<span><small>Bardic d"+entry.bardic.sides+"</small><b>+"+entry.bardic.result+"</b></span>");if(entry.destiny)lines.push("<span><small>Destiny d"+entry.destiny.sides+"</small><b>+"+entry.destiny.result+"</b></span>");
-    var choice=entry.natural===1&&!entry.natChoice?"<div class=\"fh-ps-nat-choice\"><b>Natural 1 — choose fate</b><button data-nat-choice=\"accept\" data-entry-id=\""+entry.id+"\">Accept · +1 Point</button><button data-nat-choice=\"chaos\" data-entry-id=\""+entry.id+"\">Invoke Chaos · critical success</button></div>":"";
+    var choice=entry.natural===1&&!entry.natChoice?"<div class=\"fh-ps-nat-choice\"><b>Do you accept your fate?</b><button data-nat-choice=\"accept\" data-entry-id=\""+entry.id+"\">Yes · fail &amp; +1 Destiny</button><button data-nat-choice=\"chaos\" data-entry-id=\""+entry.id+"\">No · turn it into 20</button></div>":"";
     var warnings="";if(entry.destiny&&entry.destiny.chaos)warnings="<p class=\"fh-ps-chaos\">Chaos · Overreach "+entry.destiny.chaos.overreach+" · "+entry.ability+" save DC "+entry.destiny.chaos.dc+"</p>";if(entry.awakening)warnings+="<p class=\"fh-ps-awakening\">Arcane Awakening — draw from the tarot deck.</p>";
     return "<div class=\"fh-ps-roll-result \" data-outcome=\""+esc(entry.outcome||"")+"\"><div>"+lines.join("")+"</div><strong>"+entry.total+"</strong><p>"+esc(entry.outcome||"")+(entry.dc!==""?" · DC "+esc(entry.dc):"")+"</p></div>"+choice+warnings;
   }
@@ -440,32 +499,58 @@
     if((state.activeContext==="inventory"||state.activeContext==="forge")&&state.inventory===null)loadInventory();
   }
 
-  function syncConsoleInputs(){if(!state.rollConfig)return;var q=function(id){return root.querySelector(id);},cfg=state.rollConfig;var plusTwo=q("#fhPsPlusTwo"),guidance=q("#fhPsGuidance"),bardic=q("#fhPsBardic"),sides=q("#fhPsBardicSides"),destiny=q("#fhPsDestinyDie"),custom=q("#fhPsCustom"),dc=q("#fhPsDc");if(plusTwo)cfg.plusTwo=plusTwo.checked;if(guidance)cfg.guidance=guidance.checked;if(bardic)cfg.bardic=bardic.checked;if(sides){cfg.bardicSides=Number(sides.value)||6;state.prefs.bardicSides=cfg.bardicSides;}if(destiny)cfg.destinyDieId=destiny.value;if(custom)cfg.custom=Number(custom.value)||0;if(dc)cfg.dc=dc.value;}
-  function openConfig(name,ability,bonus,note,dc){state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});render();window.setTimeout(function(){var zone=root.querySelector(".fh-ps-roll-zone");if(zone&&zone.scrollIntoView)zone.scrollIntoView({behavior:"smooth",block:"nearest"});},0);}
+  function syncConsoleInputs(){if(!state.rollConfig)return;var q=function(id){return root.querySelector(id);},cfg=state.rollConfig;var plusTwo=q("#fhPsPlusTwo"),guidance=q("#fhPsGuidance"),bardic=q("#fhPsBardic"),sides=q("#fhPsBardicSides"),destiny=q("#fhPsDestinyDie"),custom=q("#fhPsCustom"),dc=q("#fhPsDc");if(plusTwo)cfg.plusTwo=plusTwo.checked;if(guidance)cfg.guidance=guidance.checked;if(bardic)cfg.bardic=bardic.checked;if(sides){cfg.bardicSides=Number(sides.value)||6;state.prefs.bardicSides=cfg.bardicSides;}if(destiny&&cfg.destinyDieId!==destiny.value){cfg.destinyDieId=destiny.value;cfg.destinyConfirmed=false;}if(custom)cfg.custom=Number(custom.value)||0;if(dc)cfg.dc=dc.value;}
+  function openConfig(name,ability,bonus,note,dc){state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});state.message="Advanced roller opened for "+name+".";state.messageKind="roll";render();window.setTimeout(function(){var zone=root.querySelector(".fh-ps-roll-zone"),roll=root.querySelector("#fhPsRunRoll");if(zone&&zone.scrollIntoView)zone.scrollIntoView({behavior:"smooth",block:"center"});if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
   function loadInventory(){if(!state.code)return;state.inventory={loading:true};api("/inv/"+encodeURIComponent(state.code)).then(function(data){state.inventory=data;render();}).catch(function(error){state.inventory={error:"Could not load inventory: "+error.message};render();});}
   function loadParty(){var input=root.querySelector("#fhPsCode"),code=(input?input.value:state.code).trim();state.code=code;state.party=[];state.record=null;state.character=null;state.pseudo="";state.inventory=null;state.loading=!!code;render();if(!code)return;try{localStorage.setItem("fh-my-campcode",code);}catch(e){}api("/party/"+encodeURIComponent(code)).then(function(data){state.party=(data.builds||[]).map(function(entry){return entry.pseudo;}).sort();var last="";try{last=localStorage.getItem("fh-my-pseudo")||"";}catch(e){}state.loading=false;if(state.party.indexOf(last)>=0){state.pseudo=last;loadBuild();}else render();}).catch(function(error){state.loading=false;state.message=error.message||"Could not reach the campaign server.";state.messageKind="danger";render();});}
   function loadBuild(){var who=state.pseudo;if(!state.code||!who)return;state.loading=true;render();try{localStorage.setItem("fh-my-pseudo",who);}catch(e){}Promise.all([api("/party/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)),api("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)).catch(function(){return {profile:emptyProfile()};})]).then(function(results){state.record=results[0];state.profile=results[1].profile||emptyProfile();state.character=effectiveCharacter();loadPlayState(state.character);state.loading=false;state.inventory=null;state.message="";render();}).catch(function(error){state.loading=false;state.record=null;state.character=null;state.message=error.message||"Could not load this character.";state.messageKind="danger";render();});}
 
   function showModal(html){var overlay=document.createElement("div");overlay.className="fh-mc-modal-wrap";overlay.innerHTML="<div class=\"fh-mc-modal\" role=\"dialog\" aria-modal=\"true\"><button class=\"fh-mc-modal-x\" type=\"button\" aria-label=\"Close\">×</button>"+html+"</div>";function close(){overlay.remove();}overlay.addEventListener("click",function(event){if(event.target===overlay||event.target.closest(".fh-mc-modal-x"))close();});document.body.appendChild(overlay);return {element:overlay,close:close};}
+  function confirmDestinyUse(dieId,context,onConfirm){
+    var die=state.destiny.dice.find(function(item){return item.id===dieId&&item.available;});
+    if(!die){state.message="That Destiny die is no longer available.";state.messageKind="danger";renderMessage();return;}
+    state.trayPrompt={type:"destiny",dieId:dieId,context:context||"Spend this Destiny die",onConfirm:onConfirm};render();
+    window.setTimeout(function(){var tray=root&&root.querySelector(".fh-ps-dice-tray");if(tray&&tray.scrollIntoView)tray.scrollIntoView({behavior:"smooth",block:"nearest"});},0);
+  }
+  function announceRoll(entry){
+    if(!entry||entry.kind!=="d20")return;
+    if(entry.natural===1&&!entry.natChoice)window.setTimeout(function(){showNatOnePrompt(entry.id);},180);
+    else if(entry.awakening)window.setTimeout(function(){showAwakening(entry);},350);
+  }
+  function showNatOnePrompt(id){
+    var entry=state.history.find(function(item){return item.id===id;});if(!entry||entry.natural!==1||entry.natChoice)return;
+    state.trayPrompt={type:"nat1",entryId:id};render();
+  }
+  function showChaosModal(entry){
+    if(!entry||!entry.chaosRoll)return;state.trayPrompt={type:"chaos",entryId:entry.id};render();
+  }
+  function showAwakening(entry){
+    if(!entry)return;state.trayPrompt={type:"awakening",entryId:entry.id};render();
+  }
   function friendlyPullError(error){if(error&&error.status===404)return "D&D Beyond could not open this sheet. Confirm that it is public or shared.";if(error&&(error.status===502||error.status===503||error.status===504))return "D&D Beyond did not answer in time. Wait a moment, then try Sync again.";if(error&&error.status===403)return "Check the campaign code and confirm that the D&D Beyond sheet is shared.";return error&&error.message||"The D&D Beyond pull failed.";}
   function openPull(force){if(!force&&state.profile&&state.profile.ddbLinked){pullDdb(null);return;}var modal=showModal("<p class=\"fh-mc-modal-kicker\">D&D BEYOND</p><h3>Connect the public sheet</h3><p>Paste a public character link, a Shareable Link or the numeric character ID.</p><label><span>D&D Beyond character link</span><input id=\"fhPsDdbUrl\" type=\"text\" inputmode=\"url\" placeholder=\"https://www.dndbeyond.com/characters/123456789\"></label><p class=\"fh-mc-modal-note\">Only the stable numeric character ID is retained for later syncs.</p><p class=\"fh-mc-modal-error\" id=\"fhPsPullError\"></p><button class=\"fh-mc-modal-save\" id=\"fhPsPullSave\">Connect & Pull</button>");var input=modal.element.querySelector("#fhPsDdbUrl");modal.element.querySelector("#fhPsPullSave").onclick=function(){if(input.value.trim())pullDdb(input.value.trim(),modal);};input.focus();}
   function pullDdb(value,modal){var url=null;if(value){try{url=canonicalDdbUrl(value);}catch(error){modal.element.querySelector("#fhPsPullError").textContent=error.message;return;}}state.message="Syncing D&D Beyond…";state.messageKind="roll";renderMessage();post("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(state.pseudo)+"/pull",url?{shareUrl:url}:{}).then(function(data){state.profile=Object.assign({},state.profile||{},data.profile||{});state.character=effectiveCharacter();if(modal)modal.close();state.message="Character refreshed from D&D Beyond.";state.messageKind="success";render();}).catch(function(error){var message=friendlyPullError(error);if(modal)modal.element.querySelector("#fhPsPullError").textContent=message;else{state.message=message;state.messageKind="danger";render();}});}
   function openLevelUp(ch){var classes=CLASS_NAMES.slice();ch.classes.forEach(function(entry){if(classes.indexOf(entry.name)<0)classes.unshift(entry.name);});var classOptions=classes.map(function(name){return "<option "+(ch.classes[0]&&ch.classes[0].name===name?"selected":"")+">"+esc(name)+"</option>";}).join("");var statOptions="<option value=\"\">No increase</option>"+ABILITIES.map(function(key){return "<option value=\""+key+"\">"+key+" — "+ABILITY_NAMES[key]+"</option>";}).join("");var skillOptions="<option value=\"\">No skill</option>"+SKILLS.map(function(s){return "<option>"+s[0]+"</option>";}).join("");var modal=showModal("<p class=\"fh-mc-modal-kicker\">LEVEL "+(ch.level+1)+"</p><h3>What gains a level?</h3><label><span>Class</span><select id=\"fhPsLevelClass\">"+classOptions+"</select></label><div class=\"fh-mc-modal-grid\"><label><span>Ability increase 1</span><select id=\"fhPsStat1\">"+statOptions+"</select></label><label><span>Ability increase 2</span><select id=\"fhPsStat2\">"+statOptions+"</select></label></div><div class=\"fh-mc-modal-grid\"><label><span>Essential skill</span><select id=\"fhPsSkill1\">"+skillOptions+"</select></label><label><span>New tier</span><select id=\"fhPsTier1\"><option value=\"half\">Half</option><option value=\"proficient\" selected>Proficient</option><option value=\"expert\">Expert</option></select></label></div><label><span>New essential spells</span><textarea id=\"fhPsNewSpells\" placeholder=\"One per line or comma-separated\"></textarea></label><p class=\"fh-mc-modal-error\" id=\"fhPsLevelError\"></p><button class=\"fh-mc-modal-save\" id=\"fhPsLevelSave\">Apply Level Up</button>");modal.element.querySelector("#fhPsLevelSave").onclick=function(){var increases={};["#fhPsStat1","#fhPsStat2"].forEach(function(sel){var value=modal.element.querySelector(sel).value;if(value)increases[value]=(increases[value]||0)+1;});var skillName=modal.element.querySelector("#fhPsSkill1").value;var entry={id:uuid(),targetLevel:ch.level+1,className:modal.element.querySelector("#fhPsLevelClass").value,abilityIncreases:increases,essentialSkills:skillName?[{name:skillName,tier:modal.element.querySelector("#fhPsTier1").value}]:[],spells:modal.element.querySelector("#fhPsNewSpells").value.split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean),createdAt:new Date().toISOString()};saveProfile({levelUps:(state.profile.levelUps||[]).concat([entry])}).then(function(){modal.close();state.character=effectiveCharacter();state.message="Level-up saved. PB updated automatically.";state.messageKind="success";render();}).catch(function(error){modal.element.querySelector("#fhPsLevelError").textContent=error.message;});};}
 
-  function onClick(event){var button=event.target.closest("button");if(!button||!root.contains(button))return;
+  function handleClick(event){var button=event.target.closest("button");if(!button||!root.contains(button))return;
+    if(button.dataset.trayCancel!==undefined||button.dataset.trayClose!==undefined){state.trayPrompt=null;render();return;}
+    if(button.dataset.trayConfirmDestiny!==undefined){var destinyPrompt=state.trayPrompt,confirmAction=destinyPrompt&&destinyPrompt.onConfirm;state.trayPrompt=null;if(confirmAction)confirmAction();else render();return;}
+    if(button.dataset.trayAcceptFate!==undefined||button.dataset.trayRefuseFate!==undefined){var fatePrompt=state.trayPrompt,choice=button.dataset.trayAcceptFate!==undefined?"accept":"chaos";state.trayPrompt=null;if(fatePrompt)resolveNatOne(fatePrompt.entryId,choice);return;}
     if(button.id==="fhPsLoad"){loadParty();return;}if(button.id==="fhPsSync"){openPull(false);return;}if(button.id==="fhPsRelink"){openPull(true);return;}if(button.id==="fhPsLevel"){openLevelUp(state.character);return;}
     if(button.dataset.quickName){quickRoll(button.dataset.quickName,button.dataset.ability,button.dataset.bonus,button.dataset.note);return;}
     if(button.dataset.configName){openConfig(button.dataset.configName,button.dataset.ability,button.dataset.bonus,button.dataset.note,button.dataset.dc);return;}
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;render();return;}
-    if(button.id==="fhPsOpenConsole"){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}if(button.id==="fhPsCloseConsole"){state.rollConfig=null;render();return;}if(button.id==="fhPsRunRoll"){runConfiguredRoll();return;}
+    if(button.id==="fhPsOpenConsole"||button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}if(button.id==="fhPsCloseConsole"){state.rollConfig=null;render();return;}if(button.id==="fhPsRunRoll"){runConfiguredRoll();return;}
     if(button.id==="fhPsRepeatRoll"){var old=state.history.find(function(item){return state.rollConfig&&item.id===state.rollConfig.editingId;});if(old){state.rollConfig=rollInput(old.name,old.ability,old.baseBonus,{mode:old.d20Mode,plusTwo:old.plusTwo,dc:old.dc,note:old.note});state.rollConfig.custom=old.custom||0;render();}return;}
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);render();}return;}
-    if(button.dataset.destinyDie){standaloneDestiny(button.dataset.destinyDie);return;}
+    if(button.dataset.destinyDie){var dieId=button.dataset.destinyDie;confirmDestinyUse(dieId,"Roll directly from the Destiny pool",function(){standaloneDestiny(dieId);});return;}
+    if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
     if(button.id==="fhPsLongRest"){setDestinyPoints(Math.min(state.destiny.score,state.destiny.points+1),"Long rest",true);render();return;}
-    if(button.dataset.natChoice){resolveNatOne(button.dataset.entryId,button.dataset.natChoice);return;}
+    if(button.dataset.natChoice){state.trayPrompt=null;resolveNatOne(button.dataset.entryId,button.dataset.natChoice);return;}
     if(button.dataset.context){state.activeContext=button.dataset.context;state.rollConfig=null;render();return;}
   }
+  function onClick(event){try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";renderMessage();if(window.console&&console.error)console.error(error);}}
   function onChange(event){if(event.target.id==="fhPsWho"){state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.destinyField){updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
   function onKeydown(event){if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();}}
 
