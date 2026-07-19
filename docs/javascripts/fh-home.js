@@ -141,13 +141,16 @@
     var toc = document.querySelector(".md-sidebar--secondary .md-nav--secondary");
     if (!toc) return;
 
-    /* 1 — ⌂ Home pill */
+    /* 1 — ⌂ Home pill. A page-level breadcrumb already provides the same
+       action on the few utility pages that define one explicitly. */
     var logo = document.querySelector(".md-header__button.md-logo");
-    var homeLink = document.createElement("a");
-    homeLink.className = "fh-home fh-home--toc";
-    homeLink.href = logo ? logo.href : "/";
-    homeLink.innerHTML = "&#8962; Home";
-    toc.insertBefore(homeLink, toc.firstChild);
+    if (!document.querySelector("main .fh-home")) {
+      var homeLink = document.createElement("a");
+      homeLink.className = "fh-home fh-home--toc";
+      homeLink.href = logo ? logo.href : "/";
+      homeLink.innerHTML = "&#8962; Home";
+      toc.insertBefore(homeLink, toc.firstChild);
+    }
 
     /* 2 — group cross TOC (lists every sibling H1 + its H2s) */
     var path = window.location.pathname;
@@ -203,5 +206,23 @@
       cap.textContent = GROUP.name;
       toc.insertBefore(cap, group);
     }
+  });
+
+  /* Fast rules lookup during play: / and Ctrl/Cmd+K open and focus Material's
+     native indexed search. Ignore / while the player is typing in a field. */
+  document.addEventListener("keydown", function (event) {
+    var tag = event.target && event.target.tagName;
+    var isTyping = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (event.target && event.target.isContentEditable);
+    var slash = event.key === "/" && !isTyping && !event.ctrlKey && !event.metaKey && !event.altKey;
+    var commandK = event.key.toLowerCase() === "k" && (event.ctrlKey || event.metaKey);
+    if (!slash && !commandK) return;
+
+    var toggle = document.getElementById("__search");
+    var query = document.querySelector('[data-md-component="search-query"]');
+    if (!toggle || !query) return;
+
+    event.preventDefault();
+    toggle.checked = true;
+    window.setTimeout(function () { query.focus(); }, 0);
   });
 })();

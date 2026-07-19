@@ -34,7 +34,11 @@
   function api(path, options) {
     return fetch(API + path, options).then(function (response) {
       return response.json().catch(function () { return {}; }).then(function (data) {
-        if (!response.ok) throw new Error(data.error || ("HTTP " + response.status));
+        if (!response.ok) {
+          var error = new Error(data.error || ("HTTP " + response.status));
+          error.status = response.status;
+          throw error;
+        }
         return data;
       });
     });
@@ -52,10 +56,12 @@
     catch (error) { throw new Error("Paste a valid D&D Beyond character link."); }
 
     var host = parsed.hostname.toLowerCase().replace(/^www\./, "");
-    var pathMatch = parsed.pathname.match(/(?:^|\/)characters\/(\d+)(?:\/|$)/i);
+    var pathMatch = parsed.pathname.match(/(?:^|\/)characters\/(\d+)(?:\/[a-z0-9_-]+)?(?:\/|$)/i);
     if (host !== "dndbeyond.com" || !pathMatch) {
       throw new Error("Use a public D&D Beyond character link.");
     }
+    /* The production Worker follows D&D Beyond redirects from the stable
+       numeric URL. Keep this tested contract instead of persisting share tokens. */
     return "https://www.dndbeyond.com/characters/" + pathMatch[1];
   }
   function mod(score) { return Math.floor(((Number(score) || 10) - 10) / 2); }
@@ -184,6 +190,22 @@
     "</section>";
   }
 
+  function toolUrl(kind, fallback) {
+    var raw = (root && root.dataset && root.dataset[kind]) || fallback;
+    try {
+      var url = new URL(raw, window.location.href);
+      if (state.code) url.searchParams.set("campaign", state.code);
+      return url.href;
+    } catch (error) { return raw; }
+  }
+
+  function friendlyPullError(error) {
+    if (error && error.status === 404) return "D&D Beyond could not open this sheet. Confirm that the character is public or shared, then try its D&D Beyond link again.";
+    if (error && (error.status === 502 || error.status === 503 || error.status === 504)) return "D&D Beyond did not answer in time. Your link may be fine — wait a moment, then try Sync again.";
+    if (error && error.status === 403) return "This character or campaign is not accessible. Check the campaign code and confirm that the D&D Beyond sheet is shared.";
+    return (error && error.message) || "The D&D Beyond pull failed. Confirm that the sheet is shared, then try again.";
+  }
+
   function renderPanel() {
     if (!state.record) {
       panel.innerHTML = "<div class=\"fh-mc-empty\">Enter your campaign code, then choose your character.</div>";
@@ -223,12 +245,15 @@
     var soulforgeBody = skillLine("Tool - Soulforging", ch, 0, "forge check", true) +
       "<p class=\"fh-mc-rule\">The Workbench will use this bonus by default. A different forger can still override it inside the Soulforge.</p>";
 
+    var isLinked = !!(state.profile && state.profile.ddbLinked);
     panel.innerHTML =
       "<div class=\"fh-mc-identity\">" +
         "<img class=\"fh-mc-portrait\" src=\"" + esc(portrait) + "\" alt=\"\" onerror=\"this.style.display='none'\">" +
         "<span class=\"fh-mc-person\"><b>" + esc(ch.name) + "</b><small>" + esc(ch.species) + " · " + esc(classes) + "</small><i>" + esc(sync) + (ch.pending.length ? " · " + ch.pending.length + " pending level-up" + (ch.pending.length > 1 ? "s" : "") : "") + "</i></span>" +
         "<span class=\"fh-mc-badges\"><span><small>LEVEL</small><b>" + ch.level + "</b></span><span><small>PB</small><b>+" + ch.pb + "</b></span></span>" +
-        "<span class=\"fh-mc-actions\"><button type=\"button\" id=\"fhMcPull\">⟳ <span>Pull</span></button><button type=\"button\" id=\"fhMcLevel\">＋ <span>Level Up</span></button></span>" +
+        "<span class=\"fh-mc-actions\"><button type=\"button\" id=\"fhMcPull\">⟳ <span>" + (isLinked ? "Sync DDB" : "Connect DDB") + "</span></button>" +
+        (isLinked ? "<button type=\"button\" id=\"fhMcRelink\">↗ <span>Change link</span></button>" : "") +
+        "<button type=\"button\" id=\"fhMcLevel\">＋ <span>Level Up</span></button></span>" +
       "</div>" +
       "<div class=\"fh-mc-abilities\">" + abilityCells + "</div>" +
       "<div class=\"fh-mc-target\"><label><span>Target creature</span><select id=\"fhMcTarget\">" + creatureOptions + "</select></label><label><span>CR</span><input id=\"fhMcCr\" value=\"" + esc(state.cr) + "\" inputmode=\"decimal\"></label></div>" +
@@ -238,7 +263,7 @@
         section("prepare", "⚗", "Prepare", (hasTransfer || hasIdentify ? "rites ready" : "spells & tools"), prepareBody) +
         section("soulforge", "⚒", "Soulforge", signed(skillInfo("Tool - Soulforging", ch).bonus), soulforgeBody) +
       "</div>" +
-      "<div class=\"fh-mc-footer\"><a href=\"inventory/\">My Inventory</a><a class=\"is-primary\" href=\"soulforge/\">Go to the Soulforge</a><a class=\"is-off\" title=\"Coming soon\">Secrets</a></div>";
+      "<div class=\"fh-mc-footer\"><a href=\"" + esc(toolUrl("inventory", "party-inventory.html")) + "\">▣ My Inventory</a><a class=\"is-primary\" href=\"" + esc(toolUrl("soulforge", "soulforge-tool.html")) + "\">⚒ Open Soulforge</a></div>";
     wirePanel(ch);
   }
 
@@ -252,12 +277,13 @@
     return { element:overlay, close:close };
   }
 
-  function openPull() {
-    if (state.profile && state.profile.ddbLinked) { pullDdb(null); return; }
+  function openPull(forceLink) {
+    if (!forceLink && state.profile && state.profile.ddbLinked) { pullDdb(null); return; }
     var modal = showModal(
       "<p class=\"fh-mc-modal-kicker\">D&D BEYOND</p><h3>Connect the public sheet</h3>" +
-      "<p>Paste the character’s public or shareable link once. Fate’s Hand keeps only its numeric character ID—not the share token.</p>" +
-      "<label><span>D&D Beyond character link</span><input id=\"fhMcDdbUrl\" type=\"text\" inputmode=\"url\" autocomplete=\"url\" placeholder=\"https://www.dndbeyond.com/characters/…\"></label>" +
+      "<p>Paste the character's <b>public or Shareable Link</b>. Fate's Hand sends the stable numeric character URL through its server-side pull service.</p>" +
+      "<label><span>D&D Beyond character link</span><input id=\"fhMcDdbUrl\" type=\"text\" inputmode=\"url\" autocomplete=\"url\" placeholder=\"https://www.dndbeyond.com/characters/123456789\"></label>" +
+      "<p class=\"fh-mc-modal-note\">Only the numeric character ID is retained for later syncs. The sheet must be accessible to D&D Beyond's public page.</p>" +
       "<p class=\"fh-mc-modal-error\" id=\"fhMcModalError\"></p><button class=\"fh-mc-modal-save\" id=\"fhMcDdbSave\" type=\"button\">Connect & Pull</button>"
     );
     var input = modal.element.querySelector("#fhMcDdbUrl");
@@ -280,7 +306,7 @@
       }
     }
     var button = document.getElementById("fhMcPull");
-    if (button) { button.disabled = true; button.textContent = "Pulling…"; }
+    if (button) { button.disabled = true; button.textContent = "Syncing…"; }
     var body = canonicalUrl ? {shareUrl:canonicalUrl} : {};
     post("/profile/" + encodeURIComponent(state.code) + "/" + encodeURIComponent(state.pseudo) + "/pull", body)
       .then(function (data) {
@@ -290,8 +316,9 @@
         setStatus("Character refreshed from D&D Beyond.", "ok");
       })
       .catch(function (error) {
-        if (modal) modal.element.querySelector("#fhMcModalError").textContent = error.message;
-        else setStatus(error.message, "err");
+        var message = friendlyPullError(error);
+        if (modal) modal.element.querySelector("#fhMcModalError").textContent = message;
+        else setStatus(message, "err");
         renderPanel();
       });
   }
@@ -349,7 +376,9 @@
   }
 
   function wirePanel(ch) {
-    document.getElementById("fhMcPull").addEventListener("click", openPull);
+    document.getElementById("fhMcPull").addEventListener("click", function () { openPull(false); });
+    var relink = document.getElementById("fhMcRelink");
+    if (relink) relink.addEventListener("click", function () { openPull(true); });
     document.getElementById("fhMcLevel").addEventListener("click", function () { openLevelUp(ch); });
     document.getElementById("fhMcTarget").addEventListener("change", function (event) { state.target = event.target.value; renderPanel(); });
     document.getElementById("fhMcCr").addEventListener("change", function (event) { state.cr = event.target.value || "0"; renderPanel(); });
@@ -432,10 +461,9 @@
   document.addEventListener("DOMContentLoaded", function () {
     root = document.getElementById("fhMyChar");
     if (!root) return;
-    var card = root.closest("li");
-    if (card) card.classList.add("fh-mychar-card");
+    if (root.classList.contains("fh-mychar--player")) document.body.classList.add("fh-player-body");
     root.innerHTML =
-      "<span class=\"fh-mc-shell\"><span class=\"fh-mc-brand\"><i></i><b>MY CHARACTER</b><i></i></span>" +
+      "<span class=\"fh-mc-shell\"><span class=\"fh-mc-brand\"><i></i><b>CHARACTER · FATE'S HAND</b><i></i></span>" +
       "<span class=\"fh-mc-setup\" id=\"fhMcSetup\"><input id=\"fhMcCode\" placeholder=\"Campaign code\" autocomplete=\"off\"><select id=\"fhMcWho\"><option value=\"\">— character —</option></select></span>" +
       "<span class=\"fh-mc-status\" id=\"fhMcStatus\"></span><span class=\"fh-mc-panel\" id=\"fhMcPanel\"></span></span>";
     setup = document.getElementById("fhMcSetup");

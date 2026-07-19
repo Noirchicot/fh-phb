@@ -95,9 +95,21 @@
   .warnline{color:var(--warn);font:12px system-ui,sans-serif;padding:3px 0}
   .badline{color:var(--bad);font:12px system-ui,sans-serif;font-weight:700;padding:3px 0}
   .okline{color:var(--good);font:12px system-ui,sans-serif;padding:3px 0}
+  @media(max-width:600px){header{padding:11px 12px;gap:8px}header>div:first-child{width:100%}h1{font-size:19px}.sub{font-size:10px}.charbar{width:100%;gap:6px}.charbar>div{flex:1;min-width:105px}.charbar input,.charbar select{width:100%;min-width:0}main{padding:10px 9px 88px}.card{padding:12px;margin-bottom:10px}nav.tabs{position:sticky;z-index:8;top:0;flex-wrap:nowrap;margin:8px 0;overflow:auto;background:var(--bg);padding:3px 0}nav.tabs button{flex:1;min-width:max-content;padding:8px 9px;font-size:10px}.meter{gap:6px}.meter .stat{min-width:63px;padding:5px}.meter .v{font-size:18px}table{display:block;overflow-x:auto}.row{gap:8px}}
 </style>
+<link rel="stylesheet" href="stylesheets/tool-ui.css">
 </head>
-<body>
+<body class="fh-tool-soulforge">
+<nav class="fh-toolbar" aria-label="Player tools">
+  <a class="fh-toolbar__brand" href="./"><span class="fh-toolbar__mark">FH</span>Fate's Hand</a>
+  <div class="fh-toolbar__links">
+    <a href="./">Handbook</a>
+    <a href="player/">Character</a>
+    <a href="skill-builder.html">Create</a>
+    <a href="party-inventory.html">Inventory</a>
+    <a href="soulforge-tool.html" aria-current="page">Soulforge</a>
+  </div>
+</nav>
 <header>
   <div>
     <h1>⚒ Soulforge Workshop</h1>

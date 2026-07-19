@@ -73,6 +73,7 @@ nav:
     - Moonkeeper: chapters/moonkeeper.md
     - Ability Score Roller: dice-roller.md
   - My Character:
+    - Player Companion: player.md
     - Party Inventory: inventory.md
   - The Destiny System:
     - Destiny System: chapters/fates-hand-mechanic.md

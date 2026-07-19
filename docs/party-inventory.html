@@ -39,10 +39,21 @@
   .owner{max-width:155px}.empty{color:var(--muted);font-style:italic;padding:8px 2px}.count{float:right;color:var(--muted);font:12px var(--sans)}
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:18px;z-index:30}.modal{background:var(--parchment);border:2px solid var(--gold);border-radius:9px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:20px;position:relative}.modal h2{margin-right:28px}.close{position:absolute;right:10px;top:8px;border:0;background:none;font-size:21px;color:var(--muted);cursor:pointer}
   .homelink{display:block;text-align:center;margin-top:18px;font:15px var(--caps);color:#d8b65a;text-decoration:none;letter-spacing:.08em}.homelink:hover{color:#f0dfae}
-  @media(max-width:680px){.wrap{padding:18px 10px 70px}h1{font-size:36px}.item-top .sp{display:none}.owner{max-width:125px}.btn{padding:7px 11px}}
+  @media(max-width:680px){.wrap{padding:14px 9px 86px}h1{font-size:32px}.sub{font-size:13px;margin-bottom:14px}.card{padding:12px;margin-bottom:9px}.item-top{align-items:flex-start}.item-top .sp{display:none}.owner{max-width:120px}.btn{padding:7px 10px}.item{padding:9px 0}.nm{flex-basis:100%;font-size:14px}.desc{font-size:12px}.toolbar{gap:5px}}
 </style>
+<link rel="stylesheet" href="stylesheets/tool-ui.css">
 </head>
-<body>
+<body class="fh-tool-inventory">
+<nav class="fh-toolbar" aria-label="Player tools">
+  <a class="fh-toolbar__brand" href="./"><span class="fh-toolbar__mark">FH</span>Fate's Hand</a>
+  <div class="fh-toolbar__links">
+    <a href="./">Handbook</a>
+    <a href="player/">Character</a>
+    <a href="skill-builder.html">Create</a>
+    <a href="party-inventory.html" aria-current="page">Inventory</a>
+    <a href="soulforge-tool.html">Soulforge</a>
+  </div>
+</nav>
 <div class="wrap">
   <h1>Fate's Hand</h1>
   <div class="sub">PARTY INVENTORY</div>

@@ -1,15 +1,14 @@
-<a class="fh-home" href="../">&#8962; Home</a>
+---
+hide:
+  - navigation
+  - toc
+---
 
-# Ability Score Roller
+<meta http-equiv="refresh" content="0; url=../stat-roller.html">
+<script>window.location.replace("../stat-roller.html" + window.location.search + window.location.hash);</script>
 
-Roll your **3d6 × 10** set before you open the D&D Beyond builder. Every die is a genuine roll from
-your browser's crypto RNG — never a picked number — and the reroll rule (keep the six highest, valid
-only if one is 15+) is enforced for you.
+# Opening the Ability Score Roller…
 
-<iframe src="../stat-roller.html" style="width:100%;height:82vh;border:1px solid var(--md-default-fg-color--lighter);border-radius:8px"></iframe>
+The roller opens as a full-screen player tool, without nested scrolling.
 
-[Open the roller full-screen ↗](stat-roller.html){ .md-button target=_blank }
-
-!!! tip "The rule"
-    Roll 3d6 ten times, keep the six highest sums — but only if at least one of them is 15 or higher.
-    If not, the whole set rerolls. See [Ability Scores](chapters/ability-scores.md) for the full method.
+[Open the Ability Score Roller](stat-roller.html){ .md-button .md-button--primary }
