@@ -10,9 +10,10 @@ const sourcePath = path.join(__dirname, "..", "docs", "javascripts", "fh-player-
 const source = fs.readFileSync(sourcePath, "utf8");
 const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
-    SKILLS, tierName, canonicalDdbUrl, makeDestinySlots, normalizeDestiny, entryTotal,
-    skillInfo, renderSkills, renderDestiny, renderDiceTray, resolveNatOne,
-    outcomeFor, state
+    SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, importedTier,
+    makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills,
+    renderDestiny, renderDiceTray, renderEventContent, resolveNatOne,
+    outcomeFor, effectiveCharacter, addTrayDie, state
   };
 })();
 `);
@@ -29,7 +30,7 @@ const sandbox = {
     setItem: (key, value) => storage.set(key, String(value))
   },
   setTimeout,
-  window: {crypto}
+  window: {crypto,setTimeout,clearTimeout}
 };
 sandbox.document = {addEventListener() {}};
 sandbox.globalThis = sandbox;
@@ -80,8 +81,45 @@ t.state.history = [];
 const destiny = t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}});
 assert.equal((destiny.match(/class="fh-ps-destiny-group/g) || []).length, 5, "Destiny dice render as five compact size groups");
 assert.match(destiny, /×2/, "duplicate Destiny dice use a compact multiplier");
-assert.match(destiny, /DICE TRAY/, "the dice tray replaces the prepared-magic card");
+assert.doesNotMatch(destiny, /DICE TRAY/, "Destiny remains a compact horizontal strip");
 assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted");
+assert.match(t.renderDiceTray(), /DICE TRAY/, "the dice tray has its own roll-workbench zone");
+assert.match(t.renderDiceTray(), /data-add-tray-die="100"/, "the free tray exposes d4 through d100 calls");
+
+t.state.record = {build:{
+  character:{name:"Imported",abilityScores:{STR:9,DEX:9,CON:9,INT:9,WIS:9,CHA:9}},
+  meta:{class:"Rogue",level:2,species:"Human"},nativeSkillTiers:{},skills:[],destiny:{}
+}};
+t.state.pseudo = "Imported";
+t.state.profile = {
+  snapshot:{data:{
+    name:"Every Import",race:{fullName:"Tiefling"},classes:[{definition:{name:"Wizard"},level:6}],
+    stats:[{id:4,value:18},{id:1,value:8},{id:2,value:14},{id:3,value:12},{id:5,value:13},{id:6,value:10}],
+    armorClass:{value:17},skills:{arcana:{proficiencyLevel:1},Stealth:{expertise:true}},
+    toolProficiencies:{"Thieves' Tools":true},
+    modifiers:{background:[{type:"proficiency",friendlySubtypeName:"Smith's Tools"}]},
+    savingThrowProficiencies:[],spells:[]
+  }},
+  manualOverrides:{armorClass:19,skills:{Arcana:"expert"},toolTiers:{"Tool - Soulforging":"proficient"}},
+  levelUps:[],preparation:{tools:[]}
+};
+const imported = t.effectiveCharacter();
+assert.equal(imported.name,"Every Import","wrapped DDB snapshots are accepted");
+assert.equal(imported.level,6,"class level is recovered when a top-level level is absent");
+assert.equal(imported.abilities.INT,18,"array-form DDB ability scores are normalized by stat id");
+assert.equal(imported.armorClass,19,"manual AC correction remains authoritative after sync");
+assert.equal(imported.skills.Arcana.tier,"expert","manual skill corrections override imported tiers");
+assert.equal(imported.skills.Stealth.tier,"expert","object-map skill imports are normalized independent of order");
+assert.equal(imported.skills["Tool - Thieves'"].tier,"proficient","tool aliases ending in Tools are canonicalized");
+assert.equal(imported.skills["Tool - Smith's"].tier,"proficient","DDB proficiency modifiers can supply purchased tools");
+assert.equal(imported.skills["Tool - Soulforging"].tier,"proficient","manual tool corrections survive every import");
+const importedBoard=t.renderSkills(imported);
+assert.ok(importedBoard.indexOf("Smith's")<importedBoard.indexOf("Soulforging")&&importedBoard.indexOf("Soulforging")<importedBoard.indexOf("Thieves'"),"purchased tools use canonical order, not import order");
+
+t.state.traySelection=[];
+[20,20,20,4,6,8,10].forEach(t.addTrayDie);
+assert.equal(t.state.traySelection.filter(sides=>sides===20).length,2,"the tray caps d20s at two");
+assert.equal(t.state.traySelection.filter(sides=>sides!==20).length,3,"the tray caps other dice at three");
 
 function natOneEntry(id) {
   return {id,kind:"d20",name:"Arcana",ability:"INT",baseBonus:3,d20Mode:"flat",d20s:[1],kept:1,natural:1,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",createdAt:new Date().toISOString(),total:4,natChoice:null};
@@ -105,10 +143,10 @@ assert.equal(fate.chaosRoll.length,2,"invoking Chaos records two d6");
 
 t.state.character={destinyBuild:{arcana:{name:"The Hermit"}}};
 t.state.trayPrompt={type:"nat1",entryId:fate.id};
-assert.match(t.renderDiceTray(),/Do you accept your fate\?/,"the natural-1 choice is rendered inside the dice tray");
+assert.match(t.renderEventContent(),/Do you accept your fate\?/,"the natural-1 choice is rendered in the animation zone");
 t.state.trayPrompt={type:"chaos",entryId:fate.id};
-assert.match(t.renderDiceTray(),/Chaos has noticed/,"the Chaos result replaces the dice-tray content");
+assert.match(t.renderEventContent(),/Chaos has noticed/,"the Chaos result replaces the animation-zone content");
 t.state.trayPrompt={type:"awakening",entryId:fate.id};
-assert.match(t.renderDiceTray(),/Arcane Awakening/,"Arcane Awakening is rendered inside the dice tray");
+assert.match(t.renderEventContent(),/Arcane Awakening/,"Arcane Awakening is rendered inside the animation zone");
 
 console.log("Player sheet unit tests passed.");

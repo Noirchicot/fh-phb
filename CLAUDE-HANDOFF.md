@@ -28,9 +28,10 @@ The dedicated Player Companion has now been rebuilt as an active, D&D Beyond-ins
 - `docs/player.md` contains the minimal application mount.
 - `docs/javascripts/fh-player-sheet.js` owns the active sheet, rolls, Destiny state and contextual panels.
 - `docs/stylesheets/player-sheet.css` owns its responsive visual system.
-- `tests/player-sheet.test.js` verifies the canonical 26-skill list, Destiny slots, roll arithmetic and purchased-tool filtering.
+- `tests/player-sheet.test.js` verifies the canonical 26-skill list, generalized import normalization, AC fallbacks, Destiny slots, roll arithmetic, tray limits and purchased-tool ordering.
+- `tests/player-sheet.integration.test.js` performs a DOM click-through of the advanced roller and proves that mode changes preserve bonus controls and history edits preserve the original d20s.
 
-Wide screens use a persistent left sheet and independently scrolling right activity panel. The skill board is **9 + 9 + 8 skills**, followed by a fourth column containing **only tools with an invested tier**. All four columns stay on the same horizontal band at desktop and VTT-side widths; the artificial “Skills 1/2/3” headings were removed. Only phone widths below 420 px reduce this to two columns.
+Wide screens now use three areas: a narrow persistent navigation rail, the scrolling character sheet, and an independently scrolling temporary panel. The rail opens Inventory, Soulforging Loop, Soulforge, manual corrections and Rules. Campaign/Character/Load are collapsed at the top of the temporary panel. The character content order is Identity → Characteristics → Skills → horizontal Destiny → Roll Workbench. The skill board is **9 + 9 + 8 skills**, followed by a fourth column containing **only tools with an invested tier**, always sorted in canonical Fate's Hand order rather than import order.
 
 Every ability, save, skill and purchased tool supports:
 
@@ -41,7 +42,9 @@ Every ability, save, skill and purchased tool supports:
 - Immutable stored d20s. Reopening a history entry can adjust additive bonuses and roll newly added bonus dice, but can never reroll or replace the original d20.
 - `Repeat setup` creates a genuinely new roll from the old configuration.
 
-The last five rolls remain visible; up to twenty are persisted. A permanent animated Dice Tray replaced the unused Prepared Magic/Soulforging Spells card, so the most recent result is visible even while the advanced console is closed. Destiny confirmation, the Natural-1 choice, the scary 2d6 Chaos result and Arcane Awakening all replace the contents of this same tray instead of opening unrelated overlays elsewhere on screen. Natural 20, Natural 1, Destiny critical success/failure, overreach and Arcane Awakening have dedicated visual states.
+The Roll Workbench has three permanent zones: **Roll Console / animation + 10-event log / Dice Tray**. The tray supports at most 2d20 plus 3 other dice and exposes d4, d6, d8, d10, d12, d20 and d100 calls. Guidance, Bardic and Destiny dice animate beside the d20s with their own die shapes. Destiny confirmation, the Natural-1 choice, the scary 2d6 Chaos result and Arcane Awakening use the middle animation zone; transient outcomes then become colored log entries. Natural 20, Natural 1, Destiny critical success/failure, overreach and Arcane Awakening have dedicated visual states.
+
+The intermittent Roll Console failure was caused by a rerender discarding unsaved checkbox/select values. Every console-related click/change now synchronizes the visible controls into state before a rerender. The integration test covers Guidance → Advantage → Roll → history adjustment end to end.
 
 Destiny has separate editable **Maximum Score** and **Current Points**, automatic lowest-missing-die recovery on an even Points total, Long Rest +1 and direct full-die rolling. Dice of the same size are grouped as `×2`/`×3` (hard maximum three); the small −/+ controls correct the pool without rolling. Every Destiny use requires a confirmation explaining its possible score effects. A maximum Destiny die result costs only 1 Point and becomes a critical success; a result of 1 grants 1 Point and becomes a critical failure.
 
@@ -61,6 +64,8 @@ The sheet writes these profile properties through the existing profile endpoint:
 - `destinyState`
 - `rollHistory`
 - `rollPrefs`
+- `rollEvents`
+- `manualOverrides` (AC, all 26 skill tiers and the canonical tool tiers)
 
 It also writes the same state to local storage under `fh-player-v2:{campaign}:{character}`. This is an intentional safety fallback: the sheet remains persistent on the current device if a deployed Worker version rejects new profile properties. For cross-device persistence, ensure the production Worker preserves these three fields when merging a profile patch.
 
@@ -99,6 +104,10 @@ Front-end behavior that must remain intact:
 - Send the initial URL as `{ "shareUrl": canonicalUrl }` to the Worker's `/profile/{campaign}/{character}/pull` endpoint.
 - Keep actionable 403/404/timeout messages and re-enable the UI by re-rendering after failure.
 
+The player client contains a defensive, character-agnostic adapter. It accepts snapshot arrays or name-keyed maps, wrapped `{ data: ... }` snapshots, mixed case skill names, common tool aliases such as `Thieves' Tools`, DDB proficiency modifiers, several AC field shapes and array/object ability scores. Manual corrections are applied last and therefore survive every later sync. **There is no Awki-specific code.** Import order never controls display order.
+
+This client adapter cannot invent a field that the Worker never returns. The production Worker must use one parser for every initial import and resync and satisfy the normalized snapshot contract in `WORKER-ADMIN-API.md`. Do not “fix” individual characters by name or URL.
+
 If pull fails after deployment, check the production Worker and D&D Beyond sheet visibility before changing this client contract.
 
 ### First-time DDB import and DM Control
@@ -106,6 +115,8 @@ If pull fails after deployment, check the production Worker and D&D Beyond sheet
 The player-sheet Pull button can sync/link DDB **after a campaign character record already exists**. It cannot safely create a brand-new campaign character from the static browser alone.
 
 `docs/gm.html` now provides the complete DM-facing interface, including a small `DM` entry on the homepage. Existing build listing/download and loot work with the current Worker. Campaign creation/deletion, first-time DDB import, DM-triggered resync and character deletion intentionally call authenticated `/admin/*` endpoints. The deployed Worker source is absent from this repository, so Claude must implement `WORKER-ADMIN-API.md` in that Worker and redeploy it. The UI reports this missing backend explicitly on 404/405/501.
+
+The static ZIP therefore completes the sheet-side import adapter and manual correction UI, but “every DDB import” is only complete in production after the Worker has been updated and redeployed against the contract below. Awki should be retested as one ordinary fixture alongside several unrelated public characters.
 
 ## Design rules for the next pass
 
@@ -140,3 +151,10 @@ GitHub Pages deployment:
 ```
 
 Before changing behavior, also run JavaScript syntax checks for `docs/javascripts/fh-home.js` and `docs/javascripts/fh-mychar.js`, then test the builder, Player Companion, inventory and Soulforge at 390 px and desktop widths.
+
+Optional DOM roller test:
+
+```bash
+npm install --prefix /tmp/fh-player-test --cache /tmp/fh-npm-cache linkedom@0.18.12
+node tests/player-sheet.integration.test.js
+```

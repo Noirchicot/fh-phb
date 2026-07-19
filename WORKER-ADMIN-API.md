@@ -86,6 +86,57 @@ Required behavior:
 6. Choose a unique pseudo from the override or DDB character name. On a name
    collision, return `409` unless the request explicitly opts into replacement.
 
+### One parser for every character
+
+Initial DM import, player `pull`, DM resync and later resyncs must all call the
+same character-agnostic parser. Never branch on a character name, campaign,
+URL or array position. D&D Beyond ordering is not stable and must not be used
+to identify a skill, tool, ability or defense.
+
+Persist a normalized `profile.snapshot` with at least this contract:
+
+```json
+{
+  "schemaVersion": 2,
+  "characterId": "123456789",
+  "name": "Pell",
+  "species": "Human",
+  "avatarUrl": "https://...",
+  "level": 6,
+  "classes": [{ "name": "Rogue", "level": 6 }],
+  "abilityScores": { "STR": 8, "DEX": 16, "CON": 12,
+    "INT": 16, "WIS": 10, "CHA": 14 },
+  "armorClass": 15,
+  "walkingSpeed": 30,
+  "savingThrowProficiencies": ["DEX", "INT"],
+  "skills": [{ "name": "Arcana", "ability": "INT",
+    "tier": "proficient" }],
+  "tools": [{ "name": "Thieves'", "ability": "DEX",
+    "tier": "proficient" }],
+  "spells": [{ "name": "Guidance", "level": 0 }],
+  "syncedAt": "2026-07-20T12:00:00.000Z"
+}
+```
+
+Requirements:
+
+- Compute/extract AC for every sheet rather than omitting it when the source
+  uses a different defense node. Return `null` only when the source genuinely
+  contains no computable AC.
+- Match skills and tools by stable identifier/name, never by array index.
+- Normalize curly apostrophes, optional `Tool - ` prefixes and optional
+  `Tool`/`Tools` suffixes before tool lookup.
+- Treat proficiency and expertise as semantic tiers. Do not assume that a
+  numeric value means the same thing in the Fate's Hand build and raw DDB.
+- Preserve `manualOverrides`, `destinyState`, `rollHistory`, `rollEvents`,
+  `rollPrefs`, level-up notes and Soulforging preparation when replacing a
+  snapshot.
+- Return a clear parse error when required identity/stats are absent. Do not
+  report a successful sync with an empty partial snapshot.
+- Keep several unrelated public-character fixtures in Worker tests, with
+  shuffled skill/tool order and at least one character using each supported AC
+  representation. Awki may be one fixture, never a special case.
+
 Response (`201`):
 
 ```json
