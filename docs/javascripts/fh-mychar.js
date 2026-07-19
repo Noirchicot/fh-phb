@@ -42,6 +42,22 @@
   function post(path, body) {
     return api(path, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
   }
+  function canonicalDdbUrl(value) {
+    var text = String(value || "").trim();
+    var idMatch = text.match(/^\d+$/);
+    if (idMatch) return "https://www.dndbeyond.com/characters/" + idMatch[0];
+
+    var parsed;
+    try { parsed = new URL(text); }
+    catch (error) { throw new Error("Paste a valid D&D Beyond character link."); }
+
+    var host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+    var pathMatch = parsed.pathname.match(/(?:^|\/)characters\/(\d+)(?:\/|$)/i);
+    if (host !== "dndbeyond.com" || !pathMatch) {
+      throw new Error("Use a public D&D Beyond character link.");
+    }
+    return "https://www.dndbeyond.com/characters/" + pathMatch[1];
+  }
   function mod(score) { return Math.floor(((Number(score) || 10) - 10) / 2); }
   function signed(value) { return (value >= 0 ? "+" : "") + value; }
   function pbFor(level) { return 2 + Math.floor((Math.max(1, level) - 1) / 4); }
@@ -240,8 +256,8 @@
     if (state.profile && state.profile.ddbLinked) { pullDdb(null); return; }
     var modal = showModal(
       "<p class=\"fh-mc-modal-kicker\">D&D BEYOND</p><h3>Connect the public sheet</h3>" +
-      "<p>Paste the character’s shareable link once. Fate’s Hand stores only its numeric character ID—not the share token.</p>" +
-      "<label><span>Shareable character link</span><input id=\"fhMcDdbUrl\" type=\"url\" placeholder=\"https://www.dndbeyond.com/characters/…\"></label>" +
+      "<p>Paste the character’s public or shareable link once. Fate’s Hand keeps only its numeric character ID—not the share token.</p>" +
+      "<label><span>D&D Beyond character link</span><input id=\"fhMcDdbUrl\" type=\"text\" inputmode=\"url\" autocomplete=\"url\" placeholder=\"https://www.dndbeyond.com/characters/…\"></label>" +
       "<p class=\"fh-mc-modal-error\" id=\"fhMcModalError\"></p><button class=\"fh-mc-modal-save\" id=\"fhMcDdbSave\" type=\"button\">Connect & Pull</button>"
     );
     var input = modal.element.querySelector("#fhMcDdbUrl");
@@ -254,9 +270,18 @@
   }
 
   function pullDdb(url, modal) {
+    var canonicalUrl = null;
+    if (url) {
+      try { canonicalUrl = canonicalDdbUrl(url); }
+      catch (error) {
+        if (modal) modal.element.querySelector("#fhMcModalError").textContent = error.message;
+        else setStatus(error.message, "err");
+        return;
+      }
+    }
     var button = document.getElementById("fhMcPull");
     if (button) { button.disabled = true; button.textContent = "Pulling…"; }
-    var body = url ? {shareUrl:url} : {};
+    var body = canonicalUrl ? {shareUrl:canonicalUrl} : {};
     post("/profile/" + encodeURIComponent(state.code) + "/" + encodeURIComponent(state.pseudo) + "/pull", body)
       .then(function (data) {
         state.profile = data.profile;
