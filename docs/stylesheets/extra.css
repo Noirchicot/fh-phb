@@ -443,47 +443,82 @@ body.fh-home-page .md-header { display: none; }
   font-weight: 700;
 }
 
-/* ---- "My Character" landing card widget ---- */
-.fh-mychar { display: block; font-family: var(--md-text-font-family, sans-serif); }
-.fh-mychar .fh-mc-row { display: flex; gap: .4rem; margin-bottom: .55rem; }
-.fh-mychar input, .fh-mychar select {
-  width: 50%; min-width: 0;
-  background: var(--md-default-bg-color);
-  color: var(--md-typeset-color);
-  border: 1px solid var(--fh-rule); border-radius: 5px;
-  padding: .28rem .45rem; font-size: .68rem;
+/* ---- "My Character" — compact Soulforging cockpit ---- */
+.md-typeset .fh-toc.grid.cards > ul > li.fh-mychar-card {
+  --mc-ink:#f3eee2; --mc-muted:#a9b1b7; --mc-night:#10171d; --mc-panel:#18232b;
+  --mc-panel-2:#202e37; --mc-red:#9d3935; --mc-red-bright:#cc5a50; --mc-gold:#d6aa55;
+  padding:.55rem !important; overflow:visible;
+  background:linear-gradient(155deg,#182229 0%,#0d1419 72%) !important;
+  border:1px solid #71302e !important; border-top:3px solid var(--mc-red) !important;
+  box-shadow:0 9px 25px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.04);
+  transform:none;
 }
-.fh-mychar input:focus, .fh-mychar select:focus {
-  outline: none; border-color: var(--fh-gold);
+.md-typeset .fh-toc.grid.cards > ul > li.fh-mychar-card:hover { border-color:var(--mc-red-bright) !important; transform:none; }
+.fh-mychar-card > .fh-card-hero { display:none !important; }
+.fh-mychar { display:block; color:var(--mc-ink); font-family:"Scaly Sans",system-ui,sans-serif; }
+.fh-mc-shell,.fh-mc-panel,.fh-mc-setup,.fh-mc-status { display:block; }
+.fh-mc-brand { display:flex; align-items:center; gap:.45rem; margin:.05rem .1rem .5rem; color:var(--mc-gold); font:700 .75rem "Mr Eaves Small Caps",serif; letter-spacing:.15em; }
+.fh-mc-brand i { flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--mc-red)); }
+.fh-mc-brand i:last-child { background:linear-gradient(90deg,var(--mc-red),transparent); }
+.fh-mc-setup { display:grid; grid-template-columns:.9fr 1.25fr; gap:.35rem; margin-bottom:.25rem; }
+.fh-mychar input,.fh-mychar select,.fh-mc-modal input,.fh-mc-modal select,.fh-mc-modal textarea {
+  width:100%; min-width:0; margin:0; color:var(--mc-ink); background:#111a20;
+  border:1px solid #49565e; border-radius:3px; padding:.34rem .42rem;
+  font:500 .63rem "Scaly Sans",system-ui,sans-serif; box-shadow:inset 0 1px 4px rgba(0,0,0,.32);
 }
-.fh-mc-stats {
-  display: block;
-  border: 1px solid var(--fh-rule); border-radius: 6px;
-  background: rgba(156,107,22,.06);
-  padding: .55rem .65rem; font-size: .66rem; line-height: 1.45;
-  min-height: 4.2rem; margin-bottom: .55rem;
+.fh-mychar input:focus,.fh-mychar select:focus,.fh-mc-modal input:focus,.fh-mc-modal select:focus,.fh-mc-modal textarea:focus { outline:1px solid var(--mc-gold); border-color:var(--mc-gold); }
+.fh-mc-status { min-height:.9rem; padding:.05rem .1rem .25rem; color:var(--mc-muted); font-size:.56rem; }
+.fh-mc-status.is-err { color:#ff8e83; }.fh-mc-status.is-ok { color:#83d8a0; }
+.fh-mc-empty { display:flex; align-items:center; justify-content:center; min-height:7rem; padding:1rem; border:1px dashed #455159; color:var(--mc-muted); text-align:center; font-size:.63rem; }
+.fh-mc-identity { display:grid; grid-template-columns:2.7rem 1fr auto; gap:.42rem; align-items:center; position:relative; padding:.48rem; border:1px solid #3e4a52; background:linear-gradient(120deg,#24333c,#172128); }
+.fh-mc-identity::before,.fh-mc-identity::after { content:""; position:absolute; width:.7rem; height:.7rem; pointer-events:none; }
+.fh-mc-identity::before { left:-1px; top:-1px; border-left:2px solid var(--mc-red-bright); border-top:2px solid var(--mc-red-bright); }
+.fh-mc-identity::after { right:-1px; bottom:-1px; border-right:2px solid var(--mc-red-bright); border-bottom:2px solid var(--mc-red-bright); }
+.fh-mc-portrait { width:2.7rem; height:2.7rem; object-fit:cover; border-radius:50%; border:2px solid var(--mc-red); box-shadow:0 0 0 2px #10171d,0 0 12px rgba(204,90,80,.28); }
+.fh-mc-person { display:block; min-width:0; line-height:1.12; }
+.fh-mc-person b { display:block; overflow:hidden; text-overflow:ellipsis; color:#fff6e8; font:700 .86rem "Mr Eaves Small Caps",serif; white-space:nowrap; letter-spacing:.025em; }
+.fh-mc-person small,.fh-mc-person i { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fh-mc-person small { margin-top:.12rem; color:#c4cbd0; font-size:.55rem; }.fh-mc-person i { margin-top:.2rem; color:#7f909a; font-size:.48rem; font-style:normal; }
+.fh-mc-badges { display:flex; gap:.24rem; }
+.fh-mc-badges > span { display:flex; flex-direction:column; align-items:center; justify-content:center; width:2rem; height:2.2rem; background:#f4efe3; color:#211c18; border:2px solid var(--mc-red); clip-path:polygon(18% 0,82% 0,100% 18%,100% 82%,82% 100%,18% 100%,0 82%,0 18%); }
+.fh-mc-badges small { font-size:.36rem; line-height:1; letter-spacing:.06em; }.fh-mc-badges b { font-size:.82rem; line-height:1.1; }
+.fh-mc-actions { grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:.3rem; margin-top:.1rem; }
+.fh-mc-actions button,.fh-mc-die,.fh-mc-modal button,.fh-mc-pending button { border:1px solid #67534a; border-radius:3px; background:#2b211e; color:#ead9bc; cursor:pointer; font:600 .55rem "Scaly Sans",sans-serif; }
+.fh-mc-actions button { padding:.27rem .4rem; }.fh-mc-actions button:last-child { border-color:#785c29; background:#40301f; color:#f2ce7d; }
+.fh-mc-actions button:hover,.fh-mc-die:hover,.fh-mc-modal button:hover { border-color:var(--mc-gold); filter:brightness(1.15); }.fh-mc-actions button:disabled { opacity:.6; cursor:wait; }
+.fh-mc-abilities { display:grid; grid-template-columns:repeat(6,1fr); gap:.18rem; margin:.35rem 0; }
+.fh-mc-ability { display:grid; grid-template-columns:1fr auto; padding:.25rem .17rem .2rem; background:#f2eee4; color:#211c18; border:1px solid #71302e; text-align:center; clip-path:polygon(12% 0,88% 0,100% 12%,100% 88%,88% 100%,12% 100%,0 88%,0 12%); }
+.fh-mc-ability small { grid-column:1/-1; color:#7d2c29; font-size:.39rem; font-weight:800; letter-spacing:.05em; }.fh-mc-ability b { justify-self:end; font-size:.69rem; line-height:1; }.fh-mc-ability i { justify-self:start; margin-left:.08rem; color:#716961; font-size:.45rem; font-style:normal; }
+.fh-mc-target { display:grid; grid-template-columns:1fr 3.4rem; gap:.32rem; margin-bottom:.38rem; padding:.36rem; background:#131d23; border:1px solid #39464e; }
+.fh-mc-target label,.fh-mc-field,.fh-mc-modal label { display:block; margin:0; }.fh-mc-target label > span,.fh-mc-field > span,.fh-mc-modal label > span { display:block; margin-bottom:.14rem; color:var(--mc-gold); font-size:.48rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+.fh-mc-accordions { display:grid; gap:.26rem; }
+.fh-mc-accordion { display:block; border:1px solid #3d4951; background:#121b21; }
+.fh-mc-accordion.is-open { border-color:#773431; box-shadow:inset 2px 0 var(--mc-red); }
+.fh-mc-accordion-head { display:grid; grid-template-columns:1.55rem 1fr auto; gap:.28rem; align-items:center; width:100%; padding:.32rem .4rem; color:var(--mc-ink); background:transparent; border:0; text-align:left; cursor:pointer; }
+.fh-mc-accordion-head:hover { background:#1d2930; }.fh-mc-step-icon { display:grid; place-items:center; width:1.35rem; height:1.35rem; color:var(--mc-gold); border:1px solid #6f4e2c; border-radius:50%; font-size:.72rem; }
+.fh-mc-accordion-head b { display:block; font:700 .68rem "Mr Eaves Small Caps",serif; letter-spacing:.04em; }.fh-mc-accordion-head small { display:block; margin-top:.03rem; color:var(--mc-muted); font-size:.47rem; }.fh-mc-chevron { color:var(--mc-red-bright); transform:rotate(0); transition:transform .15s; }
+.fh-mc-accordion.is-open .fh-mc-chevron { transform:rotate(180deg); }.fh-mc-accordion-body { display:none; padding:.1rem .4rem .42rem; }.fh-mc-accordion.is-open .fh-mc-accordion-body { display:block; }
+.fh-mc-skill { display:grid; grid-template-columns:.55rem 1fr auto 1.7rem 2.45rem; gap:.24rem; align-items:center; padding:.3rem .18rem; border-top:1px solid #303c43; }
+.fh-mc-skill.is-active { background:linear-gradient(90deg,rgba(204,90,80,.14),transparent); }.fh-mc-star { color:var(--mc-gold); font-size:.58rem; }
+.fh-mc-skill-name { min-width:0; }.fh-mc-skill-name b { display:block; overflow:hidden; text-overflow:ellipsis; color:#fff3df; font-size:.59rem; white-space:nowrap; }.fh-mc-skill-name small { display:block; overflow:hidden; text-overflow:ellipsis; color:var(--mc-muted); font-size:.43rem; white-space:nowrap; }
+.fh-mc-bonus { color:var(--mc-gold); font-size:.7rem; }.fh-mc-die { width:1.65rem; height:1.4rem; padding:0; color:#fff4dd; border-color:var(--mc-red); background:#422321; font-size:.43rem; }.fh-mc-result { color:#e8d8b9; font-size:.48rem; font-weight:700; white-space:nowrap; }.fh-mc-result.is-crit { color:#66e692; }.fh-mc-result.is-fail { color:#ff6d65; }
+.fh-mc-rule { margin:.25rem .18rem 0 !important; color:#92a0a8; font-size:.48rem; line-height:1.32; }
+.fh-mc-dc { display:grid; grid-template-columns:1fr auto; align-items:center; margin-top:.25rem; padding:.35rem .45rem; color:#e8ddc9; background:#1d292f; border-left:2px solid var(--mc-gold); }.fh-mc-dc span { font:700 .58rem "Mr Eaves Small Caps",serif; }.fh-mc-dc strong { grid-row:1/3; grid-column:2; color:var(--mc-gold); font-size:1rem; }.fh-mc-dc small { color:var(--mc-muted); font-size:.43rem; }
+.fh-mc-checks { display:grid; grid-template-columns:1fr 1fr; gap:.3rem; margin:.2rem 0 .35rem; }.fh-mc-checks label { display:flex; align-items:center; gap:.26rem; padding:.3rem; color:#ddd3c3; background:#1b272e; border:1px solid #3c4a52; font-size:.52rem; }.fh-mc-checks input { width:auto; accent-color:var(--mc-red-bright); }
+.fh-mc-field input { margin-bottom:.32rem; }.fh-mc-spells > small { display:block; margin-bottom:.18rem; color:var(--mc-gold); font-size:.47rem; text-transform:uppercase; }.fh-mc-spells > div { display:flex; gap:.2rem; flex-wrap:wrap; }
+.fh-mc-chip { padding:.12rem .3rem; border:1px solid #56636a; border-radius:999px; color:#d9d1c4; background:#1d2930; font-size:.45rem; }.fh-mc-muted { color:#829099; font-size:.48rem; font-style:italic; }
+.fh-mc-footer { display:grid; grid-template-columns:1fr 1.35fr .75fr; gap:.25rem; margin-top:.4rem; }.fh-mc-footer a { padding:.3rem .2rem; color:#d8d3c9 !important; border:1px solid #46535a; border-radius:3px; text-align:center; text-decoration:none !important; font:600 .5rem "Mr Eaves Small Caps",serif; white-space:nowrap; }.fh-mc-footer a:hover { border-color:var(--mc-gold); color:var(--mc-gold) !important; }.fh-mc-footer .is-primary { color:#fff0d1 !important; border-color:#8a5924; background:#4b331e; }.fh-mc-footer .is-off { opacity:.35; cursor:not-allowed; }
+
+/* My Character dialogs live outside the card, so they carry their own palette. */
+.fh-mc-modal-wrap { --mc-ink:#f3eee2; --mc-muted:#a9b1b7; --mc-night:#10171d; --mc-red:#9d3935; --mc-red-bright:#cc5a50; --mc-gold:#d6aa55; position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:1rem; background:rgba(4,7,9,.82); backdrop-filter:blur(4px); }
+.fh-mc-modal { position:relative; width:min(31rem,100%); max-height:90vh; overflow:auto; padding:1rem; color:var(--mc-ink); background:linear-gradient(145deg,#1d2a32,#0f171c); border:1px solid var(--mc-red); border-top:3px solid var(--mc-red-bright); box-shadow:0 20px 70px rgba(0,0,0,.65); font-family:"Scaly Sans",system-ui,sans-serif; }
+.fh-mc-modal::before,.fh-mc-modal::after { content:""; position:absolute; width:1rem; height:1rem; pointer-events:none; }.fh-mc-modal::before { left:.35rem; top:.35rem; border-left:1px solid var(--mc-gold); border-top:1px solid var(--mc-gold); }.fh-mc-modal::after { right:.35rem; bottom:.35rem; border-right:1px solid var(--mc-gold); border-bottom:1px solid var(--mc-gold); }
+.fh-mc-modal h3 { margin:.05rem 0 .6rem; color:#fff2d9; border:0; font:700 1.2rem "Nodesto Caps Condensed",serif; }.fh-mc-modal p { color:#bec5c8; font-size:.68rem; }.fh-mc-modal .fh-mc-modal-kicker { margin:0; color:var(--mc-gold); font-size:.52rem; font-weight:700; letter-spacing:.16em; }.fh-mc-modal label { margin:.52rem 0; }.fh-mc-modal textarea { min-height:4rem; resize:vertical; }.fh-mc-modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }.fh-mc-modal-x { position:absolute; right:.55rem; top:.45rem; width:1.6rem; height:1.6rem; border:0 !important; color:#b9c1c5 !important; background:transparent !important; font-size:1.1rem !important; }.fh-mc-modal-save { width:100%; margin-top:.35rem; padding:.48rem !important; color:#fff1d2 !important; border-color:#8a5924 !important; background:#4b331e !important; }.fh-mc-modal-error { min-height:.8rem; margin:.3rem 0 !important; color:#ff8e83 !important; }.fh-mc-pending { display:flex; flex-wrap:wrap; gap:.25rem; margin:.5rem 0; padding:.45rem; border:1px solid #3f4c53; background:#141e24; }.fh-mc-pending small { flex-basis:100%; color:var(--mc-muted); font-size:.5rem; }.fh-mc-pending span { padding:.12rem .3rem; color:#e4d7bf; border:1px solid #66513b; border-radius:999px; font-size:.5rem; }.fh-mc-pending button { margin-left:auto; padding:.12rem .35rem; color:#ff9a91; border-color:#733a37; background:#291a1a; }
+
+@media screen and (max-width:44.9em) {
+  .fh-mc-person b { font-size:.8rem; }.fh-mc-badges > span { width:1.85rem; }.fh-mc-actions button span { display:inline; }
+  .fh-mc-modal-grid { grid-template-columns:1fr; gap:0; }
 }
-.fh-mc-stats.err { color: var(--fh-red); }
-.fh-mc-name {
-  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
-  font-size: .95rem; color: var(--fh-red); line-height: 1.1;
-}
-[data-md-color-scheme="slate"] .fh-mc-name { color: var(--fh-gold); }
-.fh-mc-sub { color: var(--md-default-fg-color--light); margin-bottom: .35rem; }
-.fh-mc-abs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .12rem .5rem; }
-.fh-mc-ab b { color: var(--fh-gold); font-size: .58rem; }
-.fh-mc-ab i { font-style: normal; color: var(--md-default-fg-color--light); }
-.fh-mc-dest { margin-top: .35rem; border-top: 1px dashed var(--fh-rule); padding-top: .3rem; }
-.fh-mc-btns { display: flex; gap: .35rem; flex-wrap: wrap; }
-.fh-mc-btns a {
-  flex: 1; text-align: center; white-space: nowrap;
-  border: 1px solid var(--fh-rule); border-radius: 5px;
-  padding: .26rem .5rem; font-size: .62rem; letter-spacing: .03em;
-  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
-  color: var(--md-typeset-color) !important; text-decoration: none; cursor: pointer;
-}
-.fh-mc-btns a:hover { border-color: var(--fh-gold); color: var(--fh-gold) !important; }
-.fh-mc-btns a.fh-mc-off { opacity: .45; cursor: not-allowed; }
 
 /* ---- landing grid: fixed 3 columns on desktop so the card positions hold
    (My Character top middle · World bottom right) ---- */

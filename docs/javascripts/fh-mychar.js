@@ -1,118 +1,426 @@
-/* "My Character" landing card: campaign code → party dropdown → mini stat card.
-   Data comes from the fh-builds Worker (same one the builder's "Send to GM" posts to). */
+/* Fate's Hand — My Character cockpit.
+   The build saved by Send to GM remains the source of FH creation choices.
+   A normalized public D&D Beyond snapshot can refresh level, abilities, custom
+   FH skills and spells through the fh-builds Worker (never browser -> DDB). */
 (function () {
+  "use strict";
+
   var API = "https://fh-builds.noirchicot.workers.dev";
+  var ABILITIES = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
+  var ABILITY_NAMES = { STR:"Strength", DEX:"Dexterity", CON:"Constitution", INT:"Intelligence", WIS:"Wisdom", CHA:"Charisma" };
+  var CREATURES = ["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Undead"];
+  var KNOWLEDGE = {
+    Aberration:["Arcana"], Beast:["Nature"], Celestial:["Religion"], Construct:["Investigation"],
+    Dragon:["History"], Elemental:["Arcana"], Fey:["History"], Fiend:["Religion"],
+    Giant:["Medicine"], Humanoid:["Medicine", "History"], Monstrosity:["Investigation"],
+    Ooze:["Nature"], Plant:["Nature"], Undead:["Religion", "Medicine"]
+  };
+  var SKILL_ABILITY = {
+    Arcana:"INT", History:"INT", Investigation:"INT", Nature:"INT", Religion:"INT",
+    Medicine:"WIS", Hunting:"WIS", Leadership:"CHA", "Tool - Soulforging":"CHA"
+  };
+  var ESSENTIAL = ["Arcana", "History", "Hunting", "Investigation", "Leadership", "Medicine", "Nature", "Religion", "Tool - Soulforging"];
+  var TIERS = { none:0, half:.5, proficient:1, expert:2 };
+  var TIER_LABEL = { none:"Untrained", half:"Half", proficient:"Proficient", expert:"Expert" };
+  var CLASS_NAMES = ["Artificer", "Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"];
+  var state = { code:"", pseudo:"", record:null, profile:null, open:"identify", target:"Aberration", cr:"1" };
+  var root, setup, panel, status;
+
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/[&<>\"]/g, function (c) {
+      return {"&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;"}[c];
+    });
+  }
+  function api(path, options) {
+    return fetch(API + path, options).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (data) {
+        if (!response.ok) throw new Error(data.error || ("HTTP " + response.status));
+        return data;
+      });
+    });
+  }
+  function post(path, body) {
+    return api(path, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
+  }
+  function mod(score) { return Math.floor(((Number(score) || 10) - 10) / 2); }
+  function signed(value) { return (value >= 0 ? "+" : "") + value; }
+  function pbFor(level) { return 2 + Math.floor((Math.max(1, level) - 1) / 4); }
+  function tierName(value) {
+    if (value === "prof" || value === "proficient" || value === 3) return "proficient";
+    if (value === "exp" || value === "expert" || value === 4) return "expert";
+    if (value === "half" || value === 2) return "half";
+    return "none";
+  }
+  function crNumber(value) {
+    var text = String(value || "0").trim();
+    if (/^\d+\s*\/\s*\d+$/.test(text)) {
+      var bits = text.split("/");
+      return Number(bits[0]) / Math.max(1, Number(bits[1]));
+    }
+    var number = Number(text);
+    return isFinite(number) ? Math.max(0, number) : 0;
+  }
+  function uuid() {
+    return window.crypto && crypto.randomUUID ? crypto.randomUUID() : "manual-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+  }
+
+  function emptyProfile() {
+    return { ddbLinked:false, snapshot:null, preparation:{transferEssence:false,identify:false,tools:[]}, levelUps:[] };
+  }
+
+  function effectiveCharacter() {
+    var build = (state.record && state.record.build) || {};
+    var character = build.character || {};
+    var meta = build.meta || {};
+    var profile = state.profile || emptyProfile();
+    var snap = profile.snapshot || null;
+    var pending = Array.isArray(profile.levelUps) ? profile.levelUps : [];
+    var classes = snap && Array.isArray(snap.classes) && snap.classes.length
+      ? snap.classes.map(function (entry) { return {name:entry.name, level:Number(entry.level)||1}; })
+      : [{name:meta.class || "Class", level:Number(meta.level)||1}];
+    pending.forEach(function (entry) {
+      var found = classes.find(function (item) { return item.name === entry.className; });
+      if (found) found.level += 1;
+      else classes.push({name:entry.className, level:1});
+    });
+    var liveLevel = snap ? Number(snap.level)||1 : Number(meta.level)||1;
+    var level = pending.reduce(function (max, entry) { return Math.max(max, Number(entry.targetLevel)||max); }, liveLevel);
+    var abilities = {};
+    ABILITIES.forEach(function (key) {
+      abilities[key] = Number((snap && snap.abilityScores && snap.abilityScores[key]) || (character.abilityScores && character.abilityScores[key]) || 10);
+    });
+    pending.forEach(function (entry) {
+      ABILITIES.forEach(function (key) { abilities[key] += Number(entry.abilityIncreases && entry.abilityIncreases[key]) || 0; });
+    });
+
+    var skills = {};
+    Object.keys(build.nativeSkillTiers || {}).forEach(function (name) {
+      skills[name] = {name:name, ability:SKILL_ABILITY[name], tier:tierName(build.nativeSkillTiers[name])};
+    });
+    (build.skills || []).forEach(function (skill) {
+      skills[skill.name] = {name:skill.name, ability:ABILITIES[(Number(skill.statId)||1)-1], tier:tierName(skill.proficiencyLevel)};
+    });
+    if (snap) (snap.customSkills || []).forEach(function (skill) {
+      skills[skill.name] = {name:skill.name, ability:skill.ability || SKILL_ABILITY[skill.name], tier:tierName(skill.tier)};
+    });
+    pending.forEach(function (entry) {
+      (entry.essentialSkills || []).forEach(function (skill) {
+        skills[skill.name] = {name:skill.name, ability:SKILL_ABILITY[skill.name], tier:tierName(skill.tier)};
+      });
+    });
+    ESSENTIAL.forEach(function (name) {
+      if (!skills[name]) skills[name] = {name:name, ability:SKILL_ABILITY[name], tier:"none"};
+    });
+
+    var spellMap = {};
+    if (snap) (snap.spells || []).forEach(function (spell) { spellMap[spell.name.toLowerCase()] = {name:spell.name, level:spell.level}; });
+    pending.forEach(function (entry) {
+      (entry.spells || []).forEach(function (name) { spellMap[name.toLowerCase()] = {name:name, level:null}; });
+    });
+    var spells = Object.keys(spellMap).map(function (key) { return spellMap[key]; }).sort(function (a,b) {
+      return (Number(a.level)||0) - (Number(b.level)||0) || a.name.localeCompare(b.name);
+    });
+    var preparation = profile.preparation || {transferEssence:false,identify:false,tools:[]};
+    return {
+      name:(snap && snap.name) || character.name || state.pseudo,
+      species:(snap && snap.species) || meta.species || "Unknown species",
+      avatarUrl:snap && snap.avatarUrl,
+      classes:classes,
+      level:level,
+      liveLevel:liveLevel,
+      pb:pbFor(level),
+      abilities:abilities,
+      skills:skills,
+      spells:spells,
+      preparation:preparation,
+      syncedAt:snap && snap.syncedAt,
+      pending:pending
+    };
+  }
+
+  function skillInfo(name, character, extra) {
+    var skill = character.skills[name] || {name:name, ability:SKILL_ABILITY[name], tier:"none"};
+    var ability = skill.ability || SKILL_ABILITY[name] || "INT";
+    var tier = tierName(skill.tier);
+    var proficiency = TIERS[tier] === .5 ? Math.floor(character.pb / 2) : character.pb * TIERS[tier];
+    return { name:name, ability:ability, tier:tier, bonus:mod(character.abilities[ability]) + proficiency + (extra || 0) };
+  }
+
+  function skillLine(name, character, extra, note, starred) {
+    var skill = skillInfo(name, character, extra);
+    var id = (name + (extra || 0)).replace(/[^a-z0-9]/gi, "-").toLowerCase();
+    return "<div class=\"fh-mc-skill" + (starred ? " is-active" : "") + "\">" +
+      "<span class=\"fh-mc-star\" aria-hidden=\"true\">" + (starred ? "★" : "") + "</span>" +
+      "<span class=\"fh-mc-skill-name\"><b>" + esc(name.replace("Tool - ", "")) + "</b><small>" + esc(skill.ability) + " · " + esc(TIER_LABEL[skill.tier]) + (note ? " · " + esc(note) : "") + "</small></span>" +
+      "<strong class=\"fh-mc-bonus\">" + signed(skill.bonus) + "</strong>" +
+      "<button class=\"fh-mc-die\" type=\"button\" data-roll=\"" + esc(id) + "\" data-bonus=\"" + skill.bonus + "\" aria-label=\"Roll " + esc(name) + "\">d20</button>" +
+      "<span class=\"fh-mc-result\" id=\"fhMcRoll-" + esc(id) + "\" aria-live=\"polite\"></span>" +
+    "</div>";
+  }
+
+  function section(id, icon, title, summary, body) {
+    var open = state.open === id;
+    return "<section class=\"fh-mc-accordion" + (open ? " is-open" : "") + "\">" +
+      "<button class=\"fh-mc-accordion-head\" type=\"button\" data-open=\"" + id + "\" aria-expanded=\"" + open + "\">" +
+        "<span class=\"fh-mc-step-icon\">" + icon + "</span><span><b>" + title + "</b><small>" + summary + "</small></span><span class=\"fh-mc-chevron\">⌄</span>" +
+      "</button>" +
+      "<div class=\"fh-mc-accordion-body\">" + body + "</div>" +
+    "</section>";
+  }
+
+  function renderPanel() {
+    if (!state.record) {
+      panel.innerHTML = "<div class=\"fh-mc-empty\">Enter your campaign code, then choose your character.</div>";
+      return;
+    }
+    var ch = effectiveCharacter();
+    var knowledge = KNOWLEDGE[state.target] || ["Arcana"];
+    var specialist = knowledge.some(function (name) { return TIERS[skillInfo(name, ch).tier] >= 1; });
+    var harvestExtra = specialist ? 2 : 0;
+    var dc = 12 + crNumber(state.cr);
+    var creatureOptions = CREATURES.map(function (name) { return "<option" + (name === state.target ? " selected" : "") + ">" + name + "</option>"; }).join("");
+    var classes = ch.classes.map(function (entry) { return entry.name + " " + entry.level; }).join(" / ");
+    var abilityCells = ABILITIES.map(function (key) {
+      return "<span class=\"fh-mc-ability\"><small>" + key + "</small><b>" + ch.abilities[key] + "</b><i>" + signed(mod(ch.abilities[key])) + "</i></span>";
+    }).join("");
+    var fallbackPortrait = "assets/img/species-" + String(ch.species).toLowerCase().replace(/\s*\(fh\)\s*/g, "").replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "") + ".jpg";
+    var portrait = ch.avatarUrl || fallbackPortrait;
+    var sync = ch.syncedAt ? "Pulled " + new Date(ch.syncedAt).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "Build snapshot";
+    var identifyBody = knowledge.map(function (name) {
+      return skillLine(name, ch, 0, state.target, true);
+    }).join("") + "<p class=\"fh-mc-rule\">The selected creature lights the relevant Specialist Knowledge. For overlapping types, choose the approach that fits the scene.</p>";
+    var harvestBody = skillLine("Hunting", ch, harvestExtra, specialist ? "specialist synergy +2" : "no specialist synergy", specialist) +
+      "<div class=\"fh-mc-dc\"><span>Harvest DC</span><strong>" + dc + "</strong><small>12 + CR · +1 part per 5 above DC</small></div>";
+    var spellNames = ch.spells.map(function (spell) { return spell.name.toLowerCase(); });
+    var hasIdentify = ch.preparation.identify || spellNames.indexOf("identify") >= 0;
+    var hasTransfer = ch.preparation.transferEssence || spellNames.indexOf("transfer essence") >= 0;
+    var spellChips = ch.spells.length ? ch.spells.map(function (spell) {
+      return "<span class=\"fh-mc-chip\">" + esc(spell.name) + (spell.level != null ? " · " + (spell.level ? "L" + spell.level : "Cantrip") : "") + "</span>";
+    }).join("") : "<span class=\"fh-mc-muted\">No essential spells recorded.</span>";
+    var prepareBody =
+      "<div class=\"fh-mc-checks\">" +
+        "<label><input type=\"checkbox\" data-prep=\"transferEssence\"" + (hasTransfer ? " checked" : "") + "> <span>Transfer Essence</span></label>" +
+        "<label><input type=\"checkbox\" data-prep=\"identify\"" + (hasIdentify ? " checked" : "") + "> <span>Identify</span></label>" +
+      "</div>" +
+      "<label class=\"fh-mc-field\"><span>Crafting tools available</span><input id=\"fhMcTools\" value=\"" + esc((ch.preparation.tools || []).join(", ")) + "\" placeholder=\"Smith's, Jeweler's…\"></label>" +
+      "<div class=\"fh-mc-spells\"><small>Possessed spells</small><div>" + spellChips + "</div></div>";
+    var soulforgeBody = skillLine("Tool - Soulforging", ch, 0, "forge check", true) +
+      "<p class=\"fh-mc-rule\">The Workbench will use this bonus by default. A different forger can still override it inside the Soulforge.</p>";
+
+    panel.innerHTML =
+      "<div class=\"fh-mc-identity\">" +
+        "<img class=\"fh-mc-portrait\" src=\"" + esc(portrait) + "\" alt=\"\" onerror=\"this.style.display='none'\">" +
+        "<span class=\"fh-mc-person\"><b>" + esc(ch.name) + "</b><small>" + esc(ch.species) + " · " + esc(classes) + "</small><i>" + esc(sync) + (ch.pending.length ? " · " + ch.pending.length + " pending level-up" + (ch.pending.length > 1 ? "s" : "") : "") + "</i></span>" +
+        "<span class=\"fh-mc-badges\"><span><small>LEVEL</small><b>" + ch.level + "</b></span><span><small>PB</small><b>+" + ch.pb + "</b></span></span>" +
+        "<span class=\"fh-mc-actions\"><button type=\"button\" id=\"fhMcPull\">⟳ <span>Pull</span></button><button type=\"button\" id=\"fhMcLevel\">＋ <span>Level Up</span></button></span>" +
+      "</div>" +
+      "<div class=\"fh-mc-abilities\">" + abilityCells + "</div>" +
+      "<div class=\"fh-mc-target\"><label><span>Target creature</span><select id=\"fhMcTarget\">" + creatureOptions + "</select></label><label><span>CR</span><input id=\"fhMcCr\" value=\"" + esc(state.cr) + "\" inputmode=\"decimal\"></label></div>" +
+      "<div class=\"fh-mc-accordions\">" +
+        section("identify", "⌕", "Identify", knowledge.join(" / ") + " · " + state.target, identifyBody) +
+        section("harvest", "♜", "Harvest", "Hunting · DC " + dc + (specialist ? " · +2" : ""), harvestBody) +
+        section("prepare", "⚗", "Prepare", (hasTransfer || hasIdentify ? "rites ready" : "spells & tools"), prepareBody) +
+        section("soulforge", "⚒", "Soulforge", signed(skillInfo("Tool - Soulforging", ch).bonus), soulforgeBody) +
+      "</div>" +
+      "<div class=\"fh-mc-footer\"><a href=\"inventory/\">My Inventory</a><a class=\"is-primary\" href=\"soulforge/\">Go to the Soulforge</a><a class=\"is-off\" title=\"Coming soon\">Secrets</a></div>";
+    wirePanel(ch);
+  }
+
+  function showModal(html) {
+    var overlay = document.createElement("div");
+    overlay.className = "fh-mc-modal-wrap";
+    overlay.innerHTML = "<div class=\"fh-mc-modal\" role=\"dialog\" aria-modal=\"true\"><button class=\"fh-mc-modal-x\" type=\"button\" aria-label=\"Close\">×</button>" + html + "</div>";
+    function close() { overlay.remove(); }
+    overlay.addEventListener("click", function (event) { if (event.target === overlay || event.target.closest(".fh-mc-modal-x")) close(); });
+    document.body.appendChild(overlay);
+    return { element:overlay, close:close };
+  }
+
+  function openPull() {
+    if (state.profile && state.profile.ddbLinked) { pullDdb(null); return; }
+    var modal = showModal(
+      "<p class=\"fh-mc-modal-kicker\">D&D BEYOND</p><h3>Connect the public sheet</h3>" +
+      "<p>Paste the character’s shareable link once. Fate’s Hand stores only its numeric character ID—not the share token.</p>" +
+      "<label><span>Shareable character link</span><input id=\"fhMcDdbUrl\" type=\"url\" placeholder=\"https://www.dndbeyond.com/characters/…\"></label>" +
+      "<p class=\"fh-mc-modal-error\" id=\"fhMcModalError\"></p><button class=\"fh-mc-modal-save\" id=\"fhMcDdbSave\" type=\"button\">Connect & Pull</button>"
+    );
+    var input = modal.element.querySelector("#fhMcDdbUrl");
+    modal.element.querySelector("#fhMcDdbSave").addEventListener("click", function () {
+      var value = input.value.trim();
+      if (!value) return;
+      pullDdb(value, modal);
+    });
+    input.focus();
+  }
+
+  function pullDdb(url, modal) {
+    var button = document.getElementById("fhMcPull");
+    if (button) { button.disabled = true; button.textContent = "Pulling…"; }
+    var body = url ? {shareUrl:url} : {};
+    post("/profile/" + encodeURIComponent(state.code) + "/" + encodeURIComponent(state.pseudo) + "/pull", body)
+      .then(function (data) {
+        state.profile = data.profile;
+        if (modal) modal.close();
+        renderPanel();
+        setStatus("Character refreshed from D&D Beyond.", "ok");
+      })
+      .catch(function (error) {
+        if (modal) modal.element.querySelector("#fhMcModalError").textContent = error.message;
+        else setStatus(error.message, "err");
+        renderPanel();
+      });
+  }
+
+  function openLevelUp(ch) {
+    var classes = CLASS_NAMES.slice();
+    ch.classes.forEach(function (entry) { if (classes.indexOf(entry.name) < 0) classes.unshift(entry.name); });
+    var classOptions = classes.map(function (name) { return "<option" + (ch.classes[0] && ch.classes[0].name === name ? " selected" : "") + ">" + esc(name) + "</option>"; }).join("");
+    var statOptions = "<option value=\"\">No increase</option>" + ABILITIES.map(function (key) { return "<option value=\"" + key + "\">" + key + " — " + ABILITY_NAMES[key] + "</option>"; }).join("");
+    var skillOptions = "<option value=\"\">No essential skill</option>" + ESSENTIAL.map(function (name) { return "<option>" + esc(name) + "</option>"; }).join("");
+    var pending = ch.pending.length ? "<div class=\"fh-mc-pending\"><small>Pending until D&D Beyond reaches the same level</small>" + ch.pending.map(function (entry) { return "<span>Level " + entry.targetLevel + " · " + esc(entry.className) + "</span>"; }).join("") + "<button type=\"button\" id=\"fhMcClearPending\">Clear pending changes</button></div>" : "";
+    var modal = showModal(
+      "<p class=\"fh-mc-modal-kicker\">LEVEL " + (ch.level + 1) + "</p><h3>What gains a level?</h3>" +
+      "<label><span>Class</span><select id=\"fhMcLevelClass\">" + classOptions + "</select></label>" +
+      "<div class=\"fh-mc-modal-grid\"><label><span>Ability increase 1</span><select id=\"fhMcStat1\">" + statOptions + "</select></label><label><span>Ability increase 2</span><select id=\"fhMcStat2\">" + statOptions + "</select></label></div>" +
+      "<div class=\"fh-mc-modal-grid\"><label><span>Essential skill</span><select id=\"fhMcSkill1\">" + skillOptions + "</select></label><label><span>New tier</span><select id=\"fhMcTier1\"><option value=\"half\">Half</option><option value=\"proficient\" selected>Proficient</option><option value=\"expert\">Expert</option></select></label></div>" +
+      "<div class=\"fh-mc-modal-grid\"><label><span>Second essential skill</span><select id=\"fhMcSkill2\">" + skillOptions + "</select></label><label><span>New tier</span><select id=\"fhMcTier2\"><option value=\"half\">Half</option><option value=\"proficient\" selected>Proficient</option><option value=\"expert\">Expert</option></select></label></div>" +
+      "<label><span>New essential spells</span><textarea id=\"fhMcNewSpells\" placeholder=\"One per line, or comma-separated\"></textarea></label>" + pending +
+      "<p class=\"fh-mc-modal-error\" id=\"fhMcModalError\"></p><button class=\"fh-mc-modal-save\" id=\"fhMcLevelSave\" type=\"button\">Apply Level Up</button>"
+    );
+    var clear = modal.element.querySelector("#fhMcClearPending");
+    if (clear) clear.addEventListener("click", function () {
+      saveProfile({levelUps:[]}).then(function () { modal.close(); renderPanel(); });
+    });
+    modal.element.querySelector("#fhMcLevelSave").addEventListener("click", function () {
+      var abilityIncreases = {};
+      ["#fhMcStat1", "#fhMcStat2"].forEach(function (selector) {
+        var value = modal.element.querySelector(selector).value;
+        if (value) abilityIncreases[value] = (abilityIncreases[value] || 0) + 1;
+      });
+      var essentialSkills = [];
+      [["#fhMcSkill1", "#fhMcTier1"], ["#fhMcSkill2", "#fhMcTier2"]].forEach(function (pair) {
+        var name = modal.element.querySelector(pair[0]).value;
+        if (name) essentialSkills.push({name:name, tier:modal.element.querySelector(pair[1]).value});
+      });
+      var spells = modal.element.querySelector("#fhMcNewSpells").value.split(/[\n,]+/).map(function (x) { return x.trim(); }).filter(Boolean);
+      var entry = { id:uuid(), targetLevel:ch.level + 1, className:modal.element.querySelector("#fhMcLevelClass").value, abilityIncreases:abilityIncreases, essentialSkills:essentialSkills, spells:spells, createdAt:new Date().toISOString() };
+      var next = (state.profile.levelUps || []).concat([entry]);
+      saveProfile({levelUps:next}).then(function () { modal.close(); renderPanel(); setStatus("Level-up saved. PB updated automatically.", "ok"); }).catch(function (error) {
+        modal.element.querySelector("#fhMcModalError").textContent = error.message;
+      });
+    });
+  }
+
+  function saveProfile(patch) {
+    return post("/profile/" + encodeURIComponent(state.code) + "/" + encodeURIComponent(state.pseudo), patch).then(function (data) {
+      state.profile = data.profile;
+      return data.profile;
+    });
+  }
+
+  function savePreparation() {
+    var prep = state.profile.preparation || {};
+    saveProfile({preparation:prep}).catch(function (error) { setStatus(error.message, "err"); });
+  }
+
+  function wirePanel(ch) {
+    document.getElementById("fhMcPull").addEventListener("click", openPull);
+    document.getElementById("fhMcLevel").addEventListener("click", function () { openLevelUp(ch); });
+    document.getElementById("fhMcTarget").addEventListener("change", function (event) { state.target = event.target.value; renderPanel(); });
+    document.getElementById("fhMcCr").addEventListener("change", function (event) { state.cr = event.target.value || "0"; renderPanel(); });
+    panel.querySelectorAll("[data-open]").forEach(function (button) {
+      button.addEventListener("click", function () { state.open = button.dataset.open; renderPanel(); });
+    });
+    panel.querySelectorAll("[data-roll]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var natural = 1 + Math.floor(Math.random() * 20);
+        var total = natural + Number(button.dataset.bonus || 0);
+        var output = document.getElementById("fhMcRoll-" + button.dataset.roll);
+        output.className = "fh-mc-result" + (natural === 20 ? " is-crit" : natural === 1 ? " is-fail" : "");
+        output.textContent = natural + " → " + total;
+      });
+    });
+    panel.querySelectorAll("[data-prep]").forEach(function (checkbox) {
+      checkbox.addEventListener("change", function () {
+        state.profile.preparation = state.profile.preparation || {tools:[]};
+        state.profile.preparation[checkbox.dataset.prep] = checkbox.checked;
+        savePreparation();
+      });
+    });
+    var tools = document.getElementById("fhMcTools");
+    if (tools) tools.addEventListener("change", function () {
+      state.profile.preparation = state.profile.preparation || {};
+      state.profile.preparation.tools = tools.value.split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+      savePreparation();
+    });
+  }
+
+  function setStatus(message, kind) {
+    status.textContent = message || "";
+    status.className = "fh-mc-status" + (kind ? " is-" + kind : "");
+  }
+
+  function loadBuild() {
+    var who = setup.querySelector("#fhMcWho").value;
+    if (!state.code || !who) return;
+    state.pseudo = who;
+    setStatus("Loading " + who + "…");
+    try { localStorage.setItem("fh-my-pseudo", who); } catch (e) {}
+    Promise.all([
+      api("/party/" + encodeURIComponent(state.code) + "/" + encodeURIComponent(who)),
+      api("/profile/" + encodeURIComponent(state.code) + "/" + encodeURIComponent(who)).catch(function () { return {profile:emptyProfile()}; })
+    ]).then(function (results) {
+      state.record = results[0];
+      state.profile = results[1].profile || emptyProfile();
+      setStatus("");
+      renderPanel();
+    }).catch(function (error) { state.record = null; setStatus(error.message || "Could not load this character.", "err"); renderPanel(); });
+  }
+
+  function loadParty() {
+    var code = setup.querySelector("#fhMcCode").value.trim();
+    var select = setup.querySelector("#fhMcWho");
+    state.code = code;
+    state.record = null;
+    state.profile = null;
+    select.innerHTML = "<option value=\"\">— character —</option>";
+    renderPanel();
+    if (!code) { setStatus("Enter your campaign code."); return; }
+    setStatus("Looking up the party…");
+    api("/party/" + encodeURIComponent(code)).then(function (data) {
+      try { localStorage.setItem("fh-my-campcode", code); } catch (e) {}
+      var last = "";
+      try { last = localStorage.getItem("fh-my-pseudo") || ""; } catch (e) {}
+      (data.builds || []).forEach(function (entry) {
+        var option = document.createElement("option");
+        option.value = entry.pseudo;
+        option.textContent = entry.pseudo;
+        option.selected = entry.pseudo === last;
+        select.appendChild(option);
+      });
+      if (!data.builds || !data.builds.length) setStatus("No characters in this campaign yet.");
+      else if (select.value) loadBuild();
+      else setStatus("Choose your character.");
+    }).catch(function (error) { setStatus(error.message || "Could not reach the campaign server.", "err"); });
+  }
 
   document.addEventListener("DOMContentLoaded", function () {
-    var root = document.getElementById("fhMyChar");
+    root = document.getElementById("fhMyChar");
     if (!root) return;
-    /* the slot in index.md is an empty inline span (a raw block div would break
-       the markdown card list) — the widget DOM is built here */
+    var card = root.closest("li");
+    if (card) card.classList.add("fh-mychar-card");
     root.innerHTML =
-      "<span class=\"fh-mc-row\">" +
-        "<input id=\"fhMcCode\" type=\"text\" placeholder=\"Campaign code\" autocomplete=\"off\">" +
-        "<select id=\"fhMcWho\"><option value=\"\">— character —</option></select>" +
-      "</span>" +
-      "<span class=\"fh-mc-stats\" id=\"fhMcStats\">Enter your campaign code to load your character.</span>" +
-      "<span class=\"fh-mc-btns\">" +
-        "<a href=\"inventory/\">My Inventory</a>" +
-        "<a href=\"soulforge/\">Go to the Soulforge</a>" +
-        "<a class=\"fh-mc-off\" title=\"Coming soon — campaign lore unlocked by your GM\">Secrets</a>" +
-      "</span>";
-    var codeIn = document.getElementById("fhMcCode");
-    var whoSel = document.getElementById("fhMcWho");
-    var stats = document.getElementById("fhMcStats");
-
-    var say = function (msg, cls) {
-      stats.className = "fh-mc-stats" + (cls ? " " + cls : "");
-      stats.innerHTML = msg;
-    };
-
-    var mod = function (v) {
-      var m = Math.floor((v - 10) / 2);
-      return (m >= 0 ? "+" : "") + m;
-    };
-
-    function renderBuild(rec) {
-      var b = rec.build || {};
-      var ch = b.character || {};
-      var meta = b.meta || {};
-      var dest = b.destiny || {};
-      var ab = ch.abilityScores || {};
-      var order = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
-      var cells = order.map(function (k) {
-        var v = ab[k];
-        return "<span class=\"fh-mc-ab\"><b>" + k + "</b> " +
-          (v == null ? "—" : v + " <i>" + mod(v) + "</i>") + "</span>";
-      }).join("");
-      var arc = dest.arcana ? dest.arcana.name : null;
-      say(
-        "<div class=\"fh-mc-name\">" + (ch.name || rec.pseudo) + "</div>" +
-        "<div class=\"fh-mc-sub\">Level " + (meta.level || 1) +
-          (meta.species ? " · " + meta.species : "") +
-          (meta.class ? " · " + meta.class : "") + "</div>" +
-        "<div class=\"fh-mc-abs\">" + cells + "</div>" +
-        (dest.score != null
-          ? "<div class=\"fh-mc-dest\">Destiny <b>" + dest.score + "</b>" +
-            (arc ? " — " + arc : "") + "</div>"
-          : "")
-      );
-    }
-
-    function loadBuild() {
-      var code = codeIn.value.trim(), who = whoSel.value;
-      if (!code || !who) return;
-      try {
-        localStorage.setItem("fh-my-pseudo", who);
-      } catch (e) {}
-      say("Loading " + who + "…");
-      fetch(API + "/party/" + encodeURIComponent(code) + "/" + encodeURIComponent(who))
-        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-        .then(renderBuild)
-        .catch(function () { say("Could not load this character.", "err"); });
-    }
-
-    function loadParty() {
-      var code = codeIn.value.trim();
-      whoSel.innerHTML = "<option value=\"\">— character —</option>";
-      if (!code) { say("Enter your campaign code to load your character."); return; }
-      say("Looking up the party…");
-      fetch(API + "/party/" + encodeURIComponent(code))
-        .then(function (r) {
-          if (r.status === 403) throw new Error("Unknown campaign code — ask your GM.");
-          if (!r.ok) throw new Error("Could not reach the campaign server.");
-          return r.json();
-        })
-        .then(function (data) {
-          try {
-            localStorage.setItem("fh-my-campcode", code);
-          } catch (e) {}
-          if (!data.builds.length) {
-            say("No characters in this campaign yet — build one and hit <b>Send to GM</b>!");
-            return;
-          }
-          var last = "";
-          try { last = localStorage.getItem("fh-my-pseudo") || ""; } catch (e) {}
-          data.builds.forEach(function (bld) {
-            var o = document.createElement("option");
-            o.value = bld.pseudo;
-            o.textContent = bld.pseudo;
-            if (bld.pseudo === last) o.selected = true;
-            whoSel.appendChild(o);
-          });
-          if (whoSel.value) loadBuild();
-          else say("Pick your character in the list.");
-        })
-        .catch(function (e) { say(e.message, "err"); });
-    }
-
-    codeIn.addEventListener("change", loadParty);
-    codeIn.addEventListener("keydown", function (e) { if (e.key === "Enter") loadParty(); });
-    whoSel.addEventListener("change", loadBuild);
-
-    try {
-      codeIn.value = localStorage.getItem("fh-my-campcode") || "";
-    } catch (e) {}
-    if (codeIn.value) loadParty();
+      "<span class=\"fh-mc-shell\"><span class=\"fh-mc-brand\"><i></i><b>MY CHARACTER</b><i></i></span>" +
+      "<span class=\"fh-mc-setup\" id=\"fhMcSetup\"><input id=\"fhMcCode\" placeholder=\"Campaign code\" autocomplete=\"off\"><select id=\"fhMcWho\"><option value=\"\">— character —</option></select></span>" +
+      "<span class=\"fh-mc-status\" id=\"fhMcStatus\"></span><span class=\"fh-mc-panel\" id=\"fhMcPanel\"></span></span>";
+    setup = document.getElementById("fhMcSetup");
+    panel = document.getElementById("fhMcPanel");
+    status = document.getElementById("fhMcStatus");
+    setup.querySelector("#fhMcCode").addEventListener("change", loadParty);
+    setup.querySelector("#fhMcCode").addEventListener("keydown", function (event) { if (event.key === "Enter") loadParty(); });
+    setup.querySelector("#fhMcWho").addEventListener("change", loadBuild);
+    try { setup.querySelector("#fhMcCode").value = localStorage.getItem("fh-my-campcode") || ""; } catch (e) {}
+    renderPanel();
+    if (setup.querySelector("#fhMcCode").value) loadParty();
   });
 })();
