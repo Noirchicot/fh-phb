@@ -1,0 +1,401 @@
+{
+  "character": {
+    "ddbId": null,
+    "name": "Marf",
+    "campaign": "The Guild Path",
+    "abilityScores": {
+      "STR": 18,
+      "DEX": 18,
+      "CON": 18,
+      "INT": 12,
+      "WIS": 14,
+      "CHA": 12
+    },
+    "abilityScoresRaw": {
+      "STR": 18,
+      "DEX": 18,
+      "CON": 17,
+      "INT": 12,
+      "WIS": 13,
+      "CHA": 11
+    }
+  },
+  "destiny": {
+    "score": 8,
+    "arcana": {
+      "id": "IX",
+      "name": "The Hermit",
+      "impact": 2,
+      "power": "once per long rest, store the result of your lowest available Destiny die and use it later.",
+      "vibration": "clairvoyance / guidance (e.g. Guidance).",
+      "meaning": "introspection, solitude, search for truth. Knowledge found in inner calm."
+    },
+    "breakdown": [
+      {
+        "label": "PB",
+        "value": 2
+      },
+      {
+        "label": "Human",
+        "value": 2
+      },
+      {
+        "label": "Arcana IX",
+        "value": 2
+      },
+      {
+        "label": "Destiny Touched (fh)",
+        "value": 2
+      }
+    ],
+    "notesText": "DESTINY SCORE : 8\nPB : 2\nHuman : 2\nArcana IX : 2\nDestiny Touched (fh) : 2\n\nIX. The Hermit\n* Meaning — introspection, solitude, search for truth. Knowledge found in inner calm.\n* Destiny Impact — +2\n* Power — once per long rest, store the result of your lowest available Destiny die and use it later.\n* Vibration — clairvoyance / guidance (e.g. Guidance)."
+  },
+  "background": {
+    "replaceWithBlank": true,
+    "abilityBoostFeatIds": [
+      2379983,
+      2379990,
+      2379981
+    ],
+    "originFeats": [
+      {
+        "key": "destinyTouched",
+        "label": "Destiny Touched (fh)",
+        "id": 2383104
+      },
+      {
+        "key": "skilled",
+        "label": "Skilled (fh)",
+        "id": 2383105
+      }
+    ],
+    "otherOriginFeat": "",
+    "story": ""
+  },
+  "skills": [
+    {
+      "name": "Academics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Appraise",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Delve",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Hunting",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Leadership",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Might",
+      "type": 1,
+      "statId": 1,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Streetwise",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tactics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tool - Cartographer's",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Tool - Painter's",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Tool - Potter's",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Tool - Soulforging",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Tool - Three-Dragon",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Tool - Veh. (Land)",
+      "type": 1,
+      "statId": 2,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Tool - Weaver's",
+      "type": 1,
+      "statId": 2,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Vigilance",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 1
+    }
+  ],
+  "nativeSkillTiers": {
+    "Arcana": "proficient",
+    "Religion": "proficient"
+  },
+  "destinyFeats": {
+    "diceFeats": [
+      {
+        "name": "Destiny Dice - d4",
+        "id": 1927834
+      },
+      {
+        "name": "Destiny Dice - d6",
+        "id": 1927924
+      },
+      {
+        "name": "Destiny Dice - d8",
+        "id": 1927926
+      },
+      {
+        "name": "Destiny Dice - d10",
+        "id": 1927927
+      },
+      {
+        "name": "Destiny Dice - d12",
+        "id": 1927928
+      }
+    ],
+    "score": 8,
+    "originFeatId": 2383104,
+    "originFeatIds": [
+      2383104,
+      2383105
+    ]
+  },
+  "meta": {
+    "builder": "fh-builder-v3",
+    "savedAt": "2026-07-19T02:23:36.034Z",
+    "species": "Human",
+    "class": "Fighter",
+    "level": 1
+  },
+  "builderState": {
+    "v": 3,
+    "name": "Marf",
+    "campaign": "The Guild Path",
+    "cls": "Fighter",
+    "race": "Human",
+    "lvl": 1,
+    "ddbId": "",
+    "raceP": "0",
+    "featP": "0",
+    "langPts": "0",
+    "bonus1": "0",
+    "ab": {
+      "mode": "roll",
+      "set": {
+        "rolls": [
+          {
+            "dice": [
+              6,
+              6,
+              6
+            ],
+            "total": 18
+          },
+          {
+            "dice": [
+              5,
+              5,
+              1
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              4,
+              2,
+              4
+            ],
+            "total": 10
+          },
+          {
+            "dice": [
+              6,
+              6,
+              6
+            ],
+            "total": 18
+          },
+          {
+            "dice": [
+              2,
+              1,
+              2
+            ],
+            "total": 5
+          },
+          {
+            "dice": [
+              4,
+              3,
+              2
+            ],
+            "total": 9
+          },
+          {
+            "dice": [
+              2,
+              5,
+              6
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              6,
+              6,
+              5
+            ],
+            "total": 17
+          },
+          {
+            "dice": [
+              1,
+              5,
+              6
+            ],
+            "total": 12
+          },
+          {
+            "dice": [
+              1,
+              3,
+              4
+            ],
+            "total": 8
+          }
+        ],
+        "keptIdx": [
+          0,
+          3,
+          7,
+          6,
+          8,
+          1
+        ],
+        "kept": [
+          18,
+          18,
+          17,
+          13,
+          12,
+          11
+        ],
+        "rerolls": 0
+      },
+      "assign": {
+        "STR": 1,
+        "DEX": 0,
+        "CON": 2,
+        "INT": 4,
+        "WIS": 3,
+        "CHA": 5
+      },
+      "manual": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    "boosts": {
+      "CON": 1,
+      "WIS": 1,
+      "CHA": 1
+    },
+    "arcana": "IX",
+    "origin": "destinyTouched",
+    "origin2": "skilled",
+    "originOther": "",
+    "glory": "0",
+    "other": "0",
+    "story": "",
+    "tiers": {
+      "Arcana": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Hunting": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Religion": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Cartographer's": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Painter's": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Potter's": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Soulforging": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Three-Dragon": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Veh. (Land)": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Tool - Weaver's": {
+        "t": "prof",
+        "l": "non"
+      }
+    }
+  }
+}
