@@ -38,11 +38,12 @@ theme:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/player-sheet.css
 
 extra_javascript:
   - javascripts/fh-home.js
   - javascripts/fh-sky.js
-  - javascripts/fh-mychar.js
+  - javascripts/fh-player-sheet.js
 
 markdown_extensions:
   - admonition
