@@ -196,3 +196,43 @@ Do not use `Access-Control-Allow-Origin: *` on authenticated admin responses.
 - Deleting a campaign immediately makes its join code invalid.
 - Return 404/405 clearly while routes are missing; the DM UI displays a Worker
   upgrade message rather than pretending the operation succeeded.
+
+## Implementation notes (Worker, 2026-07-20)
+
+The contract above is implemented in `~/tools/fh-worker/src/worker.js`, verified
+by `tests/parser.test.js` (6 fixtures) and by a live run against six real public
+characters. Three points deviate from, or sharpen, the spec:
+
+- **Proficiencies are keyed on `entityTypeId`, not on the name.** D&D Beyond tags
+  every proficiency modifier with the entity it points at: `1958004211` skill,
+  `2103445194` tool, `1782728300` individual weapon, `174869515` armour group.
+  A name-based filter cannot separate the tool "Thieves' Tools" from the weapon
+  "Shortsword" — the first live run reported Rapier, Scimitar, Whip and
+  "Crossbow, Hand" as tools. Unspent choices (`choose-a-*`, `Choose a Skill`) are
+  prompts on the sheet, not proficiencies, and are dropped.
+- **`savingThrowProficiencies` is `null` for a multiclass character.** The
+  flattened modifier list carries every class's saves (a Warlock 5 / Monk 4 shows
+  four), but only the starting class grants them, and a flattened modifier cannot
+  be attributed back to its class. The Worker therefore reports nothing and lets
+  the sheet apply `CLASS_SAVES[classes[0]]`. `classes` is sorted so the class
+  flagged `isStartingClass` leads. `null` rather than `[]` is deliberate: the
+  sheet's `snap.savingThrowProficiencies || CLASS_SAVES[…]` fallback never fires
+  on an empty array.
+- **`armorClass` is computed, never omitted.** Order: `overrideArmorClass` wins;
+  otherwise the highest-AC equipped body armour (light + full Dex, medium + Dex
+  capped at 2, heavy flat), else `10 + Dex` plus the best `unarmored-armor-class`
+  ability; then equipped shields and flat `armor-class` bonuses. Verified against
+  studded leather (15), Plate +1 (19), barbarian Unarmored Defense (17), monk
+  Unarmored Defense + ring (18) and an unarmoured bard with Dex 9 (9).
+
+Known limitation: flat `armor-class` bonuses are read from the whole modifier
+tree, so a bonus D&D Beyond lists under `modifiers.item` for an *unequipped*
+magic item would still be counted. No test character exercised this; revisit if
+an AC ever reads one or two points high.
+
+### Profile fields
+
+`manualOverrides` and `rollEvents` are now accepted by `POST /profile/:c/:p`,
+stored, and returned — previously the sheet sent them and the Worker dropped
+them silently, so manual corrections never survived a device change. A DDB pull
+or DM resync replaces `snapshot` only; every player-owned field is preserved.
