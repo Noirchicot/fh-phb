@@ -3,7 +3,8 @@
 // Optional DOM-level smoke test. Install with:
 // npm install --prefix /tmp/fh-player-test linkedom@0.18.12
 const assert = require("node:assert/strict");
-const crypto = require("node:crypto").webcrypto;
+const webcrypto = require("node:crypto").webcrypto;
+const crypto = {randomUUID:()=>webcrypto.randomUUID(),getRandomValues:array=>{array[0]=10;return array;}};
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
@@ -50,25 +51,31 @@ assert.ok(root.querySelector(".fh-ps-rail"),"the persistent left navigation rail
 assert.equal(root.querySelectorAll(".fh-ps-roll-workbench > section").length,3,"console, animation log and dice tray are distinct zones");
 
 root.querySelector('[data-config-name="Arcana"]').click();
+assert.match(root.querySelector(".fh-ps-dice-tray-head h2").textContent,/Arcana \+6/,"opening a console names the prepared check in the tray");
+assert.equal(root.querySelectorAll(".fh-ps-tray-dice .die-d20").length,1,"a flat console starts with one prepared d20");
 let guidance=root.querySelector("#fhPsGuidance");
 guidance.checked=true;
 guidance.dispatchEvent(new window.Event("change",{bubbles:true}));
+// linkedom does not hydrate checked properties from newly rendered attributes.
+root.querySelector("#fhPsGuidance").checked=true;
 root.querySelector('[data-roll-mode="advantage"]').click();
 assert.equal(t.state.rollConfig.guidance,true,"rerendering a roll mode preserves Guidance in console state");
 assert.equal(root.querySelector("#fhPsGuidance").hasAttribute("checked"),true,"the preserved Guidance state is rendered back into the control");
 // linkedom does not hydrate the checked property from the HTML attribute as a browser does.
 root.querySelector("#fhPsGuidance").checked=true;
 assert.ok(root.querySelector('[data-roll-mode="advantage"]').classList.contains("is-on"),"advantage stays selected");
+const plusTwo=root.querySelector("#fhPsPlusTwo");plusTwo.checked=true;plusTwo.dispatchEvent(new window.Event("change",{bubbles:true}));
+assert.ok(root.querySelector(".fh-ps-modifier-token"),"the +2 option appears as a visible tray token");
+root.querySelector("#fhPsGuidance").checked=true;root.querySelector("#fhPsPlusTwo").checked=true;
 
 root.querySelector("#fhPsRunRoll").click();
 let entry=t.state.history[0];
 assert.equal(entry.d20s.length,2,"advantage rolls two d20s");
 assert.equal(entry.guidance.sides,4,"Guidance rolls beside the d20s");
-assert.equal(t.state.trayResults.length,3,"the tray displays both d20s and the bonus die");
+assert.equal(t.state.trayResults.length,4,"the tray displays both d20s, Guidance and the +2 token");
 const originalD20=Array.from(entry.d20s);
 
-t.state.currentEvent=null;
-t.render();
+root.querySelector("[data-event-ok]").click();
 root.querySelector('[data-history-id="'+entry.id+'"]').click();
 assert.equal(t.state.rollConfig.editingId,entry.id,"clicking the event log reopens that roll");
 const custom=root.querySelector("#fhPsCustom");
@@ -80,8 +87,46 @@ assert.deepEqual(Array.from(entry.d20s),originalD20,"adjusting bonuses never rer
 assert.equal(entry.custom,3,"the edited bonus is applied");
 
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Spend this Destiny die\?/i,"Destiny always asks for confirmation before rolling");
+assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Add this Destiny die to the Dice Tray/i,"Destiny is reserved rather than rolled while any console is open");
 root.querySelector("[data-tray-cancel]").click();
 assert.equal(t.state.trayPrompt,null,"Destiny confirmation can be cancelled without spending the die");
+
+root.querySelector('[data-config-name="Arcana"]').click();
+root.querySelector("[data-destiny-die]").click();
+assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Add this Destiny die to the Dice Tray/i,"a console reserves Destiny instead of rolling it immediately");
+root.querySelector("[data-tray-confirm-destiny]").click();
+assert.ok(t.state.rollConfig.destinyDieId,"the confirmed Destiny die is reserved in console state");
+assert.ok(root.querySelector(".fh-ps-destiny-die.is-selected"),"the reserved Destiny die flashes in the pool");
+assert.equal(t.state.trayResults[0].label,"Destiny","the reserved Destiny die appears first in the tray");
+const beforeDestinyHistory=t.state.history.length;
+root.querySelector("#fhPsRunRoll").click();
+assert.equal(t.state.history.length,beforeDestinyHistory,"the d20 has not rolled while Destiny events await confirmation");
+let guard=8;
+while(t.state.rollSequence&&t.state.rollSequence.phase==="destiny-events"&&guard--){root.querySelector("[data-event-ok]").click();}
+assert.equal(t.state.history.length,beforeDestinyHistory+1,"the remaining dice roll only after every Destiny event is acknowledged");
+entry=t.state.history[0];
+assert.equal(t.state.trayResults[0].label,"Destiny","the spent Destiny result remains before the d20s");
+assert.equal(t.state.trayResults[1].sides,20,"the d20 result follows Destiny in the tray");
+root.querySelector("[data-event-ok]").click();
+
+root.querySelector('[data-config-name="Arcana"]').click();
+const dc=root.querySelector("#fhPsDc");dc.value="20";dc.dispatchEvent(new window.Event("change",{bubbles:true}));
+root.querySelector("#fhPsRunRoll").click();
+entry=t.state.history[0];
+const failedD20=Array.from(entry.d20s);
+assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Add a bonus die/i,"a known failure offers one last bonus die");
+root.querySelector("[data-rescue-bardic]").click();
+assert.deepEqual(Array.from(entry.d20s),failedD20,"the rescue never rerolls the failed d20");
+assert.ok(entry.bardic&&entry.bardic.result,"the selected Bardic die is added and rolled");
+while(t.state.currentEvent&&root.querySelector("[data-event-ok]")){root.querySelector("[data-event-ok]").click();}
+
+root.querySelector("[data-clear-tray]").click();
+assert.equal(t.state.trayResults.length,0,"Clear empties every die and result");
+assert.equal(t.state.rollConfig,null,"Clear also releases the active roll setup");
+assert.doesNotMatch(root.querySelector(".fh-ps-dice-tray").textContent,/Up to 2d20/i,"the unwanted yellow capacity subtitle is removed");
+root.querySelector("[data-destiny-die]").click();
+assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Roll and spend this Destiny die\?/i,"outside a console, Destiny uses the explicit spend confirmation");
+assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Current Points:/i,"the direct-spend warning shows current Destiny Points");
+root.querySelector("[data-tray-cancel]").click();
 
 console.log("Player sheet DOM integration tests passed.");

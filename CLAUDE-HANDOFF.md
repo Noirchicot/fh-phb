@@ -42,7 +42,13 @@ Every ability, save, skill and purchased tool supports:
 - Immutable stored d20s. Reopening a history entry can adjust additive bonuses and roll newly added bonus dice, but can never reroll or replace the original d20.
 - `Repeat setup` creates a genuinely new roll from the old configuration.
 
-The Roll Workbench has three permanent zones: **Roll Console / animation + 10-event log / Dice Tray**. The tray supports at most 2d20 plus 3 other dice and exposes d4, d6, d8, d10, d12, d20 and d100 calls. Guidance, Bardic and Destiny dice animate beside the d20s with their own die shapes. Destiny confirmation, the Natural-1 choice, the scary 2d6 Chaos result and Arcane Awakening use the middle animation zone; transient outcomes then become colored log entries. Natural 20, Natural 1, Destiny critical success/failure, overreach and Arcane Awakening have dedicated visual states.
+The Roll Workbench has three permanent zones: **Roll Console / animation + 10-event log / Dice Tray**. The tray supports at most 2d20 plus 3 other dice and exposes d4, d6, d8, d10, d12, d20 and d100 calls. The old capacity subtitle was deliberately removed. Guidance, Bardic and Destiny dice animate beside the d20s with their own die shapes; FH +2 is a visible square token. Destiny confirmation, the Natural-1 choice, the scary 2d6 Chaos result and Arcane Awakening use the middle animation zone. Natural 20, Natural 1, Destiny critical success/failure, overreach and Arcane Awakening have dedicated visual states.
+
+Opening any console or making a quick skill roll clears the previous tray. A console immediately prepares the visible recipe (`Hunting +8`, one/two pending d20s and every selected bonus). Bardic and a reserved Destiny die pulse; the matching Destiny pool die pulses too. `Clear` empties the tray and releases the active setup.
+
+Destiny is transactional. While a console is open, clicking a pool die asks **Add this Destiny die to the Dice Tray?** and reserves it without spending it. With no console, it asks **Roll and spend this Destiny die?**, shows Current Points and warns that the result changes Destiny. On a configured roll, Destiny always rolls first. Its score/critical/recovery events form a blocking queue (`Event 1 of N`) and each requires Continue. Only after the last acknowledgement do the d20s and other bonus dice roll. The final result is always the last blocking event and also requires Finish.
+
+When a DC proves the locked d20 result failed and neither Bardic nor Destiny has been spent, the middle zone offers one last Bardic or available Destiny die, or Accept Result. The bonus is rolled without touching the original d20. With no DC, the final event exposes an optional Add a bonus die action. A roll phase is persisted as `pendingRoll`, so refreshing after Destiny was spent resumes the event queue instead of allowing a second spend.
 
 The intermittent Roll Console failure was caused by a rerender discarding unsaved checkbox/select values. Every console-related click/change now synchronizes the visible controls into state before a rerender. The integration test covers Guidance → Advantage → Roll → history adjustment end to end.
 
@@ -66,6 +72,7 @@ The sheet writes these profile properties through the existing profile endpoint:
 - `rollPrefs`
 - `rollEvents`
 - `manualOverrides` (AC, all 26 skill tiers and the canonical tool tiers)
+- `pendingRoll` (serializable roll phase, event queue and tray presentation)
 
 It also writes the same state to local storage under `fh-player-v2:{campaign}:{character}`. This is an intentional safety fallback: the sheet remains persistent on the current device if a deployed Worker version rejects new profile properties. For cross-device persistence, ensure the production Worker preserves these three fields when merging a profile patch.
 

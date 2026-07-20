@@ -198,6 +198,15 @@
 }
 @media(prefers-reduced-motion:reduce){.fh-sheet-page *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
+/* Player sheet v3.1 — prepared roll recipe, blocking event queue and rescue. */
+.fh-ps-destiny-die.is-selected{z-index:3;animation:fh-ps-resource-pulse .8s ease-in-out infinite alternate;filter:drop-shadow(0 0 9px #f1c75d)}
+.fh-ps-roll-phase{margin:0 .45rem .3rem;padding:.2rem .35rem;color:#684f20;background:#fff0bd;border:1px solid #d5b75d;border-radius:3px;font-size:.35rem;font-weight:900;letter-spacing:.08em;text-align:center;text-transform:uppercase}
+.fh-ps-event-flash>small{color:#b99f6b;font-size:.34rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.fh-ps-event-flash>div:last-child{display:flex;gap:.3rem}.fh-ps-event-flash .is-bonus{color:#2a1a04;background:#d5aa46;border-color:#efd179}.fh-ps-event-flash.is-failure span{background:#9f2026}.fh-ps-event-flash.is-result b{font-size:.78rem}
+.fh-ps-event-special.is-rescue{align-content:start;padding-top:1rem}.fh-ps-rescue-dice{display:grid!important;grid-template-columns:1fr 1fr;width:100%;max-height:7rem;overflow:auto}.fh-ps-rescue-dice button{min-width:0!important}
+.fh-ps-dice-tray-head h2{font-size:.88rem!important}.fh-ps-dice-tray-head strong{display:block;margin-top:.08rem;color:#fff;font-size:.72rem;line-height:1.1}.fh-ps-dice-tray-head>div:last-child{display:flex;gap:.2rem}.fh-ps-dice-tray-head button.is-roll{color:#2a1a04;background:#d3a649;border-color:#f0cc77}
+.fh-ps-visual-die.is-pending{opacity:.86}.fh-ps-visual-die.is-flashing{animation:fh-ps-resource-pulse .75s ease-in-out infinite alternate}.fh-ps-modifier-token{display:grid;place-items:center;width:2.45rem;height:2.45rem;color:#2a1a04;background:#e1b64e;border:2px solid #f5d98d;border-radius:.5rem;box-shadow:0 0 16px rgba(225,182,78,.35);font-size:1rem;animation:fh-ps-die-tumble .75s ease both}.fh-ps-modifier-token.is-pending{animation:fh-ps-resource-pulse .75s ease-in-out infinite alternate}.fh-ps-empty-tray{color:#777;font-size:.42rem;font-style:italic}
+@keyframes fh-ps-resource-pulse{to{transform:translateY(-2px) scale(1.08);filter:brightness(1.35) drop-shadow(0 0 10px #f1c75d)}}
+
 /* Player sheet v3 — compact rail, horizontal Destiny and three-part roll bench. */
 .fh-ps-layout{grid-template-columns:4.15rem minmax(650px,1.45fr) minmax(320px,.55fr);gap:.55rem;max-width:1900px;padding:.55rem;height:100vh}
 .fh-ps-left,.fh-ps-right,.fh-ps-rail{height:calc(100vh - 1.1rem)}
