@@ -47,8 +47,44 @@ t.loadPlayState(t.state.character);
 t.render();
 
 const root=document.getElementById("fhPlayerSheet");
-assert.ok(root.querySelector(".fh-ps-rail"),"the persistent left navigation rail renders");
+assert.ok(root.querySelector(".fh-ps-commandbar"),"the narrow character command bar renders above identity");
+assert.equal(root.querySelector(".fh-ps-rail"),null,"the redundant vertical rail no longer consumes sheet width");
+assert.ok(root.querySelector('[data-context="inventory"]')&&root.querySelector('[data-context="loop"]')&&root.querySelector('[data-context="forge"]'),"Inventory, Soulforging Loop and Soulforge live in the command bar");
+assert.equal(root.querySelector(".fh-ps-command-home").textContent,"FH","the gold FH home control remains visible at the right edge");
+assert.ok(root.querySelector("#fhPsLevel"),"an unlinked character keeps Level Up as a fallback under More");
 assert.equal(root.querySelectorAll(".fh-ps-roll-workbench > section").length,3,"console, animation log and dice tray are distinct zones");
+
+t.state.profile.ddbLinked=true;
+t.render();
+assert.equal(root.querySelector("#fhPsSync").textContent,"Sync","a linked character gets the direct Sync action");
+assert.ok(root.querySelector("#fhPsRelink"),"a linked character can still replace its DDB link");
+assert.equal(root.querySelector("#fhPsLevel"),null,"Level Up disappears when Sync is the source of truth");
+t.state.profile.ddbLinked=false;
+t.render();
+
+const specialScenes=[
+  ["nat1","NATURAL 1 · Fate accepted","1"],
+  ["nat20","NATURAL 20 · Fate bends in your favor","20"],
+  ["arcane-critical-failure","ARCANE CRITICAL FAILURE · Destiny d8 rolled 1","1"],
+  ["arcane-critical-success","ARCANE CRITICAL SUCCESS · Destiny d8 rolled 8","8"]
+];
+specialScenes.forEach(([kind,text,face])=>{
+  t.state.currentEvent={kind,text,blocking:true,progress:1,total:1};
+  t.state.queueDone="finish-sequence";
+  t.render();
+  const scene=root.querySelector(".fh-ps-special-stage.is-"+kind);
+  assert.ok(scene,"the "+kind+" event renders its dedicated animated scene");
+  assert.equal(scene.querySelector(".fh-ps-event-icon strong").textContent,face,"the "+kind+" scene shows the decisive die face");
+});
+t.state.currentEvent={kind:"awakening",text:"ARCANE AWAKENING · Natural 20 at Destiny 0",blocking:true,progress:1,total:1};
+t.render();
+assert.match(root.querySelector(".fh-ps-awakening-card").textContent,/The Hermit/i,"Arcane Awakening reveals the character's Major Arcana");
+t.state.currentEvent={kind:"chaos",text:"Chaos has noticed · 2d6 = 3 + 5",chaosRoll:[3,5],blocking:true,progress:1,total:1};
+t.render();
+assert.equal(root.querySelector(".fh-ps-special-stage.is-chaos .fh-ps-chaos-pair strong").textContent,"8","Chaos gets its own animated 2d6 scene");
+t.state.currentEvent=null;
+t.state.queueDone="";
+t.render();
 
 root.querySelector('[data-config-name="Arcana"]').click();
 assert.match(root.querySelector(".fh-ps-dice-tray-head h2").textContent,/Arcana \+6/,"opening a console names the prepared check in the tray");

@@ -31,7 +31,7 @@ The dedicated Player Companion has now been rebuilt as an active, D&D Beyond-ins
 - `tests/player-sheet.test.js` verifies the canonical 26-skill list, generalized import normalization, AC fallbacks, Destiny slots, roll arithmetic, tray limits and purchased-tool ordering.
 - `tests/player-sheet.integration.test.js` performs a DOM click-through of the advanced roller and proves that mode changes preserve bonus controls and history edits preserve the original d20s.
 
-Wide screens now use three areas: a narrow persistent navigation rail, the scrolling character sheet, and an independently scrolling temporary panel. The rail opens Inventory, Soulforging Loop, Soulforge, manual corrections and Rules. Campaign/Character/Load are collapsed at the top of the temporary panel. The character content order is Identity → Characteristics → Skills → horizontal Destiny → Roll Workbench. The skill board is **9 + 9 + 8 skills**, followed by a fourth column containing **only tools with an invested tier**, always sorted in canonical Fate's Hand order rather than import order.
+Wide screens now use two areas: the scrolling character sheet and an independently scrolling temporary panel. A narrow sticky command bar above identity replaces the old width-consuming rail. It contains Sync/Link/Edit, Inventory, Soulforging Loop and Soulforge, plus a gold circular FH home control at the far right. Level Up is available under More only for an unlinked/manual character and disappears once DDB Sync is the source of truth. Campaign/Character/Load remain collapsed at the top of the temporary panel. The character content order is Identity → Characteristics → Skills → horizontal Destiny → Roll Workbench. The skill board is **9 + 9 + 8 skills**, followed by a fourth column containing **only tools with an invested tier**, always sorted in canonical Fate's Hand order rather than import order.
 
 Every ability, save, skill and purchased tool supports:
 
@@ -75,6 +75,12 @@ Rules terminology is exact and intentionally distinct:
 
 Destiny-die recovery now occurs only when Points **increase** to an even total. Spending down to an even total cannot immediately recover the die that was just spent. `tests/roller-state-machine.test.js` deterministically covers the critical outcomes, overreach/Chaos, Awakening, event ordering, Advantage/Disadvantage, rescue dice, immutable d20 history and mid-roll persistence.
 
+### Stage 5 — command bar and special-roll scenes
+
+The Player Companion now uses the validated narrow command bar above identity and no longer renders the persistent left rail. Major events keep the same middle-zone footprint but have separate animated scenes: red fracture for Natural 1 and Arcane Critical Failure, gold orbit/rays for Natural 20 and Arcane Critical Success, animated 2d6 plus the Chaos mark, and a tarot-card reveal carrying the character's Major Arcana for Arcane Awakening. The actual Destiny die face is visible for both Arcane Critical outcomes.
+
+The Stage 5 DOM test covers the linked/unlinked command actions and every special scene. See `STAGE-5-UI-FINAL.md` for the exact files, verification commands and deployment boundary. This delivery was built from `96f2236` and has not been deployed.
+
 The right-side panels provide the Soulforging Loop, a campaign inventory summary and Soulforge preparation while preserving links to the full-screen inventory and workshop.
 
 ### Stage 2 — inline sheet editing
@@ -108,7 +114,7 @@ Standalone tools use a shared navigation shell. On desktop it is a sticky top ba
 
 - `docs/index.md` — simplified homepage and rules map.
 - `docs/player.md` — dedicated Player Companion page.
-- `docs/javascripts/fh-mychar.js` — character cockpit, DDB sync UI, level-up overlay and Soulforging skill calculations.
+- `docs/javascripts/fh-player-sheet.js` — active character cockpit, DDB Sync UI, Edit mode, roller, Destiny and contextual panels. The retired `fh-mychar.js` must remain absent.
 - `docs/stylesheets/extra.css` — handbook and Player Companion styling.
 - `docs/stylesheets/tool-ui.css` — shared standalone-tool navigation, accessibility and responsive polish.
 - `docs/skill-builder.html` — guided character creation.
@@ -159,30 +165,6 @@ The DM UI now exposes Worker connection state, campaign selection, canonical DDB
 
 `tests/gm-control.integration.test.js` covers the complete client flow against a deterministic mock Worker. See `STAGE-3-PRODUCTION-CHECK.md` for the exact live observations and the short authenticated acceptance pass still requiring the DM token.
 
-### Stage 5 — shared Soulforge inventory
-
-The earlier server-backed Soulforge architecture is now treated as the real
-production subsystem rather than an untested legacy page. Party Inventory is
-the only source of truth and keeps the three player-facing groups: **Raw
-ingredients / Forgable parts / Other equipment**. The workshop consumes that
-same inventory and sends one `/inv/:campaign/forge` transaction containing
-stored component IDs.
-
-`docs/javascripts/fh-soulforge-core.js` is the shared, testable normalization
-layer. Most importantly, the workshop no longer calculates Soulforging from the
-old build alone. It combines the build, synchronized profile snapshot and the
-Stage 2 `manualOverrides`, so corrected level, PB, CHA, Soulforging tier and
-named special bonuses agree with the Player Companion. The ritual still exposes
-an explicit table Override plus fixed and dice modifiers.
-
-`tests/soulforge-core.test.js` covers aliases, tier precedence, manual bonus
-replacement and inventory mapping. `tests/soulforge-inventory.integration.test.js`
-covers the DOM/API path from the three inventory groups through a server add,
-corrected forger score, ritual controls and one forge request. The Worker
-inventory routes and KV concurrency boundary are documented in
-`WORKER-ADMIN-API.md`; future account/permission work is separated into
-`project_fh_phase2_accounts.md`.
-
 ## Design rules for the next pass
 
 - Optimize the Player Companion at 390 px first, then desktop.
@@ -215,7 +197,7 @@ GitHub Pages deployment:
 ./.venv/bin/mkdocs gh-deploy --force
 ```
 
-Before changing behavior, also run JavaScript syntax checks for `docs/javascripts/fh-home.js` and `docs/javascripts/fh-mychar.js`, then test the builder, Player Companion, inventory and Soulforge at 390 px and desktop widths.
+Before changing behavior, also run JavaScript syntax checks for `docs/javascripts/fh-home.js` and `docs/javascripts/fh-player-sheet.js`, then test the builder, Player Companion, inventory and Soulforge at 390 px and desktop widths.
 
 Optional DOM roller test:
 

@@ -705,7 +705,7 @@
     var classes=ch.classes.map(function(e){return e.name+" "+e.level;}).join(" / ");
     var portrait=ch.avatarUrl || "../assets/img/species-"+String(ch.species).toLowerCase().replace(/\s*\(fh\)\s*/g,"").replace(/[^a-z]+/g,"-").replace(/^-|-$/g,"")+".jpg";
     var sync=ch.syncedAt?"Synced "+new Date(ch.syncedAt).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"Fate's Hand build";
-    return "<section class=\"fh-ps-identity fh-ps-card\"><img src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.hidden=true\"><div class=\"fh-ps-who\"><p>FATE'S HAND CHARACTER</p><h1>"+esc(ch.name)+"</h1><span>"+esc(ch.species)+" · "+esc(classes)+"</span><small>"+esc(sync)+"</small></div><div class=\"fh-ps-identity-actions\"><button id=\"fhPsSync\" type=\"button\">"+(state.profile&&state.profile.ddbLinked?"Sync":"Link DDB")+"</button>"+(state.profile&&state.profile.ddbLinked?"<button id=\"fhPsRelink\" type=\"button\">Link</button>":"")+"<button id=\"fhPsLevel\" type=\"button\">Level Up</button><button id=\"fhPsCorrect\" type=\"button\">Edit</button></div></section>";
+    return "<section class=\"fh-ps-identity fh-ps-card\"><img src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.hidden=true\"><div class=\"fh-ps-who\"><p>FATE'S HAND CHARACTER</p><h1>"+esc(ch.name)+"</h1><span>"+esc(ch.species)+" · "+esc(classes)+"</span><small>"+esc(sync)+"</small></div></section>";
   }
   function renderStats(ch) {
     var cards=ABILITIES.map(function(key){var save=saveInfo(key,ch),abilityBonus=mod(ch.abilities[key]);return "<div class=\"fh-ps-stat\"><button type=\"button\" data-quick-name=\""+ABILITY_NAMES[key]+" Check\" data-ability=\""+key+"\" data-bonus=\""+abilityBonus+"\"><small>"+ABILITY_NAMES[key]+"</small><b>"+ch.abilities[key]+"</b><strong>"+signed(abilityBonus)+"</strong></button><div class=\"fh-ps-save-row\"><button class=\"fh-ps-save tier-"+save.tier+"\" type=\"button\" data-quick-name=\""+save.name+"\" data-ability=\""+key+"\" data-bonus=\""+save.bonus+"\"><i></i> Save "+signed(save.bonus)+"</button><button class=\"fh-ps-save-config\" type=\"button\" data-config-name=\""+save.name+"\" data-ability=\""+key+"\" data-bonus=\""+save.bonus+"\" aria-label=\"Configure "+save.name+"\">⚙</button></div><button class=\"fh-ps-stat-config\" type=\"button\" data-config-name=\""+ABILITY_NAMES[key]+" Check\" data-ability=\""+key+"\" data-bonus=\""+abilityBonus+"\" aria-label=\"Configure "+ABILITY_NAMES[key]+" check\">⚙</button></div>";}).join("");
@@ -821,6 +821,23 @@
     var label=entry?(entry.name+" · "+(entry.outcome||("Total "+entry.total))):"Ready to roll";
     return "<div class=\"fh-ps-dice-stage\" aria-live=\"polite\"><div>"+dice.join("")+"</div><p>"+esc(label)+"</p></div>";
   }
+  function specialEventCopy(text){
+    var parts=String(text||"").split(" · "),headline=parts.shift()||"Fate moves";
+    return "<b>"+esc(headline)+"</b>"+(parts.length?"<p>"+parts.map(esc).join("<span>·</span>")+"</p>":"");
+  }
+  function specialEventVisual(kind,text,chaosRoll){
+    if(kind==="chaos"){
+      var pair=chaosRoll||[0,0];
+      return "<div class=\"fh-ps-special-stage is-chaos\" aria-hidden=\"true\"><div class=\"fh-ps-chaos-pair\"><i>"+pair[0]+"</i><i>"+pair[1]+"</i><strong>"+(pair[0]+pair[1])+"</strong></div><span class=\"fh-ps-chaos-eye\">◉</span></div>";
+    }
+    if(kind==="awakening"){
+      var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};
+      return "<div class=\"fh-ps-special-stage is-awakening\" aria-hidden=\"true\"><span class=\"fh-ps-awakening-ray\"></span><div class=\"fh-ps-awakening-card\"><small>MAJOR ARCANA</small><strong>✦</strong><b>"+esc(arcana.name||"AWAKENING")+"</b></div></div>";
+    }
+    var rolled=String(text||"").match(/rolled\s+(\d+)/i),face=kind==="nat1"||kind==="arcane-critical-failure"?"1":kind==="nat20"?"20":rolled?rolled[1]:"✦";
+    var sides=String(text||"").match(/d(\d+)/i),dieLabel=sides?"d"+sides[1]:"d20";
+    return "<div class=\"fh-ps-special-stage is-"+esc(kind)+"\" aria-hidden=\"true\"><span class=\"fh-ps-special-orbit\"></span><span class=\"fh-ps-special-sparks\"><i></i><i></i><i></i><i></i><i></i><i></i></span><div class=\"fh-ps-event-icon\"><small>"+dieLabel+"</small><strong>"+face+"</strong></div></div>";
+  }
   function renderEventContent(){
     var prompt=state.trayPrompt;
     if(prompt&&prompt.type==="add-destiny"){
@@ -835,21 +852,20 @@
       var available=state.destiny.dice.filter(function(item){return item.available;}).filter(function(item,index,list){return list.findIndex(function(other){return other.sides===item.sides;})===index;});
       return "<div class=\"fh-ps-event-special is-rescue\"><div class=\"fh-ps-event-icon\">+</div><b>Add a bonus die?</b><p>The original d20 is locked. This is your last chance.</p><div class=\"fh-ps-rescue-dice\">"+available.map(function(item){return "<button data-rescue-destiny=\""+item.id+"\">Destiny d"+item.sides+"</button>";}).join("")+"<button data-rescue-bardic=\""+prompt.bardicSides+"\">Bardic d"+prompt.bardicSides+"</button></div><div><button data-rescue-accept=\""+prompt.entryId+"\">Accept result</button></div></div>";
     }
-    if(prompt&&prompt.type==="nat1")return "<div class=\"fh-ps-event-special is-nat1\"><div class=\"fh-ps-event-icon\">1</div><b>Do you accept your fate?</b><p>Yes: critical failure +1 Destiny · No: 20, then Chaos.</p><div><button data-tray-accept-fate>Yes</button><button class=\"is-danger\" data-tray-refuse-fate>No</button></div></div>";
+    if(prompt&&prompt.type==="nat1")return "<div class=\"fh-ps-event-special is-nat1\"><small>NATURAL 1</small>"+specialEventVisual("nat1","Natural 1")+"<b>Do you accept your fate?</b><p>Yes: critical failure +1 Destiny <span>·</span> No: 20, then Chaos.</p><div><button data-tray-accept-fate>Yes</button><button class=\"is-danger\" data-tray-refuse-fate>No</button></div></div>";
     if(prompt&&prompt.type==="chaos"){
       var chaosEntry=state.history.find(function(item){return item.id===prompt.entryId;}),roll=chaosEntry&&chaosEntry.chaosRoll||[0,0],total=roll[0]+roll[1];
-      return "<div class=\"fh-ps-event-special is-chaos\"><div class=\"fh-ps-chaos-pair\"><i>"+roll[0]+"</i><i>"+roll[1]+"</i><strong>"+total+"</strong></div><b>Chaos has noticed.</b><p>The d20 becomes 20 · Destiny becomes 0.</p><div><a href=\"../chapters/chaos-tables/\">Chaos table</a><button data-tray-close>OK</button></div></div>";
+      return "<div class=\"fh-ps-event-special is-chaos\"><small>FATE DEFIED</small>"+specialEventVisual("chaos","",roll)+"<b>Chaos has noticed.</b><p>The d20 becomes 20 <span>·</span> Destiny becomes 0.</p><div><a href=\"../chapters/chaos-tables/\">Chaos table</a><button data-tray-close>OK</button></div></div>";
     }
     if(prompt&&prompt.type==="awakening"){
       var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};
-      return "<div class=\"fh-ps-event-special is-awakening\"><div class=\"fh-ps-awakening-mark\">✦</div><b>Arcane Awakening</b><p>Natural 20 · Destiny 0 · "+esc(arcana.name||"Major Arcana")+"</p><div><button class=\"is-primary\" data-tray-close>OK</button></div></div>";
+      return "<div class=\"fh-ps-event-special is-awakening\"><small>DESTINY REACHES ZERO</small>"+specialEventVisual("awakening","Arcane Awakening")+"<b>Arcane Awakening</b><p>Natural 20 <span>·</span> "+esc(arcana.name||"Major Arcana")+"</p><div><button class=\"is-primary\" data-tray-close>OK</button></div></div>";
     }
     if(state.currentEvent){
       var current=state.currentEvent,icon=current.kind==="gain"||current.kind==="die-gain"?"↑":current.kind==="loss"||current.kind==="die-loss"?"↓":current.kind==="failure"?"×":"✦";
       var progress=current.total>1?"<small>Event "+current.progress+" of "+current.total+"</small>":"",isFinal=current.blocking&&current.progress===current.total&&state.queueDone==="finish-sequence",action=current.blocking?(isFinal?"Finish":"Continue"):"OK";
       var bonus=current.allowBonus?"<button class=\"is-bonus\" data-event-bonus=\""+esc(current.entryId)+"\">Add a bonus die</button>":"",major=["nat1","nat20","arcane-critical-success","arcane-critical-failure","awakening","chaos"].indexOf(current.kind)>=0;
-      var chaos=current.chaosRoll?"<div class=\"fh-ps-chaos-pair\"><i>"+current.chaosRoll[0]+"</i><i>"+current.chaosRoll[1]+"</i><strong>"+(current.chaosRoll[0]+current.chaosRoll[1])+"</strong></div>":"";
-      if(major){var mark=current.kind==="awakening"?"<div class=\"fh-ps-awakening-mark\">✦</div>":chaos||"<div class=\"fh-ps-event-icon\">"+(current.kind==="nat1"?"1":current.kind==="nat20"?"20":current.kind==="arcane-critical-failure"?"!":current.kind==="chaos"?"⚠":"✦")+"</div>";return "<div class=\"fh-ps-event-special is-"+esc(current.kind)+"\">"+progress+mark+"<b>"+esc(current.text)+"</b><div>"+bonus+"<button class=\"is-primary\" data-event-ok>"+action+"</button></div></div>";}
+      if(major){return "<div class=\"fh-ps-event-special is-"+esc(current.kind)+"\">"+progress+specialEventVisual(current.kind,current.text,current.chaosRoll)+specialEventCopy(current.text)+"<div>"+bonus+"<button class=\"is-primary\" data-event-ok>"+action+"</button></div></div>";}
       return "<div class=\"fh-ps-event-flash is-"+esc(current.kind)+"\">"+progress+"<span>"+icon+"</span><b>"+esc(current.text)+"</b><div>"+bonus+"<button data-event-ok>"+action+"</button></div></div>";
     }
     var log=state.events.slice(0,10);
@@ -956,8 +972,11 @@
     var partyOptions="<option value=\"\">— character —</option>"+state.party.map(function(name){return "<option value=\""+esc(name)+"\" "+(name===state.pseudo?"selected":"")+">"+esc(name)+"</option>";}).join("");
     return "<section class=\"fh-ps-access "+(state.chromeOpen?"is-open":"")+"\"><button id=\"fhPsChromeToggle\" type=\"button\"><span>FH</span><b>"+esc(state.code||"Campaign")+" · "+esc(state.pseudo||"Character")+"</b><i>"+(state.chromeOpen?"▲":"▼")+"</i></button>"+(state.chromeOpen?"<div><label>Campaign<input id=\"fhPsCode\" value=\""+esc(state.code)+"\" placeholder=\"Campaign code\"></label><label>Character<select id=\"fhPsWho\">"+partyOptions+"</select></label><button id=\"fhPsLoad\" type=\"button\">Load</button><a href=\""+esc(toolUrl("rules","../"))+"\">Handbook</a></div>":"")+"<p id=\"fhPsMessage\" class=\"fh-ps-message\"></p></section>";
   }
-  function renderRail(){
-    return "<nav class=\"fh-ps-rail\" aria-label=\"Player panels\"><button data-context=\"inventory\" class=\""+(state.activeContext==="inventory"?"is-active":"")+"\"><span>▣</span><b>Inventory</b></button><button data-context=\"loop\" class=\""+(state.activeContext==="loop"?"is-active":"")+"\"><span>◇</span><b>Soulforging Loop</b></button><button data-context=\"forge\" class=\""+(state.activeContext==="forge"?"is-active":"")+"\"><span>⚒</span><b>Soulforge</b></button><button data-sheet-edit class=\""+(state.editDraft?"is-active":"")+"\"><span>✎</span><b>Edit sheet</b></button><a href=\""+esc(toolUrl("rules","../"))+"\"><span>⌕</span><b>Rules</b></a></nav>";
+  function renderCommandBar(){
+    var linked=!!(state.profile&&state.profile.ddbLinked);
+    var ddb="<button id=\"fhPsSync\" type=\"button\" class=\"is-primary\">"+(linked?"Sync":"Link DDB")+"</button>"+(linked?"<button id=\"fhPsRelink\" type=\"button\">Link</button>":"");
+    var level=linked?"":"<details class=\"fh-ps-command-more\"><summary>More</summary><button id=\"fhPsLevel\" type=\"button\">Level Up</button></details>";
+    return "<nav class=\"fh-ps-commandbar\" aria-label=\"Character actions and Fate's Hand panels\"><div class=\"fh-ps-command-scroll\"><div class=\"fh-ps-command-actions\">"+ddb+"<button id=\"fhPsCorrect\" type=\"button\" class=\""+(state.editDraft?"is-active":"")+"\">Edit</button>"+level+"</div><i></i><div class=\"fh-ps-command-panels\"><button data-context=\"inventory\" class=\""+(state.activeContext==="inventory"?"is-active":"")+"\">Inventory</button><button data-context=\"loop\" class=\""+(state.activeContext==="loop"?"is-active":"")+"\">Soulforging Loop</button><button data-context=\"forge\" class=\""+(state.activeContext==="forge"?"is-active":"")+"\">Soulforge</button></div></div><a class=\"fh-ps-command-home\" href=\""+esc(toolUrl("rules","../"))+"\" aria-label=\"Return to the Fate's Hand handbook\" title=\"Fate's Hand handbook\">FH</a></nav>";
   }
   function render() {
     if(!root)return;
@@ -965,8 +984,8 @@
     if(state.loading){root.innerHTML="<div class=\"fh-ps-app\">"+top+"<div class=\"fh-ps-loading\">Loading the character sheet…</div></div>";renderMessage();return;}
     if(!state.record||!state.character){root.innerHTML="<div class=\"fh-ps-app\">"+top+"<div class=\"fh-ps-welcome\"><span>⚔</span><h1>Player Companion</h1><p>Enter the campaign code and choose a character. D&D Beyond remains the source for the standard sheet; this page runs the Fate's Hand layer.</p></div></div>";renderMessage();return;}
     var ch=state.character;
-    var sheet=state.editDraft?renderEditSheet():renderIdentity(ch)+renderStats(ch)+renderSkills(ch)+renderDestiny(ch)+renderRollWorkbench();
-    root.innerHTML="<div class=\"fh-ps-app "+(state.editDraft?"is-edit-mode":"")+"\"><div class=\"fh-ps-layout\">"+renderRail()+"<main class=\"fh-ps-left\">"+sheet+"</main>"+renderContext(ch)+"</div></div>";
+    var sheet=renderCommandBar()+(state.editDraft?renderEditSheet():renderIdentity(ch)+renderStats(ch)+renderSkills(ch)+renderDestiny(ch)+renderRollWorkbench());
+    root.innerHTML="<div class=\"fh-ps-app "+(state.editDraft?"is-edit-mode":"")+"\"><div class=\"fh-ps-layout\"><main class=\"fh-ps-left\">"+sheet+"</main>"+renderContext(ch)+"</div></div>";
     renderMessage();
     if((state.activeContext==="inventory"||state.activeContext==="forge")&&state.inventory===null)loadInventory();
   }
