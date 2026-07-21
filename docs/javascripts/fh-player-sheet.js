@@ -105,11 +105,65 @@
     if(entry.proficiencyLevel!=null){var level=Number(entry.proficiencyLevel);if(level===1)return "proficient";if(level===2)return "expert";return tierName(entry.proficiencyLevel);}
     return tierName(entry.level);
   }
+  function lookupKey(value) {
+    var text=String(value||"").trim().replace(/[’‘`´]/g,"'");
+    if(text.normalize)text=text.normalize("NFKD").replace(/[\u0300-\u036f]/g,"");
+    return text.toLowerCase()
+      .replace(/^tool\s*[-:]\s*/i,"")
+      .replace(/^proficiency\s+(?:with|in)\s+/i,"")
+      .replace(/^proficient\s+(?:with|in)\s+/i,"")
+      .replace(/^skill\s*[-:]\s*/i,"")
+      .replace(/&/g," and ")
+      .replace(/[^a-z0-9]+/g," ")
+      .replace(/\s+/g," ").trim();
+  }
+  var TOOL_ALIASES={};
+  function registerToolAliases(canonical,aliases){
+    [canonical,"Tool - "+canonical].concat(aliases||[]).forEach(function(alias){TOOL_ALIASES[lookupKey(alias)]="Tool - "+canonical;});
+  }
+  registerToolAliases("Alchemist's",["Alchemist's Supplies","Alchemist Supplies"]);
+  registerToolAliases("Brewer's",["Brewer's Supplies","Brewer Supplies"]);
+  registerToolAliases("Calligrapher's",["Calligrapher's Supplies","Calligrapher Supplies"]);
+  registerToolAliases("Carpenter's",["Carpenter's Tools","Carpenter Tools"]);
+  registerToolAliases("Card Set",["Playing Card Set","Playing Cards","Cards","Gaming Set - Playing Cards"]);
+  registerToolAliases("Cartographer's",["Cartographer's Tools","Cartographer Tools"]);
+  registerToolAliases("Cobbler's",["Cobbler's Tools","Cobbler Tools"]);
+  registerToolAliases("Cook's",["Cook's Utensils","Cook Utensils","Cooking Utensils"]);
+  registerToolAliases("Dice Set",["Dice","Gaming Set - Dice"]);
+  registerToolAliases("Disguise Kit",["Disguise Tools"]);
+  registerToolAliases("Dragonchess Set",["Dragonchess","Gaming Set - Dragonchess"]);
+  registerToolAliases("Forgery Kit",["Forger's Kit","Forgery Tools"]);
+  registerToolAliases("Garrot",["Garrote"]);
+  registerToolAliases("Glassblower's",["Glassblower's Tools","Glassblower Tools"]);
+  registerToolAliases("Herbalism Kit",["Herbalist Kit","Herbalism Tools"]);
+  registerToolAliases("Instrument (Strings)",["Dulcimer","Lute","Lyre","Viol","String Instrument","Musical Instrument - Strings"]);
+  registerToolAliases("Instrument (Wind)",["Bagpipes","Flute","Horn","Pan Flute","Shawm","Wind Instrument","Musical Instrument - Wind"]);
+  registerToolAliases("Instrument (Other)",["Drum","Musical Instrument","Instrument","Musical Instrument - Other"]);
+  registerToolAliases("Jeweler's",["Jeweler's Tools","Jeweller's Tools","Jeweler Tools","Jeweller Tools"]);
+  registerToolAliases("Leatherworker's",["Leatherworker's Tools","Leatherworker Tools"]);
+  registerToolAliases("Mason's",["Mason's Tools","Mason Tools"]);
+  registerToolAliases("Mount (Air)",["Air Mount","Flying Mount"]);
+  registerToolAliases("Mount (Land)",["Land Mount","Ground Mount"]);
+  registerToolAliases("Mount (Water)",["Water Mount","Aquatic Mount"]);
+  registerToolAliases("Navigator's",["Navigator's Tools","Navigator Tools"]);
+  registerToolAliases("Painter's",["Painter's Supplies","Painter Supplies"]);
+  registerToolAliases("Poisoner's",["Poisoner's Kit","Poisoner Kit"]);
+  registerToolAliases("Potter's",["Potter's Tools","Potter Tools"]);
+  registerToolAliases("Smith's",["Smith's Tools","Smith Tools"]);
+  registerToolAliases("Soulforging",["Soulforging Tools","Soulforge","Soulforge Tools"]);
+  registerToolAliases("Thieves'",["Thieves' Tools","Thief's Tools","Thief Tools"]);
+  registerToolAliases("Three-Dragon Ante",["Three Dragon Ante","Three-Dragon Ante Set","Gaming Set - Three-Dragon Ante"]);
+  registerToolAliases("Tinker's",["Tinker's Tools","Tinkerer's Tools","Tinker Tools"]);
+  registerToolAliases("Vehicles (Air)",["Air Vehicles","Vehicle - Air","Vehicles - Air"]);
+  registerToolAliases("Vehicles (Land)",["Land Vehicles","Vehicle - Land","Vehicles - Land"]);
+  registerToolAliases("Vehicles (Water)",["Water Vehicles","Vehicle - Water","Vehicles - Water"]);
+  registerToolAliases("Weaver's",["Weaver's Tools","Weaver Tools"]);
+  registerToolAliases("Woodcarver's",["Woodcarver's Tools","Woodcarver Tools"]);
   function canonicalToolName(value) {
-    var raw=String(value||"").trim().replace(/^Tool\s*-\s*/i,"").replace(/\s+Tools?$/i,"").replace(/[’]/g,"'");
-    var lower=raw.toLowerCase();
-    var found=TOOLS.find(function(entry){var name=entry[0].toLowerCase();return name===lower||name.replace(/'s$/i,"")===lower.replace(/'s$/i,"");});
-    return "Tool - "+(found?found[0]:raw);
+    var known=TOOL_ALIASES[lookupKey(value)];
+    if(known)return known;
+    var raw=String(value||"").trim().replace(/^Tool\s*-\s*/i,"").replace(/[’‘`´]/g,"'");
+    return "Tool - "+raw;
   }
   function importedAbility(entry, fallback) {
     var raw=entry&&(entry.ability||entry.abilityKey||entry.stat||entry.statName||entry.statId);
@@ -131,28 +185,45 @@
     });
   }
   function knownSkillName(value) {
-    var raw=String(value||"").trim().replace(/^Skill\s*-\s*/i,"");
-    var found=SKILLS.find(function(item){return item[0].toLowerCase()===raw.toLowerCase();});
+    var key=lookupKey(value),found=SKILLS.find(function(item){return lookupKey(item[0])===key;});
     return found&&found[0];
   }
   function knownToolName(value) {
-    var canonical=canonicalToolName(value),raw=canonical.replace(/^Tool - /,"").toLowerCase();
-    return TOOLS.some(function(entry){return entry[0].toLowerCase()===raw;})?canonical:null;
+    return TOOL_ALIASES[lookupKey(value)]||null;
   }
-  function applyImportedRecord(skills,entry,isTool) {
+  function emptyImportReport(){return {importedSkills:[],importedTools:[],unmappedSkills:[],unmappedTools:[]};}
+  function reportImport(report,field,value,source){
+    if(!report||!value)return;
+    var key=lookupKey(value),exists=report[field].some(function(item){return lookupKey(item.name)===key;});
+    if(!exists)report[field].push({name:String(value).trim(),source:source||"D&D Beyond"});
+  }
+  function importedRecordName(entry){
+    return typeof entry==="string"?entry:(entry&&(entry.name||entry.label||entry.skillName||entry.toolName||entry.friendlySubtypeName||entry.subtypeName||entry.subtype));
+  }
+  function hasTierMarker(entry){
+    return !!(entry&&typeof entry==="object"&&(entry.tier!=null||entry.level!=null||entry.proficiencyLevel!=null||entry.proficient!=null||entry.proficiency!=null||entry.isProficient!=null||entry.expertise!=null||entry.expert!=null||entry.isExpertise!=null));
+  }
+  function applyImportedRecord(skills,entry,isTool,report,source,implicitProficiency) {
     if(!entry)return;
-    var raw=typeof entry==="string"?entry:(entry.name||entry.label||entry.skillName||entry.toolName||entry.friendlySubtypeName||entry.subtypeName);
+    var raw=importedRecordName(entry);
     if(!raw)return;
-    var name=isTool?canonicalToolName(raw):String(raw).replace(/^Skill\s*-\s*/i,"");
-    if(!isTool){var canonical=SKILLS.find(function(item){return item[0].toLowerCase()===name.toLowerCase();});if(canonical)name=canonical[0];}
-    if(!isTool&&!skills[name]&&/^Tool\s*-\s*/i.test(raw))name=canonicalToolName(raw);
+    var skillName=knownSkillName(raw),toolName=knownToolName(raw),name;
+    if(isTool){
+      if(!toolName){reportImport(report,"unmappedTools",raw,source);return false;}
+      name=toolName;
+    }else if(skillName)name=skillName;
+    else if(toolName){name=toolName;isTool=true;}
+    else {reportImport(report,"unmappedSkills",raw,source);return false;}
     var old=skills[name]||{name:name,ability:SKILL_ABILITY[name]||(entry.ability||"INT")};
-    var tier=typeof entry==="string"?"proficient":importedTier(entry);
+    var tier=typeof entry==="string"||implicitProficiency&&!hasTierMarker(entry)?"proficient":importedTier(entry);
+    if(tier==="none")return false;
     old.ability=importedAbility(entry,old.ability||SKILL_ABILITY[name]||"INT");
-    old.tier=tier==="none"&&typeof entry!=="string"&&entry.proficient!==false?(old.tier||"none"):tier;
+    old.tier=tier;
     skills[name]=old;
+    reportImport(report,isTool?"importedTools":"importedSkills",name.replace(/^Tool - /,""),source);
+    return true;
   }
-  function applyDdbModifiers(skills, modifiers) {
+  function applyDdbModifiers(skills, modifiers, report) {
     if(!modifiers)return;
     var list=Array.isArray(modifiers)?modifiers:Object.keys(modifiers).reduce(function(all,key){return all.concat(importedEntries(modifiers[key]));},[]);
     list.forEach(function(entry){
@@ -163,7 +234,7 @@
       var skill=knownSkillName(raw),tool=knownToolName(raw);
       if(!skill&&!tool)return;
       var normalized=Object.assign({},entry,{name:skill||tool,tier:type.indexOf("expert")>=0?"expert":type.indexOf("half")>=0?"half":"proficient"});
-      applyImportedRecord(skills,normalized,!!tool);
+      applyImportedRecord(skills,normalized,!!tool,report,"DDB modifier",true);
     });
   }
   function numericImportValue(value) {
@@ -213,6 +284,7 @@
     var meta = build.meta || {};
     var profile = state.profile || emptyProfile();
     var overrides=profile.manualOverrides||{};
+    var importReport=emptyImportReport();
     var storedSnap = profile.snapshot || null;
     var snap = storedSnap&&storedSnap.data&&typeof storedSnap.data==="object"?storedSnap.data:storedSnap;
     var pending = Array.isArray(profile.levelUps) ? profile.levelUps : [];
@@ -237,26 +309,31 @@
     var skills = {};
     SKILLS.forEach(function (entry) { skills[entry[0]] = {name:entry[0],ability:entry[1],tier:"none"}; });
     Object.keys(build.nativeSkillTiers || {}).forEach(function (name) {
-      skills[name] = {name:name,ability:SKILL_ABILITY[name] || (skills[name] && skills[name].ability) || "INT",tier:tierName(build.nativeSkillTiers[name])};
+      var skillName=knownSkillName(name),toolName=knownToolName(name),canonical=skillName||toolName;
+      if(!canonical||tierName(build.nativeSkillTiers[name])==="none")return;
+      skills[canonical] = {name:canonical,ability:SKILL_ABILITY[canonical] || (skills[canonical] && skills[canonical].ability) || "INT",tier:tierName(build.nativeSkillTiers[name])};
     });
     (build.skills || []).forEach(function (skill) {
-      var name = skill.name;
-      skills[name] = {name:name,ability:ABILITIES[(Number(skill.statId)||1)-1] || SKILL_ABILITY[name] || "INT",tier:tierName(skill.proficiencyLevel)};
+      applyImportedRecord(skills,skill,false,null,"FH build",false);
     });
     if (snap) {
-      [snap.skills,snap.customSkills,snap.proficiencies&&snap.proficiencies.skills].forEach(function(group){importedEntries(group).forEach(function(skill){applyImportedRecord(skills,skill,false);});});
-      [snap.tools,snap.toolProficiencies,snap.proficiencies&&snap.proficiencies.tools].forEach(function(group){importedEntries(group).forEach(function(tool){applyImportedRecord(skills,tool,true);});});
-      applyDdbModifiers(skills,snap.modifiers);
+      importedEntries(snap.skills).forEach(function(skill){applyImportedRecord(skills,skill,false,importReport,"DDB skills",false);});
+      importedEntries(snap.customSkills).forEach(function(skill){applyImportedRecord(skills,skill,false,importReport,"DDB custom skills",false);});
+      importedEntries(snap.proficiencies&&snap.proficiencies.skills).forEach(function(skill){applyImportedRecord(skills,skill,false,importReport,"DDB skill proficiencies",true);});
+      importedEntries(snap.tools).forEach(function(tool){applyImportedRecord(skills,tool,true,importReport,"DDB tools",Number(snap.schemaVersion)>=2);});
+      importedEntries(snap.toolProficiencies).forEach(function(tool){applyImportedRecord(skills,tool,true,importReport,"DDB tool proficiencies",true);});
+      importedEntries(snap.proficiencies&&snap.proficiencies.tools).forEach(function(tool){applyImportedRecord(skills,tool,true,importReport,"DDB tool proficiencies",true);});
+      applyDdbModifiers(skills,snap.modifiers,importReport);
     }
     pending.forEach(function (entry) {
       (entry.essentialSkills || []).forEach(function (skill) {
-        var old = skills[skill.name] || {name:skill.name,ability:SKILL_ABILITY[skill.name] || "INT"};
-        old.tier = tierName(skill.tier); skills[skill.name] = old;
+        var name=knownSkillName(skill.name);if(!name)return;
+        var old = skills[name];old.tier = tierName(skill.tier);skills[name] = old;
       });
     });
-    Object.keys(overrides.skills||{}).forEach(function(name){var old=skills[name]||{name:name,ability:SKILL_ABILITY[name]||"INT"};old.tier=tierName(overrides.skills[name]);skills[name]=old;});
-    (overrides.tools||[]).forEach(function(tool){var name=canonicalToolName(tool.name||tool),old=skills[name]||{name:name,ability:tool.ability||SKILL_ABILITY[name]||"INT"};old.ability=tool.ability||old.ability;old.tier=tierName(tool.tier||"proficient");skills[name]=old;});
-    Object.keys(overrides.toolTiers||{}).forEach(function(key){var name=canonicalToolName(key),old=skills[name]||{name:name,ability:SKILL_ABILITY[name]||"INT"};old.tier=tierName(overrides.toolTiers[key]);skills[name]=old;});
+    Object.keys(overrides.skills||{}).forEach(function(key){var name=knownSkillName(key);if(!name)return;var old=skills[name];old.tier=tierName(overrides.skills[key]);skills[name]=old;});
+    (overrides.tools||[]).forEach(function(tool){var name=knownToolName(tool.name||tool);if(!name)return;var old=skills[name]||{name:name,ability:SKILL_ABILITY[name]||"INT"};old.ability=tool.ability||old.ability;old.tier=tierName(tool.tier||"proficient");skills[name]=old;});
+    Object.keys(overrides.toolTiers||{}).forEach(function(key){var name=knownToolName(key);if(!name)return;var old=skills[name]||{name:name,ability:SKILL_ABILITY[name]||"INT"};old.tier=tierName(overrides.toolTiers[key]);skills[name]=old;});
     var spells = {};
     if (snap) (snap.spells || []).forEach(function (spell) { spells[spell.name.toLowerCase()] = {name:spell.name,level:spell.level}; });
     pending.forEach(function (entry) { (entry.spells || []).forEach(function (name) { spells[name.toLowerCase()] = {name:name,level:null}; }); });
@@ -273,7 +350,7 @@
       armorClass:overrides.armorClass!=null&&overrides.armorClass!==""?Number(overrides.armorClass):firstImportNumber([snap&&snap.armorClass,snap&&snap.ac,snap&&snap.armorClassTotal,snap&&snap.defenses&&snap.defenses.armorClass,snap&&snap.combat&&snap.combat.armorClass,snap&&snap.stats&&snap.stats.armorClass,base.armorClass,build.armorClass]),
       speed:(snap && (snap.speed || snap.walkingSpeed || snap.movement&&snap.movement.walk)) || null,
       syncedAt:(snap && snap.syncedAt)||(storedSnap&&storedSnap.syncedAt),pending:pending,
-      destinyBuild:build.destiny || {},build:build
+      destinyBuild:build.destiny || {},build:build,importReport:importReport
     };
   }
   function skillInfo(name, ch, extra) {
@@ -735,11 +812,18 @@
     var forge=skillInfo("Tool - Soulforging",ch),items=state.inventory&&state.inventory.items||[],parts=items.filter(function(item){return item.kind==="part";});
     return "<div class=\"fh-ps-context-intro\"><p>SOULFORGE</p><h2>Prepare the workbench</h2><span>Your current character remains the active forger when the workshop opens.</span></div><div class=\"fh-ps-forger\"><span>Active forger</span><b>"+esc(ch.name)+"</b><small>CHA "+ch.abilities.CHA+" · PB +"+ch.pb+" · "+esc(TIER_LABEL[forge.tier])+"</small><strong>"+signed(forge.bonus)+"</strong></div><section class=\"fh-ps-inv-group\"><h3>Ready parts <span>"+parts.length+"</span></h3>"+(parts.length?parts.slice(0,16).map(function(item){return "<div><b>"+esc(item.name)+"</b><small>"+esc([item.partType,item.stage,item.creature].filter(Boolean).join(" · "))+"</small>"+(item.pp!=null?"<strong>"+item.pp+" PP</strong>":"")+"</div>";}).join(""):"<p>Prepare ingredients in Party Inventory first.</p>")+"</section>"+contextRollRow("Tool - Soulforging",ch,0,"forge check")+"<a class=\"fh-ps-primary-link\" href=\""+esc(toolUrl("soulforge","../soulforge-tool.html"))+"\">Open full Soulforge →</a>";
   }
+  function renderImportReport(ch){
+    var report=ch.importReport||emptyImportReport(),warnings=(report.unmappedSkills||[]).concat(report.unmappedTools||[]);
+    var tools=(report.importedTools||[]).map(function(item){return item.name;});
+    var summary="<p><b>"+tools.length+" DDB tool"+(tools.length===1?"":"s")+" imported</b>"+(tools.length?" · "+esc(tools.join(", ")):"")+"</p>";
+    if(!warnings.length)return "<section class=\"fh-ps-import-report is-clean\"><h3>Import report</h3>"+summary+"<small>Only canonical Fate's Hand skills and tools are active.</small></section>";
+    return "<section class=\"fh-ps-import-report has-warnings\"><h3>Import review</h3>"+summary+"<strong>"+warnings.length+" unrecognized entr"+(warnings.length===1?"y":"ies")+" ignored</strong><ul>"+warnings.map(function(item){return "<li><b>"+esc(item.name)+"</b><small>"+esc(item.source)+"</small></li>";}).join("")+"</ul><small>Ignored entries never become extra skills or tools.</small></section>";
+  }
   function tierOptions(current){return [["none","Untrained"],["half","Half"],["proficient","Proficient"],["expert","Expert"]].map(function(option){return "<option value=\""+option[0]+"\" "+(current===option[0]?"selected":"")+">"+option[1]+"</option>";}).join("");}
   function renderCorrections(ch){
     var skills=SKILLS.map(function(entry){var info=skillInfo(entry[0],ch);return "<label><span>"+esc(entry[0])+"</span><select data-manual-skill=\""+esc(entry[0])+"\">"+tierOptions(info.tier)+"</select></label>";}).join("");
     var tools=TOOLS.map(function(entry){var name="Tool - "+entry[0],info=skillInfo(name,ch);return "<label><span>"+esc(entry[0])+" <small>"+entry[1]+"</small></span><select data-manual-tool=\""+esc(name)+"\">"+tierOptions(info.tier)+"</select></label>";}).join("");
-    return "<div class=\"fh-ps-context-intro\"><p>MANUAL CORRECTIONS</p><h2>Imported character data</h2><span>These overrides apply after every DDB sync. Skills and tools always retain the canonical Fate's Hand order.</span></div><section class=\"fh-ps-corrections\"><label class=\"fh-ps-ac-fix\"><span>Armor Class</span><input id=\"fhPsManualAc\" type=\"number\" min=\"0\" max=\"99\" value=\""+(ch.armorClass==null?"":ch.armorClass)+"\" placeholder=\"—\"></label><h3>26 Skills</h3><div class=\"fh-ps-correction-grid\">"+skills+"</div><h3>Tools</h3><div class=\"fh-ps-correction-grid\">"+tools+"</div><button id=\"fhPsSaveCorrections\" type=\"button\">Save corrections</button><p id=\"fhPsCorrectionStatus\"></p></section>";
+    return "<div class=\"fh-ps-context-intro\"><p>MANUAL CORRECTIONS</p><h2>Imported character data</h2><span>These overrides apply after every DDB sync. Skills and tools always retain the canonical Fate's Hand order.</span></div>"+renderImportReport(ch)+"<section class=\"fh-ps-corrections\"><label class=\"fh-ps-ac-fix\"><span>Armor Class</span><input id=\"fhPsManualAc\" type=\"number\" min=\"0\" max=\"99\" value=\""+(ch.armorClass==null?"":ch.armorClass)+"\" placeholder=\"—\"></label><h3>26 Skills</h3><div class=\"fh-ps-correction-grid\">"+skills+"</div><h3>Tools</h3><div class=\"fh-ps-correction-grid\">"+tools+"</div><button id=\"fhPsSaveCorrections\" type=\"button\">Save corrections</button><p id=\"fhPsCorrectionStatus\"></p></section>";
   }
   function saveCorrections(){
     var skills={},toolTiers={};root.querySelectorAll("[data-manual-skill]").forEach(function(select){skills[select.dataset.manualSkill]=select.value;});root.querySelectorAll("[data-manual-tool]").forEach(function(select){toolTiers[select.dataset.manualTool]=select.value;});
@@ -805,7 +889,7 @@
   }
   function friendlyPullError(error){if(error&&error.status===404)return "D&D Beyond could not open this sheet. Confirm that it is public or shared.";if(error&&(error.status===502||error.status===503||error.status===504))return "D&D Beyond did not answer in time. Wait a moment, then try Sync again.";if(error&&error.status===403)return "Check the campaign code and confirm that the D&D Beyond sheet is shared.";return error&&error.message||"The D&D Beyond pull failed.";}
   function openPull(force){if(!force&&state.profile&&state.profile.ddbLinked){pullDdb(null);return;}var modal=showModal("<p class=\"fh-mc-modal-kicker\">D&D BEYOND</p><h3>Connect the public sheet</h3><p>Paste a public character link, a Shareable Link or the numeric character ID.</p><label><span>D&D Beyond character link</span><input id=\"fhPsDdbUrl\" type=\"text\" inputmode=\"url\" placeholder=\"https://www.dndbeyond.com/characters/123456789\"></label><p class=\"fh-mc-modal-note\">Only the stable numeric character ID is retained for later syncs.</p><p class=\"fh-mc-modal-error\" id=\"fhPsPullError\"></p><button class=\"fh-mc-modal-save\" id=\"fhPsPullSave\">Connect & Pull</button>");var input=modal.element.querySelector("#fhPsDdbUrl");modal.element.querySelector("#fhPsPullSave").onclick=function(){if(input.value.trim())pullDdb(input.value.trim(),modal);};input.focus();}
-  function pullDdb(value,modal){var url=null;if(value){try{url=canonicalDdbUrl(value);}catch(error){modal.element.querySelector("#fhPsPullError").textContent=error.message;return;}}state.message="Syncing D&D Beyond…";state.messageKind="roll";renderMessage();post("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(state.pseudo)+"/pull",url?{shareUrl:url}:{}).then(function(data){state.profile=Object.assign({},state.profile||{},data.profile||{});state.character=effectiveCharacter();if(modal)modal.close();state.message="Character refreshed from D&D Beyond.";state.messageKind="success";render();}).catch(function(error){var message=friendlyPullError(error);if(modal)modal.element.querySelector("#fhPsPullError").textContent=message;else{state.message=message;state.messageKind="danger";render();}});}
+  function pullDdb(value,modal){var url=null;if(value){try{url=canonicalDdbUrl(value);}catch(error){modal.element.querySelector("#fhPsPullError").textContent=error.message;return;}}state.message="Syncing D&D Beyond…";state.messageKind="roll";renderMessage();post("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(state.pseudo)+"/pull",url?{shareUrl:url}:{}).then(function(data){state.profile=Object.assign({},state.profile||{},data.profile||{});state.character=effectiveCharacter();if(modal)modal.close();var report=state.character.importReport||emptyImportReport(),warnings=report.unmappedSkills.length+report.unmappedTools.length;state.message="Character refreshed · "+report.importedTools.length+" DDB tool"+(report.importedTools.length===1?"":"s")+" imported"+(warnings?" · "+warnings+" unrecognized entr"+(warnings===1?"y":"ies")+" ignored":"")+".";state.messageKind=warnings?"warn":"success";render();}).catch(function(error){var message=friendlyPullError(error);if(modal)modal.element.querySelector("#fhPsPullError").textContent=message;else{state.message=message;state.messageKind="danger";render();}});}
   function openLevelUp(ch){var classes=CLASS_NAMES.slice();ch.classes.forEach(function(entry){if(classes.indexOf(entry.name)<0)classes.unshift(entry.name);});var classOptions=classes.map(function(name){return "<option "+(ch.classes[0]&&ch.classes[0].name===name?"selected":"")+">"+esc(name)+"</option>";}).join("");var statOptions="<option value=\"\">No increase</option>"+ABILITIES.map(function(key){return "<option value=\""+key+"\">"+key+" — "+ABILITY_NAMES[key]+"</option>";}).join("");var skillOptions="<option value=\"\">No skill</option>"+SKILLS.map(function(s){return "<option>"+s[0]+"</option>";}).join("");var modal=showModal("<p class=\"fh-mc-modal-kicker\">LEVEL "+(ch.level+1)+"</p><h3>What gains a level?</h3><label><span>Class</span><select id=\"fhPsLevelClass\">"+classOptions+"</select></label><div class=\"fh-mc-modal-grid\"><label><span>Ability increase 1</span><select id=\"fhPsStat1\">"+statOptions+"</select></label><label><span>Ability increase 2</span><select id=\"fhPsStat2\">"+statOptions+"</select></label></div><div class=\"fh-mc-modal-grid\"><label><span>Essential skill</span><select id=\"fhPsSkill1\">"+skillOptions+"</select></label><label><span>New tier</span><select id=\"fhPsTier1\"><option value=\"half\">Half</option><option value=\"proficient\" selected>Proficient</option><option value=\"expert\">Expert</option></select></label></div><label><span>New essential spells</span><textarea id=\"fhPsNewSpells\" placeholder=\"One per line or comma-separated\"></textarea></label><p class=\"fh-mc-modal-error\" id=\"fhPsLevelError\"></p><button class=\"fh-mc-modal-save\" id=\"fhPsLevelSave\">Apply Level Up</button>");modal.element.querySelector("#fhPsLevelSave").onclick=function(){var increases={};["#fhPsStat1","#fhPsStat2"].forEach(function(sel){var value=modal.element.querySelector(sel).value;if(value)increases[value]=(increases[value]||0)+1;});var skillName=modal.element.querySelector("#fhPsSkill1").value;var entry={id:uuid(),targetLevel:ch.level+1,className:modal.element.querySelector("#fhPsLevelClass").value,abilityIncreases:increases,essentialSkills:skillName?[{name:skillName,tier:modal.element.querySelector("#fhPsTier1").value}]:[],spells:modal.element.querySelector("#fhPsNewSpells").value.split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean),createdAt:new Date().toISOString()};saveProfile({levelUps:(state.profile.levelUps||[]).concat([entry])}).then(function(){modal.close();state.character=effectiveCharacter();state.message="Level-up saved. PB updated automatically.";state.messageKind="success";render();}).catch(function(error){modal.element.querySelector("#fhPsLevelError").textContent=error.message;});};}
 
   function handleClick(event){var button=event.target.closest("button");if(!button||!root.contains(button))return;

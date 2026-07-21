@@ -10,7 +10,7 @@ const sourcePath = path.join(__dirname, "..", "docs", "javascripts", "fh-player-
 const source = fs.readFileSync(sourcePath, "utf8");
 const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
-    SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, importedTier,
+    SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills,
     renderDestiny, renderDiceTray, renderEventContent, resolveNatOne,
     outcomeFor, effectiveCharacter, addTrayDie, state
@@ -41,6 +41,11 @@ assert.equal(t.SKILLS.length, 26, "the complete Fate's Hand skill list is presen
 assert.equal(new Set(t.SKILLS.map(skill => skill[0])).size, 26, "skill names are unique");
 assert.equal(t.canonicalDdbUrl("123456"),"https://www.dndbeyond.com/characters/123456");
 assert.throws(()=>t.canonicalDdbUrl("http://www.dndbeyond.com/characters/123456"),/HTTPS/);
+assert.equal(t.knownToolName("Cook’s Utensils"),"Tool - Cook's","curly apostrophes and DDB tool suffixes map to FH names");
+assert.equal(t.knownToolName("Playing Card Set"),"Tool - Card Set","DDB gaming-set names map to the FH taxonomy");
+assert.equal(t.knownToolName("Lute"),"Tool - Instrument (Strings)","specific DDB instruments map to an FH instrument category");
+assert.equal(t.knownToolName("Imaginary Toolkit"),null,"unknown tools never become ad-hoc FH tools");
+t.TOOLS.forEach(([name])=>assert.equal(t.knownToolName(name),"Tool - "+name,"every canonical FH tool resolves through the closed mapper"));
 
 const slots = t.makeDestinySlots(8, 8);
 assert.deepEqual(Array.from(slots, die => die.sides), [4, 6, 8, 10, 12]);
@@ -115,6 +120,46 @@ assert.equal(imported.skills["Tool - Smith's"].tier,"proficient","DDB proficienc
 assert.equal(imported.skills["Tool - Soulforging"].tier,"proficient","manual tool corrections survive every import");
 const importedBoard=t.renderSkills(imported);
 assert.ok(importedBoard.indexOf("Smith's")<importedBoard.indexOf("Soulforging")&&importedBoard.indexOf("Soulforging")<importedBoard.indexOf("Thieves'"),"purchased tools use canonical order, not import order");
+
+t.state.profile = {
+  snapshot:{data:{
+    name:"Strict Import",level:4,classes:[{name:"Ranger",level:4}],
+    abilityScores:{STR:12,DEX:16,CON:13,INT:10,WIS:15,CHA:8},
+    skills:[
+      {name:"Hunting",tier:"proficient"},
+      {name:"Bogus Skill",tier:"expert"},
+      {name:"Smith's Tools",tier:"proficient"}
+    ],
+    tools:[
+      {name:"Cook’s Utensils",tier:"proficient"},
+      {name:"Lute",tier:"proficient"},
+      {name:"Herbalism Kit"},
+      {name:"Imaginary Toolkit",tier:"proficient"}
+    ],
+    toolProficiencies:[{name:"Thieves’ Tools"}],
+    inventory:[{name:"Alchemist's Supplies"}],
+    modifiers:{background:[
+      {type:"proficiency",friendlySubtypeName:"Painter's Supplies"},
+      {type:"bonus",friendlySubtypeName:"Poisoner's Kit"}
+    ]},spells:[]
+  }},manualOverrides:{},levelUps:[],preparation:{tools:[]}
+};
+const strictImport=t.effectiveCharacter();
+const strictKeys=Object.keys(strictImport.skills);
+assert.equal(strictKeys.filter(name=>name.indexOf("Tool - ")!==0).length,26,"a pull can never create a 27th FH skill");
+assert.equal(strictImport.skills.Hunting.tier,"proficient","known FH skills still import normally");
+assert.equal(strictImport.skills["Tool - Smith's"].tier,"proficient","tools mixed into a proficiency list are recovered by name");
+assert.equal(strictImport.skills["Tool - Cook's"].tier,"proficient","official DDB tool names translate to canonical FH names");
+assert.equal(strictImport.skills["Tool - Instrument (Strings)"].tier,"proficient","specific instruments translate to their FH category");
+assert.equal(strictImport.skills["Tool - Thieves'"].tier,"proficient","a named entry in an explicit tool-proficiency collection implies proficiency");
+assert.equal(strictImport.skills["Tool - Painter's"].tier,"proficient","DDB proficiency modifiers remain a valid tool source");
+assert.equal(strictImport.skills["Tool - Herbalism Kit"],undefined,"a tool without proficiency evidence is not imported");
+assert.equal(strictImport.skills["Tool - Alchemist's"],undefined,"inventory equipment is never mistaken for a tool proficiency");
+assert.equal(strictImport.skills["Tool - Poisoner's"],undefined,"non-proficiency modifiers do not purchase tools");
+assert.equal(strictImport.skills["Tool - Imaginary Toolkit"],undefined,"unknown tools are ignored rather than displayed");
+assert.equal(strictImport.skills["Bogus Skill"],undefined,"unknown skill names are ignored rather than displayed");
+assert.ok(strictImport.importReport.unmappedSkills.some(item=>item.name==="Bogus Skill"),"ignored skills appear in the import report");
+assert.ok(strictImport.importReport.unmappedTools.some(item=>item.name==="Imaginary Toolkit"),"ignored tools appear in the import report");
 
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);

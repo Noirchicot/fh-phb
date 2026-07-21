@@ -124,8 +124,31 @@ Requirements:
   uses a different defense node. Return `null` only when the source genuinely
   contains no computable AC.
 - Match skills and tools by stable identifier/name, never by array index.
+- Emit only the 26 canonical Fate's Hand skill names. An unknown DDB label must
+  never create an additional skill row.
+- Emit a tool only when it comes from an explicit skill/tool proficiency or a
+  proficiency/expertise modifier. Never infer proficiency from inventory,
+  equipment, an item name or a mere ability-check bonus.
 - Normalize curly apostrophes, optional `Tool - ` prefixes and optional
   `Tool`/`Tools` suffixes before tool lookup.
+- Translate official DDB labels to the closed Fate's Hand tool taxonomy. This
+  includes supplies/utensils (`Cook's Utensils` -> `Cook's`), gaming sets
+  (`Playing Card Set` -> `Card Set`) and individual instruments (`Lute` ->
+  `Instrument (Strings)`, `Flute` -> `Instrument (Wind)`, `Drum` ->
+  `Instrument (Other)`). Keep the alias table character-agnostic.
+- Put recognized and rejected proficiency labels in an `importReport` rather
+  than silently inventing names. Suggested shape:
+
+  ```json
+  {
+    "importedTools": [{"name":"Smith's","source":"DDB modifier"}],
+    "unmappedSkills": [],
+    "unmappedTools": [{"name":"Unknown Kit","source":"DDB tools"}]
+  }
+  ```
+
+  Rejected entries stay visible to diagnostics but must not enter the active
+  character sheet.
 - Treat proficiency and expertise as semantic tiers. Do not assume that a
   numeric value means the same thing in the Fate's Hand build and raw DDB.
 - Preserve `manualOverrides`, `destinyState`, `rollHistory`, `rollEvents`,
