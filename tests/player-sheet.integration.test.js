@@ -101,6 +101,13 @@ assert.equal(t.state.trayResults[0].label,"Destiny","the reserved Destiny die ap
 const beforeDestinyHistory=t.state.history.length;
 root.querySelector("#fhPsRunRoll").click();
 assert.equal(t.state.history.length,beforeDestinyHistory,"the d20 has not rolled while Destiny events await confirmation");
+assert.match(t.state.currentEvent.text,/Destiny d\d+ rolled \d+.*Lost \d+ Destiny Point/i,"one Destiny popup contains the die result and its point implication");
+assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Continue/i,"the Destiny popup says Continue because the d20 still has to roll");
+assert.equal(root.querySelector("[data-clear-tray]").disabled,true,"Clear cannot cancel a transaction after Destiny has been spent");
+const spentPoints=t.state.destiny.points;
+root.querySelector('[data-quick-name="Arcana"]').click();
+assert.equal(t.state.history.length,beforeDestinyHistory,"another skill cannot replace an unfinished Destiny transaction");
+assert.equal(t.state.destiny.points,spentPoints,"a blocked second roll cannot spend or alter Destiny again");
 let guard=8;
 while(t.state.rollSequence&&t.state.rollSequence.phase==="destiny-events"&&guard--){root.querySelector("[data-event-ok]").click();}
 assert.equal(t.state.history.length,beforeDestinyHistory+1,"the remaining dice roll only after every Destiny event is acknowledged");

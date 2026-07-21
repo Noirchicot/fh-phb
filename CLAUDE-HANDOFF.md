@@ -42,7 +42,7 @@ Every ability, save, skill and purchased tool supports:
 - Immutable stored d20s. Reopening a history entry can adjust additive bonuses and roll newly added bonus dice, but can never reroll or replace the original d20.
 - `Repeat setup` creates a genuinely new roll from the old configuration.
 
-The Roll Workbench has three permanent zones: **Roll Console / animation + 10-event log / Dice Tray**. The tray supports at most 2d20 plus 3 other dice and exposes d4, d6, d8, d10, d12, d20 and d100 calls. The old capacity subtitle was deliberately removed. Guidance, Bardic and Destiny dice animate beside the d20s with their own die shapes; FH +2 is a visible square token. Destiny confirmation, the Natural-1 choice, the scary 2d6 Chaos result and Arcane Awakening use the middle animation zone. Natural 20, Natural 1, Destiny critical success/failure, overreach and Arcane Awakening have dedicated visual states.
+The Roll Workbench has three permanent zones: **Roll Console / animation + 10-event log / Dice Tray**. The tray supports at most 2d20 plus 3 other dice and exposes d4, d6, d8, d10, d12, d20 and d100 calls. The old capacity subtitle was deliberately removed. Guidance, Bardic and Destiny dice animate beside the d20s with their own die shapes; FH +2 is a visible square token. Destiny confirmation, the Natural-1 choice, the scary 2d6 Chaos result and Arcane Awakening use the middle animation zone. Natural 20, Natural 1, Arcane Critical Success, Arcane Critical Failure, overreach and Arcane Awakening have dedicated visual states.
 
 Opening any console or making a quick skill roll clears the previous tray. A console immediately prepares the visible recipe (`Hunting +8`, one/two pending d20s and every selected bonus). Bardic and a reserved Destiny die pulse; the matching Destiny pool die pulses too. `Clear` empties the tray and releases the active setup.
 
@@ -52,7 +52,7 @@ When a DC proves the locked d20 result failed and neither Bardic nor Destiny has
 
 The intermittent Roll Console failure was caused by a rerender discarding unsaved checkbox/select values. Every console-related click/change now synchronizes the visible controls into state before a rerender. The integration test covers Guidance → Advantage → Roll → history adjustment end to end.
 
-Destiny has separate editable **Maximum Score** and **Current Points**, automatic lowest-missing-die recovery on an even Points total, Long Rest +1 and direct full-die rolling. Dice of the same size are grouped as `×2`/`×3` (hard maximum three); the small −/+ controls correct the pool without rolling. Every Destiny use requires a confirmation explaining its possible score effects. A maximum Destiny die result costs only 1 Point and becomes a critical success; a result of 1 grants 1 Point and becomes a critical failure.
+Destiny has separate editable **Maximum Score** and **Current Points**, automatic lowest-missing-die recovery on an even Points total, Long Rest +1 and direct full-die rolling. Dice of the same size are grouped as `×2`/`×3` (hard maximum three); the small −/+ controls correct the pool without rolling. Every Destiny use requires a confirmation explaining its possible score effects. A maximum Destiny die result costs only 1 Point and becomes an **Arcane Critical Success**; a result of 1 grants 1 Point and becomes an **Arcane Critical Failure**.
 
 A natural 1 immediately asks **“Do you accept your fate?”**:
 
@@ -60,6 +60,20 @@ A natural 1 immediately asks **“Do you accept your fate?”**:
 - No preserves the original 1 in history but transforms the kept result to 20, recalculates the total, sets Destiny to 0 and opens a separate animated 2d6 Chaos result.
 
 A natural 20 has its own animation; if its −1 Destiny Point change reaches exactly 0, a dedicated Arcane Awakening overlay appears. A maximum result on a Destiny die is not treated as an Arcane Awakening.
+
+### Stage 4 — transactional roller audit
+
+The roller is now protected as a transaction from the moment a configured roll starts until its final event is acknowledged. During that interval, Clear, tray mutations, a second skill roll and unrelated sheet actions cannot replace or corrupt the pending roll. A reserved Destiny die is spent exactly once, including after refresh through the serialized `pendingRoll` state.
+
+One Destiny die now creates one consolidated ordinary event containing its result, Point change, new current Points and any recovered die. Chaos remains a separate major event. The player must acknowledge the Destiny event before the locked d20, Guidance and Bardic dice roll. The final result remains the last event. Rescue Bardic or Destiny dice add to the existing result without rerolling its original d20.
+
+Rules terminology is exact and intentionally distinct:
+
+- **Arcane Critical Failure**: a natural 1 on a Destiny die; gain 1 Destiny Point and spend the die.
+- **Arcane Critical Success**: the maximum face of a Destiny die; treat the check as a Natural 20, lose only 1 Destiny Point and spend the die.
+- **Arcane Awakening**: a separate event caused when a natural 20 on the d20 reduces Destiny Points to 0.
+
+Destiny-die recovery now occurs only when Points **increase** to an even total. Spending down to an even total cannot immediately recover the die that was just spent. `tests/roller-state-machine.test.js` deterministically covers the critical outcomes, overreach/Chaos, Awakening, event ordering, Advantage/Disadvantage, rescue dice, immutable d20 history and mid-roll persistence.
 
 The right-side panels provide the Soulforging Loop, a campaign inventory summary and Soulforge preparation while preserving links to the full-screen inventory and workshop.
 
