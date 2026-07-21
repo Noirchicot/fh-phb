@@ -11,7 +11,7 @@ const source = fs.readFileSync(sourcePath, "utf8");
 const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
-    makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills,
+    makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
     renderDestiny, renderDiceTray, renderEventContent, resolveNatOne,
     outcomeFor, effectiveCharacter, addTrayDie, state
   };
@@ -19,6 +19,8 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
 `);
 
 const storage = new Map();
+let replacedRoute="";
+const testWindow = {crypto,setTimeout,clearTimeout,location:{href:"https://noirchicot.github.io/fh-phb/player/?campaign=FH1&character=Awki%20Test"},history:{replaceState:(_state,_title,url)=>{replacedRoute=url;}}};
 const sandbox = {
   URL,
   clearTimeout,
@@ -30,7 +32,7 @@ const sandbox = {
     setItem: (key, value) => storage.set(key, String(value))
   },
   setTimeout,
-  window: {crypto,setTimeout,clearTimeout}
+  window: testWindow
 };
 sandbox.document = {addEventListener() {}};
 sandbox.globalThis = sandbox;
@@ -41,6 +43,10 @@ assert.equal(t.SKILLS.length, 26, "the complete Fate's Hand skill list is presen
 assert.equal(new Set(t.SKILLS.map(skill => skill[0])).size, 26, "skill names are unique");
 assert.equal(t.canonicalDdbUrl("123456"),"https://www.dndbeyond.com/characters/123456");
 assert.throws(()=>t.canonicalDdbUrl("http://www.dndbeyond.com/characters/123456"),/HTTPS/);
+assert.equal(t.routeValue("campaign"),"FH1","player deep links can prefill the campaign");
+assert.equal(t.routeValue("character"),"Awki Test","player deep links can target a precise character");
+t.state.code="FH1";t.state.pseudo="Awki Test";t.rememberRoute();
+assert.match(replacedRoute,/campaign=FH1/);assert.match(replacedRoute,/character=Awki(?:%20|\+)Test/);
 assert.equal(t.knownToolName("Cook’s Utensils"),"Tool - Cook's","curly apostrophes and DDB tool suffixes map to FH names");
 assert.equal(t.knownToolName("Playing Card Set"),"Tool - Card Set","DDB gaming-set names map to the FH taxonomy");
 assert.equal(t.knownToolName("Lute"),"Tool - Instrument (Strings)","specific DDB instruments map to an FH instrument category");
@@ -141,7 +147,7 @@ t.state.profile = {
     modifiers:{background:[
       {type:"proficiency",friendlySubtypeName:"Painter's Supplies"},
       {type:"bonus",friendlySubtypeName:"Poisoner's Kit"}
-    ]},spells:[]
+    ]},importReport:{unmappedTools:[{name:"Worker Mystery Kit",source:"Worker parser"}]},spells:[]
   }},manualOverrides:{},levelUps:[],preparation:{tools:[]}
 };
 const strictImport=t.effectiveCharacter();
@@ -160,6 +166,7 @@ assert.equal(strictImport.skills["Tool - Imaginary Toolkit"],undefined,"unknown 
 assert.equal(strictImport.skills["Bogus Skill"],undefined,"unknown skill names are ignored rather than displayed");
 assert.ok(strictImport.importReport.unmappedSkills.some(item=>item.name==="Bogus Skill"),"ignored skills appear in the import report");
 assert.ok(strictImport.importReport.unmappedTools.some(item=>item.name==="Imaginary Toolkit"),"ignored tools appear in the import report");
+assert.ok(strictImport.importReport.unmappedTools.some(item=>item.name==="Worker Mystery Kit"),"a normalized Worker's import diagnostics survive into Edit mode");
 
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);

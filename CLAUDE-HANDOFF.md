@@ -137,6 +137,14 @@ The player-sheet Pull button can sync/link DDB **after a campaign character reco
 
 The static ZIP therefore completes the sheet-side import adapter and manual correction UI, but “every DDB import” is only complete in production after the Worker has been updated and redeployed against the contract below. Awki should be retested as one ordinary fixture alongside several unrelated public characters.
 
+### Stage 3 — DM workflow and production boundary
+
+`docs/javascripts/fh-gm.js` is now the active DM client; the earlier inline implementations in `gm.html` are inert compatibility references. The live Worker was probed read-only on 2026-07-21: `/admin/campaigns` exists, returns the expected `401` without a token, and its CORS preflight accepts the GitHub Pages origin plus the Authorization header. `/party/666` returned `unknown campaign code`, so `666` must be created or replaced with the real Tentacule join code before players can use it.
+
+The DM UI now exposes Worker connection state, campaign selection, canonical DDB import, resync, deletion, download and inventory actions. Character rows include **Open sheet**, which deep-links to `/player/?campaign=…&character=…`; the Player Companion consumes this route and updates its URL after a successful load. Worker-returned `snapshot.importReport` diagnostics are retained and appear inside the inline Edit working copy when entries were rejected.
+
+`tests/gm-control.integration.test.js` covers the complete client flow against a deterministic mock Worker. See `STAGE-3-PRODUCTION-CHECK.md` for the exact live observations and the short authenticated acceptance pass still requiring the DM token.
+
 ## Design rules for the next pass
 
 - Optimize the Player Companion at 390 px first, then desktop.

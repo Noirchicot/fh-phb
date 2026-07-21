@@ -50,9 +50,9 @@
   .empty{color:var(--muted);font-style:italic;font:13.5px var(--serif);padding:10px 2px}
   .actions{display:flex;gap:6px;justify-content:flex-end}
   .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.admin-grid .card{margin:0}
-  .campaign-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.campaign-chip{display:flex;align-items:center;gap:7px;padding:6px 8px;color:var(--leather-dark);background:#fffaf0;border:1px solid var(--rule);border-radius:5px;font:13px var(--sans)}.campaign-chip b{color:var(--oxblood)}.campaign-chip button{padding:1px 5px;color:var(--bad);background:transparent;border:0;cursor:pointer;font-size:16px}
+  .campaign-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.campaign-chip{display:flex;align-items:stretch;color:var(--leather-dark);background:#fffaf0;border:1px solid var(--rule);border-radius:5px;font:13px var(--sans);overflow:hidden}.campaign-chip.is-selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(156,107,22,.18)}.campaign-chip .campaign-select{display:flex;align-items:center;gap:6px;padding:6px 8px;color:var(--leather-dark);background:transparent;border:0;cursor:pointer}.campaign-chip b{color:var(--oxblood)}.campaign-chip small{padding:1px 4px;color:#fff;background:var(--leather);border-radius:999px;font-size:9px}.campaign-chip>button:last-child{padding:1px 7px;color:var(--bad);background:rgba(88,24,13,.05);border:0;border-left:1px solid var(--rule-soft);cursor:pointer;font-size:16px}
   .worker-note{padding:8px 10px;color:#69511d;background:#fff2c8;border:1px solid #d4aa4c;border-radius:5px;font:12.5px var(--sans)}
-  .toplinks{display:flex;justify-content:center;gap:14px;margin:-16px 0 20px}.toplinks a{color:#e4c777;font:13px var(--sans)}
+  .toplinks{display:flex;justify-content:center;align-items:center;gap:14px;margin:-16px 0 20px}.toplinks a{color:#e4c777;font:13px var(--sans)}.worker-status{padding:3px 8px;color:#d9cab0;background:#41382d;border:1px solid #675b4b;border-radius:999px;font:11px var(--sans)}.worker-status.is-ok{color:#d8f0ce;background:#294622;border-color:#537a49}.worker-status.is-bad{color:#ffe0da;background:#6c211b;border-color:#a14338}.worker-status.is-warn{color:#ffe9b1;background:#67501f;border-color:#9a792e}.worker-status.is-busy{color:#fff0c6;background:#55431e;border-color:#9c7a30}.actions a.btn{display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap}
   @media(max-width:720px){.admin-grid{grid-template-columns:1fr}.row2,.row3{display:grid;grid-template-columns:1fr}.actions{flex-wrap:wrap}.wrap{padding-inline:10px}}
 </style>
 </head>
@@ -60,7 +60,7 @@
 <div class="wrap">
   <h1>Fate's Hand</h1>
   <div class="sub">DM CONTROL</div>
-  <div class="toplinks"><a href="./">Handbook</a><a href="player/">Player Companion</a></div>
+  <div class="toplinks"><a href="./">Handbook</a><a href="player/">Player Companion</a><span class="worker-status is-idle" id="workerStatus">Not connected</span></div>
 
   <div class="card">
     <h2>GM access</h2>
@@ -98,10 +98,10 @@
     </div>
   </div>
 
-  <p class="worker-note">Campaign creation, deletion and first-time DDB import require the matching Worker admin endpoints included in <b>WORKER-ADMIN-API.md</b>. Existing build listing, download and loot remain compatible with the current Worker.</p>
+  <p class="worker-note" id="workerNote" hidden>This deployment is missing one or more DM routes. Apply the matching endpoints in <b>WORKER-ADMIN-API.md</b>, then redeploy the Worker.</p>
 
   <div class="card">
-    <h2>Campaign characters</h2>
+    <h2 id="characterHeading">Campaign characters</h2>
     <div id="list"><div class="empty">Nothing loaded yet — paste your token and hit “List builds”.</div></div>
   </div>
 
@@ -204,7 +204,7 @@ $('list').addEventListener('click', async e=>{
   finally{ b.disabled=false; b.textContent=old; }
 });
 </script>
-<script>
+<script type="text/plain" id="stage2GmScript">
 const API2="https://fh-builds.noirchicot.workers.dev";
 const byId=id=>document.getElementById(id);
 const setNote=(id,kind,message)=>{const el=byId(id);el.className="note "+kind;el.textContent=message;};
@@ -240,5 +240,6 @@ byId('list').addEventListener('click',async event=>{const button=event.target.cl
 byId('token').addEventListener('keydown',event=>{if(event.key==='Enter')refreshGm();});byId('campaign').addEventListener('keydown',event=>{if(event.key==='Enter')refreshGm();});['campaign','newCampaignCode','importCampaign','lootCode'].forEach(id=>byId(id).addEventListener('input',event=>{event.target.value=event.target.value.toUpperCase();}));
 try{const saved=localStorage.getItem('fh-gm-lootcode')||localStorage.getItem('fh-gm-campaign')||"";byId('lootCode').value=saved;byId('importCampaign').value=saved;}catch(e){}
 </script>
+<script src="javascripts/fh-gm.js"></script>
 </body>
 </html>
