@@ -24,7 +24,7 @@ Suggested keys (adapt to the Worker's existing naming scheme):
 campaign:{CODE}                  -> { code, name, createdAt, updatedAt }
 build:{CODE}:{PSEUDO}            -> existing Fate's Hand build record
 profile:{CODE}:{PSEUDO}          -> existing player profile / DDB snapshot
-inventory:{CODE}                 -> existing campaign inventory
+inv:{CODE}                       -> campaign inventory array (schema v2 items)
 campaign-index                   -> ["FH1", "FH2"]
 ```
 
@@ -198,6 +198,77 @@ Return `{ "ok": true, "pseudo": "Pell", "updatedAt": "..." }`.
 
 Delete that character's build and profile only. Do not delete shared campaign
 inventory. Return `{ "ok": true }`.
+
+## Party Inventory and Soulforge contract
+
+The Inventory and Soulforge pages share one server-backed campaign inventory.
+The browser must never maintain a second authoritative Soulforge inventory in
+`localStorage`; local data is accepted only by the explicit one-time import.
+
+### Inventory reads and ordinary mutations
+
+- `GET /inv/:code` → `{ "schemaVersion": 2, "items": [...] }`.
+- `POST /inv/:code` validates and creates one ingredient, gemstone, ordinary
+  item or imported soulforged item.
+- `POST /inv/:code/import` validates every legacy item before appending any of
+  them. A rejected item must leave the entire import untouched.
+- `POST /inv/:code/:itemId` accepts the closed actions `move`, `craft`,
+  `infuse`, `identify` and `update`.
+- `DELETE /inv/:code/:itemId` removes one consumed, sold or discarded item.
+
+Inventory v2 keeps the compatible fields `id`, `name`, `qty`, `note` and
+`owner`, then adds:
+
+```json
+{
+  "kind": "raw | part | other",
+  "partType": "structure | essence | catalyst",
+  "stage": "raw | body | soulgem | identified | ready | complete",
+  "subtype": "gem | equipment | soulforged",
+  "creature": "Dragon",
+  "creatureType": "Dragon",
+  "cr": "5",
+  "pp": 3,
+  "ppCap": 3
+}
+```
+
+Transitions are server-side so their component changes cannot be separated:
+
+- `craft`: raw Structure → crafted Body.
+- `infuse`: raw Essence + one valid gemstone → Soulgem; consume one gemstone.
+- `identify`: raw Catalyst → identified Catalyst; enforce `power.pp <= ppCap`.
+
+### Soulforge transactions
+
+- `POST /inv/:code/consume` consumes a validated set of component IDs in one
+  request. It is used only for explicitly resolved loss/destruction outcomes.
+- `POST /inv/:code/forge` validates the Body, Soulgems, Catalysts and the three
+  laws, consumes the selected components and creates the completed soulforged
+  item in the same handler execution.
+- `POST /inv/:code/grow` validates a completed item and all moved/returned
+  parts, rechecks the three laws, then persists the growth outcome in the same
+  handler execution.
+
+The client must send IDs rather than trusting full client-supplied component
+objects. The Worker reloads the campaign inventory and derives the mounted
+component data from those stored IDs. A stale or missing component returns an
+error and leaves the client to refresh before retrying.
+
+Cloudflare KV does not provide compare-and-swap transactions. The current
+single-request validation prevents partial client-side consumption, but two
+truly concurrent writers can still race at the KV layer. If simultaneous party
+editing becomes common, move each campaign inventory behind a Durable Object
+or D1 transaction rather than describing KV writes as globally atomic.
+
+### Character data used by the workshop
+
+The workshop reads both `GET /party/:code/:pseudo` and
+`GET /profile/:code/:pseudo`. The public profile response must continue to
+include `snapshot` and `manualOverrides`. The calculated Soulforging score must
+therefore reflect, in order, the build, the synchronized DDB/FH snapshot and the
+player's saved corrections (level, PB, CHA, Soulforging tier and named special
+bonuses).
 
 ## CORS
 

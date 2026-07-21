@@ -159,6 +159,30 @@ The DM UI now exposes Worker connection state, campaign selection, canonical DDB
 
 `tests/gm-control.integration.test.js` covers the complete client flow against a deterministic mock Worker. See `STAGE-3-PRODUCTION-CHECK.md` for the exact live observations and the short authenticated acceptance pass still requiring the DM token.
 
+### Stage 5 — shared Soulforge inventory
+
+The earlier server-backed Soulforge architecture is now treated as the real
+production subsystem rather than an untested legacy page. Party Inventory is
+the only source of truth and keeps the three player-facing groups: **Raw
+ingredients / Forgable parts / Other equipment**. The workshop consumes that
+same inventory and sends one `/inv/:campaign/forge` transaction containing
+stored component IDs.
+
+`docs/javascripts/fh-soulforge-core.js` is the shared, testable normalization
+layer. Most importantly, the workshop no longer calculates Soulforging from the
+old build alone. It combines the build, synchronized profile snapshot and the
+Stage 2 `manualOverrides`, so corrected level, PB, CHA, Soulforging tier and
+named special bonuses agree with the Player Companion. The ritual still exposes
+an explicit table Override plus fixed and dice modifiers.
+
+`tests/soulforge-core.test.js` covers aliases, tier precedence, manual bonus
+replacement and inventory mapping. `tests/soulforge-inventory.integration.test.js`
+covers the DOM/API path from the three inventory groups through a server add,
+corrected forger score, ritual controls and one forge request. The Worker
+inventory routes and KV concurrency boundary are documented in
+`WORKER-ADMIN-API.md`; future account/permission work is separated into
+`project_fh_phase2_accounts.md`.
+
 ## Design rules for the next pass
 
 - Optimize the Player Companion at 390 px first, then desktop.

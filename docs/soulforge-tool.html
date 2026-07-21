@@ -143,6 +143,7 @@
 </div>
 
 <script src="soulforge-data.js"></script>
+<script src="javascripts/fh-soulforge-core.js"></script>
 <script>
 "use strict";
 /* ================= Rules engine — canon: Soulforge Crafting.md ================= */
@@ -236,39 +237,12 @@ async function post(path,body){ return api(path,{method:"POST",headers:{"Content
 function clone(x){ return JSON.parse(JSON.stringify(x)); }
 function roleName(partType){ return ({structure:"Structure",essence:"Essence",catalyst:"Catalyst"})[partType]||partType; }
 function serverInventory(items){
-  const inv=newInv();
-  items.forEach(x=>{
-    if(x.kind==="raw"||x.kind==="part"){
-      if(x.stage==="soulgem"){
-        inv.soulgems.push({id:x.id,server:x,gemName:x.gemName||x.name,value:x.valueGp||0,creature:x.creature,ctype:x.creatureType,cr:x.cr,pp:x.pp,upgraded:!!x.upgraded,owner:x.owner});
-      }else{
-        inv.parts.push({id:x.id,server:x,name:x.name,creature:x.creature,ctype:x.creatureType,cr:x.cr,role:roleName(x.partType),pp:x.pp,ppCap:x.ppCap,crafted:x.stage==="body",baseItem:x.baseItem,identified:x.stage==="identified",power:x.power||null,owner:x.owner});
-      }
-      return;
-    }
-    if(x.kind==="other"&&x.subtype==="gem"){
-      inv.gems.push({id:x.id,server:x,name:x.name,value:x.valueGp||0,qty:x.qty||1,owner:x.owner});
-      return;
-    }
-    if(x.kind==="other"&&x.subtype==="soulforged"&&x.soulforge){
-      inv.items.push({id:x.id,name:x.name,owner:x.owner,server:x,...clone(x.soulforge)});
-    }
-  });
-  return inv;
+  return FHSoulforgeCore.serverInventory(items);
 }
-function proficiencyBonus(level){ return 2+Math.floor((Math.max(1,+level||1)-1)/4); }
+function proficiencyBonus(level){ return FHSoulforgeCore.proficiencyBonus(level); }
 function ritualLevelFor(pp){ return pp<=3?5:pp<=5?10:pp<=7?15:30; }
-function soulforgingScore(record){
-  const b=record?.build||record||{};
-  const cha=+(b.character?.abilityScores?.CHA??10);
-  const mod=Math.floor((cha-10)/2);
-  const level=+(b.meta?.level??b.builderState?.lvl??1);
-  const pb=proficiencyBonus(level);
-  const skill=(b.skills||[]).find(s=>String(s.name).toLowerCase()==="soulforging");
-  const proficiency=+skill?.proficiencyLevel||1; /* builder: 1 none, 2 half, 3 prof, 4 expertise */
-  const trained=proficiency===2?Math.floor(pb/2):proficiency===3?pb:proficiency>=4?pb*2:0;
-  const tier=proficiency===2?"½ proficiency":proficiency===3?"proficient":proficiency>=4?"expertise":"untrained";
-  return {bonus:mod+trained,cha,mod,pb,tier,level};
+function soulforgingScore(bundle){
+  return FHSoulforgeCore.soulforgingScore(bundle?.record||bundle,bundle?.profile||{});
 }
 function rebuildState(){
   const inv=serverInventory(SERVER_ITEMS);
@@ -315,7 +289,13 @@ async function loadActiveBuild(){
 }
 async function loadBuild(pseudo){
   if(!pseudo)return null;
-  if(!BUILD_CACHE[pseudo]) BUILD_CACHE[pseudo]=await api(`/party/${encodeURIComponent(CODE)}/${encodeURIComponent(pseudo)}`);
+  if(!BUILD_CACHE[pseudo]){
+    const [record,profileResult]=await Promise.all([
+      api(`/party/${encodeURIComponent(CODE)}/${encodeURIComponent(pseudo)}`),
+      api(`/profile/${encodeURIComponent(CODE)}/${encodeURIComponent(pseudo)}`).catch(()=>({profile:{}}))
+    ]);
+    BUILD_CACHE[pseudo]={record,profile:profileResult.profile||{}};
+  }
   return BUILD_CACHE[pseudo];
 }
 async function loadCampaign(){
@@ -323,7 +303,7 @@ async function loadCampaign(){
   const btn=$("#btnLoad"); btn.disabled=true; btn.textContent="Loading…";
   try{
     const [party,inv]=await Promise.all([api(`/party/${encodeURIComponent(CODE)}`),api(`/inv/${encodeURIComponent(CODE)}`)]);
-    PARTY=party.builds.map(b=>b.pseudo).sort(); SERVER_ITEMS=inv.items; BUILD_CACHE={};
+    PARTY=Array.isArray(party.builds)?party.builds.map(b=>b.pseudo).filter(Boolean).sort():[]; SERVER_ITEMS=Array.isArray(inv.items)?inv.items:[]; BUILD_CACHE={};
     let last=""; try{ last=localStorage.getItem("fh-my-pseudo")||""; localStorage.setItem("fh-my-campcode",CODE); }catch(e){}
     S.activeChar=PARTY.includes(S.activeChar)?S.activeChar:(PARTY.includes(last)?last:(PARTY[0]||null));
     rebuildState(); await loadActiveBuild();
@@ -341,7 +321,7 @@ function renderWorkbench(){
   const parts=[...inv.parts.filter(p=>(p.role==="Structure"&&p.crafted)||(p.role==="Catalyst"&&p.identified)),...inv.soulgems];
   box.innerHTML=`<div class="card"><h2>Campaign Workbench</h2>
     <p class="hint">The campaign inventory is the only source of truth. Prepare raw ingredients in <a href="${esc($("#inventoryLink").href)}" style="color:var(--gold)">Party Inventory</a>, then select the ready parts here or in the Soulforging tab.</p>
-    ${c?`<div class="reminders"><b>Active forger</b><b>${esc(c.name)}</b> · Soulforging ${c.score?.tier||"untrained"} · CHA ${c.score?.cha??10} · PB ${c.score?.pb??2} → <b>${c.bonus>=0?"+":""}${c.bonus}</b></div>`:`<div class="badline">Load a campaign with at least one character build.</div>`}
+    ${c?`<div class="reminders"><b>Active forger</b><b>${esc(c.name)}</b> · Soulforging ${c.score?.tier||"untrained"} · CHA ${c.score?.cha??10} · PB ${c.score?.pb??2}${c.score?.special?` · <span title="${esc(c.score.specialBonuses.map(x=>`${x.label} ${x.value>=0?"+":""}${x.value}`).join(" · "))}">special ${c.score.special>=0?"+":""}${c.score.special}</span>`:""} → <b>${c.bonus>=0?"+":""}${c.bonus}</b></div>`:`<div class="badline">Load a campaign with at least one character build.</div>`}
     ${parts.length?`<table><tr><th>Forgable part</th><th>Owner</th><th></th></tr>${parts.map(p=>`<tr><td>${p.gemName?soulgemLine(p):partLine(p)}</td><td>${esc(p.owner||"Party stash")}</td><td><button class="btn small soul" data-workpart="${p.id}">Set in forge</button></td></tr>`).join("")}</table>`:`<div class="empty">No prepared parts yet. Craft, infuse or identify ingredients in Party Inventory.</div>`}
   </div>`;
   box.querySelectorAll("[data-workpart]").forEach(b=>b.onclick=()=>{ selectWorkbenchPart(b.dataset.workpart); TAB="forge"; $$("#tabs button").forEach(x=>x.classList.toggle("on",x.dataset.tab==="forge")); renderAll(); });
