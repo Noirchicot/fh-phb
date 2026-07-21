@@ -51,7 +51,7 @@
     code:"", pseudo:"", party:[], record:null, profile:null, character:null,
     destiny:null, history:[], events:[], prefs:{bardicSides:6}, rollConfig:null, trayPrompt:null,
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayResultText:"",currentEvent:null,eventQueue:[],queueDone:"",queueTotal:0,rollSequence:null,eventTimer:null,chromeOpen:false,
-    activeContext:"loop", target:"Aberration", cr:"1", inventory:null,
+    activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:""
   };
 
@@ -61,6 +61,7 @@
     });
   }
   function clamp(value, min, max) { return Math.min(max, Math.max(min, Number(value) || 0)); }
+  function numberOr(value,fallback){return value!==null&&value!==""&&isFinite(Number(value))?Number(value):fallback;}
   function mod(score) { return Math.floor(((Number(score) || 10) - 10) / 2); }
   function signed(value) { value = Number(value) || 0; return (value >= 0 ? "+" : "") + value; }
   function pbFor(level) { return 2 + Math.floor((Math.max(1, Number(level) || 1) - 1) / 4); }
@@ -298,6 +299,7 @@
     var importedLevel=snap&&Number(snap.level),classLevel=classes.reduce(function(total,entry){return total+(Number(entry.level)||0);},0);
     var liveLevel = snap ? importedLevel||classLevel||1 : Number(meta.level)||1;
     var level = pending.reduce(function (value, entry) { return Math.max(value, Number(entry.targetLevel)||value); }, liveLevel);
+    level=Math.max(1,numberOr(overrides.level,level));
     var abilities = {};
     ABILITIES.forEach(function (key) {
       var imported=snapshotAbility(snap,key);
@@ -306,6 +308,7 @@
     pending.forEach(function (entry) {
       ABILITIES.forEach(function (key) { abilities[key] += Number(entry.abilityIncreases && entry.abilityIncreases[key]) || 0; });
     });
+    ABILITIES.forEach(function(key){if(overrides.abilities&&overrides.abilities[key]!=null&&overrides.abilities[key]!=="")abilities[key]=numberOr(overrides.abilities[key],abilities[key]);});
     var skills = {};
     SKILLS.forEach(function (entry) { skills[entry[0]] = {name:entry[0],ability:entry[1],tier:"none"}; });
     Object.keys(build.nativeSkillTiers || {}).forEach(function (name) {
@@ -334,21 +337,27 @@
     Object.keys(overrides.skills||{}).forEach(function(key){var name=knownSkillName(key);if(!name)return;var old=skills[name];old.tier=tierName(overrides.skills[key]);skills[name]=old;});
     (overrides.tools||[]).forEach(function(tool){var name=knownToolName(tool.name||tool);if(!name)return;var old=skills[name]||{name:name,ability:SKILL_ABILITY[name]||"INT"};old.ability=tool.ability||old.ability;old.tier=tierName(tool.tier||"proficient");skills[name]=old;});
     Object.keys(overrides.toolTiers||{}).forEach(function(key){var name=knownToolName(key);if(!name)return;var old=skills[name]||{name:name,ability:SKILL_ABILITY[name]||"INT"};old.tier=tierName(overrides.toolTiers[key]);skills[name]=old;});
+    (overrides.deletedTools||[]).forEach(function(key){var name=knownToolName(key);if(name)delete skills[name];});
     var spells = {};
     if (snap) (snap.spells || []).forEach(function (spell) { spells[spell.name.toLowerCase()] = {name:spell.name,level:spell.level}; });
     pending.forEach(function (entry) { (entry.spells || []).forEach(function (name) { spells[name.toLowerCase()] = {name:name,level:null}; }); });
     var firstClass = classes[0] && classes[0].name;
     var savingProficiencies = (snap && snap.savingThrowProficiencies) || CLASS_SAVES[firstClass] || [];
+    var pb=Math.max(0,numberOr(overrides.pb,pbFor(level))),identity=overrides.identity||{};
+    var initiative=numberOr(overrides.initiative,mod(abilities.DEX));
+    var passiveDefaults={vigilance:10,investigation:10,insight:10},passiveOverrides=overrides.passives||{};
+    var specialBonuses=overrides.specialBonuses&&typeof overrides.specialBonuses==="object"?overrides.specialBonuses:{};
     return {
-      name:(snap && snap.name) || base.name || state.pseudo,
-      species:(snap && (snap.species||(snap.race&&(snap.race.fullName||snap.race.baseRaceName||snap.race.name)))) || meta.species || "Unknown species",
+      name:identity.name||((snap && snap.name) || base.name || state.pseudo),
+      species:identity.species||((snap && (snap.species||(snap.race&&(snap.race.fullName||snap.race.baseRaceName||snap.race.name)))) || meta.species || "Unknown species"),
       avatarUrl:snap && (snap.avatarUrl||snap.avatarUrlRaw||snap.decorations&&snap.decorations.avatarUrl),
-      classes:classes,level:level,liveLevel:liveLevel,pb:pbFor(level),abilities:abilities,skills:skills,
+      classes:classes,level:level,liveLevel:liveLevel,pb:pb,abilities:abilities,skills:skills,
       spells:Object.keys(spells).map(function (key) { return spells[key]; }).sort(function (a,b) { return (Number(a.level)||0)-(Number(b.level)||0)||a.name.localeCompare(b.name); }),
       preparation:profile.preparation || {transferEssence:false,identify:false,tools:[]},
       savingProficiencies:savingProficiencies,
       armorClass:overrides.armorClass!=null&&overrides.armorClass!==""?Number(overrides.armorClass):firstImportNumber([snap&&snap.armorClass,snap&&snap.ac,snap&&snap.armorClassTotal,snap&&snap.defenses&&snap.defenses.armorClass,snap&&snap.combat&&snap.combat.armorClass,snap&&snap.stats&&snap.stats.armorClass,base.armorClass,build.armorClass]),
       speed:(snap && (snap.speed || snap.walkingSpeed || snap.movement&&snap.movement.walk)) || null,
+      initiative:initiative,passiveOverrides:passiveOverrides,passiveDefaults:passiveDefaults,specialBonuses:specialBonuses,
       syncedAt:(snap && snap.syncedAt)||(storedSnap&&storedSnap.syncedAt),pending:pending,
       destinyBuild:build.destiny || {},build:build,importReport:importReport
     };
@@ -357,7 +366,9 @@
     var skill = ch.skills[name] || {name:name,ability:SKILL_ABILITY[name] || "INT",tier:"none"};
     var tier = tierName(skill.tier);
     var proficiency = TIERS[tier] === .5 ? Math.floor(ch.pb/2) : ch.pb * TIERS[tier];
-    return {name:name,ability:skill.ability || "INT",tier:tier,bonus:mod(ch.abilities[skill.ability] || 10)+proficiency+(Number(extra)||0)};
+    var bonuses=(ch.specialBonuses&&ch.specialBonuses[name]||[]).filter(function(item){return item&&item.active!==false&&isFinite(Number(item.value));});
+    var special=bonuses.reduce(function(total,item){return total+Number(item.value);},0);
+    return {name:name,ability:skill.ability || "INT",tier:tier,bonus:mod(ch.abilities[skill.ability] || 10)+proficiency+(Number(extra)||0)+special,specialBonuses:bonuses,specialTotal:special};
   }
   function saveInfo(ability, ch) {
     var proficient = ch.savingProficiencies.indexOf(ability) >= 0;
@@ -655,21 +666,22 @@
   }
 
   function skillRow(info, compactName) {
-    var name=compactName || info.name;
+    var name=compactName || info.name,bonuses=info.specialBonuses||[],dots=bonuses.length?"<span class=\"fh-ps-bonus-dots\" title=\""+esc(bonuses.map(function(item){return (item.label||"Special bonus")+" "+signed(item.value);}).join(" · "))+"\">"+bonuses.map(function(){return "<i></i>";}).join("")+"</span>":"";
     return "<div class=\"fh-ps-skill-row tier-"+info.tier+"\">"+
-      "<button class=\"fh-ps-skill-main\" type=\"button\" data-quick-name=\""+esc(info.name)+"\" data-ability=\""+esc(info.ability)+"\" data-bonus=\""+info.bonus+"\" title=\"Roll "+esc(info.name)+" normally\"><i></i><span><b>"+esc(name)+"</b><small>"+info.ability+" · "+esc(TIER_LABEL[info.tier])+"</small></span><strong>"+signed(info.bonus)+"</strong></button>"+
+      "<button class=\"fh-ps-skill-main\" type=\"button\" data-quick-name=\""+esc(info.name)+"\" data-ability=\""+esc(info.ability)+"\" data-bonus=\""+info.bonus+"\" title=\"Roll "+esc(info.name)+" normally\"><i></i><span><b>"+esc(name)+dots+"</b><small>"+info.ability+" · "+esc(TIER_LABEL[info.tier])+(info.specialTotal?" · special "+signed(info.specialTotal):"")+"</small></span><strong>"+signed(info.bonus)+"</strong></button>"+
       "<button class=\"fh-ps-configure\" type=\"button\" data-config-name=\""+esc(info.name)+"\" data-ability=\""+esc(info.ability)+"\" data-bonus=\""+info.bonus+"\" aria-label=\"Configure "+esc(info.name)+" roll\" title=\"Configure roll\">⚙</button></div>";
   }
   function renderIdentity(ch) {
     var classes=ch.classes.map(function(e){return e.name+" "+e.level;}).join(" / ");
     var portrait=ch.avatarUrl || "../assets/img/species-"+String(ch.species).toLowerCase().replace(/\s*\(fh\)\s*/g,"").replace(/[^a-z]+/g,"-").replace(/^-|-$/g,"")+".jpg";
     var sync=ch.syncedAt?"Synced "+new Date(ch.syncedAt).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"Fate's Hand build";
-    return "<section class=\"fh-ps-identity fh-ps-card\"><img src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.hidden=true\"><div class=\"fh-ps-who\"><p>FATE'S HAND CHARACTER</p><h1>"+esc(ch.name)+"</h1><span>"+esc(ch.species)+" · "+esc(classes)+"</span><small>"+esc(sync)+"</small></div><div class=\"fh-ps-identity-actions\"><button id=\"fhPsSync\" type=\"button\">"+(state.profile&&state.profile.ddbLinked?"Sync":"Link DDB")+"</button>"+(state.profile&&state.profile.ddbLinked?"<button id=\"fhPsRelink\" type=\"button\">Link</button>":"")+"<button id=\"fhPsLevel\" type=\"button\">Level Up</button><button id=\"fhPsCorrect\" type=\"button\">Correct</button></div></section>";
+    return "<section class=\"fh-ps-identity fh-ps-card\"><img src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.hidden=true\"><div class=\"fh-ps-who\"><p>FATE'S HAND CHARACTER</p><h1>"+esc(ch.name)+"</h1><span>"+esc(ch.species)+" · "+esc(classes)+"</span><small>"+esc(sync)+"</small></div><div class=\"fh-ps-identity-actions\"><button id=\"fhPsSync\" type=\"button\">"+(state.profile&&state.profile.ddbLinked?"Sync":"Link DDB")+"</button>"+(state.profile&&state.profile.ddbLinked?"<button id=\"fhPsRelink\" type=\"button\">Link</button>":"")+"<button id=\"fhPsLevel\" type=\"button\">Level Up</button><button id=\"fhPsCorrect\" type=\"button\">Edit</button></div></section>";
   }
   function renderStats(ch) {
     var cards=ABILITIES.map(function(key){var save=saveInfo(key,ch),abilityBonus=mod(ch.abilities[key]);return "<div class=\"fh-ps-stat\"><button type=\"button\" data-quick-name=\""+ABILITY_NAMES[key]+" Check\" data-ability=\""+key+"\" data-bonus=\""+abilityBonus+"\"><small>"+ABILITY_NAMES[key]+"</small><b>"+ch.abilities[key]+"</b><strong>"+signed(abilityBonus)+"</strong></button><div class=\"fh-ps-save-row\"><button class=\"fh-ps-save tier-"+save.tier+"\" type=\"button\" data-quick-name=\""+save.name+"\" data-ability=\""+key+"\" data-bonus=\""+save.bonus+"\"><i></i> Save "+signed(save.bonus)+"</button><button class=\"fh-ps-save-config\" type=\"button\" data-config-name=\""+save.name+"\" data-ability=\""+key+"\" data-bonus=\""+save.bonus+"\" aria-label=\"Configure "+save.name+"\">⚙</button></div><button class=\"fh-ps-stat-config\" type=\"button\" data-config-name=\""+ABILITY_NAMES[key]+" Check\" data-ability=\""+key+"\" data-bonus=\""+abilityBonus+"\" aria-label=\"Configure "+ABILITY_NAMES[key]+" check\">⚙</button></div>";}).join("");
-    var initiative=mod(ch.abilities.DEX), vigilance=skillInfo("Vigilance",ch),investigation=skillInfo("Investigation",ch),insight=skillInfo("Insight",ch);
-    return "<section class=\"fh-ps-stats fh-ps-card\"><div class=\"fh-ps-stat-grid\">"+cards+"</div><div class=\"fh-ps-derived\"><span><small>PB</small><b>+"+ch.pb+"</b></span><button data-quick-name=\"Initiative\" data-ability=\"DEX\" data-bonus=\""+initiative+"\"><small>Initiative</small><b>"+signed(initiative)+"</b></button><span><small>AC</small><b>"+(ch.armorClass||"—")+"</b></span><span><small>Passive Vigilance</small><b>"+(10+vigilance.bonus)+"</b></span><span><small>Investigation</small><b>"+(10+investigation.bonus)+"</b></span><span><small>Insight</small><b>"+(10+insight.bonus)+"</b></span></div></section>";
+    var initiative=numberOr(ch.initiative,mod(ch.abilities.DEX)), vigilance=skillInfo("Vigilance",ch),investigation=skillInfo("Investigation",ch),insight=skillInfo("Insight",ch),passives=ch.passiveOverrides||{};
+    var passiveV=numberOr(passives.vigilance,10+vigilance.bonus),passiveI=numberOr(passives.investigation,10+investigation.bonus),passiveS=numberOr(passives.insight,10+insight.bonus);
+    return "<section class=\"fh-ps-stats fh-ps-card\"><div class=\"fh-ps-stat-grid\">"+cards+"</div><div class=\"fh-ps-derived\"><span><small>PB</small><b>+"+ch.pb+"</b></span><button data-quick-name=\"Initiative\" data-ability=\"DEX\" data-bonus=\""+initiative+"\"><small>Initiative</small><b>"+signed(initiative)+"</b></button><span><small>AC</small><b>"+(ch.armorClass==null?"—":ch.armorClass)+"</b></span><span><small>Passive Vigilance</small><b>"+passiveV+"</b></span><span><small>Investigation</small><b>"+passiveI+"</b></span><span><small>Insight</small><b>"+passiveS+"</b></span></div></section>";
   }
   function renderSkills(ch) {
     var columns=[SKILLS.slice(0,9),SKILLS.slice(9,18),SKILLS.slice(18,26)];
@@ -678,6 +690,68 @@
     var toolHtml=tools.length?tools.map(function(info){return skillRow(info,info.name.replace(/^Tool - /,""));}).join(""):"<p class=\"fh-ps-no-tools\">No purchased tools.</p>";
     return "<section class=\"fh-ps-skill-board fh-ps-card\"><div class=\"fh-ps-board-title\"><div><p>ALL 26 CHECKS + PURCHASED TOOLS</p><h2>Skills</h2></div><span>Click = flat roll · ⚙ = advanced roll</span></div><div class=\"fh-ps-four-columns\">"+skillColumns+"<div class=\"fh-ps-skill-col fh-ps-tools-col\">"+toolHtml+"</div></div></section>";
   }
+  function cloneData(value){return JSON.parse(JSON.stringify(value==null?{}:value));}
+  function characterWithoutOverrides(){
+    var profile=state.profile||emptyProfile(),saved=profile.manualOverrides,character;
+    profile.manualOverrides={};
+    try{character=effectiveCharacter();}finally{profile.manualOverrides=saved;}
+    return character;
+  }
+  function beginSheetEdit(source){
+    var ch=source||state.character,base=characterWithoutOverrides(),passives=ch.passiveOverrides||{};
+    var tools=Object.keys(ch.skills).filter(function(name){return name.indexOf("Tool - ")===0&&tierName(ch.skills[name].tier)!=="none";}).sort(function(a,b){var ai=TOOL_ORDER[a],bi=TOOL_ORDER[b];if(ai==null)ai=999;if(bi==null)bi=999;return ai-bi||a.localeCompare(b);}).map(function(name){return {name:name,ability:ch.skills[name].ability||SKILL_ABILITY[name]||"INT",tier:tierName(ch.skills[name].tier)};});
+    state.editDraft={name:ch.name,species:ch.species,level:ch.level,pb:ch.pb,abilities:cloneData(ch.abilities),initiative:numberOr(ch.initiative,mod(ch.abilities.DEX)),armorClass:ch.armorClass,passives:{vigilance:numberOr(passives.vigilance,10+skillInfo("Vigilance",ch).bonus),investigation:numberOr(passives.investigation,10+skillInfo("Investigation",ch).bonus),insight:numberOr(passives.insight,10+skillInfo("Insight",ch).bonus)},skills:{},tools:tools,specialBonuses:cloneData(ch.specialBonuses||{}),baseCharacter:base};
+    Object.keys(state.editDraft.specialBonuses).forEach(function(name){state.editDraft.specialBonuses[name]=(state.editDraft.specialBonuses[name]||[]).map(function(item){return {id:item.id||uuid(),label:item.label||"Special bonus",value:numberOr(item.value,0),active:item.active!==false};});});
+    SKILLS.forEach(function(entry){state.editDraft.skills[entry[0]]=tierName(ch.skills[entry[0]]&&ch.skills[entry[0]].tier);});
+    state.rollConfig=null;state.activeContext=state.activeContext==="edit"?"loop":state.activeContext;render();
+  }
+  function captureEditDraft(){
+    var d=state.editDraft;if(!d||!root)return d;
+    function value(id,fallback){var input=root.querySelector(id);return input?input.value:fallback;}
+    d.name=value("#fhPsEditName",d.name).trim()||d.name;d.species=value("#fhPsEditSpecies",d.species).trim()||d.species;
+    d.level=Math.max(1,numberOr(value("#fhPsEditLevel",d.level),d.level));d.pb=Math.max(0,numberOr(value("#fhPsEditPb",d.pb),d.pb));
+    ABILITIES.forEach(function(key){d.abilities[key]=numberOr(value('[data-edit-ability="'+key+'"]',d.abilities[key]),d.abilities[key]);});
+    d.initiative=numberOr(value("#fhPsEditInitiative",d.initiative),d.initiative);var acValue=value("#fhPsEditAc",d.armorClass);d.armorClass=acValue===""?null:numberOr(acValue,d.armorClass);
+    ["vigilance","investigation","insight"].forEach(function(key){d.passives[key]=numberOr(value('[data-edit-passive="'+key+'"]',d.passives[key]),d.passives[key]);});
+    root.querySelectorAll("[data-edit-skill-tier]").forEach(function(select){d.skills[select.dataset.editSkillTier]=tierName(select.value);});
+    var tools=[];root.querySelectorAll("[data-edit-tool]").forEach(function(row){var name=row.dataset.editTool,tier=row.querySelector("[data-edit-tool-tier]"),ability=row.querySelector("[data-edit-tool-ability]");tools.push({name:name,tier:tierName(tier&&tier.value),ability:ability&&ability.value||SKILL_ABILITY[name]||"INT"});});d.tools=tools.filter(function(tool){return tool.tier!=="none";});
+    var bonuses={};root.querySelectorAll("[data-edit-bonus-row]").forEach(function(row){var scope=row.dataset.editBonusRow,label=row.querySelector("[data-edit-bonus-label]"),amount=row.querySelector("[data-edit-bonus-value]");if(!scope||!label||!amount)return;var text=label.value.trim(),numeric=Number(amount.value);if(!text||!isFinite(numeric))return;(bonuses[scope]||(bonuses[scope]=[])).push({id:row.dataset.bonusId||uuid(),label:text,value:numeric,active:true});});d.specialBonuses=bonuses;
+    return d;
+  }
+  function editBonusRows(name,d){
+    var list=d.specialBonuses[name]||[];
+    return "<div class=\"fh-ps-edit-bonuses\">"+list.map(function(item){return "<div data-edit-bonus-row=\""+esc(name)+"\" data-bonus-id=\""+esc(item.id||uuid())+"\"><i title=\"Special bonus\"></i><input data-edit-bonus-label value=\""+esc(item.label||"Special bonus")+"\" aria-label=\"Bonus name\"><input data-edit-bonus-value type=\"number\" value=\""+numberOr(item.value,0)+"\" aria-label=\"Bonus value\"><button type=\"button\" data-edit-remove-bonus=\""+esc(name)+"\" data-bonus-id=\""+esc(item.id||"")+"\" title=\"Remove bonus\">×</button></div>";}).join("")+"</div>";
+  }
+  function renderEditCheck(name,ability,tier,d,isTool){
+    var abilityControl=isTool?"<select data-edit-tool-ability>"+ABILITIES.map(function(key){return "<option value=\""+key+"\" "+(key===ability?"selected":"")+">"+key+"</option>";}).join("")+"</select>":"<small>"+ability+"</small>";
+    var attrs=isTool?"data-edit-tool=\""+esc(name)+"\"":"",tierAttr=isTool?"data-edit-tool-tier":"data-edit-skill-tier=\""+esc(name)+"\"";
+    return "<div class=\"fh-ps-edit-check\" "+attrs+"><div><b>"+esc(name.replace(/^Tool - /,""))+"</b>"+abilityControl+"<select "+tierAttr+">"+tierOptions(tier)+"</select><button type=\"button\" data-edit-add-bonus=\""+esc(name)+"\" title=\"Add special bonus\">+ bonus</button>"+(isTool?"<button class=\"is-delete\" type=\"button\" data-edit-remove-tool=\""+esc(name)+"\" title=\"Remove tool\">×</button>":"")+"</div>"+editBonusRows(name,d)+"</div>";
+  }
+  function renderEditIdentity(d){
+    return "<section class=\"fh-ps-edit-bar fh-ps-card\"><div><p>EDITING A WORKING COPY</p><b>Changes apply only after Save</b></div><div><button id=\"fhPsEditRestore\" type=\"button\">Restore DDB</button><button id=\"fhPsEditCancel\" type=\"button\">Cancel</button><button class=\"is-save\" id=\"fhPsEditSave\" type=\"button\">Save</button></div></section><section class=\"fh-ps-identity fh-ps-card is-editing\"><div class=\"fh-ps-edit-portrait\">EDIT</div><div class=\"fh-ps-edit-identity-fields\"><label>Name<input id=\"fhPsEditName\" value=\""+esc(d.name)+"\"></label><label>Species<input id=\"fhPsEditSpecies\" value=\""+esc(d.species)+"\"></label></div><div class=\"fh-ps-edit-level-fields\"><label>Level<input id=\"fhPsEditLevel\" type=\"number\" min=\"1\" max=\"30\" value=\""+d.level+"\"></label><label>PB<input id=\"fhPsEditPb\" type=\"number\" min=\"0\" max=\"20\" value=\""+d.pb+"\"></label></div></section>";
+  }
+  function renderEditStats(d){
+    var abilities=ABILITIES.map(function(key){return "<label class=\"fh-ps-edit-stat\"><small>"+ABILITY_NAMES[key]+"</small><input data-edit-ability=\""+key+"\" type=\"number\" min=\"1\" max=\"40\" value=\""+d.abilities[key]+"\"><b>"+signed(mod(d.abilities[key]))+"</b></label>";}).join("");
+    return "<section class=\"fh-ps-stats fh-ps-card is-editing\"><div class=\"fh-ps-stat-grid\">"+abilities+"</div><div class=\"fh-ps-derived fh-ps-edit-derived\"><label><small>Initiative</small><input id=\"fhPsEditInitiative\" type=\"number\" value=\""+d.initiative+"\"></label><label><small>AC</small><input id=\"fhPsEditAc\" type=\"number\" min=\"0\" max=\"99\" value=\""+(d.armorClass==null?"":d.armorClass)+"\"></label><label><small>Passive Vigilance</small><input data-edit-passive=\"vigilance\" type=\"number\" value=\""+d.passives.vigilance+"\"></label><label><small>Investigation</small><input data-edit-passive=\"investigation\" type=\"number\" value=\""+d.passives.investigation+"\"></label><label><small>Insight</small><input data-edit-passive=\"insight\" type=\"number\" value=\""+d.passives.insight+"\"></label></div></section>";
+  }
+  function renderEditSkills(d){
+    var columns=[SKILLS.slice(0,9),SKILLS.slice(9,18),SKILLS.slice(18,26)],skillColumns=columns.map(function(column){return "<div class=\"fh-ps-edit-skill-col\">"+column.map(function(entry){return renderEditCheck(entry[0],entry[1],d.skills[entry[0]],d,false);}).join("")+"</div>";}).join("");
+    var tools=d.tools.map(function(tool){return renderEditCheck(tool.name,tool.ability,tool.tier,d,true);}).join("");
+    var present={};d.tools.forEach(function(tool){present[tool.name]=true;});var available=TOOLS.map(function(entry){return "Tool - "+entry[0];}).filter(function(name){return !present[name];});
+    var add=available.length?"<div class=\"fh-ps-edit-add-tool\"><select id=\"fhPsEditToolChoice\">"+available.map(function(name){return "<option value=\""+esc(name)+"\">"+esc(name.replace(/^Tool - /,""))+"</option>";}).join("")+"</select><button id=\"fhPsEditAddTool\" type=\"button\">Add tool</button></div>":"";
+    return "<section class=\"fh-ps-skill-board fh-ps-card is-editing\"><div class=\"fh-ps-board-title\"><div><p>26 FIXED SKILLS + OWNED TOOLS</p><h2>Edit skills &amp; tools</h2></div><span>Red dots mark persistent special bonuses</span></div><div class=\"fh-ps-edit-four-columns\">"+skillColumns+"<div class=\"fh-ps-edit-skill-col fh-ps-edit-tools\">"+tools+add+"</div></div></section>";
+  }
+  function renderEditSheet(){var d=state.editDraft;return renderEditIdentity(d)+renderEditStats(d)+renderEditSkills(d);}
+  function saveSheetEdit(){
+    var d=captureEditDraft(),base=d.baseCharacter||characterWithoutOverrides(),present={};d.tools.forEach(function(tool){present[tool.name]=true;});
+    var deletedTools=Object.keys(base.skills||{}).filter(function(name){return name.indexOf("Tool - ")===0&&tierName(base.skills[name].tier)!=="none"&&!present[name];});
+    var manualOverrides={identity:{name:d.name,species:d.species},level:d.level,pb:d.pb,abilities:d.abilities,initiative:d.initiative,armorClass:d.armorClass,passives:d.passives,skills:d.skills,tools:d.tools,deletedTools:deletedTools,specialBonuses:d.specialBonuses};
+    state.message="Saving edited sheet…";state.messageKind="roll";renderMessage();saveProfile({manualOverrides:manualOverrides}).then(function(){state.editDraft=null;state.character=effectiveCharacter();state.message="Character sheet corrections saved.";state.messageKind="success";pushEvent("Character sheet edited","corrected",false);render();}).catch(function(error){state.message="Could not save edited sheet: "+error.message;state.messageKind="danger";renderMessage();});
+  }
+  function addEditTool(){var d=captureEditDraft(),select=root.querySelector("#fhPsEditToolChoice"),option=select&&select.querySelector("option:checked")||select&&select.querySelector("option"),raw=select&&(select.value||option&&option.getAttribute("value")),name=knownToolName(raw);if(!name||d.tools.some(function(tool){return tool.name===name;}))return;d.tools.push({name:name,ability:SKILL_ABILITY[name]||"INT",tier:"proficient"});render();}
+  function removeEditTool(name){var d=captureEditDraft(),canonical=knownToolName(name);d.tools=d.tools.filter(function(tool){return tool.name!==canonical;});delete d.specialBonuses[canonical];render();}
+  function addEditBonus(name){var d=captureEditDraft();if(!knownSkillName(name)&&!knownToolName(name))return;(d.specialBonuses[name]||(d.specialBonuses[name]=[])).push({id:uuid(),label:"Special bonus",value:0,active:true});render();}
+  function removeEditBonus(name,id){var d=captureEditDraft();d.specialBonuses[name]=(d.specialBonuses[name]||[]).filter(function(item){return item.id!==id;});if(!d.specialBonuses[name].length)delete d.specialBonuses[name];render();}
   function addTrayDie(sides){
     sides=Number(sides);var d20Count=state.traySelection.filter(function(s){return s===20;}).length,extraCount=state.traySelection.filter(function(s){return s!==20;}).length;
     if((sides===20&&d20Count>=2)||(sides!==20&&extraCount>=3)){pushEvent(sides===20?"The tray holds at most two d20s":"The tray holds at most three bonus dice","warn",false);refreshEventPanel();return;}
@@ -832,8 +906,8 @@
     saveProfile({manualOverrides:manualOverrides}).then(function(){state.character=effectiveCharacter();pushEvent("Manual AC, skills and tools saved","corrected",false);render();}).catch(function(error){var box=root.querySelector("#fhPsCorrectionStatus");if(box)box.textContent="Could not save: "+error.message;});
   }
   function renderContext(ch) {
-    var content=state.activeContext==="inventory"?renderInventoryContext():state.activeContext==="forge"?renderForgeContext(ch):state.activeContext==="edit"?renderCorrections(ch):renderLoop(ch);
-    return "<aside class=\"fh-ps-right\">"+renderAccessPanel()+"<header><span>"+esc(state.activeContext==="inventory"?"INVENTORY":state.activeContext==="forge"?"SOULFORGE":state.activeContext==="edit"?"CHARACTER CORRECTIONS":"SOULFORGING LOOP")+"</span><small>TEMPORARY PANEL</small></header><div class=\"fh-ps-context-body\">"+content+"</div></aside>";
+    var content=state.activeContext==="inventory"?renderInventoryContext():state.activeContext==="forge"?renderForgeContext(ch):renderLoop(ch);
+    return "<aside class=\"fh-ps-right\">"+renderAccessPanel()+"<header><span>"+esc(state.activeContext==="inventory"?"INVENTORY":state.activeContext==="forge"?"SOULFORGE":"SOULFORGING LOOP")+"</span><small>TEMPORARY PANEL</small></header><div class=\"fh-ps-context-body\">"+content+"</div></aside>";
   }
   function toolUrl(kind,fallback){var raw=root&&root.dataset&&root.dataset[kind]||fallback;try{var url=new URL(raw,window.location.href);if(state.code&&(kind==="inventory"||kind==="soulforge"))url.searchParams.set("campaign",state.code);return url.href;}catch(e){return raw;}}
 
@@ -846,7 +920,7 @@
     return "<section class=\"fh-ps-access "+(state.chromeOpen?"is-open":"")+"\"><button id=\"fhPsChromeToggle\" type=\"button\"><span>FH</span><b>"+esc(state.code||"Campaign")+" · "+esc(state.pseudo||"Character")+"</b><i>"+(state.chromeOpen?"▲":"▼")+"</i></button>"+(state.chromeOpen?"<div><label>Campaign<input id=\"fhPsCode\" value=\""+esc(state.code)+"\" placeholder=\"Campaign code\"></label><label>Character<select id=\"fhPsWho\">"+partyOptions+"</select></label><button id=\"fhPsLoad\" type=\"button\">Load</button><a href=\""+esc(toolUrl("rules","../"))+"\">Handbook</a></div>":"")+"<p id=\"fhPsMessage\" class=\"fh-ps-message\"></p></section>";
   }
   function renderRail(){
-    return "<nav class=\"fh-ps-rail\" aria-label=\"Player panels\"><button data-context=\"inventory\" class=\""+(state.activeContext==="inventory"?"is-active":"")+"\"><span>▣</span><b>Inventory</b></button><button data-context=\"loop\" class=\""+(state.activeContext==="loop"?"is-active":"")+"\"><span>◇</span><b>Soulforging Loop</b></button><button data-context=\"forge\" class=\""+(state.activeContext==="forge"?"is-active":"")+"\"><span>⚒</span><b>Soulforge</b></button><button data-context=\"edit\" class=\""+(state.activeContext==="edit"?"is-active":"")+"\"><span>✎</span><b>Correct sheet</b></button><a href=\""+esc(toolUrl("rules","../"))+"\"><span>⌕</span><b>Rules</b></a></nav>";
+    return "<nav class=\"fh-ps-rail\" aria-label=\"Player panels\"><button data-context=\"inventory\" class=\""+(state.activeContext==="inventory"?"is-active":"")+"\"><span>▣</span><b>Inventory</b></button><button data-context=\"loop\" class=\""+(state.activeContext==="loop"?"is-active":"")+"\"><span>◇</span><b>Soulforging Loop</b></button><button data-context=\"forge\" class=\""+(state.activeContext==="forge"?"is-active":"")+"\"><span>⚒</span><b>Soulforge</b></button><button data-sheet-edit class=\""+(state.editDraft?"is-active":"")+"\"><span>✎</span><b>Edit sheet</b></button><a href=\""+esc(toolUrl("rules","../"))+"\"><span>⌕</span><b>Rules</b></a></nav>";
   }
   function render() {
     if(!root)return;
@@ -854,7 +928,8 @@
     if(state.loading){root.innerHTML="<div class=\"fh-ps-app\">"+top+"<div class=\"fh-ps-loading\">Loading the character sheet…</div></div>";renderMessage();return;}
     if(!state.record||!state.character){root.innerHTML="<div class=\"fh-ps-app\">"+top+"<div class=\"fh-ps-welcome\"><span>⚔</span><h1>Player Companion</h1><p>Enter the campaign code and choose a character. D&D Beyond remains the source for the standard sheet; this page runs the Fate's Hand layer.</p></div></div>";renderMessage();return;}
     var ch=state.character;
-    root.innerHTML="<div class=\"fh-ps-app\"><div class=\"fh-ps-layout\">"+renderRail()+"<main class=\"fh-ps-left\">"+renderIdentity(ch)+renderStats(ch)+renderSkills(ch)+renderDestiny(ch)+renderRollWorkbench()+"</main>"+renderContext(ch)+"</div></div>";
+    var sheet=state.editDraft?renderEditSheet():renderIdentity(ch)+renderStats(ch)+renderSkills(ch)+renderDestiny(ch)+renderRollWorkbench();
+    root.innerHTML="<div class=\"fh-ps-app "+(state.editDraft?"is-edit-mode":"")+"\"><div class=\"fh-ps-layout\">"+renderRail()+"<main class=\"fh-ps-left\">"+sheet+"</main>"+renderContext(ch)+"</div></div>";
     renderMessage();
     if((state.activeContext==="inventory"||state.activeContext==="forge")&&state.inventory===null)loadInventory();
   }
@@ -889,7 +964,7 @@
   }
   function friendlyPullError(error){if(error&&error.status===404)return "D&D Beyond could not open this sheet. Confirm that it is public or shared.";if(error&&(error.status===502||error.status===503||error.status===504))return "D&D Beyond did not answer in time. Wait a moment, then try Sync again.";if(error&&error.status===403)return "Check the campaign code and confirm that the D&D Beyond sheet is shared.";return error&&error.message||"The D&D Beyond pull failed.";}
   function openPull(force){if(!force&&state.profile&&state.profile.ddbLinked){pullDdb(null);return;}var modal=showModal("<p class=\"fh-mc-modal-kicker\">D&D BEYOND</p><h3>Connect the public sheet</h3><p>Paste a public character link, a Shareable Link or the numeric character ID.</p><label><span>D&D Beyond character link</span><input id=\"fhPsDdbUrl\" type=\"text\" inputmode=\"url\" placeholder=\"https://www.dndbeyond.com/characters/123456789\"></label><p class=\"fh-mc-modal-note\">Only the stable numeric character ID is retained for later syncs.</p><p class=\"fh-mc-modal-error\" id=\"fhPsPullError\"></p><button class=\"fh-mc-modal-save\" id=\"fhPsPullSave\">Connect & Pull</button>");var input=modal.element.querySelector("#fhPsDdbUrl");modal.element.querySelector("#fhPsPullSave").onclick=function(){if(input.value.trim())pullDdb(input.value.trim(),modal);};input.focus();}
-  function pullDdb(value,modal){var url=null;if(value){try{url=canonicalDdbUrl(value);}catch(error){modal.element.querySelector("#fhPsPullError").textContent=error.message;return;}}state.message="Syncing D&D Beyond…";state.messageKind="roll";renderMessage();post("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(state.pseudo)+"/pull",url?{shareUrl:url}:{}).then(function(data){state.profile=Object.assign({},state.profile||{},data.profile||{});state.character=effectiveCharacter();if(modal)modal.close();var report=state.character.importReport||emptyImportReport(),warnings=report.unmappedSkills.length+report.unmappedTools.length;state.message="Character refreshed · "+report.importedTools.length+" DDB tool"+(report.importedTools.length===1?"":"s")+" imported"+(warnings?" · "+warnings+" unrecognized entr"+(warnings===1?"y":"ies")+" ignored":"")+".";state.messageKind=warnings?"warn":"success";render();}).catch(function(error){var message=friendlyPullError(error);if(modal)modal.element.querySelector("#fhPsPullError").textContent=message;else{state.message=message;state.messageKind="danger";render();}});}
+  function pullDdb(value,modal){var url=null;if(value){try{url=canonicalDdbUrl(value);}catch(error){modal.element.querySelector("#fhPsPullError").textContent=error.message;return;}}var preservedOverrides=cloneData(state.profile&&state.profile.manualOverrides||{});state.message="Syncing D&D Beyond…";state.messageKind="roll";renderMessage();post("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(state.pseudo)+"/pull",url?{shareUrl:url}:{}).then(function(data){state.profile=Object.assign({},state.profile||{},data.profile||{});state.profile.manualOverrides=preservedOverrides;state.character=effectiveCharacter();if(modal)modal.close();var report=state.character.importReport||emptyImportReport(),warnings=report.unmappedSkills.length+report.unmappedTools.length;state.message="Character refreshed · "+report.importedTools.length+" DDB tool"+(report.importedTools.length===1?"":"s")+" imported"+(warnings?" · "+warnings+" unrecognized entr"+(warnings===1?"y":"ies")+" ignored":"")+".";state.messageKind=warnings?"warn":"success";render();}).catch(function(error){var message=friendlyPullError(error);if(modal)modal.element.querySelector("#fhPsPullError").textContent=message;else{state.message=message;state.messageKind="danger";render();}});}
   function openLevelUp(ch){var classes=CLASS_NAMES.slice();ch.classes.forEach(function(entry){if(classes.indexOf(entry.name)<0)classes.unshift(entry.name);});var classOptions=classes.map(function(name){return "<option "+(ch.classes[0]&&ch.classes[0].name===name?"selected":"")+">"+esc(name)+"</option>";}).join("");var statOptions="<option value=\"\">No increase</option>"+ABILITIES.map(function(key){return "<option value=\""+key+"\">"+key+" — "+ABILITY_NAMES[key]+"</option>";}).join("");var skillOptions="<option value=\"\">No skill</option>"+SKILLS.map(function(s){return "<option>"+s[0]+"</option>";}).join("");var modal=showModal("<p class=\"fh-mc-modal-kicker\">LEVEL "+(ch.level+1)+"</p><h3>What gains a level?</h3><label><span>Class</span><select id=\"fhPsLevelClass\">"+classOptions+"</select></label><div class=\"fh-mc-modal-grid\"><label><span>Ability increase 1</span><select id=\"fhPsStat1\">"+statOptions+"</select></label><label><span>Ability increase 2</span><select id=\"fhPsStat2\">"+statOptions+"</select></label></div><div class=\"fh-mc-modal-grid\"><label><span>Essential skill</span><select id=\"fhPsSkill1\">"+skillOptions+"</select></label><label><span>New tier</span><select id=\"fhPsTier1\"><option value=\"half\">Half</option><option value=\"proficient\" selected>Proficient</option><option value=\"expert\">Expert</option></select></label></div><label><span>New essential spells</span><textarea id=\"fhPsNewSpells\" placeholder=\"One per line or comma-separated\"></textarea></label><p class=\"fh-mc-modal-error\" id=\"fhPsLevelError\"></p><button class=\"fh-mc-modal-save\" id=\"fhPsLevelSave\">Apply Level Up</button>");modal.element.querySelector("#fhPsLevelSave").onclick=function(){var increases={};["#fhPsStat1","#fhPsStat2"].forEach(function(sel){var value=modal.element.querySelector(sel).value;if(value)increases[value]=(increases[value]||0)+1;});var skillName=modal.element.querySelector("#fhPsSkill1").value;var entry={id:uuid(),targetLevel:ch.level+1,className:modal.element.querySelector("#fhPsLevelClass").value,abilityIncreases:increases,essentialSkills:skillName?[{name:skillName,tier:modal.element.querySelector("#fhPsTier1").value}]:[],spells:modal.element.querySelector("#fhPsNewSpells").value.split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean),createdAt:new Date().toISOString()};saveProfile({levelUps:(state.profile.levelUps||[]).concat([entry])}).then(function(){modal.close();state.character=effectiveCharacter();state.message="Level-up saved. PB updated automatically.";state.messageKind="success";render();}).catch(function(error){modal.element.querySelector("#fhPsLevelError").textContent=error.message;});};}
 
   function handleClick(event){var button=event.target.closest("button");if(!button||!root.contains(button))return;
@@ -907,7 +982,8 @@
     if(button.dataset.rescueBardic!==undefined){var bardicPrompt=state.trayPrompt;if(bardicPrompt)rescueWithBardic(bardicPrompt.entryId,button.dataset.rescueBardic);return;}
     if(button.dataset.rescueDestiny!==undefined){var rescuePrompt=state.trayPrompt,entryId=rescuePrompt&&rescuePrompt.entryId,rescueDie=button.dataset.rescueDestiny;if(entryId)confirmDestinyUse(rescueDie,"Save the failed roll",function(){rescueWithDestiny(entryId,rescueDie);},"destiny");return;}
     if(button.id==="fhPsChromeToggle"){state.chromeOpen=!state.chromeOpen;render();return;}
-    if(button.id==="fhPsLoad"){loadParty();return;}if(button.id==="fhPsSync"){openPull(false);return;}if(button.id==="fhPsRelink"){openPull(true);return;}if(button.id==="fhPsLevel"){openLevelUp(state.character);return;}if(button.id==="fhPsCorrect"){state.activeContext="edit";render();return;}if(button.id==="fhPsSaveCorrections"){saveCorrections();return;}
+    if(button.id==="fhPsEditSave"){saveSheetEdit();return;}if(button.id==="fhPsEditCancel"){state.editDraft=null;render();return;}if(button.id==="fhPsEditRestore"){beginSheetEdit(characterWithoutOverrides());return;}if(button.id==="fhPsEditAddTool"){addEditTool();return;}if(button.dataset.editRemoveTool){removeEditTool(button.dataset.editRemoveTool);return;}if(button.dataset.editAddBonus){addEditBonus(button.dataset.editAddBonus);return;}if(button.dataset.editRemoveBonus){removeEditBonus(button.dataset.editRemoveBonus,button.dataset.bonusId);return;}
+    if(button.id==="fhPsLoad"){state.editDraft=null;loadParty();return;}if(button.id==="fhPsSync"){openPull(false);return;}if(button.id==="fhPsRelink"){openPull(true);return;}if(button.id==="fhPsLevel"){openLevelUp(state.character);return;}if(button.id==="fhPsCorrect"||button.dataset.sheetEdit!==undefined){if(!state.editDraft)beginSheetEdit();return;}if(button.id==="fhPsSaveCorrections"){saveCorrections();return;}
     if(button.dataset.quickName){quickRoll(button.dataset.quickName,button.dataset.ability,button.dataset.bonus,button.dataset.note);return;}
     if(button.dataset.configName){openConfig(button.dataset.configName,button.dataset.ability,button.dataset.bonus,button.dataset.note,button.dataset.dc);return;}
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;prepareTrayForConfig(state.rollConfig);render();return;}
@@ -924,7 +1000,7 @@
   function onClick(event){try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error",true);renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   function onChange(event){
     if(event.target.id==="fhPsDestinyDie"&&state.rollConfig){var requested=event.target.value;if(!requested){state.rollConfig.destinyDieId="";state.rollConfig.destinyConfirmed=false;prepareTrayForConfig(state.rollConfig);render();return;}if(requested!==state.rollConfig.destinyDieId){confirmDestinyUse(requested,"Add this die to "+state.rollConfig.name,function(){state.rollConfig.destinyDieId=requested;state.rollConfig.destinyConfirmed=true;prepareTrayForConfig(state.rollConfig);render();},"add-destiny");return;}}
-    if(/^fhPs(PlusTwo|Guidance|Bardic|BardicSides|Custom|Dc)$/.test(event.target.id)){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsWho"){state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.destinyField){updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
+    if(/^fhPs(PlusTwo|Guidance|Bardic|BardicSides|Custom|Dc)$/.test(event.target.id)){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.destinyField){updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
   function onKeydown(event){if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();clearDiceTray(true);return;}if(state.currentEvent&&key===" "){event.preventDefault();acknowledgeEvent();return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();runConfiguredRoll();}}
 
   document.addEventListener("DOMContentLoaded",function(){root=document.getElementById("fhPlayerSheet");if(!root)return;document.body.classList.add("fh-player-body","fh-player-sheet-body");root.addEventListener("click",onClick);root.addEventListener("change",onChange);root.addEventListener("keydown",onKeydown);try{state.code=localStorage.getItem("fh-my-campcode")||"";}catch(e){}render();if(state.code)loadParty();});

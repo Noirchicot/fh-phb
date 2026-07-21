@@ -129,4 +129,49 @@ assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Roll and spend
 assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Current Points:/i,"the direct-spend warning shows current Destiny Points");
 root.querySelector("[data-tray-cancel]").click();
 
-console.log("Player sheet DOM integration tests passed.");
+const originalName=t.state.character.name;
+root.querySelector("#fhPsCorrect").click();
+assert.ok(t.state.editDraft,"Edit opens a working copy instead of the right-side corrections panel");
+assert.ok(root.querySelector(".fh-ps-app.is-edit-mode"),"the central character sheet visibly enters Edit mode");
+assert.ok(root.querySelector("#fhPsEditSave")&&root.querySelector("#fhPsEditCancel"),"the working copy exposes explicit Save and Cancel actions");
+assert.doesNotMatch(root.querySelector(".fh-ps-right").textContent,/MANUAL CORRECTIONS/i,"the old correction form no longer occupies the temporary right panel");
+root.querySelector("#fhPsEditName").value="Discarded name";
+root.querySelector("#fhPsEditCancel").click();
+assert.equal(t.state.character.name,originalName,"Cancel discards the working copy without changing the live sheet");
+
+root.querySelector("#fhPsCorrect").click();
+root.querySelector("#fhPsEditName").value="Edited Hero";
+root.querySelector("#fhPsEditPb").value="4";
+root.querySelector('[data-edit-ability="INT"]').value="18";
+root.querySelector("#fhPsEditInitiative").value="5";
+root.querySelector("#fhPsEditAc").value="17";
+root.querySelector('[data-edit-passive="vigilance"]').value="16";
+const arcanaTier=root.querySelector('[data-edit-skill-tier="Arcana"]');
+Array.from(arcanaTier.querySelectorAll("option")).forEach(option=>{
+  if(option.getAttribute("value")==="expert") option.setAttribute("selected","");
+  else option.removeAttribute("selected");
+});
+root.querySelector('[data-edit-add-bonus="Arcana"]').click();
+const bonusRow=root.querySelector('[data-edit-bonus-row="Arcana"]');
+bonusRow.querySelector("[data-edit-bonus-label]").value="Arcane focus";
+bonusRow.querySelector("[data-edit-bonus-value]").value="2";
+root.querySelector("#fhPsEditAddTool").click();
+assert.equal(t.state.editDraft.tools.length,1,"an official FH tool can be added to the working copy");
+root.querySelector("#fhPsEditSave").click();
+
+setTimeout(()=>{
+  assert.equal(t.state.editDraft,null,"Save exits Edit mode");
+  assert.equal(t.state.character.name,"Edited Hero","identity corrections are applied to the live sheet");
+  assert.equal(t.state.character.pb,4,"PB can be corrected manually");
+  assert.equal(t.state.character.abilities.INT,18,"ability scores can be corrected manually");
+  assert.equal(t.state.character.initiative,5,"initiative can be corrected manually");
+  assert.equal(t.state.character.armorClass,17,"AC can be corrected manually");
+  assert.equal(t.state.character.passiveOverrides.vigilance,16,"passive scores can be corrected manually");
+  assert.equal(t.state.character.skills.Arcana.tier,"expert","skill mastery can be altered without changing the 26-skill list");
+  assert.equal(t.state.character.specialBonuses.Arcana[0].value,2,"named special bonuses persist on a skill");
+  assert.match(root.querySelector('[data-quick-name="Arcana"]').title,/Arcana/i,"the edited skill remains rollable");
+  assert.ok(root.querySelector(".fh-ps-bonus-dots"),"a red dot reminds the player that a special bonus is active");
+  assert.match(root.querySelector(".fh-ps-bonus-dots").title,/Arcane focus \+2/,"hover text explains each red bonus dot");
+  assert.equal(Object.keys(t.state.character.skills).filter(name=>name.indexOf("Tool - ")!==0).length,26,"Edit mode cannot add or delete core skills");
+  console.log("Player sheet DOM integration tests passed.");
+},0);

@@ -63,6 +63,18 @@ A natural 20 has its own animation; if its −1 Destiny Point change reaches exa
 
 The right-side panels provide the Soulforging Loop, a campaign inventory summary and Soulforge preparation while preserving links to the full-screen inventory and workshop.
 
+### Stage 2 — inline sheet editing
+
+The old **Manual Corrections** side panel is retired from navigation. Both the identity `Edit` button and the left-rail `Edit sheet` button now turn the central character sheet into a working copy. This is deliberately transactional:
+
+- `Cancel` discards the draft without touching the live character.
+- `Save` writes one complete `manualOverrides` object and then rebuilds the live sheet.
+- `Restore DDB` resets the working copy to imported/build values, but still requires `Save` before committing.
+
+The working copy can edit name, species, level, PB, all six abilities, Initiative, AC, the three passives, proficiency tier, official FH tools and named numeric special bonuses. The 26 canonical FH skills stay fixed and cannot be added or removed. Tools can be added only from the canonical FH list and can be removed. Each saved special bonus contributes to that check's calculated/rolled value and renders as a small red reminder dot; hovering the dots lists the bonus names and values.
+
+Manual overrides remain the last layer applied by `effectiveCharacter()`. A DDB Sync therefore refreshes imported source data without replacing the player's saved corrections, deleted-tool list or special bonuses.
+
 ### Player-state persistence
 
 The sheet writes these profile properties through the existing profile endpoint:
@@ -71,7 +83,7 @@ The sheet writes these profile properties through the existing profile endpoint:
 - `rollHistory`
 - `rollPrefs`
 - `rollEvents`
-- `manualOverrides` (AC, all 26 skill tiers and the canonical tool tiers)
+- `manualOverrides` (identity, level, PB, abilities, Initiative, AC, passives, all 26 skill tiers, canonical tools, deleted tools and named special bonuses)
 - `pendingRoll` (serializable roll phase, event queue and tray presentation)
 
 It also writes the same state to local storage under `fh-player-v2:{campaign}:{character}`. This is an intentional safety fallback: the sheet remains persistent on the current device if a deployed Worker version rejects new profile properties. For cross-device persistence, ensure the production Worker preserves these three fields when merging a profile patch.
@@ -111,7 +123,7 @@ Front-end behavior that must remain intact:
 - Send the initial URL as `{ "shareUrl": canonicalUrl }` to the Worker's `/profile/{campaign}/{character}/pull` endpoint.
 - Keep actionable 403/404/timeout messages and re-enable the UI by re-rendering after failure.
 
-The player client contains a defensive, character-agnostic adapter. It accepts snapshot arrays or name-keyed maps, wrapped `{ data: ... }` snapshots, mixed case skill names, official DDB tool aliases, DDB proficiency modifiers, several AC field shapes and array/object ability scores. The adapter is now strict: a pull can produce only the 26 canonical FH skills, and only recognized tools backed by an explicit proficiency source. Inventory items, non-proficiency modifiers and unknown labels cannot become active tools. Unknown labels are retained in `character.importReport` and shown in the current correction panel for diagnosis. Manual corrections are applied last and therefore survive every later sync. **There is no character-specific code.** Import order never controls display order.
+The player client contains a defensive, character-agnostic adapter. It accepts snapshot arrays or name-keyed maps, wrapped `{ data: ... }` snapshots, mixed case skill names, official DDB tool aliases, DDB proficiency modifiers, several AC field shapes and array/object ability scores. The adapter is now strict: a pull can produce only the 26 canonical FH skills, and only recognized tools backed by an explicit proficiency source. Inventory items, non-proficiency modifiers and unknown labels cannot become active tools. Unknown labels are retained in `character.importReport` for diagnosis. Manual corrections are applied last and therefore survive every later sync. **There is no character-specific code.** Import order never controls display order.
 
 This client adapter cannot invent a field that the Worker never returns. The production Worker must use one parser for every initial import and resync and satisfy the normalized snapshot contract in `WORKER-ADMIN-API.md`. Do not “fix” individual characters by name or URL.
 
