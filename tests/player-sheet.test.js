@@ -134,20 +134,29 @@ t.state.profile = {
     skills:[
       {name:"Hunting",tier:"proficient"},
       {name:"Bogus Skill",tier:"expert"},
-      {name:"Smith's Tools",tier:"proficient"}
+      {name:"Smith's Tools",tier:"proficient"},
+      {name:"Stealth",tier:"proficient"},
+      {name:"Insight",tier:"half"}
+    ],
+    customSkills:[
+      {name:"Academic",tier:"half"},
+      {name:"Appraisal",tier:"none"},
+      {name:"Carpenter's Tool",tier:"half"}
     ],
     tools:[
       {name:"Cook’s Utensils",tier:"proficient"},
       {name:"Lute",tier:"proficient"},
       {name:"Herbalism Kit"},
-      {name:"Imaginary Toolkit",tier:"proficient"}
+      {name:"Imaginary Toolkit",tier:"proficient"},
+      {name:"Carpenter's Tools",tier:"proficient"}
     ],
     toolProficiencies:[{name:"Thieves’ Tools"}],
     inventory:[{name:"Alchemist's Supplies"}],
     modifiers:{background:[
       {type:"proficiency",friendlySubtypeName:"Painter's Supplies"},
       {type:"bonus",friendlySubtypeName:"Poisoner's Kit"}
-    ]},importReport:{unmappedTools:[{name:"Worker Mystery Kit",source:"Worker parser"}]},spells:[]
+    ]},importReport:{unmappedTools:[{name:"Worker Mystery Kit",source:"Worker parser"}]},
+    skillBonuses:[{name:"Arcana",label:"DDB bonus (WIS)",value:2}],spells:[]
   }},manualOverrides:{},levelUps:[],preparation:{tools:[]}
 };
 const strictImport=t.effectiveCharacter();
@@ -167,6 +176,17 @@ assert.equal(strictImport.skills["Bogus Skill"],undefined,"unknown skill names a
 assert.ok(strictImport.importReport.unmappedSkills.some(item=>item.name==="Bogus Skill"),"ignored skills appear in the import report");
 assert.ok(strictImport.importReport.unmappedTools.some(item=>item.name==="Imaginary Toolkit"),"ignored tools appear in the import report");
 assert.ok(strictImport.importReport.unmappedTools.some(item=>item.name==="Worker Mystery Kit"),"a normalized Worker's import diagnostics survive into Edit mode");
+assert.equal(strictImport.skills.Stealth.tier,"proficient","pencilled native proficiencies emitted by the Worker reach the sheet");
+assert.equal(strictImport.skills.Insight.tier,"half","pencilled native half tiers reach the sheet");
+assert.equal(strictImport.skills.Academics.tier,"half","the DDB custom name Academic maps to the FH skill Academics");
+assert.equal(strictImport.skills["Tool - Carpenter's"].tier,"half","the FH custom tool tier overrides the native binary proficiency");
+assert.equal(strictImport.specialBonuses.Arcana[0].value,2,"Worker skill bonuses become named special bonuses");
+assert.equal(t.skillInfo("Arcana",strictImport).specialTotal,2,"synced special bonuses feed the displayed skill bonus");
+t.state.profile.manualOverrides={specialBonuses:{Arcana:[{id:"m1",label:"DDB bonus (WIS)",value:3,active:true}]}};
+const dedupedImport=t.effectiveCharacter();
+assert.equal(dedupedImport.specialBonuses.Arcana.length,1,"a manual bonus with the same label replaces the synced one instead of duplicating");
+assert.equal(dedupedImport.specialBonuses.Arcana[0].value,3,"the manual copy of a synced bonus wins");
+t.state.profile.manualOverrides={};
 
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);

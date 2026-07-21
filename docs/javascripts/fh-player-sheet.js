@@ -185,12 +185,14 @@
       return {name:name,tier:entry};
     });
   }
+  var SKILL_ALIASES={academic:"Academics",appraisal:"Appraise"};
   function knownSkillName(value) {
     var key=lookupKey(value),found=SKILLS.find(function(item){return lookupKey(item[0])===key;});
-    return found&&found[0];
+    return (found&&found[0])||SKILL_ALIASES[key]||null;
   }
   function knownToolName(value) {
-    return TOOL_ALIASES[lookupKey(value)]||null;
+    var key=lookupKey(value);
+    return TOOL_ALIASES[key]||TOOL_ALIASES[key.replace(/\btool$/,"tools")]||TOOL_ALIASES[key.replace(/\btools$/,"tool")]||null;
   }
   function emptyImportReport(){return {importedSkills:[],importedTools:[],unmappedSkills:[],unmappedTools:[]};}
   function reportImport(report,field,value,source){
@@ -321,12 +323,15 @@
     });
     if (snap) {
       importedEntries(snap.skills).forEach(function(skill){applyImportedRecord(skills,skill,false,importReport,"DDB skills",false);});
-      importedEntries(snap.customSkills).forEach(function(skill){applyImportedRecord(skills,skill,false,importReport,"DDB custom skills",false);});
       importedEntries(snap.proficiencies&&snap.proficiencies.skills).forEach(function(skill){applyImportedRecord(skills,skill,false,importReport,"DDB skill proficiencies",true);});
       importedEntries(snap.tools).forEach(function(tool){applyImportedRecord(skills,tool,true,importReport,"DDB tools",Number(snap.schemaVersion)>=2);});
       importedEntries(snap.toolProficiencies).forEach(function(tool){applyImportedRecord(skills,tool,true,importReport,"DDB tool proficiencies",true);});
       importedEntries(snap.proficiencies&&snap.proficiencies.tools).forEach(function(tool){applyImportedRecord(skills,tool,true,importReport,"DDB tool proficiencies",true);});
       applyDdbModifiers(skills,snap.modifiers,importReport);
+      // Custom proficiencies are the Fate's Hand layer written onto the DDB
+      // sheet; their tier is authoritative, so they are applied after every
+      // native source (a pencilled half must beat a granted "proficient").
+      importedEntries(snap.customSkills).forEach(function(skill){applyImportedRecord(skills,skill,false,importReport,"DDB custom skills",false);});
       if(snap.importReport&&typeof snap.importReport==="object"){
         ["importedTools","unmappedSkills","unmappedTools"].forEach(function(key){(snap.importReport[key]||[]).forEach(function(item){var entry=typeof item==="string"?{name:item,source:"Worker import report"}:{name:item.name||"Unknown",source:item.source||"Worker import report"};if(!importReport[key].some(function(old){return old.name===entry.name&&old.source===entry.source;}))importReport[key].push(entry);});});
       }
@@ -349,7 +354,23 @@
     var pb=Math.max(0,numberOr(overrides.pb,pbFor(level))),identity=overrides.identity||{};
     var initiative=numberOr(overrides.initiative,mod(abilities.DEX));
     var passiveDefaults={vigilance:10,investigation:10,insight:10},passiveOverrides=overrides.passives||{};
-    var specialBonuses=overrides.specialBonuses&&typeof overrides.specialBonuses==="object"?overrides.specialBonuses:{};
+    // Synced skill bonuses (e.g. a class feature adding WIS to Arcana) come
+    // from the Worker snapshot each pull; manual bonuses are applied last and
+    // replace a synced bonus with the same label so edits never duplicate.
+    var specialBonuses={};
+    if(snap)importedEntries(snap.skillBonuses).forEach(function(entry){
+      if(!entry||typeof entry!=="object")return;
+      var name=knownSkillName(entry.name)||knownToolName(entry.name);
+      var value=Number(entry.value);
+      if(!name||!isFinite(value)||!value)return;
+      (specialBonuses[name]||(specialBonuses[name]=[])).push({id:"sync:"+name+":"+(entry.label||"bonus"),label:entry.label||"DDB bonus",value:value,active:true,synced:true});
+    });
+    var manualSpecials=overrides.specialBonuses&&typeof overrides.specialBonuses==="object"?overrides.specialBonuses:{};
+    Object.keys(manualSpecials).forEach(function(name){
+      var manual=Array.isArray(manualSpecials[name])?manualSpecials[name]:[];
+      specialBonuses[name]=(specialBonuses[name]||[]).filter(function(item){return !manual.some(function(entry){return entry&&entry.label===item.label;});}).concat(manual);
+      if(!specialBonuses[name].length)delete specialBonuses[name];
+    });
     return {
       name:identity.name||((snap && snap.name) || base.name || state.pseudo),
       species:identity.species||((snap && (snap.species||(snap.race&&(snap.race.fullName||snap.race.baseRaceName||snap.race.name)))) || meta.species || "Unknown species"),
