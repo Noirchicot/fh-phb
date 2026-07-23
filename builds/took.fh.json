@@ -1,0 +1,355 @@
+{
+  "character": {
+    "ddbId": null,
+    "name": "took",
+    "campaign": "FH2",
+    "abilityScores": {
+      "STR": 18,
+      "DEX": 15,
+      "CON": 13,
+      "INT": 11,
+      "WIS": 11,
+      "CHA": 9
+    },
+    "abilityScoresRaw": {
+      "STR": 16,
+      "DEX": 14,
+      "CON": 13,
+      "INT": 11,
+      "WIS": 11,
+      "CHA": 9
+    }
+  },
+  "destiny": {
+    "score": 7,
+    "arcana": {
+      "id": "XIX",
+      "name": "The Sun",
+      "impact": 1,
+      "power": "once per short rest, add +2 to the result of a Destiny die without any additional cost.",
+      "vibration": "minor light and healing (e.g. Light + small heal).",
+      "meaning": "success, vitality, clarity, joy. Dispels shadows, brings optimism and truth."
+    },
+    "breakdown": [
+      {
+        "label": "PB",
+        "value": 2
+      },
+      {
+        "label": "Araag",
+        "value": 2
+      },
+      {
+        "label": "Arcana XIX",
+        "value": 1
+      },
+      {
+        "label": "Destiny Touched (fh)",
+        "value": 2
+      }
+    ],
+    "notesText": "DESTINY SCORE : 7\nPB : 2\nAraag : 2\nArcana XIX : 1\nDestiny Touched (fh) : 2\n\nXIX. The Sun\n* Meaning — success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.\n* Destiny Impact — +1\n* Power — once per short rest, add +2 to the result of a Destiny die without any additional cost.\n* Vibration — minor light and healing (e.g. Light + small heal)."
+  },
+  "background": {
+    "replaceWithBlank": true,
+    "abilityBoostFeatIds": [
+      2379989,
+      2379985
+    ],
+    "originFeats": [
+      {
+        "key": "destinyTouched",
+        "label": "Destiny Touched (fh)",
+        "id": 2383104
+      }
+    ],
+    "otherOriginFeat": "",
+    "story": ""
+  },
+  "skills": [
+    {
+      "name": "Academics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Appraise",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Delve",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Hunting",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Leadership",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Might",
+      "type": 1,
+      "statId": 1,
+      "proficiencyLevel": 3
+    },
+    {
+      "name": "Streetwise",
+      "type": 1,
+      "statId": 6,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tactics",
+      "type": 1,
+      "statId": 4,
+      "proficiencyLevel": 1
+    },
+    {
+      "name": "Tool - Carpenter's",
+      "type": 1,
+      "statId": 1,
+      "proficiencyLevel": 2
+    },
+    {
+      "name": "Vigilance",
+      "type": 1,
+      "statId": 5,
+      "proficiencyLevel": 1
+    }
+  ],
+  "nativeSkillTiers": {
+    "Acrobatics": "proficient",
+    "Athletics": "proficient",
+    "Insight": "proficient",
+    "Stealth": "half"
+  },
+  "destinyFeats": {
+    "diceFeats": [
+      {
+        "name": "Destiny Dice - d4",
+        "id": 1927834
+      },
+      {
+        "name": "Destiny Dice - d6",
+        "id": 1927924
+      },
+      {
+        "name": "Destiny Dice - d8",
+        "id": 1927926
+      },
+      {
+        "name": "Destiny Dice - d10",
+        "id": 1927927
+      },
+      {
+        "name": "Destiny Dice - d12",
+        "id": 1927928
+      }
+    ],
+    "score": 7,
+    "originFeatId": 2383104,
+    "originFeatIds": [
+      2383104
+    ]
+  },
+  "meta": {
+    "builder": "fh-builder-v3",
+    "savedAt": "2026-07-23T21:16:36.860Z",
+    "species": "Araag",
+    "class": "Fighter",
+    "level": 1
+  },
+  "builderState": {
+    "v": 3,
+    "name": "took",
+    "campaign": "FH2",
+    "cls": "Fighter",
+    "race": "Araag",
+    "lvl": 1,
+    "ddbId": "",
+    "raceP": "0",
+    "featP": "0",
+    "langPts": "0",
+    "bonus1": "0",
+    "ab": {
+      "mode": "roll",
+      "set": {
+        "rolls": [
+          {
+            "dice": [
+              1,
+              1,
+              4
+            ],
+            "total": 6
+          },
+          {
+            "dice": [
+              2,
+              1,
+              6
+            ],
+            "total": 9
+          },
+          {
+            "dice": [
+              4,
+              5,
+              5
+            ],
+            "total": 14
+          },
+          {
+            "dice": [
+              4,
+              1,
+              2
+            ],
+            "total": 7
+          },
+          {
+            "dice": [
+              5,
+              2,
+              6
+            ],
+            "total": 13
+          },
+          {
+            "dice": [
+              6,
+              4,
+              6
+            ],
+            "total": 16
+          },
+          {
+            "dice": [
+              2,
+              6,
+              1
+            ],
+            "total": 9
+          },
+          {
+            "dice": [
+              5,
+              5,
+              1
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              6,
+              1,
+              4
+            ],
+            "total": 11
+          },
+          {
+            "dice": [
+              1,
+              1,
+              4
+            ],
+            "total": 6
+          }
+        ],
+        "keptIdx": [
+          5,
+          2,
+          4,
+          7,
+          8,
+          1
+        ],
+        "kept": [
+          16,
+          14,
+          13,
+          11,
+          11,
+          9
+        ],
+        "rerolls": 0
+      },
+      "assign": {
+        "STR": 0,
+        "DEX": 1,
+        "CON": 2,
+        "INT": 4,
+        "WIS": 3,
+        "CHA": 5
+      },
+      "manual": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    "boosts": {
+      "STR": 2,
+      "DEX": 1
+    },
+    "arcana": "XIX",
+    "origin": "destinyTouched",
+    "origin2": "",
+    "originOther": "",
+    "glory": "0",
+    "other": "0",
+    "story": "",
+    "tiers": {
+      "Acrobatics": {
+        "t": "prof",
+        "l": "exp"
+      },
+      "Appraise": {
+        "t": "half",
+        "l": "non"
+      },
+      "Athletics": {
+        "t": "prof",
+        "l": "prof"
+      },
+      "Delve": {
+        "t": "half",
+        "l": "non"
+      },
+      "Hunting": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Insight": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Might": {
+        "t": "prof",
+        "l": "non"
+      },
+      "Stealth": {
+        "t": "half",
+        "l": "non"
+      },
+      "Tool - Carpenter's": {
+        "t": "half",
+        "l": "half"
+      }
+    }
+  }
+}
