@@ -88,10 +88,16 @@ assert.match(board, /Soulforging/);
 assert.doesNotMatch(board, /Unbought/);
 
 t.state.destiny = {score:8,points:8,dice:t.makeDestinySlots(18,18)};
+t.state.prefs={bardicSides:6,destinyScoreLocked:true};
 t.state.history = [];
 const destiny = t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}});
 assert.equal((destiny.match(/class="fh-ps-destiny-group/g) || []).length, 5, "Destiny dice render as five compact size groups");
 assert.match(destiny, /×2/, "duplicate Destiny dice use a compact multiplier");
+assert.match(destiny, /fh-ps-destiny-die die-d4/, "the Destiny pool reuses the physical d4 silhouette");
+assert.match(destiny, /data-destiny-lock/, "the rarely changed maximum score is locked by default");
+t.state.destiny.points=10;
+assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}),/fh-ps-destiny-points is-overflow[\s\S]*<sup>\+2<\/sup>/,"points above Max use a label-free visual overflow cue");
+t.state.destiny.points=8;
 assert.doesNotMatch(destiny, /DICE TRAY/, "Destiny remains a compact horizontal strip");
 assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted");
 assert.match(t.renderDiceTray(), /DICE TRAY/, "the dice tray has its own roll-workbench zone");
@@ -190,8 +196,10 @@ t.state.profile.manualOverrides={};
 
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);
-assert.equal(t.state.traySelection.filter(sides=>sides===20).length,2,"the tray caps d20s at two");
-assert.equal(t.state.traySelection.filter(sides=>sides!==20).length,3,"the tray caps other dice at three");
+assert.equal(t.state.traySelection.length,7,"the free/damage tray accepts pools larger than a structured check");
+assert.match(t.renderDiceTray(),/is-lightweight/,"pools above six dice switch to the lighter presentation");
+t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);
+assert.equal(t.state.traySelection.length,8,"an 8d6 Fireball pool fits without a special case");
 
 function natOneEntry(id) {
   return {id,kind:"d20",name:"Arcana",ability:"INT",baseBonus:3,d20Mode:"flat",d20s:[1],kept:1,natural:1,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",createdAt:new Date().toISOString(),total:4,natChoice:null};

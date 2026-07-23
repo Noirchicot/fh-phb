@@ -89,22 +89,25 @@ t.render();
 root.querySelector('[data-config-name="Arcana"]').click();
 assert.match(root.querySelector(".fh-ps-dice-tray-head h2").textContent,/Arcana \+6/,"opening a console names the prepared check in the tray");
 assert.equal(root.querySelectorAll(".fh-ps-tray-dice .die-d20").length,1,"a flat console starts with one prepared d20");
-let guidance=root.querySelector("#fhPsGuidance");
-guidance.checked=true;
-guidance.dispatchEvent(new window.Event("change",{bubbles:true}));
-// linkedom does not hydrate checked properties from newly rendered attributes.
-root.querySelector("#fhPsGuidance").checked=true;
-root.querySelector('[data-roll-mode="advantage"]').click();
-assert.equal(t.state.rollConfig.guidance,true,"rerendering a roll mode preserves Guidance in console state");
-assert.equal(root.querySelector("#fhPsGuidance").hasAttribute("checked"),true,"the preserved Guidance state is rendered back into the control");
-// linkedom does not hydrate the checked property from the HTML attribute as a browser does.
-root.querySelector("#fhPsGuidance").checked=true;
-assert.ok(root.querySelector('[data-roll-mode="advantage"]').classList.contains("is-on"),"advantage stays selected");
-const plusTwo=root.querySelector("#fhPsPlusTwo");plusTwo.checked=true;plusTwo.dispatchEvent(new window.Event("change",{bubbles:true}));
+assert.equal(root.querySelectorAll(".fh-ps-preset-card").length,4,"the console exposes the four compact Guidance, Tactical, Bardic and Other cards");
+assert.ok(root.querySelector("#fhPsRunRoll .fh-icon"),"the selected A Clean d20 is the Roll call-to-action");
+assert.ok(root.querySelector("#fhPsTacticalMind"),"Tactical Mind is available as a d10 preset");
+root.querySelector("#fhPsTacticalMind").click();
+assert.equal(t.state.rollConfig.bonusDice[0].sides,10,"Tactical Mind prepares a d10");
+assert.equal(t.state.rollConfig.bonusDice[0].sourceIcon,"tactical","Tactical Mind carries the sword source identity");
+root.querySelector("#fhPsTacticalMind").click();
+root.querySelector("#fhPsGuidance").click();
+root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
+assert.equal(t.state.rollConfig.guidance,true,"rerendering a d20 mode preserves the Guidance preset");
+assert.ok(root.querySelector("#fhPsGuidance").classList.contains("is-on"),"the Guidance preset remains visibly active");
+assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),"advantage stays selected");
+root.querySelector("#fhPsPlusTwo").click();
 assert.ok(root.querySelector(".fh-ps-modifier-token"),"the +2 option appears as a visible tray token");
-root.querySelector("#fhPsGuidance").checked=true;root.querySelector("#fhPsPlusTwo").checked=true;
+assert.equal(root.querySelector(".fh-ps-modifier-token").closest(".fh-ps-die-wrap").querySelector(".fh-ps-die-source"),null,"the blue +2 token stays intentionally free of a source seal");
 
 root.querySelector("#fhPsRunRoll").click();
+assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Choose the result to keep/i,"two d20s pause for an explicit player choice");
+root.querySelector('[data-die-choice="0"]').click();
 let entry=t.state.history[0];
 assert.equal(entry.d20s.length,2,"advantage rolls two d20s");
 assert.equal(entry.guidance.sides,4,"Guidance rolls beside the d20s");
@@ -121,6 +124,7 @@ root.querySelector("#fhPsRunRoll").click();
 entry=t.state.history.find(item=>item.id===entry.id);
 assert.deepEqual(Array.from(entry.d20s),originalD20,"adjusting bonuses never rerolls the original d20s");
 assert.equal(entry.custom,3,"the edited bonus is applied");
+root.querySelector("[data-event-ok]").click();
 
 root.querySelector("[data-destiny-die]").click();
 assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Add this Destiny die to the Dice Tray/i,"Destiny is reserved rather than rolled while any console is open");
@@ -167,6 +171,37 @@ root.querySelector("[data-clear-tray]").click();
 assert.equal(t.state.trayResults.length,0,"Clear empties every die and result");
 assert.equal(t.state.rollConfig,null,"Clear also releases the active roll setup");
 assert.doesNotMatch(root.querySelector(".fh-ps-dice-tray").textContent,/Up to 2d20/i,"the unwanted yellow capacity subtitle is removed");
+
+for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
+assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
+assert.ok(root.querySelector(".fh-ps-dice-tray.is-lightweight"),"large pools use the lightweight tray presentation");
+const freeLabel=root.querySelector("#fhPsTrayLabel");freeLabel.value="Fireball";freeLabel.dispatchEvent(new window.Event("change",{bubbles:true}));
+root.querySelector("[data-roll-tray]").click();
+assert.equal(t.state.history[0].name,"Fireball","the free roll keeps its purpose in history");
+assert.equal(t.state.history[0].dice.length,8,"all damage dice are recorded");
+root.querySelector("[data-event-ok]").click();
+root.querySelector("[data-clear-tray]").click();
+
+root.querySelector('[data-config-name="Arcana"]').click();
+const portent=root.querySelector("#fhPsD20Forced");portent.value="17";portent.dispatchEvent(new window.Event("change",{bubbles:true}));
+root.querySelector("[data-add-bonus]").click();
+const generic=root.querySelector("[data-bonus-row]");generic.querySelector("[data-bonus-label]").value="Superiority";generic.querySelector("[data-bonus-forced]").value="6";generic.querySelector("[data-bonus-forced]").dispatchEvent(new window.Event("change",{bubbles:true}));
+root.querySelector("#fhPsRunRoll").click();
+entry=t.state.history[0];
+assert.equal(entry.kept,17,"Portent replaces the d20 roll");
+assert.equal(entry.d20Forced,true,"a forced d20 is stored as manual");
+assert.equal(entry.bonusDice[0].forced,true,"a forced generic bonus die is stored as manual");
+assert.equal(entry.bonusDice[0].sourceIcon,"other-1","the first custom die keeps the Other I source identity after its label is edited");
+assert.equal(root.querySelector(".fh-ps-die-source").textContent.trim(),"I","the Dice Tray carries the Other I seal with the die");
+assert.match(t.state.currentEvent.text,/MANUAL/,"the persistent roll log visibly marks forced results");
+root.querySelector("[data-event-ok]").click();
+root.querySelector("[data-clear-tray]").click();
+
+assert.equal(root.querySelector('[data-destiny-step="score:-1"]').disabled,true,"Destiny Max steppers start locked");
+root.querySelector("[data-destiny-lock]").click();
+assert.equal(root.querySelector('[data-destiny-step="score:-1"]').disabled,false,"the lock explicitly enables Max corrections");
+root.querySelector("[data-destiny-lock]").click();
+
 root.querySelector("[data-destiny-die]").click();
 assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Roll and spend this Destiny die\?/i,"outside a console, Destiny uses the explicit spend confirmation");
 assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Current Points:/i,"the direct-spend warning shows current Destiny Points");

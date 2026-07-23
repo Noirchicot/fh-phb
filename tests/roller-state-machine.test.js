@@ -9,7 +9,7 @@ const sourcePath=path.join(__dirname,"..","docs","javascripts","fh-player-sheet.
 const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
   globalThis.__fhRollMachine={
     state,makeDestinySlots,setDestinyPoints,spendDestinyDie,destinyEventSpecs,naturalDestiny,
-    rollInput,runConfiguredRoll,acknowledgeEvent,queueEvents,renderEventContent,renderDiceTray,
+    rollInput,runConfiguredRoll,resolveDieChoice,acknowledgeEvent,queueEvents,renderEventContent,renderDiceTray,
     resolveNatOne,rescueWithBardic,rescueWithDestiny,rollTransactionActive,entryTotal,outcomeFor
   };
 })();
@@ -105,9 +105,17 @@ assert.equal(t.renderDiceTray().includes("data-clear-tray disabled"),true,"Clear
 t.acknowledgeEvent();
 assert.equal(t.rollTransactionActive(),false);
 
-// Advantage and disadvantage keep the correct immutable d20.
-reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"advantage"});t.runConfiguredRoll();entry=t.state.history[0];assert.equal(entry.kept,18);assert.equal(entry.natural,18);acknowledgeAll();
-reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"disadvantage"});t.runConfiguredRoll();entry=t.state.history[0];assert.equal(entry.kept,4);assert.equal(entry.natural,4);acknowledgeAll();
+// Advantage and disadvantage both roll twice, then wait for the player's explicit choice.
+reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"advantage"});t.runConfiguredRoll();assert.equal(t.state.history.length,0);assert.equal(t.state.trayPrompt.type,"die-choice");t.resolveDieChoice(1);entry=t.state.history[0];assert.equal(entry.kept,18);assert.equal(entry.d20Choice,1);acknowledgeAll();
+reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"disadvantage"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt.type,"die-choice");t.resolveDieChoice(1);entry=t.state.history[0];assert.equal(entry.kept,18,"disadvantage still permits either result when the GM grants a choice");assert.equal(entry.d20Mode,"disadvantage");acknowledgeAll();
+
+reset();queueRolls(10,2,7);t.state.rollConfig=t.rollInput("Tactics","INT",4,{mode:"flat"});t.state.rollConfig.bonusDice=[{id:"superiority",label:"Superiority",sides:8,advantageMode:"advantage",forcedResult:null}];t.runConfiguredRoll();assert.equal(t.state.trayPrompt.target,"bonus");t.resolveDieChoice(0);entry=t.state.history[0];assert.equal(entry.bonusDice[0].result,2);assert.deepEqual(Array.from(entry.bonusDice[0].rolls),[2,7]);assert.equal(entry.total,16);acknowledgeAll();
+
+reset(5,[die("destiny-choice",4,true)]);queueRolls(2,4,12);t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",3,{mode:"flat"}),{destinyDieId:"destiny-choice",destinyConfirmed:true,destinyMode:"advantage"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt.target,"destiny","Destiny resolves its choice before any d20 exists");t.resolveDieChoice(0);assert.equal(t.state.currentEvent.kind,"destiny");t.acknowledgeEvent();entry=t.state.history[0];assert.equal(entry.destiny.result,2);assert.deepEqual(Array.from(entry.destiny.rolls),[2,4]);acknowledgeAll();
+
+// Portent-style results never consume randomness and remain permanently marked manual.
+reset();t.state.rollConfig=t.rollInput("Arcana","INT",5,{mode:"flat"});t.state.rollConfig.d20ForcedResult=17;t.state.rollConfig.bonusDice=[{id:"forced-d8",label:"Superiority",sides:8,advantageMode:"flat",forcedResult:6}];t.runConfiguredRoll();entry=t.state.history[0];assert.equal(entry.kept,17);assert.equal(entry.d20Forced,true);assert.equal(entry.bonusDice[0].result,6);assert.equal(entry.bonusDice[0].forced,true);assert.equal(entry.total,28);acknowledgeAll();
+reset();t.state.rollConfig=t.rollInput("Arcana","INT",0,{mode:"flat"});t.state.rollConfig.d20ForcedResult=10;t.state.rollConfig.bonusDice=[4,6,8,10].map((sides,index)=>({id:"cap-"+index,label:"Bonus "+index,sides,advantageMode:"flat",forcedResult:1}));t.runConfiguredRoll();entry=t.state.history[0];assert.equal(entry.bonusDice.length,3,"structured checks enforce the three-bonus-die cap in the engine as well as the UI");acknowledgeAll();
 
 // A known failure offers one final bonus die without rerolling the d20.
 reset();queueRolls(5);t.state.rollConfig=t.rollInput("Arcana","INT",3,{mode:"flat",dc:20});t.runConfiguredRoll();
