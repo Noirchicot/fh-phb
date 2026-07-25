@@ -30,11 +30,12 @@
 
 /* ── Mount & collapsed seal ─────────────────────────────────────── */
 .fh-cd-root{position:fixed;top:0;right:0;bottom:0;width:var(--cd-width);z-index:20;
-  font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;color:var(--cd-ink);
-  transition:transform .28s ease}
+  font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;color:var(--cd-ink)}
 .fh-cd-root *{box-sizing:border-box}
-.fh-cd-root:not(.is-open){transform:translateX(calc(100% + 12px));pointer-events:none}
-.fh-cd-root:not(.is-open) .fh-cd-seal-fab{pointer-events:auto}
+/* Only the panel slides away; the seal is fixed and must stay reachable. */
+.fh-cd-root:not(.is-open){pointer-events:none}
+.fh-cd-root:not(.is-open) .fh-cd-dock{transform:translateX(calc(100% + 14px))}
+.fh-cd-root .fh-cd-seal-fab{pointer-events:auto}
 body.fh-cd-docked .md-main,
 body.fh-cd-docked .md-header,
 body.fh-cd-docked .md-footer{padding-right:var(--cd-width)}
@@ -48,6 +49,7 @@ body.fh-cd-docked .md-footer{padding-right:var(--cd-width)}
 .fh-cd-seal-fab:hover{filter:brightness(1.08)}
 
 .fh-cd-dock{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;
+  transition:transform .28s ease;
   background:var(--cd-parch);border-left:6px solid;
   border-image:linear-gradient(180deg,#6b4f2a,#3f2e18 30%,#5c4326 70%,#2e2110) 1;
   box-shadow:-10px 0 30px rgba(20,12,4,.45)}
