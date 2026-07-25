@@ -9,7 +9,7 @@ const sourcePath=path.join(__dirname,"..","docs","javascripts","fh-player-sheet.
 const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
   globalThis.__fhRollMachine={
     state,makeDestinySlots,setDestinyPoints,spendDestinyDie,destinyEventSpecs,naturalDestiny,
-    rollInput,runConfiguredRoll,resolveDieChoice,acknowledgeEvent,queueEvents,renderEventContent,renderDiceTray,
+    rollInput,runConfiguredRoll,resolveDieChoice,acknowledgeEvent,queueEvents,renderEventContent,renderStageZone,
     resolveNatOne,rescueWithBardic,rescueWithDestiny,rollTransactionActive,entryTotal,outcomeFor
   };
 })();
@@ -101,7 +101,7 @@ assert.equal(entry.guidance.result,2);assert.equal(entry.bardic.result,5);
 assert.equal(t.state.trayResults[0].label,"Destiny","Destiny remains first in the visible tray");
 assert.equal(t.state.currentEvent.kind,"result","the final result is always the last blocking event");
 assert.match(t.renderEventContent(),/>Finish</);
-assert.equal(t.renderDiceTray().includes("data-clear-tray disabled"),true,"Clear is disabled until the transaction finishes");
+assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),true,"Clear is disabled until the transaction finishes");
 t.acknowledgeEvent();
 assert.equal(t.rollTransactionActive(),false);
 

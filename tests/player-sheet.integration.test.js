@@ -1,7 +1,9 @@
 "use strict";
 
-// Optional DOM-level smoke test. Install with:
+// Optional DOM-level smoke test for the Companion dock. Install with:
 // npm install --prefix /tmp/fh-player-test linkedom@0.18.12
+// Every assertion below is a behaviour the sheet had before the dock redesign,
+// re-pointed at the new markup, plus the behaviours the redesign added.
 const assert = require("node:assert/strict");
 const webcrypto = require("node:crypto").webcrypto;
 const crypto = {randomUUID:()=>webcrypto.randomUUID(),getRandomValues:array=>{array[0]=10;return array;}};
@@ -44,79 +46,111 @@ t.state.record={build:{
 t.state.profile={snapshot:null,levelUps:[],preparation:{tools:[]}};
 t.state.character=t.effectiveCharacter();
 t.loadPlayState(t.state.character);
+t.state.dockOpen=true;
 t.render();
 
 const root=document.getElementById("fhPlayerSheet");
-assert.ok(root.querySelector(".fh-ps-commandbar"),"the narrow character command bar renders above identity");
+function openMenu(){ if(!root.querySelector(".fh-cd-menu")) root.querySelector("[data-menu-toggle]").click(); }
+
+/* ── Dock chrome ─────────────────────────────────────────────── */
+assert.ok(root.querySelector(".fh-cd-dock"),"the Companion renders as a docked panel");
+assert.equal(root.querySelector(".fh-ps-commandbar"),null,"the old command bar is gone");
 assert.equal(root.querySelector(".fh-ps-rail"),null,"the redundant vertical rail no longer consumes sheet width");
-assert.ok(root.querySelector('[data-context="inventory"]')&&root.querySelector('[data-context="loop"]')&&root.querySelector('[data-context="forge"]'),"Inventory, Soulforging Loop and Soulforge live in the command bar");
-assert.equal(root.querySelector(".fh-ps-command-home").textContent,"FH","the gold FH home control remains visible at the right edge");
-assert.ok(root.querySelector("#fhPsLevel"),"an unlinked character keeps Level Up as a fallback under More");
-assert.equal(root.querySelectorAll(".fh-ps-roll-workbench > section").length,3,"console, animation log and dice tray are distinct zones");
+assert.ok(root.querySelector('[data-open-pop="inventory"]')&&root.querySelector('[data-open-pop="loop"]')&&root.querySelector('[data-open-pop="forge"]'),"Inventory, Soulforging Loop and Soulforge pop from the dock header");
+assert.equal(root.querySelector(".fh-cd-seal").textContent,"FH","the gold FH seal links back to the handbook");
+assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"],[data-zone="stream"]').length,3,"console, roller and stream are distinct zones");
+assert.equal(root.querySelectorAll("[data-zone]").length,7,"the dock shows its seven zones at once");
+openMenu();
+assert.ok(root.querySelector("#fhPsLevel"),"an unlinked character keeps Level Up under the menu");
 
 t.state.profile.ddbLinked=true;
+t.state.menuOpen=true;
 t.render();
-assert.equal(root.querySelector("#fhPsSync").textContent,"Sync","a linked character gets the direct Sync action");
+assert.match(root.querySelector("#fhPsSync").textContent,/^Sync/,"a linked character gets the direct Sync action");
 assert.ok(root.querySelector("#fhPsRelink"),"a linked character can still replace its DDB link");
 assert.equal(root.querySelector("#fhPsLevel"),null,"Level Up disappears when Sync is the source of truth");
 t.state.profile.ddbLinked=false;
+t.state.menuOpen=false;
 t.render();
 
+/* ── Major events keep their own scene ───────────────────────── */
 const specialScenes=[
-  ["nat1","NATURAL 1 · Fate accepted","1"],
-  ["nat20","NATURAL 20 · Fate bends in your favor","20"],
-  ["arcane-critical-failure","ARCANE CRITICAL FAILURE · Destiny d8 rolled 1","1"],
-  ["arcane-critical-success","ARCANE CRITICAL SUCCESS · Destiny d8 rolled 8","8"]
+  ["nat1","NATURAL 1 · Fate accepted"],
+  ["nat20","NATURAL 20 · Fate bends in your favor"],
+  ["arcane-critical-failure","ARCANE CRITICAL FAILURE · Destiny d8 rolled 1"],
+  ["arcane-critical-success","ARCANE CRITICAL SUCCESS · Destiny d8 rolled 8"]
 ];
-specialScenes.forEach(([kind,text,face])=>{
+specialScenes.forEach(([kind,text])=>{
   t.state.currentEvent={kind,text,blocking:true,progress:1,total:1};
   t.state.queueDone="finish-sequence";
   t.render();
-  const scene=root.querySelector(".fh-ps-special-stage.is-"+kind);
-  assert.ok(scene,"the "+kind+" event renders its dedicated animated scene");
-  assert.equal(scene.querySelector(".fh-ps-event-icon strong").textContent,face,"the "+kind+" scene shows the decisive die face");
+  const scene=root.querySelector(".fh-cd-card.is-"+kind);
+  assert.ok(scene,"the "+kind+" event renders its dedicated card");
+  assert.match(scene.textContent,/Finish/,"the last event of a sequence asks to Finish");
 });
 t.state.currentEvent={kind:"awakening",text:"ARCANE AWAKENING · Natural 20 at Destiny 0",blocking:true,progress:1,total:1};
 t.render();
-assert.match(root.querySelector(".fh-ps-awakening-card").textContent,/The Hermit/i,"Arcane Awakening reveals the character's Major Arcana");
+assert.match(root.querySelector(".fh-cd-card.is-awakening").textContent,/The Hermit/i,"Arcane Awakening reveals the character's Major Arcana");
 t.state.currentEvent={kind:"chaos",text:"Chaos has noticed · 2d6 = 3 + 5",chaosRoll:[3,5],blocking:true,progress:1,total:1};
 t.render();
-assert.equal(root.querySelector(".fh-ps-special-stage.is-chaos .fh-ps-chaos-pair strong").textContent,"8","Chaos gets its own animated 2d6 scene");
+assert.match(root.querySelector(".fh-cd-card.is-chaos").textContent,/total 8/,"Chaos shows its 2d6 total");
 t.state.currentEvent=null;
 t.state.queueDone="";
 t.render();
 
+/* ── Console ─────────────────────────────────────────────────── */
 root.querySelector('[data-config-name="Arcana"]').click();
-assert.match(root.querySelector(".fh-ps-dice-tray-head h2").textContent,/Arcana \+6/,"opening a console names the prepared check in the tray");
-assert.equal(root.querySelectorAll(".fh-ps-tray-dice .die-d20").length,1,"a flat console starts with one prepared d20");
-assert.equal(root.querySelectorAll(".fh-ps-preset-card").length,4,"the console exposes the four compact Guidance, Tactical, Bardic and Other cards");
-assert.ok(root.querySelector("#fhPsRunRoll .fh-icon"),"the selected A Clean d20 is the Roll call-to-action");
-assert.ok(root.querySelector("#fhPsTacticalMind"),"Tactical Mind is available as a d10 preset");
-root.querySelector("#fhPsTacticalMind").click();
-assert.equal(t.state.rollConfig.bonusDice[0].sides,10,"Tactical Mind prepares a d10");
-assert.equal(t.state.rollConfig.bonusDice[0].sourceIcon,"tactical","Tactical Mind carries the sword source identity");
-root.querySelector("#fhPsTacticalMind").click();
+assert.match(root.querySelector(".fh-cd-cname").textContent,/Arcana \+6/,"opening a console names the prepared check");
+assert.match(root.querySelector(".fh-cd-status").textContent,/Arcana \+6/,"the roller frame echoes the prepared check");
+assert.equal(root.querySelectorAll(".fh-cd-dicerow .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
+assert.equal(root.querySelectorAll("[data-bonus-preset]").length,2,"the console keeps only the Guidance and Bardic presets");
+assert.equal(root.querySelector('[data-bonus-preset="Tactical Mind"]'),null,"Tactical Mind is retired from the console");
+assert.ok(root.querySelector("#fhPsDestinyDie"),"Destiny is chosen from the console itself");
+assert.ok(root.querySelector("#fhPsRunRoll .fh-icon"),"the d20 ouroboros is the Roll call-to-action");
+
 root.querySelector("#fhPsGuidance").click();
 root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
 assert.equal(t.state.rollConfig.guidance,true,"rerendering a d20 mode preserves the Guidance preset");
 assert.ok(root.querySelector("#fhPsGuidance").classList.contains("is-on"),"the Guidance preset remains visibly active");
 assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),"advantage stays selected");
 root.querySelector("#fhPsPlusTwo").click();
-assert.ok(root.querySelector(".fh-ps-modifier-token"),"the +2 option appears as a visible tray token");
-assert.equal(root.querySelector(".fh-ps-modifier-token").closest(".fh-ps-die-wrap").querySelector(".fh-ps-die-source"),null,"the blue +2 token stays intentionally free of a source seal");
+assert.ok(root.querySelector(".fh-cd-diewrap.is-modifier"),"the +2 option appears as a visible token beside the dice");
+assert.equal(root.querySelector(".fh-cd-diewrap.is-modifier .fh-cd-src").textContent.trim(),"","the fixed +2 token stays free of a source seal");
+
+/* the tray feeds bonus dice into an open console, capped at three */
+root.querySelector('[data-add-tray-die="8"]').click();
+assert.equal(t.state.rollConfig.bonusDice.length,2,"a tray die joins the prepared roll as a bonus die");
+assert.equal(t.state.rollConfig.bonusDice[1].sides,8,"the tray die keeps the size that was clicked");
+root.querySelector('[data-add-tray-die="6"]').click();
+root.querySelector('[data-add-tray-die="12"]').click();
+assert.equal(t.state.rollConfig.bonusDice.length,3,"a roll never carries more than three bonus dice");
+assert.equal(root.querySelector('[data-add-tray-die="20"]').disabled,true,"the base d20 is not a bonus slot");
+t.state.rollConfig.bonusDice=t.state.rollConfig.bonusDice.slice(0,1);
+t.render();
 
 root.querySelector("#fhPsRunRoll").click();
-assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Choose the result to keep/i,"two d20s pause for an explicit player choice");
+assert.match(root.querySelector(".fh-cd-overlay").textContent,/Choose the result to keep/i,"two d20s pause for an explicit player choice");
 root.querySelector('[data-die-choice="0"]').click();
 let entry=t.state.history[0];
 assert.equal(entry.d20s.length,2,"advantage rolls two d20s");
 assert.equal(entry.guidance.sides,4,"Guidance rolls beside the d20s");
-assert.equal(t.state.trayResults.length,4,"the tray displays both d20s, Guidance and the +2 token");
+assert.equal(t.state.trayResults.length,4,"the frame displays both d20s, Guidance and the +2 token");
 const originalD20=Array.from(entry.d20s);
 
+/* ── Stream ──────────────────────────────────────────────────── */
 root.querySelector("[data-event-ok]").click();
+const streamLine=root.querySelector(".fh-cd-sentry");
+assert.ok(streamLine,"a finished roll lands in the stream");
+assert.match(streamLine.textContent,/Click Tester/,"every stream line names the character who rolled");
+assert.match(streamLine.textContent,/Arcana/,"the stream line names the check");
+const exported=JSON.parse(streamLine.querySelector("[data-roll]").getAttribute("data-roll"));
+assert.equal(exported.schema,"fh-roll/1","stream lines carry a versioned export payload");
+assert.equal(exported.character,"Click Tester","the export names the character for a later AboveVTT bridge");
+assert.ok(exported.parts.length>=3,"the export keeps the d20, the base bonus and every extra die");
+
+/* ── Reopening a roll never rerolls its d20 ──────────────────── */
 root.querySelector('[data-history-id="'+entry.id+'"]').click();
-assert.equal(t.state.rollConfig.editingId,entry.id,"clicking the event log reopens that roll");
+assert.equal(t.state.rollConfig.editingId,entry.id,"clicking a stream line reopens that roll");
 const custom=root.querySelector("#fhPsCustom");
 custom.value="3";
 custom.dispatchEvent(new window.Event("change",{bubbles:true}));
@@ -126,23 +160,24 @@ assert.deepEqual(Array.from(entry.d20s),originalD20,"adjusting bonuses never rer
 assert.equal(entry.custom,3,"the edited bonus is applied");
 root.querySelector("[data-event-ok]").click();
 
+/* ── Destiny is reserved, never spent, while a console is open ─ */
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Add this Destiny die to the Dice Tray/i,"Destiny is reserved rather than rolled while any console is open");
+assert.match(root.querySelector(".fh-cd-overlay").textContent,/Add this Destiny die to the Dice Tray/i,"Destiny is reserved rather than rolled while any console is open");
 root.querySelector("[data-tray-cancel]").click();
 assert.equal(t.state.trayPrompt,null,"Destiny confirmation can be cancelled without spending the die");
 
 root.querySelector('[data-config-name="Arcana"]').click();
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Add this Destiny die to the Dice Tray/i,"a console reserves Destiny instead of rolling it immediately");
+assert.match(root.querySelector(".fh-cd-overlay").textContent,/Add this Destiny die to the Dice Tray/i,"a console reserves Destiny instead of rolling it immediately");
 root.querySelector("[data-tray-confirm-destiny]").click();
 assert.ok(t.state.rollConfig.destinyDieId,"the confirmed Destiny die is reserved in console state");
-assert.ok(root.querySelector(".fh-ps-destiny-die.is-selected"),"the reserved Destiny die flashes in the pool");
-assert.equal(t.state.trayResults[0].label,"Destiny","the reserved Destiny die appears first in the tray");
+assert.ok(root.querySelector(".fh-cd-ddie.is-selected"),"the reserved Destiny die is flagged in the pool");
+assert.equal(t.state.trayResults[0].label,"Destiny","the reserved Destiny die appears first in the frame");
 const beforeDestinyHistory=t.state.history.length;
 root.querySelector("#fhPsRunRoll").click();
 assert.equal(t.state.history.length,beforeDestinyHistory,"the d20 has not rolled while Destiny events await confirmation");
 assert.match(t.state.currentEvent.text,/Destiny d\d+ rolled \d+.*Lost \d+ Destiny Point/i,"one Destiny popup contains the die result and its point implication");
-assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Continue/i,"the Destiny popup says Continue because the d20 still has to roll");
+assert.match(root.querySelector(".fh-cd-overlay").textContent,/Continue/i,"the Destiny popup says Continue because the d20 still has to roll");
 assert.equal(root.querySelector("[data-clear-tray]").disabled,true,"Clear cannot cancel a transaction after Destiny has been spent");
 const spentPoints=t.state.destiny.points;
 root.querySelector('[data-quick-name="Arcana"]').click();
@@ -153,28 +188,49 @@ while(t.state.rollSequence&&t.state.rollSequence.phase==="destiny-events"&&guard
 assert.equal(t.state.history.length,beforeDestinyHistory+1,"the remaining dice roll only after every Destiny event is acknowledged");
 entry=t.state.history[0];
 assert.equal(t.state.trayResults[0].label,"Destiny","the spent Destiny result remains before the d20s");
-assert.equal(t.state.trayResults[1].sides,20,"the d20 result follows Destiny in the tray");
+assert.equal(t.state.trayResults[1].sides,20,"the d20 result follows Destiny in the frame");
 root.querySelector("[data-event-ok]").click();
 
+/* ── A failed DC still offers one last die ───────────────────── */
 root.querySelector('[data-config-name="Arcana"]').click();
 const dc=root.querySelector("#fhPsDc");dc.value="20";dc.dispatchEvent(new window.Event("change",{bubbles:true}));
 root.querySelector("#fhPsRunRoll").click();
 entry=t.state.history[0];
 const failedD20=Array.from(entry.d20s);
-assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Add a bonus die/i,"a known failure offers one last bonus die");
+assert.match(root.querySelector(".fh-cd-overlay").textContent,/Add a bonus die/i,"a known failure offers one last bonus die");
 root.querySelector("[data-rescue-bardic]").click();
 assert.deepEqual(Array.from(entry.d20s),failedD20,"the rescue never rerolls the failed d20");
 assert.ok(entry.bardic&&entry.bardic.result,"the selected Bardic die is added and rolled");
 while(t.state.currentEvent&&root.querySelector("[data-event-ok]")){root.querySelector("[data-event-ok]").click();}
 
+/* ── A pool die boosts a roll that already landed ────────────── */
+t.state.destiny.points=6;
+t.state.destiny.dice.forEach(die=>{die.available=true;});
+t.render();
+root.querySelector('[data-quick-name="Arcana"]').click();
+const settled=t.state.history[0];
+const totalBeforeBoost=settled.total;
+const pointsBeforeBoost=t.state.destiny.points;
+assert.ok(root.querySelector("[data-event-ok]"),"a flat roll waits on its result before it is filed");
+root.querySelector("[data-destiny-die]").click();
+assert.match(root.querySelector(".fh-cd-overlay").textContent,/Boost/i,"a pool die offers to boost the roll that just landed");
+root.querySelector("[data-tray-confirm-destiny]").click();
+guard=8;
+while(t.state.currentEvent&&root.querySelector("[data-event-ok]")&&guard--){root.querySelector("[data-event-ok]").click();}
+const boosted=t.state.history.find(item=>item.id===settled.id);
+assert.ok(boosted.destiny,"the boost attaches a Destiny die to the finished roll");
+assert.ok(boosted.total>totalBeforeBoost,"the boost raises the total");
+assert.ok(t.state.destiny.points<pointsBeforeBoost,"the boost spends Destiny by the ruleset's own cost");
+assert.deepEqual(Array.from(boosted.d20s),Array.from(settled.d20s),"boosting never touches the original d20");
+
+/* ── Free tray ───────────────────────────────────────────────── */
 root.querySelector("[data-clear-tray]").click();
 assert.equal(t.state.trayResults.length,0,"Clear empties every die and result");
 assert.equal(t.state.rollConfig,null,"Clear also releases the active roll setup");
-assert.doesNotMatch(root.querySelector(".fh-ps-dice-tray").textContent,/Up to 2d20/i,"the unwanted yellow capacity subtitle is removed");
 
 for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
-assert.ok(root.querySelector(".fh-ps-dice-tray.is-lightweight"),"large pools use the lightweight tray presentation");
+assert.match(root.querySelector(".fh-cd-dicerow").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in the frame");
 const freeLabel=root.querySelector("#fhPsTrayLabel");freeLabel.value="Fireball";freeLabel.dispatchEvent(new window.Event("change",{bubbles:true}));
 root.querySelector("[data-roll-tray]").click();
 assert.equal(t.state.history[0].name,"Fireball","the free roll keeps its purpose in history");
@@ -182,41 +238,52 @@ assert.equal(t.state.history[0].dice.length,8,"all damage dice are recorded");
 root.querySelector("[data-event-ok]").click();
 root.querySelector("[data-clear-tray]").click();
 
+/* ── Portents and per-die controls live under the ⋯ drawer ───── */
 root.querySelector('[data-config-name="Arcana"]').click();
+assert.equal(root.querySelector("#fhPsD20Forced"),null,"the console stays uncluttered until fine-tuning is asked for");
+root.querySelector("[data-console-adv]").click();
 const portent=root.querySelector("#fhPsD20Forced");portent.value="17";portent.dispatchEvent(new window.Event("change",{bubbles:true}));
-root.querySelector("[data-add-bonus]").click();
-const generic=root.querySelector("[data-bonus-row]");generic.querySelector("[data-bonus-label]").value="Superiority";generic.querySelector("[data-bonus-forced]").value="6";generic.querySelector("[data-bonus-forced]").dispatchEvent(new window.Event("change",{bubbles:true}));
+root.querySelector('[data-add-tray-die="6"]').click();
+const generic=root.querySelector("[data-bonus-row]");
+generic.querySelector("[data-bonus-label]").value="Superiority";
+generic.querySelector("[data-bonus-forced]").value="6";
+generic.querySelector("[data-bonus-forced]").dispatchEvent(new window.Event("change",{bubbles:true}));
 root.querySelector("#fhPsRunRoll").click();
 entry=t.state.history[0];
 assert.equal(entry.kept,17,"Portent replaces the d20 roll");
 assert.equal(entry.d20Forced,true,"a forced d20 is stored as manual");
-assert.equal(entry.bonusDice[0].forced,true,"a forced generic bonus die is stored as manual");
-assert.equal(entry.bonusDice[0].sourceIcon,"other-1","the first custom die keeps the Other I source identity after its label is edited");
-assert.equal(root.querySelector(".fh-ps-die-source").textContent.trim(),"I","the Dice Tray carries the Other I seal with the die");
-assert.match(t.state.currentEvent.text,/MANUAL/,"the persistent roll log visibly marks forced results");
+assert.equal(entry.bonusDice[0].forced,true,"a forced tray bonus die is stored as manual");
+assert.equal(entry.bonusDice[0].sourceIcon,"other-1","the first custom die keeps its Other I identity after its label is edited");
+assert.equal(root.querySelector(".fh-cd-src b").textContent.trim(),"I","the die carries the Other I seal in the frame");
+assert.match(t.state.currentEvent.text,/MANUAL/,"the roll event visibly marks forced results");
+assert.match(root.querySelector(".fh-cd-sentry").textContent,/MANUAL/,"the stream line marks forced results too");
 root.querySelector("[data-event-ok]").click();
 root.querySelector("[data-clear-tray]").click();
 
-assert.equal(root.querySelector('[data-destiny-step="score:-1"]').disabled,true,"Destiny Max steppers start locked");
+/* ── Destiny maximum stays locked until asked ────────────────── */
+assert.equal(root.querySelector('[data-destiny-field="score"]').disabled,true,"the Destiny maximum starts locked");
 root.querySelector("[data-destiny-lock]").click();
-assert.equal(root.querySelector('[data-destiny-step="score:-1"]').disabled,false,"the lock explicitly enables Max corrections");
+assert.equal(root.querySelector('[data-destiny-field="score"]').disabled,false,"the lock explicitly enables Max corrections");
 root.querySelector("[data-destiny-lock]").click();
 
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Roll and spend this Destiny die\?/i,"outside a console, Destiny uses the explicit spend confirmation");
-assert.match(root.querySelector(".fh-ps-event-zone").textContent,/Current Points:/i,"the direct-spend warning shows current Destiny Points");
+assert.match(root.querySelector(".fh-cd-overlay").textContent,/Roll and spend this Destiny die\?/i,"outside a console, Destiny uses the explicit spend confirmation");
+assert.match(root.querySelector(".fh-cd-overlay").textContent,/Current Points:/i,"the direct-spend warning shows current Destiny Points");
 root.querySelector("[data-tray-cancel]").click();
 
+/* ── Inline sheet editing ────────────────────────────────────── */
 const originalName=t.state.character.name;
+openMenu();
 root.querySelector("#fhPsCorrect").click();
-assert.ok(t.state.editDraft,"Edit opens a working copy instead of the right-side corrections panel");
-assert.ok(root.querySelector(".fh-ps-app.is-edit-mode"),"the central character sheet visibly enters Edit mode");
+assert.ok(t.state.editDraft,"Edit opens a working copy");
+assert.ok(root.querySelector(".fh-cd-pop"),"the working copy takes over the dock as a full panel");
 assert.ok(root.querySelector("#fhPsEditSave")&&root.querySelector("#fhPsEditCancel"),"the working copy exposes explicit Save and Cancel actions");
-assert.doesNotMatch(root.querySelector(".fh-ps-right").textContent,/MANUAL CORRECTIONS/i,"the old correction form no longer occupies the temporary right panel");
+assert.equal(root.querySelector(".fh-ps-right"),null,"the old temporary right panel is gone for good");
 root.querySelector("#fhPsEditName").value="Discarded name";
 root.querySelector("#fhPsEditCancel").click();
 assert.equal(t.state.character.name,originalName,"Cancel discards the working copy without changing the live sheet");
 
+openMenu();
 root.querySelector("#fhPsCorrect").click();
 root.querySelector("#fhPsEditName").value="Edited Hero";
 root.querySelector("#fhPsEditPb").value="4";
@@ -248,8 +315,8 @@ setTimeout(()=>{
   assert.equal(t.state.character.skills.Arcana.tier,"expert","skill mastery can be altered without changing the 26-skill list");
   assert.equal(t.state.character.specialBonuses.Arcana[0].value,2,"named special bonuses persist on a skill");
   assert.match(root.querySelector('[data-quick-name="Arcana"]').title,/Arcana/i,"the edited skill remains rollable");
-  assert.ok(root.querySelector(".fh-ps-bonus-dots"),"a red dot reminds the player that a special bonus is active");
-  assert.match(root.querySelector(".fh-ps-bonus-dots").title,/Arcane focus \+2/,"hover text explains each red bonus dot");
+  assert.ok(root.querySelector(".fh-cd-sdots"),"a red dot reminds the player that a special bonus is active");
+  assert.match(root.querySelector(".fh-cd-sdots").title,/Arcane focus \+2/,"hover text explains each red bonus dot");
   assert.equal(Object.keys(t.state.character.skills).filter(name=>name.indexOf("Tool - ")!==0).length,26,"Edit mode cannot add or delete core skills");
   console.log("Player sheet DOM integration tests passed.");
 },0);

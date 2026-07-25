@@ -38,7 +38,7 @@ theme:
 
 extra_css:
   - stylesheets/extra.css
-  - stylesheets/player-sheet.css
+  - stylesheets/companion-dock.css
 
 extra_javascript:
   - javascripts/fh-home.js

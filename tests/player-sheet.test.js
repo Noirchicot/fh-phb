@@ -12,7 +12,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
-    renderDestiny, renderDiceTray, renderEventContent, resolveNatOne,
+    renderDestiny, renderStageZone, renderEventContent, resolveNatOne, renderStream, renderStreamEntry, rollExport,
     outcomeFor, effectiveCharacter, addTrayDie, state
   };
 })();
@@ -81,8 +81,9 @@ const character = {
 };
 assert.equal(t.skillInfo("Arcana", character).bonus, 6);
 const board = t.renderSkills(character);
-assert.equal((board.match(/class="fh-ps-skill-row/g) || []).length, 27, "26 skills plus one purchased tool are rendered");
-assert.equal((board.match(/class="fh-ps-skill-col/g) || []).length, 4, "all checks remain in four parallel columns");
+assert.equal((board.match(/class="fh-cd-srow/g) || []).length, 27, "26 skills plus one purchased tool are rendered");
+assert.equal((board.match(/data-config-name=/g) || []).length, 27, "every check keeps its console gear");
+assert.match(board, /fh-cd-tdiv/, "purchased tools sit under their own divider");
 assert.doesNotMatch(board, /Skills [123]/, "numbered skill column labels are removed");
 assert.match(board, /Soulforging/);
 assert.doesNotMatch(board, /Unbought/);
@@ -91,17 +92,17 @@ t.state.destiny = {score:8,points:8,dice:t.makeDestinySlots(18,18)};
 t.state.prefs={bardicSides:6,destinyScoreLocked:true};
 t.state.history = [];
 const destiny = t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}});
-assert.equal((destiny.match(/class="fh-ps-destiny-group/g) || []).length, 5, "Destiny dice render as five compact size groups");
+assert.equal((destiny.match(/class="fh-cd-poolwrap/g) || []).length, 5, "Destiny dice render as five compact size groups");
 assert.match(destiny, /×2/, "duplicate Destiny dice use a compact multiplier");
-assert.match(destiny, /fh-ps-destiny-die die-d4/, "the Destiny pool reuses the physical d4 silhouette");
+assert.match(destiny, /data-destiny-die/, "an available Destiny die is clickable in the pool");
 assert.match(destiny, /data-destiny-lock/, "the rarely changed maximum score is locked by default");
 t.state.destiny.points=10;
-assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}),/fh-ps-destiny-points is-overflow[\s\S]*<sup>\+2<\/sup>/,"points above Max use a label-free visual overflow cue");
+assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}),/fh-cd-overflow">\+2</,"points above Max use a label-free visual overflow cue");
 t.state.destiny.points=8;
-assert.doesNotMatch(destiny, /DICE TRAY/, "Destiny remains a compact horizontal strip");
+assert.doesNotMatch(destiny, /TRAY/, "Destiny remains a compact horizontal strip");
 assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted");
-assert.match(t.renderDiceTray(), /DICE TRAY/, "the dice tray has its own roll-workbench zone");
-assert.match(t.renderDiceTray(), /data-add-tray-die="100"/, "the free tray exposes d4 through d100 calls");
+assert.match(t.renderStageZone(), /fh-cd-tray/, "the roller carries its own tray bar");
+assert.match(t.renderStageZone(), /data-add-tray-die="100"/, "the free tray exposes d4 through d100 calls");
 
 t.state.record = {build:{
   character:{name:"Imported",abilityScores:{STR:9,DEX:9,CON:9,INT:9,WIS:9,CHA:9}},
@@ -197,7 +198,8 @@ t.state.profile.manualOverrides={};
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,7,"the free/damage tray accepts pools larger than a structured check");
-assert.match(t.renderDiceTray(),/is-lightweight/,"pools above six dice switch to the lighter presentation");
+assert.match(t.renderStageZone(),/width="34"/,"large pools shrink their dice to stay inside the frame");
+assert.doesNotMatch(t.renderStageZone(),/width="52"/,"a crowded pool never keeps the full-size die");
 t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,8,"an 8d6 Fireball pool fits without a special case");
 
@@ -228,5 +230,32 @@ t.state.trayPrompt={type:"chaos",entryId:fate.id};
 assert.match(t.renderEventContent(),/Chaos has noticed/,"the Chaos result replaces the animation-zone content");
 t.state.trayPrompt={type:"awakening",entryId:fate.id};
 assert.match(t.renderEventContent(),/Arcane Awakening/,"Arcane Awakening is rendered inside the animation zone");
+
+t.state.trayPrompt=null;
+t.state.currentEvent=null;
+assert.equal(t.renderEventContent(),"","with no prompt the roller frame stays clear for the dice");
+
+t.state.code="FH1";
+t.state.pseudo="Mar";
+t.state.character={name:"Mar del Ran",destinyBuild:{arcana:{name:"The Hermit"}}};
+t.state.history=[{id:"stream-1",kind:"d20",name:"Hunting",ability:"WIS",baseBonus:4,d20Mode:"advantage",d20s:[7,18],kept:18,natural:18,
+  plusTwo:true,custom:1,bonusDice:[{id:"b1",label:"Guidance",sides:4,result:3}],destiny:null,dc:"15",total:26,outcome:"Success",
+  createdAt:new Date().toISOString()}];
+const stream=t.renderStream();
+assert.match(stream,/Mar del Ran/,"every stream line names the character who rolled");
+assert.match(stream,/d20 \(adv\)/,"the stream shows the roll mode");
+assert.match(stream,/7 \/ 18 → 18/,"the stream shows both faces and the kept one");
+assert.match(stream,/Guidance d4/,"bonus dice are itemised");
+assert.match(stream,/FH/,"the fixed \+2 is itemised");
+assert.match(stream,/Mod/,"the manual modifier is itemised");
+assert.match(stream,/vs DC 15/,"the DC is carried on the line");
+assert.match(stream,/data-history-id="stream-1"/,"a d20 line can be reopened");
+
+const exported=t.rollExport(t.state.history[0]);
+assert.equal(exported.schema,"fh-roll/1","stream lines expose a versioned export shape");
+assert.equal(exported.character,"Mar del Ran","the export names the character for a later AboveVTT bridge");
+assert.equal(exported.total,26);
+assert.equal(exported.dc,15);
+assert.ok(exported.parts.length>=5,"the export keeps every contributing part");
 
 console.log("Player sheet unit tests passed.");
