@@ -13,7 +13,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
     renderDestiny, renderStageZone, renderEventContent, resolveNatOne, renderStream, renderStreamEntry, rollExport,
-    outcomeFor, effectiveCharacter, addTrayDie, state
+    outcomeFor, effectiveCharacter, addTrayDie, state, pendingFate
   };
 })();
 `);
@@ -227,7 +227,11 @@ assert.equal(fate.kept,20,"refusing fate transforms the kept die into 20");
 assert.equal(fate.total,23,"the transformed total is recalculated without rerolling bonuses");
 assert.equal(fate.d20s[0],1,"the original natural 1 remains immutable in history");
 assert.equal(t.state.destiny.points,0,"invoking Chaos drops Destiny to zero");
-assert.equal(fate.chaosRoll.length,2,"invoking Chaos records two d6");
+// REWRITTEN (tranche 3): the 2d6 are deferred behind a pending marker instead of
+// being rolled while the table waits. The entry receives them only once resolved.
+assert.equal(fate.chaosRoll,undefined,"invoking Chaos no longer rolls the 2d6 on the spot");
+assert.equal(t.pendingFate().length,1,"it installs a pending Chaos marker instead");
+assert.equal(t.pendingFate()[0].kind,"chaos");
 
 t.state.character={destinyBuild:{arcana:{name:"The Hermit"}}};
 t.state.trayPrompt={type:"nat1",entryId:fate.id};
