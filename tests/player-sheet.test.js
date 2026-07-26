@@ -12,8 +12,8 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
-    renderDestiny, renderStageZone, renderEventContent, resolveNatOne, renderStream, renderStreamEntry, rollExport,
-    outcomeFor, effectiveCharacter, addTrayDie, state, pendingFate
+    renderDestiny, renderStageZone, renderConsole, renderEventContent, resolveNatOne, renderStream, renderStreamEntry, rollExport,
+    outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate
   };
 })();
 `);
@@ -107,8 +107,12 @@ assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}),/fh-cd
 t.state.destiny.points=8;
 assert.doesNotMatch(destiny, /TRAY/, "Destiny remains a compact horizontal strip");
 assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted");
-assert.match(t.renderStageZone(), /fh-cd-tray/, "the roller carries its own tray bar");
-assert.match(t.renderStageZone(), /data-add-tray-die="100"/, "the free tray exposes d4 through d100 calls");
+// REWRITTEN (dock v5): the tray bar of die buttons is gone. Dice now come from
+// the white picker in the console, and the roller carries only ROLL / CLEAR TRAY.
+assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray\b/, "the roller no longer carries a bar of die buttons");
+assert.match(t.renderStageZone(), /data-roll-now/, "it carries the one permanent ROLL");
+assert.match(t.renderStageZone(), /data-clear-tray/, "and CLEAR TRAY beside it");
+assert.match(t.renderConsole(), /data-add-tray-die="100"/, "the white picker in the console exposes d4 through d100");
 
 t.state.record = {build:{
   character:{name:"Imported",abilityScores:{STR:9,DEX:9,CON:9,INT:9,WIS:9,CHA:9}},
@@ -208,6 +212,20 @@ assert.match(t.renderStageZone(),/width="34"/,"large pools shrink their dice to 
 assert.doesNotMatch(t.renderStageZone(),/width="52"/,"a crowded pool never keeps the full-size die");
 t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,8,"an 8d6 Fireball pool fits without a special case");
+
+/* A free die is a real object, so it survives its own roll with its identity. */
+t.state.traySelection=[];t.addTrayDie(20);t.addTrayDie(6);
+const freeDie=t.state.traySelection[0];
+assert.ok(freeDie.id,"every free die carries an id, so removing a neighbour cannot shift it");
+freeDie.colour="crimson";freeDie.forcedResult=17;
+t.state.code="";t.state.pseudo="";
+t.rollTrayDice();
+const freeEntry=t.state.history[0];
+assert.equal(freeEntry.dice[0].colour,"crimson","a free die keeps its colour once it has landed");
+assert.equal(freeEntry.dice[0].result,17,"and its Portent forces the result");
+assert.equal(freeEntry.dice[0].forced,true,"a forced free die is stored as manual");
+assert.equal(t.state.trayResults[0].colour,"crimson","the landed die is still painted in the frame");
+t.state.history=[];t.state.traySelection=[];t.state.rollSequence=null;t.state.currentEvent=null;t.state.eventQueue=[];
 
 function natOneEntry(id) {
   return {id,kind:"d20",name:"Arcana",ability:"INT",baseBonus:3,d20Mode:"flat",d20s:[1],kept:1,natural:1,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",createdAt:new Date().toISOString(),total:4,natChoice:null};

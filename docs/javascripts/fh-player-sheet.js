@@ -67,8 +67,9 @@
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayLabel:"Damage roll",trayResultText:"",currentEvent:null,eventQueue:[],queueDone:"",queueTotal:0,rollSequence:null,eventTimer:null,chromeOpen:false,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
-    dockOpen:false, menuOpen:false, popOpen:"", consoleAdvanced:false, diceSignature:"",
-    vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null
+    dockOpen:false, menuOpen:false, popOpen:"", diceSignature:"",
+    vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
+    diePrompt:null, callUntil:0, callTimer:null
   };
   // The five passives shown in the vitals zone, in Eric's reading order.
   var PASSIVES = [["vigilance","Vigilance"],["delve","Delve"],["survival","Survival"],["insight","Insight"],["investigation","Investigation"]];
@@ -490,7 +491,7 @@
     // Saved profiles from before the floor may still carry negative points.
     var overreach = Math.max(0, Number(raw.overreach)||0, points<0 ? -points : 0);
     // Deferred fate: Chaos and Overreach saves are carried, not rolled on the spot.
-    var pending = Array.isArray(raw.pending) ? raw.pending.filter(function(item){return item&&(item.kind==="chaos"||item.kind==="overreach");}).slice(0,4) : [];
+    var pending = Array.isArray(raw.pending) ? raw.pending.filter(function(item){return item&&(item.kind==="chaos"||item.kind==="overreach"||item.kind==="note");}).slice(0,6) : [];
     return {score:score,points:Math.max(0,points),dice:dice,overreach:overreach,pending:pending,lastChange:raw.lastChange || null};
   }
   // Hit points are tracked here, not imported: DDB stays the source for the
@@ -517,11 +518,15 @@
     state.destiny = normalizeDestiny(profile.destinyState || local.destiny, ch);
     state.history = Array.isArray(profile.rollHistory) ? profile.rollHistory.slice(0,MAX_HISTORY) : Array.isArray(local.history) ? local.history.slice(0,MAX_HISTORY) : [];
     state.events = Array.isArray(profile.rollEvents) ? profile.rollEvents.slice(0,10) : Array.isArray(local.events) ? local.events.slice(0,10) : [];
-    state.traySelection = Array.isArray(local.traySelection) ? local.traySelection.map(Number).filter(function(s){return ROLL_DIE_SIZES.indexOf(s)>=0;}).slice(0,MAX_FREE_DICE) : [20];
+    state.traySelection = Array.isArray(local.traySelection) ? local.traySelection.map(normalizeFreeDie).filter(Boolean).slice(0,MAX_FREE_DICE) : [newFreeDie(20)];
     state.trayLabel = String(local.trayLabel||"Damage roll").slice(0,48);
     var pending=profile.pendingRoll||local.pendingRoll||{};
     state.rollSequence=pending.rollSequence||null;state.eventQueue=Array.isArray(pending.eventQueue)?pending.eventQueue:[];state.currentEvent=pending.currentEvent||null;state.trayPrompt=pending.trayPrompt||null;state.queueDone=pending.queueDone||"";state.queueTotal=Number(pending.queueTotal)||0;
     state.trayResults=Array.isArray(pending.trayResults)?pending.trayResults:[];state.trayTitle=pending.trayTitle||"Dice Tray";state.trayResultText=pending.trayResultText||"";state.pendingArmed=pending.pendingArmed||null;
+    state.diePrompt=null;
+    // rollConfig is derived, never stored: a refresh mid-roll rebuilds the console
+    // from the entry so the head keeps naming the check instead of saying FREE ROLL.
+    if(rollOpen()){var resumed=openEntry();state.rollConfig=resumed?configFromEntry(resumed):null;}
     state.prefs = Object.assign({bardicSides:6},local.prefs || {},profile.rollPrefs || {});
   }
   function persistPlayState() {
@@ -625,8 +630,18 @@
     var roman=key.match(/^other\s+(i{1,3})$/);if(roman)return "other-"+({i:1,ii:2,iii:3}[roman[1]]||1);
     return "other-"+Math.min(3,Math.max(1,Number(index)+1||1));
   }
-  function newBonusDie(label,sides,sourceIcon){return {id:uuid(),label:String(label||"Other I").slice(0,32),sides:ROLL_DIE_SIZES.indexOf(Number(sides))>=0?Number(sides):6,advantageMode:"flat",forcedResult:null,sourceIcon:bonusSourceFor(label,0,sourceIcon)};}
-  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,sourceIcon:bonusSourceFor(label,index,die.sourceIcon)};}
+  function dieColour(value){return DIE_MATERIAL[value]&&value!=="white"&&value!=="chaos"?value:"";}
+  /* A die in the free tray is a real object, not a bare number: that is what
+     lets it keep a colour through the roll and carry its own Portent. */
+  function newFreeDie(sides,colour){return {id:uuid(),sides:Number(sides),colour:dieColour(colour),advantageMode:"flat",forcedResult:null};}
+  function normalizeFreeDie(raw){
+    var sides=Number(raw&&raw.sides!=null?raw.sides:raw);
+    if(ROLL_DIE_SIZES.indexOf(sides)<0)return null;
+    raw=raw&&typeof raw==="object"?raw:{};
+    return {id:raw.id||uuid(),sides:sides,colour:dieColour(raw.colour),advantageMode:rollMode(raw.advantageMode),forcedResult:forcedDieResult(raw.forcedResult,sides)};
+  }
+  function newBonusDie(label,sides,sourceIcon,colour){return {id:uuid(),label:String(label||"Other I").slice(0,32),sides:ROLL_DIE_SIZES.indexOf(Number(sides))>=0?Number(sides):6,advantageMode:"flat",forcedResult:null,sourceIcon:bonusSourceFor(label,0,sourceIcon),colour:dieColour(colour)};}
+  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour)};}
   function entryBonusDice(entry){
     if(Array.isArray(entry&&entry.bonusDice))return entry.bonusDice.map(normalizeBonusDie).slice(0,MAX_BONUS_DICE);
     var dice=[];
@@ -720,7 +735,7 @@
   }
   function trayDiceForPlan(plan,label,extra){
     extra=extra||{};var rolls=Array.isArray(plan&&plan.rolls)&&plan.rolls.length?plan.rolls:[plan&&plan.result];
-    return rolls.map(function(result,index){return Object.assign({sides:plan.sides,result:result,label:label+(rolls.length>1?" #"+(index+1):""),dropped:rolls.length>1&&plan.chosenIndex!=null&&index!==Number(plan.chosenIndex),choiceMode:rollMode(plan.mode||plan.advantageMode),forced:!!plan.forced,sourceIcon:plan.sourceIcon||""},extra);});
+    return rolls.map(function(result,index){return Object.assign({sides:plan.sides,result:result,label:label+(rolls.length>1?" #"+(index+1):""),dropped:rolls.length>1&&plan.chosenIndex!=null&&index!==Number(plan.chosenIndex),choiceMode:rollMode(plan.mode||plan.advantageMode),forced:!!plan.forced,sourceIcon:plan.sourceIcon||"",colour:plan.colour||""},extra);});
   }
   function pendingTrayDice(sides,label,mode,forced,extra){
     var manual=forcedDieResult(forced,sides),count=manual!=null||rollMode(mode)==="flat"?1:2,dice=[];
@@ -737,8 +752,16 @@
       if(entry.destiny)trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){results.unshift(item);});
       if(entry.plusTwo)results.push({kind:"modifier",result:2,label:"FH bonus"});
     }else if(entry.kind==="destiny")results=trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""});
-    else if(entry.kind==="tray")results=(entry.dice||[]).map(function(die){return {sides:die.sides,result:die.result,label:"d"+die.sides,natural:die.sides===20?die.result:null,dieRole:"base"};});
-    state.trayResults=results;state.trayTitle=entry.name+(entry.baseBonus!=null?" "+signed(entry.baseBonus):"");state.trayResultText=entry.total!=null?"Total "+entry.total+(entry.outcome?" · "+entry.outcome:""):"";
+    else if(entry.kind==="tray"){
+      // Through trayDiceForPlan so a free die on A/D shows the die it dropped,
+      // struck through, exactly as the d20 does.
+      results=[];
+      (entry.dice||[]).forEach(function(die){
+        trayDiceForPlan({sides:die.sides,rolls:die.rolls&&die.rolls.length?die.rolls:[die.result],result:die.result,chosenIndex:die.chosenIndex,mode:die.advantageMode,forced:die.forced,colour:die.colour},"d"+die.sides,{dieRole:"base"})
+          .forEach(function(item){item.natural=die.sides===20?item.result:null;results.push(item);});
+      });
+    }
+    state.trayResults=results;state.trayTitle=rollVerdictText(entry);state.trayResultText=rollDetailText(entry);
   }
   function prepareTrayForConfig(cfg){
     if(!cfg)return;
@@ -746,20 +769,33 @@
       var original=state.history.find(function(item){return item.id===cfg.editingId;});if(!original)return;var locked=[];
       var originalD20=original.d20Roll||{sides:20,rolls:original.d20s||[original.kept],result:original.kept,chosenIndex:original.d20Choice!=null?original.d20Choice:(original.d20s||[]).indexOf(original.kept),mode:original.d20Mode,forced:!!original.d20Forced};trayDiceForPlan(originalD20,"d20",{dieRole:"base"}).forEach(function(die){die.natural=die.result;locked.push(die);});
       var existingIds={};entryBonusDice(original).forEach(function(die){existingIds[die.id]=true;trayDiceForPlan(die,die.label,{dieRole:"bonus"}).forEach(function(item){locked.push(item);});});
-      (cfg.bonusDice||[]).filter(function(die){return !existingIds[die.id];}).forEach(function(die){pendingTrayDice(die.sides,die.label,die.advantageMode,die.forcedResult,{dieRole:"bonus",sourceIcon:die.sourceIcon}).forEach(function(item){locked.push(item);});});
+      (cfg.bonusDice||[]).filter(function(die){return !existingIds[die.id];}).forEach(function(die){pendingTrayDice(die.sides,die.label,die.advantageMode,die.forcedResult,{dieRole:"bonus",sourceIcon:die.sourceIcon,colour:die.colour||"",bonusId:die.id}).forEach(function(item){locked.push(item);});});
       if(original.destiny)trayDiceForPlan(original.destiny,"Destiny",{dieRole:"destiny",special:original.destiny.criticalSuccess?"arcane-critical-success":original.destiny.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){locked.unshift(item);});
       else if(cfg.destinyDieId){var pendingDestiny=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(pendingDestiny)pendingTrayDice(pendingDestiny.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:pendingDestiny.id,dieRole:"destiny"}).reverse().forEach(function(item){locked.unshift(item);});}
       if(cfg.plusTwo)locked.push({kind:"modifier",result:2,label:"FH bonus",pending:!original.plusTwo});
       state.traySelection=[];state.trayResults=locked;state.trayTitle=cfg.name+" "+signed(cfg.baseBonus);state.trayResultText="Original d20 locked";return;
     }
     var dice=pendingTrayDice(20,"d20",cfg.d20Mode,cfg.d20ForcedResult,{dieRole:"base"});
-    (cfg.bonusDice||[]).forEach(function(bonusDie){pendingTrayDice(bonusDie.sides,bonusDie.label,bonusDie.advantageMode,bonusDie.forcedResult,{dieRole:"bonus",sourceIcon:bonusDie.sourceIcon}).forEach(function(item){dice.push(item);});});
+    (cfg.bonusDice||[]).forEach(function(bonusDie){pendingTrayDice(bonusDie.sides,bonusDie.label,bonusDie.advantageMode,bonusDie.forcedResult,{dieRole:"bonus",sourceIcon:bonusDie.sourceIcon,colour:bonusDie.colour||"",bonusId:bonusDie.id}).forEach(function(item){dice.push(item);});});
     if(cfg.destinyDieId){var die=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(die)pendingTrayDice(die.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:die.id,dieRole:"destiny"}).reverse().forEach(function(item){dice.unshift(item);});}
     if(cfg.plusTwo)dice.push({kind:"modifier",result:2,label:"FH bonus",pending:true});
     state.traySelection=[];state.trayResults=dice;state.trayTitle=cfg.name+" "+signed(cfg.baseBonus);state.trayResultText="Ready";
   }
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayPrompt=null;state.currentEvent=null;state.eventQueue=[];state.queueDone="";state.queueTotal=0;state.rollSequence=null;state.pendingArmed=null;if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
-  function rollTransactionActive(){return !!(state.rollSequence&&state.rollSequence.phase&&state.rollSequence.phase!=="resolved");}
+  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayPrompt=null;state.currentEvent=null;state.eventQueue=[];state.queueDone="";state.queueTotal=0;state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;stopCalling();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  /* An OPEN roll no longer locks the dock: it has already reached the stream,
+     and CLEAR TRAY or the next roll are its two legitimate exits. Only the
+     phases that genuinely must be answered still hold the dock. */
+  function rollTransactionActive(){return !!(state.rollSequence&&state.rollSequence.phase&&state.rollSequence.phase!=="resolved"&&state.rollSequence.phase!=="open");}
+  /* Everything that can still change an open roll calls for three seconds,
+     then goes quiet — a nudge, not a permanent flicker. */
+  var CALL_MS=3000;
+  function callingNow(){return !!(state.callUntil&&Date.now()<state.callUntil);}
+  function startCalling(){
+    state.callUntil=Date.now()+CALL_MS;
+    clearTimeout(state.callTimer);
+    state.callTimer=window.setTimeout(function(){state.callUntil=0;if(root)render();},CALL_MS+40);
+  }
+  function stopCalling(){state.callUntil=0;clearTimeout(state.callTimer);}
   function warnRollLocked(){state.message="Finish the current roll before starting or clearing another one.";state.messageKind="warn";renderMessage();}
   /* ── The APPLY flow ──────────────────────────────────────────────
      A landed roll no longer ends in a blocking result popup. It stays
@@ -770,64 +806,73 @@
      Only three things still block: the A/D choice, a natural 1, and the
      consequences of a Destiny die. */
   function stagedList(){var sequence=state.rollSequence;return sequence&&Array.isArray(sequence.staged)?sequence.staged:[];}
-  function applyPhaseActive(){return !!(state.rollSequence&&state.rollSequence.phase==="apply");}
-  function applyEntry(){var sequence=state.rollSequence;if(!sequence)return null;return state.history.find(function(item){return item.id===sequence.entryId;})||null;}
+  function rollOpen(){return !!(state.rollSequence&&state.rollSequence.phase==="open");}
+  function openEntry(){var sequence=state.rollSequence;if(!sequence)return null;return state.history.find(function(item){return item.id===sequence.entryId;})||null;}
   function stagedBonusCount(){return stagedList().filter(function(item){return item.kind!=="destiny";}).length;}
-  function applyStatusText(entry){
+  function openStatusText(entry){
     var staged=stagedList().length;
-    return "Total "+entry.total+(entry.outcome?" · "+entry.outcome:"")+(staged?" · "+staged+" new die"+(staged===1?"":"s")+" ready":" · APPLY to resolve");
+    return rollDetailText(entry)+(staged?" · "+staged+" new die"+(staged===1?"":"s")+" ready":"");
   }
-  function refreshApplyTray(entry){
+  /* The verdict is the headline; the arithmetic that produced it stays legible
+     but discreet underneath. */
+  function rollVerdictText(entry){return (entry.name||"Roll")+" "+(entry.total==null?"":entry.total);}
+  function rollDetailText(entry){
+    var parts=rollParts(entry).map(function(part){return part.k+" "+part.v;});
+    if(entry.outcome)parts.push(entry.outcome);
+    if(entry.dc!==""&&entry.dc!=null&&isFinite(Number(entry.dc)))parts.push("DC "+entry.dc);
+    return parts.join(" · ");
+  }
+  function refreshOpenTray(entry){
     setTrayFromEntry(entry);
     stagedList().forEach(function(item){
-      var dice=pendingTrayDice(item.sides,item.label,"flat",null,{dieRole:item.kind==="destiny"?"destiny":"bonus",sourceIcon:item.sourceIcon||"",flash:item.kind==="destiny",stagedId:item.id});
+      var dice=pendingTrayDice(item.sides,item.label,item.advantageMode||"flat",null,{dieRole:item.kind==="destiny"?"destiny":"bonus",sourceIcon:item.sourceIcon||"",colour:item.colour||"",flash:item.kind==="destiny",stagedId:item.id});
       if(item.kind==="destiny")dice.reverse().forEach(function(die){state.trayResults.unshift(die);});
       else dice.forEach(function(die){state.trayResults.push(die);});
     });
-    state.trayResultText=applyStatusText(entry);
+    state.trayResultText=openStatusText(entry);
   }
-  function openApplyState(entry){
+  function openRollState(entry){
     if(!entry)return;
     state.rollSequence=state.rollSequence||{};
-    state.rollSequence.entryId=entry.id;state.rollSequence.phase="apply";state.rollSequence.staged=stagedList();
+    state.rollSequence.entryId=entry.id;state.rollSequence.phase="open";state.rollSequence.staged=stagedList();
     state.trayPrompt=null;state.currentEvent=null;state.eventQueue=[];state.queueDone="";state.queueTotal=0;
     state.rollConfig=configFromEntry(entry);
-    refreshApplyTray(entry);persistPlayState();render();
+    startCalling();refreshOpenTray(entry);persistPlayState();render();
   }
   function stageBonusDie(sides,label,sourceIcon){
-    var entry=applyEntry();if(!applyPhaseActive()||!entry)return;
+    var entry=openEntry();if(!rollOpen()||!entry)return;
     sides=Number(sides);if(ROLL_DIE_SIZES.indexOf(sides)<0||sides===20||sides===100){state.message="The d20 is the base die; d% stays a free roll.";state.messageKind="warn";renderMessage();return;}
     if(entryBonusDice(entry).length+stagedBonusCount()>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
     var used=entryBonusDice(entry).concat(stagedList()).map(function(die){var match=String(die.sourceIcon||"").match(/^other-([123])$/);return match?Number(match[1]):0;});
     var slot=[1,2,3].find(function(value){return used.indexOf(value)<0;})||1;
     state.rollSequence.staged=stagedList().concat([{id:uuid(),kind:"bonus",label:label||("Bonus "+["","I","II","III"][slot]),sides:sides,sourceIcon:sourceIcon||("other-"+slot)}]);
-    refreshApplyTray(entry);persistPlayState();render();
+    refreshOpenTray(entry);persistPlayState();render();
   }
   function unstageDie(sides){
-    var entry=applyEntry();if(!applyPhaseActive()||!entry)return false;
+    var entry=openEntry();if(!rollOpen()||!entry)return false;
     var staged=stagedList();
-    for(var i=staged.length-1;i>=0;i--){if(staged[i].kind!=="destiny"&&Number(staged[i].sides)===Number(sides)){staged.splice(i,1);refreshApplyTray(entry);persistPlayState();render();return true;}}
+    for(var i=staged.length-1;i>=0;i--){if(staged[i].kind!=="destiny"&&Number(staged[i].sides)===Number(sides)){staged.splice(i,1);refreshOpenTray(entry);persistPlayState();render();return true;}}
     return false;
   }
   function stageDestinyDie(dieId){
-    var entry=applyEntry();if(!applyPhaseActive()||!entry||entry.destiny)return;
+    var entry=openEntry();if(!rollOpen()||!entry||entry.destiny)return;
     if(stagedList().some(function(item){return item.kind==="destiny";}))return;
     var die=state.destiny.dice.find(function(item){return item.id===dieId&&item.available;});if(!die)return;
     state.rollSequence.staged=stagedList().concat([{id:uuid(),kind:"destiny",destinyDieId:die.id,label:"Destiny",sides:die.sides}]);
-    refreshApplyTray(entry);persistPlayState();render();
+    refreshOpenTray(entry);persistPlayState();render();
   }
-  /* APPLY with nothing staged: the roll is resolved and the tray is released. */
-  function finishApply(){
-    var entry=applyEntry();
-    if(entry){entry.applied=true;setTrayFromEntry(entry);state.trayResultText="Total "+entry.total+(entry.outcome?" · "+entry.outcome:"")+" · applied";}
-    state.rollSequence=null;state.currentEvent=null;state.eventQueue=[];state.queueDone="";state.queueTotal=0;state.trayPrompt=null;
-    persistPlayState();render();
+  /* The roll landed but stays open. Nothing has to be "applied" — it is already
+     in the stream. Only two things end it: CLEAR TRAY, or a new roll. */
+  function releaseRoll(){
+    state.rollSequence=null;state.currentEvent=null;state.eventQueue=[];state.queueDone="";state.queueTotal=0;state.trayPrompt=null;state.diePrompt=null;
   }
-  /* APPLY NEW MODIFIERS: every staged die rolls at once, then the loop reopens. */
-  function applyStagedModifiers(){
-    var entry=applyEntry(),staged=stagedList();
-    if(!applyPhaseActive()||!entry)return;
-    if(!staged.length){finishApply();return;}
+  /* ROLL on an open roll: only the newly staged dice leave the hand, and they
+     join the same stream entry. With nothing staged it simply rolls the same
+     check again, as a fresh entry — the button says ROLL, so it rolls. */
+  function rollStagedDice(){
+    var entry=openEntry(),staged=stagedList();
+    if(!rollOpen()||!entry)return;
+    if(!staged.length){repeatOpenRoll(entry);return;}
     var events=[],settled=false;
     staged.forEach(function(item){
       if(item.kind==="destiny"){
@@ -841,24 +886,31 @@
         return;
       }
       if(entryBonusDice(entry).length>=MAX_BONUS_DICE)return;
-      var plan=Object.assign(newBonusDie(item.label,item.sides,item.sourceIcon),makeDiePlan(item.sides,"flat",null));
+      var plan=Object.assign(newBonusDie(item.label,item.sides,item.sourceIcon,item.colour),makeDiePlan(item.sides,item.advantageMode||"flat",item.forcedResult));
       entry.bonusDice=entryBonusDice(entry).concat([plan]);
     });
     mirrorNamedBonusDice(entry);
     entry.total=entryTotal(entry);entry.outcome=outcomeFor(entry);entry.adjusted=true;entry.adjustedAt=new Date().toISOString();
     state.rollSequence.staged=[];
     setTrayFromEntry(entry);
-    if(events.length){state.rollSequence.phase="apply-after-events";persistPlayState();queueEvents(events,settled?"finish-sequence":"open-apply");return;}
-    if(settled){finishApply();return;}
-    openApplyState(entry);
+    if(events.length){state.rollSequence.phase="open-after-events";persistPlayState();queueEvents(events,settled?"finish-sequence":"open-roll");return;}
+    if(settled){releaseRoll();setTrayFromEntry(entry);persistPlayState();render();return;}
+    openRollState(entry);
+  }
+  /* ROLL again on the same check: the setup is kept, the dice are not. */
+  function repeatOpenRoll(entry){
+    var cfg=configFromEntry(entry);
+    cfg.editingId=null;cfg.d20ForcedResult=null;cfg.destinyForcedResult=null;cfg.destinyDieId="";cfg.destinyConfirmed=false;
+    cfg.bonusDice=(cfg.bonusDice||[]).map(function(die){return newBonusDie(die.label,die.sides,die.sourceIcon,die.colour);});
+    releaseRoll();state.rollConfig=cfg;prepareTrayForConfig(cfg);persistPlayState();runConfiguredRoll();
   }
   function finishRolledEntry(entry,events){
     entry.total=entryTotal(entry);entry.outcome=outcomeFor(entry);addHistory(entry);setTrayFromEntry(entry);state.rollConfig=configFromEntry(entry);state.message="";
     if(entry.natural===1){state.rollSequence=state.rollSequence||{};state.rollSequence.entryId=entry.id;state.rollSequence.phase="nat1";state.trayPrompt={type:"nat1",entryId:entry.id};persistPlayState();render();return;}
     events=(events||[]).concat(naturalDestiny(entry));entry.outcome=outcomeFor(entry);state.trayResultText="Total "+entry.total+(entry.outcome?" · "+entry.outcome:"");
     state.rollSequence=state.rollSequence||{};state.rollSequence.entryId=entry.id;
-    if(events.length){state.rollSequence.phase="apply-after-events";persistPlayState();queueEvents(events,"open-apply");return;}
-    openApplyState(entry);
+    if(events.length){state.rollSequence.phase="open-after-events";persistPlayState();queueEvents(events,"open-roll");return;}
+    openRollState(entry);
   }
   function quickRoll(name, ability, bonus, note) {
     clearDiceTray(false);state.rollConfig=null;
@@ -882,8 +934,8 @@
     var existing=entryBonusDice(entry),events=[];entry.plusTwo=cfg.plusTwo;entry.custom=cfg.custom;entry.dc=cfg.dc;entry.bonusDice=existing.concat(plans||[]).slice(0,MAX_BONUS_DICE).map(normalizeBonusDie);mirrorNamedBonusDice(entry);
     entry.total=entryTotal(entry);entry.adjusted=true;entry.adjustedAt=new Date().toISOString();entry.outcome=outcomeFor(entry);state.trayPrompt=null;setTrayFromEntry(entry);
     state.rollSequence.entryId=entry.id;
-    if(events.length){state.rollSequence.phase="apply-after-events";persistPlayState();queueEvents(events,"open-apply");return;}
-    openApplyState(entry);
+    if(events.length){state.rollSequence.phase="open-after-events";persistPlayState();queueEvents(events,"open-roll");return;}
+    openRollState(entry);
   }
   function continueAdjustmentChoices(){
     var sequence=state.rollSequence;if(!sequence||!sequence.entry)return;var next=(sequence.choiceQueue||[]).shift();
@@ -950,13 +1002,13 @@
     // behind a pending marker so the table is never blocked mid-turn.
     else { var oldPoints=state.destiny.points;entry.natChoice="chaos";entry.originalKept=entry.kept;entry.transformed=true;entry.kept=20;setDestinyPoints(0,"Invoked Chaos",false,true);entry.total=entryTotal(entry);addPendingFate({kind:"chaos",entryId:entry.id,name:entry.name||"Defied roll"});events.push({text:"FATE DEFIED · The 1 becomes 20"+(oldPoints?" · Destiny becomes 0":""),kind:"nat1",entryId:entry.id},{text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id}); }
     setTrayFromEntry(entry);entry.outcome=outcomeFor(entry);state.trayPrompt=null;persistPlayState();
-    state.rollSequence=state.rollSequence||{};state.rollSequence.entryId=entry.id;state.rollSequence.phase="apply-after-events";
-    queueEvents(events,"open-apply");
+    state.rollSequence=state.rollSequence||{};state.rollSequence.entryId=entry.id;state.rollSequence.phase="open-after-events";
+    queueEvents(events,"open-roll");
   }
   function runQueueDone(action){
     if(action==="roll-remaining"){rollSequenceRemaining();return;}
     if(action==="adjustment-remaining"){var sequence=state.rollSequence,adjusted=sequence&&state.history.find(function(item){return item.id===sequence.entryId;})||sequence&&sequence.entry;if(adjusted&&sequence&&sequence.cfg){if(sequence.entry&&sequence.entry.destiny)adjusted.destiny=sequence.entry.destiny;applyHistoryAdjustmentRemaining(adjusted,sequence.cfg);}else render();return;}
-    if(action==="open-apply"){var landed=applyEntry();if(landed)openApplyState(landed);else render();return;}
+    if(action==="open-roll"){var landed=openEntry();if(landed)openRollState(landed);else render();return;}
     if(action==="finish-sequence"){state.rollSequence=null;state.currentEvent=null;state.eventQueue=[];persistPlayState();render();return;}
     render();
   }
@@ -974,13 +1026,31 @@
     return item;
   }
   function dropPendingFate(id){if(state.destiny)state.destiny.pending=pendingFate().filter(function(item){return item.id!==id;});}
+  /* One field serves both cards: with an id it renames that badge, without one
+     it pins a new note. An empty label is not a badge. */
+  function savePendingLabel(id){
+    var field=root&&root.querySelector("#fhPsBadgeLabel"),label=String(field&&field.value||"").trim().slice(0,24);
+    if(!label){state.message="Give the badge a name first.";state.messageKind="warn";renderMessage();return;}
+    if(id){var item=pendingFate().find(function(entry){return entry.id===id;});if(item)item.label=label;}
+    else if(pendingFate().length>=6){state.message="Six badges is the most the strip holds.";state.messageKind="warn";renderMessage();return;}
+    else addPendingFate({kind:"note",label:label});
+    state.trayPrompt=null;persistPlayState();render();
+  }
   // The destiny row is crowded, so the button is a short red word; the whole
   // rule lives in its tooltip and in the card it opens.
-  function pendingLabel(item){return item.kind==="chaos"?"CHAOS":"OVERREACH "+(Number(item.overreach)||0);}
-  function pendingTitle(item){return (item.kind==="chaos"?"Chaos is pending":"An Overreach save is pending, DC "+(Number(item.dc)||10))+" — 1 fatigue point per round until you face it. Click to resolve.";}
+  function pendingLabel(item){
+    if(item.label)return String(item.label).slice(0,24);
+    return item.kind==="chaos"?"CHAOS":item.kind==="overreach"?"OVERREACH "+(Number(item.overreach)||0):"NOTE";
+  }
+  function pendingResolvable(item){return item.kind==="chaos"||item.kind==="overreach";}
+  function pendingTitle(item){
+    if(item.kind==="note")return "A reminder you pinned yourself. Click to open · right click to rename or cancel it.";
+    return (item.kind==="chaos"?"Chaos is pending":"An Overreach save is pending, DC "+(Number(item.dc)||10))+
+      " — 1 fatigue point per round until you face it. Click to resolve · right click to rename or cancel it.";
+  }
   /* Arming a pending marker only fills the tray — ROLL is still the player's call. */
   function armPendingFate(id){
-    var item=pendingFate().find(function(entry){return entry.id===id;});if(!item)return;
+    var item=pendingFate().find(function(entry){return entry.id===id;});if(!item||!pendingResolvable(item))return;
     if(rollTransactionActive()){warnRollLocked();return;}
     state.trayPrompt=null;state.rollConfig=null;state.traySelection=[];
     if(item.kind==="chaos"){
@@ -1174,10 +1244,10 @@
       syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();return;
     }
     if(state.traySelection.length>=MAX_FREE_DICE){pushEvent("The free-roll tray holds at most "+MAX_FREE_DICE+" dice","warn",false);refreshEventPanel();return;}
-    state.traySelection.push(sides);state.trayResults=[];persistPlayState();render();
+    state.traySelection.push(newFreeDie(sides));state.trayResults=[];persistPlayState();render();
   }
   function removeTrayDie(index){state.traySelection.splice(Number(index),1);state.trayResults=[];persistPlayState();render();}
-  function removeTrayDieSize(sides){var index=state.traySelection.lastIndexOf(Number(sides));if(index>=0)removeTrayDie(index);}
+  function removeTrayDieSize(sides){sides=Number(sides);for(var i=state.traySelection.length-1;i>=0;i--){if(state.traySelection[i].sides===sides){removeTrayDie(i);return;}}}
   // The mirror of addTrayDie: right-click (or long press) takes one back off,
   // so a mis-clicked bonus die no longer forces cancelling the whole roll.
   function dropTrayDie(sides){
@@ -1192,10 +1262,17 @@
     removeTrayDieSize(sides);
   }
   function rollTrayDice(){
-    if(!state.traySelection.length)state.traySelection=[20];
+    if(!state.traySelection.length)state.traySelection=[newFreeDie(20)];
     var labelInput=root&&root.querySelector("#fhPsTrayLabel");if(labelInput)state.trayLabel=String(labelInput.value||"Damage roll").slice(0,48);
-    var dice=state.traySelection.map(function(sides){return {sides:sides,result:rollDie(sides)};}),entry={id:uuid(),kind:"tray",name:state.trayLabel||"Damage roll",dice:dice,total:dice.reduce(function(sum,die){return sum+die.result;},0),createdAt:new Date().toISOString(),outcome:"Free roll"};
-    addHistory(entry);setTrayFromEntry(entry);var special=dice.find(function(die){return die.sides===20&&(die.result===1||die.result===20);}),events=[];if(special)events.push({text:special.result===20?"NATURAL 20 IN THE TRAY":"NATURAL 1 IN THE TRAY",kind:special.result===20?"nat20":"nat1",entryId:entry.id});events.push({text:entry.name+" · Total "+entry.total+" · "+dice.map(function(d){return "d"+d.sides+"="+d.result;}).join(" · "),kind:"result",entryId:entry.id});state.rollSequence={phase:"free-tray",entryId:entry.id};queueEvents(events,"finish-sequence");
+    var dice=state.traySelection.map(function(die){var plan=makeDiePlan(die.sides,die.advantageMode,die.forcedResult);return {sides:die.sides,result:plan.result,rolls:(plan.rolls||[plan.result]).slice(),chosenIndex:plan.chosenIndex==null?0:plan.chosenIndex,advantageMode:rollMode(plan.mode),forced:!!plan.forced,colour:die.colour||""};}),entry={id:uuid(),kind:"tray",name:state.trayLabel||"Damage roll",dice:dice,total:dice.reduce(function(sum,die){return sum+(Number(die.result)||0);},0),createdAt:new Date().toISOString(),outcome:"Free roll"};
+    addHistory(entry);setTrayFromEntry(entry);
+    // No trailing result popup here either: the tray shows the verdict and the
+    // stream keeps it. Only a natural 20 or 1 is worth stopping for.
+    var special=dice.find(function(die){return die.sides===20&&(die.result===1||die.result===20);}),events=[];
+    if(special)events.push({text:(special.result===20?"NATURAL 20 IN THE TRAY":"NATURAL 1 IN THE TRAY")+" · "+entry.name+" · Total "+entry.total,kind:special.result===20?"nat20":"nat1",entryId:entry.id});
+    state.rollSequence=null;state.currentEvent=null;state.eventQueue=[];state.queueDone="";state.queueTotal=0;
+    if(events.length){state.rollSequence={phase:"free-tray",entryId:entry.id};queueEvents(events,"finish-sequence");return;}
+    persistPlayState();render();
   }
   function bonusSourceMark(source){
     source=String(source||"");
@@ -1225,10 +1302,20 @@
     green:{fill:"#3d7d56",light:"#5b9b71",dark:"#1f4a30",rim:"#143020",facet:"#1c4029",num:"#f2ead2"},
     crit:{fill:"#f0c550",light:"#fff0a8",dark:"#c68c22",rim:"#6d4a10",facet:"#8a6414",num:"#3a2606"},
     fumble:{fill:"#b51d25",light:"#d1494f",dark:"#6c1015",rim:"#4a0c10",facet:"#7d161c",num:"#fff0ee"},
-    chaos:{fill:"#8f1118",light:"#e3535a",dark:"#3f0407",rim:"#ff5f67",facet:"#ff9aa0",num:"#fff0ee"}
+    chaos:{fill:"#8f1118",light:"#e3535a",dark:"#3f0407",rim:"#ff5f67",facet:"#ff9aa0",num:"#fff0ee"},
+    // The console picker: a blank die, waiting to be given a colour and a seal.
+    white:{fill:"#fbf8f1",light:"#ffffff",dark:"#e3dccb",rim:"#9c8a5f",facet:"#cabfa0",num:"#5a4a2a"},
+    // Player-chosen colours, offered on a right click once the die is in the tray.
+    crimson:{fill:"#93303a",light:"#c05a63",dark:"#5b1620",rim:"#4a1018",facet:"#7a2530",num:"#ffeceb"},
+    azure:{fill:"#2f5f86",light:"#5d8cb0",dark:"#173b57",rim:"#12293c",facet:"#23496a",num:"#eef6fd"},
+    violet:{fill:"#5c3d7e",light:"#8563a6",dark:"#372049",rim:"#241432",facet:"#452c5e",num:"#f5edff"},
+    slate:{fill:"#4a4f55",light:"#727880",dark:"#2b2f34",rim:"#1c1f22",facet:"#3a3e44",num:"#f0f2f4"}
   };
+  // Offered in the right-click menu, in this order. "ivory" is the default.
+  var DIE_COLOURS = [["ivory","Ivory"],["green","Green"],["gold","Gold"],["crimson","Crimson"],["azure","Azure"],["violet","Violet"],["slate","Slate"]];
   function dieMaterialName(die){
     if(die.special==="chaos")return "chaos";
+    if(die.colour&&DIE_MATERIAL[die.colour])return die.colour;
     if(die.special==="arcane-critical-success")return "crit";
     if(die.special==="arcane-critical-failure")return "fumble";
     if(die.sides===20&&die.result===20)return "crit";
@@ -1281,7 +1368,17 @@
     }
     var source=die.dieRole==="bonus"?"<span class=\"fh-cd-src\" title=\""+esc(die.label||"Bonus die")+"\">"+bonusSourceMark(die.sourceIcon)+"</span>":"<span class=\"fh-cd-src\"></span>";
     var dieClasses="fh-cd-die"+(die.result!=null?" is-landed":"")+(animate&&die.result!=null?" is-spinning":"");
-    return "<span class=\""+classes.join(" ")+"\">"+source+
+    // A die still in the hand carries its identity so a right click can reach it.
+    var handle="";
+    if(die.pending&&die.result==null){
+      if(die.stagedId)handle=" data-die-staged=\""+esc(die.stagedId)+"\"";
+      else if(die.bonusId)handle=" data-die-bonus=\""+esc(die.bonusId)+"\"";
+      else if(die.destinyDieId)handle=" data-die-destiny=\""+esc(die.destinyDieId)+"\"";
+      else if(die.freeId)handle=" data-die-free=\""+esc(die.freeId)+"\"";
+      else if(die.dieRole==="base")handle=" data-die-base=\"1\"";
+      if(handle){classes.push("is-tunable");handle+=" title=\"Right click or long press: colour, advantage, Portent\"";}
+    }
+    return "<span class=\""+classes.join(" ")+"\""+handle+">"+source+
       "<span class=\""+dieClasses+"\">"+dieSvg(die.sides,size,dieMaterialName(die),die.result==null?"?":die.result)+"</span>"+
       "<em>"+esc((die.label||("d"+die.sides))+status)+"</em></span>";
   }
@@ -1302,9 +1399,35 @@
       var die=state.destiny.dice.find(function(item){return item.id===prompt.dieId&&item.available;});
       if(die)return "<div class=\"fh-cd-card is-destiny\"><small>DESTINY d"+die.sides+"</small><b>Roll and spend this Destiny die?</b><p>"+esc(prompt.context||"")+(prompt.context?" · ":"")+"Current Points: "+state.destiny.points+" · the result will change your Destiny.</p><div class=\"fh-cd-acts\"><button class=\"is-ghost\" data-tray-cancel>Cancel</button><button data-tray-confirm-destiny>Roll &amp; spend</button></div></div>";
     }
+    /* Pinning a badge by hand: anything the table must not forget. */
+    if(prompt&&prompt.type==="pending-new"){
+      return "<div class=\"fh-cd-card is-badgemenu\"><small>PIN A BADGE</small><b>What must not be forgotten?</b>"+
+        "<p>It stays above the tray until you cancel it — CLEAR TRAY does not touch it.</p>"+
+        "<div class=\"fh-cd-dmrow\"><input id=\"fhPsBadgeLabel\" maxlength=\"24\" value=\"\" placeholder=\"Concentration, Rage, 2 rounds…\" aria-label=\"Badge label\"></div>"+
+        "<div class=\"fh-cd-acts\"><button class=\"is-ghost\" data-tray-close>Cancel</button><button data-pending-save>Pin it</button></div></div>";
+    }
+    /* Right click on a badge: rename it, or take it back. */
+    if(prompt&&prompt.type==="pending-menu"){
+      var edited=pendingFate().find(function(item){return item.id===prompt.id;});
+      if(edited){
+        return "<div class=\"fh-cd-card is-badgemenu\"><small>BADGE · "+esc(pendingLabel(edited))+"</small><b>Rename it, or take it back</b>"+
+          "<div class=\"fh-cd-dmrow\"><input id=\"fhPsBadgeLabel\" maxlength=\"24\" value=\""+esc(pendingLabel(edited))+"\" aria-label=\"Badge label\"></div>"+
+          "<div class=\"fh-cd-acts\"><button class=\"is-danger\" data-pending-drop=\""+esc(edited.id)+"\">Cancel the badge</button>"+
+          "<button data-pending-save=\""+esc(edited.id)+"\">Rename</button><button class=\"is-ghost\" data-tray-close>Close</button></div></div>";
+      }
+      state.trayPrompt=null;
+    }
     /* Deferred fate: informational, never blocking. OK leaves it waiting. */
     if(prompt&&prompt.type==="pending"){
       var waiting=pendingFate().find(function(item){return item.id===prompt.id;});
+      if(waiting&&waiting.kind==="note"){
+        // A pinned reminder has nothing to resolve: opening it is editing it.
+        return "<div class=\"fh-cd-card is-badgemenu\"><small>BADGE</small><b>"+esc(pendingLabel(waiting))+"</b>"+
+          "<p>A reminder you pinned. It survives CLEAR TRAY and only goes when you cancel it.</p>"+
+          "<div class=\"fh-cd-dmrow\"><input id=\"fhPsBadgeLabel\" maxlength=\"24\" value=\""+esc(pendingLabel(waiting))+"\" aria-label=\"Badge label\"></div>"+
+          "<div class=\"fh-cd-acts\"><button class=\"is-danger\" data-pending-drop=\""+esc(waiting.id)+"\">Cancel the badge</button>"+
+          "<button data-pending-save=\""+esc(waiting.id)+"\">Rename</button><button class=\"is-ghost\" data-tray-close>Close</button></div></div>";
+      }
       if(waiting){
         var isChaos=waiting.kind==="chaos";
         return "<div class=\"fh-cd-card is-chaos\"><small>"+(isChaos?"CHAOS IS PENDING":"OVERREACH IS PENDING")+"</small><b>"+(isChaos?"Chaos has noticed.":"The Weave is over-drawn.")+"</b><p>"+
@@ -1322,6 +1445,45 @@
       var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};
       return "<div class=\"fh-cd-card is-awakening\"><small>DESTINY REACHES ZERO</small><b>Arcane Awakening</b><p>Natural 20 · "+esc(arcana.name||"Major Arcana")+"</p><div class=\"fh-cd-acts\"><button data-tray-close>OK</button></div></div>";
     }
+    /* Right click on a die that has not left the hand yet: its colour, its seal
+       and its own advantage, in one card instead of three menus. */
+    if(state.diePrompt){
+      var target=findStagedDie(state.diePrompt);
+      if(target){
+        var seals=[["","None"],["guidance","Guidance"],["bardic","Bardic"],["other-1","I"],["other-2","II"],["other-3","III"]];
+        var poolReady=state.destiny.dice.some(function(die){return die.available&&die.sides===target.sides;});
+        var canSeal=target.scope==="bonus"||target.scope==="staged";
+        var canTune=true;
+        /* A/D means "roll two, choose afterwards" — that needs a choice prompt,
+           and the free tray has no resolver for one. Free dice get A and D, which
+           settle themselves, but not A/D. */
+        var modes=target.scope==="free"?["flat","advantage","disadvantage"]:["flat","advantage","disadvantage","choice"];
+        // A free damage die has neither a source nor an advantage: only a colour.
+        var sealRow=!canSeal?"":"<div class=\"fh-cd-dmrow\"><span>Seal</span>"+seals.map(function(pair){
+            return "<button type=\"button\" class=\"fh-cd-dmseal"+((target.sourceIcon||"")===pair[0]?" is-on":"")+"\" data-die-seal=\""+pair[0]+"\" title=\""+pair[1]+"\">"+(pair[0]?bonusSourceMark(pair[0]):"—")+"</button>";
+          }).join("")+
+          "<button type=\"button\" class=\"fh-cd-dmseal is-destiny\" data-die-seal=\"destiny\""+(poolReady?"":" disabled")+" title=\""+(poolReady?"Spend a Destiny d"+target.sides+" instead — this costs Destiny Points":"No Destiny d"+target.sides+" available")+"\">★</button></div>";
+        var modeRow=!canTune?"":"<div class=\"fh-cd-dmrow\"><span>Roll</span>"+modes.map(function(mode){
+            var short=mode==="flat"?"—":mode==="advantage"?"A":mode==="disadvantage"?"D":"A/D";
+            return "<button type=\"button\" class=\"fh-cd-dmmode"+((target.advantageMode||"flat")===mode?" is-on":"")+"\" data-die-mode-set=\""+mode+"\">"+short+"</button>";
+          }).join("")+"</div>";
+        /* The Portent used to hide in a FINE TUNE drawer. It belongs to one die,
+           so it lives with that die — as a dropdown, not a number spinner. */
+        var forced=target.forcedResult==null?"":String(target.forcedResult);
+        var portentRow=!canTune?"":"<div class=\"fh-cd-dmrow\"><span>Portent</span>"+
+          "<select class=\"fh-cd-dmportent"+(forced?" is-on":"")+"\" data-die-portent aria-label=\"Force this die's result\" title=\"Force this die to a chosen result — the roll is marked MANUAL\">"+
+          "<option value=\"\">— roll it</option>"+
+          Array.from({length:target.sides},function(_,index){var value=index+1;return "<option value=\""+value+"\""+(forced===String(value)?" selected":"")+">"+value+"</option>";}).join("")+
+          "</select></div>";
+        return "<div class=\"fh-cd-card is-diemenu\"><small>d"+target.sides+" · "+esc(target.label||"Die")+"</small>"+sealRow+
+          "<div class=\"fh-cd-dmrow\"><span>Colour</span>"+DIE_COLOURS.map(function(pair){
+            return "<button type=\"button\" class=\"fh-cd-dmcol"+((target.colour||"ivory")===pair[0]?" is-on":"")+"\" data-die-colour=\""+pair[0]+"\" title=\""+pair[1]+"\">"+dieSvg(6,15,pair[0],"")+"</button>";
+          }).join("")+"</div>"+modeRow+portentRow+
+          // Removes THIS die only — emptying the whole tray is the permanent CLEAR TRAY.
+          "<div class=\"fh-cd-acts\">"+(target.scope==="base"?"":"<button class=\"is-ghost\" data-die-drop>Remove this die</button>")+"<button data-tray-close>Done</button></div></div>";
+      }
+      state.diePrompt=null;
+    }
     if(state.currentEvent){
       var current=state.currentEvent;
       var progress=current.total>1?"<small>EVENT "+current.progress+" OF "+current.total+"</small>":"<small>"+esc(String(current.kind||"event").toUpperCase().replace(/-/g," "))+"</small>";
@@ -1336,55 +1498,56 @@
   function trayDiceForDisplay(){
     if(state.trayResults.length)return state.trayResults;
     if(state.rollConfig)return [];
-    return state.traySelection.map(function(sides){return {sides:sides,result:null,label:"d"+sides,dieRole:"base",pending:true};});
+    return state.traySelection.map(function(die){return {sides:die.sides,result:forcedDieResult(die.forcedResult,die.sides),label:"d"+die.sides,dieRole:"base",pending:true,freeId:die.id,colour:die.colour||"",forced:die.forcedResult!=null};});
   }
   function renderFrameInner(){
     var dice=trayDiceForDisplay();
     var signature=dice.map(function(die){return (die.label||"")+":"+(die.result==null?"?":die.result);}).join("|");
     var animate=signature!==state.diceSignature;state.diceSignature=signature;
-    var overlay=renderEventContent();
-    var status=state.trayResultText
-      ? "<b>"+esc(state.trayTitle||"")+"</b> <em>"+esc(state.trayResultText)+"</em>"
+    var status=state.trayResultText||state.trayTitle
+      ? "<b>"+esc(state.trayTitle||"")+"</b>"+(state.trayResultText?"<em>"+esc(state.trayResultText)+"</em>":"")
       : "<em>Ready — click a skill, a save or an ability.</em>";
-    // The verdict docks to the bottom of the frame; the dice keep the top half.
-    return "<div class=\"fh-cd-dicerow"+(overlay?" is-shrunk":"")+"\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,animate);}).join("")+"</div>"+
-      (overlay?"<div class=\"fh-cd-overlay\">"+overlay+"</div>":"")+
+    // The verdict docks to the bottom of the frame; popups now live outside it.
+    return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,animate);}).join("")+"</div>"+
       "<div class=\"fh-cd-status\" aria-live=\"polite\">"+status+"</div>";
   }
+  /* One ROLL, one CLEAR TRAY. Nothing else is permanent. Below them the
+     transient badges, then the tray, then whatever popup is owed — which
+     pushes the stream down instead of covering the dice. */
+  function rollSummaryText(){
+    var cfg=state.rollConfig,staged=stagedList().length;
+    if(state.pendingArmed)return state.pendingArmed.kind==="chaos"?"2d6 · Chaos table":"d20 save · DC "+(Number(state.pendingArmed.dc)||10);
+    if(rollOpen())return staged?staged+" new die"+(staged===1?"":"s"):"the same check again";
+    if(!cfg)return state.traySelection.length?(state.traySelection.length===1?"1 die":state.traySelection.length+" dice"):"pick dice above";
+    var summary=[(cfg.d20Mode==="advantage"?"2d20kh ":cfg.d20Mode==="disadvantage"?"2d20kl ":cfg.d20Mode==="choice"?"2d20 A/D ":"d20 ")+signed(Number(cfg.baseBonus)+(cfg.plusTwo?2:0)+(Number(cfg.custom)||0))];
+    (cfg.bonusDice||[]).forEach(function(die){summary.push(die.label.slice(0,4)+" d"+die.sides);});
+    if(cfg.destinyDieId)summary.unshift("★");
+    return summary.join(" · ");
+  }
   function renderStageZone(){
-    var busy=rollTransactionActive(),cfg=state.rollConfig,configured=!!(cfg&&!cfg.editingId);
-    var applying=applyPhaseActive(),armed=state.pendingArmed,openEntry=applying?applyEntry():null,staged=stagedList();
-    var counts={};state.traySelection.forEach(function(sides){counts[sides]=(counts[sides]||0)+1;});
-    var bonusDice=configured?(cfg.bonusDice||[]):[];
-    var applyFull=!!(openEntry&&entryBonusDice(openEntry).length+stagedBonusCount()>=MAX_BONUS_DICE);
-    var calls=ROLL_DIE_SIZES.map(function(sides){
-      var count=applying?staged.filter(function(item){return item.kind!=="destiny"&&item.sides===sides;}).length
-        :configured?bonusDice.filter(function(die){return die.sides===sides;}).length:(counts[sides]||0);
-      // While a roll waits on APPLY the tray sizes stay live: they stage the next modifier.
-      var disabled=armed?true:applying?(sides===20||sides===100||(applyFull&&!count))
-        :(busy||(configured&&(sides===20||sides===100))||(configured&&bonusDice.length>=MAX_BONUS_DICE&&!count));
-      return "<button class=\"fh-cd-tdie"+(applying&&!disabled?" is-calling":"")+"\" type=\"button\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+" title=\"Click to add a d"+sides+" · right-click or long press to remove one\" aria-label=\"Add a d"+sides+"; right-click to remove one\">d"+(sides===100?"%":sides)+(count?"<span class=\"fh-cd-ct\">×"+count+"</span>":"")+"</button>";
-    }).join("");
-    // APPLY NEW MODIFIERS needs the width the label input would eat, and the
-    // status line already says what the tray is for. So the input steps aside.
-    var label=applying||armed
-      ? ""
-      : configured
-      ? "<input value=\"\" placeholder=\"→ bonus dice for the prepared roll\" disabled aria-label=\"Tray label\">"
-      : "<input id=\"fhPsTrayLabel\" maxlength=\"48\" value=\""+esc(state.trayLabel)+"\" placeholder=\"Damage / free roll…\" aria-label=\"Roll label\">";
-    var rollButton=applying
-      ? "<button class=\"fh-cd-trayroll is-calling\" type=\"button\" data-apply-roll title=\""+(staged.length?"Roll the staged dice and keep the roll open":"Resolve this roll")+"\">APPLY"+(staged.length?"<i class=\"fh-cd-applylong\"> NEW MODIFIERS</i><i class=\"fh-cd-applyct\"> ×"+staged.length+"</i>":"")+"</button>"
-      : "<button class=\"fh-cd-trayroll"+(armed?" is-calling is-chaos":"")+"\" type=\"button\" data-roll-tray"+(busy?" disabled":"")+">ROLL</button>";
-    return "<section class=\"fh-cd-stage\" data-zone=\"roller\"><div class=\"fh-cd-frame\">"+renderFrameInner()+"</div>"+
-      "<div class=\"fh-cd-tray\"><span class=\"fh-cd-tlab\">TRAY</span>"+calls+label+rollButton+
-      "<button class=\"fh-cd-trayclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Finish the current roll first\"":"")+" aria-label=\"Clear the tray\">"+iconSvg("close")+"</button></div></section>";
+    var busy=rollTransactionActive(),armed=state.pendingArmed;
+    /* The badge strip is always there: it carries what the table still owes,
+       and the … pins a reminder of your own beside it. */
+    var badges=pendingFate().map(function(item){
+      return "<button type=\"button\" class=\"fh-cd-pending"+(item.kind==="note"?" is-note":"")+"\" data-pending-open=\""+esc(item.id)+"\" data-pending-id=\""+esc(item.id)+"\" title=\""+esc(pendingTitle(item))+"\">"+esc(pendingLabel(item))+"</button>";
+    }).join("")+
+      "<button type=\"button\" class=\"fh-cd-pendadd\" data-pending-add title=\"Pin a reminder of your own\" aria-label=\"Pin a badge\">…</button>";
+    var popup=renderEventContent();
+    return "<section class=\"fh-cd-stage\" data-zone=\"roller\">"+
+      "<div class=\"fh-cd-acts-bar\">"+
+      "<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">ROLL<small>"+esc(rollSummaryText())+"</small></button>"+
+      "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the popup first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
+      "<div class=\"fh-cd-temps\">"+badges+"</div>"+
+      "<div class=\"fh-cd-frame\">"+renderFrameInner()+"</div>"+
+      (popup?"<div class=\"fh-cd-popups\">"+popup+"</div>":"")+
+      "</section>";
   }
   function renderDestiny(ch) {
     var arcana=ch.destinyBuild&&ch.destinyBuild.arcana||{};
     var overflow=Math.max(0,Number(state.destiny.points)-Number(state.destiny.score));
-    // A roll waiting on APPLY can still take one Destiny die: the pool calls for it.
-    var openEntry=applyPhaseActive()?applyEntry():null;
-    var calling=!!openEntry&&!openEntry.destiny&&!stagedList().some(function(item){return item.kind==="destiny";});
+    // An open roll can still take one Destiny die: the pool calls for it, briefly.
+    var landed=rollOpen()?openEntry():null;
+    var calling=callingNow()&&!!landed&&!landed.destiny&&!stagedList().some(function(item){return item.kind==="destiny";});
     var dice=DIE_SEQUENCE.map(function(sides){
       var available=state.destiny.dice.filter(function(die){return die.sides===sides&&die.available;}),die=available[0];
       var selected=die&&state.rollConfig&&state.rollConfig.destinyDieId===die.id;
@@ -1393,9 +1556,6 @@
         "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(available.length?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button></span>"+
         "<button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
         dieSvg(sides,26,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
-    }).join("");
-    var waiting=pendingFate().map(function(item){
-      return "<button type=\"button\" class=\"fh-cd-pending\" data-pending-open=\""+esc(item.id)+"\" title=\""+esc(pendingTitle(item))+"\">"+esc(pendingLabel(item))+"</button>";
     }).join("");
     // The Score changes once in a campaign, so it is plain text with a
     // click-to-edit affordance instead of a permanently locked input.
@@ -1412,7 +1572,7 @@
       "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
       "<span class=\"fh-cd-pool\">"+dice+"</span>"+
-      (waiting||"<span class=\"fh-cd-arcana\" title=\"Your Major Arcana — a pool die powers or rescues a roll\">"+esc(arcana.name||"Major Arcana")+"</span>")+
+      "<span class=\"fh-cd-arcana\" title=\"Your Major Arcana — a pool die powers or rescues a roll\">"+esc(arcana.name||"Major Arcana")+"</span>"+
       "</div></section>";
   }
   /* ── Stream: one finished roll per line, shaped for a later AboveVTT export ── */
@@ -1492,69 +1652,133 @@
   }
   // Fine tune only — A/D (choose after the roll) comes from Major Arcana powers
   // on Destiny dice, so it is never offered on the main console strip.
-  function renderDieModes(scope,index,mode,disabled){
-    var attrs=" data-die-scope=\""+scope+"\""+(index!=null?" data-die-index=\""+index+"\"":""),off=disabled?" disabled":"";
-    return "<span class=\"fh-cd-seg\">"+
-      "<button type=\"button\" class=\"is-disadvantage "+(mode==="disadvantage"?"is-on":"")+"\" data-die-mode=\"disadvantage\""+attrs+off+" aria-label=\"Disadvantage: roll two, keep the lower\">D</button>"+
-      "<button type=\"button\" class=\""+(mode==="flat"?"is-on":"")+"\" data-die-mode=\"flat\""+attrs+off+" aria-label=\"Flat roll\">—</button>"+
-      "<button type=\"button\" class=\"is-advantage "+(mode==="advantage"?"is-on":"")+"\" data-die-mode=\"advantage\""+attrs+off+" aria-label=\"Advantage: roll two, keep the higher\">A</button>"+
-      "<button type=\"button\" class=\"is-choice "+(mode==="choice"?"is-on":"")+"\" data-die-mode=\"choice\""+attrs+off+" aria-label=\"A/D: roll two, choose afterwards\">A/D</button></span>";
-  }
-  function renderBonusDieControl(die,index){var locked=!!die.locked,disabled=locked?" disabled":"";return "<div class=\"fh-cd-bonusrow"+(locked?" is-locked":"")+"\" data-bonus-row=\""+esc(die.id)+"\"><span class=\"fh-cd-srcmark\" aria-hidden=\"true\">"+bonusSourceMark(die.sourceIcon)+"</span><input data-bonus-label maxlength=\"32\" value=\""+esc(die.label)+"\" aria-label=\"Bonus die label\""+disabled+"><select data-bonus-sides aria-label=\"Bonus die size\""+disabled+">"+ROLL_DIE_SIZES.slice(0,6).map(function(sides){return "<option value=\""+sides+"\" "+(die.sides===sides?"selected":"")+">d"+sides+"</option>";}).join("")+"</select>"+renderDieModes("bonus",index,die.advantageMode,locked)+"<label class=\"fh-cd-portent\">Portent<input data-bonus-forced type=\"number\" min=\"1\" max=\""+die.sides+"\" value=\""+(die.forcedResult==null?"":die.forcedResult)+"\" placeholder=\"—\""+disabled+"></label>"+(locked?"<span class=\"fh-cd-srcmark\" title=\"Already rolled\">"+iconSvg("lock")+"</span>":"<button type=\"button\" data-remove-bonus=\""+index+"\" aria-label=\"Remove "+esc(die.label)+"\">"+iconSvg("close")+"</button>")+"</div>";}
   function renderConsole() {
     var cfg=state.rollConfig,entry=cfg&&cfg.editingId?state.history.find(function(item){return item.id===cfg.editingId;}):null;
-    if(!cfg)return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE<small>space = roll · A / D / F = mode</small></div>"+
-      "<button class=\"fh-cd-idle\" id=\"fhPsOpenConsole\" type=\"button\">Click a check to roll it flat, or its <b>gear</b> to prepare a full roll.</button></section>";
-    var locked=!!entry,busy=rollTransactionActive(),applying=applyPhaseActive()&&entry&&entry.id===state.rollSequence.entryId;
-    var bonusDice=cfg.bonusDice||[],capacity=bonusDice.length>=MAX_BONUS_DICE;
-    // Under APPLY the presets stop being setup switches: they call for one more die.
-    var applyRoom=!!applying&&entryBonusDice(entry).length+stagedBonusCount()<MAX_BONUS_DICE;
-    var callChip=applyRoom?" is-calling":"",callOff=applying&&!applyRoom?" disabled":"";
-    var guidance=bonusDice.some(function(die){return String(die.label).toLowerCase()==="guidance";});
-    var bardic=bonusDice.find(function(die){return String(die.label).toLowerCase()==="bardic";});
-    var availableGroups=DIE_SEQUENCE.map(function(sides){return state.destiny.dice.filter(function(die){return die.available&&die.sides===sides;});}).filter(function(group){return group.length;});
-    var destinyOptions="<option value=\"\">Destiny</option>"+availableGroups.map(function(group){var die=group[0];return "<option value=\""+die.id+"\" "+(cfg.destinyDieId===die.id?"selected":"")+">d"+die.sides+(group.length>1?" ×"+group.length:"")+"</option>";}).join("");
-    if(entry&&entry.destiny)destinyOptions="<option selected value=\"\">d"+entry.destiny.sides+" = "+entry.destiny.result+" · spent</option>";
-    var destinyOn=!!cfg.destinyDieId||!!(entry&&entry.destiny);
-    var head="<div class=\"fh-cd-crow fh-cd-chead\"><span class=\"fh-cd-cname\">"+esc(cfg.name)+" <b>"+signed(cfg.baseBonus)+"</b></span>"+
-      "<span class=\"fh-cd-cmeta\">"+esc(cfg.note||cfg.ability||"")+"</span>"+
-      "<span class=\"fh-cd-dc\">DC <input id=\"fhPsDc\" type=\"number\" min=\"0\" value=\""+esc(cfg.dc)+"\" placeholder=\"—\"></span>"+
-      "<button class=\"fh-cd-cclose\" id=\"fhPsCloseConsole\" type=\"button\" aria-label=\"Close the roll console\">"+iconSvg("close")+"</button></div>";
-    var modes="<span class=\"fh-cd-seg\">"+
-      "<button type=\"button\" class=\"is-disadvantage"+(cfg.d20Mode==="disadvantage"?" is-on":"")+"\" data-die-mode=\"disadvantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Disadvantage\">D</button>"+
-      "<button type=\"button\" class=\""+(cfg.d20Mode==="flat"?"is-on":"")+"\" data-die-mode=\"flat\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Flat roll\">—</button>"+
-      "<button type=\"button\" class=\"is-advantage"+(cfg.d20Mode==="advantage"?" is-on":"")+"\" data-die-mode=\"advantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Advantage\">A</button></span>";
-    var row2="<div class=\"fh-cd-crow\">"+modes+
-      "<button type=\"button\" id=\"fhPsPlusTwo\" class=\"fh-cd-chip"+(cfg.plusTwo?" is-on":"")+"\" title=\"Fixed Fate's Hand +2\">FH +2</button>"+
-      "<span class=\"fh-cd-modctl\"><small>MOD</small><button type=\"button\" data-custom-step=\"-1\" aria-label=\"Lower the manual modifier\">−</button>"+
-      "<input id=\"fhPsCustom\" type=\"number\" value=\""+(Number(cfg.custom)||0)+"\" aria-label=\"Manual modifier\">"+
-      "<button type=\"button\" data-custom-step=\"1\" aria-label=\"Raise the manual modifier\">+</button></span></div>";
-    var row3="<div class=\"fh-cd-crow\">"+
-      "<button type=\"button\" id=\"fhPsGuidance\" data-bonus-preset=\"Guidance\" class=\"fh-cd-chip"+(guidance?" is-on":"")+(applying?callChip:"")+"\""+(applying?callOff:(capacity&&!guidance?" disabled":""))+" title=\"Guidance d4\">"+iconSvg("guidance")+"Guid</button>"+
-      "<span class=\"fh-cd-chip"+(bardic?" is-on":"")+(applying?callChip:"")+"\" style=\"padding-right:2px\">"+
-      "<button type=\"button\" id=\"fhPsBardic\" data-bonus-preset=\"Bardic\" style=\"border:0;background:none;color:inherit;font:inherit;cursor:pointer;display:flex;align-items:center;gap:3px;padding:0\""+(applying?callOff:(capacity&&!bardic?" disabled":""))+" title=\"Bardic Inspiration\">"+iconSvg("bardic")+"Bard</button>"+
-      "<select id=\"fhPsBardicSides\" aria-label=\"Bardic die size\" style=\"border:0;background:rgba(0,0,0,.14);border-radius:3px;font:inherit;font-size:7px;color:inherit\">"+[6,8,10,12].map(function(sides){return "<option value=\""+sides+"\" "+((bardic?bardic.sides:cfg.bardicSides)===sides?"selected":"")+">d"+sides+"</option>";}).join("")+"</select></span>"+
-      "<select id=\"fhPsDestinyDie\" class=\"fh-cd-chip"+(destinyOn?" is-on":"")+"\" aria-label=\"Destiny die\""+(entry&&entry.destiny?" disabled":"")+">"+destinyOptions+"</select>"+
-      "<span class=\"fh-cd-trayhint\">+ dice: TRAY <b>"+bonusDice.length+"/"+MAX_BONUS_DICE+"</b></span>"+
-      "<button type=\"button\" class=\"fh-cd-more-toggle"+(state.consoleAdvanced?" is-on":"")+"\" data-console-adv aria-label=\"Portents and per-die advantage\" title=\"Portent · per-die A/D · labels\">⋯</button></div>";
-    var advanced="";
-    if(state.consoleAdvanced){
-      var d20Row="<div class=\"fh-cd-diectl\"><span>Base d20</span>"+renderDieModes("d20",null,cfg.d20Mode,locked)+
-        "<label class=\"fh-cd-portent\">Portent<input id=\"fhPsD20Forced\" type=\"number\" min=\"1\" max=\"20\" value=\""+(cfg.d20ForcedResult==null?"":cfg.d20ForcedResult)+"\" placeholder=\"—\""+(locked?" disabled":"")+"></label></div>";
-      var destinyMax=(function(){var selected=entry&&entry.destiny||state.destiny.dice.find(function(die){return die.id===cfg.destinyDieId;});return selected?selected.sides:100;})();
-      var destinyRow="<div class=\"fh-cd-diectl\"><span>Destiny</span>"+renderDieModes("destiny",null,cfg.destinyMode,!!(entry&&entry.destiny))+
-        "<label class=\"fh-cd-portent\">Portent<input id=\"fhPsDestinyForced\" type=\"number\" min=\"1\" max=\""+destinyMax+"\" value=\""+(cfg.destinyForcedResult==null?"":cfg.destinyForcedResult)+"\" placeholder=\"—\""+(entry&&entry.destiny?" disabled":"")+"></label></div>";
-      advanced="<div class=\"fh-cd-adv\"><div class=\"fh-cd-adv-title\">FINE TUNE</div>"+d20Row+destinyRow+bonusDice.map(renderBonusDieControl).join("")+"</div>";
+    var locked=!!entry,open=rollOpen();
+    var bonusDice=cfg?(cfg.bonusDice||[]):[];
+    // Head: a loaded check names itself; a free roll gets a label to name itself.
+    var head=cfg
+      ? "<div class=\"fh-cd-crow fh-cd-chead\"><span class=\"fh-cd-cname\">"+esc(cfg.name)+" <b>"+signed(cfg.baseBonus)+"</b></span>"+
+        "<span class=\"fh-cd-cmeta\">"+esc(cfg.note||cfg.ability||"")+"</span>"+
+        "<button class=\"fh-cd-cclose\" id=\"fhPsCloseConsole\" type=\"button\" aria-label=\"Close the roll console\">"+iconSvg("close")+"</button></div>"
+      : "<div class=\"fh-cd-crow fh-cd-chead\"><span class=\"fh-cd-cname is-free\">FREE ROLL</span>"+
+        "<input id=\"fhPsTrayLabel\" maxlength=\"48\" value=\""+esc(state.trayLabel)+"\" placeholder=\"Damage / free roll…\" aria-label=\"Roll label\"></div>";
+    // Row 1 belongs to a check: modes, the fixed +2, the manual modifier, the DC.
+    var row1="";
+    if(cfg){
+      row1="<div class=\"fh-cd-crow\"><span class=\"fh-cd-seg\">"+
+        "<button type=\"button\" class=\"is-disadvantage"+(cfg.d20Mode==="disadvantage"?" is-on":"")+"\" data-die-mode=\"disadvantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Disadvantage\">D</button>"+
+        "<button type=\"button\" class=\""+(cfg.d20Mode==="flat"?"is-on":"")+"\" data-die-mode=\"flat\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Flat roll\">—</button>"+
+        "<button type=\"button\" class=\"is-advantage"+(cfg.d20Mode==="advantage"?" is-on":"")+"\" data-die-mode=\"advantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Advantage\">A</button></span>"+
+        "<button type=\"button\" id=\"fhPsPlusTwo\" class=\"fh-cd-chip"+(cfg.plusTwo?" is-on":"")+"\" title=\"Fixed Fate's Hand +2\">FH +2</button>"+
+        "<span class=\"fh-cd-modctl\"><small>MOD</small><button type=\"button\" data-custom-step=\"-1\" aria-label=\"Lower the manual modifier\">−</button>"+
+        "<input id=\"fhPsCustom\" type=\"number\" value=\""+(Number(cfg.custom)||0)+"\" aria-label=\"Manual modifier\">"+
+        "<button type=\"button\" data-custom-step=\"1\" aria-label=\"Raise the manual modifier\">+</button></span>"+
+        "<span class=\"fh-cd-dc\">DC <input id=\"fhPsDc\" type=\"number\" min=\"0\" value=\""+esc(cfg.dc)+"\" placeholder=\"—\"></span></div>";
     }
-    var actionLabel=applying?(stagedList().length?"Apply new modifiers":"Apply"):busy?"Waiting":locked?"Apply adjustments":"Roll";
-    var summary=[];
-    summary.push((cfg.d20Mode==="advantage"?"2d20kh ":cfg.d20Mode==="disadvantage"?"2d20kl ":cfg.d20Mode==="choice"?"2d20 A/D ":"d20 ")+signed(Number(cfg.baseBonus)+(cfg.plusTwo?2:0)+(Number(cfg.custom)||0)));
-    bonusDice.forEach(function(die){summary.push(die.label.slice(0,4)+" d"+die.sides);});
-    if(destinyOn)summary.unshift("★");
-    var actions="<button class=\"fh-cd-roll"+(applying?" is-calling":"")+"\" id=\"fhPsRunRoll\" type=\"button\" title=\""+actionLabel+"\""+(applying?" data-apply-roll":"")+((busy&&!applying)?" disabled":"")+">"+actionLabel.toUpperCase()+"<small>"+esc(summary.join(" · "))+"</small></button>"+
-      (locked?"<button type=\"button\" id=\"fhPsRepeatRoll\" class=\"fh-cd-chip\" style=\"margin-top:4px\">Repeat setup</button>":"");
-    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE<small>space = roll · A / D / F = mode</small></div>"+
-      head+row2+row3+advanced+actions+(locked?renderBreakdown(entry):"")+"</section>";
+    // The FINE TUNE drawer is gone: a Portent belongs to one die, so it lives in
+    // that die's own right-click menu rather than in a console-wide panel.
+    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE<small>left click adds a die · right click tunes it</small></div>"+
+      head+row1+renderWhiteDice()+"</section>";
+  }
+  /* The one place dice come from. A blank die per size: left click adds one to
+     the tray, right click takes one back. Once in the tray, a right click on the
+     die itself gives it a colour, a seal and its own advantage. */
+  function renderWhiteDice(){
+    var cfg=state.rollConfig,checkLoaded=!!cfg,counts=trayDieCounts(),calling=callingNow();
+    var full=checkLoaded&&trayBonusCount()>=MAX_BONUS_DICE;
+    return "<div class=\"fh-cd-whiterow\">"+ROLL_DIE_SIZES.map(function(sides){
+      var count=counts[sides]||0;
+      var disabled=!!state.pendingArmed||(checkLoaded&&(sides===20||sides===100))||(full&&!count)||(!checkLoaded&&state.traySelection.length>=MAX_FREE_DICE&&!count);
+      return "<button type=\"button\" class=\"fh-cd-wdie"+(calling&&!disabled?" is-calling":"")+"\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+
+        " title=\"Left click adds a d"+sides+" · right click or long press takes one back\" aria-label=\"Add a d"+sides+"; right-click to remove one\">"+
+        dieSvg(sides,26,"white","d"+(sides===100?"%":sides))+(count?"<span class=\"fh-cd-mult\">×"+count+"</span>":"")+"</button>";
+    }).join("")+"</div>";
+  }
+  /* Every die still in the hand answers to a right click, wherever it lives:
+     the prepared d20, a reserved Destiny die, a bonus die, a staged die, or a
+     plain die in the free tray. The menu then offers only what that die can do. */
+  function findStagedDie(prompt){
+    if(!prompt)return null;
+    var cfg=state.rollConfig;
+    if(prompt.base){
+      if(!cfg||cfg.editingId)return null;
+      return {scope:"base",sides:20,label:"Base d20",advantageMode:cfg.d20Mode||"flat",forcedResult:cfg.d20ForcedResult,colour:cfg.d20Colour||"",sourceIcon:""};
+    }
+    if(prompt.destinyDieId){
+      if(!cfg)return null;
+      var poolDie=state.destiny.dice.find(function(die){return die.id===prompt.destinyDieId&&die.available;});
+      if(!poolDie||cfg.destinyDieId!==poolDie.id)return null;
+      return {scope:"destiny",sides:poolDie.sides,label:"Destiny d"+poolDie.sides,advantageMode:cfg.destinyMode||"flat",forcedResult:cfg.destinyForcedResult,colour:"",sourceIcon:""};
+    }
+    if(prompt.stagedId){var item=stagedList().find(function(die){return die.id===prompt.stagedId&&die.kind!=="destiny";});return item?Object.assign({scope:"staged"},item):null;}
+    if(prompt.bonusId){var bonus=cfg&&(cfg.bonusDice||[]).find(function(die){return die.id===prompt.bonusId&&!die.locked;});return bonus?Object.assign({scope:"bonus"},bonus):null;}
+    if(prompt.freeId){
+      var free=state.traySelection.find(function(die){return die.id===prompt.freeId;});
+      return free?Object.assign({scope:"free",label:"d"+free.sides,sourceIcon:""},free):null;
+    }
+    return null;
+  }
+  function refreshTrayForState(){
+    if(rollOpen()){var entry=openEntry();if(entry)refreshOpenTray(entry);return;}
+    if(state.rollConfig)prepareTrayForConfig(state.rollConfig);else state.trayResults=[];
+  }
+  function mutateStagedDie(patch){
+    var prompt=state.diePrompt,target=findStagedDie(prompt),cfg=state.rollConfig;
+    if(!target)return;
+    if(target.scope==="base"){
+      if(patch.advantageMode!=null)cfg.d20Mode=patch.advantageMode;
+      if(patch.forcedResult!==undefined)cfg.d20ForcedResult=forcedDieResult(patch.forcedResult,20);
+      if(patch.colour!=null)cfg.d20Colour=patch.colour;
+    }
+    else if(target.scope==="destiny"){
+      if(patch.advantageMode!=null)cfg.destinyMode=patch.advantageMode;
+      if(patch.forcedResult!==undefined)cfg.destinyForcedResult=forcedDieResult(patch.forcedResult,target.sides);
+    }
+    else if(target.scope==="staged"){var item=stagedList().find(function(die){return die.id===prompt.stagedId;});if(item)Object.assign(item,patch);}
+    else if(target.scope==="bonus"){var bonus=(cfg.bonusDice||[]).find(function(die){return die.id===prompt.bonusId;});if(bonus)Object.assign(bonus,patch);}
+    else if(target.scope==="free"){var freeDie=state.traySelection.find(function(die){return die.id===prompt.freeId;});if(freeDie)Object.assign(freeDie,patch);}
+    refreshTrayForState();persistPlayState();render();
+  }
+  function dropStagedDie(){
+    var prompt=state.diePrompt,target=findStagedDie(prompt);if(!target)return;
+    // The base d20 is the roll itself — it cannot be taken out of its own tray.
+    if(target.scope==="base"){state.message="The d20 is the roll — it cannot be removed.";state.messageKind="warn";renderMessage();return;}
+    if(target.scope==="destiny"){var cfg=state.rollConfig;cfg.destinyDieId="";cfg.destinyConfirmed=false;cfg.destinyForcedResult=null;}
+    else if(target.scope==="staged")state.rollSequence.staged=stagedList().filter(function(die){return die.id!==prompt.stagedId;});
+    else if(target.scope==="bonus"){var config=state.rollConfig;config.bonusDice=(config.bonusDice||[]).filter(function(die){return die.id!==prompt.bonusId;});syncPresetFlags(config);}
+    else if(target.scope==="free")state.traySelection=state.traySelection.filter(function(die){return die.id!==prompt.freeId;});
+    state.diePrompt=null;refreshTrayForState();persistPlayState();render();
+  }
+  /* Sealing a die "Destiny" is not decoration: it spends a die from the pool,
+     with the same confirmation as clicking the pool itself. */
+  function sealStagedDie(seal){
+    var target=findStagedDie(state.diePrompt);if(!target)return;
+    if(seal!=="destiny"){
+      mutateStagedDie({sourceIcon:seal,label:seal==="guidance"?"Guidance":seal==="bardic"?"Bardic":target.label});
+      return;
+    }
+    var poolDie=state.destiny.dice.find(function(die){return die.available&&die.sides===target.sides;});
+    if(!poolDie){state.message="No Destiny d"+target.sides+" is available in the pool.";state.messageKind="warn";renderMessage();return;}
+    confirmDestinyUse(poolDie.id,"Turn this d"+target.sides+" into a Destiny die",function(){
+      dropStagedDie();
+      if(rollOpen()){stageDestinyDie(poolDie.id);return;}
+      if(state.rollConfig){state.rollConfig.destinyDieId=poolDie.id;state.rollConfig.destinyConfirmed=true;prepareTrayForConfig(state.rollConfig);}
+      render();
+    },"add-destiny");
+  }
+  function trayBonusCount(){
+    var cfg=state.rollConfig;
+    if(rollOpen()){var entry=openEntry();return (entry?entryBonusDice(entry).length:0)+stagedBonusCount();}
+    return cfg?(cfg.bonusDice||[]).length:0;
+  }
+  function trayDieCounts(){
+    var counts={};
+    function add(sides){sides=Number(sides);counts[sides]=(counts[sides]||0)+1;}
+    if(rollOpen())stagedList().forEach(function(item){if(item.kind!=="destiny")add(item.sides);});
+    else if(state.rollConfig)(state.rollConfig.bonusDice||[]).forEach(function(die){if(!die.locked)add(die.sides);});
+    else state.traySelection.forEach(function(die){add(die.sides);});
+    return counts;
   }
   function renderBreakdown(entry) {
     var lines=["<span><small>Kept d20</small><b>"+entry.kept+"</b></span>","<span><small>Base bonus</small><b>"+signed(entry.baseBonus)+"</b></span>"];
@@ -1678,19 +1902,16 @@
     if((state.popOpen==="inventory"||state.popOpen==="forge")&&state.inventory===null)loadInventory();
   }
   function syncPresetFlags(cfg){var guidance=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="guidance";}),bardic=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="bardic";});cfg.guidance=!!guidance;cfg.bardic=!!bardic;if(bardic){cfg.bardicSides=bardic.sides;state.prefs.bardicSides=bardic.sides;}}
+  /* Only two free-text fields are left in the console; everything else is a
+     button or lives in a die's own menu, and writes straight to the config. */
   function syncConsoleInputs(){
-    if(!state.rollConfig||!root)return;var q=function(id){return root.querySelector(id);},cfg=state.rollConfig,d20Forced=q("#fhPsD20Forced"),destinyForced=q("#fhPsDestinyForced"),custom=q("#fhPsCustom"),dc=q("#fhPsDc"),bardicSides=q("#fhPsBardicSides");
-    if(d20Forced)cfg.d20ForcedResult=forcedDieResult(d20Forced.value,20);if(destinyForced){var destinyDie=state.destiny&&state.destiny.dice.find(function(die){return die.id===cfg.destinyDieId;}),max=destinyDie?destinyDie.sides:100;cfg.destinyForcedResult=forcedDieResult(destinyForced.value,max);}if(custom)cfg.custom=Number(custom.value)||0;if(dc)cfg.dc=dc.value;if(bardicSides){cfg.bardicSides=Number(bardicSides.value)||6;state.prefs.bardicSides=cfg.bardicSides;}
-    var previous={};(cfg.bonusDice||[]).forEach(function(die){previous[die.id]=die;});var rows=Array.prototype.slice.call(root.querySelectorAll("[data-bonus-row]"));if(rows.length)cfg.bonusDice=rows.map(function(row,index){var old=previous[row.dataset.bonusRow]||{},label=row.querySelector("[data-bonus-label]"),sides=row.querySelector("[data-bonus-sides]"),forced=row.querySelector("[data-bonus-forced]"),size=Number(sides&&sides.value)||old.sides||6,die=normalizeBonusDie({id:row.dataset.bonusRow,label:label?label.value:old.label,sides:size,advantageMode:old.advantageMode,forcedResult:forced?forced.value:old.forcedResult,result:old.result,rolls:old.rolls,chosenIndex:old.chosenIndex,forced:old.forced,sourceIcon:old.sourceIcon},index);die.locked=!!old.locked;return die;}).slice(0,MAX_BONUS_DICE);
-    var bardic=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="bardic"&&!die.locked;});if(bardic&&bardicSides)bardic.sides=Number(bardicSides.value)||bardic.sides;syncPresetFlags(cfg);
+    if(!state.rollConfig||!root)return;
+    var cfg=state.rollConfig,custom=root.querySelector("#fhPsCustom"),dc=root.querySelector("#fhPsDc");
+    if(custom)cfg.custom=Number(custom.value)||0;
+    if(dc)cfg.dc=dc.value;
   }
-  function toggleBonusPreset(label){var cfg=state.rollConfig;if(!cfg)return;
-    // While a roll waits on APPLY the same chips stage another die instead of editing a setup.
-    if(applyPhaseActive()){stageBonusDie(label==="Guidance"?4:Number(cfg.bardicSides)||6,label,label==="Guidance"?"guidance":"bardic");return;}
-    syncConsoleInputs();var index=(cfg.bonusDice||[]).findIndex(function(die){return die.label.toLowerCase()===label.toLowerCase();});if(index>=0){if(cfg.bonusDice[index].locked)return;cfg.bonusDice.splice(index,1);}else if(cfg.bonusDice.length<MAX_BONUS_DICE){var sides=label==="Guidance"?4:label==="Tactical Mind"?10:Number(cfg.bardicSides)||6,source=label==="Guidance"?"guidance":label==="Tactical Mind"?"tactical":"bardic";cfg.bonusDice.push(newBonusDie(label,sides,source));}syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
-  function addGenericBonusDie(){var cfg=state.rollConfig;if(!cfg)return;syncConsoleInputs();if(cfg.bonusDice.length>=MAX_BONUS_DICE)return;var used=(cfg.bonusDice||[]).map(function(die){var match=String(die.sourceIcon||"").match(/^other-([123])$/);return match?Number(match[1]):0;}),slot=[1,2,3].find(function(value){return used.indexOf(value)<0;})||Math.min(3,cfg.bonusDice.length+1);cfg.bonusDice.push(newBonusDie("Other "+["","I","II","III"][slot],6,"other-"+slot));syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
   function removeGenericBonusDie(index){var cfg=state.rollConfig;if(!cfg)return;syncConsoleInputs();index=Number(index);if(!cfg.bonusDice[index]||cfg.bonusDice[index].locked)return;cfg.bonusDice.splice(index,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
-  function openConfig(name,ability,bonus,note,dc){clearDiceTray(false);state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});prepareTrayForConfig(state.rollConfig);state.message="";state.messageKind="";render();window.setTimeout(function(){var roll=root&&root.querySelector("#fhPsRunRoll");if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
+  function openConfig(name,ability,bonus,note,dc){clearDiceTray(false);state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});prepareTrayForConfig(state.rollConfig);state.message="";state.messageKind="";render();window.setTimeout(function(){var roll=root&&root.querySelector("[data-roll-now]");if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
   function loadInventory(){if(!state.code)return;state.inventory={loading:true};api("/inv/"+encodeURIComponent(state.code)).then(function(data){state.inventory=data;render();}).catch(function(error){state.inventory={error:"Could not load inventory: "+error.message};render();});}
   function loadParty(){var input=root.querySelector("#fhPsCode"),code=(input?input.value:state.code).trim().toUpperCase();state.code=code;state.party=[];state.record=null;state.character=null;state.pseudo="";state.inventory=null;state.loading=!!code;render();if(!code)return;try{localStorage.setItem("fh-my-campcode",code);}catch(e){}api("/party/"+encodeURIComponent(code)).then(function(data){state.party=(data.builds||[]).map(function(entry){return entry.pseudo;}).sort();var last=state.requestedPseudo||"";if(!last)try{last=localStorage.getItem("fh-my-pseudo")||"";}catch(e){}state.requestedPseudo="";state.loading=false;if(state.party.indexOf(last)>=0){state.pseudo=last;loadBuild();}else render();}).catch(function(error){state.requestedPseudo="";state.loading=false;state.message=error.message||"Could not reach the campaign server.";state.messageKind="danger";render();});}
   function loadBuild(){var who=state.pseudo;if(!state.code||!who)return;state.loading=true;render();try{localStorage.setItem("fh-my-pseudo",who);}catch(e){}Promise.all([api("/party/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)),api("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)).catch(function(){return {profile:emptyProfile()};})]).then(function(results){state.record=results[0];state.profile=results[1].profile||emptyProfile();state.character=effectiveCharacter();loadPlayState(state.character);state.loading=false;state.inventory=null;state.message="";rememberRoute();render();}).catch(function(error){state.loading=false;state.record=null;state.character=null;state.message=error.message||"Could not load this character.";state.messageKind="danger";render();});}
@@ -1726,17 +1947,29 @@
     if(state.rollConfig)syncConsoleInputs();
     if(button.dataset.dieChoice!==undefined){resolveDieChoice(button.dataset.dieChoice);return;}
     if(button.dataset.eventOk!==undefined){clearTimeout(state.eventTimer);acknowledgeEvent();return;}
-    /* APPLY and its staging live above the transaction lock: they ARE the way out of it. */
-    if(button.dataset.applyRoll!==undefined){applyStagedModifiers();return;}
-    if(button.dataset.bonusPreset&&applyPhaseActive()){toggleBonusPreset(button.dataset.bonusPreset);return;}
-    if(button.dataset.pendingOpen!==undefined){state.trayPrompt={type:"pending",id:button.dataset.pendingOpen};render();return;}
+    /* The one ROLL: it arms nothing and asks nothing, it rolls whatever the
+       tray is currently holding. */
+    if(button.dataset.rollNow!==undefined){
+      if(state.pendingArmed){rollPendingFate();return;}
+      if(rollOpen()){rollStagedDice();return;}
+      if(rollTransactionActive()){warnRollLocked();return;}
+      if(state.rollConfig)runConfiguredRoll();else rollTrayDice();
+      return;
+    }
+    if(button.dataset.dieSeal!==undefined){sealStagedDie(button.dataset.dieSeal);return;}
+    if(button.dataset.dieColour!==undefined){mutateStagedDie({colour:button.dataset.dieColour==="ivory"?"":button.dataset.dieColour});return;}
+    if(button.dataset.dieModeSet!==undefined){mutateStagedDie({advantageMode:button.dataset.dieModeSet});return;}
+    if(button.dataset.dieDrop!==undefined){dropStagedDie();return;}
+    if(button.dataset.pendingOpen!==undefined){state.trayPrompt={type:"pending",id:button.dataset.pendingOpen};state.diePrompt=null;render();return;}
     if(button.dataset.pendingResolve!==undefined){armPendingFate(button.dataset.pendingResolve);return;}
+    if(button.dataset.pendingAdd!==undefined){state.trayPrompt={type:"pending-new"};state.diePrompt=null;render();return;}
+    if(button.dataset.pendingSave!==undefined){savePendingLabel(button.dataset.pendingSave);return;}
+    if(button.dataset.pendingDrop!==undefined){dropPendingFate(button.dataset.pendingDrop);state.trayPrompt=null;persistPlayState();render();return;}
     if(button.dataset.clearTray!==undefined){if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}
-    if(button.dataset.addTrayDie!==undefined){if(applyPhaseActive())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
+    if(button.dataset.addTrayDie!==undefined){if(rollOpen())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
     if(button.dataset.removeTrayDie!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDie(button.dataset.removeTrayDie);return;}
     if(button.dataset.removeTraySize!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDieSize(button.dataset.removeTraySize);return;}
-    if(button.dataset.rollTray!==undefined){if(state.pendingArmed){rollPendingFate();return;}if(rollTransactionActive()){warnRollLocked();return;}if(state.rollConfig&&!state.rollConfig.editingId)runConfiguredRoll();else rollTrayDice();return;}
-    if(button.dataset.trayCancel!==undefined||button.dataset.trayClose!==undefined){state.trayPrompt=null;render();return;}
+    if(button.dataset.trayCancel!==undefined||button.dataset.trayClose!==undefined){state.trayPrompt=null;state.diePrompt=null;render();return;}
     if(button.dataset.trayConfirmDestiny!==undefined){var destinyPrompt=state.trayPrompt,confirmAction=destinyPrompt&&destinyPrompt.onConfirm;state.trayPrompt=null;if(confirmAction)confirmAction();else render();return;}
     if(button.dataset.trayAcceptFate!==undefined||button.dataset.trayRefuseFate!==undefined){var fatePrompt=state.trayPrompt,choice=button.dataset.trayAcceptFate!==undefined?"accept":"chaos";state.trayPrompt=null;if(fatePrompt)resolveNatOne(fatePrompt.entryId,choice);return;}
     /* Dock chrome never touches roll state, so it stays reachable mid-transaction. */
@@ -1746,15 +1979,14 @@
     if(button.dataset.openPop!==undefined){state.popOpen=button.dataset.openPop;state.activeContext=button.dataset.openPop;state.menuOpen=false;render();return;}
     if(button.dataset.closePop!==undefined){if(state.editDraft)state.editDraft=null;state.popOpen="";render();return;}
     if(button.dataset.chromeToggle!==undefined){state.chromeOpen=!state.chromeOpen;state.menuOpen=false;render();return;}
-    if(button.dataset.consoleAdv!==undefined){if(state.rollConfig)syncConsoleInputs();state.consoleAdvanced=!state.consoleAdvanced;render();return;}
     if(button.dataset.cdMode!==undefined){setWindowMode(button.dataset.cdMode);return;}
     if(button.dataset.hpOpen!==undefined){state.hpOpen=!state.hpOpen;render();return;}
     if(button.dataset.hpStep!==undefined){var hp=state.vitals||{};if(hp.max==null){state.message="Set a maximum first.";state.messageKind="warn";renderMessage();return;}setVitals({current:(hp.current==null?hp.max:hp.current)+Number(button.dataset.hpStep)});render();return;}
     if(button.dataset.hpFull!==undefined){setVitals({current:(state.vitals||{}).max});render();return;}
     if(button.dataset.scoreEdit!==undefined){state.scoreEditing=true;render();return;}
     /* A pool die clicked while a roll waits on APPLY is staged, not spent on the spot. */
-    if(button.dataset.destinyDie!==undefined&&applyPhaseActive()){
-      var settled=applyEntry();
+    if(button.dataset.destinyDie!==undefined&&rollOpen()){
+      var settled=openEntry();
       if(settled&&settled.kind==="d20"&&!settled.destiny&&!stagedList().some(function(item){return item.kind==="destiny";})){
         var boostDie=button.dataset.destinyDie;
         confirmDestinyUse(boostDie,"Boost "+settled.name+" · total "+settled.total,function(){stageDestinyDie(boostDie);},"add-destiny");
@@ -1769,13 +2001,10 @@
     if(button.dataset.quickName){quickRoll(button.dataset.quickName,button.dataset.ability,button.dataset.bonus,button.dataset.note);return;}
     if(button.dataset.configName){openConfig(button.dataset.configName,button.dataset.ability,button.dataset.bonus,button.dataset.note,button.dataset.dc);return;}
     if(button.id==="fhPsPlusTwo"){state.rollConfig.plusTwo=!state.rollConfig.plusTwo;prepareTrayForConfig(state.rollConfig);render();return;}
-    if(button.dataset.bonusPreset){toggleBonusPreset(button.dataset.bonusPreset);return;}
-    if(button.dataset.addBonus!==undefined){addGenericBonusDie();return;}
     if(button.dataset.removeBonus!==undefined){removeGenericBonusDie(button.dataset.removeBonus);return;}
     if(button.dataset.dieMode){var cfg=state.rollConfig,scope=button.dataset.dieScope,index=Number(button.dataset.dieIndex),next=button.dataset.dieMode;if(!cfg)return;if(scope==="d20")cfg.d20Mode=cfg.d20Mode===next?"flat":next;else if(scope==="destiny")cfg.destinyMode=cfg.destinyMode===next?"flat":next;else if(scope==="bonus"&&cfg.bonusDice[index]&&!cfg.bonusDice[index].locked)cfg.bonusDice[index].advantageMode=cfg.bonusDice[index].advantageMode===next?"flat":next;prepareTrayForConfig(cfg);render();return;}
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;prepareTrayForConfig(state.rollConfig);render();return;}
-    if(button.id==="fhPsOpenConsole"||button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}if(button.id==="fhPsCloseConsole"){clearDiceTray(true);return;}if(button.id==="fhPsRunRoll"){runConfiguredRoll();return;}
-    if(button.id==="fhPsRepeatRoll"){var old=state.history.find(function(item){return state.rollConfig&&item.id===state.rollConfig.editingId;});if(old){clearDiceTray(false);state.rollConfig=rollInput(old.name,old.ability,old.baseBonus,{mode:old.d20Mode,plusTwo:old.plusTwo,dc:old.dc,note:old.note});state.rollConfig.custom=old.custom||0;state.rollConfig.d20ForcedResult=old.d20Forced?old.kept:null;state.rollConfig.bonusDice=entryBonusDice(old).map(function(die){var manual=die.forced?die.result:null;die.id=uuid();die.result=undefined;die.rolls=undefined;die.chosenIndex=undefined;die.forcedResult=manual;die.forced=false;die.locked=false;return die;});syncPresetFlags(state.rollConfig);prepareTrayForConfig(state.rollConfig);render();}return;}
+    if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}if(button.id==="fhPsCloseConsole"){clearDiceTray(true);return;}
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
     if(button.dataset.destinyDie){var dieId=button.dataset.destinyDie,activeEntry=state.rollConfig&&state.rollConfig.editingId&&state.history.find(function(item){return item.id===state.rollConfig.editingId;});if(state.rollConfig&&!(activeEntry&&activeEntry.destiny)){confirmDestinyUse(dieId,"Add this die to "+state.rollConfig.name,function(){state.rollConfig.destinyDieId=dieId;state.rollConfig.destinyConfirmed=true;prepareTrayForConfig(state.rollConfig);render();},"add-destiny");}else confirmDestinyUse(dieId,"Roll directly from the Destiny pool",function(){standaloneDestiny(dieId);},"destiny");return;}
     if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
@@ -1784,20 +2013,49 @@
     if(button.dataset.natChoice){state.trayPrompt=null;resolveNatOne(button.dataset.entryId,button.dataset.natChoice);return;}
     if(button.dataset.context){state.activeContext=button.dataset.context;render();return;}
   }
-  // Right-click on a tray die removes one; on the iPad a long press does the same.
-  function trayDieTarget(event){var button=event.target&&event.target.closest&&event.target.closest("[data-add-tray-die]");return button&&!button.disabled?button:null;}
-  function onTrayContext(event){
-    var button=trayDieTarget(event);if(!button)return;
-    event.preventDefault();
-    if(applyPhaseActive())unstageDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else dropTrayDie(button.dataset.addTrayDie);
+  /* Two right-click surfaces, two meanings, two places:
+     on a WHITE console die it takes one back; on a die already IN THE TRAY it
+     opens that die's own menu (colour, seal, advantage). */
+  function trayDieTarget(event){
+    if(!event.target||!event.target.closest)return null;
+    var picker=event.target.closest("[data-add-tray-die]");
+    if(picker)return picker.disabled?null:{kind:"picker",node:picker};
+    var badge=event.target.closest("[data-pending-id]");
+    if(badge)return {kind:"badge",node:badge};
+    var tunable=event.target.closest("[data-die-staged],[data-die-bonus],[data-die-destiny],[data-die-free],[data-die-base]");
+    return tunable?{kind:"die",node:tunable}:null;
   }
+  function openDieMenu(node){
+    var data=node.dataset;
+    state.diePrompt=data.dieStaged!==undefined?{stagedId:data.dieStaged}
+      :data.dieBonus!==undefined?{bonusId:data.dieBonus}
+      :data.dieDestiny!==undefined?{destinyDieId:data.dieDestiny}
+      :data.dieBase!==undefined?{base:true}
+      :{freeId:data.dieFree};
+    state.trayPrompt=null;render();
+  }
+  function takeBackDie(node){
+    if(rollOpen())unstageDie(node.dataset.addTrayDie);
+    else if(rollTransactionActive())warnRollLocked();
+    else dropTrayDie(node.dataset.addTrayDie);
+  }
+  function onTrayContext(event){
+    var target=trayDieTarget(event);if(!target)return;
+    event.preventDefault();
+    if(target.kind==="badge")openBadgeMenu(target.node);
+    else if(target.kind==="die")openDieMenu(target.node);
+    else takeBackDie(target.node);
+  }
+  function openBadgeMenu(node){state.trayPrompt={type:"pending-menu",id:node.dataset.pendingId};state.diePrompt=null;render();}
   function onTrayTouchStart(event){
-    var button=trayDieTarget(event);if(!button)return;
+    var target=trayDieTarget(event);if(!target)return;
     clearTimeout(state.trayHoldTimer);
     state.trayHeld=false;
     state.trayHoldTimer=window.setTimeout(function(){
       state.trayHeld=true;
-      if(applyPhaseActive())unstageDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else dropTrayDie(button.dataset.addTrayDie);
+      if(target.kind==="badge")openBadgeMenu(target.node);
+      else if(target.kind==="die")openDieMenu(target.node);
+      else takeBackDie(target.node);
     },500);
   }
   function onTrayTouchEnd(event){
@@ -1806,9 +2064,9 @@
   }
   function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error",true);renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   function onChange(event){
-    if(event.target.id==="fhPsDestinyDie"&&state.rollConfig){var requested=event.target.value;if(!requested){state.rollConfig.destinyDieId="";state.rollConfig.destinyConfirmed=false;prepareTrayForConfig(state.rollConfig);render();return;}if(requested!==state.rollConfig.destinyDieId){confirmDestinyUse(requested,"Add this die to "+state.rollConfig.name,function(){state.rollConfig.destinyDieId=requested;state.rollConfig.destinyConfirmed=true;prepareTrayForConfig(state.rollConfig);render();},"add-destiny");return;}}
-    if(/^fhPs(D20Forced|DestinyForced|BardicSides|Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.hpField){setVitals(event.target.dataset.hpField==="max"?{max:event.target.value}:{current:event.target.value});render();return;}if(event.target.dataset.destinyField){if(event.target.dataset.destinyField==="score")state.scoreEditing=false;updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
-  function onKeydown(event){if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(state.currentEvent&&key===" "){event.preventDefault();acknowledgeEvent();return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();runConfiguredRoll();}}
+    if(event.target.dataset.diePortent!==undefined){mutateStagedDie({forcedResult:event.target.value===""?null:Number(event.target.value)});return;}
+    if(/^fhPs(Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.hpField){setVitals(event.target.dataset.hpField==="max"?{max:event.target.value}:{current:event.target.value});render();return;}if(event.target.dataset.destinyField){if(event.target.dataset.destinyField==="score")state.scoreEditing=false;updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
+  function onKeydown(event){if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(state.currentEvent&&key===" "){event.preventDefault();acknowledgeEvent();return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
 
   function setDockOpen(open){
     state.dockOpen=!!open;state.menuOpen=false;

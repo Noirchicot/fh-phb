@@ -51,12 +51,12 @@ t.render();
 
 const root=document.getElementById("fhPlayerSheet");
 function openMenu(){ if(!root.querySelector(".fh-cd-menu")) root.querySelector("[data-menu-toggle]").click(); }
-/* Since tranche 2 a roll ends on APPLY, not on a result popup: closing one out
-   means clicking through whatever still blocks, then applying. */
+/* Since dock v5 a roll ends on nothing at all: it lands in the stream and stays
+   open. Closing one out means answering what blocks, then clearing the tray. */
 function settleRoll(guard=10){
   while(guard-- && root.querySelector("[data-event-ok]")) root.querySelector("[data-event-ok]").click();
-  const apply=root.querySelector("[data-apply-roll]");
-  if(apply) apply.click();
+  const clear=root.querySelector("[data-clear-tray]");
+  if(clear && !clear.disabled) clear.click();
 }
 
 /* ── Dock chrome ─────────────────────────────────────────────── */
@@ -110,16 +110,18 @@ root.querySelector('[data-config-name="Arcana"]').click();
 assert.match(root.querySelector(".fh-cd-cname").textContent,/Arcana \+6/,"opening a console names the prepared check");
 assert.match(root.querySelector(".fh-cd-status").textContent,/Arcana \+6/,"the roller frame echoes the prepared check");
 assert.equal(root.querySelectorAll(".fh-cd-dicerow .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
-assert.equal(root.querySelectorAll("[data-bonus-preset]").length,2,"the console keeps only the Guidance and Bardic presets");
-assert.equal(root.querySelector('[data-bonus-preset="Tactical Mind"]'),null,"Tactical Mind is retired from the console");
-assert.ok(root.querySelector("#fhPsDestinyDie"),"Destiny is chosen from the console itself");
-assert.equal(root.querySelector("#fhPsRunRoll .fh-icon"),null,"the Roll button carries no icon — the word alone is the call-to-action");
-assert.match(root.querySelector("#fhPsRunRoll").textContent,/^ROLL/,"the Roll button leads with its label");
+// REWRITTEN (dock v5): the Guid / Bard / Destiny chips are gone. Every die now
+// comes from the white picker, and a seal is something you give a die afterwards.
+assert.equal(root.querySelectorAll("[data-bonus-preset]").length,0,"the Guidance and Bardic chips are gone from the console");
+assert.equal(root.querySelector("#fhPsDestinyDie"),null,"and so is the Destiny selector — the gold pool is the only way in");
+assert.equal(root.querySelectorAll(".fh-cd-whiterow .fh-cd-wdie").length,7,"the white picker offers d4 through d100");
+assert.equal(root.querySelector("#fhPsRunRoll"),null,"the console no longer carries a second roll button");
+assert.match(root.querySelector("[data-roll-now]").textContent,/^ROLL/,"one permanent ROLL leads with its label");
 
-root.querySelector("#fhPsGuidance").click();
+root.querySelector('.fh-cd-whiterow [data-add-tray-die="4"]').click();
 root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
-assert.equal(t.state.rollConfig.guidance,true,"rerendering a d20 mode preserves the Guidance preset");
-assert.ok(root.querySelector("#fhPsGuidance").classList.contains("is-on"),"the Guidance preset remains visibly active");
+assert.equal(t.state.rollConfig.bonusDice.length,1,"a white die joins the prepared roll");
+assert.equal(t.state.rollConfig.bonusDice[0].sides,4,"and keeps the size that was clicked");
 assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),"advantage stays selected");
 root.querySelector("#fhPsPlusTwo").click();
 assert.ok(root.querySelector(".fh-cd-diewrap.is-modifier"),"the +2 option appears as a visible token beside the dice");
@@ -136,13 +138,14 @@ assert.equal(root.querySelector('[data-add-tray-die="20"]').disabled,true,"the b
 t.state.rollConfig.bonusDice=t.state.rollConfig.bonusDice.slice(0,1);
 t.render();
 
-root.querySelector("#fhPsRunRoll").click();
+root.querySelector("[data-roll-now]").click();
 assert.equal(root.querySelector('[data-die-choice="0"]'),null,"advantage was decided before the roll — it never stops to ask");
 let entry=t.state.history[0];
 assert.equal(entry.d20s.length,2,"advantage rolls two d20s");
 assert.equal(entry.kept,Math.max(entry.d20s[0],entry.d20s[1]),"advantage keeps the higher d20");
-assert.equal(entry.guidance.sides,4,"Guidance rolls beside the d20s");
-assert.equal(t.state.trayResults.length,4,"the frame displays both d20s, Guidance and the +2 token");
+// REWRITTEN (dock v5): the die is a plain d4 until a seal is put on it.
+assert.equal(entry.bonusDice[0].sides,4,"the picked d4 rolls beside the d20s");
+assert.equal(t.state.trayResults.length,4,"the frame displays both d20s, the bonus die and the +2 token");
 const originalD20=Array.from(entry.d20s);
 
 /* ── Stream ──────────────────────────────────────────────────── */
@@ -162,30 +165,32 @@ assert.equal(t.state.rollConfig.editingId,entry.id,"clicking a stream line reope
 const custom=root.querySelector("#fhPsCustom");
 custom.value="3";
 custom.dispatchEvent(new window.Event("change",{bubbles:true}));
-root.querySelector("#fhPsRunRoll").click();
+root.querySelector("[data-roll-now]").click();
 entry=t.state.history.find(item=>item.id===entry.id);
 assert.deepEqual(Array.from(entry.d20s),originalD20,"adjusting bonuses never rerolls the original d20s");
 assert.equal(entry.custom,3,"the edited bonus is applied");
 settleRoll();
 
 /* ── Destiny is reserved, never spent, while a console is open ─ */
+// CLEAR TRAY now releases the console too, so the check is re-opened first.
+root.querySelector('[data-config-name="Arcana"]').click();
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-cd-overlay").textContent,/Add this Destiny die to the Dice Tray/i,"Destiny is reserved rather than rolled while any console is open");
+assert.match(root.querySelector(".fh-cd-popups").textContent,/Add this Destiny die to the Dice Tray/i,"Destiny is reserved rather than rolled while any console is open");
 root.querySelector("[data-tray-cancel]").click();
 assert.equal(t.state.trayPrompt,null,"Destiny confirmation can be cancelled without spending the die");
 
 root.querySelector('[data-config-name="Arcana"]').click();
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-cd-overlay").textContent,/Add this Destiny die to the Dice Tray/i,"a console reserves Destiny instead of rolling it immediately");
+assert.match(root.querySelector(".fh-cd-popups").textContent,/Add this Destiny die to the Dice Tray/i,"a console reserves Destiny instead of rolling it immediately");
 root.querySelector("[data-tray-confirm-destiny]").click();
 assert.ok(t.state.rollConfig.destinyDieId,"the confirmed Destiny die is reserved in console state");
 assert.ok(root.querySelector(".fh-cd-ddie.is-selected"),"the reserved Destiny die is flagged in the pool");
 assert.equal(t.state.trayResults[0].label,"Destiny","the reserved Destiny die appears first in the frame");
 const beforeDestinyHistory=t.state.history.length;
-root.querySelector("#fhPsRunRoll").click();
+root.querySelector("[data-roll-now]").click();
 assert.equal(t.state.history.length,beforeDestinyHistory,"the d20 has not rolled while Destiny events await confirmation");
 assert.match(t.state.currentEvent.text,/Destiny d\d+ rolled \d+.*Lost \d+ Destiny Point/i,"one Destiny popup contains the die result and its point implication");
-assert.match(root.querySelector(".fh-cd-overlay").textContent,/Continue/i,"the Destiny popup says Continue because the d20 still has to roll");
+assert.match(root.querySelector(".fh-cd-popups").textContent,/Continue/i,"the Destiny popup says Continue because the d20 still has to roll");
 assert.equal(root.querySelector("[data-clear-tray]").disabled,true,"Clear cannot cancel a transaction after Destiny has been spent");
 const spentPoints=t.state.destiny.points;
 root.querySelector('[data-quick-name="Arcana"]').click();
@@ -199,29 +204,32 @@ assert.equal(t.state.trayResults[0].label,"Destiny","the spent Destiny result re
 assert.equal(t.state.trayResults[1].sides,20,"the d20 result follows Destiny in the frame");
 settleRoll();
 
-/* ── A landed roll stays open on APPLY ───────────────────────── */
-// REWRITTEN (tranche 2): the rescue popup is replaced by a repeatable APPLY loop.
+/* ── A landed roll stays open behind the one ROLL ─────────────── */
+// REWRITTEN (dock v5): no rescue popup, no APPLY. The roll stays open, the
+// sources call for three seconds, and ROLL rolls whatever was added since.
 root.querySelector('[data-config-name="Arcana"]').click();
 const dc=root.querySelector("#fhPsDc");dc.value="20";dc.dispatchEvent(new window.Event("change",{bubbles:true}));
-root.querySelector("#fhPsRunRoll").click();
+root.querySelector("[data-roll-now]").click();
 entry=t.state.history[0];
 const failedD20=Array.from(entry.d20s);
-assert.equal(root.querySelector(".fh-cd-overlay"),null,"a known failure no longer stops the table with a popup");
-const applyButton=root.querySelector("[data-apply-roll]");
-assert.ok(applyButton,"it waits on a blinking APPLY instead");
-assert.ok(applyButton.classList.contains("is-calling"),"APPLY blinks so an iPad shows it without hover");
-assert.equal(root.querySelector('[data-add-tray-die="6"]').disabled,false,"the tray sizes stay live to stage another die");
-assert.ok(root.querySelector('[data-add-tray-die="6"]').classList.contains("is-calling"),"and they blink with it");
-assert.ok(root.querySelector(".fh-cd-ddie.is-calling"),"the Destiny pool calls for a die too");
-root.querySelector("#fhPsBardic").click();
-assert.equal(t.state.rollSequence.staged.length,1,"the Bardic chip stages a die instead of editing a setup");
-assert.match(root.querySelector("[data-apply-roll]").textContent,/APPLY NEW MODIFIERS/,"APPLY becomes APPLY NEW MODIFIERS");
-root.querySelector("[data-apply-roll]").click();
-assert.deepEqual(Array.from(entry.d20s),failedD20,"applying a modifier never rerolls the failed d20");
-assert.ok(entry.bardic&&entry.bardic.result,"the staged Bardic die is rolled and folded in");
-assert.ok(root.querySelector("[data-apply-roll]"),"and the cycle reopens for another one");
+const linesAfterRoll=t.state.history.length;
+assert.equal(root.querySelector(".fh-cd-popups"),null,"a known failure no longer stops the table with a popup");
+assert.ok(root.querySelector("[data-roll-now]"),"the one ROLL is still the only button");
+assert.equal(root.querySelector("[data-clear-tray]").disabled,false,"and an open roll never locks the dock");
+const whiteD6=root.querySelector('.fh-cd-whiterow [data-add-tray-die="6"]');
+assert.equal(whiteD6.disabled,false,"the white picker stays live to add another die");
+assert.ok(whiteD6.classList.contains("is-calling"),"it calls for one, briefly");
+assert.ok(root.querySelector(".fh-cd-ddie.is-calling"),"the Destiny pool calls too");
+whiteD6.click();
+assert.equal(t.state.rollSequence.staged.length,1,"the picked die is staged, not rolled on the spot");
+assert.match(root.querySelector("[data-roll-now]").textContent,/1 new die/,"ROLL says what it is about to roll");
+root.querySelector("[data-roll-now]").click();
+assert.deepEqual(Array.from(entry.d20s),failedD20,"rolling a late modifier never rerolls the failed d20");
+assert.equal(entry.bonusDice.length,1,"the staged die is rolled and folded into the same entry");
+assert.ok(entry.bonusDice[0].result,"and it really rolled");
+assert.equal(t.state.history.length,linesAfterRoll,"it joins the same stream line rather than opening a new one");
 settleRoll();
-assert.equal(root.querySelector("[data-apply-roll]"),null,"APPLY with nothing staged resolves the roll");
+assert.equal(t.state.rollSequence,null,"CLEAR TRAY is what releases an open roll");
 
 /* ── A pool die boosts a roll that already landed ────────────── */
 t.state.destiny.points=6;
@@ -231,13 +239,13 @@ root.querySelector('[data-quick-name="Arcana"]').click();
 const settled=t.state.history[0];
 const totalBeforeBoost=settled.total;
 const pointsBeforeBoost=t.state.destiny.points;
-// REWRITTEN (tranche 2): the roll waits on APPLY rather than on a result popup.
-assert.ok(root.querySelector("[data-apply-roll]"),"a flat roll waits on APPLY before it is filed");
+// REWRITTEN (dock v5): the roll is already filed; it simply stays open.
+assert.ok(t.state.rollSequence,"a flat roll stays open after it lands");
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-cd-overlay").textContent,/Boost/i,"a pool die offers to boost the roll that just landed");
+assert.match(root.querySelector(".fh-cd-popups").textContent,/Boost/i,"a pool die offers to boost the roll that just landed");
 root.querySelector("[data-tray-confirm-destiny]").click();
 assert.equal(t.state.destiny.points,pointsBeforeBoost,"confirming only stages the die — nothing is spent yet");
-root.querySelector("[data-apply-roll]").click();
+root.querySelector("[data-roll-now]").click();
 guard=8;
 while(t.state.currentEvent&&root.querySelector("[data-event-ok]")&&guard--){root.querySelector("[data-event-ok]").click();}
 settleRoll();
@@ -256,23 +264,43 @@ for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
 assert.match(root.querySelector(".fh-cd-dicerow").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in the frame");
 const freeLabel=root.querySelector("#fhPsTrayLabel");freeLabel.value="Fireball";freeLabel.dispatchEvent(new window.Event("change",{bubbles:true}));
-root.querySelector("[data-roll-tray]").click();
+root.querySelector("[data-roll-now]").click();
 assert.equal(t.state.history[0].name,"Fireball","the free roll keeps its purpose in history");
 assert.equal(t.state.history[0].dice.length,8,"all damage dice are recorded");
-root.querySelector("[data-event-ok]").click();
-root.querySelector("[data-clear-tray]").click();
+// REWRITTEN (dock v5): a free roll drops its trailing result popup too — the
+// tray shows the verdict and the stream keeps it. Only a nat 20/1 stops the table.
+assert.equal(root.querySelector("[data-event-ok]"),null,"a free roll no longer ends in a result popup");
+assert.match(root.querySelector(".fh-cd-status b").textContent,/^Fireball /,"its verdict reads straight off the tray");
+settleRoll();
 
-/* ── Portents and per-die controls live under the ⋯ drawer ───── */
+/* ── Portents live in each die's own right-click menu ─────────── */
+// REWRITTEN (dock v5): the FINE TUNE drawer is gone. A Portent belongs to one
+// die, so it is a dropdown inside that die's menu.
 root.querySelector('[data-config-name="Arcana"]').click();
-assert.equal(root.querySelector("#fhPsD20Forced"),null,"the console stays uncluttered until fine-tuning is asked for");
-root.querySelector("[data-console-adv]").click();
-const portent=root.querySelector("#fhPsD20Forced");portent.value="17";portent.dispatchEvent(new window.Event("change",{bubbles:true}));
-root.querySelector('[data-add-tray-die="6"]').click();
-const generic=root.querySelector("[data-bonus-row]");
-generic.querySelector("[data-bonus-label]").value="Superiority";
-generic.querySelector("[data-bonus-forced]").value="6";
-generic.querySelector("[data-bonus-forced]").dispatchEvent(new window.Event("change",{bubbles:true}));
-root.querySelector("#fhPsRunRoll").click();
+assert.equal(root.querySelector("[data-console-adv]"),null,"the ⋯ drawer is gone from the console");
+assert.equal(root.querySelector("[data-die-portent]"),null,"a Portent only exists once a die is picked up");
+function tuneDie(selector){
+  const die=root.querySelector(selector);
+  die.dispatchEvent(new window.Event("contextmenu",{bubbles:true,cancelable:true}));
+  return root.querySelector("[data-die-portent]");
+}
+// linkedom exposes select.value read-only, so the option is selected directly.
+function choosePortent(select,face){
+  select.querySelector('option[value="'+face+'"]').selected=true;
+  select.dispatchEvent(new window.Event("change",{bubbles:true}));
+}
+let portent=tuneDie(".fh-cd-diewrap[data-die-base]");
+assert.ok(portent,"the base d20 has its own menu with a Portent dropdown");
+assert.equal(portent.querySelectorAll("option").length,21,"a d20 offers — plus its twenty faces");
+choosePortent(portent,17);
+assert.equal(t.state.rollConfig.d20ForcedResult,17,"choosing a face forces the d20");
+root.querySelector('.fh-cd-whiterow [data-add-tray-die="6"]').click();
+portent=tuneDie('.fh-cd-diewrap[data-die-bonus]');
+assert.equal(portent.querySelectorAll("option").length,7,"a d6 offers — plus its six faces");
+choosePortent(portent,6);
+root.querySelector("[data-die-seal='other-1']").click();
+root.querySelector("[data-tray-close]").click();
+root.querySelector("[data-roll-now]").click();
 entry=t.state.history[0];
 assert.equal(entry.kept,17,"Portent replaces the d20 roll");
 assert.equal(entry.d20Forced,true,"a forced d20 is stored as manual");
@@ -343,8 +371,8 @@ root.querySelector('[data-cd-mode="margin"]').click();
 assert.equal(t.state.dockOpen,true,"Margin brings it back");
 
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-cd-overlay").textContent,/Roll and spend this Destiny die\?/i,"outside a console, Destiny uses the explicit spend confirmation");
-assert.match(root.querySelector(".fh-cd-overlay").textContent,/Current Points:/i,"the direct-spend warning shows current Destiny Points");
+assert.match(root.querySelector(".fh-cd-popups").textContent,/Roll and spend this Destiny die\?/i,"outside a console, Destiny uses the explicit spend confirmation");
+assert.match(root.querySelector(".fh-cd-popups").textContent,/Current Points:/i,"the direct-spend warning shows current Destiny Points");
 root.querySelector("[data-tray-cancel]").click();
 
 /* ── Inline sheet editing ────────────────────────────────────── */

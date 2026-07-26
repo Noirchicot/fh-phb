@@ -11,8 +11,9 @@ const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
     state,makeDestinySlots,setDestinyPoints,spendDestinyDie,destinyEventSpecs,naturalDestiny,
     rollInput,runConfiguredRoll,resolveDieChoice,acknowledgeEvent,queueEvents,renderEventContent,renderStageZone,
     resolveNatOne,rollTransactionActive,entryTotal,outcomeFor,
-    applyPhaseActive,stagedList,stageBonusDie,stageDestinyDie,applyStagedModifiers,finishApply,
-    pendingFate,armPendingFate,rollPendingFate,renderDestiny
+    rollOpen,stagedList,stageBonusDie,stageDestinyDie,rollStagedDice,releaseRoll,clearDiceTray,
+    pendingFate,addPendingFate,dropPendingFate,armPendingFate,rollPendingFate,renderDestiny,renderConsole,
+    findStagedDie,mutateStagedDie,sealStagedDie,dropStagedDie,addTrayDie
   };
 })();
 `);
@@ -39,15 +40,15 @@ function reset(points=5,dice=[die("d4",4,true),die("d6",6,true),die("d8",8,true)
   randomBuckets.length=0;
   Object.assign(t.state,{
     code:"",pseudo:"",destiny:{score:8,points,dice:JSON.parse(JSON.stringify(dice)),lastChange:null},history:[],events:[],prefs:{bardicSides:6},
-    rollConfig:null,trayPrompt:null,traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayResultText:"",currentEvent:null,eventQueue:[],queueDone:"",queueTotal:0,rollSequence:null,message:"",messageKind:"",pendingArmed:null,
+    rollConfig:null,trayPrompt:null,diePrompt:null,trayColours:{},callUntil:0,traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayResultText:"",currentEvent:null,eventQueue:[],queueDone:"",queueTotal:0,rollSequence:null,message:"",messageKind:"",pendingArmed:null,
     character:{destinyBuild:{arcana:{name:"The Hermit"}},build:{}}
   });
   t.state.destiny.pending=[];
 }
 function acknowledgeAll(limit=20){while(t.state.currentEvent&&limit--){t.acknowledgeEvent();}assert.ok(limit>0,"event queue must always terminate");}
-/* A roll now ends on APPLY, not on a popup: closing one means acknowledging
-   whatever still blocks, then applying. */
-function settle(limit=20){acknowledgeAll(limit);if(t.applyPhaseActive())t.finishApply();}
+/* A roll no longer ends on a button at all: it lands in the stream and stays
+   open. Closing one out means answering whatever still blocks, then clearing. */
+function settle(limit=20){acknowledgeAll(limit);if(t.rollOpen())t.clearDiceTray(true);}
 function natOne(id="nat-one"){return {id,kind:"d20",name:"Arcana",ability:"INT",baseBonus:3,d20Mode:"flat",d20s:[1],kept:1,natural:1,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",note:"",createdAt:new Date().toISOString(),total:4,outcome:"Natural 1 · choose fate",natChoice:null};}
 
 // A spent die must disappear. Losing points never recovers the die that was just spent.
@@ -108,13 +109,15 @@ entry=t.state.history[0];
 assert.deepEqual(Array.from(entry.d20s),[15]);
 assert.equal(entry.guidance.result,2);assert.equal(entry.bardic.result,5);
 assert.equal(t.state.trayResults[0].label,"Destiny","Destiny remains first in the visible tray");
-// REWRITTEN (tranche 2): the result popup is gone. A landed roll stays open on APPLY.
+// REWRITTEN (dock v5): the result popup is gone and so is APPLY. A landed roll
+// stays OPEN behind the one permanent ROLL, and it no longer locks the dock.
 assert.equal(t.state.currentEvent,null,"a landed roll no longer ends in a blocking result popup");
-assert.equal(t.applyPhaseActive(),true,"it waits on APPLY instead, with every source of a new die still live");
-assert.match(t.renderStageZone(),/data-apply-roll[^>]*>APPLY</,"the tray offers APPLY where it used to offer ROLL");
-assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),true,"Clear is disabled until the transaction finishes");
-t.finishApply();
-assert.equal(t.rollTransactionActive(),false);
+assert.equal(t.rollOpen(),true,"it stays open, with every source of a new die still reachable");
+assert.match(t.renderStageZone(),/data-roll-now[^>]*>ROLL</,"there is one button, and it says ROLL");
+assert.doesNotMatch(t.renderStageZone(),/APPLY/,"APPLY is gone from the dock entirely");
+assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),false,"an open roll no longer holds the dock hostage");
+assert.equal(t.rollTransactionActive(),false,"only a popup that must be answered locks the dock now");
+t.clearDiceTray(true);
 
 // Advantage and disadvantage are committed to BEFORE the dice leave the hand,
 // so they resolve themselves. Offering a choice on top of them was the old bug.
@@ -138,17 +141,18 @@ reset();t.state.rollConfig=t.rollInput("Arcana","INT",0,{mode:"flat"});t.state.r
 reset();queueRolls(5);t.state.rollConfig=t.rollInput("Arcana","INT",3,{mode:"flat",dc:20});t.runConfiguredRoll();
 entry=t.state.history[0];const locked=Array.from(entry.d20s);
 assert.equal(t.state.trayPrompt,null,"a failed DC no longer stops the table with a rescue popup");
-assert.equal(t.applyPhaseActive(),true,"the failed roll waits on APPLY with every die source still live");
+assert.equal(t.rollOpen(),true,"the failed roll waits on APPLY with every die source still live");
 t.stageBonusDie(6,"Bardic","bardic");
 assert.equal(t.stagedList().length,1,"a die chosen after the roll is staged, not rolled on the spot");
-assert.match(t.renderStageZone(),/APPLY<i class="fh-cd-applylong"> NEW MODIFIERS<\/i>/,"staging turns APPLY into APPLY NEW MODIFIERS");
-assert.match(t.renderStageZone(),/fh-cd-applyct"> ×1</,"a phone-width dock falls back to a count");
-queueRolls(6);t.applyStagedModifiers();
+// REWRITTEN (dock v5): the button never changes its name. Only the line under
+// it says what pressing ROLL is about to do.
+assert.match(t.renderStageZone(),/>ROLL<small>1 new die<\/small>/,"ROLL announces the staged die instead of renaming itself");
+queueRolls(6);t.rollStagedDice();
 assert.deepEqual(Array.from(entry.d20s),locked,"applying a modifier never rerolls the d20");
 assert.equal(entry.bardic.result,6);assert.equal(entry.total,14);
 assert.equal(t.state.currentEvent,null,"a plain bonus die never blocks");
-assert.equal(t.applyPhaseActive(),true,"the cycle reopens — a second modifier may still be added");
-t.stageBonusDie(4,"Guidance","guidance");queueRolls(3);t.applyStagedModifiers();
+assert.equal(t.rollOpen(),true,"the cycle reopens — a second modifier may still be added");
+t.stageBonusDie(4,"Guidance","guidance");queueRolls(3);t.rollStagedDice();
 assert.equal(entry.guidance.result,3,"the loop really is repeatable");
 assert.equal(entry.total,17);settle();
 
@@ -168,7 +172,10 @@ assert.equal(t.state.currentEvent.kind,"chaos");assert.match(t.state.currentEven
 settle();
 assert.equal(t.pendingFate().length,1,"the Chaos roll is carried, not lost");
 assert.equal(t.rollTransactionActive(),false,"a pending Chaos never blocks the next roll");
-assert.match(t.renderDestiny(t.state.character),/data-pending-open/,"a red button installs itself until it is faced");
+// REWRITTEN (dock v5): the red badge left the Destiny row for the transient
+// strip above the tray, so the Major Arcana keeps its name.
+assert.match(t.renderStageZone(),/data-pending-open/,"a red badge installs itself above the tray until it is faced");
+assert.match(t.renderDestiny(t.state.character),/The Hermit/,"and the Destiny row keeps showing the Major Arcana");
 t.armPendingFate(t.pendingFate()[0].id);
 assert.equal(t.state.trayResults.length,2,"resolving arms 2d6 in the tray");
 assert.equal(t.state.trayResults[0].special,"chaos","the Chaos dice carry their own red material");
@@ -181,11 +188,11 @@ settle();
 // REWRITTEN (tranche 2/3): a Destiny die added to a landed roll is staged first,
 // and the Overreach save it triggers is now carried instead of rolled at once.
 reset(2,[die("rescue-d8",8,true)]);entry={id:"rescue-entry",kind:"d20",name:"Arcana",ability:"INT",baseBonus:3,d20Mode:"flat",d20s:[5],kept:5,natural:5,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"20",note:"",createdAt:new Date().toISOString(),total:8,outcome:"Failure"};
-t.state.history=[entry];t.state.rollSequence={phase:"apply",entryId:entry.id,staged:[]};
+t.state.history=[entry];t.state.rollSequence={phase:"open",entryId:entry.id,staged:[]};
 t.stageDestinyDie("rescue-d8");
 assert.equal(t.stagedList().length,1,"the pool die is staged by the click, not spent by it");
 assert.equal(t.state.destiny.dice[0].available,true,"staging never spends the die");
-queueRolls(5);t.applyStagedModifiers();
+queueRolls(5);t.rollStagedDice();
 assert.deepEqual(Array.from(entry.d20s),[5]);assert.equal(entry.destiny.result,5);
 assert.equal(t.state.queueTotal,2,"the spend summary and the Overreach notice — no result popup after them");
 assert.match(t.state.currentEvent.text,/Destiny d8 rolled 5.*Current 0/);assert.equal(t.state.destiny.overreach,3);t.acknowledgeEvent();assert.match(t.state.currentEvent.text,/INT save DC 13/);
@@ -193,6 +200,15 @@ settle();
 assert.equal(t.pendingFate().length,1,"the Overreach save is carried, not rolled mid-turn");
 assert.equal(t.pendingFate()[0].dc,13,"the DC stays 10 + Overreach");
 assert.equal(t.pendingFate()[0].kind,"overreach","Chaos and Overreach stay two separate mechanics");
+// The badge strip is always offered, and what it carries outlives CLEAR TRAY.
+assert.match(t.renderStageZone(),/data-pending-add/,"the strip always offers … to pin a badge of your own");
+t.addPendingFate({kind:"note",label:"Concentration"});
+assert.equal(t.pendingFate().length,2);
+t.clearDiceTray(true);
+assert.equal(t.pendingFate().length,2,"CLEAR TRAY empties the tray, never a debt or a pinned reminder");
+assert.match(t.renderStageZone(),/fh-cd-pending is-note[^>]*>Concentration</,"a pinned badge reads its own name");
+t.dropPendingFate(t.pendingFate().find(item=>item.kind==="note").id);
+assert.equal(t.pendingFate().length,1,"cancelling a badge takes only that one");
 // The Overreach envelope resolves as a save in the tray, not as 2d6 on the Chaos table.
 t.state.character={destinyBuild:{arcana:{name:"The Hermit"}},build:{},abilities:{STR:10,DEX:10,CON:10,INT:16,WIS:10,CHA:10},savingProficiencies:["INT"],pb:3};
 t.armPendingFate(t.pendingFate()[0].id);

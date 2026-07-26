@@ -236,9 +236,6 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 
 /* ── Console ────────────────────────────────────────────────────── */
 .fh-cd-console{padding-bottom:8px}
-.fh-cd-idle{display:flex;align-items:center;gap:7px;min-height:24px;font-size:8.7px;color:var(--cd-faint);
-  border:0;background:none;font-family:inherit;text-align:left;cursor:pointer;padding:0;width:100%}
-.fh-cd-idle b{color:var(--cd-gold);font-weight:600}
 .fh-cd-crow{display:flex;align-items:center;gap:5px;margin-top:5px}
 .fh-cd-chead{margin-top:2px}
 .fh-cd-cname{font-size:11px;font-weight:700;color:var(--cd-oxblood)}
@@ -276,37 +273,8 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-modctl input{width:30px;height:16px;border:1px solid var(--cd-line-soft);background:#fffdf6;border-radius:3px;
   text-align:center;font-size:9px;font-family:inherit;color:var(--cd-ink);padding:0}
 .fh-cd-modctl small{font-size:7px;color:var(--cd-gold);letter-spacing:.05em;margin-right:2px}
-.fh-cd-more-toggle{border:0;background:none;color:var(--cd-faint);font-size:11px;font-family:inherit;cursor:pointer;
-  letter-spacing:.1em;padding:0 2px;flex:none;margin-left:auto}
-.fh-cd-more-toggle:hover,.fh-cd-more-toggle.is-on{color:var(--cd-gold-bright)}
-.fh-cd-trayhint{font-size:7.6px;color:var(--cd-faint)}
-.fh-cd-trayhint b{color:var(--cd-gold)}
-.fh-cd-roll{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:28px;margin-top:6px;
-  border:1px solid #6d4a10;border-radius:6px;cursor:pointer;font-family:inherit;
-  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-size:11px;font-weight:800;letter-spacing:.14em;
-  box-shadow:inset 0 1px 1px rgba(255,248,226,.55),0 1px 3px rgba(40,25,5,.3)}
-.fh-cd-roll:hover{filter:brightness(1.06)}
-.fh-cd-roll:disabled{filter:grayscale(.5) opacity(.6);cursor:not-allowed}
-.fh-cd-roll small{font-size:7.8px;font-weight:600;letter-spacing:.02em;opacity:.85}
-.fh-cd-roll svg{width:15px;height:15px}
 
 /* Advanced drawer (portents, per-die A/D, bonus rows) */
-.fh-cd-adv{margin-top:5px;padding:5px 6px;border:1px dashed var(--cd-line);border-radius:5px;background:var(--cd-parch-2)}
-.fh-cd-adv-title{font-size:7.3px;letter-spacing:.09em;color:var(--cd-gold);margin-bottom:4px}
-.fh-cd-diectl{display:flex;align-items:center;gap:5px;margin-bottom:4px;font-size:8.2px;color:var(--cd-muted)}
-.fh-cd-diectl>span:first-child{font-weight:700;color:var(--cd-ink);min-width:52px}
-.fh-cd-portent{display:flex;align-items:center;gap:3px;font-size:7.2px;color:var(--cd-faint)}
-.fh-cd-portent input{width:30px;height:16px;border:1px solid var(--cd-line-soft);background:#fffdf6;border-radius:3px;
-  text-align:center;font-size:8.5px;font-family:inherit;color:var(--cd-ink);padding:0}
-.fh-cd-bonusrow{display:flex;align-items:center;gap:4px;margin-bottom:3px}
-.fh-cd-bonusrow input[data-bonus-label]{flex:1;min-width:0;height:17px;border:1px solid var(--cd-line-soft);background:#fffdf6;
-  border-radius:3px;font-size:8.3px;font-family:inherit;color:var(--cd-ink);padding:0 4px}
-.fh-cd-bonusrow select{height:17px;border:1px solid var(--cd-line-soft);background:#fffdf6;border-radius:3px;
-  font-size:8px;font-family:inherit;color:var(--cd-ink)}
-.fh-cd-bonusrow>button{width:16px;height:16px;border:1px solid var(--cd-line-soft);background:var(--cd-parch);border-radius:3px;
-  color:var(--cd-faint);cursor:pointer;padding:0;display:grid;place-items:center}
-.fh-cd-bonusrow>button svg{width:9px;height:9px}
-.fh-cd-bonusrow.is-locked{opacity:.6}
 .fh-cd-srcmark{width:12px;flex:none;color:var(--cd-gold-bright);display:grid;place-items:center;font-size:7.5px;font-weight:800}
 .fh-cd-srcmark svg{width:10px;height:10px}
 
@@ -324,10 +292,6 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-dicerow{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;gap:10px;
   flex-wrap:wrap;align-content:center;padding:2px 6px;overflow:hidden}
 /* With a verdict on screen the dice give up room rather than being covered. */
-.fh-cd-dicerow.is-shrunk{gap:6px;padding:1px 6px}
-.fh-cd-dicerow.is-shrunk .fh-cd-die,.fh-cd-dicerow.is-shrunk .fh-cd-die svg{width:30px;height:30px}
-.fh-cd-dicerow.is-shrunk .fh-cd-src{height:9px}
-.fh-cd-dicerow.is-shrunk .fh-cd-diewrap em{font-size:6.4px;line-height:1.05}
 .fh-cd-diewrap{position:relative;display:grid;justify-items:center;gap:2px}
 .fh-cd-src{height:12px;color:var(--cd-gold-bright);display:grid;place-items:center}
 .fh-cd-src svg{width:12px;height:12px;display:block;filter:drop-shadow(0 1px 0 rgba(255,248,226,.8))}
@@ -354,18 +318,19 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-burst{position:absolute;inset:-12px;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,rgba(241,201,111,.85) 0%,rgba(241,201,111,.25) 45%,transparent 70%);animation:fh-cd-burst .8s ease-out both}
 .fh-cd-burst.is-bad{background:radial-gradient(circle,rgba(159,47,49,.7) 0%,rgba(159,47,49,.2) 45%,transparent 70%)}
-.fh-cd-status{position:relative;flex:none;min-height:28px;display:flex;align-items:center;justify-content:center;
-  gap:8px;padding:0 8px;font-size:8.6px;letter-spacing:.05em;color:var(--cd-muted);
+/* The verdict is the headline; the arithmetic sits under it, quiet. */
+.fh-cd-status{position:relative;flex:none;min-height:30px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1px;padding:2px 8px;font-size:8.6px;letter-spacing:.05em;color:var(--cd-muted);
   border-top:1px solid var(--cd-line-soft);background:rgba(244,236,216,.8);text-align:center}
-.fh-cd-status b{color:var(--cd-oxblood);font-size:9.6px}
+.fh-cd-status b{color:var(--cd-oxblood);font-size:12px;font-weight:800;letter-spacing:.02em;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fh-cd-status .is-ok{color:var(--cd-ok);font-weight:700}
 .fh-cd-status .is-bad{color:var(--cd-bad);font-weight:700}
-.fh-cd-status em{font-style:normal;color:var(--cd-faint);font-size:7.6px}
+.fh-cd-status em{font-style:normal;color:var(--cd-faint);font-size:7.2px;line-height:1.15;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* The verdict docks under the dice instead of covering them. */
-.fh-cd-overlay{position:relative;flex:none;max-height:64%;
-  display:flex;align-items:flex-end;justify-content:stretch;z-index:3;padding:0 6px 4px}
-.fh-cd-card{flex:1;min-width:0;background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:7px;
+/* Popups live outside the frame now, so a card is simply a block in the flow. */
+.fh-cd-card{min-width:0;background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:7px;
   box-shadow:0 -3px 14px rgba(40,25,5,.28);padding:4px 8px;animation:fh-cd-up .22s ease-out;max-height:100%;overflow:auto;
   display:flex;flex-wrap:wrap;align-items:center;gap:1px 7px;text-align:left}
 /* Title and buttons share the first line, the explanation wraps under it:
@@ -387,45 +352,73 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-choice{display:flex;gap:8px;justify-content:center;margin-bottom:6px}
 .fh-cd-choice button{height:auto;padding:0;background:none;border:0}
 
-/* ── Tray bar ───────────────────────────────────────────────────── */
-.fh-cd-tray{display:flex;align-items:center;gap:3px;min-height:26px;padding:0 8px 5px;flex-wrap:nowrap}
-.fh-cd-tray .fh-cd-tlab{font-size:7.3px;letter-spacing:.09em;color:var(--cd-gold);font-weight:600;margin-right:1px;flex:none}
-.fh-cd-tdie{position:relative;height:19px;min-width:0;flex:0 0 auto;border:1px solid var(--cd-line);border-radius:4px;
-  background:var(--cd-parch-2);font-size:7.4px;font-family:inherit;font-weight:700;color:var(--cd-muted);cursor:pointer;padding:0 4px}
-.fh-cd-tdie:hover{border-color:var(--cd-gold-hi);color:var(--cd-ink)}
-.fh-cd-tdie:disabled{opacity:.35;cursor:not-allowed}
-.fh-cd-tdie .fh-cd-ct{position:absolute;top:-5px;right:-4px;font-size:6.3px;font-weight:800;color:var(--cd-parch);
-  background:var(--cd-oxblood);border-radius:5px;padding:0 3px;line-height:9px}
-.fh-cd-tray input{flex:1 1 30px;min-width:0;height:19px;border:1px solid var(--cd-line-soft);background:#fffdf6;border-radius:4px;
-  font-size:8px;padding:0 4px;color:var(--cd-ink);font-family:inherit}
-.fh-cd-tray input:disabled{background:var(--cd-parch-3);color:var(--cd-faint)}
-.fh-cd-trayroll{height:19px;padding:0 7px;flex:none;border:1px solid #6d4a10;border-radius:4px;
-  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-size:7.6px;font-family:inherit;font-weight:800;
-  letter-spacing:.06em;cursor:pointer}
-.fh-cd-trayroll:disabled{filter:grayscale(.5) opacity(.6);cursor:not-allowed}
-.fh-cd-trayclear{width:19px;height:19px;flex:none;border:1px solid var(--cd-line-soft);border-radius:4px;background:none;
-  color:var(--cd-faint);font-size:9px;cursor:pointer;line-height:1;padding:0;display:grid;place-items:center;font-family:inherit}
-.fh-cd-trayclear svg{width:10px;height:10px}
-.fh-cd-trayclear:disabled{opacity:.35;cursor:not-allowed}
-
-/* ── APPLY loop ─────────────────────────────────────────────────
-   A landed roll stays open. Everything that can still change it
-   blinks: the tray sizes, the Guid/Bard chips, the Destiny pool
-   and APPLY itself. Blinking is opacity only — an iPad has no
-   hover, so the affordance has to be visible at rest. */
+/* ── The call ───────────────────────────────────────────────────
+   A roll that just landed can still take another die. The sources
+   say so for three seconds, then go quiet: a nudge, not a nag.
+   Opacity only — an iPad has no hover, so the affordance has to be
+   visible at rest. */
 @keyframes fh-cd-call{0%,100%{opacity:1}50%{opacity:.42}}
-@keyframes fh-cd-callring{0%,100%{box-shadow:0 0 0 0 rgba(241,201,111,.6)}55%{box-shadow:0 0 0 3px rgba(241,201,111,0)}}
-.fh-cd-tdie.is-calling{border-color:var(--cd-gold-hi);color:var(--cd-ink);animation:fh-cd-call 1.15s ease-in-out infinite}
-.fh-cd-chip.is-calling{animation:fh-cd-call 1.15s ease-in-out infinite}
+.fh-cd-wdie.is-calling{animation:fh-cd-call 1.15s ease-in-out infinite}
 .fh-cd-ddie.is-calling svg{animation:fh-cd-call 1.15s ease-in-out infinite;filter:drop-shadow(0 0 4px var(--cd-gold-glow))}
-.fh-cd-trayroll.is-calling{animation:fh-cd-call 1.15s ease-in-out infinite,fh-cd-callring 1.15s ease-in-out infinite}
-.fh-cd-roll.is-calling{animation:fh-cd-call 1.5s ease-in-out infinite}
-.fh-cd-trayroll.is-chaos{background:linear-gradient(180deg,#c8353c,#7c0f15);border-color:#ff5f67;color:#fff1ef}
-/* On a phone the dock takes the full width and the tray dice grow, so the long
-   label no longer fits: it falls back to a count. Measured at 375px. */
-.fh-cd-applylong,.fh-cd-applyct{font-style:normal}
-.fh-cd-applyct{display:none}
-@media (max-width:519px){.fh-cd-applylong{display:none}.fh-cd-applyct{display:inline}}
+.fh-cd-diewrap.is-tunable.is-pending .fh-cd-die{animation:fh-cd-call 1.15s ease-in-out infinite}
+
+/* ── The white picker: the one place dice come from ─────────────── */
+.fh-cd-whiterow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding-top:2px}
+.fh-cd-wdie{position:relative;width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer;flex:none}
+.fh-cd-wdie svg{width:100%;height:100%;display:block}
+.fh-cd-wdie:hover svg{filter:brightness(1.06) drop-shadow(0 0 4px rgba(241,201,111,.8))}
+.fh-cd-wdie:disabled{opacity:.3;cursor:not-allowed}
+/* top:auto matters — the shared .fh-cd-mult sets top, and both edges together
+   stretch the badge down the whole die. Caught at the DOM, not by eye. */
+.fh-cd-wdie .fh-cd-mult{position:absolute;top:auto;right:-3px;bottom:-2px;background:var(--cd-oxblood);color:var(--cd-parch);
+  border-radius:6px;padding:0 3px;font-size:6.6px;font-weight:800;line-height:10px}
+
+/* ── ROLL and CLEAR TRAY: the only permanent buttons ────────────── */
+.fh-cd-acts-bar{display:flex;align-items:stretch;gap:6px;padding:6px 10px 0}
+.fh-cd-mainroll{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  min-height:30px;padding:3px 8px;border:1px solid #6d4a10;border-radius:6px;
+  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-family:inherit;font-size:10px;font-weight:800;
+  letter-spacing:.1em;cursor:pointer}
+.fh-cd-mainroll small{font-size:6.8px;font-weight:600;letter-spacing:.04em;opacity:.85;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-mainroll:disabled{filter:grayscale(.5) opacity(.6);cursor:not-allowed}
+.fh-cd-mainroll.is-chaos{background:linear-gradient(180deg,#c8353c,#7c0f15);border-color:#ff5f67;color:#fff1ef;
+  animation:fh-cd-call 1s ease-in-out infinite}
+.fh-cd-mainclear{flex:none;padding:0 9px;border:1px solid var(--cd-line);border-radius:6px;background:var(--cd-parch-2);
+  color:var(--cd-muted);font-family:inherit;font-size:7.6px;font-weight:700;letter-spacing:.08em;cursor:pointer}
+.fh-cd-mainclear i{font-style:normal}
+.fh-cd-mainclear:hover{border-color:var(--cd-gold-hi);color:var(--cd-ink)}
+.fh-cd-mainclear:disabled{opacity:.35;cursor:not-allowed}
+@media (max-width:519px){.fh-cd-mainclear i{display:none}}
+
+/* ── Transient badges, between the buttons and the tray ─────────── */
+.fh-cd-temps{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:5px 10px 0}
+
+/* ── Popups: under the tray, pushing the stream down ────────────── */
+.fh-cd-popups{padding:5px 10px 6px}
+
+/* ── One die's own menu ─────────────────────────────────────────────
+   These selectors carry .fh-cd-card on purpose: the generic card button
+   is a gold call-to-action, and a grid of toggles must not be. */
+.fh-cd-card.is-diemenu{display:block}
+.fh-cd-card .fh-cd-dmrow{display:flex;align-items:center;gap:3px;flex-wrap:wrap;margin-top:3px}
+.fh-cd-card .fh-cd-dmrow>span{flex:none;width:36px;font-size:6.6px;letter-spacing:.09em;color:var(--cd-gold);text-transform:uppercase}
+.fh-cd-card .fh-cd-dmseal,.fh-cd-card .fh-cd-dmmode{min-width:20px;width:auto;height:19px;padding:0 4px;
+  border:1px solid var(--cd-line);border-radius:4px;background:var(--cd-parch-2);color:var(--cd-muted);
+  font-family:inherit;font-size:7.6px;font-weight:700;cursor:pointer;display:inline-grid;place-items:center}
+.fh-cd-card .fh-cd-dmseal svg{width:12px;height:12px}
+.fh-cd-card .fh-cd-dmseal.is-on,.fh-cd-card .fh-cd-dmmode.is-on{border-color:#6d4a10;
+  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2}
+.fh-cd-card .fh-cd-dmseal.is-destiny{color:var(--cd-gold-bright);font-size:10px}
+.fh-cd-card .fh-cd-dmseal:disabled{opacity:.3;cursor:not-allowed}
+.fh-cd-card .fh-cd-dmcol{width:21px;height:21px;padding:0;border:1px solid transparent;border-radius:4px;
+  background:none;cursor:pointer;display:inline-grid;place-items:center}
+.fh-cd-card .fh-cd-dmcol svg{width:17px;height:17px}
+.fh-cd-card .fh-cd-dmcol.is-on{border-color:var(--cd-gold-hi);box-shadow:0 0 0 1px var(--cd-gold-hi)}
+/* The Portent: one die's forced result, as a dropdown rather than a spinner. */
+.fh-cd-card .fh-cd-dmportent{height:19px;padding:0 4px;border:1px solid var(--cd-line);border-radius:4px;
+  background:var(--cd-parch-2);color:var(--cd-muted);font-family:inherit;font-size:7.6px;font-weight:700;cursor:pointer}
+.fh-cd-card .fh-cd-dmportent.is-on{border-color:#6b4a8c;background:#efe6f6;color:#5a3a80}
 
 /* ── Deferred fate ──────────────────────────────────────────────
    Chaos and Overreach never block the table: they wait behind a
@@ -435,6 +428,16 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   letter-spacing:.02em;cursor:pointer;white-space:nowrap;
   animation:fh-cd-call 1s ease-in-out infinite}
 .fh-cd-pending:hover{filter:brightness(1.25)}
+/* A badge you pinned yourself is not a debt: it waits in gold, not in blood. */
+.fh-cd-pending.is-note{border-color:var(--cd-gold-hi);background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;
+  animation:none}
+.fh-cd-pendadd{flex:none;width:19px;height:15px;padding:0;border:1px dashed var(--cd-line);border-radius:999px;
+  background:none;color:var(--cd-faint);font-family:inherit;font-size:9px;line-height:1;cursor:pointer}
+.fh-cd-pendadd:hover{border-color:var(--cd-gold-hi);color:var(--cd-gold-bright);border-style:solid}
+.fh-cd-card.is-badgemenu{display:block}
+.fh-cd-card.is-badgemenu input{width:100%;height:20px;border:1px solid var(--cd-line);background:#fffdf6;border-radius:4px;
+  font-family:inherit;font-size:9px;color:var(--cd-ink);padding:0 5px}
+.fh-cd-card button.is-danger{background:linear-gradient(180deg,#c8353c,#7c0f15);border-color:#ff5f67;color:#fff1ef}
 @keyframes fh-cd-arc{0%,100%{filter:drop-shadow(0 0 3px #ff3b45) drop-shadow(0 0 7px rgba(255,59,69,.45))}
   50%{filter:drop-shadow(0 0 7px #ff7a80) drop-shadow(0 0 15px rgba(255,120,128,.7))}}
 .fh-cd-diewrap.is-chaosdie .fh-cd-die{animation:fh-cd-arc .85s ease-in-out infinite}
@@ -572,9 +575,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   .fh-cd-destiny-row{gap:5px}
   .fh-cd-ddie{width:23px;height:23px}
   .fh-cd-crow{margin-top:4px}
-  .fh-cd-roll{height:25px;margin-top:5px}
   .fh-cd-frame{height:112px;margin:5px 10px 3px}
-  .fh-cd-tray{min-height:24px}
   .fh-cd-zone{padding:5px 10px}
 }
 @media(max-height:720px){
@@ -595,9 +596,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   .fh-cd-srow>button{font-size:10px}
   .fh-cd-gear{width:20px;height:20px}
   .fh-cd-gear svg{width:13px;height:13px}
-  .fh-cd-tdie{height:24px;min-width:32px;font-size:8.6px}
   .fh-cd-chip{height:26px}
-  .fh-cd-roll{height:32px}
 }
 
 @media(prefers-reduced-motion:reduce){
@@ -625,8 +624,6 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-size:7.6px;font-family:inherit;font-weight:700;cursor:pointer}
 .fh-cd-console .fh-ps-chaos,.fh-cd-console .fh-ps-awakening{margin:4px 0 0;font-size:7.6px;color:var(--cd-bad)}
 .fh-cd-console .fh-ps-awakening{color:var(--cd-gold-bright)}
-.fh-cd-adv .fh-cd-seg button{width:20px;height:18px;font-size:7.6px}
-.fh-cd-adv .fh-cd-seg button.is-choice{width:26px;font-size:6.5px}
 
 /* ── Table mode (Document Picture-in-Picture) ───────────────────── */
 /* The dock's node is moved into a chrome-less always-on-top window, so it
