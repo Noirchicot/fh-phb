@@ -260,11 +260,56 @@ assert.match(root.querySelector(".fh-cd-sentry").textContent,/MANUAL/,"the strea
 root.querySelector("[data-event-ok]").click();
 root.querySelector("[data-clear-tray]").click();
 
-/* ── Destiny maximum stays locked until asked ────────────────── */
-assert.equal(root.querySelector('[data-destiny-field="score"]').disabled,true,"the Destiny maximum starts locked");
-root.querySelector("[data-destiny-lock]").click();
-assert.equal(root.querySelector('[data-destiny-field="score"]').disabled,false,"the lock explicitly enables Max corrections");
-root.querySelector("[data-destiny-lock]").click();
+/* ── Destiny Score is click-to-edit, no padlock ──────────────── */
+assert.equal(root.querySelector('[data-destiny-field="score"]'),null,"the Score is not an input until it is clicked");
+const scoreBefore=root.querySelector("[data-score-edit]").textContent.trim();
+root.querySelector("[data-score-edit]").click();
+const scoreInput=root.querySelector('[data-destiny-field="score"]');
+assert.ok(scoreInput,"clicking the Score turns it into an editable field");
+assert.equal(scoreInput.disabled,false,"the revealed field is directly editable — no lock to open first");
+scoreInput.value=String(Number(scoreBefore)+1);
+scoreInput.dispatchEvent(new window.Event("change",{bubbles:true}));
+assert.equal(t.state.destiny.score,Number(scoreBefore)+1,"the typed Score is committed");
+assert.equal(root.querySelector('[data-destiny-field="score"]'),null,"committing closes the inline editor");
+t.state.destiny.score=Number(scoreBefore);t.render();
+
+/* ── Vitals: full words, five passives, tracked hit points ───── */
+assert.match(root.querySelector(".fh-cd-vsave").textContent,/^Save /,"saves are spelled out instead of SV");
+const passiveNames=Array.from(root.querySelectorAll(".fh-cd-pcell small"),node=>node.textContent);
+assert.deepEqual(passiveNames,["Vigilance","Delve","Survival","Insight","Investigation"],"five passives are written in full, in reading order");
+assert.equal(root.querySelector(".fh-cd-plabel").textContent,"PASSIVES","the row is labelled in full");
+const miniCells=Array.from(root.querySelectorAll(".fh-cd-mstat"),node=>node.textContent.trim().split(/\s+/)[0]);
+assert.deepEqual(miniCells,["PB","INIT","AC","HP","REST"],"Rest sits with PB/INIT/AC/HP, not with Destiny");
+
+assert.equal(root.querySelector(".fh-cd-hp"),null,"the hit point tracker costs no height until it is opened");
+root.querySelector("[data-hp-open]").click();
+assert.ok(root.querySelector(".fh-cd-hp"),"clicking HP opens the tracker");
+const hpMax=root.querySelector('[data-hp-field="max"]');
+hpMax.value="34";hpMax.dispatchEvent(new window.Event("change",{bubbles:true}));
+assert.equal(t.state.vitals.max,34,"the typed maximum is stored");
+assert.equal(t.state.vitals.current,34,"setting a maximum starts the character at full health");
+root.querySelector('[data-hp-step="-5"]').click();
+root.querySelector('[data-hp-step="-1"]').click();
+assert.equal(t.state.vitals.current,28,"damage steps subtract from current hit points");
+root.querySelector('[data-hp-step="1"]').click();
+assert.equal(t.state.vitals.current,29,"healing steps add back");
+root.querySelector("[data-hp-full]").click();
+assert.equal(t.state.vitals.current,34,"FULL returns to the maximum");
+root.querySelector('[data-hp-step="-5"]').click();
+const pointsBeforeRest=t.state.destiny.points;
+root.querySelector("#fhPsLongRest").click();
+assert.equal(t.state.vitals.current,34,"a long rest also restores hit points");
+assert.equal(t.state.destiny.points,Math.min(t.state.destiny.score,pointsBeforeRest+1),"a long rest still returns one Destiny Point");
+root.querySelector("[data-hp-open]").click();
+assert.equal(root.querySelector(".fh-cd-hp"),null,"the tracker collapses again");
+
+/* ── Window modes replace the lone collapse arrow ────────────── */
+assert.deepEqual(Array.from(root.querySelectorAll("[data-cd-mode]"),node=>node.dataset.cdMode),["margin","table","seal"],"the header offers Margin, Table and Seal");
+assert.ok(root.querySelector('[data-cd-mode="margin"]').classList.contains("is-on"),"Margin is the active mode while docked");
+root.querySelector('[data-cd-mode="seal"]').click();
+assert.equal(t.state.dockOpen,false,"Seal collapses the dock");
+root.querySelector('[data-cd-mode="margin"]').click();
+assert.equal(t.state.dockOpen,true,"Margin brings it back");
 
 root.querySelector("[data-destiny-die]").click();
 assert.match(root.querySelector(".fh-cd-overlay").textContent,/Roll and spend this Destiny die\?/i,"outside a console, Destiny uses the explicit spend confirmation");

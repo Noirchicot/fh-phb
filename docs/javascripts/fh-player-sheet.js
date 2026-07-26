@@ -63,12 +63,15 @@
   var TOOL_PATHS = {inventory:"party-inventory.html", soulforge:"soulforge-tool.html", rules:"", builder:"skill-builder.html"};
   var state = {
     code:"", pseudo:"", requestedPseudo:"", party:[], record:null, profile:null, character:null,
-    destiny:null, history:[], events:[], prefs:{bardicSides:6,destinyScoreLocked:true}, rollConfig:null, trayPrompt:null,
+    destiny:null, history:[], events:[], prefs:{bardicSides:6}, rollConfig:null, trayPrompt:null,
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayLabel:"Damage roll",trayResultText:"",currentEvent:null,eventQueue:[],queueDone:"",queueTotal:0,rollSequence:null,eventTimer:null,chromeOpen:false,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
-    dockOpen:false, menuOpen:false, popOpen:"", consoleAdvanced:false, diceSignature:""
+    dockOpen:false, menuOpen:false, popOpen:"", consoleAdvanced:false, diceSignature:"",
+    vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin"
   };
+  // The five passives shown in the vitals zone, in Eric's reading order.
+  var PASSIVES = [["vigilance","Vigilance"],["delve","Delve"],["survival","Survival"],["insight","Insight"],["investigation","Investigation"]];
 
   function esc(value) {
     return String(value == null ? "" : value).replace(/[&<>\"]/g, function (c) {
@@ -89,6 +92,40 @@
       unlock:'<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 7.3-2.2"/>'
     };
     return '<svg class="fh-icon'+(extraClass?' '+extraClass:'')+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">'+(icons[name]||icons.other)+'</svg>';
+  }
+  // Header glyphs live on a 16px grid: each one is tuned to stay legible at
+  // that size rather than being a shrunk-down 24px icon.
+  function glyph(name) {
+    var stroke='fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"';
+    var shapes={
+      satchel:'<svg viewBox="0 0 16 16" '+stroke+' stroke-width="1.15">'+
+        '<path d="M4.2 13.5A1.4 1.4 0 0 1 2.8 12.1V7.9a4 4 0 0 1 4-4h2.4a4 4 0 0 1 4 4v4.2a1.4 1.4 0 0 1-1.4 1.4z"/>'+
+        '<path d="M2.9 8.4h10.2"/>'+
+        '<path d="M6.3 10.7h3.4v2.8H6.3z"/>'+
+        '<path d="M6.6 3.9V3a1 1 0 0 1 1-1h.8a1 1 0 0 1 1 1v.9"/></svg>',
+      loupe:'<svg viewBox="0 0 16 16" '+stroke+' stroke-width="1.35">'+
+        '<circle cx="6.9" cy="6.9" r="4.1"/><path d="M9.9 9.9 13.7 13.7"/>'+
+        '<path d="M5.4 5.3a2.2 2.2 0 0 1 2.5-.7" stroke-width="1"/></svg>',
+      anvil:'<svg viewBox="0 0 16 16" fill="currentColor">'+
+        '<path d="M4.2 3.6h11v1.7c0 1-.8 1.8-1.8 1.8h-2.5v1.5c0 .9.6 1.5 1.5 2 .9.5 1.4 1.2 1.4 2.2v.6H4.2v-.6c0-1 .5-1.7 1.4-2.2.9-.5 1.5-1.1 1.5-2V7.1H4.2C2.5 7.1 1.2 6.6.5 5.8c-.3-.4-.1-.9.4-1.1.9-.5 2-.9 3.3-1.1z"/></svg>',
+      dots:'<svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="3.5" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="8" cy="12.5" r="1.3"/></svg>',
+      margin:'<svg viewBox="0 0 16 16" '+stroke+' stroke-width="1.2">'+
+        '<rect x="1.6" y="3" width="12.8" height="10" rx="1.4"/>'+
+        '<path d="M9.8 3v10" /><path d="M9.8 3.6h4v8.8h-4z" fill="currentColor" stroke="none" opacity=".5"/></svg>',
+      table:'<svg viewBox="0 0 16 16" '+stroke+' stroke-width="1.2">'+
+        '<rect x="1.4" y="3" width="10" height="7.4" rx="1.2"/>'+
+        '<rect x="7" y="7.2" width="7.6" height="6" rx="1.2" fill="currentColor" stroke="none"/></svg>',
+      seal:'<svg viewBox="0 0 16 16" '+stroke+' stroke-width="1.5"><path d="M5 3l6 5-6 5"/></svg>'
+    };
+    return shapes[name]||shapes.dots;
+  }
+  var MODES=[["margin","Margin","Docked beside the rules"],["table","Table","Floating window, always on top"],["seal","Seal","Collapse to the FH seal"]];
+  function renderModeControl() {
+    var active=inPip()?"table":"margin";
+    return "<span class=\"fh-cd-modes\" role=\"group\" aria-label=\"Companion window mode\">"+MODES.map(function(entry){
+      var on=entry[0]===active&&entry[0]!=="seal";
+      return "<button class=\"fh-cd-hbtn fh-cd-mode"+(on?" is-on":"")+"\" type=\"button\" data-cd-mode=\""+entry[0]+"\" title=\""+entry[1]+" — "+entry[2]+"\" aria-label=\""+entry[1]+": "+entry[2]+"\""+(on?" aria-pressed=\"true\"":"")+">"+glyph(entry[0])+"</button>";
+    }).join("")+"</span>";
   }
   function clamp(value, min, max) { return Math.min(max, Math.max(min, Number(value) || 0)); }
   function numberOr(value,fallback){return value!==null&&value!==""&&isFinite(Number(value))?Number(value):fallback;}
@@ -383,7 +420,7 @@
     var savingProficiencies = (snap && snap.savingThrowProficiencies) || CLASS_SAVES[firstClass] || [];
     var pb=Math.max(0,numberOr(overrides.pb,pbFor(level))),identity=overrides.identity||{};
     var initiative=numberOr(overrides.initiative,mod(abilities.DEX));
-    var passiveDefaults={vigilance:10,investigation:10,insight:10},passiveOverrides=overrides.passives||{};
+    var passiveDefaults={vigilance:10,delve:10,survival:10,insight:10,investigation:10},passiveOverrides=overrides.passives||{};
     // Synced skill bonuses (e.g. a class feature adding WIS to Arcana) come
     // from the Worker snapshot each pull; manual bonuses are applied last and
     // replace a synced bonus with the same label so edits never duplicate.
@@ -451,10 +488,27 @@
     if (!dice.length) dice = makeDestinySlots(score,points);
     return {score:score,points:points,dice:dice,lastChange:raw.lastChange || null};
   }
+  // Hit points are tracked here, not imported: DDB stays the source for the
+  // standard sheet but the dock is what the player touches mid-combat.
+  function normalizeVitals(raw) {
+    raw = raw && typeof raw === "object" ? raw : {};
+    var max = raw.max == null || raw.max === "" ? null : Math.max(0, Math.round(Number(raw.max) || 0));
+    var current = raw.current == null || raw.current === "" ? null : Math.round(Number(raw.current) || 0);
+    if (current != null) current = Math.max(-999, max == null ? current : Math.min(current, max));
+    if (max != null && current == null) current = max;
+    return {current:current, max:max};
+  }
+  function setVitals(patch, message) {
+    state.vitals = normalizeVitals(Object.assign({}, state.vitals || {}, patch));
+    if (message) { state.message = message; state.messageKind = "success"; }
+    persistPlayState();
+  }
   function loadPlayState(ch) {
     var local = {};
     try { local = JSON.parse(localStorage.getItem(storageKey()) || "{}"); } catch (error) {}
     var profile = state.profile || {};
+    state.vitals = normalizeVitals(profile.vitalsState || local.vitals);
+    state.hpOpen = false; state.scoreEditing = false;
     state.destiny = normalizeDestiny(profile.destinyState || local.destiny, ch);
     state.history = Array.isArray(profile.rollHistory) ? profile.rollHistory.slice(0,MAX_HISTORY) : Array.isArray(local.history) ? local.history.slice(0,MAX_HISTORY) : [];
     state.events = Array.isArray(profile.rollEvents) ? profile.rollEvents.slice(0,10) : Array.isArray(local.events) ? local.events.slice(0,10) : [];
@@ -463,17 +517,17 @@
     var pending=profile.pendingRoll||local.pendingRoll||{};
     state.rollSequence=pending.rollSequence||null;state.eventQueue=Array.isArray(pending.eventQueue)?pending.eventQueue:[];state.currentEvent=pending.currentEvent||null;state.trayPrompt=pending.trayPrompt||null;state.queueDone=pending.queueDone||"";state.queueTotal=Number(pending.queueTotal)||0;
     state.trayResults=Array.isArray(pending.trayResults)?pending.trayResults:[];state.trayTitle=pending.trayTitle||"Dice Tray";state.trayResultText=pending.trayResultText||"";
-    state.prefs = Object.assign({bardicSides:6,destinyScoreLocked:true},local.prefs || {},profile.rollPrefs || {});
+    state.prefs = Object.assign({bardicSides:6},local.prefs || {},profile.rollPrefs || {});
   }
   function persistPlayState() {
     if (!state.code || !state.pseudo || !state.destiny) return;
     var safePrompt=state.trayPrompt&&["nat1","rescue","chaos","awakening","die-choice"].indexOf(state.trayPrompt.type)>=0?state.trayPrompt:null;
     var pendingRoll={rollSequence:state.rollSequence,eventQueue:state.eventQueue,currentEvent:state.currentEvent,trayPrompt:safePrompt,queueDone:state.queueDone,queueTotal:state.queueTotal,trayResults:state.trayResults,trayTitle:state.trayTitle,trayResultText:state.trayResultText};
-    var payload = {destiny:state.destiny,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll};
+    var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll};
     try { localStorage.setItem(storageKey(), JSON.stringify(payload)); } catch (error) {}
     clearTimeout(persistTimer);
     persistTimer = window.setTimeout(function () {
-      saveProfile({destinyState:state.destiny,rollHistory:state.history.slice(0,MAX_HISTORY),rollEvents:state.events.slice(0,10),rollPrefs:state.prefs,pendingRoll:pendingRoll}).catch(function () {
+      saveProfile({destinyState:state.destiny,vitalsState:state.vitals,rollHistory:state.history.slice(0,MAX_HISTORY),rollEvents:state.events.slice(0,10),rollPrefs:state.prefs,pendingRoll:pendingRoll}).catch(function () {
         state.message = "Saved on this device; server sync is unavailable."; state.messageKind = "warn"; renderMessage();
       });
     },450);
@@ -540,7 +594,6 @@
     return recovered;
   }
   function updateDestinyField(field, value, reason) {
-    if (field === "score" && state.prefs.destinyScoreLocked) return;
     if (field === "score") state.destiny.score = clamp(value,0,99);
     else setDestinyPoints(value,reason || "Manual correction",true);
     persistPlayState(); render();
@@ -815,20 +868,39 @@
       return "<div class=\"fh-cd-vchip\">"+
         "<button class=\"fh-cd-vtop\" type=\"button\" data-quick-name=\""+ABILITY_NAMES[key]+" Check\" data-ability=\""+key+"\" data-bonus=\""+abilityBonus+"\" title=\"Roll a "+ABILITY_NAMES[key]+" check\">"+
         "<span class=\"fh-cd-vlbl\">"+key+"</span><span class=\"fh-cd-vscore\">"+ch.abilities[key]+"<sub>"+signed(abilityBonus)+"</sub></span></button>"+
-        "<button class=\"fh-cd-vsave tier-"+save.tier+"\" type=\"button\" data-quick-name=\""+esc(save.name)+"\" data-ability=\""+key+"\" data-bonus=\""+save.bonus+"\" title=\"Roll a "+key+" save\">SV <b>"+signed(save.bonus)+"</b></button></div>";
+        "<button class=\"fh-cd-vsave tier-"+save.tier+"\" type=\"button\" data-quick-name=\""+esc(save.name)+"\" data-ability=\""+key+"\" data-bonus=\""+save.bonus+"\" title=\"Roll a "+key+" save\">Save <b>"+signed(save.bonus)+"</b></button></div>";
     }).join("");
     var initiative=numberOr(ch.initiative,mod(ch.abilities.DEX));
-    var passives=ch.passiveOverrides||{};
-    var passiveV=numberOr(passives.vigilance,10+skillInfo("Vigilance",ch).bonus);
-    var passiveI=numberOr(passives.investigation,10+skillInfo("Investigation",ch).bonus);
-    var passiveS=numberOr(passives.insight,10+skillInfo("Insight",ch).bonus);
+    var overrides=ch.passiveOverrides||{};
+    var passives=PASSIVES.map(function(entry){
+      var value=numberOr(overrides[entry[0]],10+skillInfo(entry[1],ch).bonus);
+      return "<span class=\"fh-cd-pcell\" title=\"Passive "+entry[1]+"\"><small>"+entry[1]+"</small><b>"+value+"</b></span>";
+    }).join("");
+    var hp=state.vitals||{},hpText=hp.max==null?"—":(hp.current==null?hp.max:hp.current)+"/"+hp.max;
+    var hpLow=hp.max!=null&&hp.current!=null&&hp.current<=Math.floor(hp.max/2);
     var mini="<span class=\"fh-cd-mstat\">PB <b>+"+ch.pb+"</b></span>"+
       "<button class=\"fh-cd-mstat\" type=\"button\" data-quick-name=\"Initiative\" data-ability=\"DEX\" data-bonus=\""+initiative+"\" title=\"Roll initiative\">INIT <b>"+signed(initiative)+"</b></button>"+
       "<span class=\"fh-cd-mstat\">AC <b>"+(ch.armorClass==null?"—":ch.armorClass)+"</b></span>"+
-      "<span class=\"fh-cd-mstat\" title=\"Passive Vigilance\">P.VIG <b>"+passiveV+"</b></span>"+
-      "<span class=\"fh-cd-mstat\" title=\"Passive Investigation\">P.INV <b>"+passiveI+"</b></span>"+
-      "<span class=\"fh-cd-mstat\" title=\"Passive Insight\">P.INS <b>"+passiveS+"</b></span>";
-    return "<section class=\"fh-cd-zone\" data-zone=\"vitals\"><div class=\"fh-cd-vitals\">"+chips+"</div><div class=\"fh-cd-mini\">"+mini+"</div></section>";
+      "<button class=\"fh-cd-mstat"+(hpLow?" is-hurt":"")+(state.hpOpen?" is-active":"")+"\" type=\"button\" data-hp-open title=\"Track hit points\">HP <b>"+hpText+"</b></button>"+
+      "<button class=\"fh-cd-mstat\" id=\"fhPsLongRest\" type=\"button\" title=\"Long rest: +1 Destiny Point and hit points back to full\">REST <b>+1</b></button>";
+    return "<section class=\"fh-cd-zone\" data-zone=\"vitals\"><div class=\"fh-cd-vitals\">"+chips+"</div>"+
+      "<div class=\"fh-cd-mini\">"+mini+"</div>"+renderHpTracker()+
+      "<div class=\"fh-cd-passives\"><span class=\"fh-cd-plabel\">PASSIVES</span>"+passives+"</div></section>";
+  }
+  // Collapsed to nothing until the HP cell is clicked, so it costs no height.
+  function renderHpTracker() {
+    if(!state.hpOpen)return "";
+    var v=state.vitals||{current:null,max:null};
+    return "<div class=\"fh-cd-hp\">"+
+      "<button type=\"button\" data-hp-step=\"-5\" aria-label=\"Lose five hit points\">−5</button>"+
+      "<button type=\"button\" data-hp-step=\"-1\" aria-label=\"Lose one hit point\">−1</button>"+
+      "<input data-hp-field=\"current\" type=\"number\" value=\""+(v.current==null?"":v.current)+"\" aria-label=\"Current hit points\">"+
+      "<span class=\"fh-cd-hpsep\">/</span>"+
+      "<input data-hp-field=\"max\" type=\"number\" min=\"0\" value=\""+(v.max==null?"":v.max)+"\" placeholder=\"max\" aria-label=\"Maximum hit points\">"+
+      "<button type=\"button\" data-hp-step=\"1\" aria-label=\"Regain one hit point\">+1</button>"+
+      "<button type=\"button\" data-hp-step=\"5\" aria-label=\"Regain five hit points\">+5</button>"+
+      "<button type=\"button\" data-hp-full"+(v.max==null?" disabled":"")+">FULL</button>"+
+      "<button class=\"fh-cd-hpx\" type=\"button\" data-hp-open aria-label=\"Close the hit point tracker\">"+iconSvg("close")+"</button></div>";
   }
   function renderSkills(ch) {
     var half=Math.ceil(SKILLS.length/2);
@@ -856,7 +928,7 @@
   function beginSheetEdit(source){
     var ch=source||state.character,base=characterWithoutOverrides(),passives=ch.passiveOverrides||{};
     var tools=Object.keys(ch.skills).filter(function(name){return name.indexOf("Tool - ")===0&&tierName(ch.skills[name].tier)!=="none";}).sort(function(a,b){var ai=TOOL_ORDER[a],bi=TOOL_ORDER[b];if(ai==null)ai=999;if(bi==null)bi=999;return ai-bi||a.localeCompare(b);}).map(function(name){return {name:name,ability:ch.skills[name].ability||SKILL_ABILITY[name]||"INT",tier:tierName(ch.skills[name].tier)};});
-    state.editDraft={name:ch.name,species:ch.species,level:ch.level,pb:ch.pb,abilities:cloneData(ch.abilities),initiative:numberOr(ch.initiative,mod(ch.abilities.DEX)),armorClass:ch.armorClass,passives:{vigilance:numberOr(passives.vigilance,10+skillInfo("Vigilance",ch).bonus),investigation:numberOr(passives.investigation,10+skillInfo("Investigation",ch).bonus),insight:numberOr(passives.insight,10+skillInfo("Insight",ch).bonus)},skills:{},tools:tools,specialBonuses:cloneData(ch.specialBonuses||{}),baseCharacter:base};
+    state.editDraft={name:ch.name,species:ch.species,level:ch.level,pb:ch.pb,abilities:cloneData(ch.abilities),initiative:numberOr(ch.initiative,mod(ch.abilities.DEX)),armorClass:ch.armorClass,passives:PASSIVES.reduce(function(acc,entry){acc[entry[0]]=numberOr(passives[entry[0]],10+skillInfo(entry[1],ch).bonus);return acc;},{}),skills:{},tools:tools,specialBonuses:cloneData(ch.specialBonuses||{}),baseCharacter:base};
     Object.keys(state.editDraft.specialBonuses).forEach(function(name){state.editDraft.specialBonuses[name]=(state.editDraft.specialBonuses[name]||[]).map(function(item){return {id:item.id||uuid(),label:item.label||"Special bonus",value:numberOr(item.value,0),active:item.active!==false};});});
     SKILLS.forEach(function(entry){state.editDraft.skills[entry[0]]=tierName(ch.skills[entry[0]]&&ch.skills[entry[0]].tier);});
     state.rollConfig=null;state.activeContext=state.activeContext==="edit"?"loop":state.activeContext;render();
@@ -868,7 +940,7 @@
     d.level=Math.max(1,numberOr(value("#fhPsEditLevel",d.level),d.level));d.pb=Math.max(0,numberOr(value("#fhPsEditPb",d.pb),d.pb));
     ABILITIES.forEach(function(key){d.abilities[key]=numberOr(value('[data-edit-ability="'+key+'"]',d.abilities[key]),d.abilities[key]);});
     d.initiative=numberOr(value("#fhPsEditInitiative",d.initiative),d.initiative);var acValue=value("#fhPsEditAc",d.armorClass);d.armorClass=acValue===""?null:numberOr(acValue,d.armorClass);
-    ["vigilance","investigation","insight"].forEach(function(key){d.passives[key]=numberOr(value('[data-edit-passive="'+key+'"]',d.passives[key]),d.passives[key]);});
+    PASSIVES.forEach(function(entry){var key=entry[0];d.passives[key]=numberOr(value('[data-edit-passive="'+key+'"]',d.passives[key]),d.passives[key]);});
     root.querySelectorAll("[data-edit-skill-tier]").forEach(function(select){d.skills[select.dataset.editSkillTier]=tierName(select.value);});
     var tools=[];root.querySelectorAll("[data-edit-tool]").forEach(function(row){var name=row.dataset.editTool,tier=row.querySelector("[data-edit-tool-tier]"),ability=row.querySelector("[data-edit-tool-ability]");tools.push({name:name,tier:tierName(tier&&tier.value),ability:ability&&ability.value||SKILL_ABILITY[name]||"INT"});});d.tools=tools.filter(function(tool){return tool.tier!=="none";});
     var bonuses={};root.querySelectorAll("[data-edit-bonus-row]").forEach(function(row){var scope=row.dataset.editBonusRow,label=row.querySelector("[data-edit-bonus-label]"),amount=row.querySelector("[data-edit-bonus-value]");if(!scope||!label||!amount)return;var text=label.value.trim(),numeric=Number(amount.value);if(!text||!isFinite(numeric))return;(bonuses[scope]||(bonuses[scope]=[])).push({id:row.dataset.bonusId||uuid(),label:text,value:numeric,active:true});});d.specialBonuses=bonuses;
@@ -888,7 +960,7 @@
   }
   function renderEditStats(d){
     var abilities=ABILITIES.map(function(key){return "<label class=\"fh-ps-edit-stat\"><small>"+ABILITY_NAMES[key]+"</small><input data-edit-ability=\""+key+"\" type=\"number\" min=\"1\" max=\"40\" value=\""+d.abilities[key]+"\"><b>"+signed(mod(d.abilities[key]))+"</b></label>";}).join("");
-    return "<section class=\"fh-ps-stats fh-ps-card is-editing\"><div class=\"fh-ps-stat-grid\">"+abilities+"</div><div class=\"fh-ps-derived fh-ps-edit-derived\"><label><small>Initiative</small><input id=\"fhPsEditInitiative\" type=\"number\" value=\""+d.initiative+"\"></label><label><small>AC</small><input id=\"fhPsEditAc\" type=\"number\" min=\"0\" max=\"99\" value=\""+(d.armorClass==null?"":d.armorClass)+"\"></label><label><small>Passive Vigilance</small><input data-edit-passive=\"vigilance\" type=\"number\" value=\""+d.passives.vigilance+"\"></label><label><small>Investigation</small><input data-edit-passive=\"investigation\" type=\"number\" value=\""+d.passives.investigation+"\"></label><label><small>Insight</small><input data-edit-passive=\"insight\" type=\"number\" value=\""+d.passives.insight+"\"></label></div></section>";
+    return "<section class=\"fh-ps-stats fh-ps-card is-editing\"><div class=\"fh-ps-stat-grid\">"+abilities+"</div><div class=\"fh-ps-derived fh-ps-edit-derived\"><label><small>Initiative</small><input id=\"fhPsEditInitiative\" type=\"number\" value=\""+d.initiative+"\"></label><label><small>AC</small><input id=\"fhPsEditAc\" type=\"number\" min=\"0\" max=\"99\" value=\""+(d.armorClass==null?"":d.armorClass)+"\"></label>"+PASSIVES.map(function(entry){return "<label><small>Passive "+entry[1]+"</small><input data-edit-passive=\""+entry[0]+"\" type=\"number\" value=\""+numberOr(d.passives[entry[0]],10)+"\"></label>";}).join("")+"</div></section>";
   }
   function renderEditSkills(d){
     var columns=[SKILLS.slice(0,9),SKILLS.slice(9,18),SKILLS.slice(18,26)],skillColumns=columns.map(function(column){return "<div class=\"fh-ps-edit-skill-col\">"+column.map(function(entry){return renderEditCheck(entry[0],entry[1],d.skills[entry[0]],d,false);}).join("")+"</div>";}).join("");
@@ -1072,7 +1144,8 @@
     var status=state.trayResultText
       ? "<b>"+esc(state.trayTitle||"")+"</b> <em>"+esc(state.trayResultText)+"</em>"
       : "<em>Ready — click a skill, a save or an ability.</em>";
-    return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,animate);}).join("")+"</div>"+
+    // The verdict docks to the bottom of the frame; the dice keep the top half.
+    return "<div class=\"fh-cd-dicerow"+(overlay?" is-shrunk":"")+"\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,animate);}).join("")+"</div>"+
       (overlay?"<div class=\"fh-cd-overlay\">"+overlay+"</div>":"")+
       "<div class=\"fh-cd-status\" aria-live=\"polite\">"+status+"</div>";
   }
@@ -1095,7 +1168,6 @@
   }
   function renderDestiny(ch) {
     var arcana=ch.destinyBuild&&ch.destinyBuild.arcana||{};
-    var scoreLocked=state.prefs.destinyScoreLocked!==false,lockAttr=scoreLocked?" disabled":"";
     var overflow=Math.max(0,Number(state.destiny.points)-Number(state.destiny.score));
     var dice=DIE_SEQUENCE.map(function(sides){
       var available=state.destiny.dice.filter(function(die){return die.sides===sides&&die.available;}),die=available[0];
@@ -1106,16 +1178,23 @@
         "<button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
         dieSvg(sides,26,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
     }).join("");
-    return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-cap\">DESTINY · "+esc(arcana.name||"Major Arcana")+"<small>a pool die powers or rescues a roll</small></div>"+
-      "<div class=\"fh-cd-destiny-row\"><span class=\"fh-cd-pts\">"+
+    // The Score changes once in a campaign, so it is plain text with a
+    // click-to-edit affordance instead of a permanently locked input.
+    var score=state.scoreEditing
+      ? "<input class=\"fh-cd-scorein\" data-destiny-field=\"score\" type=\"number\" value=\""+state.destiny.score+"\" aria-label=\"Destiny Score\">"
+      : "<button class=\"fh-cd-score\" type=\"button\" data-score-edit title=\"Click to change the Destiny Score\">"+state.destiny.score+"</button>";
+    return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-destiny-row\">"+
+      "<span class=\"fh-cd-dgroup is-pts\"><span class=\"fh-cd-pts\">"+
       "<button type=\"button\" data-destiny-step=\"points:-1\" aria-label=\"One Destiny Point less\">−</button>"+
       "<input data-destiny-field=\"points\" type=\"number\" value=\""+state.destiny.points+"\" aria-label=\"Current Destiny Points\">"+
       "<button type=\"button\" data-destiny-step=\"points:1\" aria-label=\"One Destiny Point more\">+</button></span>"+
-      "<span class=\"fh-cd-max\">/<input data-destiny-field=\"score\" type=\"number\" value=\""+state.destiny.score+"\""+lockAttr+" aria-label=\"Maximum Destiny score\">"+
-      "<button type=\"button\" data-destiny-lock aria-label=\""+(scoreLocked?"Unlock":"Lock")+" the maximum Destiny score\" title=\""+(scoreLocked?"Unlock Max":"Lock Max")+"\">"+iconSvg(scoreLocked?"lock":"unlock")+"</button>"+
-      (overflow?"<b class=\"fh-cd-overflow\">+"+overflow+"</b>":"")+"</span>"+
+      "<span class=\"fh-cd-dlab\">POINTS</span></span>"+
+      "<span class=\"fh-cd-dslash\">/</span>"+
+      "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
+      (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
       "<span class=\"fh-cd-pool\">"+dice+"</span>"+
-      "<button class=\"fh-cd-rest\" id=\"fhPsLongRest\" type=\"button\">Rest +1</button></div></section>";
+      "<span class=\"fh-cd-arcana\" title=\"Your Major Arcana — a pool die powers or rescues a roll\">"+esc(arcana.name||"Major Arcana")+"</span>"+
+      "</div></section>";
   }
   /* ── Stream: one finished roll per line, shaped for a later AboveVTT export ── */
   function outcomeTone(entry){
@@ -1340,17 +1419,19 @@
     return "<div class=\"fh-cd-head\" data-zone=\"header\">"+
       "<a class=\"fh-cd-seal\" href=\""+esc(toolUrl("rules","../"))+"\" title=\"Back to the Handbook\">FH</a>"+avatar+
       "<div class=\"fh-cd-id\"><h1>"+esc(ch&&ch.name||"Player Companion")+"</h1><p>"+subtitle+"</p></div>"+
-      "<button class=\"fh-cd-hbtn"+(state.popOpen==="inventory"?" is-active":"")+"\" type=\"button\" data-open-pop=\"inventory\" title=\"Inventory\" aria-label=\"Inventory\"><svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.25\"><path d=\"M2.6 6h10.8v6.4a1 1 0 0 1-1 1H3.6a1 1 0 0 1-1-1z\"/><path d=\"M2.6 6l1.5-2.7a1 1 0 0 1 .9-.5h6a1 1 0 0 1 .9.5L13.4 6\"/><path d=\"M6.4 6v2h3.2V6\"/><path d=\"M8 8v1.4\" stroke-linecap=\"round\"/></svg></button>"+
-      "<button class=\"fh-cd-hbtn"+(state.popOpen==="loop"?" is-active":"")+"\" type=\"button\" data-open-pop=\"loop\" title=\"Soulforging Loop\" aria-label=\"Soulforging Loop\"><svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.3\"><path d=\"M13 5.4A5.5 5.5 0 0 0 3.5 6.2M3 10.6a5.5 5.5 0 0 0 9.5-.8\"/><path d=\"M13 2.8v2.6h-2.6M3 13.2v-2.6h2.6\"/><path d=\"M8 6.2l1.7 1.8L8 9.8 6.3 8z\" fill=\"currentColor\" stroke=\"none\"/></svg></button>"+
-      "<button class=\"fh-cd-hbtn"+(state.popOpen==="forge"?" is-active":"")+"\" type=\"button\" data-open-pop=\"forge\" title=\"Soulforge\" aria-label=\"Soulforge\"><svg viewBox=\"0 0 16 16\" fill=\"currentColor\"><path d=\"M1.8 4.2h9.9c-.3 1.7-1.5 3-3.4 3.5v2.6h1.3a1 1 0 0 1 1 1v1H4.1v-1a1 1 0 0 1 1-1h1.3V7.7C4 7.2 2.2 6 1.8 4.2z\"/><path d=\"M12.4 4.2h1.8l-.9 1.8c-.3.6-.8 1-1.5 1.2z\"/><rect x=\"5.6\" y=\"1.6\" width=\"4.8\" height=\"1.4\" rx=\".5\"/></svg></button>"+
-      "<button class=\"fh-cd-hbtn"+(state.menuOpen?" is-active":"")+"\" type=\"button\" data-menu-toggle title=\"More\" aria-label=\"More actions\"><svg viewBox=\"0 0 16 16\" fill=\"currentColor\"><circle cx=\"8\" cy=\"3.5\" r=\"1.3\"/><circle cx=\"8\" cy=\"8\" r=\"1.3\"/><circle cx=\"8\" cy=\"12.5\" r=\"1.3\"/></svg></button>"+
-      "<button class=\"fh-cd-hbtn\" type=\"button\" data-dock-close title=\"Collapse\" aria-label=\"Collapse the Companion\"><svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M5 3l6 5-6 5\"/></svg></button>"+
+      "<button class=\"fh-cd-hbtn"+(state.popOpen==="inventory"?" is-active":"")+"\" type=\"button\" data-open-pop=\"inventory\" title=\"Inventory\" aria-label=\"Inventory\">"+glyph("satchel")+"</button>"+
+      "<button class=\"fh-cd-hbtn"+(state.popOpen==="loop"?" is-active":"")+"\" type=\"button\" data-open-pop=\"loop\" title=\"Soulforging Loop\" aria-label=\"Soulforging Loop\">"+glyph("loupe")+"</button>"+
+      "<button class=\"fh-cd-hbtn"+(state.popOpen==="forge"?" is-active":"")+"\" type=\"button\" data-open-pop=\"forge\" title=\"Soulforge\" aria-label=\"Soulforge\">"+glyph("anvil")+"</button>"+
+      "<button class=\"fh-cd-hbtn"+(state.menuOpen?" is-active":"")+"\" type=\"button\" data-menu-toggle title=\"More\" aria-label=\"More actions\">"+glyph("dots")+"</button>"+
+      renderModeControl()+
       menu+"</div><p id=\"fhPsMessage\" class=\"fh-cd-msg\"></p>";
   }
   function render() {
     if(!root)return;
-    root.className="fh-cd-root"+(state.dockOpen?" is-open":"");
-    try{if(document.body&&document.body.classList)document.body.classList.toggle("fh-cd-docked",!!state.dockOpen);}catch(error){}
+    var floating=inPip();
+    root.className="fh-cd-root"+(state.dockOpen?" is-open":"")+(floating?" is-floating":"");
+    // While the dock floats, the page must not keep a gutter for it.
+    try{if(document.body&&document.body.classList)document.body.classList.toggle("fh-cd-docked",!!state.dockOpen&&!floating);}catch(error){}
     var seal="<button class=\"fh-cd-seal-fab\" type=\"button\" data-dock-open aria-label=\"Open the Player Companion\">FH</button>";
     var inner;
     if(state.loading)inner=renderDockHeader(state.character)+"<div class=\"fh-cd-loading\">Loading the character sheet…</div>";
@@ -1362,6 +1443,7 @@
     }
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
+    if(state.scoreEditing){var scoreInput=root.querySelector(".fh-cd-scorein");if(scoreInput&&scoreInput.focus){scoreInput.focus();if(scoreInput.select)scoreInput.select();}}
     if((state.popOpen==="inventory"||state.popOpen==="forge")&&state.inventory===null)loadInventory();
   }
   function syncPresetFlags(cfg){var guidance=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="guidance";}),bardic=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="bardic";});cfg.guidance=!!guidance;cfg.bardic=!!bardic;if(bardic){cfg.bardicSides=bardic.sides;state.prefs.bardicSides=bardic.sides;}}
@@ -1430,6 +1512,11 @@
     if(button.dataset.closePop!==undefined){if(state.editDraft)state.editDraft=null;state.popOpen="";render();return;}
     if(button.dataset.chromeToggle!==undefined){state.chromeOpen=!state.chromeOpen;state.menuOpen=false;render();return;}
     if(button.dataset.consoleAdv!==undefined){if(state.rollConfig)syncConsoleInputs();state.consoleAdvanced=!state.consoleAdvanced;render();return;}
+    if(button.dataset.cdMode!==undefined){setWindowMode(button.dataset.cdMode);return;}
+    if(button.dataset.hpOpen!==undefined){state.hpOpen=!state.hpOpen;render();return;}
+    if(button.dataset.hpStep!==undefined){var hp=state.vitals||{};if(hp.max==null){state.message="Set a maximum first.";state.messageKind="warn";renderMessage();return;}setVitals({current:(hp.current==null?hp.max:hp.current)+Number(button.dataset.hpStep)});render();return;}
+    if(button.dataset.hpFull!==undefined){setVitals({current:(state.vitals||{}).max});render();return;}
+    if(button.dataset.scoreEdit!==undefined){state.scoreEditing=true;render();return;}
     /* A pool die clicked while a finished roll still waits for Finish boosts that roll. */
     if(button.dataset.destinyDie!==undefined&&rollTransactionActive()){
       var settled=state.rollSequence&&state.history.find(function(item){return item.id===state.rollSequence.entryId;});
@@ -1457,16 +1544,15 @@
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
     if(button.dataset.destinyDie){var dieId=button.dataset.destinyDie,activeEntry=state.rollConfig&&state.rollConfig.editingId&&state.history.find(function(item){return item.id===state.rollConfig.editingId;});if(state.rollConfig&&!(activeEntry&&activeEntry.destiny)){confirmDestinyUse(dieId,"Add this die to "+state.rollConfig.name,function(){state.rollConfig.destinyDieId=dieId;state.rollConfig.destinyConfirmed=true;prepareTrayForConfig(state.rollConfig);render();},"add-destiny");}else confirmDestinyUse(dieId,"Roll directly from the Destiny pool",function(){standaloneDestiny(dieId);},"destiny");return;}
     if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
-    if(button.dataset.destinyLock!==undefined){state.prefs.destinyScoreLocked=!state.prefs.destinyScoreLocked;persistPlayState();render();return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
-    if(button.id==="fhPsLongRest"){setDestinyPoints(Math.min(state.destiny.score,state.destiny.points+1),"Long rest",true);render();return;}
+    if(button.id==="fhPsLongRest"){var restMax=(state.vitals||{}).max;if(restMax!=null)setVitals({current:restMax});setDestinyPoints(Math.min(state.destiny.score,state.destiny.points+1),"Long rest",true);render();return;}
     if(button.dataset.natChoice){state.trayPrompt=null;resolveNatOne(button.dataset.entryId,button.dataset.natChoice);return;}
     if(button.dataset.context){state.activeContext=button.dataset.context;render();return;}
   }
   function onClick(event){try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error",true);renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   function onChange(event){
     if(event.target.id==="fhPsDestinyDie"&&state.rollConfig){var requested=event.target.value;if(!requested){state.rollConfig.destinyDieId="";state.rollConfig.destinyConfirmed=false;prepareTrayForConfig(state.rollConfig);render();return;}if(requested!==state.rollConfig.destinyDieId){confirmDestinyUse(requested,"Add this die to "+state.rollConfig.name,function(){state.rollConfig.destinyDieId=requested;state.rollConfig.destinyConfirmed=true;prepareTrayForConfig(state.rollConfig);render();},"add-destiny");return;}}
-    if(/^fhPs(D20Forced|DestinyForced|BardicSides|Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.destinyField){updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
+    if(/^fhPs(D20Forced|DestinyForced|BardicSides|Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.hpField){setVitals(event.target.dataset.hpField==="max"?{max:event.target.value}:{current:event.target.value});render();return;}if(event.target.dataset.destinyField){if(event.target.dataset.destinyField==="score")state.scoreEditing=false;updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
   function onKeydown(event){if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(state.currentEvent&&key===" "){event.preventDefault();acknowledgeEvent();return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();runConfiguredRoll();}}
 
   function setDockOpen(open){
@@ -1475,11 +1561,60 @@
     render();
     if(state.dockOpen&&state.code&&!state.record&&!state.loading)loadParty();
   }
+  /* Table mode moves the dock's node into a Document Picture-in-Picture window.
+     The engine keeps running in this JS realm and the click/change listeners are
+     bound to the node itself, so nothing about roll behaviour changes. */
+  var pipWindow=null,homeParent=null,homeNext=null;
+  function inPip(){return !!(pipWindow&&!pipWindow.closed);}
+  function pipSupported(){try{return typeof window!=="undefined"&&"documentPictureInPicture" in window;}catch(error){return false;}}
+  function copyStylesInto(win){
+    Array.prototype.forEach.call(document.styleSheets,function(sheet){
+      try{
+        var css=Array.prototype.map.call(sheet.cssRules,function(rule){return rule.cssText;}).join("\n");
+        var style=win.document.createElement("style");style.textContent=css;win.document.head.appendChild(style);
+      }catch(error){
+        if(sheet.href){var link=win.document.createElement("link");link.rel="stylesheet";link.href=sheet.href;win.document.head.appendChild(link);}
+      }
+    });
+  }
+  function enterPip(){
+    if(inPip())return;
+    if(!pipSupported()){state.message="Table mode needs Chrome or Edge 116+.";state.messageKind="warn";state.menuOpen=false;render();return;}
+    var box=root.getBoundingClientRect();
+    var width=Math.round(Math.min(760,Math.max(380,box.width||440)));
+    var height=Math.round(Math.min(1000,Math.max(520,(window.screen&&window.screen.availHeight||900)*0.92)));
+    window.documentPictureInPicture.requestWindow({width:width,height:height}).then(function(win){
+      pipWindow=win;
+      copyStylesInto(win);
+      win.document.title="Fate's Hand — Player Companion";
+      win.document.body.classList.add("fh-cd-pip-body");
+      win.document.body.appendChild(root);
+      win.addEventListener("pagehide",function(){restoreFromPip();});
+      state.windowMode="table";state.menuOpen=false;render();
+    }).catch(function(error){
+      state.message="Could not open the floating window: "+(error&&error.message||error);state.messageKind="warn";render();
+    });
+  }
+  function restoreFromPip(){
+    if(!pipWindow)return;
+    var closing=pipWindow;pipWindow=null;
+    try{if(homeParent)homeParent.insertBefore(root,homeNext);else document.body.appendChild(root);}catch(error){document.body.appendChild(root);}
+    try{if(!closing.closed)closing.close();}catch(error){}
+    state.windowMode="margin";render();
+  }
+  function setWindowMode(mode){
+    state.menuOpen=false;
+    if(mode==="table"){if(!state.dockOpen)setDockOpen(true);enterPip();return;}
+    if(mode==="seal"){if(inPip())restoreFromPip();setDockOpen(false);return;}
+    if(inPip()){restoreFromPip();return;}
+    setDockOpen(true);
+  }
   document.addEventListener("DOMContentLoaded",function(){
     /* The dock lives on every page: the handbook stays readable beside the sheet. */
     var mount=document.getElementById("fhPlayerSheet"),ownsPage=!!mount;
     if(!mount){mount=document.createElement("div");mount.id="fhCompanionDock";document.body.appendChild(mount);}
     root=mount;root.className="fh-cd-root";
+    homeParent=root.parentNode;homeNext=root.nextSibling;
     root.addEventListener("click",onClick);root.addEventListener("change",onChange);root.addEventListener("keydown",onKeydown);
     var linkedCampaign=routeValue("campaign"),linkedCharacter=routeValue("character");
     try{state.code=(linkedCampaign||localStorage.getItem("fh-my-campcode")||"").trim().toUpperCase();}catch(error){state.code=String(linkedCampaign||"").trim().toUpperCase();}

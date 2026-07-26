@@ -9,7 +9,7 @@
   --cd-gold:#8a6a2a; --cd-gold-bright:#9c6b16; --cd-gold-hi:#c9a45a; --cd-gold-glow:#f1c96f;
   --cd-oxblood:#58180d; --cd-red:#9f2f31;
   --cd-ok:#4a7a3a; --cd-bad:#9f2f31;
-  --cd-width:clamp(360px,25vw,500px);
+  --cd-width:clamp(360px,25vw,640px);
 }
 
 /* ── Reset: the dock sits inside .md-typeset, so neutralise the
@@ -76,6 +76,11 @@ body.fh-cd-docked .md-footer{padding-right:var(--cd-width)}
 .fh-cd-hbtn:hover{border-color:var(--cd-line);background:var(--cd-parch-2)}
 .fh-cd-hbtn.is-active{border-color:var(--cd-gold-hi);background:var(--cd-parch-2)}
 .fh-cd-hbtn svg{width:14px;height:14px;display:block}
+/* Window mode: Margin (docked) · Table (floating) · Seal (collapsed). */
+.fh-cd-modes{display:flex;align-items:center;flex:none;gap:0;margin-left:2px;padding-left:3px;
+  border-left:1px solid var(--cd-line-soft)}
+.fh-cd-mode{width:21px}
+.fh-cd-mode.is-on{border-color:var(--cd-gold-hi);background:var(--cd-parch-2);color:var(--cd-gold-bright)}
 
 .fh-cd-menu{position:absolute;top:calc(100% - 4px);right:34px;z-index:25;display:flex;flex-direction:column;min-width:172px;
   background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:7px;box-shadow:0 6px 20px rgba(40,25,5,.35);padding:4px}
@@ -110,12 +115,43 @@ body.fh-cd-docked .md-footer{padding-right:var(--cd-width)}
 .fh-cd-vsave{border-top:1px solid var(--cd-line-soft);background:var(--cd-parch);font-size:7.3px;color:var(--cd-muted);padding:1px 0}
 .fh-cd-vsave b{color:var(--cd-ink);font-weight:600}
 .fh-cd-vsave.tier-proficient b,.fh-cd-vsave.tier-expert b{color:var(--cd-gold-bright)}
-.fh-cd-mini{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:4px}
-.fh-cd-mstat{display:flex;align-items:center;justify-content:center;gap:3px;font-size:7.3px;color:var(--cd-gold);
+.fh-cd-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:4px}
+.fh-cd-mstat{display:flex;align-items:center;justify-content:center;gap:3px;font-size:7.6px;color:var(--cd-gold);
   background:var(--cd-parch-2);border:1px solid var(--cd-line-soft);border-radius:4px;padding:2px 0;font-family:inherit}
-.fh-cd-mstat b{font-size:8.5px;color:var(--cd-ink);font-weight:600}
+.fh-cd-mstat b{font-size:8.8px;color:var(--cd-ink);font-weight:600}
 button.fh-cd-mstat{cursor:pointer}
 button.fh-cd-mstat:hover{border-color:var(--cd-gold-hi)}
+button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-parch)}
+.fh-cd-mstat.is-hurt b{color:var(--cd-red)}
+.fh-cd-mstat.is-hurt{border-color:rgba(159,47,49,.45)}
+
+/* Hit point tracker — zero height until the HP cell is clicked. */
+.fh-cd-hp{display:flex;align-items:center;gap:3px;margin-top:4px;padding:3px 5px;
+  background:var(--cd-parch-2);border:1px solid var(--cd-line);border-radius:4px}
+.fh-cd-hp button{height:16px;min-width:20px;padding:0 4px;border:1px solid var(--cd-line);background:var(--cd-parch);
+  border-radius:3px;font-size:8px;font-family:inherit;font-weight:600;color:var(--cd-muted);cursor:pointer;line-height:1}
+.fh-cd-hp button:hover:not(:disabled){border-color:var(--cd-gold-hi);color:var(--cd-ink)}
+.fh-cd-hp button:disabled{opacity:.4;cursor:default}
+.fh-cd-hp input{width:34px;height:17px;border:1px solid var(--cd-line);background:#fffdf6;border-radius:3px;
+  font-size:10px;font-weight:700;color:var(--cd-oxblood);text-align:center;font-family:inherit;padding:0;
+  -moz-appearance:textfield;appearance:textfield}
+.fh-cd-hp input::-webkit-outer-spin-button,.fh-cd-hp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.fh-cd-hpsep{font-size:9px;color:var(--cd-faint)}
+.fh-cd-hp [data-hp-full]{color:var(--cd-gold);margin-left:2px}
+.fh-cd-hpx{margin-left:auto;border:0!important;background:none!important;color:var(--cd-faint)!important;min-width:0!important;padding:0 2px!important}
+.fh-cd-hpx svg{width:9px;height:9px;display:block}
+
+/* Passives — full words, name over value, on their own row. */
+/* Flex, not grid: the label keeps its full width at any dock size and the
+   five cells share whatever is left. */
+.fh-cd-passives{display:flex;align-items:stretch;gap:4px;margin-top:4px}
+.fh-cd-plabel{flex:none;display:flex;align-items:center;font-size:6.6px;letter-spacing:.08em;
+  color:var(--cd-gold);white-space:nowrap;padding-right:5px;border-right:1px solid var(--cd-line-soft);line-height:1.05}
+.fh-cd-pcell{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  background:var(--cd-parch-2);border:1px solid var(--cd-line-soft);border-radius:4px;padding:1px 0 2px;overflow:hidden}
+.fh-cd-pcell small{font-size:6.4px;letter-spacing:.02em;color:var(--cd-muted);line-height:1.15;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.fh-cd-pcell b{font-size:9.6px;font-weight:600;color:var(--cd-ink);line-height:1.05}
 
 /* ── Skills & tools ─────────────────────────────────────────────── */
 .fh-cd-skillcols{display:grid;grid-template-columns:1fr 1fr;column-gap:12px}
@@ -140,7 +176,24 @@ button.fh-cd-mstat:hover{border-color:var(--cd-gold-hi)}
 .fh-cd-notools{grid-column:1/-1;font-size:8px;color:var(--cd-faint);font-style:italic;margin:0}
 
 /* ── Destiny ────────────────────────────────────────────────────── */
-.fh-cd-destiny-row{display:flex;align-items:center;gap:7px}
+/* One row, no caption: POINTS labels below its number, SCORE above its own,
+   both tucked into the height the die pool already occupies. */
+.fh-cd-destiny-row{display:flex;align-items:center;gap:5px;min-height:34px}
+.fh-cd-dgroup{position:relative;display:flex;align-items:center}
+.fh-cd-dlab{position:absolute;left:50%;transform:translateX(-50%);font-size:6.4px;letter-spacing:.14em;
+  color:var(--cd-faint);line-height:1;white-space:nowrap;pointer-events:none}
+.fh-cd-dgroup.is-pts .fh-cd-dlab{top:100%;margin-top:1.5px}
+.fh-cd-dgroup.is-score .fh-cd-dlab{bottom:100%;margin-bottom:1.5px}
+.fh-cd-dslash{font-size:11px;color:var(--cd-faint);margin:0 1px}
+.fh-cd-score{font-size:12px;font-weight:700;color:var(--cd-gold-bright);font-family:inherit;
+  border:0;background:none;padding:0 3px;cursor:pointer;line-height:1;border-bottom:1px dashed transparent}
+.fh-cd-score:hover{border-bottom-color:var(--cd-gold-hi)}
+.fh-cd-scorein{width:26px;height:17px;border:1px solid var(--cd-gold-hi);background:#fffdf6;border-radius:3px;
+  font-size:12px;font-weight:700;color:var(--cd-gold-bright);text-align:center;font-family:inherit;padding:0;
+  -moz-appearance:textfield;appearance:textfield}
+.fh-cd-scorein::-webkit-outer-spin-button,.fh-cd-scorein::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.fh-cd-arcana{font-size:7.4px;letter-spacing:.05em;color:var(--cd-gold);text-align:right;
+  max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
 .fh-cd-pts{display:flex;align-items:center;gap:3px}
 .fh-cd-pts button{width:15px;height:15px;border:1px solid var(--cd-line);background:var(--cd-parch-2);border-radius:3px;
   font-size:9px;font-family:inherit;color:var(--cd-muted);cursor:pointer;line-height:1;padding:0}
@@ -148,12 +201,7 @@ button.fh-cd-mstat:hover{border-color:var(--cd-gold-hi)}
   font-size:12px;font-weight:700;color:var(--cd-oxblood);text-align:center;font-family:inherit;padding:0;
   -moz-appearance:textfield;appearance:textfield}
 .fh-cd-pts input::-webkit-outer-spin-button,.fh-cd-pts input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.fh-cd-max{display:flex;align-items:center;gap:2px;font-size:7px;color:var(--cd-faint)}
-.fh-cd-max input{width:20px;height:14px;border:1px solid var(--cd-line-soft);background:#fffdf6;border-radius:3px;
-  font-size:8px;text-align:center;color:var(--cd-muted);font-family:inherit;padding:0}
-.fh-cd-max button{width:14px;height:14px;border:0;background:none;color:var(--cd-gold);cursor:pointer;padding:0;display:grid;place-items:center}
-.fh-cd-max button svg{width:9px;height:9px}
-.fh-cd-overflow{color:var(--cd-red);font-weight:700}
+.fh-cd-overflow{color:var(--cd-red);font-weight:700;font-size:9px}
 .fh-cd-pool{display:flex;gap:5px;align-items:center;margin-left:auto}
 .fh-cd-ddie{position:relative;width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer}
 .fh-cd-ddie svg{width:100%;height:100%;display:block}
@@ -166,8 +214,6 @@ button.fh-cd-mstat:hover{border-color:var(--cd-gold-hi)}
 .fh-cd-poolstack{display:flex;flex-direction:column;gap:1px;margin-right:-3px}
 .fh-cd-poolstack button{width:11px;height:11px;border:1px solid var(--cd-line-soft);background:var(--cd-parch-2);
   border-radius:2px;font-size:7px;line-height:1;color:var(--cd-muted);cursor:pointer;padding:0;font-family:inherit}
-.fh-cd-rest{font-size:7.5px;font-family:inherit;color:var(--cd-gold);background:var(--cd-parch-2);
-  border:1px solid var(--cd-line);border-radius:4px;padding:3px 6px;cursor:pointer}
 @keyframes fh-cd-pulse{to{opacity:.35}}
 
 /* ── Console ────────────────────────────────────────────────────── */
@@ -246,13 +292,21 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 /* ── Stage (roller) ─────────────────────────────────────────────── */
 .fh-cd-stage{padding:0;border-bottom:1px solid var(--cd-line);
   background:radial-gradient(120% 90% at 50% 8%,var(--cd-parch-2) 0%,var(--cd-parch-deep) 78%,#dccc9f 100%)}
+/* Column layout so the verdict bar and the dice split the frame by
+   calculation instead of by guessed offsets. */
 .fh-cd-frame{position:relative;height:148px;margin:6px 10px 4px;border:1.5px solid var(--cd-gold-hi);border-radius:10px;
-  box-shadow:inset 0 0 0 3px var(--cd-parch-2),inset 0 0 26px rgba(138,106,42,.16);overflow:hidden}
+  box-shadow:inset 0 0 0 3px var(--cd-parch-2),inset 0 0 26px rgba(138,106,42,.16);overflow:hidden;
+  display:flex;flex-direction:column}
 .fh-cd-frame::before,.fh-cd-frame::after{content:"\276E";position:absolute;top:2px;font-size:9px;color:var(--cd-gold-hi);opacity:.75}
 .fh-cd-frame::before{left:6px}
 .fh-cd-frame::after{right:6px;transform:scaleX(-1)}
-.fh-cd-dicerow{position:absolute;inset:0 0 30px 0;display:flex;align-items:center;justify-content:center;gap:10px;
+.fh-cd-dicerow{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;gap:10px;
   flex-wrap:wrap;align-content:center;padding:2px 6px;overflow:hidden}
+/* With a verdict on screen the dice give up room rather than being covered. */
+.fh-cd-dicerow.is-shrunk{gap:6px;padding:1px 6px}
+.fh-cd-dicerow.is-shrunk .fh-cd-die,.fh-cd-dicerow.is-shrunk .fh-cd-die svg{width:30px;height:30px}
+.fh-cd-dicerow.is-shrunk .fh-cd-src{height:9px}
+.fh-cd-dicerow.is-shrunk .fh-cd-diewrap em{font-size:6.4px;line-height:1.05}
 .fh-cd-diewrap{position:relative;display:grid;justify-items:center;gap:2px}
 .fh-cd-src{height:12px;color:var(--cd-gold-bright);display:grid;place-items:center}
 .fh-cd-src svg{width:12px;height:12px;display:block;filter:drop-shadow(0 1px 0 rgba(255,248,226,.8))}
@@ -279,7 +333,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-burst{position:absolute;inset:-12px;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,rgba(241,201,111,.85) 0%,rgba(241,201,111,.25) 45%,transparent 70%);animation:fh-cd-burst .8s ease-out both}
 .fh-cd-burst.is-bad{background:radial-gradient(circle,rgba(159,47,49,.7) 0%,rgba(159,47,49,.2) 45%,transparent 70%)}
-.fh-cd-status{position:absolute;left:0;right:0;bottom:0;min-height:28px;display:flex;align-items:center;justify-content:center;
+.fh-cd-status{position:relative;flex:none;min-height:28px;display:flex;align-items:center;justify-content:center;
   gap:8px;padding:0 8px;font-size:8.6px;letter-spacing:.05em;color:var(--cd-muted);
   border-top:1px solid var(--cd-line-soft);background:rgba(244,236,216,.8);text-align:center}
 .fh-cd-status b{color:var(--cd-oxblood);font-size:9.6px}
@@ -287,13 +341,20 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-status .is-bad{color:var(--cd-bad);font-weight:700}
 .fh-cd-status em{font-style:normal;color:var(--cd-faint);font-size:7.6px}
 
-.fh-cd-overlay{position:absolute;inset:8px 10px 34px;display:flex;align-items:center;justify-content:center;z-index:3}
-.fh-cd-card{background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:8px;box-shadow:0 4px 18px rgba(40,25,5,.35);
-  padding:7px 12px;text-align:center;animation:fh-cd-up .25s ease-out;max-width:96%;max-height:100%;overflow:auto}
-.fh-cd-card>small{display:block;font-size:7.3px;letter-spacing:.12em;color:var(--cd-gold)}
-.fh-cd-card>b{display:block;font-size:10.5px;color:var(--cd-ink);margin:3px 0 2px}
-.fh-cd-card>p{font-size:8.4px;color:var(--cd-muted);margin:0 0 6px}
-.fh-cd-card .fh-cd-acts{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+/* The verdict docks under the dice instead of covering them. */
+.fh-cd-overlay{position:relative;flex:none;max-height:64%;
+  display:flex;align-items:flex-end;justify-content:stretch;z-index:3;padding:0 6px 4px}
+.fh-cd-card{flex:1;min-width:0;background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:7px;
+  box-shadow:0 -3px 14px rgba(40,25,5,.28);padding:4px 8px;animation:fh-cd-up .22s ease-out;max-height:100%;overflow:auto;
+  display:flex;flex-wrap:wrap;align-items:center;gap:1px 7px;text-align:left}
+/* Title and buttons share the first line, the explanation wraps under it:
+   two rows instead of four keeps the dice their half of the frame. */
+.fh-cd-card>small{order:0;flex:none;font-size:7.1px;letter-spacing:.12em;color:var(--cd-gold)}
+.fh-cd-card>b{order:0;flex:1 1 auto;min-width:0;font-size:10px;color:var(--cd-ink);margin:0}
+.fh-cd-card>p{order:2;flex:1 1 100%;font-size:8.1px;color:var(--cd-muted);margin:0;line-height:1.3}
+.fh-cd-card .fh-cd-acts{order:1;flex:none;margin-left:auto;display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}
+.fh-cd-card .fh-cd-choice{order:1;flex:none;margin-left:auto;display:flex;gap:5px;align-items:center}
+.fh-cd-card .fh-cd-choice .fh-cd-die,.fh-cd-card .fh-cd-choice .fh-cd-die svg{width:34px;height:34px}
 .fh-cd-card button,.fh-cd-card a{height:20px;padding:0 12px;border:1px solid #6d4a10;border-radius:4px;
   background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-size:8.3px;font-family:inherit;font-weight:700;
   cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
@@ -511,3 +572,13 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-console .fh-ps-chaos,.fh-cd-console .fh-ps-awakening{margin:4px 0 0;font-size:7.6px;color:var(--cd-bad)}
 .fh-cd-console .fh-ps-awakening{color:var(--cd-gold-bright)}
 .fh-cd-adv .fh-cd-seg button{width:20px;height:18px;font-size:7.6px}
+
+/* ── Table mode (Document Picture-in-Picture) ───────────────────── */
+/* The dock's node is moved into a chrome-less always-on-top window, so it
+   must fill that window instead of hugging the right edge of a page. */
+.fh-cd-pip-body{margin:0;padding:0;overflow:hidden;background:var(--cd-leather,#241708)}
+.fh-cd-pip-body .fh-cd-root{position:static;width:100%;height:100vh;pointer-events:auto}
+.fh-cd-pip-body .fh-cd-dock{position:static;width:100%;height:100vh;transform:none!important;
+  border-left:0;border-radius:0;box-shadow:none}
+.fh-cd-pip-body .fh-cd-seal-fab{display:none}
+.fh-cd-pip-body .fh-cd-mode[data-cd-mode="seal"]{display:none}
