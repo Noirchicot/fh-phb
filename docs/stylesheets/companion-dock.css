@@ -107,12 +107,23 @@ body.fh-cd-docked .md-footer{padding-right:var(--cd-width)}
 .fh-cd-vitals{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
 .fh-cd-vchip{background:var(--cd-parch-2);border:1px solid var(--cd-line);border-radius:5px;text-align:center;overflow:hidden;display:flex;flex-direction:column}
 .fh-cd-vchip:hover{border-color:var(--cd-gold-hi)}
-.fh-cd-vchip>button{border:0;background:none;padding:0;width:100%;cursor:pointer;font-family:inherit;color:inherit}
+.fh-cd-vchip button{border:0;background:none;padding:0;width:100%;cursor:pointer;font-family:inherit;color:inherit}
 .fh-cd-vchip .fh-cd-vtop{padding:2px 0 1px}
+/* Each rollable cell hosts its own gear in the corner. */
+.fh-cd-vslot{position:relative;display:flex}
+/* In the mini strip the slot is a grid cell: its button must fill it, or the
+   corner gear floats away from the box it belongs to. */
+.fh-cd-mini .fh-cd-vslot>.fh-cd-mstat{flex:1 1 auto;width:100%}
+/* Always visible at rest, like the skill-row gears: the iPad has no hover. */
+.fh-cd-vgear{position:absolute!important;top:0;right:0;width:11px!important;height:11px;padding:0!important;
+  color:var(--cd-gold);opacity:.45;display:grid;place-items:center;transition:opacity .12s}
+.fh-cd-vgear svg{width:8px;height:8px;display:block}
+.fh-cd-vslot:hover .fh-cd-vgear,.fh-cd-vgear:focus-visible{opacity:1}
 .fh-cd-vlbl{font-size:6.3px;letter-spacing:.06em;color:var(--cd-gold);display:block}
 .fh-cd-vscore{font-size:11px;font-weight:600;line-height:1.05;display:block}
 .fh-cd-vscore sub{font-size:7px;color:var(--cd-muted);vertical-align:1px;margin-left:1px}
-.fh-cd-vsave{border-top:1px solid var(--cd-line-soft);background:var(--cd-parch);font-size:7.3px;color:var(--cd-muted);padding:1px 0}
+/* 2px taller than before so the corner gear fits without being clipped. */
+.fh-cd-vsave{border-top:1px solid var(--cd-line-soft);background:var(--cd-parch);font-size:7.3px;color:var(--cd-muted);padding:2px 0}
 .fh-cd-vsave b{color:var(--cd-ink);font-weight:600}
 .fh-cd-vsave.tier-proficient b,.fh-cd-vsave.tier-expert b{color:var(--cd-gold-bright)}
 .fh-cd-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:4px}
@@ -124,6 +135,12 @@ button.fh-cd-mstat:hover{border-color:var(--cd-gold-hi)}
 button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-parch)}
 .fh-cd-mstat.is-hurt b{color:var(--cd-red)}
 .fh-cd-mstat.is-hurt{border-color:rgba(159,47,49,.45)}
+.fh-cd-mstat.is-rest svg{width:9px;height:9px;display:block}
+/* Read-outs, not buttons: no frame, fully rounded, so the strip never lies
+   about what can be clicked. */
+.fh-cd-minfo{display:flex;align-items:center;justify-content:center;gap:3px;font-size:7.6px;color:var(--cd-muted);
+  background:var(--cd-parch);border:0;border-radius:999px;padding:3px 0;font-family:inherit;cursor:default}
+.fh-cd-minfo b{font-size:8.8px;color:var(--cd-ink);font-weight:600}
 
 /* Hit point tracker — zero height until the HP cell is clicked. */
 .fh-cd-hp{display:flex;align-items:center;gap:3px;margin-top:4px;padding:3px 5px;
@@ -147,8 +164,9 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-passives{display:flex;align-items:stretch;gap:4px;margin-top:4px}
 .fh-cd-plabel{flex:none;display:flex;align-items:center;font-size:6.6px;letter-spacing:.08em;
   color:var(--cd-gold);white-space:nowrap;padding-right:5px;border-right:1px solid var(--cd-line-soft);line-height:1.05}
+/* Same read-out language as PB and AC: no frame, fully rounded. */
 .fh-cd-pcell{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
-  background:var(--cd-parch-2);border:1px solid var(--cd-line-soft);border-radius:4px;padding:1px 0 2px;overflow:hidden}
+  background:var(--cd-parch);border:0;border-radius:999px;padding:2px 0 3px;overflow:hidden}
 .fh-cd-pcell small{font-size:6.4px;letter-spacing:.02em;color:var(--cd-muted);line-height:1.15;
   max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
 .fh-cd-pcell b{font-size:9.6px;font-weight:600;color:var(--cd-ink);line-height:1.05}
@@ -238,6 +256,9 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-seg button:last-child{border-right:0}
 .fh-cd-seg button.is-on{background:var(--cd-gold-bright);color:#fff8e2}
 .fh-cd-seg button.is-disadvantage.is-on{background:var(--cd-red)}
+/* A/D needs room for two glyphs and a slash. */
+.fh-cd-seg button.is-choice{width:30px;font-size:7.4px;letter-spacing:-.02em}
+.fh-cd-seg button.is-choice.is-on{background:var(--cd-oxblood)}
 .fh-cd-seg button:disabled{opacity:.4;cursor:not-allowed}
 .fh-cd-chip{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 7px;border:1px solid var(--cd-line);
   border-radius:11px;background:var(--cd-parch-2);font-size:8.3px;font-family:inherit;font-weight:600;color:var(--cd-muted);cursor:pointer;flex:none}
@@ -572,6 +593,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-console .fh-ps-chaos,.fh-cd-console .fh-ps-awakening{margin:4px 0 0;font-size:7.6px;color:var(--cd-bad)}
 .fh-cd-console .fh-ps-awakening{color:var(--cd-gold-bright)}
 .fh-cd-adv .fh-cd-seg button{width:20px;height:18px;font-size:7.6px}
+.fh-cd-adv .fh-cd-seg button.is-choice{width:26px;font-size:6.5px}
 
 /* ── Table mode (Document Picture-in-Picture) ───────────────────── */
 /* The dock's node is moved into a chrome-less always-on-top window, so it

@@ -88,6 +88,7 @@
       other:'<path d="M4.2 8.8 10 5.5l5.8 10-5.8 3.3Z"/><path d="M9 6.2 15.5 4l3.8 11.2-6.2 2.1"/><path d="M13.2 5.2h6.6v11.6h-6.6Z"/>',
       gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.1m0 14.2v2.1M2.8 12h2.1m14.2 0h2.1M5.5 5.5 7 7m10 10 1.5 1.5m0-13L17 7M7 17l-1.5 1.5"/><circle cx="12" cy="12" r="7.1"/>',
       close:'<path d="m6 6 12 12M18 6 6 18"/>',
+      rest:'<path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1Z"/>',
       lock:'<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
       unlock:'<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 7.3-2.2"/>'
     };
@@ -486,7 +487,9 @@
       return {id:die.id || uuid(),sides:DIE_SEQUENCE.indexOf(Number(die.sides))>=0?Number(die.sides):DIE_SEQUENCE[i%DIE_SEQUENCE.length],available:!!die.available};
     }).filter(function (die) { counts[die.sides]=(counts[die.sides]||0)+1;return counts[die.sides]<=3; }) : makeDestinySlots(score,points);
     if (!dice.length) dice = makeDestinySlots(score,points);
-    return {score:score,points:points,dice:dice,lastChange:raw.lastChange || null};
+    // Saved profiles from before the floor may still carry negative points.
+    var overreach = Math.max(0, Number(raw.overreach)||0, points<0 ? -points : 0);
+    return {score:score,points:Math.max(0,points),dice:dice,overreach:overreach,lastChange:raw.lastChange || null};
   }
   // Hit points are tracked here, not imported: DDB stays the source for the
   // standard sheet but the dock is what the player touches mid-combat.
@@ -584,6 +587,13 @@
   function setDestinyPoints(next, reason, recover, silent) {
     var before = Number(state.destiny.points)||0;
     next = Math.max(-99,Math.min(999,Number(next)||0));
+    // Points never fall below zero. Whatever they would have gone under is
+    // recorded as Overreach, which is what Chaos reads to set its DC.
+    var shortfall = next<0 ? -next : 0;
+    state.destiny.overreach = shortfall
+      ? (Number(state.destiny.overreach)||0)+shortfall
+      : (next>before ? 0 : Number(state.destiny.overreach)||0);
+    next = Math.max(0,next);
     state.destiny.points = next;
     var recovered = null;
     if (recover !== false && next > before && next > 0 && next % 2 === 0) recovered = recoverLowestDie();
@@ -599,7 +609,10 @@
     persistPlayState(); render();
   }
 
-  function rollMode(value){return value==="advantage"||value==="disadvantage"?value:"flat";}
+  // "choice" is Eric's A/D: roll two, decide afterwards. Advantage and
+  // disadvantage are decisions taken *before* the roll, so they resolve
+  // themselves — offering a choice on top of them was the old bug.
+  function rollMode(value){return value==="advantage"||value==="disadvantage"||value==="choice"?value:"flat";}
   function forcedDieResult(value,sides){if(value==null||value==="")return null;return clamp(value,1,Number(sides)||20);}
   function bonusSourceFor(label,index,source){
     if(source)return String(source);
@@ -628,7 +641,10 @@
     sides=Number(sides)||20;mode=rollMode(mode);var manual=forcedDieResult(forced,sides);
     if(manual!=null)return {sides:sides,mode:mode,rolls:[manual],result:manual,chosenIndex:0,forced:true};
     var rolls=mode==="flat"?[rollDie(sides)]:[rollDie(sides),rollDie(sides)];
-    return {sides:sides,mode:mode,rolls:rolls,result:mode==="flat"?rolls[0]:null,chosenIndex:mode==="flat"?0:null,forced:false};
+    if(mode==="flat")return {sides:sides,mode:mode,rolls:rolls,result:rolls[0],chosenIndex:0,forced:false};
+    if(mode==="choice")return {sides:sides,mode:mode,rolls:rolls,result:null,chosenIndex:null,forced:false};
+    var pick=mode==="advantage"?(rolls[0]>=rolls[1]?0:1):(rolls[0]<=rolls[1]?0:1);
+    return {sides:sides,mode:mode,rolls:rolls,result:rolls[pick],chosenIndex:pick,forced:false};
   }
   function chooseDiePlan(plan,index){index=clamp(index,0,plan.rolls.length-1);plan.chosenIndex=index;plan.result=plan.rolls[index];return plan;}
   function rollInput(name, ability, bonus, options) {
@@ -665,7 +681,8 @@
     else if (result === 1) { cost = -1; criticalFailure = true; recovered=setDestinyPoints(before+1,"Arcane Critical Failure d"+die.sides,true,!!silent); }
     else {
       cost = result; recovered=setDestinyPoints(before-result,"Destiny d"+die.sides,true,!!silent);
-      if (state.destiny.points <= 0) chaos = {overreach:Math.abs(state.destiny.points),dc:10+Math.abs(state.destiny.points)};
+      var over = Number(state.destiny.overreach)||0;
+      if (over > 0) chaos = {overreach:over,dc:10+over};
     }
     if(!silent&&criticalSuccess)pushEvent("ARCANE CRITICAL SUCCESS · Destiny d"+die.sides+" rolled "+result,"arcane-critical-success",false);
     else if(!silent&&criticalFailure)pushEvent("ARCANE CRITICAL FAILURE · Destiny d"+die.sides+" rolled 1","arcane-critical-failure",false);
@@ -862,13 +879,22 @@
       "<button class=\"fh-cd-gear\" type=\"button\" data-config-name=\""+esc(info.name)+"\" data-ability=\""+esc(info.ability)+"\" data-bonus=\""+info.bonus+"\" aria-label=\"Configure the "+esc(info.name)+" roll\" title=\"Roll console\">"+iconSvg("gear")+"</button></div>";
   }
   function renderIdentity(ch) { return renderDockHeader(ch); }
+  // Every rollable cell carries its own gear, exactly like a skill row:
+  // the cell rolls flat, the gear opens the console.
+  function statGear(name,ability,bonus){
+    return "<button class=\"fh-cd-vgear\" type=\"button\" data-config-name=\""+esc(name)+"\" data-ability=\""+esc(ability)+"\" data-bonus=\""+bonus+"\" aria-label=\"Configure the "+esc(name)+" roll\" title=\"Roll console\">"+iconSvg("gear")+"</button>";
+  }
   function renderStats(ch) {
     var chips=ABILITIES.map(function(key){
-      var save=saveInfo(key,ch),abilityBonus=mod(ch.abilities[key]);
+      var save=saveInfo(key,ch),abilityBonus=mod(ch.abilities[key]),checkName=ABILITY_NAMES[key]+" Check";
       return "<div class=\"fh-cd-vchip\">"+
-        "<button class=\"fh-cd-vtop\" type=\"button\" data-quick-name=\""+ABILITY_NAMES[key]+" Check\" data-ability=\""+key+"\" data-bonus=\""+abilityBonus+"\" title=\"Roll a "+ABILITY_NAMES[key]+" check\">"+
+        "<div class=\"fh-cd-vslot\">"+
+        "<button class=\"fh-cd-vtop\" type=\"button\" data-quick-name=\""+checkName+"\" data-ability=\""+key+"\" data-bonus=\""+abilityBonus+"\" title=\"Roll a "+ABILITY_NAMES[key]+" check\">"+
         "<span class=\"fh-cd-vlbl\">"+key+"</span><span class=\"fh-cd-vscore\">"+ch.abilities[key]+"<sub>"+signed(abilityBonus)+"</sub></span></button>"+
-        "<button class=\"fh-cd-vsave tier-"+save.tier+"\" type=\"button\" data-quick-name=\""+esc(save.name)+"\" data-ability=\""+key+"\" data-bonus=\""+save.bonus+"\" title=\"Roll a "+key+" save\">Save <b>"+signed(save.bonus)+"</b></button></div>";
+        statGear(checkName,key,abilityBonus)+"</div>"+
+        "<div class=\"fh-cd-vslot\">"+
+        "<button class=\"fh-cd-vsave tier-"+save.tier+"\" type=\"button\" data-quick-name=\""+esc(save.name)+"\" data-ability=\""+key+"\" data-bonus=\""+save.bonus+"\" title=\"Roll a "+key+" save\">Save <b>"+signed(save.bonus)+"</b></button>"+
+        statGear(save.name,key,save.bonus)+"</div></div>";
     }).join("");
     var initiative=numberOr(ch.initiative,mod(ch.abilities.DEX));
     var overrides=ch.passiveOverrides||{};
@@ -878,11 +904,14 @@
     }).join("");
     var hp=state.vitals||{},hpText=hp.max==null?"—":(hp.current==null?hp.max:hp.current)+"/"+hp.max;
     var hpLow=hp.max!=null&&hp.current!=null&&hp.current<=Math.floor(hp.max/2);
-    var mini="<span class=\"fh-cd-mstat\">PB <b>+"+ch.pb+"</b></span>"+
-      "<button class=\"fh-cd-mstat\" type=\"button\" data-quick-name=\"Initiative\" data-ability=\"DEX\" data-bonus=\""+initiative+"\" title=\"Roll initiative\">INIT <b>"+signed(initiative)+"</b></button>"+
-      "<span class=\"fh-cd-mstat\">AC <b>"+(ch.armorClass==null?"—":ch.armorClass)+"</b></span>"+
+    // PB, AC and the passives are read-outs, never rolls: they wear the flat
+    // pill so nothing on the strip looks clickable unless it is.
+    var mini="<span class=\"fh-cd-minfo\">PB <b>+"+ch.pb+"</b></span>"+
+      "<span class=\"fh-cd-vslot\"><button class=\"fh-cd-mstat\" type=\"button\" data-quick-name=\"Initiative\" data-ability=\"DEX\" data-bonus=\""+initiative+"\" title=\"Roll initiative\">INIT <b>"+signed(initiative)+"</b></button>"+
+      statGear("Initiative","DEX",initiative)+"</span>"+
+      "<span class=\"fh-cd-minfo\">AC <b>"+(ch.armorClass==null?"—":ch.armorClass)+"</b></span>"+
       "<button class=\"fh-cd-mstat"+(hpLow?" is-hurt":"")+(state.hpOpen?" is-active":"")+"\" type=\"button\" data-hp-open title=\"Track hit points\">HP <b>"+hpText+"</b></button>"+
-      "<button class=\"fh-cd-mstat\" id=\"fhPsLongRest\" type=\"button\" title=\"Long rest: +1 Destiny Point and hit points back to full\">REST <b>+1</b></button>";
+      "<button class=\"fh-cd-mstat is-rest\" id=\"fhPsLongRest\" type=\"button\" title=\"Long rest: +1 Destiny Point and hit points back to full\">"+iconSvg("rest")+"REST</button>";
     return "<section class=\"fh-cd-zone\" data-zone=\"vitals\"><div class=\"fh-cd-vitals\">"+chips+"</div>"+
       "<div class=\"fh-cd-mini\">"+mini+"</div>"+renderHpTracker()+
       "<div class=\"fh-cd-passives\"><span class=\"fh-cd-plabel\">PASSIVES</span>"+passives+"</div></section>";
@@ -998,6 +1027,19 @@
   }
   function removeTrayDie(index){state.traySelection.splice(Number(index),1);state.trayResults=[];persistPlayState();render();}
   function removeTrayDieSize(sides){var index=state.traySelection.lastIndexOf(Number(sides));if(index>=0)removeTrayDie(index);}
+  // The mirror of addTrayDie: right-click (or long press) takes one back off,
+  // so a mis-clicked bonus die no longer forces cancelling the whole roll.
+  function dropTrayDie(sides){
+    sides=Number(sides);if(ROLL_DIE_SIZES.indexOf(sides)<0)return;
+    var cfg=state.rollConfig;
+    if(cfg&&!cfg.editingId){
+      syncConsoleInputs();
+      var dice=cfg.bonusDice||[];
+      for(var i=dice.length-1;i>=0;i--){if(Number(dice[i].sides)===sides&&!dice[i].locked){dice.splice(i,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();return;}}
+      return;
+    }
+    removeTrayDieSize(sides);
+  }
   function rollTrayDice(){
     if(!state.traySelection.length)state.traySelection=[20];
     var labelInput=root&&root.querySelector("#fhPsTrayLabel");if(labelInput)state.trayLabel=String(labelInput.value||"Damage roll").slice(0,48);
@@ -1093,7 +1135,7 @@
   function renderEventContent(){
     var prompt=state.trayPrompt;
     if(prompt&&prompt.type==="die-choice"){
-      var choiceLabel=prompt.mode==="advantage"?"ADVANTAGE":prompt.mode==="disadvantage"?"DISADVANTAGE":"CHOOSE RESULT";
+      var choiceLabel=prompt.mode==="choice"?"A / D":"CHOOSE RESULT";
       return "<div class=\"fh-cd-card is-die-choice\"><small>"+choiceLabel+"</small><b>Choose the result to keep</b><p>"+esc(prompt.label)+" · either result may be chosen.</p><div class=\"fh-cd-choice\">"+(prompt.rolls||[]).map(function(result,index){
         return "<button type=\"button\" data-die-choice=\""+index+"\" class=\"fh-cd-die\" aria-label=\"Keep "+result+"\">"+dieSvg(prompt.sides,44,dieMaterialName({sides:prompt.sides,result:result,dieRole:prompt.dieRole}),result)+"</button>";
       }).join("")+"</div></div>";
@@ -1156,7 +1198,7 @@
     var calls=ROLL_DIE_SIZES.map(function(sides){
       var count=configured?bonusDice.filter(function(die){return die.sides===sides;}).length:(counts[sides]||0);
       var disabled=busy||(configured&&(sides===20||sides===100))||(configured&&bonusDice.length>=MAX_BONUS_DICE&&!count);
-      return "<button class=\"fh-cd-tdie\" type=\"button\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+" aria-label=\"Add a d"+sides+"\">d"+(sides===100?"%":sides)+(count?"<span class=\"fh-cd-ct\">×"+count+"</span>":"")+"</button>";
+      return "<button class=\"fh-cd-tdie\" type=\"button\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+" title=\"Click to add a d"+sides+" · right-click or long press to remove one\" aria-label=\"Add a d"+sides+"; right-click to remove one\">d"+(sides===100?"%":sides)+(count?"<span class=\"fh-cd-ct\">×"+count+"</span>":"")+"</button>";
     }).join("");
     var label=configured
       ? "<input value=\"\" placeholder=\"→ bonus dice for the prepared roll\" disabled aria-label=\"Tray label\">"
@@ -1207,7 +1249,7 @@
   function rollParts(entry){
     var parts=[];
     if(entry.kind==="d20"){
-      var mode=entry.d20Mode&&entry.d20Mode!=="flat"?" ("+(entry.d20Mode==="advantage"?"adv":"dis")+")":"";
+      var mode=entry.d20Mode&&entry.d20Mode!=="flat"?" ("+(entry.d20Mode==="advantage"?"adv":entry.d20Mode==="choice"?"A/D":"dis")+")":"";
       var value=(entry.d20s||[]).join(" / ");
       if((entry.d20s||[]).length>1)value+=" → "+entry.kept;
       if(entry.transformed)value=(entry.originalKept!=null?entry.originalKept:1)+" → Fate refused → 20";
@@ -1271,7 +1313,16 @@
     var dice=entryBonusDice(entry).map(function(die){die.locked=true;return die;});
     return {editingId:entry.id,name:entry.name,ability:entry.ability,baseBonus:entry.baseBonus,d20Mode:entry.d20Mode||"flat",d20ForcedResult:entry.d20Forced?entry.kept:null,plusTwo:!!entry.plusTwo,guidance:!!entry.guidance,bardic:!!entry.bardic,bardicSides:entry.bardic?entry.bardic.sides:Number(state.prefs.bardicSides)||6,bonusDice:dice,destinyDieId:"",destinyConfirmed:false,destinyMode:entry.destiny&&entry.destiny.advantageMode||"flat",destinyForcedResult:entry.destiny&&entry.destiny.forced?entry.destiny.result:null,custom:Number(entry.custom)||0,dc:entry.dc,note:entry.note||""};
   }
-  function renderDieModes(scope,index,mode,disabled){var attrs=" data-die-scope=\""+scope+"\""+(index!=null?" data-die-index=\""+index+"\"":"");return "<span class=\"fh-cd-seg\"><button type=\"button\" class=\"is-disadvantage "+(mode==="disadvantage"?"is-on":"")+"\" data-die-mode=\"disadvantage\""+attrs+(disabled?" disabled":"")+" aria-label=\"Disadvantage: roll two, keep the lower\">D</button><button type=\"button\" class=\""+(mode!=="advantage"&&mode!=="disadvantage"?"is-on":"")+"\" data-die-mode=\"flat\""+attrs+(disabled?" disabled":"")+" aria-label=\"Flat roll\">—</button><button type=\"button\" class=\"is-advantage "+(mode==="advantage"?"is-on":"")+"\" data-die-mode=\"advantage\""+attrs+(disabled?" disabled":"")+" aria-label=\"Advantage: roll two, keep the higher\">A</button></span>";}
+  // Fine tune only — A/D (choose after the roll) comes from Major Arcana powers
+  // on Destiny dice, so it is never offered on the main console strip.
+  function renderDieModes(scope,index,mode,disabled){
+    var attrs=" data-die-scope=\""+scope+"\""+(index!=null?" data-die-index=\""+index+"\"":""),off=disabled?" disabled":"";
+    return "<span class=\"fh-cd-seg\">"+
+      "<button type=\"button\" class=\"is-disadvantage "+(mode==="disadvantage"?"is-on":"")+"\" data-die-mode=\"disadvantage\""+attrs+off+" aria-label=\"Disadvantage: roll two, keep the lower\">D</button>"+
+      "<button type=\"button\" class=\""+(mode==="flat"?"is-on":"")+"\" data-die-mode=\"flat\""+attrs+off+" aria-label=\"Flat roll\">—</button>"+
+      "<button type=\"button\" class=\"is-advantage "+(mode==="advantage"?"is-on":"")+"\" data-die-mode=\"advantage\""+attrs+off+" aria-label=\"Advantage: roll two, keep the higher\">A</button>"+
+      "<button type=\"button\" class=\"is-choice "+(mode==="choice"?"is-on":"")+"\" data-die-mode=\"choice\""+attrs+off+" aria-label=\"A/D: roll two, choose afterwards\">A/D</button></span>";
+  }
   function renderBonusDieControl(die,index){var locked=!!die.locked,disabled=locked?" disabled":"";return "<div class=\"fh-cd-bonusrow"+(locked?" is-locked":"")+"\" data-bonus-row=\""+esc(die.id)+"\"><span class=\"fh-cd-srcmark\" aria-hidden=\"true\">"+bonusSourceMark(die.sourceIcon)+"</span><input data-bonus-label maxlength=\"32\" value=\""+esc(die.label)+"\" aria-label=\"Bonus die label\""+disabled+"><select data-bonus-sides aria-label=\"Bonus die size\""+disabled+">"+ROLL_DIE_SIZES.slice(0,6).map(function(sides){return "<option value=\""+sides+"\" "+(die.sides===sides?"selected":"")+">d"+sides+"</option>";}).join("")+"</select>"+renderDieModes("bonus",index,die.advantageMode,locked)+"<label class=\"fh-cd-portent\">Portent<input data-bonus-forced type=\"number\" min=\"1\" max=\""+die.sides+"\" value=\""+(die.forcedResult==null?"":die.forcedResult)+"\" placeholder=\"—\""+disabled+"></label>"+(locked?"<span class=\"fh-cd-srcmark\" title=\"Already rolled\">"+iconSvg("lock")+"</span>":"<button type=\"button\" data-remove-bonus=\""+index+"\" aria-label=\"Remove "+esc(die.label)+"\">"+iconSvg("close")+"</button>")+"</div>";}
   function renderConsole() {
     var cfg=state.rollConfig,entry=cfg&&cfg.editingId?state.history.find(function(item){return item.id===cfg.editingId;}):null;
@@ -1317,10 +1368,10 @@
     }
     var actionLabel=busy?"Waiting":locked?"Apply adjustments":"Roll";
     var summary=[];
-    summary.push((cfg.d20Mode==="advantage"?"2d20kh ":cfg.d20Mode==="disadvantage"?"2d20kl ":"d20 ")+signed(Number(cfg.baseBonus)+(cfg.plusTwo?2:0)+(Number(cfg.custom)||0)));
+    summary.push((cfg.d20Mode==="advantage"?"2d20kh ":cfg.d20Mode==="disadvantage"?"2d20kl ":cfg.d20Mode==="choice"?"2d20 A/D ":"d20 ")+signed(Number(cfg.baseBonus)+(cfg.plusTwo?2:0)+(Number(cfg.custom)||0)));
     bonusDice.forEach(function(die){summary.push(die.label.slice(0,4)+" d"+die.sides);});
     if(destinyOn)summary.unshift("★");
-    var actions="<button class=\"fh-cd-roll\" id=\"fhPsRunRoll\" type=\"button\" title=\""+actionLabel+"\""+(busy?" disabled":"")+">"+iconSvg("roll")+actionLabel.toUpperCase()+"<small>"+esc(summary.join(" · "))+"</small></button>"+
+    var actions="<button class=\"fh-cd-roll\" id=\"fhPsRunRoll\" type=\"button\" title=\""+actionLabel+"\""+(busy?" disabled":"")+">"+actionLabel.toUpperCase()+"<small>"+esc(summary.join(" · "))+"</small></button>"+
       (locked?"<button type=\"button\" id=\"fhPsRepeatRoll\" class=\"fh-cd-chip\" style=\"margin-top:4px\">Repeat setup</button>":"");
     return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE<small>space = roll · A / D / F = mode</small></div>"+
       head+row2+row3+advanced+actions+(locked?renderBreakdown(entry):"")+"</section>";
@@ -1549,7 +1600,27 @@
     if(button.dataset.natChoice){state.trayPrompt=null;resolveNatOne(button.dataset.entryId,button.dataset.natChoice);return;}
     if(button.dataset.context){state.activeContext=button.dataset.context;render();return;}
   }
-  function onClick(event){try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error",true);renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
+  // Right-click on a tray die removes one; on the iPad a long press does the same.
+  function trayDieTarget(event){var button=event.target&&event.target.closest&&event.target.closest("[data-add-tray-die]");return button&&!button.disabled?button:null;}
+  function onTrayContext(event){
+    var button=trayDieTarget(event);if(!button)return;
+    event.preventDefault();
+    if(rollTransactionActive())warnRollLocked();else dropTrayDie(button.dataset.addTrayDie);
+  }
+  function onTrayTouchStart(event){
+    var button=trayDieTarget(event);if(!button)return;
+    clearTimeout(state.trayHoldTimer);
+    state.trayHeld=false;
+    state.trayHoldTimer=window.setTimeout(function(){
+      state.trayHeld=true;
+      if(rollTransactionActive())warnRollLocked();else dropTrayDie(button.dataset.addTrayDie);
+    },500);
+  }
+  function onTrayTouchEnd(event){
+    clearTimeout(state.trayHoldTimer);
+    if(state.trayHeld){state.trayHeld=false;if(event.cancelable)event.preventDefault();}
+  }
+  function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error",true);renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   function onChange(event){
     if(event.target.id==="fhPsDestinyDie"&&state.rollConfig){var requested=event.target.value;if(!requested){state.rollConfig.destinyDieId="";state.rollConfig.destinyConfirmed=false;prepareTrayForConfig(state.rollConfig);render();return;}if(requested!==state.rollConfig.destinyDieId){confirmDestinyUse(requested,"Add this die to "+state.rollConfig.name,function(){state.rollConfig.destinyDieId=requested;state.rollConfig.destinyConfirmed=true;prepareTrayForConfig(state.rollConfig);render();},"add-destiny");return;}}
     if(/^fhPs(D20Forced|DestinyForced|BardicSides|Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.hpField){setVitals(event.target.dataset.hpField==="max"?{max:event.target.value}:{current:event.target.value});render();return;}if(event.target.dataset.destinyField){if(event.target.dataset.destinyField==="score")state.scoreEditing=false;updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
@@ -1616,6 +1687,9 @@
     root=mount;root.className="fh-cd-root";
     homeParent=root.parentNode;homeNext=root.nextSibling;
     root.addEventListener("click",onClick);root.addEventListener("change",onChange);root.addEventListener("keydown",onKeydown);
+    root.addEventListener("contextmenu",onTrayContext);
+    root.addEventListener("touchstart",onTrayTouchStart,{passive:true});
+    root.addEventListener("touchend",onTrayTouchEnd);root.addEventListener("touchcancel",onTrayTouchEnd);
     var linkedCampaign=routeValue("campaign"),linkedCharacter=routeValue("character");
     try{state.code=(linkedCampaign||localStorage.getItem("fh-my-campcode")||"").trim().toUpperCase();}catch(error){state.code=String(linkedCampaign||"").trim().toUpperCase();}
     state.requestedPseudo=linkedCharacter;

@@ -106,7 +106,8 @@ assert.equal(root.querySelectorAll(".fh-cd-dicerow .fh-cd-diewrap").length,1,"a 
 assert.equal(root.querySelectorAll("[data-bonus-preset]").length,2,"the console keeps only the Guidance and Bardic presets");
 assert.equal(root.querySelector('[data-bonus-preset="Tactical Mind"]'),null,"Tactical Mind is retired from the console");
 assert.ok(root.querySelector("#fhPsDestinyDie"),"Destiny is chosen from the console itself");
-assert.ok(root.querySelector("#fhPsRunRoll .fh-icon"),"the d20 ouroboros is the Roll call-to-action");
+assert.equal(root.querySelector("#fhPsRunRoll .fh-icon"),null,"the Roll button carries no icon — the word alone is the call-to-action");
+assert.match(root.querySelector("#fhPsRunRoll").textContent,/^ROLL/,"the Roll button leads with its label");
 
 root.querySelector("#fhPsGuidance").click();
 root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
@@ -129,10 +130,10 @@ t.state.rollConfig.bonusDice=t.state.rollConfig.bonusDice.slice(0,1);
 t.render();
 
 root.querySelector("#fhPsRunRoll").click();
-assert.match(root.querySelector(".fh-cd-overlay").textContent,/Choose the result to keep/i,"two d20s pause for an explicit player choice");
-root.querySelector('[data-die-choice="0"]').click();
+assert.equal(root.querySelector('[data-die-choice="0"]'),null,"advantage was decided before the roll — it never stops to ask");
 let entry=t.state.history[0];
 assert.equal(entry.d20s.length,2,"advantage rolls two d20s");
+assert.equal(entry.kept,Math.max(entry.d20s[0],entry.d20s[1]),"advantage keeps the higher d20");
 assert.equal(entry.guidance.sides,4,"Guidance rolls beside the d20s");
 assert.equal(t.state.trayResults.length,4,"the frame displays both d20s, Guidance and the +2 token");
 const originalD20=Array.from(entry.d20s);
@@ -278,8 +279,13 @@ assert.match(root.querySelector(".fh-cd-vsave").textContent,/^Save /,"saves are 
 const passiveNames=Array.from(root.querySelectorAll(".fh-cd-pcell small"),node=>node.textContent);
 assert.deepEqual(passiveNames,["Vigilance","Delve","Survival","Insight","Investigation"],"five passives are written in full, in reading order");
 assert.equal(root.querySelector(".fh-cd-plabel").textContent,"PASSIVES","the row is labelled in full");
-const miniCells=Array.from(root.querySelectorAll(".fh-cd-mstat"),node=>node.textContent.trim().split(/\s+/)[0]);
+const miniCells=Array.from(root.querySelectorAll(".fh-cd-mstat,.fh-cd-minfo"),node=>node.textContent.trim().split(/\s+/)[0]);
 assert.deepEqual(miniCells,["PB","INIT","AC","HP","REST"],"Rest sits with PB/INIT/AC/HP, not with Destiny");
+// PB and AC are read-outs; only the three that roll or act are buttons.
+assert.deepEqual(Array.from(root.querySelectorAll(".fh-cd-minfo"),n=>n.tagName),["SPAN","SPAN"],"PB and AC are not buttons");
+assert.deepEqual(Array.from(root.querySelectorAll(".fh-cd-mstat"),n=>n.textContent.trim().split(/\s+/)[0]),["INIT","HP","REST"],"only INIT, HP and REST are actionable");
+assert.ok(root.querySelector("#fhPsLongRest .fh-icon"),"Rest is carried by an icon, not by a bare number");
+assert.equal(root.querySelectorAll(".fh-cd-vgear").length,13,"every ability, save and initiative carries its own console gear");
 
 assert.equal(root.querySelector(".fh-cd-hp"),null,"the hit point tracker costs no height until it is opened");
 root.querySelector("[data-hp-open]").click();

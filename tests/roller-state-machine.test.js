@@ -65,10 +65,13 @@ assert.equal(specs.length,1);
 assert.match(specs[0].text,/ARCANE CRITICAL FAILURE.*Gained 1 Destiny Point.*Gained a Destiny d4/);
 
 // Chaos remains a separate major implication, after the consolidated spend summary.
+// Points stop at zero; the shortfall is carried as Overreach, which is what sets the DC.
 reset(3,[die("chaos-d8",8,true)]);queueRolls(5);
 spent=t.spendDestinyDie("chaos-d8",true);t.state.rollSequence={entry:{ability:"WIS"}};specs=t.destinyEventSpecs(spent,"entry");
 assert.equal(specs.length,2);
-assert.match(specs[0].text,/Lost 5 Destiny Points.*Current -2/);
+assert.equal(t.state.destiny.points,0,"Destiny Points never fall below zero");
+assert.equal(t.state.destiny.overreach,2,"the 2 points it could not pay become Overreach");
+assert.match(specs[0].text,/Lost 3 Destiny Points.*Current 0/);
 assert.match(specs[1].text,/CHAOS RISK.*Overreach 2.*WIS save DC 12/);
 
 // Natural 20 and Awakening consolidate score implications into one animated event.
@@ -105,13 +108,18 @@ assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),true,"Clea
 t.acknowledgeEvent();
 assert.equal(t.rollTransactionActive(),false);
 
-// Advantage and disadvantage both roll twice, then wait for the player's explicit choice.
-reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"advantage"});t.runConfiguredRoll();assert.equal(t.state.history.length,0);assert.equal(t.state.trayPrompt.type,"die-choice");t.resolveDieChoice(1);entry=t.state.history[0];assert.equal(entry.kept,18);assert.equal(entry.d20Choice,1);acknowledgeAll();
-reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"disadvantage"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt.type,"die-choice");t.resolveDieChoice(1);entry=t.state.history[0];assert.equal(entry.kept,18,"disadvantage still permits either result when the GM grants a choice");assert.equal(entry.d20Mode,"disadvantage");acknowledgeAll();
+// Advantage and disadvantage are committed to BEFORE the dice leave the hand,
+// so they resolve themselves. Offering a choice on top of them was the old bug.
+reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"advantage"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt,null,"advantage never stops to ask");entry=t.state.history[0];assert.equal(entry.kept,18,"advantage keeps the higher die");assert.equal(entry.d20Choice,1);acknowledgeAll();
+reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"disadvantage"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt,null,"disadvantage never stops to ask");entry=t.state.history[0];assert.equal(entry.kept,4,"disadvantage keeps the lower die");assert.equal(entry.d20Mode,"disadvantage");acknowledgeAll();
 
-reset();queueRolls(10,2,7);t.state.rollConfig=t.rollInput("Tactics","INT",4,{mode:"flat"});t.state.rollConfig.bonusDice=[{id:"superiority",label:"Superiority",sides:8,advantageMode:"advantage",forcedResult:null}];t.runConfiguredRoll();assert.equal(t.state.trayPrompt.target,"bonus");t.resolveDieChoice(0);entry=t.state.history[0];assert.equal(entry.bonusDice[0].result,2);assert.deepEqual(Array.from(entry.bonusDice[0].rolls),[2,7]);assert.equal(entry.total,16);acknowledgeAll();
+// A/D is the one mode that rolls two and lets the player pick afterwards.
+reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mode:"choice"});t.runConfiguredRoll();assert.equal(t.state.history.length,0,"A/D waits");assert.equal(t.state.trayPrompt.type,"die-choice");t.resolveDieChoice(0);entry=t.state.history[0];assert.equal(entry.kept,4,"A/D may deliberately take the lower result");assert.equal(entry.d20Mode,"choice");acknowledgeAll();
 
-reset(5,[die("destiny-choice",4,true)]);queueRolls(2,4,12);t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",3,{mode:"flat"}),{destinyDieId:"destiny-choice",destinyConfirmed:true,destinyMode:"advantage"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt.target,"destiny","Destiny resolves its choice before any d20 exists");t.resolveDieChoice(0);assert.equal(t.state.currentEvent.kind,"destiny");t.acknowledgeEvent();entry=t.state.history[0];assert.equal(entry.destiny.result,2);assert.deepEqual(Array.from(entry.destiny.rolls),[2,4]);acknowledgeAll();
+reset();queueRolls(10,2,7);t.state.rollConfig=t.rollInput("Tactics","INT",4,{mode:"flat"});t.state.rollConfig.bonusDice=[{id:"superiority",label:"Superiority",sides:8,advantageMode:"advantage",forcedResult:null}];t.runConfiguredRoll();assert.equal(t.state.trayPrompt,null,"a bonus die on advantage resolves itself too");entry=t.state.history[0];assert.equal(entry.bonusDice[0].result,7);assert.deepEqual(Array.from(entry.bonusDice[0].rolls),[2,7]);assert.equal(entry.total,21);acknowledgeAll();
+
+// A/D on a Destiny die is the Major Arcana case it exists for.
+reset(5,[die("destiny-choice",4,true)]);queueRolls(2,4,12);t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",3,{mode:"flat"}),{destinyDieId:"destiny-choice",destinyConfirmed:true,destinyMode:"choice"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt.target,"destiny","Destiny resolves its choice before any d20 exists");t.resolveDieChoice(0);assert.equal(t.state.currentEvent.kind,"destiny");t.acknowledgeEvent();entry=t.state.history[0];assert.equal(entry.destiny.result,2);assert.deepEqual(Array.from(entry.destiny.rolls),[2,4]);acknowledgeAll();
 
 // Portent-style results never consume randomness and remain permanently marked manual.
 reset();t.state.rollConfig=t.rollInput("Arcana","INT",5,{mode:"flat"});t.state.rollConfig.d20ForcedResult=17;t.state.rollConfig.bonusDice=[{id:"forced-d8",label:"Superiority",sides:8,advantageMode:"flat",forcedResult:6}];t.runConfiguredRoll();entry=t.state.history[0];assert.equal(entry.kept,17);assert.equal(entry.d20Forced,true);assert.equal(entry.bonusDice[0].result,6);assert.equal(entry.bonusDice[0].forced,true);assert.equal(entry.total,28);acknowledgeAll();
@@ -137,7 +145,7 @@ assert.match(t.state.currentEvent.text,/FATE DEFIED.*Destiny becomes 0/);t.ackno
 reset(2,[die("rescue-d8",8,true)]);entry={id:"rescue-entry",kind:"d20",name:"Arcana",ability:"INT",baseBonus:3,d20Mode:"flat",d20s:[5],kept:5,natural:5,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"20",note:"",createdAt:new Date().toISOString(),total:8,outcome:"Failure"};
 t.state.history=[entry];t.state.rollSequence={phase:"rescue",entryId:entry.id};queueRolls(5);t.rescueWithDestiny(entry.id,"rescue-d8");
 assert.deepEqual(Array.from(entry.d20s),[5]);assert.equal(entry.destiny.result,5);assert.equal(t.state.queueTotal,3);
-assert.match(t.state.currentEvent.text,/Destiny d8 rolled 5.*Current -3/);t.acknowledgeEvent();assert.match(t.state.currentEvent.text,/INT save DC 13/);acknowledgeAll();
+assert.match(t.state.currentEvent.text,/Destiny d8 rolled 5.*Current 0/);assert.equal(t.state.destiny.overreach,3);t.acknowledgeEvent();assert.match(t.state.currentEvent.text,/INT save DC 13/);acknowledgeAll();
 
 // Adding Destiny from history never rerolls the stored d20.
 reset(4,[die("history-d4",4,true)]);entry={id:"history-entry",kind:"d20",name:"Hunting",ability:"WIS",baseBonus:4,d20Mode:"flat",d20s:[10],kept:10,natural:10,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",note:"",createdAt:new Date().toISOString(),total:14,outcome:""};
