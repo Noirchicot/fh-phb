@@ -17,13 +17,14 @@ this file alone, without the conversation that produced it.
 | `docs/javascripts/fh-player-sheet.js` | 2 633 lines / 228 KB | state, persistence, DDB sync, roll engine, destiny, chaos, arcana, tray, console, event stream, every panel, every click handler — one IIFE |
 | `docs/stylesheets/companion-dock.css` | 754 lines / 64 KB | the whole dock |
 
-Every item on the roadmap edits **both of these**. Two chats working in parallel
-today means two chats rewriting the same 2 600-line closure: constant conflicts,
-and each chat burning its context window re-reading the monolith before it can
-touch anything.
+Every item on the roadmap wanted to edit **both of these**. Two chats in parallel
+meant two chats rewriting the same 2 633-line closure: constant conflicts, and each
+chat burning its context window re-reading the monolith before it could touch
+anything.
 
-**So the split is not a nice-to-have — it is the thing that makes parallel chats
-possible at all.** The belt is the natural seam: six tabs, six owners.
+**This is solved as of `73dedba`** — the belt was the seam, and a panel is now its
+own file behind a small contract (§2). Core is still one big file, deliberately
+(§5, package 1). A panel chat does not open it.
 
 ---
 
@@ -44,38 +45,59 @@ stay pinned above it (always visible); the belt switches everything below.
 Destiny / console / tray is **shared** — Skills and Actions both use it. It must
 live in core and be declared by the panel (`showsRoller: true`), not copied twice.
 
-### Files after the split
+### Files as they actually are
 
 | File | Owner | Contents |
 |---|---|---|
-| `fh-companion-core.js` | architect | state, persistence, DDB sync, roll engine, destiny, chaos, arcana, tray/console/stage, stream, belt shell + routing, panel registry |
-| `fh-panel-skills.js` | (extract, don't rewrite) | skills & tools board |
+| `fh-player-sheet.js` | **architect only** | state, persistence, DDB sync, roll engine, destiny, chaos, arcana, tray/console/stage, stream, belt shell, panel registry — **and** the Skills panel, registered through the same contract as everything else |
 | `fh-panel-features.js` | chat | abilities, traits, feats — **a good tracker** is the point |
 | `fh-panel-actions.js` | chat | Action / Bonus Action / Reaction, clickable rolls |
 | `fh-panel-spells.js` | chat | spell list, slots, clickable casts |
 | `fh-panel-inventory.js` | chat | wire the existing inventory pop into the belt |
 | `fh-panel-notes.js` | chat | notes |
 
-CSS splits the same way: `companion-core.css` + one block per panel.
+All five panel files exist already, as registering stubs. CSS stays in one
+`companion-dock.css`; each panel appends its own block at the end.
 
 ### The contract (architect writes and freezes this first)
 
+**As shipped** (`73dedba`) — this is the real API, not a sketch. A panel pushes
+itself onto `window.FH.panels` from its own file; there is no registration
+function to import and load order does not matter, because core reads the list
+at render time:
+
 ```js
-FH.registerPanel({
-  id: "features",
-  label: "Features",
-  colour: "--cd-belt-features",
-  showsRoller: false,          // true → core renders destiny/console/tray below
-  render: function (ctx) { return html; },
-  onClick: function (event, ctx) { return handled; }
-});
+(function () {
+  "use strict";
+  (window.FH = window.FH || {}).panels = window.FH.panels || [];
+  window.FH.panels.push({
+    id: "features",              // belt tab, and the key for this panel's store
+    label: "Features",
+    tint: "#4a7a3a",             // the tab's colour when lit
+    order: 20,                   // belt position
+    showsRoller: false,          // true → core draws Destiny + Console + Tray below
+    render: function (ctx) { return html; },
+    onClick: function (event, ctx) { return handled; }   // optional
+  });
+})();
 ```
 
-`ctx` gives a panel read access to the character and the roll API — `ctx.character`,
-`ctx.roll(spec)`, `ctx.stageDie(size)`, `ctx.pushEvent(text, kind)` — and nothing
-else. A panel chat then needs to read **the contract, not the engine**. That is the
-whole point: it collapses each subject chat's required context from 2 600 lines to
-about 40.
+`ctx` is the whole surface a panel may touch:
+
+| | |
+|---|---|
+| `ctx.character` | effective character (DDB + manual overrides) |
+| `ctx.destiny` · `ctx.profile` | score/points/pool, and the saved profile |
+| `ctx.esc` · `ctx.icon` · `ctx.signed` · `ctx.mod` | the same helpers core uses |
+| `ctx.roll(name, ability, bonus, note)` | immediate flat d20 |
+| `ctx.openConsole(name, ability, bonus, note, dc)` | the advanced console |
+| `ctx.note(text, kind)` | write a line into the event stream |
+| `ctx.store(id)` | the panel's own persisted object, saved with the play state |
+| `ctx.save()` · `ctx.refresh()` | persist · re-render |
+
+That is about forty lines instead of 2 633. `render` returning a string keeps a
+panel from ever holding DOM across a re-render, and a panel that throws is caught
+and reported in its own body rather than taking the dock down with it.
 
 ---
 
@@ -105,8 +127,8 @@ Checked in the source, not assumed:
   **The Brick needs a rules decision before it can be coded** — see §6.
 - **No card imagery, no flip.** Target behaviour (ref: randomtarotcard.com): on
   draw, the tray grows, one card is dealt **face down**, clicking it flips it over.
-- **Belt does not exist.** Only the Skills content exists, unlabelled and always-on.
-- **Features / Actions / Spells / Notes panels do not exist.**
+- **Features / Actions / Spells / Notes panels are stubs** — the tabs and files
+  exist and register correctly; the bodies say "Not built yet".
 - **No AboveVTT link.**
 
 ---
