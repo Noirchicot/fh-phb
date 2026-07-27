@@ -62,6 +62,9 @@
     return "";
   })();
   var TOOL_PATHS = {inventory:"party-inventory.html", soulforge:"soulforge-tool.html", rules:"", builder:"skill-builder.html"};
+  /* The text scale's usable range. Declared here because `var state` below
+     reads FS_MIN when it is evaluated, and var hoists the name, not the value. */
+  var FS_MIN=1.15,FS_MAX=1.45;
   var state = {
     code:"", pseudo:"", requestedPseudo:"", party:[], record:null, profile:null, character:null,
     destiny:null, history:[], events:[], prefs:{bardicSides:6}, rollConfig:null, trayPrompt:null,
@@ -70,7 +73,7 @@
     loading:false, message:"", messageKind:"",
     dockOpen:false, menuOpen:false, popOpen:"", diceSignature:"",
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
-    diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:1.15,
+    diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:FS_MIN,
     panel:"skills", panelData:{}
   };
   // The five passives shown in the vitals zone, in Eric's reading order.
@@ -131,10 +134,11 @@
       return "<button class=\"fh-cd-hbtn fh-cd-mode"+(on?" is-on":"")+"\" type=\"button\" data-cd-mode=\""+entry[0]+"\" title=\""+entry[1]+" — "+entry[2]+"\" aria-label=\""+entry[1]+": "+entry[2]+"\""+(on?" aria-pressed=\"true\"":"")+">"+glyph(entry[0])+"</button>";
     }).join("")+"</span>";
   }
-  // Text size: three steps on the dock's --cd-fs scale. Normal is the tuned
-  // baseline; Large (+15%) is the default so the dock isn't squinting-small
-  // out of the box, and XL (+30%) is there for anyone who wants it bigger still.
-  var TEXT_SIZES=[["1","A","Normal"],["1.15","A","Large (+15%)"],["1.3","A","Extra large (+30%)"]];
+  // Text size. The old 1.0 baseline is gone -- it was too small to read at the
+  // table, so the scale starts where the useful range starts. Width follows the
+  // same number (400px x scale), which is why these read as sizes of the whole
+  // dock rather than of the type alone: 460 / 520 / 580px.
+  var TEXT_SIZES=[["1.15","A","Compact — 460px"],["1.3","A","Comfortable — 520px"],["1.45","A","Large — 580px"]];
   function renderTextSizeControl() {
     var active=String(state.textSize);
     return "<div class=\"fh-cd-seg fh-cd-textsize\" role=\"group\" aria-label=\"Companion text size\">"+TEXT_SIZES.map(function(entry,i){
@@ -2341,6 +2345,11 @@
     if(!slug)return "";
     return (SITE_ROOT||"../")+"assets/img/species-"+slug+".jpg";
   }
+  /* The header is identity and window chrome, and nothing else: portrait, name,
+     the seal, the ... menu, the window modes. The satchel/loupe/anvil buttons
+     that used to live here are gone -- Gear and Craft are belt tabs now, and
+     navigation belongs to the belt. renderPops still draws those panels; only
+     the way in moved. */
   function renderDockHeader(ch){
     var linked=!!(state.profile&&state.profile.ddbLinked);
     var initials=String(ch&&ch.name||"FH").split(/\s+/).map(function(word){return word.charAt(0);}).join("").slice(0,3).toUpperCase();
@@ -2366,9 +2375,6 @@
     return "<div class=\"fh-cd-head\" data-zone=\"header\">"+
       "<a class=\"fh-cd-seal\" href=\""+esc(toolUrl("rules","../"))+"\" title=\"Back to the Handbook\">FH</a>"+avatar+
       "<div class=\"fh-cd-id\"><h1>"+esc(ch&&ch.name||"Player Companion")+"</h1><p>"+subtitle+"</p></div>"+
-      "<button class=\"fh-cd-hbtn"+(state.popOpen==="inventory"?" is-active":"")+"\" type=\"button\" data-open-pop=\"inventory\" title=\"Inventory\" aria-label=\"Inventory\">"+glyph("satchel")+"</button>"+
-      "<button class=\"fh-cd-hbtn"+(state.popOpen==="loop"?" is-active":"")+"\" type=\"button\" data-open-pop=\"loop\" title=\"Soulforging Loop\" aria-label=\"Soulforging Loop\">"+glyph("loupe")+"</button>"+
-      "<button class=\"fh-cd-hbtn"+(state.popOpen==="forge"?" is-active":"")+"\" type=\"button\" data-open-pop=\"forge\" title=\"Soulforge\" aria-label=\"Soulforge\">"+glyph("anvil")+"</button>"+
       "<button class=\"fh-cd-hbtn"+(state.menuOpen?" is-active":"")+"\" type=\"button\" data-menu-toggle title=\"More\" aria-label=\"More actions\">"+glyph("dots")+"</button>"+
       renderModeControl()+
       menu+"</div><p id=\"fhPsMessage\" class=\"fh-cd-msg\"></p>";
@@ -2475,7 +2481,7 @@
        leaving --cd-width locked to whatever it resolved to at :root (1). Use
        ownerDocument so this still lands on the right :root when Table mode has
        moved the node into the Picture-in-Picture window. */
-    (root.ownerDocument||document).documentElement.style.setProperty("--cd-fs",state.textSize);
+    (root.ownerDocument||document).documentElement.style.setProperty("--cd-fs-pref",state.textSize);
     // While the dock floats, the page must not keep a gutter for it.
     try{if(document.body&&document.body.classList)document.body.classList.toggle("fh-cd-docked",!!state.dockOpen&&!floating);}catch(error){}
     var seal="<button class=\"fh-cd-seal-fab\" type=\"button\" data-dock-open aria-label=\"Open the Player Companion\">FH</button>";
@@ -2731,7 +2737,7 @@
     state.windowMode="margin";render();
   }
   function setTextSize(size){
-    state.textSize=Number(size)||1;
+    state.textSize=clamp(size,FS_MIN,FS_MAX)||FS_MIN;
     try{localStorage.setItem("fh-cd-textsize",String(state.textSize));}catch(error){}
     render();
   }
@@ -2762,7 +2768,10 @@
     var remembered=null;try{remembered=localStorage.getItem("fh-cd-open");}catch(error){}
     state.dockOpen=ownsPage||!!linkedCampaign||remembered==="1";
     var rememberedSize=null;try{rememberedSize=localStorage.getItem("fh-cd-textsize");}catch(error){}
-    if(rememberedSize)state.textSize=clamp(rememberedSize,1,1.3)||1.15;
+    /* The scale was rebased from 1/1.15/1.3 to 1.15/1.3/1.45. Anything at or
+       below the old baseline lands on the new floor rather than on a step that
+       no longer exists, so a returning player never gets the size we removed. */
+    if(rememberedSize)state.textSize=clamp(rememberedSize,FS_MIN,FS_MAX)||FS_MIN;
     /* Only honour a remembered tab that still exists -- a panel file that was
        removed must not leave the belt pointing at nothing. */
     var rememberedPanel=null;try{rememberedPanel=localStorage.getItem("fh-cd-panel");}catch(error){}

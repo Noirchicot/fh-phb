@@ -9,12 +9,31 @@
   --cd-gold:#8a6a2a; --cd-gold-bright:#9c6b16; --cd-gold-hi:#c9a45a; --cd-gold-glow:#f1c96f;
   --cd-oxblood:#58180d; --cd-red:#9f2f31;
   --cd-ok:#4a7a3a; --cd-bad:#9f2f31;
-  --cd-fs:1;
-  /* Text-size toggle: 1 = tuned baseline, bumped by the "Aa" control in the
-     header menu. Multiplies every font-size in this file via calc(). The
-     dock's own min/max width grow with it too, so bigger text gets more
-     room instead of just wrapping harder inside the same box. */
-  --cd-width:clamp(calc(360px * var(--cd-fs)),25vw,calc(640px * var(--cd-fs)));
+  /* Text scale. JS writes --cd-fs-PREF (what the player picked); --cd-fs is what
+     the dock actually uses. Keeping them separate is what lets a media query cap
+     the scale on a screen too narrow to afford it -- a property cannot be defined
+     in terms of itself, so --cd-fs:min(var(--cd-fs),N) would be a cycle and get
+     thrown away. Steps are 1.15 / 1.3 / 1.45: the old 1.0 baseline was too small
+     to read at the table and no longer exists. */
+  --cd-fs-pref:1.15;
+  --cd-fs:var(--cd-fs-pref);
+  /* Width follows the TEXT, not the monitor. The old 25vw preferred value meant
+     a 2560px screen got a 640px dock and the text-size control moved nothing at
+     all, because 25vw sat above every floor. 400px x scale puts the default at
+     460px -- the original design target -- and identical on every display. */
+  --cd-ideal:calc(400px * var(--cd-fs));
+  /* The dock's own grids stop fitting below this: six vitals columns, seven belt
+     tabs, two skill columns. It never renders narrower, whatever the viewport --
+     a hair of page scroll on a 320px phone beats a dock that has folded in on
+     itself. Order matters: max() last so the floor always wins. */
+  --cd-floor:360px;
+  --cd-width:max(var(--cd-floor),min(var(--cd-ideal),100vw));
+  /* Same idea vertically, and the dock is more exposed here: it is pinned
+     top-to-bottom, so its height is simply the window's, and Table mode lets
+     that window be dragged to any size at all. Seven stacked zones stop having
+     room below this. Under it the dock keeps its floor and the shell scrolls,
+     rather than every zone folding into its neighbour. */
+  --cd-floor-h:520px;
 }
 
 /* ── Reset: the dock sits inside .md-typeset, so neutralise the
@@ -35,7 +54,10 @@
 
 /* ── Mount & collapsed seal ─────────────────────────────────────── */
 .fh-cd-root{position:fixed;top:0;right:0;bottom:0;width:var(--cd-width);z-index:20;
-  font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;color:var(--cd-ink)}
+  font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;color:var(--cd-ink);
+  /* Scrolls only when the dock has hit its height floor and no longer fits;
+     at any normal window size there is nothing to scroll. */
+  overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
 .fh-cd-root *{box-sizing:border-box}
 /* Only the panel slides away; the seal is fixed and must stay reachable. */
 .fh-cd-root:not(.is-open){pointer-events:none}
@@ -53,7 +75,8 @@ body.fh-cd-docked .md-footer{padding-right:var(--cd-width)}
 .fh-cd-root.is-open .fh-cd-seal-fab{display:none}
 .fh-cd-seal-fab:hover{filter:brightness(1.08)}
 
-.fh-cd-dock{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;
+.fh-cd-dock{position:absolute;inset:0;min-height:var(--cd-floor-h);
+  display:flex;flex-direction:column;overflow:hidden;
   transition:transform .28s ease;
   background:var(--cd-parch);border-left:6px solid;
   border-image:linear-gradient(180deg,#6b4f2a,#3f2e18 30%,#5c4326 70%,#2e2110) 1;
@@ -218,6 +241,11 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-soon{text-align:center;padding:calc(15px * var(--cd-fs)) 12px}
 .fh-cd-soon p{font-size:calc(8.6px * var(--cd-fs));color:var(--cd-muted);line-height:1.45;margin:0 0 5px}
 .fh-cd-soon small{font-size:calc(7.2px * var(--cd-fs));color:var(--cd-faint);font-style:italic}
+.fh-cd-soonacts{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0 0 7px}
+.fh-cd-soonacts button{height:calc(21px * var(--cd-fs));padding:0 11px;border:1px solid #6d4a10;border-radius:4px;
+  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-family:inherit;
+  font-size:calc(8.3px * var(--cd-fs));font-weight:700;cursor:pointer}
+.fh-cd-soonacts button:hover{filter:brightness(1.07)}
 
 /* ── Skills & tools ─────────────────────────────────────────────── */
 .fh-cd-skillcols{display:grid;grid-template-columns:1fr 1fr;column-gap:12px}
@@ -725,6 +753,14 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   .fh-cd-frame{height:112px;margin:5px 10px 3px}
   .fh-cd-zone{padding:5px 10px}
 }
+@media(max-height:640px){
+  /* Last stop before the floor: the stream gives up its reserved room -- it is
+     a log, it scrolls, and it is the one zone that can be short without
+     becoming unusable. */
+  .fh-cd-stream{min-height:calc(54px * var(--cd-fs))}
+  .fh-cd-frame{height:calc(84px * var(--cd-fs))}
+  .fh-cd-belttab{padding:calc(3.5px * var(--cd-fs)) 3px}
+}
 @media(max-height:720px){
   .fh-cd-frame{height:96px}
   .fh-cd-portrait{width:38px;height:38px;font-size:calc(11px * var(--cd-fs))}
@@ -732,12 +768,23 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   .fh-cd-stream{min-height:96px}
 }
 
-/* ── Mobile: the dock becomes a full-width sheet ────────────────── */
+/* ── Mobile: the dock becomes a full-width sheet ──────────────────
+   The base --cd-width already refuses to exceed 100vw, so there is nothing to
+   override here; what a narrow screen cannot afford is the TEXT. Capping the
+   scale is the other half of the floor: pinning the width at 360px while the
+   type keeps growing is exactly how the layout breaks. --cd-fs reads from
+   --cd-fs-pref, never from itself, so these caps are legal. */
 @media(max-width:900px){
-  .fh-cd-root{width:min(100vw,var(--cd-width));--cd-width:min(100vw,calc(440px * var(--cd-fs)))}
+  :root{--cd-fs:min(var(--cd-fs-pref),1.3)}
 }
 @media(max-width:520px){
+  :root{--cd-fs:min(var(--cd-fs-pref),1.15)}
   .fh-cd-root{width:100vw}
+  /* Seven tabs do not fit one row on a phone, and a belt that scrolls sideways
+     can hide the lit tab -- which is the one thing the belt exists to show. So
+     it wraps to two rows instead: four and three, all of them visible. */
+  .fh-cd-belt{flex-wrap:wrap;overflow-x:visible}
+  .fh-cd-belttab{flex:1 0 25%;min-width:0;border-bottom:1px solid var(--cd-line)}
   .fh-cd-dock{border-left-width:0}
   .fh-cd-srow{height:calc(17px * var(--cd-fs));font-size:calc(10px * var(--cd-fs))}
   .fh-cd-srow>button{font-size:calc(10px * var(--cd-fs))}

@@ -25,7 +25,7 @@
     id: "notes",
     label: "Notes",
     tint: "#3a5a8c",
-    order: 60,
+    order: 70,
     showsRoller: false,
     render: function (ctx) {
       var store = ctx.store("notes");

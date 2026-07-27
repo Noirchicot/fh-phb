@@ -6,7 +6,17 @@ this file alone, without the conversation that produced it.
 **Repo:** `~/tools/fh-phb` · branch `main` · deploy `./.venv/bin/mkdocs gh-deploy --force`
 **Tests:** `for t in tests/*.test.js; do node "$t"; done` — all six must stay green.
 **Harness:** `tools/dock-harness.html`, copied to `site/` and served on port 8125
-(`.claude/launch.json` entry `fh-site-b`). Offline, stubbed Worker, no campaign code needed.
+(`.claude/launch.json` entry `fh-site-b`). Offline, stubbed Worker, no campaign code
+needed. Add `?keep` to reload **without** wiping the panel stores.
+
+**Sizing (fixed 2026-07-28).** Width follows the text, not the monitor:
+`max(360px, min(400px × scale, 100vw))`. Scale steps are **1.15 / 1.3 / 1.45**, so
+the dock is **460 / 520 / 580px** — identical on every display. The old `25vw`
+meant a 2560px screen got 640px and the text control moved nothing. Two floors
+keep it from ever folding: **360px wide**, **520px tall** (`--cd-floor`,
+`--cd-floor-h`); past either, the shell scrolls instead of the zones collapsing.
+Narrow screens also **cap the scale** (`--cd-fs` derives from `--cd-fs-pref` so a
+media query can clamp it) — pinning width while type keeps growing is how it breaks.
 
 ---
 
@@ -36,7 +46,7 @@ stay pinned above it (always visible); the belt switches everything below.
 ```
 ┌─ header (portrait, menu, window mode) ──────────┐   core
 ├─ vitals · PB/AC/HP/EXH · passives ──────────────┤   core, always visible
-├─ BELT: Skills │Features│Actions│Spells│Inv│Notes┤   core, colourful, active tab lit
+├─ BELT: Skills│Traits│Actions│Spells│Gear│Craft│Notes   core, active tab lit
 ├─ … active panel body … ─────────────────────────┤   panel module
 ├─ destiny · console · tray · stage ──────────────┤   core, shown when panel asks
 └─ stream ────────────────────────────────────────┘   core
@@ -50,10 +60,11 @@ live in core and be declared by the panel (`showsRoller: true`), not copied twic
 | File | Owner | Contents |
 |---|---|---|
 | `fh-player-sheet.js` | **architect only** | state, persistence, DDB sync, roll engine, destiny, chaos, arcana, tray/console/stage, stream, belt shell, panel registry — **and** the Skills panel, registered through the same contract as everything else |
-| `fh-panel-features.js` | chat | abilities, traits, feats — **a good tracker** is the point |
+| `fh-panel-traits.js` | chat | abilities, traits, feats — **a good tracker** is the point |
 | `fh-panel-actions.js` | chat | Action / Bonus Action / Reaction, clickable rolls |
 | `fh-panel-spells.js` | chat | spell list, slots, clickable casts |
-| `fh-panel-inventory.js` | chat | wire the existing inventory pop into the belt |
+| `fh-panel-gear.js` | chat | carried gear + party stash; surface the existing inventory pop |
+| `fh-panel-craft.js` | chat | Soulforging: the Loop **and** the Forge, one tab |
 | `fh-panel-notes.js` | chat | notes |
 
 All five panel files exist already, as registering stubs. CSS stays in one
@@ -518,3 +529,23 @@ node "$t"; done -- all six must pass.
 Done when: either a roll in the Companion appears in AboveVTT, or the plan
 records exactly why it cannot. Both are a successful outcome for this package.
 ```
+
+---
+
+## 9. The belt, settled (2026-07-28)
+
+**Skills · Traits · Actions · Spells · Gear · Craft · Notes.**
+
+- `Features` became **Traits** — nine characters truncated on a 460px belt.
+- Inventory became **Gear**, and **Craft** is its own tab, not folded into Gear:
+  they have different rhythms (gear is an at-table lookup, the Forge is downtime
+  work), so sharing a tab would have made the frequent thing slower to reach.
+- The **Soulforging Loop is inside Craft**, not beside it — it is the Forge's prep
+  checklist, not a peer of it. Three header buttons became one tab.
+- The header is now **identity and window chrome only**: portrait, name, seal, ⋯,
+  window modes. All content navigation belongs to the belt; the ⋯ menu keeps what
+  leaves the dock (Sync, Edit, Level Up, Change character, the ↗ tools).
+- The Gear and Craft **stubs open the existing pops**, so nothing that worked
+  before the header cleanup is out of reach while those panels are unbuilt.
+- On phones (≤520px) the belt **wraps to two rows** rather than scrolling
+  sideways — a belt that can hide the lit tab defeats its own purpose.

@@ -51,10 +51,11 @@ extra_javascript:
   # Belt panels register themselves onto window.FH.panels. Order between them
   # is irrelevant (each carries its own `order`), and the dock reads the list
   # at render time, so these only need to be present — not loaded first.
-  - javascripts/fh-panel-features.js
+  - javascripts/fh-panel-traits.js
   - javascripts/fh-panel-actions.js
   - javascripts/fh-panel-spells.js
-  - javascripts/fh-panel-inventory.js
+  - javascripts/fh-panel-gear.js
+  - javascripts/fh-panel-craft.js
   - javascripts/fh-panel-notes.js
   - javascripts/fh-player-sheet.js
 

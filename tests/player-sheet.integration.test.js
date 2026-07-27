@@ -33,6 +33,13 @@ const sandbox = {
   }
 };
 sandbox.globalThis = sandbox;
+/* The belt's panels live in their own files and register onto window.FH.panels.
+   Load them the way the page does, or the dock under test has one tab and the
+   thing the belt exists for goes uncovered. */
+const panelDir = path.join(__dirname,"..","docs","javascripts");
+for (const name of fs.readdirSync(panelDir).filter(f=>/^fh-panel-.*\.js$/.test(f)).sort()) {
+  vm.runInNewContext(fs.readFileSync(path.join(panelDir,name),"utf8"),sandbox,{filename:name});
+}
 vm.runInNewContext(source,sandbox,{filename:sourcePath});
 document.dispatchEvent(new window.Event("DOMContentLoaded"));
 
@@ -65,7 +72,19 @@ function settleRoll(){
 assert.ok(root.querySelector(".fh-cd-dock"),"the Companion renders as a docked panel");
 assert.equal(root.querySelector(".fh-ps-commandbar"),null,"the old command bar is gone");
 assert.equal(root.querySelector(".fh-ps-rail"),null,"the redundant vertical rail no longer consumes sheet width");
-assert.ok(root.querySelector('[data-open-pop="inventory"]')&&root.querySelector('[data-open-pop="loop"]')&&root.querySelector('[data-open-pop="forge"]'),"Inventory, Soulforging Loop and Soulforge pop from the dock header");
+/* REWRITTEN (belt): the satchel/loupe/anvil buttons left the header when the
+   belt arrived -- Gear and Craft are tabs now, and navigation belongs to the
+   belt. The header is identity and window chrome only. What still matters is
+   not where the three pops are reached from, but that all three ARE reached,
+   so this asserts the new route rather than dropping the old one. */
+assert.equal(root.querySelector('.fh-cd-head [data-open-pop]'),null,"the dock header no longer carries content navigation");
+assert.equal(root.querySelectorAll(".fh-cd-belttab").length,7,"the belt shows its seven sections");
+function showPanel(id){root.querySelector('.fh-cd-belttab[data-panel="'+id+'"]').click();}
+showPanel("gear");
+assert.ok(root.querySelector('[data-open-pop="inventory"]'),"Gear reaches the inventory");
+showPanel("craft");
+assert.ok(root.querySelector('[data-open-pop="loop"]')&&root.querySelector('[data-open-pop="forge"]'),"Craft reaches the Soulforging Loop and the Soulforge");
+showPanel("skills");
 assert.equal(root.querySelector(".fh-cd-seal").textContent,"FH","the gold FH seal links back to the handbook");
 assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"],[data-zone="stream"]').length,3,"console, roller and stream are distinct zones");
 assert.equal(root.querySelectorAll("[data-zone]").length,7,"the dock shows its seven zones at once");
