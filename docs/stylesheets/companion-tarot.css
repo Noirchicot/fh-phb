@@ -24,7 +24,10 @@
    background/display for every button inside a tray card (companion-dock.css).
    ".fh-cd-card .fh-tarot-card" (two classes) is needed to outrank it and get
    a clean slate for the flip card instead of a label-shaped gold button. */
-.fh-cd-card .fh-tarot-card{position:relative;height:auto;width:calc(112px * var(--cd-fs));aspect-ratio:.58;
+/* 7:12 is the exact Tarot proportion the art bible specifies for the custom
+   deck, so the slot matches the delivered art and object-fit:cover crops
+   nothing — including the numeral and title baked into the card's own frame. */
+.fh-cd-card .fh-tarot-card{position:relative;height:auto;width:calc(112px * var(--cd-fs));aspect-ratio:7/12;
   border:0;padding:0;margin:0;background:none;display:block;text-decoration:none;
   transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
 .fh-tarot-card:not(.is-flipped){cursor:pointer}
