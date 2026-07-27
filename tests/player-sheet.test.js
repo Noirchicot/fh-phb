@@ -12,7 +12,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
-    renderDestiny, renderStageZone, renderConsole, renderEventContent, resolveNatOne, renderStream, renderStreamEntry, rollExport,
+    renderDestiny, renderStageZone, renderConsole, renderEventContent, renderEventList, resolveNatOne, renderStream, renderStreamEntry, rollExport,
     outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate
   };
 })();
@@ -225,7 +225,7 @@ assert.equal(freeEntry.dice[0].colour,"crimson","a free die keeps its colour onc
 assert.equal(freeEntry.dice[0].result,17,"and its Portent forces the result");
 assert.equal(freeEntry.dice[0].forced,true,"a forced free die is stored as manual");
 assert.equal(t.state.trayResults[0].colour,"crimson","the landed die is still painted in the frame");
-t.state.history=[];t.state.traySelection=[];t.state.rollSequence=null;t.state.currentEvent=null;t.state.eventQueue=[];
+t.state.history=[];t.state.traySelection=[];t.state.rollSequence=null;t.state.events=[];
 
 function natOneEntry(id) {
   return {id,kind:"d20",name:"Arcana",ability:"INT",baseBonus:3,d20Mode:"flat",d20s:[1],kept:1,natural:1,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",createdAt:new Date().toISOString(),total:4,natChoice:null};
@@ -252,16 +252,21 @@ assert.equal(t.pendingFate().length,1,"it installs a pending Chaos marker instea
 assert.equal(t.pendingFate()[0].kind,"chaos");
 
 t.state.character={destinyBuild:{arcana:{name:"The Hermit"}}};
+// REWRITTEN (dock v6): a decision is a line in the event list above the dice,
+// not a card under them, so it is renderEventList that carries the question.
 t.state.trayPrompt={type:"nat1",entryId:fate.id};
-assert.match(t.renderEventContent(),/Do you accept your fate\?/,"the natural-1 choice is rendered in the animation zone");
+assert.match(t.renderEventList(),/do you accept your fate\?/i,"the natural-1 choice is a decision line above the dice");
+assert.match(t.renderEventList(),/data-tray-accept-fate[\s\S]*data-tray-refuse-fate/,"with both answers on it");
+assert.equal(t.renderEventContent(),"","and nothing under the dice, because nothing was opened");
 t.state.trayPrompt={type:"chaos",entryId:fate.id};
-assert.match(t.renderEventContent(),/Chaos has noticed/,"the Chaos result replaces the animation-zone content");
+assert.match(t.renderEventContent(),/Chaos has noticed/,"an opened Chaos card still renders under the dice");
 t.state.trayPrompt={type:"awakening",entryId:fate.id};
-assert.match(t.renderEventContent(),/Arcane Awakening/,"Arcane Awakening is rendered inside the animation zone");
+assert.match(t.renderEventContent(),/Arcane Awakening/,"and so does an Awakening card");
 
 t.state.trayPrompt=null;
-t.state.currentEvent=null;
+t.state.events=[];
 assert.equal(t.renderEventContent(),"","with no prompt the roller frame stays clear for the dice");
+assert.equal(t.renderEventList(),"","and an empty list takes no room at all");
 
 t.state.code="FH1";
 t.state.pseudo="Mar";

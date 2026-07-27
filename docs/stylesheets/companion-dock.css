@@ -306,13 +306,16 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-diewrap.is-dropped{opacity:.38}
 .fh-cd-diewrap.is-dropped em{text-decoration:line-through}
 .fh-cd-diewrap.is-pending{opacity:.88}
-.fh-cd-diewrap.is-flashing .fh-cd-die{animation:fh-cd-flash .8s ease-in-out infinite alternate}
+/* A Destiny die waiting in the tray blinks between empty and full — and unlike
+   every other call in the dock it does not stop after three seconds, because
+   what it is announcing is a cost that has not been paid yet. */
+.fh-cd-diewrap.is-flashing .fh-cd-die{animation:fh-cd-flash 1.15s ease-in-out infinite}
 .fh-cd-diewrap.is-forced em{color:#7a4a9c}
 .fh-cd-diewrap button.fh-cd-die{border:0;background:none;padding:0;cursor:pointer}
 .fh-cd-diewrap button.fh-cd-die:hover{filter:brightness(1.1) drop-shadow(0 3px 5px rgba(40,25,5,.4))}
 @keyframes fh-cd-spin{0%{transform:rotate(0)}80%{transform:rotate(1101deg)}100%{transform:rotate(1080deg)}}
 @keyframes fh-cd-glint{0%{opacity:0}30%{opacity:.6}100%{opacity:0}}
-@keyframes fh-cd-flash{to{filter:drop-shadow(0 0 7px var(--cd-gold-glow))}}
+@keyframes fh-cd-flash{0%,100%{opacity:1;filter:drop-shadow(0 0 6px var(--cd-gold-glow))}50%{opacity:.16;filter:none}}
 @keyframes fh-cd-burst{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.9);opacity:0}}
 @keyframes fh-cd-up{0%{opacity:0;transform:translateY(4px)}100%{opacity:1;transform:none}}
 .fh-cd-burst{position:absolute;inset:-12px;border-radius:50%;pointer-events:none;
@@ -360,7 +363,9 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 @keyframes fh-cd-call{0%,100%{opacity:1}50%{opacity:.42}}
 .fh-cd-wdie.is-calling{animation:fh-cd-call 1.15s ease-in-out infinite}
 .fh-cd-ddie.is-calling svg{animation:fh-cd-call 1.15s ease-in-out infinite;filter:drop-shadow(0 0 4px var(--cd-gold-glow))}
-.fh-cd-diewrap.is-tunable.is-pending .fh-cd-die{animation:fh-cd-call 1.15s ease-in-out infinite}
+/* :not(.is-flashing) so a Destiny die keeps its own empty/full blink instead of
+   losing it to this rule's higher specificity — caught at the DOM, not by eye. */
+.fh-cd-diewrap.is-tunable.is-pending:not(.is-flashing) .fh-cd-die{animation:fh-cd-call 1.15s ease-in-out infinite}
 
 /* ── The white picker: the one place dice come from ─────────────── */
 .fh-cd-whiterow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding-top:2px}
@@ -394,7 +399,54 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 /* ── Transient badges, between the buttons and the tray ─────────── */
 .fh-cd-temps{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:5px 10px 0}
 
-/* ── Popups: under the tray, pushing the stream down ────────────── */
+/* ── The event list: under the badges, above the dice ───────────────
+   One event, one line. The newest is larger and at full strength; the
+   ones under it stay legible but recede, so the zone reads as a stack
+   of what just happened rather than a queue waiting to be dismissed.
+   Height is capped and scrolls — the dice never lose their frame. */
+/* 96px measured, not guessed: a decision line wraps to ~59px and still has to
+   leave two announcements readable under it before the list starts scrolling. */
+.fh-cd-events{display:flex;flex-direction:column;gap:2px;margin:5px 10px 0;
+  max-height:96px;overflow-y:auto;overscroll-behavior:contain}
+.fh-cd-eline{display:flex;align-items:baseline;gap:5px;min-width:0;
+  padding:1px 6px 1px 5px;border-left:2px solid var(--cd-line);border-radius:0 4px 4px 0;
+  background:rgba(233,220,188,.55);opacity:.64}
+.fh-cd-eline>b{flex:none;font-size:7.8px;font-weight:800;letter-spacing:.02em;color:var(--cd-ink);
+  max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-eline>i{flex:1 1 auto;min-width:0;font-style:normal;font-size:7px;color:var(--cd-faint);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-eline .fh-cd-elink{flex:none;font-size:6.6px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--cd-red);text-decoration:underline}
+/* The current line is told apart by weight and colour, never by a button. */
+.fh-cd-eline.is-current{opacity:1;background:var(--cd-parch);border-left-color:var(--cd-gold-hi);
+  box-shadow:inset 0 0 0 1px rgba(201,164,90,.35)}
+.fh-cd-eline.is-current>b{font-size:9.2px;color:var(--cd-oxblood)}
+.fh-cd-eline.is-current>i{font-size:7.4px;color:var(--cd-muted)}
+.fh-cd-eline.is-nat1,.fh-cd-eline.is-chaos,.fh-cd-eline.is-arcane-critical-failure,
+.fh-cd-eline.is-loss,.fh-cd-eline.is-die-loss,.fh-cd-eline.is-error{border-left-color:var(--cd-red)}
+.fh-cd-eline.is-nat20,.fh-cd-eline.is-awakening,.fh-cd-eline.is-arcane-critical-success,
+.fh-cd-eline.is-destiny,.fh-cd-eline.is-die-gain,.fh-cd-eline.is-gain{border-left-color:var(--cd-gold-hi)}
+.fh-cd-eline.is-current.is-nat1,.fh-cd-eline.is-current.is-chaos,
+.fh-cd-eline.is-current.is-arcane-critical-failure{background:#f7e9e3}
+.fh-cd-eline.is-current.is-nat20,.fh-cd-eline.is-current.is-awakening,
+.fh-cd-eline.is-current.is-arcane-critical-success{background:#f9f0d8;box-shadow:inset 0 0 0 1px var(--cd-gold-glow)}
+/* A decision is the only line that asks, so it is the only line with buttons. */
+/* A question is the one line allowed to take the room it needs: measured at the
+   DOM, the shared 62% cap was clipping "…do you accept your fate?" itself. */
+.fh-cd-eline.is-decision{flex-wrap:wrap;padding:3px 6px;border:1px solid var(--cd-gold-hi);border-left-width:3px;
+  border-radius:0 5px 5px 0;animation:fh-cd-up .22s ease-out}
+.fh-cd-eline.is-decision>b{flex:1 1 100%;max-width:none;white-space:normal;font-size:9.2px;color:var(--cd-oxblood)}
+.fh-cd-eline.is-decision>i{flex:1 1 55%;white-space:normal;overflow:visible;line-height:1.35}
+.fh-cd-eline.is-decision.is-nat1,.fh-cd-eline.is-decision.is-arcane-critical-failure{border-color:#c07a72;border-left-color:var(--cd-red)}
+.fh-cd-eacts{flex:none;margin-left:auto;display:flex;align-items:center;gap:5px}
+.fh-cd-eacts button{height:18px;padding:0 10px;border:1px solid #6d4a10;border-radius:4px;
+  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-size:8px;font-weight:700;cursor:pointer}
+.fh-cd-eacts button.is-danger{background:linear-gradient(180deg,#c8353c,#7c0f15);border-color:#ff5f67;color:#fff1ef}
+.fh-cd-eacts.is-dice button{height:auto;padding:0;border:0;background:none}
+.fh-cd-eacts.is-dice button svg{display:block;filter:drop-shadow(0 1px 2px rgba(40,25,5,.35))}
+.fh-cd-eacts.is-dice button:hover svg{filter:brightness(1.1) drop-shadow(0 2px 4px rgba(40,25,5,.45))}
+
+/* ── Menus: under the tray, pushing the stream down ─────────────── */
 .fh-cd-popups{padding:5px 10px 6px}
 
 /* ── One die's own menu ─────────────────────────────────────────────

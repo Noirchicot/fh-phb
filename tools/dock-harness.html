@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FH dock harness</title>
+<!-- Offline bench for the Companion dock. Lives in tools/ because mkdocs build
+     wipes site/ every time; copy it into site/ after each build:
+       cp tools/dock-harness.html site/dock-harness.html
+     Serve with preview_start on the fh-site-b entry of .claude/launch.json. -->
+<!-- Cache-busted: without this the browser keeps serving the stylesheet from the
+     last build and a CSS fix looks like it did nothing. -->
+<script>document.write('<link rel="stylesheet" href="/stylesheets/companion-dock.css?v='+Date.now()+'">');</script>
+<style>body{margin:0;background:#2b2419;min-height:100vh;font-family:-apple-system,Helvetica,Arial,sans-serif}
+  .note{color:#c9b98c;font-size:12px;padding:12px;max-width:40ch;line-height:1.5}</style>
+</head>
+<body>
+<p class="note">Dock harness — the Companion runs against a stubbed Worker.</p>
+<div id="fhPlayerSheet" data-rules="/"></div>
+<script>
+(function(){
+  var BUILD={build:{
+    meta:{class:"Wizard",level:5,species:"Human"},
+    character:{name:"Harness",abilityScores:{STR:10,DEX:14,CON:13,INT:18,WIS:12,CHA:9}},
+    nativeSkillTiers:{Arcana:"expert",History:"proficient",Vigilance:"proficient",Insight:"proficient","Tool - Soulforging":"proficient"},
+    destiny:{score:8,arcana:{name:"The Hermit"}}
+  }};
+  var PROFILE={profile:{ddbLinked:false,snapshot:null,levelUps:[],preparation:{transferEssence:false,identify:false,tools:[]}}};
+  window.fetch=function(url){
+    var path=String(url);
+    var body= /\/profile\//.test(path) ? PROFILE
+      : /\/party\/[^/]+\/[^/]+/.test(path) ? BUILD
+      : /\/party\//.test(path) ? {builds:[{pseudo:"Harness"}]}
+      : /\/inv\//.test(path) ? {items:[]}
+      : {};
+    return Promise.resolve({ok:true,status:200,json:function(){return Promise.resolve(body);}});
+  };
+  try{
+    localStorage.setItem("fh-my-campcode","FH1");
+    localStorage.setItem("fh-my-pseudo","Harness");
+    localStorage.setItem("fh-cd-open","1");
+    localStorage.removeItem("fh-player-v2:FH1:Harness");
+  }catch(error){}
+})();
+</script>
+<script>document.write('<scr'+'ipt src="/javascripts/fh-player-sheet.js?v='+Date.now()+'"><\/scr'+'ipt>');</script>
+</body>
+</html>

@@ -9,11 +9,12 @@ const sourcePath=path.join(__dirname,"..","docs","javascripts","fh-player-sheet.
 const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
   globalThis.__fhRollMachine={
     state,makeDestinySlots,setDestinyPoints,spendDestinyDie,destinyEventSpecs,naturalDestiny,
-    rollInput,runConfiguredRoll,resolveDieChoice,acknowledgeEvent,queueEvents,renderEventContent,renderStageZone,
-    resolveNatOne,rollTransactionActive,entryTotal,outcomeFor,
-    rollOpen,stagedList,stageBonusDie,stageDestinyDie,rollStagedDice,releaseRoll,clearDiceTray,
+    rollInput,runConfiguredRoll,resolveDieChoice,announceEvents,renderEventContent,renderEventList,renderStageZone,
+    resolveNatOne,resolveArcaneOne,arcaneDecision,rollTransactionActive,entryTotal,outcomeFor,
+    rollOpen,stagedList,stageBonusDie,stageDestinyDie,stageDestinyFromPool,rollStagedDice,releaseRoll,clearDiceTray,
     pendingFate,addPendingFate,dropPendingFate,armPendingFate,rollPendingFate,renderDestiny,renderConsole,
-    findStagedDie,mutateStagedDie,sealStagedDie,dropStagedDie,addTrayDie
+    findStagedDie,mutateStagedDie,sealStagedDie,dropStagedDie,addTrayDie,rollTrayDice,standaloneDestiny,
+    trayDiceForDisplay,setTrayFromEntry,visualDie,retuneLandedDie,sealLabel
   };
 })();
 `);
@@ -40,15 +41,18 @@ function reset(points=5,dice=[die("d4",4,true),die("d6",6,true),die("d8",8,true)
   randomBuckets.length=0;
   Object.assign(t.state,{
     code:"",pseudo:"",destiny:{score:8,points,dice:JSON.parse(JSON.stringify(dice)),lastChange:null},history:[],events:[],prefs:{bardicSides:6},
-    rollConfig:null,trayPrompt:null,diePrompt:null,trayColours:{},callUntil:0,traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayResultText:"",currentEvent:null,eventQueue:[],queueDone:"",queueTotal:0,rollSequence:null,message:"",messageKind:"",pendingArmed:null,
+    rollConfig:null,trayPrompt:null,diePrompt:null,destinyStaged:null,trayColours:{},callUntil:0,traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayResultText:"",queueDone:"",rollSequence:null,message:"",messageKind:"",pendingArmed:null,
     character:{destinyBuild:{arcana:{name:"The Hermit"}},build:{}}
   });
   t.state.destiny.pending=[];
 }
-function acknowledgeAll(limit=20){while(t.state.currentEvent&&limit--){t.acknowledgeEvent();}assert.ok(limit>0,"event queue must always terminate");}
+/* REWRITTEN (dock v6): there is no acknowledgeAll any more. An announcement no
+   longer waits on a click, so nothing is left to drain — the newest line is
+   simply state.events[0]. Only a decision still holds the roll. */
+function latest(){return t.state.events[0]||null;}
 /* A roll no longer ends on a button at all: it lands in the stream and stays
    open. Closing one out means answering whatever still blocks, then clearing. */
-function settle(limit=20){acknowledgeAll(limit);if(t.rollOpen())t.clearDiceTray(true);}
+function settle(){assert.equal(t.rollTransactionActive(),false,"nothing may still be blocking when a roll is settled");if(t.rollOpen())t.clearDiceTray(true);}
 function natOne(id="nat-one"){return {id,kind:"d20",name:"Arcana",ability:"INT",baseBonus:3,d20Mode:"flat",d20s:[1],kept:1,natural:1,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",note:"",createdAt:new Date().toISOString(),total:4,outcome:"Natural 1 · choose fate",natChoice:null};}
 
 // A spent die must disappear. Losing points never recovers the die that was just spent.
@@ -69,7 +73,13 @@ assert.equal(spent.criticalFailure,true);
 assert.equal(t.state.destiny.points,4);
 assert.equal(spent.recovered.id,"missing-d4");
 assert.equal(specs.length,1);
-assert.match(specs[0].text,/ARCANE CRITICAL FAILURE.*Gained 1 Destiny Point.*Gained a Destiny d4/);
+// REWRITTEN (dock v6): a 1 on a Destiny die is now an offer, not a verdict, so
+// the line announces the roll only — the point it moved may still be undone by
+// refusing, and a line must not claim what may be undone.
+assert.match(specs[0].text,/^ARCANE CRITICAL FAILURE · Destiny d6 rolled 1$/);
+const offer=t.arcaneDecision(spent,"entry");
+assert.equal(offer.type,"arcane1","and the failure raises a decision instead");
+assert.equal(offer.sides,6);
 
 // Chaos remains a separate major implication, after the consolidated spend summary.
 // Points stop at zero; the shortfall is carried as Overreach, which is what sets the DC.
@@ -88,36 +98,40 @@ assert.equal(events.length,1);
 assert.equal(events[0].kind,"awakening");
 assert.match(events[0].text,/ARCANE AWAKENING.*Lost 1 Destiny Point.*Current 0/);
 
-// The button says Continue whenever more dice or another phase still follows.
-reset();t.state.rollSequence={phase:"destiny-events"};t.queueEvents([{text:"Destiny summary",kind:"destiny"}],"roll-remaining");
-assert.match(t.renderEventContent(),/>Continue</);
-assert.doesNotMatch(t.renderEventContent(),/>Finish</);
-t.state.rollSequence={phase:"result"};t.queueEvents([{text:"Final result",kind:"result"}],"finish-sequence");
-assert.match(t.renderEventContent(),/>Finish</);
+// REWRITTEN (dock v6): the Continue/Finish button is gone with the whole popup
+// queue. Announcements stack as lines, newest first, and none of them blocks.
+reset();t.state.rollSequence={phase:"destiny-events"};
+t.announceEvents([{text:"Destiny summary · Lost 3 Destiny Points",kind:"destiny"},{text:"CHAOS RISK · pending",kind:"chaos"}],"");
+assert.equal(t.state.events.length,2,"both announcements land at once — the second does not wait for the first");
+assert.equal(latest().text,"CHAOS RISK · pending","newest first");
+assert.doesNotMatch(t.renderEventList(),/data-event-ok|>Continue<|>Finish</,"an announcement carries no button at all");
+assert.match(t.renderEventList(),/fh-cd-eline is-chaos is-current[^>]*><b>CHAOS RISK<\/b>/,"the newest line is the current one");
+assert.match(t.renderEventList(),/fh-cd-eline is-destiny"[^>]*><b>Destiny summary<\/b>/,"and the one before it stays on screen, unhighlighted");
+assert.equal(t.rollTransactionActive(),false,"announcing never holds the dock");
 
-// Destiny rolls first. The d20 and bonus dice do not exist until its popup is acknowledged.
+// Destiny still rolls first, but its consequences no longer gate the d20: the
+// whole sequence resolves in one pass and simply narrates itself as it goes.
 reset(5,[die("first",4,true)]);queueRolls(3,15,2,5);
 t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",8,{mode:"flat",dc:18}),{guidance:true,bardic:true,bardicSides:6,destinyDieId:"first",destinyConfirmed:true});
 t.runConfiguredRoll();
-assert.equal(t.state.history.length,0,"the d20 waits while Destiny consequences are shown");
-assert.equal(t.state.rollSequence.phase,"destiny-events");
-assert.match(t.state.currentEvent.text,/Destiny d4 rolled 3.*Lost 3 Destiny Points/);
-assert.match(t.renderEventContent(),/>Continue</);
-t.acknowledgeEvent();
-assert.equal(t.state.history.length,1);
+assert.equal(t.state.history.length,1,"REWRITTEN (dock v6): no click stands between Destiny and the d20 any more");
+assert.ok(t.state.events.some(event=>/Destiny d4 rolled 3.*Lost 3 Destiny Points/.test(event.text)),"the Destiny summary is still announced, as a line");
 entry=t.state.history[0];
 assert.deepEqual(Array.from(entry.d20s),[15]);
 assert.equal(entry.guidance.result,2);assert.equal(entry.bardic.result,5);
 assert.equal(t.state.trayResults[0].label,"Destiny","Destiny remains first in the visible tray");
 // REWRITTEN (dock v5): the result popup is gone and so is APPLY. A landed roll
 // stays OPEN behind the one permanent ROLL, and it no longer locks the dock.
-assert.equal(t.state.currentEvent,null,"a landed roll no longer ends in a blocking result popup");
 assert.equal(t.rollOpen(),true,"it stays open, with every source of a new die still reachable");
 assert.match(t.renderStageZone(),/data-roll-now[^>]*>ROLL</,"there is one button, and it says ROLL");
 assert.doesNotMatch(t.renderStageZone(),/APPLY/,"APPLY is gone from the dock entirely");
 assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),false,"an open roll no longer holds the dock hostage");
-assert.equal(t.rollTransactionActive(),false,"only a popup that must be answered locks the dock now");
+assert.equal(t.rollTransactionActive(),false,"only a question that must be answered locks the dock now");
+// The event zone sits between the badges and the dice, and menus stay below them.
+assert.ok(t.renderStageZone().indexOf("fh-cd-temps")<t.renderStageZone().indexOf("fh-cd-events"),"events come after the badge strip");
+assert.ok(t.renderStageZone().indexOf("fh-cd-events")<t.renderStageZone().indexOf("fh-cd-frame"),"and before the dice");
 t.clearDiceTray(true);
+assert.equal(t.state.events.length,0,"CLEAR TRAY takes the running commentary with the hand");
 
 // Advantage and disadvantage are committed to BEFORE the dice leave the hand,
 // so they resolve themselves. Offering a choice on top of them was the old bug.
@@ -130,7 +144,7 @@ reset();queueRolls(4,18);t.state.rollConfig=t.rollInput("Vigilance","WIS",3,{mod
 reset();queueRolls(10,2,7);t.state.rollConfig=t.rollInput("Tactics","INT",4,{mode:"flat"});t.state.rollConfig.bonusDice=[{id:"superiority",label:"Superiority",sides:8,advantageMode:"advantage",forcedResult:null}];t.runConfiguredRoll();assert.equal(t.state.trayPrompt,null,"a bonus die on advantage resolves itself too");entry=t.state.history[0];assert.equal(entry.bonusDice[0].result,7);assert.deepEqual(Array.from(entry.bonusDice[0].rolls),[2,7]);assert.equal(entry.total,21);settle();
 
 // A/D on a Destiny die is the Major Arcana case it exists for.
-reset(5,[die("destiny-choice",4,true)]);queueRolls(2,4,12);t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",3,{mode:"flat"}),{destinyDieId:"destiny-choice",destinyConfirmed:true,destinyMode:"choice"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt.target,"destiny","Destiny resolves its choice before any d20 exists");t.resolveDieChoice(0);assert.equal(t.state.currentEvent.kind,"destiny");t.acknowledgeEvent();entry=t.state.history[0];assert.equal(entry.destiny.result,2);assert.deepEqual(Array.from(entry.destiny.rolls),[2,4]);settle();
+reset(5,[die("destiny-choice",4,true)]);queueRolls(2,4,12);t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",3,{mode:"flat"}),{destinyDieId:"destiny-choice",destinyConfirmed:true,destinyMode:"choice"});t.runConfiguredRoll();assert.equal(t.state.trayPrompt.target,"destiny","Destiny resolves its choice before any d20 exists");t.resolveDieChoice(0);assert.equal(latest().kind,"destiny","REWRITTEN (dock v6): the Destiny summary is announced, not queued");entry=t.state.history[0];assert.equal(entry.destiny.result,2);assert.deepEqual(Array.from(entry.destiny.rolls),[2,4]);settle();
 
 // Portent-style results never consume randomness and remain permanently marked manual.
 reset();t.state.rollConfig=t.rollInput("Arcana","INT",5,{mode:"flat"});t.state.rollConfig.d20ForcedResult=17;t.state.rollConfig.bonusDice=[{id:"forced-d8",label:"Superiority",sides:8,advantageMode:"flat",forcedResult:6}];t.runConfiguredRoll();entry=t.state.history[0];assert.equal(entry.kept,17);assert.equal(entry.d20Forced,true);assert.equal(entry.bonusDice[0].result,6);assert.equal(entry.bonusDice[0].forced,true);assert.equal(entry.total,28);settle();
@@ -150,7 +164,7 @@ assert.match(t.renderStageZone(),/>ROLL<small>1 new die<\/small>/,"ROLL announce
 queueRolls(6);t.rollStagedDice();
 assert.deepEqual(Array.from(entry.d20s),locked,"applying a modifier never rerolls the d20");
 assert.equal(entry.bardic.result,6);assert.equal(entry.total,14);
-assert.equal(t.state.currentEvent,null,"a plain bonus die never blocks");
+assert.equal(t.rollTransactionActive(),false,"REWRITTEN (dock v6): a plain bonus die never blocks — there is no popup left to be null");
 assert.equal(t.rollOpen(),true,"the cycle reopens — a second modifier may still be added");
 t.stageBonusDie(4,"Guidance","guidance");queueRolls(3);t.rollStagedDice();
 assert.equal(entry.guidance.result,3,"the loop really is repeatable");
@@ -158,17 +172,19 @@ assert.equal(entry.total,17);settle();
 
 // Accepting or defying a natural 1 keeps implications grouped and preserves the original die.
 reset(3,[die("missing-d4",4,false)]);entry=natOne("accept");t.state.history=[entry];t.state.rollSequence={phase:"nat1",entryId:entry.id};t.resolveNatOne(entry.id,"accept");
-// REWRITTEN (tranche 2): the trailing result popup is gone, so the Fate summary stands alone.
-assert.equal(t.state.queueTotal,1,"one popup for the whole Fate summary, and no result popup after it");
-assert.match(t.state.currentEvent.text,/FATE ACCEPTED.*Gained 1 Destiny Point.*Current 4.*Gained a Destiny d4/);settle();
+// REWRITTEN (tranche 2 · dock v6): the trailing result popup is gone, so the
+// Fate summary stands alone — now as one line rather than one popup.
+assert.equal(t.state.events.length,1,"one line for the whole Fate summary, and no result line after it");
+assert.match(latest().text,/FATE ACCEPTED.*Gained 1 Destiny Point.*Current 4.*Gained a Destiny d4/);settle();
 
 // REWRITTEN (tranche 3): defying a natural 1 no longer rolls Chaos on the spot.
 reset(4);entry=natOne("defy");t.state.history=[entry];t.state.rollSequence={phase:"nat1",entryId:entry.id};t.resolveNatOne(entry.id,"chaos");
 assert.equal(entry.d20s[0],1);assert.equal(entry.kept,20);assert.equal(entry.transformed,true);assert.equal(t.state.destiny.points,0);
 assert.equal(entry.chaosRoll,undefined,"the 2d6 are deferred, not rolled while the table waits");
-assert.equal(t.state.queueTotal,2,"Fate defied, then the pending-Chaos notice");
-assert.match(t.state.currentEvent.text,/FATE DEFIED.*Destiny becomes 0/);t.acknowledgeEvent();
-assert.equal(t.state.currentEvent.kind,"chaos");assert.match(t.state.currentEvent.text,/CHAOS IS PENDING.*1 fatigue point per round/);
+// REWRITTEN (dock v6): both lines land together instead of one popup at a time.
+assert.equal(t.state.events.length,2,"Fate defied, then the pending-Chaos notice");
+assert.match(t.state.events[1].text,/FATE DEFIED.*Destiny becomes 0/);
+assert.equal(latest().kind,"chaos");assert.match(latest().text,/CHAOS IS PENDING.*1 fatigue point per round/);
 settle();
 assert.equal(t.pendingFate().length,1,"the Chaos roll is carried, not lost");
 assert.equal(t.rollTransactionActive(),false,"a pending Chaos never blocks the next roll");
@@ -194,8 +210,10 @@ assert.equal(t.stagedList().length,1,"the pool die is staged by the click, not s
 assert.equal(t.state.destiny.dice[0].available,true,"staging never spends the die");
 queueRolls(5);t.rollStagedDice();
 assert.deepEqual(Array.from(entry.d20s),[5]);assert.equal(entry.destiny.result,5);
-assert.equal(t.state.queueTotal,2,"the spend summary and the Overreach notice — no result popup after them");
-assert.match(t.state.currentEvent.text,/Destiny d8 rolled 5.*Current 0/);assert.equal(t.state.destiny.overreach,3);t.acknowledgeEvent();assert.match(t.state.currentEvent.text,/INT save DC 13/);
+// REWRITTEN (dock v6): two lines, not two popups — the staging notice is dropped
+// the moment the die it described is spent, so only the outcomes remain.
+assert.equal(t.state.events.length,2,"the spend summary and the Overreach notice — no result line after them");
+assert.match(t.state.events[1].text,/Destiny d8 rolled 5.*Current 0/);assert.equal(t.state.destiny.overreach,3);assert.match(latest().text,/INT save DC 13/);
 settle();
 assert.equal(t.pendingFate().length,1,"the Overreach save is carried, not rolled mid-turn");
 assert.equal(t.pendingFate()[0].dc,13,"the DC stays 10 + Overreach");
@@ -224,12 +242,102 @@ settle();
 // Adding Destiny from history never rerolls the stored d20.
 reset(4,[die("history-d4",4,true)]);entry={id:"history-entry",kind:"d20",name:"Hunting",ability:"WIS",baseBonus:4,d20Mode:"flat",d20s:[10],kept:10,natural:10,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",note:"",createdAt:new Date().toISOString(),total:14,outcome:""};
 t.state.history=[entry];t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",4,{mode:"flat"}),{editingId:entry.id,destinyDieId:"history-d4",destinyConfirmed:true});queueRolls(4);t.runConfiguredRoll();
-assert.match(t.state.currentEvent.text,/ARCANE CRITICAL SUCCESS/);t.acknowledgeEvent();assert.deepEqual(Array.from(entry.d20s),[10]);assert.equal(entry.destiny.result,4);assert.equal(t.state.destiny.points,3);assert.equal(t.state.destiny.dice[0].available,false);settle();
+assert.match(latest().text,/ARCANE CRITICAL SUCCESS/);assert.deepEqual(Array.from(entry.d20s),[10]);assert.equal(entry.destiny.result,4);assert.equal(t.state.destiny.points,3);assert.equal(t.state.destiny.dice[0].available,false);settle();
 
 // A serialized mid-Destiny transaction resumes exactly once after refresh.
+// REWRITTEN (dock v6): there is no queue to serialize, so what has to survive a
+// refresh is the spent die itself — the sequence no longer waits on a click.
 reset(5,[die("resume",4,true)]);queueRolls(2,12);t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",4,{mode:"flat"}),{destinyDieId:"resume",destinyConfirmed:true});t.runConfiguredRoll();
-const pending=JSON.parse(JSON.stringify({rollSequence:t.state.rollSequence,eventQueue:t.state.eventQueue,currentEvent:t.state.currentEvent,queueDone:t.state.queueDone,queueTotal:t.state.queueTotal,destiny:t.state.destiny}));
-Object.assign(t.state,pending);t.acknowledgeEvent();assert.equal(t.state.history.length,1);assert.deepEqual(Array.from(t.state.history[0].d20s),[12]);assert.equal(t.state.destiny.dice.find(item=>item.id==="resume").available,false,"refresh cannot spend the same Destiny die twice");settle();
+const pending=JSON.parse(JSON.stringify({rollSequence:t.state.rollSequence,queueDone:t.state.queueDone,destiny:t.state.destiny,history:t.state.history,events:t.state.events}));
+Object.assign(t.state,pending);
+assert.equal(t.state.history.length,1);assert.deepEqual(Array.from(t.state.history[0].d20s),[12]);assert.equal(t.state.destiny.dice.find(item=>item.id==="resume").available,false,"refresh cannot spend the same Destiny die twice");settle();
+
+/* ── Dock v6 · the four fixes ─────────────────────────────────────── */
+
+// A seal renames the die every time, including on the way back to a plain bonus.
+assert.equal(t.sealLabel("bardic"),"Bardic");
+assert.equal(t.sealLabel("other-1"),"Bonus I");
+assert.equal(t.sealLabel("other-3"),"Bonus III");
+reset();t.state.rollSequence={phase:"open",entryId:"x",staged:[{id:"s1",kind:"bonus",label:"Bonus I",sides:6,sourceIcon:"other-1"}]};
+t.state.history=[{id:"x",kind:"d20",name:"Arcana",baseBonus:0,d20s:[10],kept:10,natural:10,bonusDice:[],total:10,createdAt:new Date().toISOString()}];
+t.state.diePrompt={stagedId:"s1"};
+t.sealStagedDie("bardic");assert.equal(t.stagedList()[0].label,"Bardic");
+t.sealStagedDie("other-1");assert.equal(t.stagedList()[0].label,"Bonus I","the label follows the seal back, instead of staying Bardic");
+t.clearDiceTray(true);
+
+// A Destiny die is picked up like a white one, in all three contexts, and put
+// back the same way. Nothing is spent before ROLL.
+reset(6,[die("pool-d6",6,true)]);
+t.stageDestinyFromPool("pool-d6");
+assert.equal(t.state.trayPrompt,null,"no popup stands between the pool and the tray any more");
+assert.equal(t.state.destiny.dice[0].available,true,"the click spends nothing");
+assert.equal(t.state.destinyStaged.dieId,"pool-d6","with nothing prepared it waits in the free tray");
+assert.equal(t.trayDiceForDisplay()[0].flash,true,"and it blinks there until ROLL");
+assert.match(latest().text,/Destiny d6 waits in the tray/,"a line says so");
+t.state.diePrompt={poolId:"pool-d6"};
+assert.equal(t.findStagedDie(t.state.diePrompt).scope,"pool-destiny","and a right click reaches it");
+t.dropStagedDie();
+assert.equal(t.state.destinyStaged,null,"cancelling takes the die back");
+assert.equal(t.state.events.length,0,"and takes its line with it");
+// ROLL is what spends it.
+t.stageDestinyFromPool("pool-d6");queueRolls(4);t.rollTrayDice();
+assert.equal(t.state.destiny.dice[0].available,false,"ROLL spends the die");
+assert.equal(t.state.history[0].destiny.result,4);
+settle();
+
+// An Arcane Critical Failure is an offer. Accepting leaves the +1 point standing.
+reset(3,[die("arc-d8",8,true)]);queueRolls(1);
+t.state.rollConfig=Object.assign(t.rollInput("Arcana","INT",2,{mode:"flat"}),{destinyDieId:"arc-d8",destinyConfirmed:true});
+t.runConfiguredRoll();
+assert.equal(t.state.trayPrompt.type,"arcane1","a 1 on a Destiny die now asks before it decides");
+assert.equal(t.rollTransactionActive(),true,"and it holds the roll while it asks");
+assert.equal(t.state.history.length,0,"the d20 waits behind the question");
+assert.match(t.renderEventList(),/data-arcane-fate="accept"[\s\S]*data-arcane-fate="chaos"/,"both answers are on the line");
+queueRolls(12);t.resolveArcaneOne(t.state.trayPrompt.entryId,"accept");
+entry=t.state.history[0];
+assert.equal(entry.destiny.criticalFailure,true,"accepting leaves the failure standing");
+assert.equal(t.state.destiny.points,4,"and keeps the point it granted");
+assert.equal(entry.total,1+12+2,"the 1 still counts as 1");
+settle();
+
+// Refusing costs exactly what defying a natural 1 costs, and the 1 reads as the max face.
+reset(3,[die("arc-d8b",8,true)]);queueRolls(1);
+t.state.rollConfig=Object.assign(t.rollInput("Arcana","INT",2,{mode:"flat"}),{destinyDieId:"arc-d8b",destinyConfirmed:true});
+t.runConfiguredRoll();
+queueRolls(12);t.resolveArcaneOne(t.state.trayPrompt.entryId,"chaos");
+entry=t.state.history[0];
+assert.equal(entry.destiny.result,8,"the 1 becomes the die's highest face");
+assert.equal(entry.destiny.criticalSuccess,true,"which makes it an Arcane Critical Success");
+assert.equal(t.state.destiny.points,0,"paid for with every Destiny Point");
+assert.equal(t.pendingFate()[0].kind,"chaos","and a 2d6 on the Chaos table, deferred like any other");
+assert.equal(entry.total,8+12+2,"the total is recomputed from the face it now reads");
+assert.equal(entry.outcome,"Critical success");
+assert.equal(t.rollTransactionActive(),false,"answering releases the dock");
+settle();
+
+// Portent lands on a die that has already fallen: the entry is rewritten, not duplicated.
+reset();queueRolls(9);t.state.rollConfig=t.rollInput("Arcana","INT",5,{mode:"flat",dc:20});t.runConfiguredRoll();
+entry=t.state.history[0];const historyLength=t.state.history.length;
+assert.equal(entry.total,14);assert.equal(entry.outcome,"Failure");
+const fallen=t.state.trayResults.find(item=>item.landedKey==="d20");
+assert.ok(fallen&&fallen.result===9,"the fallen d20 carries the key its menu answers to");
+assert.match(t.visualDie(fallen,0,1,false),/data-die-landed="d20"/,"and the key reaches the DOM");
+t.state.diePrompt={landedKey:"d20",entryId:entry.id};
+const landedTarget=t.findStagedDie(t.state.diePrompt);
+assert.equal(landedTarget.scope,"landed");
+const landedMenu=t.renderEventContent();
+assert.match(landedMenu,/data-die-portent/,"the menu offers a Portent");
+assert.doesNotMatch(landedMenu,/data-die-seal/,"but no seal");
+assert.doesNotMatch(landedMenu,/data-die-mode-set/,"and no A/D — the die has already fallen");
+assert.doesNotMatch(landedMenu,/data-die-drop/,"and it cannot be taken out of its own roll");
+t.retuneLandedDie(t.state.diePrompt,{forcedResult:18});
+assert.equal(t.state.history.length,historyLength,"replacing a result never opens a second stream line");
+assert.equal(entry.kept,18);assert.equal(entry.natural,18);assert.equal(entry.d20Forced,true,"and it is marked MANUAL");
+assert.equal(entry.total,23);assert.equal(entry.outcome,"Success","the outcome is recomputed against the DC");
+t.retuneLandedDie(t.state.diePrompt,{forcedResult:null});
+assert.equal(entry.kept,9,"— as it fell — hands the roll back to the dice that rolled it");
+assert.equal(entry.d20Forced,false);assert.equal(entry.total,14);
+settle();
 
 assert.equal(randomBuckets.length,0,"every deterministic die result was consumed exactly once");
 console.log("Roller state-machine tests passed.");

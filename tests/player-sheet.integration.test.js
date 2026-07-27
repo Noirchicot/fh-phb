@@ -53,8 +53,10 @@ const root=document.getElementById("fhPlayerSheet");
 function openMenu(){ if(!root.querySelector(".fh-cd-menu")) root.querySelector("[data-menu-toggle]").click(); }
 /* Since dock v5 a roll ends on nothing at all: it lands in the stream and stays
    open. Closing one out means answering what blocks, then clearing the tray. */
-function settleRoll(guard=10){
-  while(guard-- && root.querySelector("[data-event-ok]")) root.querySelector("[data-event-ok]").click();
+/* REWRITTEN (dock v6): there is no Continue button to click through — an
+   announcement never waited on one. Only a decision does, and each test that
+   raises one answers it itself. */
+function settleRoll(){
   const clear=root.querySelector("[data-clear-tray]");
   if(clear && !clear.disabled) clear.click();
 }
@@ -80,30 +82,41 @@ t.state.profile.ddbLinked=false;
 t.state.menuOpen=false;
 t.render();
 
-/* ── Major events keep their own scene ───────────────────────── */
+/* ── Major events keep their own line ────────────────────────────
+   REWRITTEN (dock v6): each of these used to be a card with a Continue or
+   Finish button under the dice. They are now lines above the dice, stacked,
+   with no button at all — only the newest is marked current. */
 const specialScenes=[
   ["nat1","NATURAL 1 · Fate accepted"],
   ["nat20","NATURAL 20 · Fate bends in your favor"],
   ["arcane-critical-failure","ARCANE CRITICAL FAILURE · Destiny d8 rolled 1"],
   ["arcane-critical-success","ARCANE CRITICAL SUCCESS · Destiny d8 rolled 8"]
 ];
-specialScenes.forEach(([kind,text])=>{
-  t.state.currentEvent={kind,text,blocking:true,progress:1,total:1};
-  t.state.queueDone="finish-sequence";
+t.state.events=[];
+specialScenes.forEach(([kind,text],index)=>{
+  t.state.events.unshift({id:"scene-"+index,kind,text,createdAt:new Date().toISOString()});
   t.render();
-  const scene=root.querySelector(".fh-cd-card.is-"+kind);
-  assert.ok(scene,"the "+kind+" event renders its dedicated card");
-  assert.match(scene.textContent,/Finish/,"the last event of a sequence asks to Finish");
+  const line=root.querySelector(".fh-cd-eline.is-"+kind);
+  assert.ok(line,"the "+kind+" event renders its own line");
+  assert.equal(line.querySelector("button"),null,"an announcement carries no button");
+  assert.ok(line.classList.contains("is-current"),"and the one that just arrived is the current one");
 });
-t.state.currentEvent={kind:"awakening",text:"ARCANE AWAKENING · Natural 20 at Destiny 0",blocking:true,progress:1,total:1};
+assert.equal(root.querySelectorAll(".fh-cd-eline").length,4,"every earlier line is still on screen");
+assert.equal(root.querySelectorAll(".fh-cd-eline.is-current").length,1,"exactly one line is current");
+// The zone sits between the badge strip and the dice.
+const stageChildren=Array.from(root.querySelector(".fh-cd-stage").children).map(node=>node.className);
+assert.ok(stageChildren.indexOf("fh-cd-temps")<stageChildren.indexOf("fh-cd-events"),"events come after the badges");
+assert.ok(stageChildren.indexOf("fh-cd-events")<stageChildren.indexOf("fh-cd-frame"),"and before the dice");
+t.state.events=[{id:"awaken",kind:"awakening",text:"ARCANE AWAKENING · Natural 20 at Destiny 0",createdAt:new Date().toISOString()}];
 t.render();
-assert.match(root.querySelector(".fh-cd-card.is-awakening").textContent,/The Hermit/i,"Arcane Awakening reveals the character's Major Arcana");
-t.state.currentEvent={kind:"chaos",text:"Chaos has noticed · 2d6 = 3 + 5",chaosRoll:[3,5],blocking:true,progress:1,total:1};
+assert.match(root.querySelector(".fh-cd-eline.is-awakening").textContent,/The Hermit/i,"Arcane Awakening reveals the character's Major Arcana");
+t.state.events=[{id:"chaos",kind:"chaos",text:"Chaos has noticed · 2d6 = 3 + 5",chaosRoll:[3,5],createdAt:new Date().toISOString()}];
 t.render();
-assert.match(root.querySelector(".fh-cd-card.is-chaos").textContent,/total 8/,"Chaos shows its 2d6 total");
-t.state.currentEvent=null;
+assert.match(root.querySelector(".fh-cd-eline.is-chaos").textContent,/total 8/,"Chaos shows its 2d6 total");
+t.state.events=[];
 t.state.queueDone="";
 t.render();
+assert.equal(root.querySelector(".fh-cd-events"),null,"an empty list costs the dice no height");
 
 /* ── Console ─────────────────────────────────────────────────── */
 root.querySelector('[data-config-name="Arcana"]').click();
@@ -171,34 +184,34 @@ assert.deepEqual(Array.from(entry.d20s),originalD20,"adjusting bonuses never rer
 assert.equal(entry.custom,3,"the edited bonus is applied");
 settleRoll();
 
-/* ── Destiny is reserved, never spent, while a console is open ─ */
-// CLEAR TRAY now releases the console too, so the check is re-opened first.
+/* ── Destiny is staged, never spent, until ROLL ────────────────── */
+// REWRITTEN (dock v6): the confirmation popup is gone. A gold die is picked up
+// exactly like a white one — the click stages it, ROLL spends it, and a right
+// click on the die in the tray puts it back.
 root.querySelector('[data-config-name="Arcana"]').click();
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-cd-popups").textContent,/Add this Destiny die to the Dice Tray/i,"Destiny is reserved rather than rolled while any console is open");
-root.querySelector("[data-tray-cancel]").click();
-assert.equal(t.state.trayPrompt,null,"Destiny confirmation can be cancelled without spending the die");
+assert.equal(root.querySelector(".fh-cd-popups"),null,"no popup stands between the pool and the tray");
+assert.ok(t.state.rollConfig.destinyDieId,"the die is staged in console state by the click alone");
+assert.ok(t.state.destiny.dice.some(die=>die.id===t.state.rollConfig.destinyDieId&&die.available),"and it is still in the pool, unspent");
+assert.match(root.querySelector(".fh-cd-events").textContent,/waits in the tray/i,"a line says it is waiting");
+// Right click on the staged gold die takes it back, and its line goes with it.
+const stagedGold=root.querySelector("[data-die-destiny]");
+assert.ok(stagedGold,"the staged Destiny die answers to a right click");
+stagedGold.dispatchEvent(new window.Event("contextmenu",{bubbles:true,cancelable:true}));
+assert.match(root.querySelector(".fh-cd-popups").textContent,/Remove this die/i,"its menu offers to cancel it");
+assert.equal(root.querySelector(".fh-cd-popups").textContent.includes("Colour"),false,"gold is a Destiny die's identity, so no palette is offered");
+root.querySelector("[data-die-drop]").click();
+assert.equal(t.state.rollConfig.destinyDieId,"","cancelling takes the die back");
+assert.equal(root.querySelector(".fh-cd-events"),null,"and takes its line with it");
 
-root.querySelector('[data-config-name="Arcana"]').click();
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-cd-popups").textContent,/Add this Destiny die to the Dice Tray/i,"a console reserves Destiny instead of rolling it immediately");
-root.querySelector("[data-tray-confirm-destiny]").click();
-assert.ok(t.state.rollConfig.destinyDieId,"the confirmed Destiny die is reserved in console state");
-assert.ok(root.querySelector(".fh-cd-ddie.is-selected"),"the reserved Destiny die is flagged in the pool");
-assert.equal(t.state.trayResults[0].label,"Destiny","the reserved Destiny die appears first in the frame");
+assert.ok(root.querySelector(".fh-cd-ddie.is-selected"),"the staged Destiny die is flagged in the pool");
+assert.equal(t.state.trayResults[0].label,"Destiny","the staged Destiny die appears first in the frame");
 const beforeDestinyHistory=t.state.history.length;
 root.querySelector("[data-roll-now]").click();
-assert.equal(t.state.history.length,beforeDestinyHistory,"the d20 has not rolled while Destiny events await confirmation");
-assert.match(t.state.currentEvent.text,/Destiny d\d+ rolled \d+.*Lost \d+ Destiny Point/i,"one Destiny popup contains the die result and its point implication");
-assert.match(root.querySelector(".fh-cd-popups").textContent,/Continue/i,"the Destiny popup says Continue because the d20 still has to roll");
-assert.equal(root.querySelector("[data-clear-tray]").disabled,true,"Clear cannot cancel a transaction after Destiny has been spent");
-const spentPoints=t.state.destiny.points;
-root.querySelector('[data-quick-name="Arcana"]').click();
-assert.equal(t.state.history.length,beforeDestinyHistory,"another skill cannot replace an unfinished Destiny transaction");
-assert.equal(t.state.destiny.points,spentPoints,"a blocked second roll cannot spend or alter Destiny again");
-let guard=8;
-while(t.state.rollSequence&&t.state.rollSequence.phase==="destiny-events"&&guard--){root.querySelector("[data-event-ok]").click();}
-assert.equal(t.state.history.length,beforeDestinyHistory+1,"the remaining dice roll only after every Destiny event is acknowledged");
+assert.equal(t.state.history.length,beforeDestinyHistory+1,"REWRITTEN (dock v6): no click stands between Destiny and the d20");
+assert.ok(t.state.events.some(event=>/Destiny d\d+ rolled \d+/i.test(event.text)),"the Destiny summary is announced as a line");
+assert.equal(root.querySelector("[data-clear-tray]").disabled,false,"and nothing is blocking, so CLEAR TRAY stays reachable");
 entry=t.state.history[0];
 assert.equal(t.state.trayResults[0].label,"Destiny","the spent Destiny result remains before the d20s");
 assert.equal(t.state.trayResults[1].sides,20,"the d20 result follows Destiny in the frame");
@@ -242,12 +255,12 @@ const pointsBeforeBoost=t.state.destiny.points;
 // REWRITTEN (dock v5): the roll is already filed; it simply stays open.
 assert.ok(t.state.rollSequence,"a flat roll stays open after it lands");
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-cd-popups").textContent,/Boost/i,"a pool die offers to boost the roll that just landed");
-root.querySelector("[data-tray-confirm-destiny]").click();
-assert.equal(t.state.destiny.points,pointsBeforeBoost,"confirming only stages the die — nothing is spent yet");
+// REWRITTEN (dock v6): the boost confirmation is gone with every other Destiny
+// popup — the click stages the die, and ROLL is what spends it.
+assert.equal(root.querySelector(".fh-cd-popups"),null,"a pool die is staged by the click, with nothing to confirm");
+assert.equal(t.state.destiny.points,pointsBeforeBoost,"staging spends nothing");
+assert.ok(t.state.rollSequence.staged.some(item=>item.kind==="destiny"),"the die waits inside the open roll");
 root.querySelector("[data-roll-now]").click();
-guard=8;
-while(t.state.currentEvent&&root.querySelector("[data-event-ok]")&&guard--){root.querySelector("[data-event-ok]").click();}
 settleRoll();
 const boosted=t.state.history.find(item=>item.id===settled.id);
 assert.ok(boosted.destiny,"the boost attaches a Destiny die to the finished roll");
@@ -370,10 +383,21 @@ assert.equal(t.state.dockOpen,false,"Seal collapses the dock");
 root.querySelector('[data-cd-mode="margin"]').click();
 assert.equal(t.state.dockOpen,true,"Margin brings it back");
 
+/* REWRITTEN (dock v6): outside a console there is no spend confirmation left.
+   The gold die goes to the free tray like a white one, blinking, and ROLL is
+   the only thing that spends it — which is what makes cancelling free. */
+const pointsBeforeStandalone=t.state.destiny.points;
 root.querySelector("[data-destiny-die]").click();
-assert.match(root.querySelector(".fh-cd-popups").textContent,/Roll and spend this Destiny die\?/i,"outside a console, Destiny uses the explicit spend confirmation");
-assert.match(root.querySelector(".fh-cd-popups").textContent,/Current Points:/i,"the direct-spend warning shows current Destiny Points");
-root.querySelector("[data-tray-cancel]").click();
+assert.equal(root.querySelector(".fh-cd-popups"),null,"the cold-click spend confirmation is gone");
+assert.ok(t.state.destinyStaged,"the die waits in the free tray instead");
+assert.equal(t.state.destiny.points,pointsBeforeStandalone,"and clicking a gold die can no longer spend Destiny on its own");
+const waitingGold=root.querySelector("[data-die-pool]");
+assert.ok(waitingGold,"it is reachable by right click in the tray");
+assert.ok(waitingGold.classList.contains("is-flashing"),"and blinks between empty and full until ROLL");
+assert.match(root.querySelector("[data-roll-now]").textContent,/Destiny d\d+/,"ROLL says what it is about to spend");
+waitingGold.dispatchEvent(new window.Event("contextmenu",{bubbles:true,cancelable:true}));
+root.querySelector("[data-die-drop]").click();
+assert.equal(t.state.destinyStaged,null,"and a right click puts it back in the pool");
 
 /* ── Inline sheet editing ────────────────────────────────────── */
 const originalName=t.state.character.name;
