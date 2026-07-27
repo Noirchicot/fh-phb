@@ -1388,8 +1388,8 @@
       "<button class=\"fh-cd-mstat"+(hpLow?" is-hurt":"")+(state.hpOpen?" is-active":"")+"\" type=\"button\" data-hp-open title=\"Track hit points\">HP <b>"+hpText+"</b></button>"+
       "<button class=\"fh-cd-mstat"+(exhaustionLevel()?" is-exhausted":"")+(state.hpOpen?" is-active":"")+"\" type=\"button\" data-hp-open title=\"Exhaustion — "+esc(exhaustionNote(exhaustionLevel()))+"\">EXH <b>"+exhaustionLevel()+"</b></button>"+
       "<button class=\"fh-cd-mstat is-rest\" id=\"fhPsShortRest\" type=\"button\""+(exhaustionLevel()&&!(state.vitals||{}).shortRestUsed?"":" disabled")+
-        " title=\""+(!exhaustionLevel()?"No Exhaustion to shake off":(state.vitals||{}).shortRestUsed?"Already used this short rest — sleep first":"Short rest: one level of Exhaustion, once per long rest")+"\">SHORT</button>"+
-      "<button class=\"fh-cd-mstat is-rest\" id=\"fhPsLongRest\" type=\"button\" title=\"Long rest: +1 Destiny Point, hit points back to full, and the short rest is available again\">"+iconSvg("rest")+"REST</button>";
+        " title=\""+(!exhaustionLevel()?"No Exhaustion to shake off":(state.vitals||{}).shortRestUsed?"Already used today's extra short rest — sleep first":"Short rest: one extra level of Exhaustion, once per day")+"\">SHORT</button>"+
+      "<button class=\"fh-cd-mstat is-rest\" id=\"fhPsLongRest\" type=\"button\" title=\"Long rest: +1 Destiny Point, hit points back to full, one level of Exhaustion cleared, and the day's short rest is available again\">"+iconSvg("rest")+"REST</button>";
     return "<section class=\"fh-cd-zone\" data-zone=\"vitals\"><div class=\"fh-cd-vitals\">"+chips+"</div>"+
       "<div class=\"fh-cd-mini\">"+mini+"</div>"+renderHpTracker()+
       "<div class=\"fh-cd-passives\"><span class=\"fh-cd-plabel\">PASSIVES</span>"+passives+"</div></section>";
@@ -2456,14 +2456,20 @@
     if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
     if(button.dataset.exhStep!==undefined){setExhaustion(exhaustionLevel()+Number(button.dataset.exhStep),"Adjusted by hand");render();return;}
-    /* One level per short rest, once per long rest — the long rest is what makes
-       the short one able to heal again. */
+    /* A long rest always clears a level; a short rest may clear one MORE, but
+       only once a day — once between two long rests, which is what resets it. */
     if(button.id==="fhPsShortRest"){
       if(!exhaustionLevel()){state.message="No Exhaustion to shake off.";state.messageKind="warn";renderMessage();return;}
-      if((state.vitals||{}).shortRestUsed){state.message="A short rest only clears one level between long rests.";state.messageKind="warn";renderMessage();return;}
+      if((state.vitals||{}).shortRestUsed){state.message="A short rest only clears one extra level per day.";state.messageKind="warn";renderMessage();return;}
       setVitals({shortRestUsed:true});setExhaustion(exhaustionLevel()-1,"Short rest");render();return;
     }
-    if(button.id==="fhPsLongRest"){var restMax=(state.vitals||{}).max;setVitals(restMax!=null?{current:restMax,shortRestUsed:false}:{shortRestUsed:false});setDestinyPoints(Math.min(state.destiny.score,state.destiny.points+1),"Long rest",true);render();return;}
+    if(button.id==="fhPsLongRest"){
+      var restMax=(state.vitals||{}).max;
+      setVitals(restMax!=null?{current:restMax,shortRestUsed:false}:{shortRestUsed:false});
+      setDestinyPoints(Math.min(state.destiny.score,state.destiny.points+1),"Long rest",true);
+      if(exhaustionLevel())setExhaustion(exhaustionLevel()-1,"Long rest");
+      render();return;
+    }
     if(button.dataset.natChoice){state.trayPrompt=null;resolveNatOne(button.dataset.entryId,button.dataset.natChoice);return;}
     if(button.dataset.context){state.activeContext=button.dataset.context;render();return;}
   }

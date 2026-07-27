@@ -376,9 +376,23 @@ root.querySelector("[data-hp-full]").click();
 assert.equal(t.state.vitals.current,34,"FULL returns to the maximum");
 root.querySelector('[data-hp-step="-5"]').click();
 const pointsBeforeRest=t.state.destiny.points;
+// REWRITTEN (Exhaustion recovery): a long rest always clears one level; a short
+// rest may clear one MORE, but only once a day between two long rests.
+root.querySelector('[data-exh-step="1"]').click();
+root.querySelector('[data-exh-step="1"]').click();
+assert.equal(t.state.vitals.exhaustion,2,"two levels taken by hand");
 root.querySelector("#fhPsLongRest").click();
 assert.equal(t.state.vitals.current,34,"a long rest also restores hit points");
 assert.equal(t.state.destiny.points,Math.min(t.state.destiny.score,pointsBeforeRest+1),"a long rest still returns one Destiny Point");
+assert.equal(t.state.vitals.exhaustion,1,"and a long rest always clears one level of Exhaustion");
+assert.equal(root.querySelector("#fhPsShortRest").disabled,false,"the day's short rest is available again");
+root.querySelector("#fhPsShortRest").click();
+assert.equal(t.state.vitals.exhaustion,0,"a short rest clears one more level");
+root.querySelector('[data-exh-step="1"]').click();
+assert.equal(t.state.vitals.exhaustion,1,"one level taken again");
+assert.equal(root.querySelector("#fhPsShortRest").disabled,true,"but only once a day — a second short rest before the next long rest does nothing");
+root.querySelector("#fhPsLongRest").click();
+assert.equal(t.state.vitals.exhaustion,0,"the next long rest clears it regardless, and resets the day's short rest too");
 root.querySelector("[data-hp-open]").click();
 assert.equal(root.querySelector(".fh-cd-hp"),null,"the tracker collapses again");
 

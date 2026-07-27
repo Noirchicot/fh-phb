@@ -83,9 +83,9 @@ The 5e ladder is not used here. Chaos hands out levels often enough that the off
 
 - **Six levels.** Each level is a flat **−1** to every d20 test — ability checks, attacks and saving throws alike. They stack, so level 3 is −3. **Level 6 is still death.**
 - **No other penalty.** No halved speed, no halved hit point maximum, no disadvantage — the −1 is the whole of it.
-- **Recovery: one level per short rest, once per long rest.** A short rest removes a single level of Exhaustion. You may only do this **once between two long rests**; the long rest is what makes a short rest able to heal again.
+- **Recovery.** A **long rest** always removes **1 level** of Exhaustion. A **short rest** may remove **1 additional level**, but only **once per day** — once between two long rests. The long rest is what makes a short rest able to heal again.
 
-> *Example — Karnos ends a bad night at Exhaustion 3, taking −3 on everything. A short rest brings him to 2. A second short rest that same day does nothing: he has already drawn on it, and must sleep before the next one counts.*
+> *Example — Karnos ends a bad night at Exhaustion 3, taking −3 on everything. His long rest brings him to 2. Later that same day, a short rest after a hard fight brings him to 1 — his one short-rest recovery for the day. A second short rest does nothing until his next long rest resets it; his next long rest, whenever it comes, removes another level regardless.*
 
 > *Example — Karnos (Points 4) hurls a d10 at a foe, rolling 9 → Overreach 5. He fails his Strength save (DC 15) and consults the [Chaos Table](chaos-tables.md#strength-str): a fractured arm robs half his strength, but his blow lands with earth-shattering force.*
 
