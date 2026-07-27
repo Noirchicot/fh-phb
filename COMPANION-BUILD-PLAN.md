@@ -218,6 +218,15 @@ to a belt tab rather than rebuilding it.
    Because the custom faces drop into the same slots, **package 2 must key cards by
    numeral, never by filename**, so the deck can be swapped wholesale later.
 
+   > ⚠️ **State the `{NUMERAL}.jpg` convention in the art brief BEFORE the deck is
+   > generated.** Raised by the tarot chat, and it is right: art now falls back to
+   > the numeral when an image 404s, which is good for a missing card and bad for a
+   > mis-named delivery — 22 wrongly-named files would render as 22 gold numerals on
+   > brown and break nothing visibly. The filenames are `0.jpg`, `I.jpg`, `II.jpg` …
+   > `XXI.jpg` (Roman, uppercase, matching `card.numeral` in `arcana.js`), and the
+   > Saints d'AvA map one saint per numeral, so the brief must carry the numeral —
+   > not the saint's name — as the filename.
+
 ---
 
 ## 7. How the chats run
