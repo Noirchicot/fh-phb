@@ -23,11 +23,11 @@ Glimmers of true power flicker beyond mortal sight, revealing a grand tapestry o
 > *Example — Sir Gawain (5th-level Human Knight): proficiency +3, Human birthright +3, Lucky +2, Arcana boon +1, chivalric deed +1 → **Destiny Score 10**.*
 
 ### Destiny Dice — slots & stacking
-Each time your **Destiny Points increase** and reach an **even** total, you gain a Destiny Die in the **lowest slot available** — d4 first, then d6, d8, d10, d12. Spending Points never recovers the die that was just spent. Only once **all slots up to d12 are full** does the next even total start a **second round**: a 2nd d4, then a 2nd d6, and so on — so you can hold **several dice of the same size**.
+Each time your **Destiny Points** reach an **even** total, you gain a Destiny Die in the **lowest slot available** — d4 first, then d6, d8, d10, d12. Only once **all slots up to d12 are full** does the next even total start a **second round**: a 2nd d4, then a 2nd d6, and so on — so you can hold **several dice of the same size**.
 
 Your Points go **up and down** in play, so there is no fixed link between a Points total and a die size — only the lowest empty slot matters. *You may wake up at 8 Points one morning and the first open slot is a d6.*
 
-### Arcane Critical Success
+### Arcane Critical
 A **max roll** on a Destiny Die (e.g. a 12 on a d12) is an **automatic Natural 20**, at a cost of only **−1 Destiny Point** — no Arcane Awakening.
 
 ### Species — Base Destiny
@@ -41,7 +41,7 @@ A **max roll** on a Destiny Die (e.g. a 12 on a d12) is an **automatic Natural 2
 ## 2. Recovery & Erosion
 
 - **Long rest:** regain **+1 Destiny Point** — capped at your Destiny Score.
-- **Increasing to an even total → die back:** when a gain brings your Points to an even number, regain the **lowest missing** die.
+- **Even total → die back:** each time your Points reach an even number, regain the **lowest missing** die.
 - **Cap & overflow:** long rest and most recovery **cannot exceed your Score**. The exceptions — **Arcana cards** and **Natural 1s** — grant *temporary* points that **may push you above your Score**.
 - **Natural 20 (on a d20):** −1 Destiny Point. If this brings you to **0**, trigger an **Arcane Awakening** (§5).
 - **Natural 1 (on a d20):** either **Accept** (fail, +1 *temporary* point) **or Invoke Chaos** (Points → 0, the failure becomes a critical success, then roll **2d6** on the [Chaos Table](chaos-tables.md)).
@@ -55,8 +55,12 @@ A **max roll** on a Destiny Die (e.g. a 12 on a d12) is an **automatic Natural 2
 
 1. **Spend a die** — roll it; **subtract** the result from your Destiny Points and **add** it to a d20 check (attack, skill, or save).
 2. **Breach 0** — if your Points reach **0 or below**, provoke **Chaos** (§4).
-3. **Max roll = Arcane Critical Success** — counts as a Natural 20; you lose only **−1 Point** (not the full roll) and the die is spent until recovered.
-4. **Roll of 1 = Arcane Critical Failure** — the check fails critically; you gain **+1 Destiny Point** but **lose that die**. *(That +1 often lands you on an even total, which immediately regains the lowest missing die — so roughly one time in two you get a die straight back.)*
+3. **Max roll = Critical Success** — counts as a Natural 20; you lose only **−1 Point** (not the full roll) and the die is spent until recovered.
+4. **Roll of 1 = Arcane Critical Failure — or a refusal.** A 1 on a Destiny Die is an offer, exactly as a Natural 1 on a d20 is (§2). Choose:
+    - **Accept** — the check fails critically; you gain **+1 Destiny Point** but **lose that die**. *(That +1 often lands you on an even total, which immediately regains the lowest missing die — so roughly one time in two you get a die straight back.)*
+    - **Refuse** — the 1 reads instead as the die's **highest face**: an **Arcane Critical Success** (§1), counting as a Natural 20. The price is exactly what defying a Natural 1 costs — your **Points drop to 0** and you roll **2d6** on the [Chaos Table](chaos-tables.md) for the ability you were using. The die is spent either way, and refusing forfeits the +1 point along with any die it would have brought back.
+
+> *Refusing is the mirror of §2's Natural 1: the same gesture, made from the other side. Fate offered you a way out of the failure it was about to hand you; taking it back costs everything you were holding.*
 
 > *Example — Lirien (Points 6) attempts a wild acrobatic feat with a d6. She rolls 5: +5 to her check, dropping her to 1. She avoids Chaos (5 < 6), but one more push risks calamity.*
 
@@ -71,7 +75,17 @@ Chaos occurs when spending a die brings your Destiny Points to **0 or below**.
 3. **Success** — suffer **1 level of Exhaustion**.
 4. **Failure** — roll **1d6 + Overreach** on the [Chaos Table](chaos-tables.md) for that ability. The higher the result, the worse (injuries, lasting handicaps, madness tied to the ability used).
 
-A **Natural 1** on a d20 may instead **force destiny** — turning the failure into a critical success (Natural 20) at the cost of a **2d6** [Chaos roll](chaos-tables.md).
+A **Natural 1** on a d20 may instead **force destiny** — turning the failure into a critical success (Natural 20) at the cost of a **2d6** [Chaos roll](chaos-tables.md). **Refusing an Arcane Critical Failure** (§3.4) costs the same 2d6, and likewise skips the Overreach save entirely: the two refusals go straight to the table.
+
+### Exhaustion — house scale
+
+The 5e ladder is not used here. Chaos hands out levels often enough that the official scale would end a character rather than mark one: by two levels you are already unplayable. Fate's Hand keeps the six levels and flattens what each one costs.
+
+- **Six levels.** Each level is a flat **−1** to every d20 test — ability checks, attacks and saving throws alike. They stack, so level 3 is −3. **Level 6 is still death.**
+- **No other penalty.** No halved speed, no halved hit point maximum, no disadvantage — the −1 is the whole of it.
+- **Recovery: one level per short rest, once per long rest.** A short rest removes a single level of Exhaustion. You may only do this **once between two long rests**; the long rest is what makes a short rest able to heal again.
+
+> *Example — Karnos ends a bad night at Exhaustion 3, taking −3 on everything. A short rest brings him to 2. A second short rest that same day does nothing: he has already drawn on it, and must sleep before the next one counts.*
 
 > *Example — Karnos (Points 4) hurls a d10 at a foe, rolling 9 → Overreach 5. He fails his Strength save (DC 15) and consults the [Chaos Table](chaos-tables.md#strength-str): a fractured arm robs half his strength, but his blow lands with earth-shattering force.*
 

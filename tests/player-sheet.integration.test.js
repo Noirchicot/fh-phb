@@ -104,7 +104,9 @@ specialScenes.forEach(([kind,text],index)=>{
 assert.equal(root.querySelectorAll(".fh-cd-eline").length,4,"every earlier line is still on screen");
 assert.equal(root.querySelectorAll(".fh-cd-eline.is-current").length,1,"exactly one line is current");
 // The zone sits between the badge strip and the dice.
-const stageChildren=Array.from(root.querySelector(".fh-cd-stage").children).map(node=>node.className);
+// The frame carries a mood class when something is owed, so match on the first
+// class name rather than the whole attribute.
+const stageChildren=Array.from(root.querySelector(".fh-cd-stage").children).map(node=>node.className.split(/\s+/)[0]);
 assert.ok(stageChildren.indexOf("fh-cd-temps")<stageChildren.indexOf("fh-cd-events"),"events come after the badges");
 assert.ok(stageChildren.indexOf("fh-cd-events")<stageChildren.indexOf("fh-cd-frame"),"and before the dice");
 t.state.events=[{id:"awaken",kind:"awakening",text:"ARCANE AWAKENING · Natural 20 at Destiny 0",createdAt:new Date().toISOString()}];
@@ -346,10 +348,15 @@ const passiveNames=Array.from(root.querySelectorAll(".fh-cd-pcell small"),node=>
 assert.deepEqual(passiveNames,["Vigilance","Delve","Survival","Insight","Investigation"],"five passives are written in full, in reading order");
 assert.equal(root.querySelector(".fh-cd-plabel").textContent,"PASSIVES","the row is labelled in full");
 const miniCells=Array.from(root.querySelectorAll(".fh-cd-mstat,.fh-cd-minfo"),node=>node.textContent.trim().split(/\s+/)[0]);
-assert.deepEqual(miniCells,["PB","INIT","AC","HP","REST"],"Rest sits with PB/INIT/AC/HP, not with Destiny");
-// PB and AC are read-outs; only the three that roll or act are buttons.
+// REWRITTEN (Exhaustion): the strip gains the Exhaustion read-out and the short
+// rest that clears a level, both next to HP where the player already looks.
+assert.deepEqual(miniCells,["PB","INIT","AC","HP","EXH","SHORT","REST"],"vitals, Exhaustion and both rests sit together, not with Destiny");
+// PB and AC are read-outs; only the cells that roll or act are buttons.
+// REWRITTEN (Exhaustion): EXH opens the same tracker as HP, and SHORT spends the
+// one short rest that clears a level.
 assert.deepEqual(Array.from(root.querySelectorAll(".fh-cd-minfo"),n=>n.tagName),["SPAN","SPAN"],"PB and AC are not buttons");
-assert.deepEqual(Array.from(root.querySelectorAll(".fh-cd-mstat"),n=>n.textContent.trim().split(/\s+/)[0]),["INIT","HP","REST"],"only INIT, HP and REST are actionable");
+assert.deepEqual(Array.from(root.querySelectorAll(".fh-cd-mstat"),n=>n.textContent.trim().split(/\s+/)[0]),["INIT","HP","EXH","SHORT","REST"],"only the cells that roll or act are actionable");
+assert.equal(root.querySelector("#fhPsShortRest").disabled,true,"SHORT is dead while there is no Exhaustion to shake off");
 assert.ok(root.querySelector("#fhPsLongRest .fh-icon"),"Rest is carried by an icon, not by a bare number");
 assert.equal(root.querySelectorAll(".fh-cd-vgear").length,13,"every ability, save and initiative carries its own console gear");
 

@@ -348,7 +348,96 @@ def build_soulforge_data():
     print(f"  ok  soulforge-data.js       <- {SF_CATALYSTS.name} + {SF_INGREDIENTS.name}")
 
 
+# The dock used to send the player to the Chaos chapter and let them find the
+# row themselves. It can read the row out loud instead — but only if the table
+# is data, so this lifts the six markdown tables into a global the dock reads
+# without a fetch, the same shape as soulforge-data.js.
+CHAOS_SRC = DOCS / "chaos-tables.md"
+CHAOS_DST = ROOT / "docs" / "javascripts" / "chaos-tables.js"
+CHAOS_ABILITIES = ("STR", "DEX", "CON", "WIS", "INT", "CHA")
+CHAOS_MAX_ROW = 12
+
+
+def build_chaos_tables():
+    import json
+    if not CHAOS_SRC.exists():
+        print("  !! MISSING chaos-tables.md — chaos-tables.js not rebuilt")
+        return
+    text = CHAOS_SRC.read_text(encoding="utf-8")
+    tables, current = {}, None
+    for line in text.splitlines():
+        heading = re.match(r"^#{2,4}\s+(.+?)\s*\(([A-Z]{3})\)\s*$", line.strip())
+        if heading and heading.group(2) in CHAOS_ABILITIES:
+            current = heading.group(2)
+            tables[current] = {"name": heading.group(1).strip(), "rows": {}}
+            continue
+        if current is None:
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")] if line.strip().startswith("|") else None
+        if not cells or len(cells) < 2:
+            continue
+        if not re.fullmatch(r"\d{1,2}", cells[0]):
+            continue  # header row and the |---| separator
+        result = int(cells[0])
+        if not 1 <= result <= CHAOS_MAX_ROW:
+            continue
+        # The dock renders the row as plain text, so the emphasis markers would
+        # show up literally. Keep the words, drop the asterisks.
+        row = re.sub(r"\*{1,2}(.+?)\*{1,2}", r"\1", cells[1]).strip()
+        tables[current]["rows"][str(result)] = row
+    missing = [ability for ability in CHAOS_ABILITIES
+               if len(tables.get(ability, {}).get("rows", {})) != CHAOS_MAX_ROW]
+    if missing:
+        print(f"  !! Chaos tables incomplete for {', '.join(missing)} — chaos-tables.js not rebuilt")
+        return
+    payload = {"max": CHAOS_MAX_ROW, "tables": {key: tables[key] for key in CHAOS_ABILITIES}}
+    CHAOS_DST.write_text(
+        "window.FH_CHAOS = " + json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + ";\n",
+        encoding="utf-8")
+    print(f"  ok  chaos-tables.js        <- chaos-tables.md ({len(CHAOS_ABILITIES)} tables x {CHAOS_MAX_ROW})")
+
+
+# The 22 Major Arcana, lifted the same way, so an Arcane Awakening can deal a
+# real card with its real powers instead of asking the player to go and look.
+ARCANA_SRC = DOCS / "major-arcana.md"
+ARCANA_DST = ROOT / "docs" / "javascripts" / "arcana.js"
+ARCANA_COUNT = 22
+ARCANA_FIELDS = {"meaning": "meaning", "destiny impact": "impact", "power": "power", "vibration": "vibration"}
+
+
+def build_arcana():
+    import json
+    if not ARCANA_SRC.exists():
+        print("  !! MISSING major-arcana.md — arcana.js not rebuilt")
+        return
+    cards, current = [], None
+    for line in ARCANA_SRC.read_text(encoding="utf-8").splitlines():
+        heading = re.match(r"^#{2,4}\s+([0IVXL]+)\.\s+(.+?)\s*$", line.strip())
+        if heading:
+            current = {"numeral": heading.group(1), "name": heading.group(2).strip(),
+                       "meaning": "", "impact": "", "power": "", "vibration": ""}
+            cards.append(current)
+            continue
+        if current is None:
+            continue
+        field = re.match(r"^-\s+\*\*(.+?)\*\*\s+[—-]\s+(.+?)\s*$", line.strip())
+        if not field:
+            continue
+        key = ARCANA_FIELDS.get(field.group(1).strip().lower())
+        if key:
+            current[key] = re.sub(r"\*{1,2}(.+?)\*{1,2}", r"\1", field.group(2)).strip()
+    if len(cards) != ARCANA_COUNT:
+        print(f"  !! Found {len(cards)} Major Arcana, expected {ARCANA_COUNT} — arcana.js not rebuilt")
+        return
+    ARCANA_DST.write_text(
+        "window.FH_ARCANA = " + json.dumps(cards, ensure_ascii=False, separators=(",", ":")) + ";\n",
+        encoding="utf-8")
+    print(f"  ok  arcana.js              <- major-arcana.md ({len(cards)} cards)")
+
+
 if __name__ == "__main__":
     print("Syncing FH PHB chapters from vault…")
     main()
+    build_chaos_tables()
+    build_arcana()
     print("Done.")

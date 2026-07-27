@@ -14,7 +14,8 @@ const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
     rollOpen,stagedList,stageBonusDie,stageDestinyDie,stageDestinyFromPool,rollStagedDice,releaseRoll,clearDiceTray,
     pendingFate,addPendingFate,dropPendingFate,armPendingFate,rollPendingFate,renderDestiny,renderConsole,
     findStagedDie,mutateStagedDie,sealStagedDie,dropStagedDie,addTrayDie,rollTrayDice,standaloneDestiny,
-    trayDiceForDisplay,setTrayFromEntry,visualDie,retuneLandedDie,sealLabel
+    trayDiceForDisplay,setTrayFromEntry,visualDie,retuneLandedDie,sealLabel,
+    exhaustionLevel,setExhaustion,chaosRowText,quickRoll,setVitals,MAX_EXHAUSTION
   };
 })();
 `);
@@ -33,6 +34,10 @@ const sandbox={URL,clearTimeout,console,crypto,setTimeout,window:{crypto,setTime
   localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,String(value))},
   document:{addEventListener(){}}};
 sandbox.globalThis=sandbox;
+// The real generated table, not a stand-in: this is what proves the whole chain
+// — vault markdown, the parser in sync_from_vault.py, and the dock reading a row.
+const chaosPath=path.join(__dirname,"..","docs","javascripts","chaos-tables.js");
+vm.runInNewContext(fs.readFileSync(chaosPath,"utf8"),sandbox,{filename:chaosPath});
 vm.runInNewContext(source,sandbox,{filename:sourcePath});
 const t=sandbox.__fhRollMachine;
 
@@ -42,6 +47,7 @@ function reset(points=5,dice=[die("d4",4,true),die("d6",6,true),die("d8",8,true)
   Object.assign(t.state,{
     code:"",pseudo:"",destiny:{score:8,points,dice:JSON.parse(JSON.stringify(dice)),lastChange:null},history:[],events:[],prefs:{bardicSides:6},
     rollConfig:null,trayPrompt:null,diePrompt:null,destinyStaged:null,trayColours:{},callUntil:0,traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayResultText:"",queueDone:"",rollSequence:null,message:"",messageKind:"",pendingArmed:null,
+    vitals:{current:null,max:null,exhaustion:0,shortRestUsed:false},
     character:{destinyBuild:{arcana:{name:"The Hermit"}},build:{}}
   });
   t.state.destiny.pending=[];
@@ -337,6 +343,84 @@ assert.equal(entry.total,23);assert.equal(entry.outcome,"Success","the outcome i
 t.retuneLandedDie(t.state.diePrompt,{forcedResult:null});
 assert.equal(entry.kept,9,"— as it fell — hands the roll back to the dice that rolled it");
 assert.equal(entry.d20Forced,false);assert.equal(entry.total,14);
+settle();
+
+/* ── Exhaustion, and Chaos resolved for real ──────────────────────── */
+
+// The Chaos tables are data, and the dock can read the exact row.
+assert.equal(t.chaosRowText("INT",1).length>0,true,"row 1 exists");
+assert.match(t.chaosRowText("STR",12),/fatal/i,"row 12 is the worst one");
+assert.equal(t.chaosRowText("STR",99),t.chaosRowText("STR",12),"the table stops at 12 and the dice do not");
+assert.equal(t.chaosRowText("STR",0),t.chaosRowText("STR",1),"and it starts at 1");
+assert.equal(t.chaosRowText("XXX",5),"","an unknown ability degrades to nothing rather than throwing");
+
+// A level of Exhaustion is a flat −1 that rides on every d20 test.
+reset();t.setExhaustion(2,"Test");
+assert.equal(t.exhaustionLevel(),2);
+queueRolls(15);t.quickRoll("Arcana","INT",5);
+entry=t.state.history[0];
+assert.equal(entry.exhaustion,2,"the level is stamped on the entry as it rolls");
+assert.equal(entry.total,15+5-2,"and comes straight off the total");
+var token=t.state.trayResults.find(item=>item.kind==="modifier"&&item.label==="Exhaustion");
+assert.ok(token,"a token sits beside the dice, like the FH +2 token");
+assert.equal(token.result,-2,"carrying the malus itself");
+assert.equal(token.tone,"exhaustion","in its own colour");
+assert.match(t.visualDie(token,0,2,false),/−2/,"and it reads as a minus, not a stray hyphen");
+// Changing the level afterwards must not rewrite a roll already in the stream.
+t.setExhaustion(5,"Test");
+assert.equal(entry.total,18,"a roll already filed keeps the level it rolled under");
+settle();
+
+// One level per short rest, once per long rest.
+reset();t.setExhaustion(3,"Test");t.setVitals({shortRestUsed:false});
+t.state.vitals.shortRestUsed=true;
+assert.equal(t.exhaustionLevel(),3,"a spent short rest cannot clear a level");
+t.setVitals({shortRestUsed:false});t.setExhaustion(t.exhaustionLevel()-1,"Short rest");
+assert.equal(t.exhaustionLevel(),2,"a fresh one can");
+
+// Refusing fate goes straight to 2d6 — no Overreach save on that path.
+reset(4);entry=natOne("refuse-chaos");entry.ability="INT";t.state.history=[entry];
+t.state.rollSequence={phase:"nat1",entryId:entry.id};t.resolveNatOne(entry.id,"chaos");
+settle();
+assert.equal(t.pendingFate()[0].ability,"INT","the marker remembers which table to read");
+t.armPendingFate(t.pendingFate()[0].id);
+assert.equal(t.state.trayResults.length,2,"2d6, not a save");
+queueRolls(4,5);t.rollPendingFate();
+var chaosEntry=t.state.history[0];
+assert.equal(chaosEntry.total,9);
+assert.equal(chaosEntry.chaosRow,t.chaosRowText("INT",9),"the row is quoted onto the entry");
+assert.match(latest().text,/CHAOS RESOLVED · 2d6 = 4 \+ 5 = 9/,"and announced with the row");
+assert.ok(latest().text.indexOf(t.chaosRowText("INT",9))>0,"the line carries the row text itself, not a link");
+settle();
+
+// Holding the Weave costs a level of Exhaustion.
+reset(2,[die("hold-d8",8,true)]);
+t.state.character={destinyBuild:{arcana:{name:"The Hermit"}},build:{},abilities:{STR:10,DEX:10,CON:10,INT:16,WIS:10,CHA:10},savingProficiencies:["INT"],pb:3};
+t.addPendingFate({kind:"overreach",entryId:"x",ability:"INT",dc:13,overreach:3});
+t.armPendingFate(t.pendingFate()[0].id);
+queueRolls(11);t.rollPendingFate();
+assert.equal(t.state.history[0].outcome,"Success","17 clears DC 13");
+assert.equal(t.exhaustionLevel(),1,"a successful Overreach save costs one level of Exhaustion");
+assert.match(latest().text,/EXHAUSTION 1/);
+settle();
+
+// Failing it rolls 1d6 + Overreach on the table, with a red token for the Overreach.
+reset(2);
+t.state.character={destinyBuild:{arcana:{name:"The Hermit"}},build:{},abilities:{STR:10,DEX:10,CON:10,INT:16,WIS:10,CHA:10},savingProficiencies:["INT"],pb:3};
+t.addPendingFate({kind:"overreach",entryId:"y",ability:"INT",dc:18,overreach:8});
+t.armPendingFate(t.pendingFate()[0].id);
+queueRolls(2,5);t.rollPendingFate();
+assert.equal(t.state.history[1].outcome,"Failure","7 misses DC 18");
+assert.equal(t.exhaustionLevel(),0,"a failed save costs no Exhaustion — it costs the table");
+var breakEntry=t.state.history[0];
+assert.equal(breakEntry.dice[0].result,5,"the d6");
+assert.equal(breakEntry.flatBonus,8,"plus the Overreach");
+assert.equal(breakEntry.total,13,"read as 13");
+assert.equal(breakEntry.chaosRow,t.chaosRowText("INT",13),"which reads row 12, the table's last");
+var redToken=t.state.trayResults.find(item=>item.kind==="modifier");
+assert.ok(redToken&&redToken.tone==="overreach","the Overreach sits beside the die as a red token");
+assert.equal(redToken.result,8);
+assert.match(latest().text,/CHAOS · d6 5 \+ Overreach 8 = 13/);
 settle();
 
 assert.equal(randomBuckets.length,0,"every deterministic die result was consumed exactly once");

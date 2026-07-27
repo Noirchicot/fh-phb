@@ -48,6 +48,7 @@
   var MAX_FREE_DICE = 40;
   var LIGHTWEIGHT_DICE_THRESHOLD = 6;
   var MAX_HISTORY = 20;
+  var MAX_EXHAUSTION = 6;
 
   var root;
   var persistTimer = null;
@@ -452,7 +453,9 @@
       speed:(snap && (snap.speed || snap.walkingSpeed || snap.movement&&snap.movement.walk)) || null,
       initiative:initiative,passiveOverrides:passiveOverrides,passiveDefaults:passiveDefaults,specialBonuses:specialBonuses,
       syncedAt:(snap && snap.syncedAt)||(storedSnap&&storedSnap.syncedAt),pending:pending,
-      destinyBuild:build.destiny || {},build:build,importReport:importReport
+      // A card drawn at the table outranks the one the build was created with.
+      destinyBuild:Object.assign({},build.destiny||{},overrides.arcana?{arcana:overrides.arcana}:{}),
+      build:build,importReport:importReport
     };
   }
   function skillInfo(name, ch, extra) {
@@ -492,7 +495,8 @@
     var overreach = Math.max(0, Number(raw.overreach)||0, points<0 ? -points : 0);
     // Deferred fate: Chaos and Overreach saves are carried, not rolled on the spot.
     var pending = Array.isArray(raw.pending) ? raw.pending.filter(function(item){return item&&(item.kind==="chaos"||item.kind==="overreach"||item.kind==="note");}).slice(0,6) : [];
-    return {score:score,points:Math.max(0,points),dice:dice,overreach:overreach,pending:pending,lastChange:raw.lastChange || null};
+    return {score:score,points:Math.max(0,points),dice:dice,overreach:overreach,pending:pending,
+      awakeningOwed:!!raw.awakeningOwed,lastChange:raw.lastChange || null};
   }
   // Hit points are tracked here, not imported: DDB stays the source for the
   // standard sheet but the dock is what the player touches mid-combat.
@@ -502,8 +506,31 @@
     var current = raw.current == null || raw.current === "" ? null : Math.round(Number(raw.current) || 0);
     if (current != null) current = Math.max(-999, max == null ? current : Math.min(current, max));
     if (max != null && current == null) current = max;
-    return {current:current, max:max};
+    // House Exhaustion: six levels, a flat −1 each, level 6 is death. The short
+    // rest that can clear a level is spent until the next long rest.
+    return {current:current, max:max,
+      exhaustion:clamp(raw.exhaustion,0,MAX_EXHAUSTION),
+      shortRestUsed:!!raw.shortRestUsed};
   }
+  function exhaustionLevel(){return clamp(state.vitals&&state.vitals.exhaustion,0,MAX_EXHAUSTION);}
+  /* Every level is a flat −1 on any d20 test, so the malus rides along with the
+     dice of every roll instead of being remembered by the player. */
+  function exhaustionPenalty(){return -exhaustionLevel();}
+  function exhaustionNote(level){
+    if(level>=MAX_EXHAUSTION)return "level 6 is death";
+    return level?"−"+level+" on every d20 test":"clear";
+  }
+  /* silent lets a caller fold the announcement into its own batch, so the
+     consequence lands above its cause in a newest-first list instead of under it. */
+  function setExhaustion(level,reason,silent){
+    var before=exhaustionLevel();
+    level=clamp(level,0,MAX_EXHAUSTION);
+    if(level===before)return before;
+    setVitals({exhaustion:level});
+    if(!silent)pushEvent(exhaustionText(level,reason),level>before?"loss":"gain");
+    return level;
+  }
+  function exhaustionText(level,reason){return "EXHAUSTION "+level+" · "+(reason||"Adjusted")+" · "+exhaustionNote(level);}
   function setVitals(patch, message) {
     state.vitals = normalizeVitals(Object.assign({}, state.vitals || {}, patch));
     if (message) { state.message = message; state.messageKind = "success"; }
@@ -532,7 +559,7 @@
   }
   function persistPlayState() {
     if (!state.code || !state.pseudo || !state.destiny) return;
-    var safePrompt=state.trayPrompt&&["nat1","arcane1","chaos","awakening","die-choice"].indexOf(state.trayPrompt.type)>=0?state.trayPrompt:null;
+    var safePrompt=state.trayPrompt&&["nat1","arcane1","chaos","awakening","die-choice","arcana-draw"].indexOf(state.trayPrompt.type)>=0?state.trayPrompt:null;
     var pendingRoll={rollSequence:state.rollSequence,trayPrompt:safePrompt,queueDone:state.queueDone,trayResults:state.trayResults,trayTitle:state.trayTitle,trayResultText:state.trayResultText,pendingArmed:state.pendingArmed,destinyStaged:state.destinyStaged};
     var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll};
     try { localStorage.setItem(storageKey(), JSON.stringify(payload)); } catch (error) {}
@@ -594,8 +621,29 @@
      its own verdict; a check earns its outcome back from the numbers. */
   function recomputeEntry(entry){
     if(!entry)return;
-    if(entry.kind==="tray"){entry.total=(entry.dice||[]).reduce(function(sum,die){return sum+(Number(die.result)||0);},0);return;}
+    // flatBonus is what a Chaos roll adds on top of its die — the Overreach.
+    if(entry.kind==="tray"){entry.total=(entry.dice||[]).reduce(function(sum,die){return sum+(Number(die.result)||0);},0)+(Number(entry.flatBonus)||0);return;}
     entry.total=entryTotal(entry);entry.outcome=outcomeFor(entry);
+  }
+  /* The Chaos tables are data now (window.FH_CHAOS, built by sync_from_vault.py),
+     so the dock reads the row out loud instead of pointing at the chapter. The
+     table stops at 12 and the dice do not, so anything past the end reads the
+     last row. Missing data degrades to the link, never to a crash. */
+  function chaosTableFor(ability){
+    var data=typeof window!=="undefined"&&window.FH_CHAOS;
+    if(!data||!data.tables)return null;
+    return data.tables[String(ability||"").slice(0,3).toUpperCase()]||null;
+  }
+  function chaosRowText(ability,total){
+    var table=chaosTableFor(ability);
+    if(!table)return "";
+    var top=Number((window.FH_CHAOS||{}).max)||12;
+    return table.rows[String(clamp(total,1,top))]||"";
+  }
+  function chaosVerdict(ability,total){
+    var row=chaosRowText(ability,total),top=Number((window.FH_CHAOS||{}).max)||12;
+    var capped=total>top?" (table stops at "+top+")":"";
+    return row?row+capped:"read the "+(ability||"matching")+" Chaos table";
   }
   function refreshEntryTray(entry){
     if(!entry)return;
@@ -712,7 +760,9 @@
   }
   function ensureConfigBonusDice(cfg){cfg.bonusDice=(Array.isArray(cfg.bonusDice)?cfg.bonusDice:[]).slice(0,MAX_BONUS_DICE);if(cfg.guidance&&!cfg.bonusDice.some(function(die){return String(die.label).toLowerCase()==="guidance";})&&cfg.bonusDice.length<MAX_BONUS_DICE)cfg.bonusDice.push(newBonusDie("Guidance",4));if(cfg.bardic&&!cfg.bonusDice.some(function(die){return String(die.label).toLowerCase()==="bardic";})&&cfg.bonusDice.length<MAX_BONUS_DICE)cfg.bonusDice.push(newBonusDie("Bardic",Number(cfg.bardicSides)||6));return cfg;}
   function entryTotal(entry) {
-    var total = (Number(entry.kept)||0) + (Number(entry.baseBonus)||0) + (entry.plusTwo?2:0) + (Number(entry.custom)||0);
+    // Exhaustion is stamped on the entry when it rolls, not read live: changing
+    // the level later must not silently rewrite a roll already in the stream.
+    var total = (Number(entry.kept)||0) + (Number(entry.baseBonus)||0) + (entry.plusTwo?2:0) + (Number(entry.custom)||0) - (Number(entry.exhaustion)||0);
     var bonusDice=entryBonusDice(entry);if(bonusDice.length)bonusDice.forEach(function(die){total+=Number(die.result)||0;});else [entry.guidance,entry.bardic].forEach(function(die){if(die)total+=Number(die.result)||0;});
     if(entry.destiny)total+=Number(entry.destiny.result)||0;
     return total;
@@ -799,7 +849,7 @@
       spent.criticalFailure=false;spent.criticalSuccess=true;
       var hadPoints=state.destiny.points;
       setDestinyPoints(0,"Arcane fate refused",false,true);
-      addPendingFate({kind:"chaos",entryId:entry.id,name:entry.name||"Arcane failure refused"});
+      addPendingFate({kind:"chaos",entryId:entry.id,ability:entry.ability||"",name:entry.name||"Arcane failure refused"});
       events.push({text:"ARCANE FATE REFUSED · The 1 becomes "+spent.sides+" · Arcane Critical Success"+(hadPoints?" · Destiny becomes 0":""),kind:"arcane-critical-success",entryId:entry.id},
         {text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id});
     }
@@ -814,6 +864,8 @@
       var before = state.destiny.points,recovered=setDestinyPoints(before-1,"Natural 20",true,true);
       entry.destinyPointChange={before:before,after:state.destiny.points,reason:"Natural 20"};
       entry.awakening=state.destiny.points===0;
+      // The draw is owed from this moment until the card is actually dealt.
+      if(entry.awakening)state.destiny.awakeningOwed=true;
       var parts=[entry.awakening?"ARCANE AWAKENING · Natural 20 at Destiny 0":"NATURAL 20 · Fate bends in your favor","Lost 1 Destiny Point","Current "+state.destiny.points];
       if(recovered)parts.push("Gained a Destiny d"+recovered.sides);
       events.push({text:parts.join(" · "),kind:entry.awakening?"awakening":"nat20",entryId:entry.id});
@@ -843,6 +895,7 @@
       entryBonusDice(entry).forEach(function(die){trayDiceForPlan(die,die.label,{dieRole:"bonus",landedKey:"bonus:"+die.id,entryId:entry.id}).forEach(function(item){results.push(item);});});
       if(entry.destiny)trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){results.unshift(item);});
       if(entry.plusTwo)results.push({kind:"modifier",result:2,label:"FH bonus"});
+      if(entry.exhaustion)results.push({kind:"modifier",result:-Number(entry.exhaustion),label:"Exhaustion",tone:"exhaustion"});
     }else if(entry.kind==="destiny")results=trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""});
     else if(entry.kind==="tray"){
       // Through trayDiceForPlan so a free die on A/D shows the die it dropped,
@@ -871,6 +924,7 @@
     (cfg.bonusDice||[]).forEach(function(bonusDie){pendingTrayDice(bonusDie.sides,bonusDie.label,bonusDie.advantageMode,bonusDie.forcedResult,{dieRole:"bonus",sourceIcon:bonusDie.sourceIcon,colour:bonusDie.colour||"",bonusId:bonusDie.id}).forEach(function(item){dice.push(item);});});
     if(cfg.destinyDieId){var die=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(die)pendingTrayDice(die.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:die.id,dieRole:"destiny"}).reverse().forEach(function(item){dice.unshift(item);});}
     if(cfg.plusTwo)dice.push({kind:"modifier",result:2,label:"FH bonus",pending:true});
+    if(exhaustionLevel())dice.push({kind:"modifier",result:exhaustionPenalty(),label:"Exhaustion",tone:"exhaustion",pending:true});
     state.traySelection=[];state.trayResults=dice;state.trayTitle=cfg.name+" "+signed(cfg.baseBonus);state.trayResultText="Ready";
   }
   /* CLEAR TRAY empties the hand and, with it, the running commentary above the
@@ -1045,7 +1099,7 @@
   function quickRoll(name, ability, bonus, note) {
     clearDiceTray(false);state.rollConfig=null;
     var natural = rollDie(20);
-    var entry = {id:uuid(),kind:"d20",name:name,ability:ability,baseBonus:Number(bonus)||0,d20Mode:"flat",d20s:[natural],d20Roll:{sides:20,mode:"flat",rolls:[natural],result:natural,chosenIndex:0,forced:false},d20Choice:0,d20Forced:false,kept:natural,natural:natural,plusTwo:false,custom:0,bonusDice:[],guidance:null,bardic:null,destiny:null,dc:"",note:note||"",createdAt:new Date().toISOString(),adjusted:false};
+    var entry = {id:uuid(),kind:"d20",name:name,ability:ability,baseBonus:Number(bonus)||0,exhaustion:exhaustionLevel(),d20Mode:"flat",d20s:[natural],d20Roll:{sides:20,mode:"flat",rolls:[natural],result:natural,chosenIndex:0,forced:false},d20Choice:0,d20Forced:false,kept:natural,natural:natural,plusTwo:false,custom:0,bonusDice:[],guidance:null,bardic:null,destiny:null,dc:"",note:note||"",createdAt:new Date().toISOString(),adjusted:false};
     state.rollSequence={phase:"remaining",entryId:entry.id};finishRolledEntry(entry,[]);
   }
   function snapshotRollConfig(cfg){ensureConfigBonusDice(cfg);var copy=Object.assign({},cfg);copy.bonusDice=(cfg.bonusDice||[]).map(function(die,index){return normalizeBonusDie(die,index);});return copy;}
@@ -1087,7 +1141,7 @@
     ensureConfigBonusDice(cfg);
     if(state.rollSequence&&state.rollSequence.phase&&state.rollSequence.phase!=="resolved")return;
     if (cfg.editingId) { applyHistoryAdjustment(cfg); return; }
-    var entry={id:uuid(),kind:"d20",name:cfg.name,ability:cfg.ability,baseBonus:cfg.baseBonus,d20Mode:cfg.d20Mode,d20s:[],kept:null,natural:null,plusTwo:cfg.plusTwo,custom:cfg.custom,dc:cfg.dc,note:cfg.note,createdAt:new Date().toISOString(),adjusted:false,bonusDice:[],guidance:null,bardic:null,destiny:null};
+    var entry={id:uuid(),kind:"d20",name:cfg.name,ability:cfg.ability,baseBonus:cfg.baseBonus,exhaustion:exhaustionLevel(),d20Mode:cfg.d20Mode,d20s:[],kept:null,natural:null,plusTwo:cfg.plusTwo,custom:cfg.custom,dc:cfg.dc,note:cfg.note,createdAt:new Date().toISOString(),adjusted:false,bonusDice:[],guidance:null,bardic:null,destiny:null};
     state.rollSequence={phase:cfg.destinyDieId?"destiny":"remaining",cfg:snapshotRollConfig(cfg),entry:entry,entryId:entry.id};persistPlayState();
     if(cfg.destinyDieId)rollSequenceDestiny();else rollSequenceRemaining();
   }
@@ -1135,7 +1189,7 @@
     if(choice==="accept") { var before=state.destiny.points,recovered=setDestinyPoints(before+1,"Natural 1 accepted",true,true);entry.natChoice="accept";entry.destinyPointChange={before:before,after:state.destiny.points,reason:"Natural 1 accepted"};var accepted=["FATE ACCEPTED · Critical failure","Gained 1 Destiny Point","Current "+state.destiny.points];if(recovered)accepted.push("Gained a Destiny d"+recovered.sides);events.push({text:accepted.join(" · "),kind:"nat1",entryId:entry.id}); }
     // Defying fate no longer rolls Chaos on the spot: the 2d6 are deferred
     // behind a pending marker so the table is never blocked mid-turn.
-    else { var oldPoints=state.destiny.points;entry.natChoice="chaos";entry.originalKept=entry.kept;entry.transformed=true;entry.kept=20;setDestinyPoints(0,"Invoked Chaos",false,true);entry.total=entryTotal(entry);addPendingFate({kind:"chaos",entryId:entry.id,name:entry.name||"Defied roll"});events.push({text:"FATE DEFIED · The 1 becomes 20"+(oldPoints?" · Destiny becomes 0":""),kind:"nat1",entryId:entry.id},{text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id}); }
+    else { var oldPoints=state.destiny.points;entry.natChoice="chaos";entry.originalKept=entry.kept;entry.transformed=true;entry.kept=20;setDestinyPoints(0,"Invoked Chaos",false,true);entry.total=entryTotal(entry);addPendingFate({kind:"chaos",entryId:entry.id,ability:entry.ability||"",name:entry.name||"Defied roll"});events.push({text:"FATE DEFIED · The 1 becomes 20"+(oldPoints?" · Destiny becomes 0":""),kind:"nat1",entryId:entry.id},{text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id}); }
     setTrayFromEntry(entry);entry.outcome=outcomeFor(entry);state.trayPrompt=null;persistPlayState();
     state.rollSequence=state.rollSequence||{};state.rollSequence.entryId=entry.id;state.rollSequence.phase="open-after-events";
     announceEvents(events,"open-roll");
@@ -1153,6 +1207,42 @@
      and the player pays a fatigue point per round until it is resolved.
      The two mechanics stay separate — a defied natural 1 resolves 2d6 on
      the Chaos table, an Overreach resolves a save against 10 + Overreach. */
+  /* ── The Major Arcana ─────────────────────────────────────────────
+     An Awakening deals a real card. The deck is the vault's own list of 22,
+     generated into window.FH_ARCANA, so the card the dock hands you carries the
+     powers the book gives it — no going and looking it up mid-turn. */
+  function arcanaDeck(){var deck=typeof window!=="undefined"&&window.FH_ARCANA;return Array.isArray(deck)&&deck.length?deck:[];}
+  function currentArcana(){return state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};}
+  function arcanaDrawn(){return !!(currentArcana().name);}
+  /* The Awakening is owed until the card is drawn: that is what the backdrop
+     behind the dice is saying, and it says it until this stops being null. */
+  function awakeningOwed(){return !!(state.destiny&&state.destiny.awakeningOwed);}
+  function drawArcana(){
+    var deck=arcanaDeck();
+    if(!deck.length){state.message="The Arcana deck did not load — draw from the chapter instead.";state.messageKind="warn";renderMessage();return;}
+    var card=deck[rollDie(deck.length)-1];
+    // §5: the draw pays either way — +1 Score and 10 temporary Points — and only
+    // then does the player choose whether to switch. So the card is a proposal.
+    state.trayPrompt={type:"arcana-draw",card:card,previous:currentArcana().name||""};
+    persistPlayState();render();
+  }
+  function keepArcana(card,replace){
+    var before=state.destiny.score;
+    state.destiny.score=clamp(before+1,0,99);
+    setDestinyPoints((Number(state.destiny.points)||0)+10,"Arcane Awakening",true,true);
+    state.destiny.awakeningOwed=false;
+    var events=[{text:"ARCANE AWAKENING · Drew "+card.numeral+" · "+card.name+" · Score "+state.destiny.score+" · +10 temporary Points",kind:"awakening"}];
+    if(replace){
+      var arcana={name:card.name,numeral:card.numeral,power:card.power,vibration:card.vibration,meaning:card.meaning};
+      var overrides=Object.assign({},(state.profile&&state.profile.manualOverrides)||{},{arcana:arcana});
+      saveProfile({manualOverrides:overrides}).then(function(){state.character=effectiveCharacter();render();})
+        .catch(function(){state.message="Card kept on this device; server sync is unavailable.";state.messageKind="warn";renderMessage();});
+      if(state.profile)state.profile.manualOverrides=overrides;
+      state.character=effectiveCharacter();
+      events.push({text:"ARCANA SWITCHED · "+card.name+" · "+card.power,kind:"awakening"});
+    }else events.push({text:"ARCANA KEPT · "+(currentArcana().name||"your card")+" · the drawn powers are discarded",kind:"destiny"});
+    state.trayPrompt=null;persistPlayState();announceEvents(events,"");
+  }
   function pendingFate(){return (state.destiny&&Array.isArray(state.destiny.pending))?state.destiny.pending:[];}
   function addPendingFate(spec){
     if(!state.destiny)return null;
@@ -1189,11 +1279,11 @@
     if(rollTransactionActive()){warnRollLocked();return;}
     state.trayPrompt=null;state.rollConfig=null;state.traySelection=[];
     if(item.kind==="chaos"){
-      state.pendingArmed={id:item.id,kind:"chaos",sides:[6,6]};
+      state.pendingArmed={id:item.id,kind:"chaos",sides:[6,6],ability:item.ability||""};
       state.trayResults=[0,1].map(function(index){return {sides:6,result:null,label:"Chaos #"+(index+1),pending:true,special:"chaos",dieRole:"chaos"};});
       state.trayTitle="Chaos";state.trayResultText="Roll 2d6 and read the Chaos table";
     }else{
-      state.pendingArmed={id:item.id,kind:"overreach",sides:[20],dc:Number(item.dc)||10,ability:item.ability||""};
+      state.pendingArmed={id:item.id,kind:"overreach",sides:[20],dc:Number(item.dc)||10,ability:item.ability||"",overreach:Number(item.overreach)||0};
       state.trayResults=[{sides:20,result:null,label:(item.ability||"")+" save",pending:true,dieRole:"base"}];
       state.trayTitle="Overreach save";state.trayResultText="DC "+(Number(item.dc)||10)+" — roll to hold the Weave";
     }
@@ -1203,26 +1293,55 @@
     var armed=state.pendingArmed;if(!armed)return;
     var item=pendingFate().find(function(entry){return entry.id===armed.id;});
     var entry=item&&state.history.find(function(row){return row.id===item.entryId;});
+    /* Refusing fate — a natural 1 or an Arcane Critical Failure — skips the
+       Overreach save entirely and goes straight to 2d6 on the table. */
     if(armed.kind==="chaos"){
+      var chaosAbility=armed.ability||item&&item.ability||entry&&entry.ability||"";
       var chaos=[rollDie(6),rollDie(6)],total=chaos[0]+chaos[1];
       if(entry){entry.chaosRoll=chaos;entry.chaosTotal=total;}
       state.trayResults=chaos.map(function(result,index){return {sides:6,result:result,label:"Chaos #"+(index+1),special:"chaos",dieRole:"chaos"};});
+      var chaosEntry={id:uuid(),kind:"tray",name:"Chaos"+(chaosAbility?" · "+chaosAbility:"")+(item&&item.name?" · "+item.name:""),ability:chaosAbility,
+        dice:chaos.map(function(result){return {sides:6,result:result};}),flatBonus:0,total:total,
+        createdAt:new Date().toISOString(),outcome:"Chaos "+total,chaosRow:chaosRowText(chaosAbility,total)};
       state.trayTitle="Chaos";state.trayResultText="2d6 = "+chaos.join(" + ")+" = "+total;
-      var chaosEntry={id:uuid(),kind:"tray",name:"Chaos"+(item&&item.name?" · "+item.name:""),dice:chaos.map(function(result){return {sides:6,result:result};}),total:total,createdAt:new Date().toISOString(),outcome:"Chaos "+total};
       addHistory(chaosEntry);
       if(item)dropPendingFate(item.id);
       state.pendingArmed=null;state.rollSequence={phase:"free-tray",entryId:chaosEntry.id};
-      announceEvents([{text:"CHAOS RESOLVED · 2d6 = "+chaos.join(" + ")+" · read the "+(entry&&entry.ability||"matching")+" Chaos table",kind:"chaos",entryId:chaosEntry.id,chaosRoll:chaos}],"finish-sequence");
+      // No chaosRoll on the line: the text already spells the 2d6 out, and the
+      // renderer would append "total 5" a second time.
+      announceEvents([{text:"CHAOS RESOLVED · 2d6 = "+chaos.join(" + ")+" = "+total+" · "+chaosVerdict(chaosAbility,total),kind:"chaos",entryId:chaosEntry.id}],"finish-sequence");
       return;
     }
     var ability=armed.ability||"",save={bonus:0};
     try{if(ability&&state.character)save=saveInfo(ability,state.character);}catch(error){}
-    var natural=rollDie(20),total=natural+(Number(save.bonus)||0),dc=Number(armed.dc)||10,held=total>=dc;
-    var saveEntry={id:uuid(),kind:"d20",name:"Overreach save"+(ability?" · "+ability:""),ability:ability,baseBonus:Number(save.bonus)||0,d20Mode:"flat",d20s:[natural],d20Roll:{sides:20,mode:"flat",rolls:[natural],result:natural,chosenIndex:0,forced:false},d20Choice:0,d20Forced:false,kept:natural,natural:natural,plusTwo:false,custom:0,bonusDice:[],guidance:null,bardic:null,destiny:null,dc:String(dc),note:"Deferred Overreach",createdAt:new Date().toISOString(),adjusted:false,total:total,outcome:held?"Success":"Failure"};
+    var overreach=Number(armed.overreach)||Number(item&&item.overreach)||0;
+    var natural=rollDie(20),total=natural+(Number(save.bonus)||0)-exhaustionLevel(),dc=Number(armed.dc)||10,held=total>=dc;
+    var saveEntry={id:uuid(),kind:"d20",name:"Overreach save"+(ability?" · "+ability:""),ability:ability,exhaustion:exhaustionLevel(),baseBonus:Number(save.bonus)||0,d20Mode:"flat",d20s:[natural],d20Roll:{sides:20,mode:"flat",rolls:[natural],result:natural,chosenIndex:0,forced:false},d20Choice:0,d20Forced:false,kept:natural,natural:natural,plusTwo:false,custom:0,bonusDice:[],guidance:null,bardic:null,destiny:null,dc:String(dc),note:"Deferred Overreach",createdAt:new Date().toISOString(),adjusted:false,total:total,outcome:held?"Success":"Failure"};
     addHistory(saveEntry);setTrayFromEntry(saveEntry);
     if(item)dropPendingFate(item.id);
-    state.pendingArmed=null;state.rollSequence={phase:"free-tray",entryId:saveEntry.id};
-    announceEvents([{text:(held?"WEAVE HELD":"OVERREACH BREAKS")+" · "+(ability||"Save")+" "+total+" vs DC "+dc,kind:held?"result":"chaos",entryId:saveEntry.id}],"finish-sequence");
+    state.pendingArmed=null;
+    var saveEvents=[{text:(held?"WEAVE HELD":"OVERREACH BREAKS")+" · "+(ability||"Save")+" "+total+" vs DC "+dc,kind:held?"result":"chaos",entryId:saveEntry.id}];
+    /* Holding the Weave is not free: the rules pay for it in Exhaustion. */
+    if(held){
+      state.rollSequence={phase:"free-tray",entryId:saveEntry.id};
+      var beforeLevel=exhaustionLevel(),after=setExhaustion(beforeLevel+1,"Overreach held",true);
+      if(after!==beforeLevel)saveEvents.push({text:exhaustionText(after,"Overreach held"),kind:after>=MAX_EXHAUSTION?"nat1":"loss",entryId:saveEntry.id});
+      announceEvents(saveEvents,"finish-sequence");
+      return;
+    }
+    /* Failing it rolls 1d6 + Overreach on the table — one gesture, because the
+       save and its consequence are one moment at the table. */
+    var chaosDie=rollDie(6),chaosTotal=chaosDie+overreach;
+    var breakEntry={id:uuid(),kind:"tray",name:"Chaos"+(ability?" · "+ability:""),ability:ability,
+      dice:[{sides:6,result:chaosDie}],flatBonus:overreach,total:chaosTotal,
+      createdAt:new Date().toISOString(),outcome:"Chaos "+chaosTotal,chaosRow:chaosRowText(ability,chaosTotal)};
+    addHistory(breakEntry);
+    state.trayResults=[{sides:6,result:chaosDie,label:"Chaos",special:"chaos",dieRole:"chaos"}];
+    if(overreach)state.trayResults.push({kind:"modifier",result:overreach,label:"Overreach",tone:"overreach"});
+    state.trayTitle="Chaos";state.trayResultText="d6 "+chaosDie+(overreach?" + Overreach "+overreach:"")+" = "+chaosTotal;
+    state.rollSequence={phase:"free-tray",entryId:breakEntry.id};
+    saveEvents.push({text:"CHAOS · d6 "+chaosDie+(overreach?" + Overreach "+overreach:"")+" = "+chaosTotal+" · "+chaosVerdict(ability,chaosTotal),kind:"chaos",entryId:breakEntry.id});
+    announceEvents(saveEvents,"finish-sequence");
   }
 
   function skillRow(info, compactName) {
@@ -1267,7 +1386,10 @@
       statGear("Initiative","DEX",initiative)+"</span>"+
       "<span class=\"fh-cd-minfo\">AC <b>"+(ch.armorClass==null?"—":ch.armorClass)+"</b></span>"+
       "<button class=\"fh-cd-mstat"+(hpLow?" is-hurt":"")+(state.hpOpen?" is-active":"")+"\" type=\"button\" data-hp-open title=\"Track hit points\">HP <b>"+hpText+"</b></button>"+
-      "<button class=\"fh-cd-mstat is-rest\" id=\"fhPsLongRest\" type=\"button\" title=\"Long rest: +1 Destiny Point and hit points back to full\">"+iconSvg("rest")+"REST</button>";
+      "<button class=\"fh-cd-mstat"+(exhaustionLevel()?" is-exhausted":"")+(state.hpOpen?" is-active":"")+"\" type=\"button\" data-hp-open title=\"Exhaustion — "+esc(exhaustionNote(exhaustionLevel()))+"\">EXH <b>"+exhaustionLevel()+"</b></button>"+
+      "<button class=\"fh-cd-mstat is-rest\" id=\"fhPsShortRest\" type=\"button\""+(exhaustionLevel()&&!(state.vitals||{}).shortRestUsed?"":" disabled")+
+        " title=\""+(!exhaustionLevel()?"No Exhaustion to shake off":(state.vitals||{}).shortRestUsed?"Already used this short rest — sleep first":"Short rest: one level of Exhaustion, once per long rest")+"\">SHORT</button>"+
+      "<button class=\"fh-cd-mstat is-rest\" id=\"fhPsLongRest\" type=\"button\" title=\"Long rest: +1 Destiny Point, hit points back to full, and the short rest is available again\">"+iconSvg("rest")+"REST</button>";
     return "<section class=\"fh-cd-zone\" data-zone=\"vitals\"><div class=\"fh-cd-vitals\">"+chips+"</div>"+
       "<div class=\"fh-cd-mini\">"+mini+"</div>"+renderHpTracker()+
       "<div class=\"fh-cd-passives\"><span class=\"fh-cd-plabel\">PASSIVES</span>"+passives+"</div></section>";
@@ -1285,7 +1407,12 @@
       "<button type=\"button\" data-hp-step=\"1\" aria-label=\"Regain one hit point\">+1</button>"+
       "<button type=\"button\" data-hp-step=\"5\" aria-label=\"Regain five hit points\">+5</button>"+
       "<button type=\"button\" data-hp-full"+(v.max==null?" disabled":"")+">FULL</button>"+
-      "<button class=\"fh-cd-hpx\" type=\"button\" data-hp-open aria-label=\"Close the hit point tracker\">"+iconSvg("close")+"</button></div>";
+      "<span class=\"fh-cd-hpsep\">·</span>"+
+      "<span class=\"fh-cd-hplbl\">EXH</span>"+
+      "<button type=\"button\" data-exh-step=\"-1\""+(exhaustionLevel()?"":" disabled")+" aria-label=\"One level of Exhaustion less\">−</button>"+
+      "<input data-exh-field type=\"number\" min=\"0\" max=\""+MAX_EXHAUSTION+"\" value=\""+exhaustionLevel()+"\" aria-label=\"Exhaustion level\">"+
+      "<button type=\"button\" data-exh-step=\"1\""+(exhaustionLevel()>=MAX_EXHAUSTION?" disabled":"")+" aria-label=\"One level of Exhaustion more\">+</button>"+
+      "<button class=\"fh-cd-hpx\" type=\"button\" data-hp-open aria-label=\"Close the vitals tracker\">"+iconSvg("close")+"</button></div>";
   }
   function renderSkills(ch) {
     var half=Math.ceil(SKILLS.length/2);
@@ -1482,8 +1609,17 @@
     out+='<text class="fh-cd-num" x="50" y="'+geo.ny+'" font-size="'+geo.fs+'" text-anchor="middle" dominant-baseline="middle" fill="'+m.num+'">'+esc(text==null?"?":text)+'</text>';
     return out+"</svg>";
   }
+  /* Tokens are not dice — they are the flat numbers a roll carries. Gold is the
+     Fate's Hand bonus, yellow is Exhaustion, red is the Overreach a Chaos roll
+     adds, copper is anything the player typed in by hand. */
+  var TOKEN_TONES={
+    fh:{fill:"#d9b25e",rim:"#6d4a10",facet:"#7a5a14",num:"#3a2606"},
+    mod:{fill:"#b0763a",rim:"#6e451a",facet:"#8a5a26",num:"#fdf3dd"},
+    exhaustion:{fill:"#e0c34a",rim:"#7a6410",facet:"#9a7f16",num:"#3a3106"},
+    overreach:{fill:"#b51d25",rim:"#4a0c10",facet:"#7d161c",num:"#fff0ee"}
+  };
   function tokenSvg(size,label,tone){
-    var body=tone==="mod"?{fill:"#b0763a",rim:"#6e451a",facet:"#8a5a26",num:"#fdf3dd"}:{fill:"#d9b25e",rim:"#6d4a10",facet:"#7a5a14",num:"#3a2606"};
+    var body=TOKEN_TONES[tone]||TOKEN_TONES.mod;
     return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'+
       '<circle cx="50" cy="50" r="42" fill="'+body.fill+'" stroke="'+body.rim+'" stroke-width="4"/>'+
       '<circle cx="50" cy="50" r="32" fill="none" stroke="'+body.facet+'" stroke-width="1.6"/>'+
@@ -1500,7 +1636,7 @@
     var status=die.forced?" · MANUAL":die.pending?" · ready":die.dieRole==="destiny"&&die.result!=null?" · spent":"";
     var size=dieSize(count||1);
     if(die.kind==="modifier"){
-      var tone=die.label==="FH bonus"?"fh":"mod",text=(Number(die.result)||0)>=0?"+"+Math.abs(Number(die.result)||0):String(die.result);
+      var tone=die.tone||(die.label==="FH bonus"?"fh":"mod"),text=(Number(die.result)||0)>=0?"+"+Math.abs(Number(die.result)||0):"−"+Math.abs(Number(die.result)||0);
       classes.push("is-modifier");
       return "<span class=\""+classes.join(" ")+"\"><span class=\"fh-cd-src\"></span><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span><em>"+esc(die.label||"Bonus")+"</em></span>";
     }
@@ -1581,6 +1717,10 @@
       return "<div class=\"fh-cd-card is-badgemenu\"><small>PIN A BADGE</small><b>What must not be forgotten?</b>"+
         "<p>It stays above the tray until you cancel it — CLEAR TRAY does not touch it.</p>"+
         "<div class=\"fh-cd-dmrow\"><input id=\"fhPsBadgeLabel\" maxlength=\"24\" value=\"\" placeholder=\"Concentration, Rage, 2 rounds…\" aria-label=\"Badge label\"></div>"+
+        // Exhaustion is the one badge the dock can also do the arithmetic for,
+        // so it is offered as a type rather than typed in as free text.
+        "<div class=\"fh-cd-dmrow\"><span>Or</span><button type=\"button\" class=\"fh-cd-dmmode\" data-pending-exhaustion"+
+        (exhaustionLevel()>=MAX_EXHAUSTION?" disabled":"")+" title=\"Take a level of Exhaustion — the dock tracks the −1 and puts it on every roll\">Exhaustion +1</button></div>"+
         "<div class=\"fh-cd-acts\"><button class=\"is-ghost\" data-tray-close>Cancel</button><button data-pending-save>Pin it</button></div></div>";
     }
     /* Right click on a badge: rename it, or take it back. */
@@ -1616,6 +1756,17 @@
     if(prompt&&prompt.type==="chaos"){
       var chaosEntry=state.history.find(function(item){return item.id===prompt.entryId;}),roll=chaosEntry&&chaosEntry.chaosRoll||[0,0];
       return "<div class=\"fh-cd-card is-chaos\"><small>FATE DEFIED</small><b>Chaos has noticed.</b><p>2d6 = "+roll[0]+" + "+roll[1]+" = "+(roll[0]+roll[1])+" · the d20 becomes 20 · Destiny becomes 0.</p><div class=\"fh-cd-acts\"><a href=\""+esc(toolUrl("rules",""))+"chapters/chaos-tables/\">Chaos table</a><button data-tray-close>OK</button></div></div>";
+    }
+    /* The card the deck just dealt, with the powers it actually carries — and
+       the one choice §5 leaves you: take it, or keep what you had. */
+    if(prompt&&prompt.type==="arcana-draw"&&prompt.card){
+      var drawn=prompt.card;
+      return "<div class=\"fh-cd-card is-awakening is-arcana\"><small>ARCANE AWAKENING · "+esc(drawn.numeral)+"</small><b>"+esc(drawn.name)+"</b>"+
+        "<p><b>Power</b> "+esc(drawn.power||"—")+(drawn.vibration?"<br><b>Vibration</b> "+esc(drawn.vibration):"")+
+        (drawn.meaning?"<br><em>"+esc(drawn.meaning)+"</em>":"")+"</p>"+
+        "<p class=\"fh-cd-arcnote\">+1 Destiny Score and 10 temporary Points either way"+(prompt.previous?" · you currently hold "+esc(prompt.previous):"")+".</p>"+
+        "<div class=\"fh-cd-acts\"><button data-arcana-take>Switch to "+esc(drawn.name)+"</button>"+
+        (prompt.previous?"<button class=\"is-ghost\" data-arcana-keep>Keep "+esc(prompt.previous)+"</button>":"")+"</div></div>";
     }
     if(prompt&&prompt.type==="awakening"){
       var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};
@@ -1684,6 +1835,21 @@
     }
     return dice;
   }
+  /* ── What the frame is saying behind the dice ─────────────────────
+     Two kinds of backdrop. A DEBT persists — Chaos or an Overreach waiting, an
+     Awakening not yet drawn — and keeps its streaks up until the thing is faced.
+     A MOMENT is whatever the newest event was, and fades with it. The debt wins:
+     a critical you already read matters less than a table you still owe. */
+  function frameMood(){
+    if(state.pendingArmed)return state.pendingArmed.kind==="chaos"?"chaos-armed":"overreach-armed";
+    if(awakeningOwed())return "awakening";
+    var owed=pendingFate().filter(pendingResolvable);
+    if(owed.length)return owed.some(function(item){return item.kind==="chaos";})?"chaos-owed":"overreach-owed";
+    var newest=state.events[0];
+    if(!newest)return "";
+    return {"arcane-critical-success":"arcane-success","arcane-critical-failure":"arcane-failure",
+      nat20:"crit-success",nat1:"crit-failure",awakening:"awakening",chaos:"chaos-owed"}[newest.kind]||"";
+  }
   function renderFrameInner(){
     var dice=trayDiceForDisplay();
     var signature=dice.map(function(die){return (die.label||"")+":"+(die.result==null?"?":die.result);}).join("|");
@@ -1713,7 +1879,13 @@
     var busy=rollTransactionActive(),armed=state.pendingArmed;
     /* The badge strip is always there: it carries what the table still owes,
        and the … pins a reminder of your own beside it. */
-    var badges=pendingFate().map(function(item){
+    /* Exhaustion is not a debt the player pinned, it is a condition the sheet
+       already knows about — so it leads the strip and opens the tracker rather
+       than a rename card. */
+    var badges=(exhaustionLevel()
+      ? "<button type=\"button\" class=\"fh-cd-pending is-exhaustion\" data-hp-open title=\"Exhaustion "+exhaustionLevel()+" — "+esc(exhaustionNote(exhaustionLevel()))+"\">EXHAUSTION "+exhaustionLevel()+"</button>"
+      : "")+
+      pendingFate().map(function(item){
       return "<button type=\"button\" class=\"fh-cd-pending"+(item.kind==="note"?" is-note":"")+"\" data-pending-open=\""+esc(item.id)+"\" data-pending-id=\""+esc(item.id)+"\" title=\""+esc(pendingTitle(item))+"\">"+esc(pendingLabel(item))+"</button>";
     }).join("")+
       "<button type=\"button\" class=\"fh-cd-pendadd\" data-pending-add title=\"Pin a reminder of your own\" aria-label=\"Pin a badge\">…</button>";
@@ -1727,7 +1899,7 @@
       "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
       "<div class=\"fh-cd-temps\">"+badges+"</div>"+
       renderEventList()+
-      "<div class=\"fh-cd-frame\">"+renderFrameInner()+"</div>"+
+      "<div class=\"fh-cd-frame"+(frameMood()?" mood-"+frameMood():"")+"\">"+renderFrameInner()+"</div>"+
       (menu?"<div class=\"fh-cd-popups\">"+menu+"</div>":"")+
       "</section>";
   }
@@ -1764,7 +1936,9 @@
       "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
       "<span class=\"fh-cd-pool\">"+dice+"</span>"+
-      "<span class=\"fh-cd-arcana\" title=\"Your Major Arcana — a pool die powers or rescues a roll\">"+esc(arcana.name||"Major Arcana")+"</span>"+
+      "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
+      " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
+      esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
       "</div></section>";
   }
   /* ── Stream: one finished roll per line, shaped for a later AboveVTT export ── */
@@ -1786,10 +1960,12 @@
       parts.push({k:entry.name,v:signed(entry.baseBonus)});
       entryBonusDice(entry).forEach(function(die){parts.push({k:die.label+" d"+die.sides+(die.forced?" · MANUAL":""),v:String(die.result)});});
       if(entry.plusTwo)parts.push({k:"FH",v:"+2"});
+      if(entry.exhaustion)parts.push({k:"Exhaustion "+entry.exhaustion,v:"−"+entry.exhaustion});
       if(entry.custom)parts.push({k:"Mod",v:signed(entry.custom)});
       if(entry.destiny)parts.push({k:"Destiny d"+entry.destiny.sides+(entry.destiny.forced?" · MANUAL":""),v:String(entry.destiny.result)});
     }else if(entry.kind==="tray"){
       (entry.dice||[]).forEach(function(die){parts.push({k:"d"+die.sides,v:String(die.result)});});
+      if(entry.flatBonus)parts.push({k:"Overreach",v:signed(entry.flatBonus)});
     }else if(entry.destiny){
       parts.push({k:"Destiny d"+entry.destiny.sides,v:String(entry.destiny.result)});
     }
@@ -1801,6 +1977,10 @@
     if(entry.natural===1&&entry.natChoice==="accept")badges.push({t:"NATURAL 1 accepted",k:"chaos"});
     if(entry.natChoice==="chaos")badges.push({t:"Fate refused",k:"chaos"});
     if(entry.chaosRoll)badges.push({t:"Chaos 2d6 = "+(entry.chaosRoll[0]+entry.chaosRoll[1]),k:"chaos"});
+    // The row the dice landed on, quoted rather than linked — the stream is what
+    // the player scrolls back through after the session.
+    if(entry.chaosRow)badges.push({t:entry.chaosRow,k:"chaos"});
+    if(entry.exhaustion)badges.push({t:"Exhaustion "+entry.exhaustion+" · −"+entry.exhaustion,k:"manual"});
     if(entry.destiny){
       var spent=entry.destiny,change=Number(spent.pointsAfter)-Number(spent.pointsBefore);
       var head=spent.criticalSuccess?"Arcane Critical Success":spent.criticalFailure?"Arcane Critical Failure":"Destiny d"+spent.sides+"="+spent.result;
@@ -2229,6 +2409,13 @@
     if(button.dataset.pendingOpen!==undefined){state.trayPrompt={type:"pending",id:button.dataset.pendingOpen};state.diePrompt=null;render();return;}
     if(button.dataset.pendingResolve!==undefined){armPendingFate(button.dataset.pendingResolve);return;}
     if(button.dataset.pendingAdd!==undefined){state.trayPrompt={type:"pending-new"};state.diePrompt=null;render();return;}
+    if(button.dataset.pendingExhaustion!==undefined){setExhaustion(exhaustionLevel()+1,"Taken by hand");state.trayPrompt=null;render();return;}
+    if(button.dataset.arcanaDraw!==undefined){drawArcana();return;}
+    if(button.dataset.arcanaTake!==undefined||button.dataset.arcanaKeep!==undefined){
+      var drawPrompt=state.trayPrompt;
+      if(drawPrompt&&drawPrompt.card)keepArcana(drawPrompt.card,button.dataset.arcanaTake!==undefined);
+      return;
+    }
     if(button.dataset.pendingSave!==undefined){savePendingLabel(button.dataset.pendingSave);return;}
     if(button.dataset.pendingDrop!==undefined){dropPendingFate(button.dataset.pendingDrop);state.trayPrompt=null;persistPlayState();render();return;}
     if(button.dataset.clearTray!==undefined){if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}
@@ -2268,7 +2455,15 @@
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
     if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
-    if(button.id==="fhPsLongRest"){var restMax=(state.vitals||{}).max;if(restMax!=null)setVitals({current:restMax});setDestinyPoints(Math.min(state.destiny.score,state.destiny.points+1),"Long rest",true);render();return;}
+    if(button.dataset.exhStep!==undefined){setExhaustion(exhaustionLevel()+Number(button.dataset.exhStep),"Adjusted by hand");render();return;}
+    /* One level per short rest, once per long rest — the long rest is what makes
+       the short one able to heal again. */
+    if(button.id==="fhPsShortRest"){
+      if(!exhaustionLevel()){state.message="No Exhaustion to shake off.";state.messageKind="warn";renderMessage();return;}
+      if((state.vitals||{}).shortRestUsed){state.message="A short rest only clears one level between long rests.";state.messageKind="warn";renderMessage();return;}
+      setVitals({shortRestUsed:true});setExhaustion(exhaustionLevel()-1,"Short rest");render();return;
+    }
+    if(button.id==="fhPsLongRest"){var restMax=(state.vitals||{}).max;setVitals(restMax!=null?{current:restMax,shortRestUsed:false}:{shortRestUsed:false});setDestinyPoints(Math.min(state.destiny.score,state.destiny.points+1),"Long rest",true);render();return;}
     if(button.dataset.natChoice){state.trayPrompt=null;resolveNatOne(button.dataset.entryId,button.dataset.natChoice);return;}
     if(button.dataset.context){state.activeContext=button.dataset.context;render();return;}
   }
@@ -2326,7 +2521,7 @@
   function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   function onChange(event){
     if(event.target.dataset.diePortent!==undefined){mutateStagedDie({forcedResult:event.target.value===""?null:Number(event.target.value)});return;}
-    if(/^fhPs(Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.hpField){setVitals(event.target.dataset.hpField==="max"?{max:event.target.value}:{current:event.target.value});render();return;}if(event.target.dataset.destinyField){if(event.target.dataset.destinyField==="score")state.scoreEditing=false;updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
+    if(/^fhPs(Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.hpField){setVitals(event.target.dataset.hpField==="max"?{max:event.target.value}:{current:event.target.value});render();return;}if(event.target.dataset.exhField!==undefined){setExhaustion(event.target.value,"Set by hand");render();return;}if(event.target.dataset.destinyField){if(event.target.dataset.destinyField==="score")state.scoreEditing=false;updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
   function onKeydown(event){if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
 
   function setDockOpen(open){

@@ -135,6 +135,12 @@ button.fh-cd-mstat:hover{border-color:var(--cd-gold-hi)}
 button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-parch)}
 .fh-cd-mstat.is-hurt b{color:var(--cd-red)}
 .fh-cd-mstat.is-hurt{border-color:rgba(159,47,49,.45)}
+/* Exhaustion reads yellow everywhere it appears — cell, badge and token — so the
+   −1 riding on every roll is always the same colour as the thing causing it. */
+.fh-cd-mstat.is-exhausted{border-color:rgba(224,195,74,.85);background:#f6efd2}
+.fh-cd-mstat.is-exhausted b{color:#7a6410}
+.fh-cd-mstat:disabled{opacity:.4;cursor:not-allowed}
+.fh-cd-hplbl{flex:none;font-size:6.6px;letter-spacing:.09em;color:var(--cd-gold);text-transform:uppercase}
 .fh-cd-mstat.is-rest svg{width:9px;height:9px;display:block}
 /* Read-outs, not buttons: no frame, fully rounded, so the strip never lies
    about what can be clicked. */
@@ -210,8 +216,16 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   font-size:12px;font-weight:700;color:var(--cd-gold-bright);text-align:center;font-family:inherit;padding:0;
   -moz-appearance:textfield;appearance:textfield}
 .fh-cd-scorein::-webkit-outer-spin-button,.fh-cd-scorein::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+/* The Arcana became a button when the draw became real. It keeps looking like a
+   label until there is something to do — then it says so, and keeps saying so. */
 .fh-cd-arcana{font-size:7.4px;letter-spacing:.05em;color:var(--cd-gold);text-align:right;
-  max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
+  max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none;
+  padding:0;border:0;background:none;font-family:inherit;cursor:pointer}
+.fh-cd-arcana:hover{color:var(--cd-gold-bright);text-decoration:underline}
+.fh-cd-arcana.is-empty{font-style:italic;color:var(--cd-faint)}
+.fh-cd-arcana.is-owed{color:var(--cd-oxblood);font-weight:800;animation:fh-cd-call 1.3s ease-in-out infinite}
+.fh-cd-card.is-arcana>p{flex:1 1 100%}
+.fh-cd-card .fh-cd-arcnote{font-size:7.2px;color:var(--cd-gold)}
 .fh-cd-pts{display:flex;align-items:center;gap:3px}
 .fh-cd-pts button{width:15px;height:15px;border:1px solid var(--cd-line);background:var(--cd-parch-2);border-radius:3px;
   font-size:9px;font-family:inherit;color:var(--cd-muted);cursor:pointer;line-height:1;padding:0}
@@ -399,6 +413,44 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 /* ── Transient badges, between the buttons and the tray ─────────── */
 .fh-cd-temps{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:5px 10px 0}
 
+/* ── What the frame says behind the dice ─────────────────────────────
+   The backdrop is a ::before under the dice, never over them: it tints and
+   moves, it never competes for the numbers. A debt (Chaos or an Overreach
+   waiting, an Awakening not drawn) keeps its streaks running; a moment —
+   a critical just read — fades on its own. */
+.fh-cd-frame::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0;
+  transition:opacity .4s ease}
+.fh-cd-frame>*{position:relative;z-index:1}
+@keyframes fh-cd-storm{
+  0%{background-position:0 0,0 0}
+  100%{background-position:120px -160px,-90px 140px}
+}
+@keyframes fh-cd-breathe{0%,100%{opacity:.30}50%{opacity:.62}}
+/* Red lightning: Chaos or Overreach owed, and it does not stop until faced. */
+.fh-cd-frame.mood-chaos-owed::before,.fh-cd-frame.mood-overreach-owed::before,
+.fh-cd-frame.mood-chaos-armed::before,.fh-cd-frame.mood-overreach-armed::before{
+  opacity:.42;
+  background-image:repeating-linear-gradient(114deg,rgba(159,47,49,.55) 0 2px,transparent 2px 22px),
+    repeating-linear-gradient(72deg,rgba(255,95,103,.30) 0 1px,transparent 1px 34px);
+  animation:fh-cd-storm 2.6s linear infinite,fh-cd-breathe 2.1s ease-in-out infinite}
+/* Armed means the dice are already in the tray: louder and faster. */
+.fh-cd-frame.mood-chaos-armed::before,.fh-cd-frame.mood-overreach-armed::before{
+  animation-duration:1.5s,1.2s}
+.fh-cd-frame.mood-arcane-success::before,.fh-cd-frame.mood-crit-success::before{
+  opacity:.5;background:radial-gradient(120% 90% at 50% 50%,rgba(241,201,111,.7) 0%,rgba(241,201,111,.15) 55%,transparent 78%);
+  animation:fh-cd-breathe 2.4s ease-in-out 3}
+.fh-cd-frame.mood-arcane-failure::before,.fh-cd-frame.mood-crit-failure::before{
+  opacity:.45;background:radial-gradient(120% 90% at 50% 50%,rgba(159,47,49,.6) 0%,rgba(159,47,49,.14) 55%,transparent 78%);
+  animation:fh-cd-breathe 2.4s ease-in-out 3}
+/* The Awakening is owed until the card is drawn, so it never stops either. */
+.fh-cd-frame.mood-awakening::before{
+  opacity:.46;
+  background-image:conic-gradient(from 0deg at 50% 50%,rgba(241,201,111,.55),transparent 22%,rgba(201,164,90,.5) 46%,transparent 70%,rgba(241,201,111,.55));
+  animation:fh-cd-breathe 3s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){
+  .fh-cd-frame::before{animation:none!important}
+}
+
 /* ── The event list: under the badges, above the dice ───────────────
    One event, one line. The newest is larger and at full strength; the
    ones under it stay legible but recede, so the zone reads as a stack
@@ -481,6 +533,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   animation:fh-cd-call 1s ease-in-out infinite}
 .fh-cd-pending:hover{filter:brightness(1.25)}
 /* A badge you pinned yourself is not a debt: it waits in gold, not in blood. */
+.fh-cd-pending.is-exhaustion{border-color:#9a7f16;background:linear-gradient(180deg,#e0c34a,#a8891a);color:#3a3106}
 .fh-cd-pending.is-note{border-color:var(--cd-gold-hi);background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;
   animation:none}
 .fh-cd-pendadd{flex:none;width:19px;height:15px;padding:0;border:1px dashed var(--cd-line);border-radius:999px;

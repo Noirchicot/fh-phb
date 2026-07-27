@@ -43,6 +43,11 @@
   }catch(error){}
 })();
 </script>
-<script>document.write('<scr'+'ipt src="/javascripts/fh-player-sheet.js?v='+Date.now()+'"><\/scr'+'ipt>');</script>
+<script>
+// Same order as mkdocs.yml: the data globals must exist before the dock reads them.
+["chaos-tables","arcana","fh-player-sheet"].forEach(function(name){
+  document.write('<scr'+'ipt src="/javascripts/'+name+'.js?v='+Date.now()+'"><\/scr'+'ipt>');
+});
+</script>
 </body>
 </html>
