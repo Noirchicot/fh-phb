@@ -118,7 +118,7 @@ because they touch disjoint files.
 
 | # | Package | Model · effort | Files | Depends on |
 |---|---|---|---|---|
-| 1 | **The split + belt shell.** Carve core out of the monolith, write and freeze the panel contract, build the belt (6 tabs, colour-coded, active tab lit), move Skills into `fh-panel-skills.js` unchanged. No new features. Tests stay green. | Opus · high | both monoliths → 3 files | — |
+| 1 | ~~**The split + belt shell.**~~ **DONE — commit `73dedba`.** Belt shipped with all six tabs, colour-coded, active tab lit; panel registry + `ctx` contract frozen; five stub panel files created. **Deviation, on purpose:** core was *not* physically carved into `fh-companion-core.js`. The tests instrument `fh-player-sheet.js` by name, and splitting a 2 633-line closure across script tags is real regression risk on a working roll engine for no extra parallelism — panels being separate files is what unlocks the chats, and that is done. Skills still renders from core, registered through the same contract as everything else. Carve core later, or never. | Opus · high | + 5 panel files | — |
 | 2 | **Tarot visuals.** 78-card deck data, face-down deal, click-to-flip, tray grows during a draw. Major keep/switch UI reskinned onto the card. | Sonnet · high | `fh-panel-*`? no — core (arcana) + new `companion-tarot.css` | 1 |
 | 3 | **Minor Arcana + Brick.** Deck extension + the Brick as a tracked, once-shapeable resource. | Sonnet · medium | core (arcana) | 2, and §6 |
 | 4 | **AboveVTT bridge.** Research first — how AboveVTT ingests external rolls (postMessage? custom event? its chat API?), then send the Companion's resolved rolls into it. | Sonnet · high, research-first | new `fh-abovevtt.js` | 1 |
@@ -166,9 +166,93 @@ to a belt tab rather than rebuilding it.
 - **One chat per package**, started cold from a transition prompt naming: the
   package, its files, the contract, and its done-when. No chat needs another
   chat's history.
-- **Sequencing beats branching.** Package 1 lands on `main` first. After that the
-  packages touch disjoint files, so parallel chats can each commit to `main`
-  without conflicts. Only merge into a branch if two chats must share a file.
-- **Every chat runs the six test suites before committing**, and verifies visually
-  against `dock-harness.html` on port 8125.
+- **One worktree per package**, all branched off `73dedba` (the belt), so every
+  chat starts with the contract already in place and none can break another's
+  checkout:
+
+  | Worktree | Branch | Package |
+  |---|---|---|
+  | `~/tools/fh-worktrees/tarot` | `pkg2-tarot` | 2 — tarot visuals (+3, Minor/Brick) |
+  | `~/tools/fh-worktrees/abovevtt` | `pkg4-abovevtt` | 4 — AboveVTT bridge |
+  | `~/tools/fh-worktrees/features` | `pkg5-features` | 5 — Features panel |
+  | `~/tools/fh-worktrees/actions` | `pkg6-actions` | 6 — Actions panel |
+  | `~/tools/fh-worktrees/spells` | `pkg7-spells` | 7 — Spells panel |
+  | `~/tools/fh-worktrees/notes` | `pkg8-notes` | 8 — Notes panel |
+
+- **Per-worktree setup.** `site/` and `.venv/` are gitignored, so a fresh worktree
+  has neither. To use the harness there:
+  ```bash
+  python3 -m venv .venv && ./.venv/bin/pip install -r requirements.txt
+  ./.venv/bin/mkdocs build && cp tools/dock-harness.html site/
+  ```
+  Then `preview_start` on the `fh-site-b` entry in `.claude/launch.json` and open
+  `/dock-harness.html`. Tests need only `node`, no setup.
+- **Merging.** Panel packages touch one new file each and cannot conflict; merge
+  them to `main` in any order. Package 2 (tarot) and 4 (AboveVTT) *do* touch core,
+  so they merge one at a time and rebase on `main` first.
+- **Every chat runs the six test suites before committing** (`for t in tests/*.test.js;
+  do node "$t"; done`) and verifies visually in the harness.
 - **Every chat updates this file** when it changes the contract or closes a question.
+
+---
+
+## 8. Starter prompts
+
+Paste into a fresh chat. Each is self-contained — no chat needs another's history.
+
+**Package 5 · Features panel** *(same shape for 6 Actions, 7 Spells, 8 Notes —
+swap the worktree, the file and the brief)*
+```
+Work in ~/tools/fh-worktrees/features (branch pkg5-features).
+
+Read COMPANION-BUILD-PLAN.md, then build the Features panel by filling in
+docs/javascripts/fh-panel-features.js. The full ctx contract is documented at
+the top of that file — you should not need to open fh-player-sheet.js at all,
+and you must not edit it.
+
+Features = abilities, traits and feats. The point of the panel is a real
+tracker for everything that recharges: per short rest, per long rest, per day,
+N uses. Persist it in ctx.store("features") + ctx.save().
+
+Style must match the dock: read docs/stylesheets/companion-dock.css and add a
+panel block at the end. Every font-size goes through calc(Npx * var(--cd-fs)).
+
+Done when: the Features tab shows a working tracker, all six suites in tests/
+pass, and it looks right in tools/dock-harness.html on port 8125.
+```
+
+**Package 2 · Tarot**
+```
+Work in ~/tools/fh-worktrees/tarot (branch pkg2-tarot).
+
+Read COMPANION-BUILD-PLAN.md §3, §4 and §6 first — the Major Arcana awakening
+is ALREADY BUILT (drawArcana/keepArcana in fh-player-sheet.js: +1 Score, +10
+temp Points, keep-vs-switch). Do not rebuild the rule. Build the card.
+
+On draw, the tray grows and deals one card FACE DOWN; clicking it flips it over
+(ref: randomtarotcard.com). The keep-vs-switch choice then reads off the card.
+Art: Rider–Waite–Smith (public domain) as a placeholder deck. Key every card by
+its numeral, never by filename — a custom Fate's Hand deck replaces the faces
+later and must drop straight into the same slots.
+
+This package touches core, so rebase on main before merging.
+
+Done when: an Awakening deals a face-down card that flips, all six test suites
+pass, and it works in tools/dock-harness.html.
+```
+
+**Package 4 · AboveVTT bridge**
+```
+Work in ~/tools/fh-worktrees/abovevtt (branch pkg4-abovevtt).
+
+RESEARCH FIRST, build second. Find out how AboveVTT accepts an externally
+produced roll — postMessage, a custom DOM event, its chat API, something else —
+and write what you find into COMPANION-BUILD-PLAN.md before writing any code.
+Eric has prior AboveVTT work in the vault logbook (~/obsidian-vault/7.CLAUDE AND
+ERIC LOGBOOK/AboveVTT Statblocks.md).
+
+Then send the Companion's resolved rolls into AboveVTT from a new
+docs/javascripts/fh-abovevtt.js. Read COMPANION-BUILD-PLAN.md for the contract.
+
+Done when: a roll in the Companion appears in AboveVTT, all six suites pass.
+```
