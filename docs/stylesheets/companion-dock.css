@@ -33,7 +33,7 @@
      that window be dragged to any size at all. Seven stacked zones stop having
      room below this. Under it the dock keeps its floor and the shell scrolls,
      rather than every zone folding into its neighbour. */
-  --cd-floor-h:520px;
+  --cd-floor-h:620px;
 }
 
 /* ── Reset: the dock sits inside .md-typeset, so neutralise the
@@ -218,7 +218,12 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    tab wears its own colour, so the dock always says where you are without
    needing a second label. Scrolls sideways rather than wrapping: six tabs at
    the largest text size still beat a 360px dock. */
-.fh-cd-belt{display:flex;align-items:stretch;border-bottom:1px solid var(--cd-line);
+/* flex:none is load-bearing. A flex item whose overflow is not `visible` gets an
+   automatic minimum size of 0 instead of min-content -- so the moment this got
+   overflow-x:auto for sideways scrolling, it also became able to shrink to
+   nothing. In a short Table-mode window it did exactly that: measured 1px tall
+   at a 600px dock, which is how the belt vanished while its neighbours stayed. */
+.fh-cd-belt{flex:none;display:flex;align-items:stretch;border-bottom:1px solid var(--cd-line);
   background:var(--cd-parch-3);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .fh-cd-belt::-webkit-scrollbar{display:none}
 .fh-cd-belttab{flex:1 1 0;min-width:calc(44px * var(--cd-fs));border:0;border-right:1px solid var(--cd-line);
@@ -780,17 +785,23 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 @media(max-width:520px){
   :root{--cd-fs:min(var(--cd-fs-pref),1.15)}
   .fh-cd-root{width:100vw}
-  /* Seven tabs do not fit one row on a phone, and a belt that scrolls sideways
-     can hide the lit tab -- which is the one thing the belt exists to show. So
-     it wraps to two rows instead: four and three, all of them visible. */
-  .fh-cd-belt{flex-wrap:wrap;overflow-x:visible}
-  .fh-cd-belttab{flex:1 0 25%;min-width:0;border-bottom:1px solid var(--cd-line)}
   .fh-cd-dock{border-left-width:0}
   .fh-cd-srow{height:calc(17px * var(--cd-fs));font-size:calc(10px * var(--cd-fs))}
   .fh-cd-srow>button{font-size:calc(10px * var(--cd-fs))}
   .fh-cd-gear{width:20px;height:20px}
   .fh-cd-gear svg{width:13px;height:13px}
   .fh-cd-chip{height:26px}
+}
+
+/* Seven tabs stop fitting one row somewhere under ~420px, and a belt that
+   scrolls sideways can hide the lit tab -- the one thing it exists to show. So
+   below that it wraps to two rows, four and three, all visible.
+   Deliberately NOT tied to the 520px phone breakpoint: a detached Table-mode
+   window is often 460-520px wide, the belt fits one row there perfectly well,
+   and wrapping it made a desktop window wear the phone layout. */
+@media(max-width:420px){
+  .fh-cd-belt{flex-wrap:wrap;overflow-x:visible}
+  .fh-cd-belttab{flex:1 0 25%;min-width:0;border-bottom:1px solid var(--cd-line)}
 }
 
 @media(prefers-reduced-motion:reduce){
@@ -804,7 +815,13 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 
 /* ── Late additions: pool wrapper, skills overflow guard, breakdown ─ */
 .fh-cd-poolwrap{display:flex;align-items:center;gap:1px}
-.fh-cd-root [data-zone="skills"]{flex:0 1 auto;min-height:0;display:flex;flex-direction:column}
+/* The floor belongs to the ZONE, not to the scroller inside it. Putting it on
+   .fh-cd-skillcols made the scroller taller than the box holding it, and with no
+   clipping on the zone the rows spilled straight over the Destiny row below. */
+.fh-cd-root [data-zone="skills"]{flex:0 1 auto;min-height:calc(78px * var(--cd-fs));
+  overflow:hidden;display:flex;flex-direction:column}
+/* The scroller keeps min-height:0 so it fits whatever the zone gives it and
+   scrolls the rest; the zone above is what refuses to collapse. */
 .fh-cd-root [data-zone="skills"] .fh-cd-skillcols{min-height:0;overflow-y:auto;scrollbar-width:thin}
 .fh-cd-console .fh-ps-roll-result{display:flex;align-items:center;gap:6px;margin-top:5px;padding:5px 6px;
   border:1px solid var(--cd-line-soft);border-radius:5px;background:var(--cd-parch-2);font-size:calc(7.8px * var(--cd-fs));color:var(--cd-muted);flex-wrap:wrap}

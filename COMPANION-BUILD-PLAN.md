@@ -18,6 +18,15 @@ keep it from ever folding: **360px wide**, **520px tall** (`--cd-floor`,
 Narrow screens also **cap the scale** (`--cd-fs` derives from `--cd-fs-pref` so a
 media query can clamp it) — pinning width while type keeps growing is how it breaks.
 
+> ⚠️ **`flex:none` on dock chrome is load-bearing.** A flex item whose `overflow`
+> is not `visible` gets an automatic minimum size of **0**, not `min-content`. The
+> belt got `overflow-x:auto` for sideways scrolling and thereby became able to
+> shrink to nothing — measured **1px** tall in a 600px Table-mode window, which is
+> how it vanished while its neighbours looked fine. Same trap one level down on the
+> skills scroller. If you add a scrollable strip to the dock, give it `flex:none`
+> or a real `min-height`, and floor the **zone**, never the scroller inside it —
+> a scroller taller than its box overflows onto the row below.
+
 ---
 
 ## 1. The constraint that shapes everything
