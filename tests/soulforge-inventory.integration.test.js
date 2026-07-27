@@ -5,7 +5,7 @@ const crypto = require("node:crypto").webcrypto;
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const {parseHTML} = require("/tmp/fh-player-test/node_modules/linkedom");
+const {parseHTML} = require("linkedom");
 const core = require("../docs/javascripts/fh-soulforge-core.js");
 
 function inlineSource(html) {

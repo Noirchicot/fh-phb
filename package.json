@@ -1,0 +1,12 @@
+{
+  "name": "fh-phb",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Test-only dependencies for the Fate's Hand Player's Handbook site.",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.12"
+  }
+}

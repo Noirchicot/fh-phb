@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const {parseHTML} = require("/tmp/fh-player-test/node_modules/linkedom");
+const {parseHTML} = require("linkedom");
 
 async function main() {
   const html=fs.readFileSync(path.join(__dirname,"..","docs","gm.html"),"utf8");

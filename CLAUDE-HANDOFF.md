@@ -199,9 +199,10 @@ GitHub Pages deployment:
 
 Before changing behavior, also run JavaScript syntax checks for `docs/javascripts/fh-home.js` and `docs/javascripts/fh-player-sheet.js`, then test the builder, Player Companion, inventory and Soulforge at 390 px and desktop widths.
 
-Optional DOM roller test:
+Optional DOM roller test. `linkedom` is a devDependency in `package.json`, so a single
+`npm install` in the repo root is enough (`node_modules/` is gitignored):
 
 ```bash
-npm install --prefix /tmp/fh-player-test --cache /tmp/fh-npm-cache linkedom@0.18.12
-node tests/player-sheet.integration.test.js
+npm install
+node --test tests/*.test.js
 ```

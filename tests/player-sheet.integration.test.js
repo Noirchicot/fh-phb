@@ -1,7 +1,7 @@
 "use strict";
 
 // Optional DOM-level smoke test for the Companion dock. Install with:
-// npm install --prefix /tmp/fh-player-test linkedom@0.18.12
+// npm install   (linkedom is a devDependency in the repo's package.json)
 // Every assertion below is a behaviour the sheet had before the dock redesign,
 // re-pointed at the new markup, plus the behaviours the redesign added.
 const assert = require("node:assert/strict");
@@ -10,7 +10,7 @@ const crypto = {randomUUID:()=>webcrypto.randomUUID(),getRandomValues:array=>{ar
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const {parseHTML} = require("/tmp/fh-player-test/node_modules/linkedom");
+const {parseHTML} = require("linkedom");
 
 const {window} = parseHTML("<html><body><div id=\"fhPlayerSheet\" data-rules=\"../\" data-inventory=\"../party-inventory.html\" data-soulforge=\"../soulforge-tool.html\"></div></body></html>");
 const {document} = window;
