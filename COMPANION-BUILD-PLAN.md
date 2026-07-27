@@ -195,64 +195,265 @@ to a belt tab rather than rebuilding it.
 - **Every chat updates this file** when it changes the contract or closes a question.
 
 ---
-
 ## 8. Starter prompts
 
-Paste into a fresh chat. Each is self-contained — no chat needs another's history.
+One per chat. Each is self-contained -- no chat needs another's history. Every
+worktree already has its harness built and its own port, so there is no setup step.
 
-**Package 5 · Features panel** *(same shape for 6 Actions, 7 Spells, 8 Notes —
-swap the worktree, the file and the brief)*
+| Worktree | Branch | Port | Model · effort |
+|---|---|---|---|
+| `notes` | `pkg8-notes` | 8130 | Sonnet · medium |
+| `tarot` | `pkg2-tarot` | 8131 | Sonnet · high |
+| `features` | `pkg5-features` | 8132 | Sonnet · high |
+| `actions` | `pkg6-actions` | 8133 | Sonnet · high |
+| `spells` | `pkg7-spells` | 8134 | Sonnet · high |
+| `abovevtt` | `pkg4-abovevtt` | 8135 | Sonnet · high |
+
+**Start Notes and Tarot first.** Notes is the cheap proof that the contract
+holds; Tarot is unblocked and is the one worth looking at. Features / Actions /
+Spells fan out after Notes reports back.
+
+---
+
+**Package 8 · Notes** — worktree `~/tools/fh-worktrees/notes`, branch `pkg8-notes`, port 8130
+
+```
+Work in ~/tools/fh-worktrees/notes (branch pkg8-notes).
+
+Build the Notes panel by filling in docs/javascripts/fh-panel-notes.js.
+
+Notes = somewhere to write things down at the table. Keep it simple: a
+textarea (or a short list of entries), persisted through ctx.store("notes")
+and ctx.save(), surviving a reload.
+
+YOU ARE GOING FIRST ON PURPOSE. Notes is the only package that exercises the
+two halves of the contract that have never been run: ctx.store/ctx.save
+persistence, and onClick delegation from a panel's own body. If either is
+broken or awkward, you are the one who finds it -- report it plainly rather
+than working around it in silence.
+
+Read COMPANION-BUILD-PLAN.md first. The full ctx contract is documented at the
+top of docs/javascripts/fh-panel-features.js -- you should not need to open
+fh-player-sheet.js at all, and you MUST NOT edit it: core is the architect
+chat's file and another chat may be changing it right now.
+
+Style must match the dock. Add your panel's CSS at the END of
+docs/stylesheets/companion-dock.css. Every font-size goes through
+calc(Npx * var(--cd-fs)) -- the dock has a user text-size control and a
+hardcoded px will not scale with it.
+
+The harness is already built and your worktree has its own port, so just
+preview_start the fh-site-b entry in .claude/launch.json and open
+/dock-harness.html. Do not commit .claude/launch.json (it is skip-worktree'd).
+
+Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
+
+Done when: the Notes tab works, all six test suites pass, and it looks right in
+the harness. Then report back what you built and whether the ctx contract gave
+you everything you needed -- if you had to work around it, say so.
+```
+
+---
+
+**Package 5 · Features** — worktree `~/tools/fh-worktrees/features`, branch `pkg5-features`, port 8132
+
 ```
 Work in ~/tools/fh-worktrees/features (branch pkg5-features).
 
-Read COMPANION-BUILD-PLAN.md, then build the Features panel by filling in
-docs/javascripts/fh-panel-features.js. The full ctx contract is documented at
-the top of that file — you should not need to open fh-player-sheet.js at all,
-and you must not edit it.
+Build the Features panel by filling in docs/javascripts/fh-panel-features.js.
 
-Features = abilities, traits and feats. The point of the panel is a real
+Features = abilities, traits and feats. The POINT of this panel is a real
 tracker for everything that recharges: per short rest, per long rest, per day,
-N uses. Persist it in ctx.store("features") + ctx.save().
+N uses. A player should be able to see at a glance what they have left and
+spend one with a click.
 
-Style must match the dock: read docs/stylesheets/companion-dock.css and add a
-panel block at the end. Every font-size goes through calc(Npx * var(--cd-fs)).
+FIRST, find out what data you actually have: log ctx.character in the harness
+and look. The build payload is an FH level-1 builder record plus DDB sync, and
+it may well NOT carry feats, traits or class features. If it does not, say so and build a
+manual-entry version rather than inventing a data source -- then note the gap
+in COMPANION-BUILD-PLAN.md so the architect chat can decide where the data
+comes from. Do not fake it.
 
-Done when: the Features tab shows a working tracker, all six suites in tests/
-pass, and it looks right in tools/dock-harness.html on port 8125.
+Read COMPANION-BUILD-PLAN.md first. The full ctx contract is documented at the
+top of docs/javascripts/fh-panel-features.js -- you should not need to open
+fh-player-sheet.js at all, and you MUST NOT edit it: core is the architect
+chat's file and another chat may be changing it right now.
+
+Style must match the dock. Add your panel's CSS at the END of
+docs/stylesheets/companion-dock.css. Every font-size goes through
+calc(Npx * var(--cd-fs)) -- the dock has a user text-size control and a
+hardcoded px will not scale with it.
+
+The harness is already built and your worktree has its own port, so just
+preview_start the fh-site-b entry in .claude/launch.json and open
+/dock-harness.html. Do not commit .claude/launch.json (it is skip-worktree'd).
+
+Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
+
+Done when: the Features tab works, all six test suites pass, and it looks right in
+the harness. Then report back what you built and whether the ctx contract gave
+you everything you needed -- if you had to work around it, say so.
 ```
 
-**Package 2 · Tarot**
+---
+
+**Package 6 · Actions** — worktree `~/tools/fh-worktrees/actions`, branch `pkg6-actions`, port 8133
+
+```
+Work in ~/tools/fh-worktrees/actions (branch pkg6-actions).
+
+Build the Actions panel by filling in docs/javascripts/fh-panel-actions.js.
+
+Actions = what you can do on your turn, split Action / Bonus Action /
+Reaction, each one a clickable roll (ctx.roll for a flat d20, ctx.openConsole
+for the advanced console). This panel already declares showsRoller: true, so
+core draws Destiny + Console + Tray underneath it exactly as under Skills --
+do not build your own roller.
+
+FIRST, find out what data you actually have: log ctx.character in the harness
+and look. The build payload is an FH level-1 builder record plus DDB sync, and
+it may well NOT carry attacks, actions or class actions. If it does not, say so and build a
+manual-entry version rather than inventing a data source -- then note the gap
+in COMPANION-BUILD-PLAN.md so the architect chat can decide where the data
+comes from. Do not fake it.
+
+Read COMPANION-BUILD-PLAN.md first. The full ctx contract is documented at the
+top of docs/javascripts/fh-panel-features.js -- you should not need to open
+fh-player-sheet.js at all, and you MUST NOT edit it: core is the architect
+chat's file and another chat may be changing it right now.
+
+Style must match the dock. Add your panel's CSS at the END of
+docs/stylesheets/companion-dock.css. Every font-size goes through
+calc(Npx * var(--cd-fs)) -- the dock has a user text-size control and a
+hardcoded px will not scale with it.
+
+The harness is already built and your worktree has its own port, so just
+preview_start the fh-site-b entry in .claude/launch.json and open
+/dock-harness.html. Do not commit .claude/launch.json (it is skip-worktree'd).
+
+Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
+
+Done when: the Actions tab works, all six test suites pass, and it looks right in
+the harness. Then report back what you built and whether the ctx contract gave
+you everything you needed -- if you had to work around it, say so.
+```
+
+---
+
+**Package 7 · Spells** — worktree `~/tools/fh-worktrees/spells`, branch `pkg7-spells`, port 8134
+
+```
+Work in ~/tools/fh-worktrees/spells (branch pkg7-spells).
+
+Build the Spells panel by filling in docs/javascripts/fh-panel-spells.js.
+
+Spells = the spell list: what is prepared, how many slots remain per level,
+and casting from the panel. showsRoller is already true, so attack rolls and
+saves go through the shared roller -- do not build your own.
+
+FIRST, find out what data you actually have: log ctx.character in the harness
+and look. The build payload is an FH level-1 builder record plus DDB sync, and
+it may well NOT carry a spell list or slots. If it does not, say so and build a
+manual-entry version rather than inventing a data source -- then note the gap
+in COMPANION-BUILD-PLAN.md so the architect chat can decide where the data
+comes from. Do not fake it.
+
+Read COMPANION-BUILD-PLAN.md first. The full ctx contract is documented at the
+top of docs/javascripts/fh-panel-features.js -- you should not need to open
+fh-player-sheet.js at all, and you MUST NOT edit it: core is the architect
+chat's file and another chat may be changing it right now.
+
+Style must match the dock. Add your panel's CSS at the END of
+docs/stylesheets/companion-dock.css. Every font-size goes through
+calc(Npx * var(--cd-fs)) -- the dock has a user text-size control and a
+hardcoded px will not scale with it.
+
+The harness is already built and your worktree has its own port, so just
+preview_start the fh-site-b entry in .claude/launch.json and open
+/dock-harness.html. Do not commit .claude/launch.json (it is skip-worktree'd).
+
+Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
+
+Done when: the Spells tab works, all six test suites pass, and it looks right in
+the harness. Then report back what you built and whether the ctx contract gave
+you everything you needed -- if you had to work around it, say so.
+```
+
+---
+
+**Package 2 · Tarot visuals** — worktree `~/tools/fh-worktrees/tarot`, branch `pkg2-tarot`, port 8131
+
 ```
 Work in ~/tools/fh-worktrees/tarot (branch pkg2-tarot).
 
-Read COMPANION-BUILD-PLAN.md §3, §4 and §6 first — the Major Arcana awakening
-is ALREADY BUILT (drawArcana/keepArcana in fh-player-sheet.js: +1 Score, +10
-temp Points, keep-vs-switch). Do not rebuild the rule. Build the card.
+READ COMPANION-BUILD-PLAN.md SECTIONS 3, 4 AND 6 BEFORE WRITING ANY CODE.
 
-On draw, the tray grows and deals one card FACE DOWN; clicking it flips it over
-(ref: randomtarotcard.com). The keep-vs-switch choice then reads off the card.
-Art: Rider–Waite–Smith (public domain) as a placeholder deck. Key every card by
-its numeral, never by filename — a custom Fate's Hand deck replaces the faces
-later and must drop straight into the same slots.
+The Major Arcana awakening is ALREADY BUILT and works: drawArcana/keepArcana in
+docs/javascripts/fh-player-sheet.js already grant +1 permanent Destiny Score and
++10 temporary Points either way, then offer keep-vs-switch, and write the switch
+through to the profile. DO NOT REBUILD THE RULE. You are building the card.
 
-This package touches core, so rebase on main before merging.
+What to build:
+- On an Awakening draw, the tray GROWS and deals one card FACE DOWN.
+- Clicking the card flips it over (reference: randomtarotcard.com).
+- The existing keep-vs-switch choice then reads off the revealed card.
+- Art: Rider-Waite-Smith (1909, public domain) as a PLACEHOLDER deck.
 
-Done when: an Awakening deals a face-down card that flips, all six test suites
-pass, and it works in tools/dock-harness.html.
+CRITICAL: key every card by its NUMERAL (0, I, II ... XXI), never by filename.
+A custom Fate's Hand deck -- the Saints d'AvA, who are already the 22 Majors --
+replaces these faces later and must drop into the same slots untouched.
+
+Unlike the panel packages, this one DOES touch core (fh-player-sheet.js), so:
+rebase on main before you merge, and keep your diff to the arcana/tray area.
+Put card CSS in a new docs/stylesheets/companion-tarot.css and add it to
+mkdocs.yml + tools/dock-harness.html.
+
+The harness is already built and this worktree runs on port 8131: preview_start
+the fh-site-b entry in .claude/launch.json and open /dock-harness.html. Do not
+commit .claude/launch.json (skip-worktree'd). To force an Awakening for testing,
+drive the state directly in the console rather than rolling until one happens.
+
+Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
+
+Done when: an Awakening deals a face-down card that flips to a real RWS face,
+keep-vs-switch still works, all six suites pass. Report back with a screenshot.
+
+DO NOT build Minor Arcana or the Brick -- that is package 3 and it is BLOCKED on
+a rules decision from Eric (see plan section 6).
 ```
 
-**Package 4 · AboveVTT bridge**
+---
+
+**Package 4 · AboveVTT bridge** — worktree `~/tools/fh-worktrees/abovevtt`, branch `pkg4-abovevtt`, port 8135
+
 ```
 Work in ~/tools/fh-worktrees/abovevtt (branch pkg4-abovevtt).
 
-RESEARCH FIRST, build second. Find out how AboveVTT accepts an externally
-produced roll — postMessage, a custom DOM event, its chat API, something else —
-and write what you find into COMPANION-BUILD-PLAN.md before writing any code.
-Eric has prior AboveVTT work in the vault logbook (~/obsidian-vault/7.CLAUDE AND
-ERIC LOGBOOK/AboveVTT Statblocks.md).
+RESEARCH FIRST, BUILD SECOND. Do not write feature code until the research
+question is answered in writing.
 
-Then send the Companion's resolved rolls into AboveVTT from a new
-docs/javascripts/fh-abovevtt.js. Read COMPANION-BUILD-PLAN.md for the contract.
+The question: how does AboveVTT accept a roll produced outside it? postMessage?
+a custom DOM event? its chat input? a websocket? something else? AboveVTT is a
+browser extension layered over D&D Beyond, so the answer may be "there is no
+clean external hook" -- that is a legitimate finding and worth knowing BEFORE a
+session is spent on it, not during.
 
-Done when: a roll in the Companion appears in AboveVTT, all six suites pass.
+Sources: the AboveVTT source/docs, and Eric's prior work at
+~/obsidian-vault/7.CLAUDE AND ERIC LOGBOOK/D&D — Tech & Outils/AboveVTT Statblocks.md
+
+Write what you find into COMPANION-BUILD-PLAN.md and STOP THERE if the answer is
+that no supported hook exists -- report back before building anything.
+
+If a hook does exist: send the Companion's resolved rolls into AboveVTT from a
+NEW file docs/javascripts/fh-abovevtt.js. It should subscribe to rolls rather
+than have core call it, so core stays unaware of it. Read the ctx contract at the
+top of docs/javascripts/fh-panel-features.js; if you need core to expose a roll
+hook it does not have, propose the smallest possible addition and flag it -- do
+not restructure fh-player-sheet.js.
+
+Harness: this worktree runs on port 8135. Tests: for t in tests/*.test.js; do
+node "$t"; done -- all six must pass.
+
+Done when: either a roll in the Companion appears in AboveVTT, or the plan
+records exactly why it cannot. Both are a successful outcome for this package.
 ```
