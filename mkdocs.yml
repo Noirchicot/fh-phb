@@ -39,6 +39,7 @@ theme:
 extra_css:
   - stylesheets/extra.css
   - stylesheets/companion-dock.css
+  - stylesheets/companion-tarot.css
 
 extra_javascript:
   - javascripts/fh-home.js

@@ -1228,6 +1228,10 @@
   function arcanaDeck(){var deck=typeof window!=="undefined"&&window.FH_ARCANA;return Array.isArray(deck)&&deck.length?deck:[];}
   function currentArcana(){return state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};}
   function arcanaDrawn(){return !!(currentArcana().name);}
+  /* Card art is keyed by numeral, never by filename or English name — so the
+     placeholder Rider-Waite-Smith deck can be swapped wholesale for the Saints
+     d'AvA later by dropping 22 files into the same folder under the same names. */
+  function arcanaArtUrl(numeral){return numeral?(SITE_ROOT||"../")+"assets/img/tarot/major/"+numeral+".jpg":"";}
   /* The Awakening is owed until the card is drawn: that is what the backdrop
      behind the dice is saying, and it says it until this stops being null. */
   function awakeningOwed(){return !!(state.destiny&&state.destiny.awakeningOwed);}
@@ -1237,8 +1241,14 @@
     var card=deck[rollDie(deck.length)-1];
     // §5: the draw pays either way — +1 Score and 10 temporary Points — and only
     // then does the player choose whether to switch. So the card is a proposal.
-    state.trayPrompt={type:"arcana-draw",card:card,previous:currentArcana().name||""};
+    // It is dealt face down (revealed:false) — the flip is the player's own click.
+    state.trayPrompt={type:"arcana-draw",card:card,previous:currentArcana().name||"",revealed:false};
     persistPlayState();render();
+  }
+  function flipArcana(){
+    var prompt=state.trayPrompt;
+    if(!prompt||prompt.type!=="arcana-draw"||prompt.revealed)return;
+    prompt.revealed=true;persistPlayState();render();
   }
   function keepArcana(card,replace){
     var before=state.destiny.score;
@@ -1774,13 +1784,26 @@
     /* The card the deck just dealt, with the powers it actually carries — and
        the one choice §5 leaves you: take it, or keep what you had. */
     if(prompt&&prompt.type==="arcana-draw"&&prompt.card){
-      var drawn=prompt.card;
-      return "<div class=\"fh-cd-card is-awakening is-arcana\"><small>ARCANE AWAKENING · "+esc(drawn.numeral)+"</small><b>"+esc(drawn.name)+"</b>"+
-        "<p><b>Power</b> "+esc(drawn.power||"—")+(drawn.vibration?"<br><b>Vibration</b> "+esc(drawn.vibration):"")+
-        (drawn.meaning?"<br><em>"+esc(drawn.meaning)+"</em>":"")+"</p>"+
-        "<p class=\"fh-cd-arcnote\">+1 Destiny Score and 10 temporary Points either way"+(prompt.previous?" · you currently hold "+esc(prompt.previous):"")+".</p>"+
-        "<div class=\"fh-cd-acts\"><button data-arcana-take>Switch to "+esc(drawn.name)+"</button>"+
-        (prompt.previous?"<button class=\"is-ghost\" data-arcana-keep>Keep "+esc(prompt.previous)+"</button>":"")+"</div></div>";
+      var drawn=prompt.card,revealed=!!prompt.revealed,art=arcanaArtUrl(drawn.numeral);
+      var stage="<div class=\"fh-tarot-stage\">"+
+        (revealed
+          ?"<div class=\"fh-tarot-card is-flipped\"><span class=\"fh-tarot-face fh-tarot-back\"></span>"+
+            "<span class=\"fh-tarot-face fh-tarot-front\"><img src=\""+esc(art)+"\" alt=\""+esc(drawn.name)+"\" loading=\"lazy\"><em>"+esc(drawn.numeral)+"</em></span></div>"
+          :"<button type=\"button\" class=\"fh-tarot-card\" data-arcana-flip aria-label=\"Reveal the drawn card\">"+
+            "<span class=\"fh-tarot-face fh-tarot-back\"></span>"+
+            "<span class=\"fh-tarot-face fh-tarot-front\"><img src=\""+esc(art)+"\" alt=\"\" loading=\"lazy\"><em>"+esc(drawn.numeral)+"</em></span></button>")+
+        "</div>";
+      return "<div class=\"fh-cd-card is-awakening is-arcana is-tarot"+(revealed?" is-revealed":"")+"\">"+
+        "<small>ARCANE AWAKENING"+(revealed?" · "+esc(drawn.numeral):"")+"</small>"+
+        "<b>"+(revealed?esc(drawn.name):"A card is dealt, face down")+"</b>"+stage+
+        (revealed
+          ?"<p><b>Power</b> "+esc(drawn.power||"—")+(drawn.vibration?"<br><b>Vibration</b> "+esc(drawn.vibration):"")+
+            (drawn.meaning?"<br><em>"+esc(drawn.meaning)+"</em>":"")+"</p>"+
+            "<p class=\"fh-cd-arcnote\">+1 Destiny Score and 10 temporary Points either way"+(prompt.previous?" · you currently hold "+esc(prompt.previous):"")+".</p>"+
+            "<div class=\"fh-cd-acts\"><button data-arcana-take>Switch to "+esc(drawn.name)+"</button>"+
+            (prompt.previous?"<button class=\"is-ghost\" data-arcana-keep>Keep "+esc(prompt.previous)+"</button>":"")+"</div>"
+          :"<p class=\"fh-cd-arcnote\">+1 Destiny Score and 10 temporary Points either way"+(prompt.previous?" · you currently hold "+esc(prompt.previous):"")+" — tap the card to reveal it.</p>")+
+        "</div>";
     }
     if(prompt&&prompt.type==="awakening"){
       var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};
@@ -2516,6 +2539,7 @@
     if(button.dataset.pendingAdd!==undefined){state.trayPrompt={type:"pending-new"};state.diePrompt=null;render();return;}
     if(button.dataset.pendingExhaustion!==undefined){setExhaustion(exhaustionLevel()+1,"Taken by hand");state.trayPrompt=null;render();return;}
     if(button.dataset.arcanaDraw!==undefined){drawArcana();return;}
+    if(button.dataset.arcanaFlip!==undefined){flipArcana();return;}
     if(button.dataset.arcanaTake!==undefined||button.dataset.arcanaKeep!==undefined){
       var drawPrompt=state.trayPrompt;
       if(drawPrompt&&drawPrompt.card)keepArcana(drawPrompt.card,button.dataset.arcanaTake!==undefined);

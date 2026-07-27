@@ -1,0 +1,10 @@
+Placeholder deck for the Arcane Awakening card UI.
+
+Source: Rider–Waite–Smith tarot (Pamela Colman Smith, 1909), via Wikimedia
+Commons (`RWS_Tarot_NN_*.jpg`, public domain in the US — pre-1929 publication).
+Resized to 360px width, JPEG quality 82.
+
+Files are named by **numeral** (0, I, II … XXI), matching `card.numeral` in
+`window.FH_ARCANA` (docs/javascripts/arcana.js) — never by the card's English
+name. This is a placeholder; the Saints d'AvA deck replaces these files
+wholesale, one file per numeral, once generated (see COMPANION-BUILD-PLAN.md §6).

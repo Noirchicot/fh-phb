@@ -1,0 +1,57 @@
+/* Fate's Hand — Arcane Awakening tarot card.
+   The Major Arcana rule itself lives in fh-player-sheet.js (drawArcana /
+   keepArcana, commit 4c69290); this file is only the card's visuals:
+   a face-down deal that grows the tray, and a click-to-flip reveal
+   (ref: randomtarotcard.com). Placeholder deck is Rider-Waite-Smith (1909,
+   public domain); art is keyed by numeral in the JS, never by filename, so
+   the Saints d'AvA deck can replace it later without touching this file. */
+
+.fh-cd-card.is-tarot{flex-direction:column;align-items:center;text-align:center;gap:5px;padding:10px 8px 8px}
+.fh-cd-card.is-tarot>small{order:0;flex:none}
+.fh-cd-card.is-tarot>b{order:0;flex:none;font-size:calc(11px * var(--cd-fs))}
+.fh-cd-card.is-tarot>p{order:2;flex:none;width:100%;text-align:left}
+.fh-cd-card.is-tarot .fh-cd-arcnote{text-align:center}
+.fh-cd-card.is-tarot .fh-cd-acts{order:3;flex:none;width:100%;margin-left:0;justify-content:center}
+
+/* The drop-shadow lives here, not on .fh-tarot-card: a filter on the element
+   that declares transform-style:preserve-3d forces its own 3D context to
+   flatten (CSS Transforms §Grouping), which silently breaks backface-visibility
+   and the flip shows both faces overlapped instead of hiding the back one. */
+.fh-tarot-stage{order:1;flex:none;width:100%;display:flex;justify-content:center;align-items:center;padding:4px 0 2px;
+  perspective:900px;filter:drop-shadow(0 4px 10px rgba(20,12,4,.45))}
+
+/* Specificity note: .fh-cd-card button already sets height/padding/border/
+   background/display for every button inside a tray card (companion-dock.css).
+   ".fh-cd-card .fh-tarot-card" (two classes) is needed to outrank it and get
+   a clean slate for the flip card instead of a label-shaped gold button. */
+.fh-cd-card .fh-tarot-card{position:relative;height:auto;width:calc(112px * var(--cd-fs));aspect-ratio:.58;
+  border:0;padding:0;margin:0;background:none;display:block;text-decoration:none;
+  transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
+.fh-tarot-card:not(.is-flipped){cursor:pointer}
+.fh-tarot-card:not(.is-flipped):hover{animation:fh-tarot-invite 1.3s ease-in-out infinite}
+.fh-tarot-card.is-flipped{animation:fh-tarot-flip .55s cubic-bezier(.3,.1,.25,1) both}
+
+.fh-tarot-face{position:absolute;inset:0;border-radius:8px;overflow:hidden;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1.5px solid var(--cd-gold-hi);box-shadow:inset 0 0 0 3px var(--cd-parch-2)}
+.fh-tarot-back{background:
+  repeating-linear-gradient(45deg,#3f2e18 0 6px,#4a3820 6px 12px),
+  radial-gradient(120% 90% at 50% 50%,#5c4326,#2e2110 85%)}
+.fh-tarot-back::before{content:"FH";position:absolute;inset:0;display:grid;place-items:center;
+  font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:800;font-size:calc(15px * var(--cd-fs));
+  color:var(--cd-gold-glow);text-shadow:0 0 8px rgba(241,201,111,.6);letter-spacing:.06em}
+.fh-tarot-front{transform:rotateY(180deg);-webkit-transform:rotateY(180deg);background:var(--cd-parch)}
+.fh-tarot-front img{width:100%;height:100%;object-fit:cover;display:block}
+.fh-tarot-front em{position:absolute;left:3px;top:2px;font-style:normal;font-weight:700;
+  font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:calc(8px * var(--cd-fs));
+  color:#fff8e2;background:rgba(20,12,4,.55);border-radius:3px;padding:1px 4px;line-height:1.3}
+
+@keyframes fh-tarot-flip{0%{transform:rotateY(0)}100%{transform:rotateY(180deg)}}
+@keyframes fh-tarot-invite{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+@media(max-height:900px){.fh-tarot-card{width:calc(92px * var(--cd-fs))}}
+@media(max-height:720px){.fh-tarot-card{width:calc(78px * var(--cd-fs))}}
+
+@media(prefers-reduced-motion:reduce){
+  .fh-tarot-card{animation:none!important}
+}
