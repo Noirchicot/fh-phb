@@ -70,7 +70,7 @@
     loading:false, message:"", messageKind:"",
     dockOpen:false, menuOpen:false, popOpen:"", diceSignature:"",
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
-    diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null
+    diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:1.15
   };
   // The five passives shown in the vitals zone, in Eric's reading order.
   var PASSIVES = [["vigilance","Vigilance"],["delve","Delve"],["survival","Survival"],["insight","Insight"],["investigation","Investigation"]];
@@ -129,6 +129,17 @@
       var on=entry[0]===active&&entry[0]!=="seal";
       return "<button class=\"fh-cd-hbtn fh-cd-mode"+(on?" is-on":"")+"\" type=\"button\" data-cd-mode=\""+entry[0]+"\" title=\""+entry[1]+" — "+entry[2]+"\" aria-label=\""+entry[1]+": "+entry[2]+"\""+(on?" aria-pressed=\"true\"":"")+">"+glyph(entry[0])+"</button>";
     }).join("")+"</span>";
+  }
+  // Text size: three steps on the dock's --cd-fs scale. Normal is the tuned
+  // baseline; Large (+15%) is the default so the dock isn't squinting-small
+  // out of the box, and XL (+30%) is there for anyone who wants it bigger still.
+  var TEXT_SIZES=[["1","A","Normal"],["1.15","A","Large (+15%)"],["1.3","A","Extra large (+30%)"]];
+  function renderTextSizeControl() {
+    var active=String(state.textSize);
+    return "<div class=\"fh-cd-seg fh-cd-textsize\" role=\"group\" aria-label=\"Companion text size\">"+TEXT_SIZES.map(function(entry,i){
+      var on=entry[0]===active;
+      return "<button class=\"fh-cd-tsz-btn"+(on?" is-on":"")+"\" type=\"button\" data-text-size=\""+entry[0]+"\" title=\""+entry[2]+"\" aria-label=\"Text size: "+entry[2]+"\""+(on?" aria-pressed=\"true\"":"")+" style=\"font-size:"+(11+i*2)+"px\">"+entry[1]+"</button>";
+    }).join("")+"</div>";
   }
   function clamp(value, min, max) { return Math.min(max, Math.max(min, Number(value) || 0)); }
   function numberOr(value,fallback){return value!==null&&value!==""&&isFinite(Number(value))?Number(value):fallback;}
@@ -2314,6 +2325,8 @@
       ? "<img class=\"fh-cd-portrait\" src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'fh-cd-portrait',textContent:'"+esc(initials)+"'}))\">"
       : "<span class=\"fh-cd-portrait\">"+esc(initials)+"</span>";
     var menu=state.menuOpen?"<div class=\"fh-cd-menu\">"+
+      "<div class=\"fh-cd-menurow\"><span>Text size</span>"+renderTextSizeControl()+"</div>"+
+      "<div class=\"fh-cd-msep\"></div>"+
       "<button type=\"button\" id=\"fhPsSync\">"+(linked?"Sync D&amp;D Beyond":"Link D&amp;D Beyond")+"<small>pull</small></button>"+
       (linked?"<button type=\"button\" id=\"fhPsRelink\">Replace the DDB link</button>":"")+
       "<button type=\"button\" id=\"fhPsCorrect\">Edit sheet<small>overrides</small></button>"+
@@ -2338,6 +2351,13 @@
     if(!root)return;
     var floating=inPip();
     root.className="fh-cd-root"+(state.dockOpen?" is-open":"")+(floating?" is-floating":"");
+    /* --cd-width is computed at :root from var(--cd-fs), so the override has to land
+       on :root (the <html> element) too — setting it on the dock's own node only
+       reaches the font-size rules that read --cd-fs directly at their own selector,
+       leaving --cd-width locked to whatever it resolved to at :root (1). Use
+       ownerDocument so this still lands on the right :root when Table mode has
+       moved the node into the Picture-in-Picture window. */
+    (root.ownerDocument||document).documentElement.style.setProperty("--cd-fs",state.textSize);
     // While the dock floats, the page must not keep a gutter for it.
     try{if(document.body&&document.body.classList)document.body.classList.toggle("fh-cd-docked",!!state.dockOpen&&!floating);}catch(error){}
     var seal="<button class=\"fh-cd-seal-fab\" type=\"button\" data-dock-open aria-label=\"Open the Player Companion\">FH</button>";
@@ -2433,6 +2453,7 @@
     if(button.dataset.closePop!==undefined){if(state.editDraft)state.editDraft=null;state.popOpen="";render();return;}
     if(button.dataset.chromeToggle!==undefined){state.chromeOpen=!state.chromeOpen;state.menuOpen=false;render();return;}
     if(button.dataset.cdMode!==undefined){setWindowMode(button.dataset.cdMode);return;}
+    if(button.dataset.textSize!==undefined){setTextSize(button.dataset.textSize);return;}
     if(button.dataset.hpOpen!==undefined){state.hpOpen=!state.hpOpen;render();return;}
     if(button.dataset.hpStep!==undefined){var hp=state.vitals||{};if(hp.max==null){state.message="Set a maximum first.";state.messageKind="warn";renderMessage();return;}setVitals({current:(hp.current==null?hp.max:hp.current)+Number(button.dataset.hpStep)});render();return;}
     if(button.dataset.hpFull!==undefined){setVitals({current:(state.vitals||{}).max});render();return;}
@@ -2577,6 +2598,11 @@
     try{if(!closing.closed)closing.close();}catch(error){}
     state.windowMode="margin";render();
   }
+  function setTextSize(size){
+    state.textSize=Number(size)||1;
+    try{localStorage.setItem("fh-cd-textsize",String(state.textSize));}catch(error){}
+    render();
+  }
   function setWindowMode(mode){
     state.menuOpen=false;
     if(mode==="table"){if(!state.dockOpen)setDockOpen(true);enterPip();return;}
@@ -2599,6 +2625,8 @@
     state.requestedPseudo=linkedCharacter;
     var remembered=null;try{remembered=localStorage.getItem("fh-cd-open");}catch(error){}
     state.dockOpen=ownsPage||!!linkedCampaign||remembered==="1";
+    var rememberedSize=null;try{rememberedSize=localStorage.getItem("fh-cd-textsize");}catch(error){}
+    if(rememberedSize)state.textSize=clamp(rememberedSize,1,1.3)||1.15;
     render();
     if(state.dockOpen&&state.code)loadParty();
   });
