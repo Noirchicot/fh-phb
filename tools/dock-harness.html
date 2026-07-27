@@ -45,7 +45,9 @@
 </script>
 <script>
 // Same order as mkdocs.yml: the data globals must exist before the dock reads them.
-["chaos-tables","arcana","fh-player-sheet"].forEach(function(name){
+["chaos-tables","arcana",
+ "fh-panel-features","fh-panel-actions","fh-panel-spells","fh-panel-inventory","fh-panel-notes",
+ "fh-player-sheet"].forEach(function(name){
   document.write('<scr'+'ipt src="/javascripts/'+name+'.js?v='+Date.now()+'"><\/scr'+'ipt>');
 });
 </script>

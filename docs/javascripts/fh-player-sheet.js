@@ -70,7 +70,8 @@
     loading:false, message:"", messageKind:"",
     dockOpen:false, menuOpen:false, popOpen:"", diceSignature:"",
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
-    diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:1.15
+    diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:1.15,
+    panel:"skills", panelData:{}
   };
   // The five passives shown in the vitals zone, in Eric's reading order.
   var PASSIVES = [["vigilance","Vigilance"],["delve","Delve"],["survival","Survival"],["insight","Insight"],["investigation","Investigation"]];
@@ -567,12 +568,14 @@
     // from the entry so the head keeps naming the check instead of saying FREE ROLL.
     if(rollOpen()){var resumed=openEntry();state.rollConfig=resumed?configFromEntry(resumed):null;}
     state.prefs = Object.assign({bardicSides:6},local.prefs || {},profile.rollPrefs || {});
+    // Each belt panel's own bucket, restored wholesale: core never reads inside it.
+    state.panelData = (local.panelData && typeof local.panelData === "object") ? local.panelData : {};
   }
   function persistPlayState() {
     if (!state.code || !state.pseudo || !state.destiny) return;
     var safePrompt=state.trayPrompt&&["nat1","arcane1","chaos","awakening","die-choice","arcana-draw"].indexOf(state.trayPrompt.type)>=0?state.trayPrompt:null;
     var pendingRoll={rollSequence:state.rollSequence,trayPrompt:safePrompt,queueDone:state.queueDone,trayResults:state.trayResults,trayTitle:state.trayTitle,trayResultText:state.trayResultText,pendingArmed:state.pendingArmed,destinyStaged:state.destinyStaged};
-    var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll};
+    var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll,panelData:state.panelData};
     try { localStorage.setItem(storageKey(), JSON.stringify(payload)); } catch (error) {}
     clearTimeout(persistTimer);
     persistTimer = window.setTimeout(function () {
@@ -2347,6 +2350,81 @@
       renderModeControl()+
       menu+"</div><p id=\"fhPsMessage\" class=\"fh-cd-msg\"></p>";
   }
+  /* ── The belt ──────────────────────────────────────────────────────
+     Six panels between the passives and the body. Skills is declared here
+     because it predates the belt and still draws from this file; every other
+     panel lives in its own docs/javascripts/fh-panel-*.js and pushes itself
+     onto window.FH.panels. That is the point of the registry: a chat can own
+     one panel without ever opening this file.
+
+     A panel is:
+       id           the belt tab, and the key for its own persisted store
+       label/tint   what the belt shows, and its colour when lit
+       order        belt position
+       showsRoller  true -> core draws Destiny + Console + Tray underneath
+       render(ctx)  returns the panel body's HTML
+       onClick(event,ctx)  optional; return true when it handled the click
+     ctx comes from panelContext() and is the only surface a panel may use. */
+  var BUILT_IN_PANELS=[{
+    id:"skills", label:"Skills", tint:"#9c6b16", order:10, showsRoller:true,
+    render:function(ctx){return renderSkills(ctx.character);}
+  }];
+  function allPanels(){
+    var extra=[];
+    try{if(window.FH&&Array.isArray(window.FH.panels))extra=window.FH.panels;}catch(error){}
+    return BUILT_IN_PANELS.concat(extra).sort(function(a,b){return (a.order||99)-(b.order||99);});
+  }
+  function activePanel(){
+    var panels=allPanels();
+    for(var i=0;i<panels.length;i++)if(panels[i].id===state.panel)return panels[i];
+    return panels[0]||null;
+  }
+  /* A panel's own corner of the persisted play state, so Notes can keep its
+     text and Features its tracker without either touching core's schema. */
+  function panelStore(id){
+    if(!state.panelData||typeof state.panelData!=="object")state.panelData={};
+    if(!state.panelData[id]||typeof state.panelData[id]!=="object")state.panelData[id]={};
+    return state.panelData[id];
+  }
+  function panelContext(){
+    return {
+      character:state.character, destiny:state.destiny, profile:state.profile,
+      esc:esc, icon:iconSvg, signed:signed, mod:mod,
+      roll:function(name,ability,bonus,note){quickRoll(name,ability,bonus,note);},
+      openConsole:function(name,ability,bonus,note,dc){openConfig(name,ability,bonus,note,dc);},
+      note:function(text,kind){pushEvent(text,kind||"note");renderMessage();refreshEventPanel();},
+      store:panelStore,
+      save:function(){persistPlayState();},
+      refresh:function(){render();}
+    };
+  }
+  function setPanel(id){
+    if(!id||id===state.panel)return;
+    state.panel=id;state.menuOpen=false;
+    try{localStorage.setItem("fh-cd-panel",id);}catch(error){}
+    render();
+  }
+  function renderBelt(){
+    var current=activePanel();
+    return "<nav class=\"fh-cd-belt\" role=\"tablist\" aria-label=\"Companion sections\">"+allPanels().map(function(panel){
+      var on=!!(current&&panel.id===current.id);
+      return "<button class=\"fh-cd-belttab"+(on?" is-on":"")+"\" type=\"button\" role=\"tab\" data-panel=\""+esc(panel.id)+"\""+
+        " style=\"--cd-tab:"+esc(panel.tint||"#9c6b16")+"\" aria-selected=\""+(on?"true":"false")+"\">"+esc(panel.label||panel.id)+"</button>";
+    }).join("")+"</nav>";
+  }
+  /* display:contents on the wrapper -- it exists to scope a panel's clicks,
+     not to become a flex item and steal the zones' own layout. */
+  function renderPanelBody(){
+    var panel=activePanel();
+    if(!panel)return "";
+    var body="";
+    try{body=panel.render(panelContext())||"";}
+    catch(error){
+      body="<div class=\"fh-cd-zone\"><p class=\"fh-cd-msg is-danger\">The "+esc(panel.label||panel.id)+" panel failed to draw: "+esc(error&&error.message||"unknown error")+"</p></div>";
+      if(window.console&&console.error)console.error(error);
+    }
+    return "<div class=\"fh-cd-panelbody\" data-panel-body=\""+esc(panel.id)+"\">"+body+"</div>";
+  }
   function render() {
     if(!root)return;
     var floating=inPip();
@@ -2366,8 +2444,15 @@
     else if(!state.record||!state.character)inner=renderDockHeader(null)+renderAccessZone()+"<div class=\"fh-cd-welcome\"><span>⚔</span><h1>Player Companion</h1><p>Enter your campaign code and pick a character. D&amp;D Beyond stays the source for the standard sheet; this dock runs the Fate's Hand layer.</p></div>";
     else{
       var ch=state.character;
+      var panel=activePanel();
+      /* A roll in flight keeps the roller on screen even on a panel that does
+         not normally carry it -- otherwise switching tabs mid-transaction
+         strands the dice where nobody can finish them. */
+      var roller=!!(panel&&panel.showsRoller)||rollTransactionActive()||rollOpen();
       inner=renderDockHeader(ch)+(state.chromeOpen?renderAccessZone():"")+
-        renderStats(ch)+renderSkills(ch)+renderDestiny(ch)+renderConsole()+renderStageZone()+renderStream()+renderPops(ch);
+        renderStats(ch)+renderBelt()+renderPanelBody()+
+        (roller?renderDestiny(ch)+renderConsole()+renderStageZone():"")+
+        renderStream()+renderPops(ch);
     }
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
@@ -2454,6 +2539,23 @@
     if(button.dataset.chromeToggle!==undefined){state.chromeOpen=!state.chromeOpen;state.menuOpen=false;render();return;}
     if(button.dataset.cdMode!==undefined){setWindowMode(button.dataset.cdMode);return;}
     if(button.dataset.textSize!==undefined){setTextSize(button.dataset.textSize);return;}
+    if(button.dataset.panel!==undefined){setPanel(button.dataset.panel);return;}
+    /* A panel owns the clicks inside its own body. Core still handles
+       everything outside it, and anything the panel declines. */
+    if(event.target.closest&&event.target.closest("[data-panel-body]")){
+      var here=activePanel();
+      if(here&&typeof here.onClick==="function"){
+        var handled=false;
+        try{handled=here.onClick(event,panelContext());}
+        catch(error){
+          state.message=(here.label||here.id)+" panel error: "+(error&&error.message||"unknown error");
+          state.messageKind="danger";renderMessage();
+          if(window.console&&console.error)console.error(error);
+          return;
+        }
+        if(handled)return;
+      }
+    }
     if(button.dataset.hpOpen!==undefined){state.hpOpen=!state.hpOpen;render();return;}
     if(button.dataset.hpStep!==undefined){var hp=state.vitals||{};if(hp.max==null){state.message="Set a maximum first.";state.messageKind="warn";renderMessage();return;}setVitals({current:(hp.current==null?hp.max:hp.current)+Number(button.dataset.hpStep)});render();return;}
     if(button.dataset.hpFull!==undefined){setVitals({current:(state.vitals||{}).max});render();return;}
@@ -2627,6 +2729,10 @@
     state.dockOpen=ownsPage||!!linkedCampaign||remembered==="1";
     var rememberedSize=null;try{rememberedSize=localStorage.getItem("fh-cd-textsize");}catch(error){}
     if(rememberedSize)state.textSize=clamp(rememberedSize,1,1.3)||1.15;
+    /* Only honour a remembered tab that still exists -- a panel file that was
+       removed must not leave the belt pointing at nothing. */
+    var rememberedPanel=null;try{rememberedPanel=localStorage.getItem("fh-cd-panel");}catch(error){}
+    if(rememberedPanel&&allPanels().some(function(panel){return panel.id===rememberedPanel;}))state.panel=rememberedPanel;
     render();
     if(state.dockOpen&&state.code)loadParty();
   });

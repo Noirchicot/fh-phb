@@ -47,6 +47,14 @@ extra_javascript:
   # window.FH_CHAOS to quote a Chaos row instead of linking to the chapter.
   - javascripts/chaos-tables.js
   - javascripts/arcana.js
+  # Belt panels register themselves onto window.FH.panels. Order between them
+  # is irrelevant (each carries its own `order`), and the dock reads the list
+  # at render time, so these only need to be present — not loaded first.
+  - javascripts/fh-panel-features.js
+  - javascripts/fh-panel-actions.js
+  - javascripts/fh-panel-spells.js
+  - javascripts/fh-panel-inventory.js
+  - javascripts/fh-panel-notes.js
   - javascripts/fh-player-sheet.js
 
 markdown_extensions:

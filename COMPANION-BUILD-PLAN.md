@@ -143,9 +143,19 @@ to a belt tab rather than rebuilding it.
    yet written anywhere.
 2. **How many temporary Destiny Points does a Minor draw grant?** The Major draw is
    pinned at +1 Score / +10 temp Points. The Minor number is not in the chapters.
-3. **Card art.** Rider–Waite–Smith (1909) is public domain and is what most tarot
-   sites use — safest given the SRD 5.2 compliance work. 78 images, or a styled
-   generative back + typographic face? Art choice affects package 2's size a lot.
+3. ~~**Card art.**~~ **Decided (2026-07-27):** ship **Rider–Waite–Smith** (1909,
+   public domain) first — recognisable, legally clean for a paid product. It is a
+   placeholder deck, not the destination.
+   **Then a custom Fate's Hand deck**, generated externally (ChatGPT image prompts,
+   written by the architect chat) from the world canon:
+   - the **Saints d'AvA** are already the 22 Major Arcana, one saint per card —
+     `2. World/Cosmologie/Panthéons/Saints d'AVA/Saints d'AVA.md` in the vault
+     (0 En-Zalûm the Void-Walker → XV Karagall the Soul-Devourer → XXI Va-Enki the
+     Perfect Unity). Sumerian-flavoured naming, each with a title and a descriptor.
+   - `Handout, Saints d'AVA.jpg` in that folder is the existing visual reference.
+   - world/lore sources: `2. World/` (cosmology, pantheons, the Primordial Forces).
+   Because the custom faces drop into the same slots, **package 2 must key cards by
+   numeral, never by filename**, so the deck can be swapped wholesale later.
 
 ---
 
