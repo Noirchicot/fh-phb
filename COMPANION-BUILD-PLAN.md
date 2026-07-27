@@ -77,7 +77,12 @@ at render time:
     order: 20,                   // belt position
     showsRoller: false,          // true → core draws Destiny + Console + Tray below
     render: function (ctx) { return html; },
-    onClick: function (event, ctx) { return handled; }   // optional
+    // Event hooks, all optional, all scoped to this panel's own body.
+    // Return true when handled; falsy lets core have the event.
+    onClick: function (event, ctx) { return handled; },  // incl. non-buttons
+    onChange: function (event, ctx) { return handled; },
+    onInput: function (event, ctx) { return handled; },  // autosave while typing
+    onBlur: function (event, ctx) { return handled; }    // delegated focusout
   });
 })();
 ```
@@ -98,6 +103,20 @@ at render time:
 That is about forty lines instead of 2 633. `render` returning a string keeps a
 panel from ever holding DOM across a re-render, and a panel that throws is caught
 and reported in its own body rather than taking the dock down with it.
+
+**Testing persistence:** the harness wipes the saved store on every load so each
+run starts clean. Load `/dock-harness.html?keep` to reload *without* the wipe.
+
+**Widened after package 8 (Notes).** Notes went first to find exactly this sort of
+thing, and found two gaps, both now closed:
+- the contract delegated `click` only, so a panel could not autosave on typing or
+  on leaving a field — `onChange` / `onInput` / `onBlur` now delegate too;
+- the harness wiped every panel's store on load, making "survives a reload"
+  untestable without commenting out a line — hence `?keep`.
+A third, found reviewing the same merge: panel clicks were delegated *inside*
+`handleClick`, which bails on anything that is not a `<button>` — so a clickable
+row or a tracker pip would have silently done nothing. Delegation now runs before
+that guard.
 
 ---
 
@@ -270,6 +289,10 @@ preview_start the fh-site-b entry in .claude/launch.json and open
 
 Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
 
+COMMIT YOUR WORK on your branch before reporting back. Both of the first two
+packages reported "done" with everything still uncommitted in the working tree,
+one stray git command away from being lost. Reporting is not delivering.
+
 Done when: the Notes tab works, all six test suites pass, and it looks right in
 the harness. Then report back what you built and whether the ctx contract gave
 you everything you needed -- if you had to work around it, say so.
@@ -311,6 +334,10 @@ preview_start the fh-site-b entry in .claude/launch.json and open
 /dock-harness.html. Do not commit .claude/launch.json (it is skip-worktree'd).
 
 Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
+
+COMMIT YOUR WORK on your branch before reporting back. Both of the first two
+packages reported "done" with everything still uncommitted in the working tree,
+one stray git command away from being lost. Reporting is not delivering.
 
 Done when: the Features tab works, all six test suites pass, and it looks right in
 the harness. Then report back what you built and whether the ctx contract gave
@@ -355,6 +382,10 @@ preview_start the fh-site-b entry in .claude/launch.json and open
 
 Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
 
+COMMIT YOUR WORK on your branch before reporting back. Both of the first two
+packages reported "done" with everything still uncommitted in the working tree,
+one stray git command away from being lost. Reporting is not delivering.
+
 Done when: the Actions tab works, all six test suites pass, and it looks right in
 the harness. Then report back what you built and whether the ctx contract gave
 you everything you needed -- if you had to work around it, say so.
@@ -396,6 +427,10 @@ preview_start the fh-site-b entry in .claude/launch.json and open
 
 Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
 
+COMMIT YOUR WORK on your branch before reporting back. Both of the first two
+packages reported "done" with everything still uncommitted in the working tree,
+one stray git command away from being lost. Reporting is not delivering.
+
 Done when: the Spells tab works, all six test suites pass, and it looks right in
 the harness. Then report back what you built and whether the ctx contract gave
 you everything you needed -- if you had to work around it, say so.
@@ -436,6 +471,10 @@ commit .claude/launch.json (skip-worktree'd). To force an Awakening for testing,
 drive the state directly in the console rather than rolling until one happens.
 
 Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
+
+COMMIT YOUR WORK on your branch before reporting back. Both of the first two
+packages reported "done" with everything still uncommitted in the working tree,
+one stray git command away from being lost. Reporting is not delivering.
 
 Done when: an Awakening deals a face-down card that flips to a real RWS face,
 keep-vs-switch still works, all six suites pass. Report back with a screenshot.

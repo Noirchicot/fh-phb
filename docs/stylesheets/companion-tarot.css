@@ -55,3 +55,14 @@
 @media(prefers-reduced-motion:reduce){
   .fh-tarot-card{animation:none!important}
 }
+
+/* Missing art is a realistic failure, not a broken-image icon: the placeholder
+   deck is meant to be replaced wholesale, and a custom deck can arrive with a
+   numeral missing. The face then reads as the numeral itself. */
+.fh-tarot-front.is-artless img{display:none}
+.fh-tarot-front.is-artless{display:grid;place-items:center;
+  background:linear-gradient(160deg,#3a2c14,#1d1408)}
+.fh-tarot-front.is-artless em{position:static;font-style:normal;
+  font-family:"Iowan Old Style",Palatino,Georgia,serif;
+  font-size:calc(19px * var(--cd-fs));font-weight:700;color:var(--cd-gold-hi);
+  opacity:1;letter-spacing:.06em}

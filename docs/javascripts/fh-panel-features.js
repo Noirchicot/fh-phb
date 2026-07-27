@@ -12,7 +12,13 @@
    order        belt position
    showsRoller  true -> core draws Destiny + Console + Tray under the panel
    render(ctx)  return the panel body's HTML (a string)
-   onClick(event, ctx)  optional; return true when you handled the click
+
+   Event hooks -- all optional, all scoped to your own panel body, all return
+   true when you handled the event (falsy lets core have it):
+   onClick(event, ctx)   every click, including on non-button elements
+   onChange(event, ctx)  a `change` event
+   onInput(event, ctx)   fires while typing -- use for autosave
+   onBlur(event, ctx)    delegated `focusout` (blur itself does not bubble)
 
    ctx is the only surface a panel may touch:
      ctx.character      effective character (D&D Beyond + manual overrides)
@@ -28,6 +34,10 @@
      ctx.store("features")  your own persisted object — yours alone, survives reload
      ctx.save()             persist after writing to the store
      ctx.refresh()          re-render the dock
+
+   Testing persistence: the harness wipes the saved store on every load so each
+   run starts clean. Load /dock-harness.html?keep to reload WITHOUT the wipe --
+   that is how you prove your panel's state survives.
 */
 (function () {
   "use strict";

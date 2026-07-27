@@ -1788,10 +1788,10 @@
       var stage="<div class=\"fh-tarot-stage\">"+
         (revealed
           ?"<div class=\"fh-tarot-card is-flipped\"><span class=\"fh-tarot-face fh-tarot-back\"></span>"+
-            "<span class=\"fh-tarot-face fh-tarot-front\"><img src=\""+esc(art)+"\" alt=\""+esc(drawn.name)+"\" loading=\"lazy\"><em>"+esc(drawn.numeral)+"</em></span></div>"
+            "<span class=\"fh-tarot-face fh-tarot-front\"><img src=\""+esc(art)+"\" alt=\""+esc(drawn.name)+"\" loading=\"lazy\" onerror=\"this.parentNode.classList.add('is-artless')\"><em>"+esc(drawn.numeral)+"</em></span></div>"
           :"<button type=\"button\" class=\"fh-tarot-card\" data-arcana-flip aria-label=\"Reveal the drawn card\">"+
             "<span class=\"fh-tarot-face fh-tarot-back\"></span>"+
-            "<span class=\"fh-tarot-face fh-tarot-front\"><img src=\""+esc(art)+"\" alt=\"\" loading=\"lazy\"><em>"+esc(drawn.numeral)+"</em></span></button>")+
+            "<span class=\"fh-tarot-face fh-tarot-front\"><img src=\""+esc(art)+"\" alt=\"\" loading=\"lazy\" onerror=\"this.parentNode.classList.add('is-artless')\"><em>"+esc(drawn.numeral)+"</em></span></button>")+
         "</div>";
       return "<div class=\"fh-cd-card is-awakening is-arcana is-tarot"+(revealed?" is-revealed":"")+"\">"+
         "<small>ARCANE AWAKENING"+(revealed?" · "+esc(drawn.numeral):"")+"</small>"+
@@ -2421,6 +2421,23 @@
       refresh:function(){render();}
     };
   }
+  /* A panel gets first refusal on events inside its own body, for every hook it
+     declares. Core uses `click` and `change` itself, so those run the panel first
+     and fall through when it returns falsy; `input` and `focusout` are panel-only,
+     and exist so a panel can autosave while typing or on leaving a field instead
+     of being forced to hang everything off a Save button. */
+  function delegateToPanel(event,hook){
+    if(!event.target||!event.target.closest||!event.target.closest("[data-panel-body]"))return false;
+    var panel=activePanel();
+    if(!panel||typeof panel[hook]!=="function")return false;
+    try{return !!panel[hook](event,panelContext());}
+    catch(error){
+      state.message=(panel.label||panel.id)+" panel error: "+(error&&error.message||"unknown error");
+      state.messageKind="danger";renderMessage();
+      if(window.console&&console.error)console.error(error);
+      return true;
+    }
+  }
   function setPanel(id){
     if(!id||id===state.panel)return;
     state.panel=id;state.menuOpen=false;
@@ -2564,22 +2581,6 @@
     if(button.dataset.cdMode!==undefined){setWindowMode(button.dataset.cdMode);return;}
     if(button.dataset.textSize!==undefined){setTextSize(button.dataset.textSize);return;}
     if(button.dataset.panel!==undefined){setPanel(button.dataset.panel);return;}
-    /* A panel owns the clicks inside its own body. Core still handles
-       everything outside it, and anything the panel declines. */
-    if(event.target.closest&&event.target.closest("[data-panel-body]")){
-      var here=activePanel();
-      if(here&&typeof here.onClick==="function"){
-        var handled=false;
-        try{handled=here.onClick(event,panelContext());}
-        catch(error){
-          state.message=(here.label||here.id)+" panel error: "+(error&&error.message||"unknown error");
-          state.messageKind="danger";renderMessage();
-          if(window.console&&console.error)console.error(error);
-          return;
-        }
-        if(handled)return;
-      }
-    }
     if(button.dataset.hpOpen!==undefined){state.hpOpen=!state.hpOpen;render();return;}
     if(button.dataset.hpStep!==undefined){var hp=state.vitals||{};if(hp.max==null){state.message="Set a maximum first.";state.messageKind="warn";renderMessage();return;}setVitals({current:(hp.current==null?hp.max:hp.current)+Number(button.dataset.hpStep)});render();return;}
     if(button.dataset.hpFull!==undefined){setVitals({current:(state.vitals||{}).max});render();return;}
@@ -2671,8 +2672,13 @@
     clearTimeout(state.trayHoldTimer);
     if(state.trayHeld){state.trayHeld=false;if(event.cancelable)event.preventDefault();}
   }
-  function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
+  /* A panel owns the clicks inside its own body, and gets them BEFORE
+     handleClick -- which bails on anything that is not a <button>, so a panel's
+     clickable row or tracker pip would otherwise never reach it. Core still
+     handles everything outside a panel body, and anything the panel declines. */
+  function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   function onChange(event){
+    if(delegateToPanel(event,"onChange"))return;
     if(event.target.dataset.diePortent!==undefined){mutateStagedDie({forcedResult:event.target.value===""?null:Number(event.target.value)});return;}
     if(/^fhPs(Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.hpField){setVitals(event.target.dataset.hpField==="max"?{max:event.target.value}:{current:event.target.value});render();return;}if(event.target.dataset.exhField!==undefined){setExhaustion(event.target.value,"Set by hand");render();return;}if(event.target.dataset.destinyField){if(event.target.dataset.destinyField==="score")state.scoreEditing=false;updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
   function onKeydown(event){if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
@@ -2743,6 +2749,10 @@
     root=mount;root.className="fh-cd-root";
     homeParent=root.parentNode;homeNext=root.nextSibling;
     root.addEventListener("click",onClick);root.addEventListener("change",onChange);root.addEventListener("keydown",onKeydown);
+    /* Panel-only hooks. focusout rather than blur, because blur does not bubble
+       and a delegated listener would never see it. */
+    root.addEventListener("input",function(event){delegateToPanel(event,"onInput");});
+    root.addEventListener("focusout",function(event){delegateToPanel(event,"onBlur");});
     root.addEventListener("contextmenu",onTrayContext);
     root.addEventListener("touchstart",onTrayTouchStart,{passive:true});
     root.addEventListener("touchend",onTrayTouchEnd);root.addEventListener("touchcancel",onTrayTouchEnd);

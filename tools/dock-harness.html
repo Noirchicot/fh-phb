@@ -40,7 +40,10 @@
     localStorage.setItem("fh-my-campcode","FH1");
     localStorage.setItem("fh-my-pseudo","Harness");
     localStorage.setItem("fh-cd-open","1");
-    localStorage.removeItem("fh-player-v2:FH1:Harness");
+    // A clean slate by default -- but that also wipes every panel's persisted
+    // store, which makes "does my panel survive a reload?" untestable. Load
+    // /dock-harness.html?keep to reload without the wipe.
+    if(!/[?&]keep\b/.test(location.search))localStorage.removeItem("fh-player-v2:FH1:Harness");
   }catch(error){}
 })();
 </script>
