@@ -194,38 +194,33 @@ to a belt tab rather than rebuilding it.
 
 ---
 
-## 6. Open questions — Eric decides
+## 6. Open questions
 
-1. **The Brick.** The website describes it narratively (a shard shaped once, through
-   a story or song, seeding White Void). To put it in the Companion it needs a
-   mechanical shape: is a Brick a *tracked token* the dock just holds and displays
-   until the GM rules on it, or does it have dice/points behaviour of its own?
-   The narrative version is codeable today as a badge; the mechanical version is not
-   yet written anywhere.
-2. **How many temporary Destiny Points does a Minor draw grant?** The Major draw is
-   pinned at +1 Score / +10 temp Points. The Minor number is not in the chapters.
-3. ~~**Card art.**~~ **Decided (2026-07-27):** ship **Rider–Waite–Smith** (1909,
-   public domain) first — recognisable, legally clean for a paid product. It is a
-   placeholder deck, not the destination.
-   **Then a custom Fate's Hand deck**, generated externally (ChatGPT image prompts,
-   written by the architect chat) from the world canon:
-   - the **Saints d'AvA** are already the 22 Major Arcana, one saint per card —
-     `2. World/Cosmologie/Panthéons/Saints d'AVA/Saints d'AVA.md` in the vault
-     (0 En-Zalûm the Void-Walker → XV Karagall the Soul-Devourer → XXI Va-Enki the
-     Perfect Unity). Sumerian-flavoured naming, each with a title and a descriptor.
-   - `Handout, Saints d'AVA.jpg` in that folder is the existing visual reference.
-   - world/lore sources: `2. World/` (cosmology, pantheons, the Primordial Forces).
-   Because the custom faces drop into the same slots, **package 2 must key cards by
-   numeral, never by filename**, so the deck can be swapped wholesale later.
+1. ~~**The Brick.**~~ **ANSWERED 2026-07-28 — and the answer changes what package 3
+   builds.** A Brick is **not a mechanic**. It is a roleplay opportunity: the chance
+   to dream something into reality. No objective, no statistics, no cost. Full rule
+   in the vault at `0. D&D 5+ Rules/3. Arcane Destinies/D&D 5+ Fate's Hand Mechanic.md`
+   §5.1, and live at `/chapters/fates-hand-mechanic/`.
+   **What this means for the dock:** a Brick is a **tracked token with a story
+   attached**, nothing more. The Companion should record that one was granted, which
+   Minor Arcana themed it, and hold the player's written story — then get out of the
+   way. Do **not** build resolution mechanics, costs, or a "spend" action; there are
+   none, and inventing them would contradict the rule. The tattoos and the call of
+   the White Void are the GM's and the player's business, not the dock's.
+2. ~~**Minor Arcana temporary Points.**~~ **ANSWERED:** temporary Destiny Points
+   **equal to the card's value** — numbered cards give their number (Ace = 1),
+   **heads (Page, Knight, Queen, King) give 10**.
+3. ~~**Card art.**~~ **Decided:** Rider–Waite–Smith placeholder first, then a custom
+   deck from the **Saints d'AvA** (the 22 Majors, one saint per numeral) — vault
+   `2. World/Cosmologie/Panthéons/Saints d'AVA/`. Design work lives in the vault at
+   `Gpt in FH/Tarot Design/`, **not** in this repo.
 
    > ⚠️ **State the `{NUMERAL}.jpg` convention in the art brief BEFORE the deck is
-   > generated.** Raised by the tarot chat, and it is right: art now falls back to
-   > the numeral when an image 404s, which is good for a missing card and bad for a
-   > mis-named delivery — 22 wrongly-named files would render as 22 gold numerals on
-   > brown and break nothing visibly. The filenames are `0.jpg`, `I.jpg`, `II.jpg` …
-   > `XXI.jpg` (Roman, uppercase, matching `card.numeral` in `arcana.js`), and the
-   > Saints d'AvA map one saint per numeral, so the brief must carry the numeral —
-   > not the saint's name — as the filename.
+   > generated.** Art falls back to the numeral when an image 404s, which is good for
+   > a missing card and bad for a mis-named delivery — 22 wrongly-named files render
+   > as 22 gold numerals on brown and break nothing visibly. Filenames are `0.jpg`,
+   > `I.jpg` … `XXI.jpg` (Roman, uppercase, matching `card.numeral` in `arcana.js`),
+   > so the brief must carry the **numeral**, not the saint's name.
 
 ---
 
