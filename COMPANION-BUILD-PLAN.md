@@ -562,3 +562,81 @@ records exactly why it cannot. Both are a successful outcome for this package.
   before the header cleanup is out of reach while those panels are unbuilt.
 - On phones (≤520px) the belt **wraps to two rows** rather than scrolling
   sideways — a belt that can hide the lit tab defeats its own purpose.
+
+---
+
+## 10. AboveVTT — verified findings (2026-07-28)
+
+Full study in the vault: `Gpt in FH/FHPC × AboveVTT.md`. It is accurate — its
+source references were checked against ours and match exactly (`quickRoll` at
+`fh-player-sheet.js:1117`, `rollDie(20)` at 1119, `rollExport` → `fh-roll/1` at
+2038, and zero transport code anywhere). **Read it before starting package 4.**
+What follows is only what was independently verified, plus what the study did not
+settle.
+
+### A browser extension is unavoidable
+
+AboveVTT 1.58's manifest injects into exactly:
+
+```
+https://www.dndbeyond.com/campaigns/*
+https://www.dndbeyond.com/characters*
+host_permissions: *://*.dndbeyond.com/*
+```
+
+The Companion is served from `github.io`. `BroadcastChannel` is same-origin, and
+there is no public AboveVTT API. **Every** integration — even one that only writes
+a line into the game log — has to cross that origin boundary, so the extension is
+forced, not chosen. Do not look for a way around it, and specifically do not try
+to reach D&D Beyond/AboveVTT WebSockets from a Worker: that needs session secrets
+and is the wrong shape.
+
+### You cannot push a roll FHPC already made
+
+Checked in `DiceRoller.js`:
+
+```
+roll(diceRoll, multiroll = false, critRange = 20, critType = 2,
+     spellSave, damageType, forceCritType)
+```
+
+There is **no forced-result path** — no `setResult`, no way to render dice from
+caller-supplied values. It generates its own randomness through `rpgDiceRoller`.
+
+And the 3D dice everyone likes are **D&D Beyond's, not AboveVTT's**: with
+`ddb3dDiceShareToggle` on, AboveVTT delegates by clicking DDB's own dice UI. Its
+native path is chat-log text.
+
+**Consequence, and it decides the architecture:** "FHPC rolls and pushes the
+result" and "the table sees the nice dice" are mutually exclusive. If FHPC rolls,
+Above can only show text. If you want the dice, D&D Beyond must roll — and then
+FHPC *must* read the result back, or its engine is blind (no natural = no Natural
+20/1, no Destiny, no Chaos, no Awakening). There is no cheap push-only version
+that keeps the dice.
+
+The upside: the animation is a free DDB feature. The bridge never builds it.
+
+### The whole risk is in one place
+
+Sending a roll is easy — `window.diceRoller.roll(...)` is a real callable. There
+is **no `await roll()`**, so the hard half is catching the result and matching it
+to the request that asked for it. With DDB rolling, that means observing DDB's
+`dice/roll/fulfilled` broker message. Correlation is the genuine problem: several
+players roll at once and nothing in that message names an FHPC request.
+
+**Spike this before building anything else.** One throwaway extension, one
+`1d20+5`, sent from a page, rolled by DDB with 3D dice, exact faces returned and
+correlated. No protocol, no UI, no second repo. If it holds, the rest is ordinary
+engineering; if it does not, the plan changes shape and nothing has been wasted.
+It can only be tested against a live campaign with AboveVTT running — that needs
+Eric at the keyboard.
+
+### Non-negotiables from the study
+
+- Insert **before** `rollDie()`, never after `addHistory()` — otherwise two
+  sources of randomness for one roll.
+- Return **every die face and the kept index**, never just a total: FHPC needs the
+  kept natural for Natural 1/20, history and badges. Same for Guidance/Bardic/Destiny.
+- Bind by D&D Beyond **`characterId`**, never by character name.
+- **Never fall back to a local roll silently.** A visible error beats two players
+  believing a roll reached the table when it did not.
