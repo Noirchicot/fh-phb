@@ -95,10 +95,52 @@ The 5e ladder is not used here. Chaos hands out levels often enough that the off
 
 When your Destiny **Points reach 0 after a Natural 20**, draw a card from the tarot deck:
 
-- **Minor Arcana** — gain *temporary* Destiny Points and a single **Brick**: a malleable shard of reality you can shape once.
+- **Minor Arcana** — gain **temporary Destiny Points equal to the card's value**, and a single **Brick** (§5.1). Numbered cards give their number (Ace = 1); **heads — Page, Knight, Queen, King — give 10**.
 - **Major Arcana** — you gain **+1 to your maximum Destiny Score and 10 temporary Destiny Points** *either way*, then choose to **switch** to the new card (losing your old Arcana's powers for the new one's) or **keep** your current one. **Only one Major Arcana is ever active — powers never stack.**
 
 > *Example — Alysandra (Points 1) lands a final strike with a Nat 20, draining her to 0 and sparking an Awakening. She draws **The Emperor**: her Score climbs and she gains command over lesser minds.*
+
+---
+
+### 5.1 The Brick — dreaming something into being
+
+A **Brick** is not a power. It is **a roleplay opportunity**: the chance to dream
+something into reality. It has **no objective, no statistics and no cost** — and
+the table should not go looking for any.
+
+**How it is given.** When you draw a Minor Arcana, the GM hands you a Brick with
+these words, and no others:
+
+> *Dream something. Tie it to your character's background and their aspirations.
+> You will incept it — but you will not control it.*
+
+**What you owe.** A **written story**, composed by the player, on the **theme of
+the Minor Arcana you drew**. Its suit and its number colour the dream; they do not
+constrain it. There is no length requirement and no deadline — only that it be
+written, and be yours.
+
+**What it costs you.** Nothing in points. But the dream **marks you**: it surfaces
+as **tattoos across your body**, in the imagery of the story you told. You did not
+choose them and you cannot remove them.
+
+**What it does to you.** You feel **the urge to tell the story** — because the
+dream is *so real*. Not a compulsion the GM enforces with a save; a pull the
+player is invited to play. Over time this becomes **the call of the White Void**,
+and it grows **stronger and stronger as time passes**. A Brick is the beginning of
+something, not the end of it.
+
+**What you do not get.** You do not choose *when* the dream takes hold, *where* it
+lands, or *what* it becomes when it does. ÂNON's only power is the **intuition
+that chooses who dreams** — never the when, never the what. Shaping the Brick
+seeds a pocket of **White Void**; what that pocket does afterwards is the world's
+business, not the dreamer's. *(Full cycle — barrier, displacement, recomposition,
+fusion — in Les Forces Primordiales de Nymedes.)*
+
+> [!note] For the GM
+> Do not ask what the Brick *does*. Ask what the player **dreamed**, and then let
+> the world answer in its own time. A Brick that is never mechanically resolved
+> has still done its whole job the moment the tattoos appear and the player starts
+> wanting to tell you about them.
 
 ---
 

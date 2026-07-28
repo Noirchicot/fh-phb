@@ -13,8 +13,9 @@ The Third Age is shaped by Nymedes's **two opposed primordial forces**. This pag
 ÂNON's mist **remakes the world** through the dreams of the Awakened. Mechanically it is the world-facing side of an **Arcane Awakening** (full subsystem: [D&D 5+ Fate’s Hand Mechanic](fates-hand-mechanic.md)).
 
 - **Trigger.** A character rolls a **Natural 20** that brings their **Destiny Points to 0** → an **Arcane Awakening**: they draw a Tarot card.
-- **A Minor Arcana → a Brick.** The draw grants temporary Destiny points **and a Brick** — a shard of malleable reality, shaped **once**.
-- **Shaping the Brick = seeding a pocket of White Void.** The player shapes it through a **story or song** they compose; the drawn Arcana sets the theme. ÂNON's only power is the **intuition** that chooses *who* dreams — never the *when*, never the *what*.
+- **A Minor Arcana → a Brick.** The draw grants **temporary Destiny points equal to the card's value** (Ace = 1, heads give 10) **and a Brick** — not a power, but the chance to dream something into being. *(Full rule: [§5.1](fates-hand-mechanic.md#51-the-brick-dreaming-something-into-being).)*
+- **Shaping the Brick = seeding a pocket of White Void.** The player owes a **written story** on the theme of the Arcana drawn, tied to their character's background and aspirations. The dream **marks them**: it surfaces as **tattoos** in the imagery of the story, and they feel the urge to tell it — because the dream is *so real*. That urge is **the call of the White Void**, and it grows stronger as time passes.
+- **You incept it; you do not control it.** ÂNON's only power is the **intuition** that chooses *who* dreams — never the *when*, never the *what*.
 - **The pocket's life-cycle.** Barrier (a white wall isolates a region) → displacement (what was there is relocated elsewhere on Nymedes) → recomposition (the dreamer's vision is drawn from the void) → **fusion** (the pocket merges with the world, permanent, and **survives its dreamer**). A pocket is not frozen: over time and further Awakenings it can shrink, vanish (if small) or transform (if vast).
 
 > Full lore, the GM tables (what is recomposed / where the old land lands), and the canon cases (Atalante, Theymoron…) are in Les Forces Primordiales de Nymedes.

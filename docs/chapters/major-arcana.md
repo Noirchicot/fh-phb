@@ -28,7 +28,7 @@ Each Major Arcana provides:
 
 On an **Arcane Awakening** (your Destiny Points reach 0 after a Natural 20), you draw from the **whole tarot deck** — all 78 cards, Major and Minor Arcana: [Random Tarot Card Generator](https://randomtarotcard.com/).
 
-- **Minor Arcana** — gain *temporary* Destiny Points and a single **Brick**: a malleable shard of reality you can shape once.
+- **Minor Arcana** — gain **temporary Destiny Points equal to the card's value** (numbered cards give their number, Ace = 1; **heads — Page, Knight, Queen, King — give 10**), and a single **Brick**: not a power, but the chance to dream something into being. *(Full rule: [§5.1](fates-hand-mechanic.md#51-the-brick-dreaming-something-into-being).)*
 - **Major Arcana** — **+1 to your maximum Destiny Score and 10 temporary Destiny Points** either way, then **switch** to the new card or **keep** your current one (see the Destiny System, §5).
 
 ## 0. The Fool
