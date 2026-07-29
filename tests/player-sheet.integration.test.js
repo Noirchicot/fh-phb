@@ -153,6 +153,7 @@ assert.equal(root.querySelector("#fhPsRunRoll"),null,"the console no longer carr
 assert.match(root.querySelector("[data-roll-now]").textContent,/^ROLL/,"one permanent ROLL leads with its label");
 
 root.querySelector('.fh-cd-whiterow [data-add-tray-die="4"]').click();
+assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="4"][data-pending="1"]').length,1,"the d4 already uses its opaque 3D ready pose before rolling");
 root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
 assert.equal(t.state.rollConfig.bonusDice.length,1,"a white die joins the prepared roll");
 assert.equal(t.state.rollConfig.bonusDice[0].sides,4,"and keeps the size that was clicked");
@@ -296,6 +297,15 @@ assert.deepEqual(Array.from(boosted.d20s),Array.from(settled.d20s),"boosting nev
 root.querySelector("[data-clear-tray]").click();
 assert.equal(t.state.trayResults.length,0,"Clear empties every die and result");
 assert.equal(t.state.rollConfig,null,"Clear also releases the active roll setup");
+
+root.querySelector('[data-add-tray-die="100"]').click();
+assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="100"] .fh-cd-static3d-part').length,2,"a ready d100 is already represented by two physical d10s");
+root.querySelector("[data-roll-now]").click();
+const percentileEntry=t.state.history[0],percentileResult=percentileEntry.dice[0].result;
+const percentileText=percentileResult===100?"00":String(percentileResult).padStart(2,"0");
+assert.equal(Array.from(root.querySelectorAll('.fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result')).map(item=>item.textContent).join(""),percentileText,"the two d10 overlays compose the resolved percentile value");
+settleRoll();
+root.querySelector("[data-clear-tray]").click();
 
 for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");

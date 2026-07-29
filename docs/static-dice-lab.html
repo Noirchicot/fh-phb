@@ -16,28 +16,35 @@
     .tray{height:310px;display:grid;place-items:center;overflow:hidden;background:#121827;border:1px solid #9d783a;border-radius:16px;box-shadow:inset 0 1px rgba(255,255,255,.045),inset 0 -30px 60px rgba(0,0,0,.12),0 20px 60px rgba(0,0,0,.48)}
     #fhLabDie{display:grid;place-items:center;width:178px;height:178px}
     .fh-cd-static3d{position:relative;display:block;width:var(--fh-static-die-size);height:var(--fh-static-die-size)}
+    .fh-cd-static3d.is-percentile{width:calc(var(--fh-static-die-size) * 1.42)}
+    .fh-cd-static3d-part{position:relative;display:none;flex:0 0 calc(var(--fh-static-die-size) * .78);width:calc(var(--fh-static-die-size) * .78);height:calc(var(--fh-static-die-size) * .78)}
+    .fh-cd-static3d.is-percentile.is-webgl{display:flex;align-items:center;justify-content:center}
+    .fh-cd-static3d.is-percentile.is-webgl .fh-cd-static3d-part{display:block}
+    .fh-cd-static3d-part+.fh-cd-static3d-part{margin-left:calc(var(--fh-static-die-size) * -.14)}
     .fh-cd-static3d canvas{display:none;width:100%;height:100%;filter:drop-shadow(0 14px 14px rgba(0,0,0,.65))}
     .fh-cd-static3d.is-webgl canvas{display:block}
-    .fh-cd-static3d-result{position:absolute;z-index:2;left:50%;top:50%;display:block;min-width:1.35em;transform:translate(-50%,-47%) scale(.7);opacity:0;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:calc(var(--fh-static-die-size) * .35);font-weight:700;line-height:1;text-align:center;text-shadow:0 1px rgba(255,255,255,.2),0 3px 4px rgba(0,0,0,.2);transition:opacity .16s ease,transform .2s ease}
-    .fh-cd-static3d[data-sides="4"] .fh-cd-static3d-result{top:54%;font-size:calc(var(--fh-static-die-size) * .29)}
+    .fh-cd-static3d-result{position:absolute;z-index:2;left:50%;top:49%;display:block;min-width:1.35em;transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(.7);opacity:0;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:calc(var(--fh-static-die-size) * .35);font-weight:700;line-height:1;text-align:center;text-shadow:0 1px rgba(255,255,255,.2),0 3px 4px rgba(0,0,0,.2);transition:opacity .16s ease,transform .2s ease}
+    .fh-cd-static3d[data-sides="4"] .fh-cd-static3d-result{top:51%;font-size:calc(var(--fh-static-die-size) * .29)}
     .fh-cd-static3d[data-sides="10"] .fh-cd-static3d-result,
     .fh-cd-static3d[data-sides="12"] .fh-cd-static3d-result,
     .fh-cd-static3d[data-sides="20"] .fh-cd-static3d-result{font-size:calc(var(--fh-static-die-size) * .3)}
-    .fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result{font-size:calc(var(--fh-static-die-size) * .24)}
-    .fh-cd-static3d.is-settled .fh-cd-static3d-result{transform:translate(-50%,-47%) scale(1);opacity:1}
+    .fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result{font-size:calc(var(--fh-static-die-size) * .27)}
+    .fh-cd-static3d.is-settled .fh-cd-static3d-result{transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(1);opacity:1}
     .fh-cd-static3d-fallback{display:grid;place-items:center;width:100%;height:100%;color:var(--fh-static-num,#58180d);background:var(--fh-static-fill,#f3ead6);border:3px solid var(--fh-static-rim,#8a6a2a);border-radius:20px;font:700 48px Georgia,serif}
     .fh-cd-static3d.is-webgl .fh-cd-static3d-fallback{display:none}
     .controls{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     fieldset{min-width:0;margin:0;padding:12px;border:1px solid #38475a;border-radius:10px;background:#0d1724}
     legend{padding:0 7px;color:#aeb8c6;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
     .shapes{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-    .shape,.roll{min-height:42px;color:#eadbbf;background:#101a28;border:1px solid #65543b;border-radius:7px;font-weight:750;cursor:pointer}
+    .shape,.roll,.ready{min-height:42px;color:#eadbbf;background:#101a28;border:1px solid #65543b;border-radius:7px;font-weight:750;cursor:pointer}
     .shape[aria-pressed="true"]{color:#271b07;background:#d9ae54;border-color:#f0cc77}
     .palette{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
     .colour{min-height:42px;display:flex;align-items:center;justify-content:center;gap:7px;color:#cad2dc;background:#101a28;border:1px solid #38475a;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
     .colour::before{content:"";width:15px;height:15px;border-radius:50%;background:var(--swatch);border:1px solid rgba(255,255,255,.38);box-shadow:0 1px 3px rgba(0,0,0,.4)}
     .colour[aria-pressed="true"]{color:#fff5df;border-color:#d9ae54;box-shadow:inset 0 0 0 1px #d9ae54}
-    .roll{width:100%;min-height:50px;color:#271b07;background:#d9ae54;border-color:#f0cc77;letter-spacing:.08em}
+    .actions{display:grid;grid-template-columns:1fr 1.35fr;gap:9px}
+    .ready,.roll{width:100%;min-height:50px;letter-spacing:.06em}
+    .roll{color:#271b07;background:#d9ae54;border-color:#f0cc77}
     small{color:#9aa5b4;text-align:center}
     @media(max-width:560px){
       body{padding:16px}
@@ -77,14 +84,17 @@
         </div>
       </fieldset>
     </section>
-    <button type="button" class="roll" id="fhLabRoll">ROLL</button>
+    <div class="actions">
+      <button type="button" class="ready" id="fhLabReady">READY POSE</button>
+      <button type="button" class="roll" id="fhLabRoll">ROLL</button>
+    </div>
     <small>The result is chosen first. The die then rotates in place without travelling across the tray.</small>
   </main>
   <script src="javascripts/fh-static-dice.js"></script>
   <script>
     (function(){
       "use strict";
-      var sides=6,material="ivory",face=1;
+      var sides=6,material="ivory",face=1,pending=true;
       var host=document.getElementById("fhLabDie"),result=document.getElementById("fhLabResult");
       var materials={
         ivory:{label:"Ivory",fill:"#f3ead6",rim:"#76551e",num:"#58180d"},
@@ -104,17 +114,22 @@
         return Math.floor(Math.random()*max)+1;
       }
       function render(animate){
-        var palette=materials[material];
-        result.textContent="d"+sides+" · "+face+" · "+palette.label;
-        host.innerHTML='<span class="fh-cd-static3d" data-sides="'+sides+'" data-result="'+face+'" data-material="'+material+'" data-index="0" data-animate="'+(animate?"1":"0")+'" style="--fh-static-die-size:178px;--fh-static-fill:'+palette.fill+';--fh-static-rim:'+palette.rim+';--fh-static-num:'+palette.num+'" role="img" aria-label="d'+sides+' result '+face+', '+palette.label+'"><canvas aria-hidden="true"></canvas><b class="fh-cd-static3d-result" aria-hidden="true">'+face+'</b><span class="fh-cd-static3d-fallback">'+face+'</span></span>';
+        var palette=materials[material],text=sides===10&&face===10?"0":String(face),body="";
+        if(sides===100){
+          var percentile=face===100?"00":String(face).padStart(2,"0");
+          body='<span class="fh-cd-static3d-part"><canvas aria-hidden="true"></canvas><b class="fh-cd-static3d-result" aria-hidden="true">'+(pending?"":percentile.charAt(0))+'</b></span><span class="fh-cd-static3d-part"><canvas aria-hidden="true"></canvas><b class="fh-cd-static3d-result" aria-hidden="true">'+(pending?"":percentile.charAt(1))+'</b></span>';
+        }else body='<canvas aria-hidden="true"></canvas><b class="fh-cd-static3d-result" aria-hidden="true">'+(pending?"":text)+'</b>';
+        result.textContent="d"+sides+" · "+(pending?"ready":face)+" · "+palette.label;
+        host.innerHTML='<span class="fh-cd-static3d'+(sides===100?" is-percentile":"")+'" data-sides="'+sides+'" data-result="'+face+'" data-pending="'+(pending?"1":"0")+'" data-material="'+material+'" data-index="0" data-animate="'+(!pending&&animate?"1":"0")+'" style="--fh-static-die-size:178px;--fh-static-fill:'+palette.fill+';--fh-static-rim:'+palette.rim+';--fh-static-num:'+palette.num+'" role="img" aria-label="d'+sides+' '+(pending?"ready":"result "+face)+', '+palette.label+'">'+body+'<span class="fh-cd-static3d-fallback">'+(pending?"?":text)+'</span></span>';
         window.FHStaticDice.mount(host);
       }
-      function roll(){face=randomFace(sides);render(true);}
+      function ready(){pending=true;face=1;render(false);}
+      function roll(){pending=false;face=randomFace(sides);render(true);}
       document.querySelectorAll("[data-lab-sides]").forEach(function(button){
         button.addEventListener("click",function(){
           sides=Number(button.dataset.labSides);
           document.querySelectorAll("[data-lab-sides]").forEach(function(item){item.setAttribute("aria-pressed",String(item===button));});
-          roll();
+          ready();
         });
       });
       document.querySelectorAll("[data-lab-material]").forEach(function(button){
@@ -124,8 +139,9 @@
           render(false);
         });
       });
+      document.getElementById("fhLabReady").addEventListener("click",ready);
       document.getElementById("fhLabRoll").addEventListener("click",roll);
-      roll();
+      ready();
     }());
   </script>
 </body>

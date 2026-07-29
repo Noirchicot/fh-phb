@@ -1693,9 +1693,20 @@
     /* The WebGL renderer is deliberately only a renderer: the face was chosen
        before this markup exists. Larger pools retain the lightweight SVG tray
        and its lower GPU cost. */
-    if(die.result!=null&&ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0&&count<=LIGHTWEIGHT_DICE_THRESHOLD){
-      face="<span class=\"fh-cd-static3d\" data-sides=\""+Number(die.sides)+"\" data-result=\""+Number(die.result)+"\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(index||0)+"\" data-animate=\""+(animate?"1":"0")+"\" style=\"--fh-static-die-size:"+size+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" result "+Number(die.result)+"\">"+
-        "<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+Number(die.result)+"</b><span class=\"fh-cd-static3d-fallback\">"+face+"</span></span>";
+    if(ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0&&count<=LIGHTWEIGHT_DICE_THRESHOLD){
+      var resolved=die.result!=null,staticResult=resolved?Number(die.result):1,staticLabel=resolved?"result "+staticResult:"ready";
+      var staticBody="";
+      if(Number(die.sides)===100){
+        var percentile=staticResult===100?"00":String(staticResult).padStart(2,"0");
+        staticBody="<span class=\"fh-cd-static3d-part\"><canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?percentile.charAt(0):"")+"</b></span>"+
+          "<span class=\"fh-cd-static3d-part\"><canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?percentile.charAt(1):"")+"</b></span>";
+        dieClasses+=" is-percentile";
+      }else{
+        var staticText=Number(die.sides)===10&&staticResult===10?"0":staticResult;
+        staticBody="<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?staticText:"")+"</b>";
+      }
+      face="<span class=\"fh-cd-static3d"+(Number(die.sides)===100?" is-percentile":"")+"\" data-sides=\""+Number(die.sides)+"\" data-result=\""+staticResult+"\" data-pending=\""+(resolved?"0":"1")+"\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(index||0)+"\" data-animate=\""+(resolved&&animate?"1":"0")+"\" style=\"--fh-static-die-size:"+size+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" "+staticLabel+"\">"+
+        staticBody+"<span class=\"fh-cd-static3d-fallback\">"+face+"</span></span>";
       dieClasses+=" is-static3d";
     }
     return "<span class=\""+classes.join(" ")+"\""+handle+">"+source+

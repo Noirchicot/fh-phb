@@ -1,6 +1,6 @@
 /* Fate's Hand — static 3D dice renderer.
-   The roller owns randomness. This module only animates a result that FHPC has
-   already resolved, and never moves the die away from its tray position. */
+   The roller owns randomness. This module renders the ready pose or animates a
+   result FHPC has already resolved, without moving a die across the tray. */
 (function () {
   "use strict";
 
@@ -66,6 +66,11 @@
       2*(xz+wy),2*(yz-wx),1-2*(xx+yy)
     ]);
   }
+  function quaternionRotate(q,v){
+    q=quaternionNormalize(q);
+    var vector=[q[0],q[1],q[2]],scalar=q[3];
+    return add(add(scaleVector(vector,2*dot(vector,v)),scaleVector(v,scalar*scalar-dot(vector,vector))),scaleVector(cross(vector,v),2*scalar));
+  }
   function pushVertex(store,position,normal){
     store.positions.push(position[0],position[1],position[2]);
     store.normals.push(normal[0],normal[1],normal[2]);
@@ -81,15 +86,16 @@
   function pushEdge(store,a,b){store.edges.push(a[0],a[1],a[2],b[0],b[1],b[2]);}
 
   function polygonGeometry(vertices,faces){
-    var store={positions:[],normals:[],edges:[],faceNormals:[]},seen={};
+    var store={positions:[],normals:[],edges:[],faceNormals:[],faceUps:[]},seen={};
     faces.forEach(function(originalFace){
-      var face=originalFace.slice(),points=face.map(function(index){return vertices[index];});
+      var face=originalFace.slice(),upAnchor=vertices[originalFace[0]],points=face.map(function(index){return vertices[index];});
       var normal=normalize(cross(subtract(points[1],points[0]),subtract(points[2],points[0])));
       if(dot(normal,centreOf(points))<0){
         face.reverse();points=face.map(function(index){return vertices[index];});
         normal=normalize(cross(subtract(points[1],points[0]),subtract(points[2],points[0])));
       }
       store.faceNormals.push(normal);
+      store.faceUps.push(normalize(subtract(upAnchor,centreOf(points))));
       for(var triangle=1;triangle<points.length-1;triangle++)pushFlatTriangle(store,points[0],points[triangle],points[triangle+1],normal);
       for(var edge=0;edge<face.length;edge++){
         var a=face[edge],b=face[(edge+1)%face.length],key=Math.min(a,b)+":"+Math.max(a,b);
@@ -131,7 +137,7 @@
 
   function roundedCubeGeometry(){
     var outer=.76,radius=.16,core=outer-radius,steps=8;
-    var store={positions:[],normals:[],edges:[],faceNormals:[]};
+    var store={positions:[],normals:[],edges:[],faceNormals:[],faceUps:[]};
     var faces=[
       {normal:[0,0,1],u:[1,0,0],v:[0,1,0]},
       {normal:[0,0,-1],u:[-1,0,0],v:[0,1,0]},
@@ -148,6 +154,7 @@
     }
     faces.forEach(function(face){
       store.faceNormals.push(face.normal);
+      store.faceUps.push(face.v);
       for(var row=0;row<steps;row++)for(var column=0;column<steps;column++){
         var u0=-outer+2*outer*column/steps,u1=-outer+2*outer*(column+1)/steps;
         var v0=-outer+2*outer*row/steps,v1=-outer+2*outer*(row+1)/steps;
@@ -164,14 +171,17 @@
   }
   function tetrahedronGeometry(){
     var vertices=[[1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1]].map(function(vertex){return scaleVector(normalize(vertex),.88);});
-    return polygonGeometry(vertices,convexFaces(vertices));
+    return polygonGeometry(vertices,[[0,1,2],[0,3,1],[0,2,3],[1,3,2]]);
   }
   function octahedronGeometry(){
     var vertices=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]].map(function(vertex){return scaleVector(vertex,.91);});
     return polygonGeometry(vertices,convexFaces(vertices));
   }
   function trapezohedronGeometry(){
-    var vertices=[[0,0,.94],[0,0,-.94]],radius=.75,ringHeight=.0992;
+    /* A real d10 is a pentagonal trapezohedron: ten kites around a broad
+       equator. Keeping the poles lower avoids the stretched-d8 silhouette. */
+    var pole=.70,radius=.84,ringHeight=pole/9.472135955;
+    var vertices=[[0,0,pole],[0,0,-pole]];
     for(var i=0;i<5;i++)vertices.push([Math.cos(i*Math.PI*2/5)*radius,Math.sin(i*Math.PI*2/5)*radius,ringHeight]);
     for(var j=0;j<5;j++)vertices.push([Math.cos((j+.5)*Math.PI*2/5)*radius,Math.sin((j+.5)*Math.PI*2/5)*radius,-ringHeight]);
     var faces=[];
@@ -239,11 +249,11 @@
     if(!gl)throw new Error("WebGL unavailable");
     var geo=geometryFor(sides),material=MATERIALS[materialName]||MATERIALS.ivory;
     var meshProgram=program(gl,
-      "attribute vec3 aPosition;attribute vec3 aNormal;uniform mat3 uRotation;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 p=uRotation*aPosition;vNormal=normalize(uRotation*aNormal);vPosition=p;gl_Position=vec4(p.xy*.91,p.z*.22,1.0);}",
+      "attribute vec3 aPosition;attribute vec3 aNormal;uniform mat3 uRotation;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;vNormal=normalize(uRotation*aNormal);vPosition=p;gl_Position=vec4(p.xy*.89*depth,p.z*.22,1.0);}",
       "precision mediump float;uniform vec3 uFill;uniform vec3 uLight;uniform vec3 uDark;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-.48,.72,1.0));vec3 fillLight=normalize(vec3(.68,-.28,.52));vec3 view=vec3(0.0,0.0,1.0);float diffuse=max(dot(n,key),0.0);float bounce=max(dot(n,fillLight),0.0);float shade=clamp(.16+.68*diffuse+.16*bounce,0.0,1.0);float specular=pow(max(dot(n,normalize(key+view)),0.0),28.0);float fresnel=pow(1.0-max(dot(n,view),0.0),3.0);vec3 colour=mix(uDark,uFill,shade);colour=mix(colour,uLight,clamp(specular*.32+fresnel*.075,0.0,.38));gl_FragColor=vec4(colour,1.0);}"
     );
     var lineProgram=program(gl,
-      "attribute vec3 aPosition;uniform mat3 uRotation;void main(){vec3 p=uRotation*aPosition;gl_Position=vec4(p.xy*.91,p.z*.22-.001,1.0);}",
+      "attribute vec3 aPosition;uniform mat3 uRotation;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;gl_Position=vec4(p.xy*.89*depth,p.z*.22-.001,1.0);}",
       "precision mediump float;uniform vec3 uRim;void main(){gl_FragColor=vec4(uRim,.88);}"
     );
     var positionBuffer=buffer(gl,geo.positions),normalBuffer=buffer(gl,geo.normals),edgeBuffer=buffer(gl,geo.edges);
@@ -273,27 +283,31 @@
       }
     };
   }
-  function mountDie(host){
-    var canvas=host.querySelector("canvas"),number=host.querySelector(".fh-cd-static3d-result");
-    if(!canvas||!number)return;
-    var sides=Number(host.dataset.sides)||20,result=Math.max(1,Math.min(sides,Number(host.dataset.result)||1));
-    var materialName=host.dataset.material||"ivory",renderer;
-    try{renderer=prepareRenderer(canvas,sides,materialName);}
-    catch(error){return;}
-    host.classList.add("is-webgl");
+  function faceRotation(geo,faceIndex){
+    var target=normalize([0,-.12,1]),normal=geo.faceNormals[faceIndex]||[0,0,1];
+    var base=quaternionBetween(normal,target),up=geo.faceUps[faceIndex]||[0,1,0],rotatedUp=quaternionRotate(base,up);
+    var roll=quaternionAxis(target,Math.PI*.5-Math.atan2(rotatedUp[1],rotatedUp[0]));
+    return quaternionMultiply(roll,base);
+  }
+  function displayValue(sides,result){
+    return Number(sides)===10&&Number(result)===10?"0":String(result);
+  }
+  function animatePart(host,canvas,number,renderSides,faceIndex,seedResult,sequenceIndex,materialName,animate){
+    var renderer;
+    try{renderer=prepareRenderer(canvas,renderSides,materialName);}
+    catch(error){return false;}
     number.style.color=(MATERIALS[materialName]||MATERIALS.ivory).num;
-    var face=renderer.geo.faceNormals[(result-1)%renderer.geo.faceNormals.length]||[0,0,1];
-    var finalRotation=quaternionBetween(face,[0,0,1]);
-    var animate=host.dataset.animate==="1"&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var index=Number(host.dataset.index)||0,duration=960,delay=animate?index*65:0,start=null;
+    var finalRotation=faceRotation(renderer.geo,faceIndex);
+    var startRotation=faceRotation(renderer.geo,0);
+    var duration=960,delay=animate?sequenceIndex*42:0,start=null;
     function drawFrame(now){
       if(!canvas.isConnected)return;
       if(start===null)start=now+delay;
       var elapsed=now-start;
-      if(elapsed<0){renderer.draw(quaternionMatrix(finalRotation));requestAnimationFrame(drawFrame);return;}
+      if(elapsed<0){renderer.draw(quaternionMatrix(startRotation));requestAnimationFrame(drawFrame);return;}
       var progress=animate?Math.max(0,Math.min(1,elapsed/duration)):1;
       var eased=1-Math.pow(1-progress,3),remaining=1-eased;
-      var seed=(result*17+index*11+sides)%23;
+      var seed=(seedResult*17+sequenceIndex*11+renderSides)%23;
       var qx=quaternionAxis([1,.22,.08],remaining*Math.PI*2*(2.75+(seed%5)*.18));
       var qy=quaternionAxis([.12,1,.31],remaining*Math.PI*2*(2.35+(seed%7)*.14));
       var qz=quaternionAxis([.05,.18,1],remaining*Math.PI*2*(.35+(seed%3)*.11));
@@ -304,6 +318,31 @@
       else host.classList.add("is-settled");
     }
     requestAnimationFrame(drawFrame);
+    return true;
+  }
+  function mountDie(host){
+    var sides=Number(host.dataset.sides)||20,result=Math.max(1,Math.min(sides,Number(host.dataset.result)||1));
+    var materialName=host.dataset.material||"ivory",pending=host.dataset.pending==="1";
+    var animate=!pending&&host.dataset.animate==="1"&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var index=Number(host.dataset.index)||0;
+    if(sides===100){
+      var parts=host.querySelectorAll(".fh-cd-static3d-part");
+      if(!parts||parts.length!==2)return;
+      var percentile=result===100?"00":String(result).padStart(2,"0"),mounted=true;
+      parts.forEach(function(part,partIndex){
+        var canvas=part.querySelector("canvas"),number=part.querySelector(".fh-cd-static3d-result");
+        var digit=Number(percentile.charAt(partIndex)),faceIndex=digit===0?9:digit-1;
+        if(!canvas||!number){mounted=false;return;}
+        number.textContent=pending?"":String(digit);
+        if(!animatePart(host,canvas,number,10,faceIndex,result,index*2+partIndex,materialName,animate))mounted=false;
+      });
+      if(mounted){host.classList.add("is-webgl");host.classList.add("is-percentile");}
+      return;
+    }
+    var canvas=host.querySelector("canvas"),number=host.querySelector(".fh-cd-static3d-result");
+    if(!canvas||!number)return;
+    number.textContent=pending?"":displayValue(sides,result);
+    if(animatePart(host,canvas,number,sides,(result-1)%geometryFor(sides).faceNormals.length,result,index,materialName,animate))host.classList.add("is-webgl");
   }
   function mount(scope){
     if(!scope||!scope.querySelectorAll)return;

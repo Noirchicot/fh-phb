@@ -31,26 +31,27 @@ function fakeGl() {
     drawArrays:(mode,first,count)=>draws.push({mode,first,count})
   };
 }
-function dieHost(sides,index,material) {
-  const gl=fakeGl();
-  const canvas={
-    width:0,height:0,isConnected:true,
-    getBoundingClientRect:()=>({width:52}),
-    getContext:type=>type==="webgl"?gl:null
-  };
-  const number={style:{}};
+function visualPart() {
+  const gl=fakeGl(),number={style:{},textContent:""};
+  const canvas={width:0,height:0,isConnected:true,getBoundingClientRect:()=>({width:52}),getContext:type=>type==="webgl"?gl:null};
+  return {gl,number,canvas,querySelector:selector=>selector==="canvas"?canvas:number};
+}
+function dieHost(sides,index,material,result=sides,pending=false) {
+  const parts=sides===100?[visualPart(),visualPart()]:[visualPart()];
   const classes=classList();
   const host={
-    dataset:{sides:String(sides),result:String(sides),material,index:String(index),animate:"0"},
+    dataset:{sides:String(sides),result:String(result),material,index:String(index),animate:"0",pending:pending?"1":"0"},
     classList:classes,
-    querySelector:selector=>selector==="canvas"?canvas:number,
+    querySelector:selector=>sides===100?null:parts[0].querySelector(selector),
+    querySelectorAll:selector=>selector===".fh-cd-static3d-part"&&sides===100?parts:[],
     setAttribute:(name,value)=>{if(name==="data-mounted")host.dataset.mounted=value;}
   };
-  return {host,canvas,number,classes,gl};
+  return {host,parts,classes};
 }
 
-const dice=[4,6,8,10,12,20,100].map((sides,index)=>dieHost(sides,index,index===6?"violet":"ivory"));
-const root={querySelectorAll:()=>dice.map(item=>item.host)};
+const dice=[4,6,8,10,12,20,100].map((sides,index)=>dieHost(sides,index,index===6?"violet":"ivory",sides===100?100:sides));
+const pendingDie=dieHost(4,7,"azure",1,true);
+const root={querySelectorAll:()=>dice.concat(pendingDie).map(item=>item.host)};
 const window={devicePixelRatio:1,matchMedia:()=>({matches:false})};
 const sandbox={
   Float32Array,Math,Number,Set,String,console,window,
@@ -65,17 +66,23 @@ assert.equal(typeof window.FHStaticDice.mount,"function","the renderer exposes o
 assert.deepEqual(Array.from(window.FHStaticDice.supportedSides),[4,6,8,10,12,20,100],"the complete tabletop dice set is supported");
 assert.ok(window.FHStaticDice.materials.includes("crimson"),"player colours are exposed to every die shape");
 window.FHStaticDice.mount(root);
-dice.forEach(({host,canvas,classes},index)=>{
+dice.forEach(({host,parts,classes},index)=>{
   assert.equal(host.dataset.mounted,"1",`d${host.dataset.sides} is mounted only once`);
   assert.ok(classes.contains("is-webgl"),`d${host.dataset.sides} builds a WebGL mesh`);
   assert.ok(classes.contains("is-settled"),`d${host.dataset.sides} reaches the supplied final face`);
-  assert.equal(canvas.width,52,index===0?"the canvas follows the die's rendered size":undefined);
+  assert.equal(parts[0].canvas.width,52,index===0?"the canvas follows the die's rendered size":undefined);
 });
 const expectedMeshVertices={4:12,6:2304,8:24,10:60,12:108,20:60,100:60};
-dice.forEach(({host,gl})=>{
-  const mesh=gl.draws.find(draw=>draw.mode===gl.TRIANGLES);
-  assert.equal(mesh.count,expectedMeshVertices[host.dataset.sides],`d${host.dataset.sides} has the complete intended mesh`);
+dice.forEach(({host,parts})=>{
+  parts.forEach(part=>{
+    const mesh=part.gl.draws.find(draw=>draw.mode===part.gl.TRIANGLES);
+    assert.equal(mesh.count,expectedMeshVertices[host.dataset.sides],`d${host.dataset.sides} has the complete intended mesh`);
+  });
 });
-assert.equal(dice[6].number.style.color,"#f5edff","d100 uses the selected violet material");
+assert.equal(dice[3].parts[0].number.textContent,"0","a natural d10 result of 10 is printed as 0");
+assert.deepEqual(dice[6].parts.map(part=>part.number.textContent),["0","0"],"d100 result 100 is a pair of d10s reading 00");
+assert.equal(dice[6].parts[0].number.style.color,"#f5edff","both percentile dice use the selected violet material");
+assert.ok(pendingDie.classes.contains("is-webgl"),"the ready pose uses the same opaque 3D geometry");
+assert.equal(pendingDie.parts[0].number.textContent,"","the ready pose does not invent a result");
 
 console.log("Static 3D dice tests passed.");
