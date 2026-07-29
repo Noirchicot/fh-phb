@@ -240,20 +240,34 @@ commit not yet merged.
 > from this seat, correctly). Verified live: `GET /table/FH2` → `{"live":false}`,
 > `POST` without a GM token → `401`, `/feed/FH2` unaffected.
 
+> ✅ **DOCK CLIENT BUILT AND VERIFIED LIVE, 2026-07-29** (commit `dbf6072`).
+> `fh-player-sheet.js` now polls `/table/:code` every 60s, opens a WebSocket to
+> a live table, and posts rolls there instead of the cloud when it does. Three
+> named states replace the old binary flag — LIVE/RECENT/OFF, exactly §12.5.
+>
+> **Verified against real infrastructure, not the harness's stub**: a real
+> `table-server.mjs` + Cloudflare tunnel, this exact shipped code, a `curl`'d
+> roll appearing with no reload, and — the one that matters — killing the
+> tunnel mid-session produced **OFF, not a silent slide to RECENT**. Rule 1 of
+> §12.5 held under a real network failure, not a mocked one.
+>
+> All seven existing test suites still green, unchanged, because default state
+> is RECENT and behaves exactly as package 11 shipped it.
+
 **Next, in order:**
 
-1. **The dock's transport client** — architect work, core: WebSocket with
-   reconnect-and-resume (~40 lines, the one thing the SSE fallback cost),
-   source resolution, and the three table states of §12.5. This is the last
-   piece between here and a live table.
-2. **The caption relabelling + site deploy** — small, independent, and it
-   un-strands all of package 11 today. Worth doing alongside 1.
-3. **12b, the bridge** — its starter prompt is written and did not need
+1. **12b, the bridge** — its starter prompt is written and did not need
    rewriting: it reads the feed and does not care which transport carries it.
    On loopback it may use SSE or WS, both of which work there.
-4. **The four-hour soak** — now the largest open risk (plan §12.11 point 4).
+2. **The four-hour soak** — the largest open risk (plan §12.11 point 4).
    WebSocket moves the question from "does it stream" to "does it survive a
    session"; the 20s server ping exists for that and is untested over hours.
+3. **The caption relabelling is done as part of the client work above** — the
+   three states already ship honest captions, and OFF is what a real network
+   failure produces (verified, not assumed) rather than a silent lie. What is
+   left of "unblock package 11" is just `mkdocs gh-deploy` itself. Technically
+   safe to run now; deliberately not run from this seat — **that decision is
+   Eric's**, same as every deploy in this project.
 
 Then 6/5/7 (Actions, Traits, Spells — parallel;
 they are also what starts producing `damage` and `spell` intents). Package 9 (the
