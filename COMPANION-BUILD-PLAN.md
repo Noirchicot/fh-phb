@@ -3,6 +3,10 @@
 Working document for a multi-chat build. Any chat should be able to start from
 this file alone, without the conversation that produced it.
 
+> **Taking over the architect thread?** Read **`ARCHITECT-HANDOFF.md`** first — the
+> standing rules, the traps already paid for, and how the package chats are run.
+> This file is the plan; that one is the job.
+
 **Repo:** `~/tools/fh-phb` · branch `main` · deploy `./.venv/bin/mkdocs gh-deploy --force`
 **Tests:** `for t in tests/*.test.js; do node "$t"; done` — all six must stay green.
 **Harness:** `tools/dock-harness.html`, copied to `site/` and served on port 8125
