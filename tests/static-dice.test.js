@@ -11,19 +11,22 @@ function classList() {
 }
 function fakeGl() {
   let attribute=0;
-  const draws=[];
+  const draws=[],states=[],shaderSources=[];
   return {
-    draws,
+    draws,states,shaderSources,
     VERTEX_SHADER:1,FRAGMENT_SHADER:2,COMPILE_STATUS:3,LINK_STATUS:4,
     ARRAY_BUFFER:5,STATIC_DRAW:6,FLOAT:7,DEPTH_TEST:8,CULL_FACE:9,
     COLOR_BUFFER_BIT:16,DEPTH_BUFFER_BIT:32,TRIANGLES:10,LINES:11,
-    POLYGON_OFFSET_FILL:12,
-    createShader:()=>({}),shaderSource:()=>{},compileShader:()=>{},
+    POLYGON_OFFSET_FILL:12,LEQUAL:13,CCW:14,BACK:15,BLEND:17,
+    createShader:()=>({}),shaderSource:(_shader,source)=>shaderSources.push(source),compileShader:()=>{},
     getShaderParameter:()=>true,getShaderInfoLog:()=>"",
     createProgram:()=>({}),attachShader:()=>{},linkProgram:()=>{},
     getProgramParameter:()=>true,getProgramInfoLog:()=>"",
-    createBuffer:()=>({}),bindBuffer:()=>{},bufferData:()=>{},
-    viewport:()=>{},clearColor:()=>{},enable:()=>{},polygonOffset:()=>{},
+    createBuffer:()=>({}),bindBuffer:(...args)=>assert.equal(args.length,2,"bindBuffer receives exactly target and buffer"),bufferData:()=>{},
+    viewport:()=>{},clearColor:()=>{},enable:value=>states.push(["enable",value]),
+    disable:value=>states.push(["disable",value]),depthFunc:value=>states.push(["depthFunc",value]),
+    depthMask:value=>states.push(["depthMask",value]),frontFace:value=>states.push(["frontFace",value]),
+    cullFace:value=>states.push(["cullFace",value]),polygonOffset:()=>{},
     lineWidth:()=>{},clear:()=>{},useProgram:()=>{},
     getAttribLocation:()=>attribute++,enableVertexAttribArray:()=>{},
     vertexAttribPointer:()=>{},getUniformLocation:()=>({}),
@@ -83,6 +86,13 @@ dice.forEach(({host,parts})=>{
   parts.forEach(part=>{
     const mesh=part.gl.draws.find(draw=>draw.mode===part.gl.TRIANGLES);
     assert.equal(mesh.count,expectedMeshVertices[host.dataset.sides],`d${host.dataset.sides} has the complete intended mesh`);
+    assert.ok(part.gl.states.some(state=>state[0]==="depthFunc"&&state[1]===part.gl.LEQUAL),`d${host.dataset.sides} uses a coherent depth function`);
+    assert.ok(part.gl.states.filter(state=>state[0]==="depthMask"&&state[1]===true).length>=3,`d${host.dataset.sides} writes depth for setup, mesh, and edge passes`);
+    assert.ok(part.gl.states.some(state=>state[0]==="frontFace"&&state[1]===part.gl.CCW),`d${host.dataset.sides} keeps outward CCW winding`);
+    assert.ok(part.gl.states.some(state=>state[0]==="cullFace"&&state[1]===part.gl.BACK),`d${host.dataset.sides} culls back faces`);
+    assert.ok(part.gl.states.filter(state=>state[0]==="disable"&&state[1]===part.gl.BLEND).length>=3,`d${host.dataset.sides} keeps both material passes opaque`);
+    assert.ok(part.gl.shaderSources.filter(source=>source.includes("gl_FragColor")).every(source=>source.includes(",1.0)")),`d${host.dataset.sides} uses opaque alpha in both fragment shaders`);
+    assert.ok(part.gl.shaderSources.filter(source=>source.includes("gl_Position")).every(source=>source.includes("-p.z*.22")),`d${host.dataset.sides} maps camera-facing +Z toward the depth buffer`);
   });
 });
 assert.equal(dice[3].parts[0].number.textContent,"0","a natural d10 result of 10 is printed as 0");
@@ -90,5 +100,11 @@ assert.deepEqual(dice[6].parts.map(part=>part.number.textContent),["0","0"],"d10
 assert.equal(dice[6].parts[0].number.style.color,"#f5edff","both percentile dice use the selected violet material");
 assert.ok(pendingDie.classes.contains("is-webgl"),"the ready pose uses the same opaque 3D geometry");
 assert.equal(pendingDie.parts[0].number.textContent,"","the ready pose does not invent a result");
+
+const css=fs.readFileSync(path.join(__dirname,"..","docs","stylesheets","companion-dock.css"),"utf8");
+const lab=fs.readFileSync(path.join(__dirname,"..","docs","static-dice-lab.html"),"utf8");
+assert.match(css,/\.fh-cd-static3d-result\{[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"the tray uses one .28 result ratio for the whole dice set");
+assert.doesNotMatch(css,/data-sides=\"(?:4|6|8|10|12|20|100)\"[^}]*font-size/,"no die shape overrides the shared result scale");
+assert.match(lab,/\.fh-cd-static3d-result\{[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"the lab previews the same shared .28 result ratio");
 
 console.log("Static 3D dice tests passed.");

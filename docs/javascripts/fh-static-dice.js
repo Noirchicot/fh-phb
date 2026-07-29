@@ -256,12 +256,12 @@
     if(!gl)throw new Error("WebGL unavailable");
     var geo=geometryFor(sides),material=MATERIALS[materialName]||MATERIALS.ivory;
     var meshProgram=program(gl,
-      "attribute vec3 aPosition;attribute vec3 aNormal;uniform mat3 uRotation;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;vNormal=normalize(uRotation*aNormal);vPosition=p;gl_Position=vec4(p.xy*.89*depth,p.z*.22,1.0);}",
+      "attribute vec3 aPosition;attribute vec3 aNormal;uniform mat3 uRotation;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;vNormal=normalize(uRotation*aNormal);vPosition=p;gl_Position=vec4(p.xy*.89*depth,-p.z*.22,1.0);}",
       "precision mediump float;uniform vec3 uFill;uniform vec3 uLight;uniform vec3 uDark;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-.48,.72,1.0));vec3 fillLight=normalize(vec3(.68,-.28,.52));vec3 view=vec3(0.0,0.0,1.0);float diffuse=max(dot(n,key),0.0);float bounce=max(dot(n,fillLight),0.0);float shade=clamp(.16+.68*diffuse+.16*bounce,0.0,1.0);float specular=pow(max(dot(n,normalize(key+view)),0.0),28.0);float fresnel=pow(1.0-max(dot(n,view),0.0),3.0);vec3 colour=mix(uDark,uFill,shade);colour=mix(colour,uLight,clamp(specular*.32+fresnel*.075,0.0,.38));gl_FragColor=vec4(colour,1.0);}"
     );
     var lineProgram=program(gl,
-      "attribute vec3 aPosition;uniform mat3 uRotation;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;gl_Position=vec4(p.xy*.89*depth,p.z*.22-.001,1.0);}",
-      "precision mediump float;uniform vec3 uRim;void main(){gl_FragColor=vec4(uRim,.88);}"
+      "attribute vec3 aPosition;uniform mat3 uRotation;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;gl_Position=vec4(p.xy*.89*depth,-p.z*.22-.001,1.0);}",
+      "precision mediump float;uniform vec3 uRim;void main(){gl_FragColor=vec4(uRim,1.0);}"
     );
     var positionBuffer=buffer(gl,geo.positions),normalBuffer=buffer(gl,geo.normals),edgeBuffer=buffer(gl,geo.edges);
     /* canvas (and, for the d100 pair, its .fh-cd-static3d-part parent) are
@@ -275,7 +275,9 @@
        is passed straight through instead of re-derived from layout. */
     var pixelRatio=Math.max(1,Math.min(2,window.devicePixelRatio||1)),size=Math.max(32,Math.round(sizePx||canvas.getBoundingClientRect().width||52));
     canvas.width=Math.round(size*pixelRatio);canvas.height=Math.round(size*pixelRatio);
-    gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(0,0,0,0);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);
+    gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(0,0,0,0);
+    gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.depthMask(true);
+    gl.enable(gl.CULL_FACE);gl.frontFace(gl.CCW);gl.cullFace(gl.BACK);gl.disable(gl.BLEND);
     if(gl.POLYGON_OFFSET_FILL!=null&&gl.polygonOffset){gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1,1);}
     if(gl.lineWidth)gl.lineWidth(Math.max(1,pixelRatio));
     function attribute(programObject,name,item,sizeValue){
@@ -285,6 +287,7 @@
       geo:geo,
       draw:function(rotation){
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+        gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);
         gl.useProgram(meshProgram);
         attribute(meshProgram,"aPosition",positionBuffer,3);attribute(meshProgram,"aNormal",normalBuffer,3);
         gl.uniformMatrix3fv(gl.getUniformLocation(meshProgram,"uRotation"),false,rotation);
@@ -292,6 +295,7 @@
         gl.uniform3fv(gl.getUniformLocation(meshProgram,"uLight"),hexRgb(material.light));
         gl.uniform3fv(gl.getUniformLocation(meshProgram,"uDark"),hexRgb(material.dark));
         gl.drawArrays(gl.TRIANGLES,0,geo.positions.length/3);
+        gl.enable(gl.DEPTH_TEST);gl.depthMask(true);gl.disable(gl.BLEND);
         gl.useProgram(lineProgram);attribute(lineProgram,"aPosition",edgeBuffer,3);
         gl.uniformMatrix3fv(gl.getUniformLocation(lineProgram,"uRotation"),false,rotation);
         gl.uniform3fv(gl.getUniformLocation(lineProgram,"uRim"),hexRgb(material.rim));

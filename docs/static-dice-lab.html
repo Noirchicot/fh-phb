@@ -23,12 +23,8 @@
     .fh-cd-static3d-part+.fh-cd-static3d-part{margin-left:calc(var(--fh-static-die-size) * -.14)}
     .fh-cd-static3d canvas{display:none;width:100%;height:100%;filter:drop-shadow(0 14px 14px rgba(0,0,0,.65))}
     .fh-cd-static3d.is-webgl canvas{display:block}
-    .fh-cd-static3d-result{position:absolute;z-index:2;left:50%;top:49%;display:block;min-width:1.35em;transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(.7);opacity:0;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:calc(var(--fh-static-die-size) * .35);font-weight:700;line-height:1;text-align:center;text-shadow:0 1px rgba(255,255,255,.2),0 3px 4px rgba(0,0,0,.2);transition:opacity .16s ease,transform .2s ease}
-    .fh-cd-static3d[data-sides="4"] .fh-cd-static3d-result{top:51%;font-size:calc(var(--fh-static-die-size) * .29)}
-    .fh-cd-static3d[data-sides="10"] .fh-cd-static3d-result,
-    .fh-cd-static3d[data-sides="12"] .fh-cd-static3d-result,
-    .fh-cd-static3d[data-sides="20"] .fh-cd-static3d-result{font-size:calc(var(--fh-static-die-size) * .3)}
-    .fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result{font-size:calc(var(--fh-static-die-size) * .27)}
+    .fh-cd-static3d-result{position:absolute;z-index:2;left:50%;top:49%;display:block;min-width:1.35em;transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(.7);opacity:0;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:calc(var(--fh-static-die-size) * .28);font-weight:700;line-height:1;text-align:center;text-shadow:0 1px rgba(255,255,255,.2),0 3px 4px rgba(0,0,0,.2);transition:opacity .16s ease,transform .2s ease}
+    .fh-cd-static3d[data-sides="4"] .fh-cd-static3d-result{top:51%}
     .fh-cd-static3d.is-settled .fh-cd-static3d-result{transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(1);opacity:1}
     .fh-cd-static3d-fallback{display:grid;place-items:center;width:100%;height:100%;color:var(--fh-static-num,#58180d);background:var(--fh-static-fill,#f3ead6);border:3px solid var(--fh-static-rim,#8a6a2a);border-radius:20px;font:700 48px Georgia,serif}
     .fh-cd-static3d.is-webgl .fh-cd-static3d-fallback{display:none}
