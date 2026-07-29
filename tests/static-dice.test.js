@@ -68,25 +68,25 @@ vm.runInNewContext(source,sandbox,{filename:"fh-static-dice.js"});
 assert.equal(typeof window.FHStaticDice.mount,"function","the renderer exposes one progressive-enhancement mount");
 assert.deepEqual(Array.from(window.FHStaticDice.supportedSides),[4,6,8,10,12,20,100],"the complete tabletop dice set is supported");
 assert.ok(window.FHStaticDice.materials.includes("crimson"),"player colours are exposed to every die shape");
-assert.equal(typeof window.FHStaticDice.sound.preview,"function","the renderer exposes an iterable procedural sound preview");
+assert.equal(typeof window.FHStaticDice.sound.preview,"function","the renderer exposes an iterable recorded sound preview");
 assert.equal(window.FHStaticDice.sound.isMuted(),false,"dice sound starts enabled when no preference is stored");
 window.FHStaticDice.sound.setMuted(true);
 assert.equal(window.FHStaticDice.sound.isMuted(),true,"dice sound can be muted without changing the renderer");
 window.FHStaticDice.sound.setMuted(false);
-assert.equal(window.FHStaticDice.sound.preview(6),false,"sound degrades safely when Web Audio is unavailable");
+assert.equal(window.FHStaticDice.sound.preview(6),false,"sound degrades safely when HTML audio is unavailable");
 const audioEvents=[];
-function audioParam(){return {setValueAtTime:()=>{},exponentialRampToValueAtTime:()=>{}};}
-window.AudioContext=function(){
-  this.currentTime=2;this.sampleRate=1000;this.state="running";this.destination={};
-  this.createBuffer=(_channels,length)=>({getChannelData:()=>new Float32Array(length)});
-  this.createBufferSource=()=>({connect:()=>{},start:time=>audioEvents.push(["noise",time]),stop:()=>{}});
-  this.createBiquadFilter=()=>({type:"",frequency:audioParam(),Q:audioParam(),connect:()=>{}});
-  this.createGain=()=>({gain:audioParam(),connect:()=>{}});
-  this.createOscillator=()=>({type:"",frequency:audioParam(),connect:()=>{},start:time=>audioEvents.push(["body",time]),stop:()=>{}});
+window.Audio=function(source){
+  this.source=source;this.pause=()=>audioEvents.push(["pause",source]);
+  this.play=()=>{audioEvents.push(["play",source,this.playbackRate,this.preservesPitch]);return Promise.resolve();};
 };
-assert.equal(window.FHStaticDice.sound.preview(6),true,"procedural sound schedules when Web Audio is available");
-assert.equal(audioEvents.filter(event=>event[0]==="noise").length,7,"one roll schedules six clacks and a landing impact");
-assert.equal(audioEvents.filter(event=>event[0]==="body").length,7,"each impact receives a short resonant body");
+assert.deepEqual(Array.from(window.FHStaticDice.sound.samples),[
+  "dice-throw-1.mp3","dice-throw-2.mp3","dice-throw-3.mp3","die-throw-3.mp3"
+],"only Eric's four selected CC0 samples are exposed");
+assert.equal(window.FHStaticDice.sound.rollDuration,960,"recorded sound targets the approved visual roll duration");
+assert.equal(window.FHStaticDice.sound.preview(6),true,"recorded sound schedules when HTML audio is available");
+assert.equal(audioEvents.filter(event=>event[0]==="play").length,1,"one recorded throw plays per die roll");
+assert.ok(Math.abs(audioEvents[0][2]-(.574694/.96))<.000001,"the first sample is stretched to exactly 960 ms");
+assert.equal(audioEvents[0][3],true,"pitch preservation is requested while syncing duration");
 window.FHStaticDice.mount(root);
 dice.forEach(({host,parts,classes},index)=>{
   assert.equal(host.dataset.mounted,"1",`d${host.dataset.sides} is mounted only once`);

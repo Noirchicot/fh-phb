@@ -19,20 +19,22 @@
     white:{fill:"#fbf8f1",light:"#ffffff",dark:"#d9cfb9",rim:"#8b7546",num:"#5a4a2a"}
   };
   var geometryCache = {};
-  var soundContext = null;
   var soundMuted = readStoredMute();
-  var SOUND_PROFILE = {
-    volume:.18,
-    impacts:[
-      {time:.03,strength:.42},
-      {time:.16,strength:.34},
-      {time:.30,strength:.46},
-      {time:.46,strength:.37},
-      {time:.63,strength:.51},
-      {time:.78,strength:.43}
-    ],
-    landing:{time:.91,strength:.82}
-  };
+  var soundVolume=.55,soundCursor=0,activeSounds=[];
+  var ROLL_DURATION_MS=960;
+  var SOUND_SAMPLES = [
+    {file:"dice-throw-1.mp3",duration:.574694},
+    {file:"dice-throw-2.mp3",duration:.679184},
+    {file:"dice-throw-3.mp3",duration:.783673},
+    {file:"die-throw-3.mp3",duration:.626939}
+  ];
+  var soundBase=(function(){
+    try{
+      var source=document.currentScript&&document.currentScript.src;
+      if(source)return source.slice(0,source.lastIndexOf("/javascripts/")+1)+"assets/audio/dice/";
+    }catch(error){}
+    return "assets/audio/dice/";
+  }());
 
   function readStoredMute(){
     try{return Boolean(window.localStorage&&window.localStorage.getItem("fh-static-dice-muted")==="1");}
@@ -40,63 +42,42 @@
   }
   function setSoundMuted(muted){
     soundMuted=Boolean(muted);
+    if(soundMuted){
+      activeSounds.forEach(function(audio){try{audio.pause();}catch(error){}});
+      activeSounds=[];
+    }
     try{if(window.localStorage)window.localStorage.setItem("fh-static-dice-muted",soundMuted?"1":"0");}
     catch(error){}
     return soundMuted;
   }
   function setSoundVolume(volume){
-    SOUND_PROFILE.volume=Math.max(0,Math.min(.35,Number(volume)||0));
-    return SOUND_PROFILE.volume;
-  }
-  function audioContext(){
-    if(soundMuted)return null;
-    var AudioContext=window.AudioContext||window.webkitAudioContext;
-    if(!AudioContext)return null;
-    try{
-      if(!soundContext)soundContext=new AudioContext();
-      if(soundContext.state==="suspended"&&soundContext.resume)soundContext.resume();
-      return soundContext;
-    }catch(error){return null;}
-  }
-  function seededNoise(seed){
-    var state=(Number(seed)||1)>>>0;
-    return function(){
-      state=(state*1664525+1013904223)>>>0;
-      return state/4294967296;
-    };
-  }
-  function scheduleImpact(context,time,strength,pitch,seed){
-    var duration=.045,length=Math.max(1,Math.floor(context.sampleRate*duration));
-    var buffer=context.createBuffer(1,length,context.sampleRate),data=buffer.getChannelData(0),noise=seededNoise(seed);
-    for(var sample=0;sample<length;sample++)data[sample]=(noise()*2-1)*Math.pow(1-sample/length,3);
-    var source=context.createBufferSource(),filter=context.createBiquadFilter(),gain=context.createGain();
-    source.buffer=buffer;filter.type="bandpass";
-    filter.frequency.setValueAtTime(pitch*3.2,time);filter.Q.setValueAtTime(1.7,time);
-    gain.gain.setValueAtTime(.0001,time);
-    gain.gain.exponentialRampToValueAtTime(Math.max(.0001,SOUND_PROFILE.volume*strength),time+.003);
-    gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
-    source.connect(filter);filter.connect(gain);gain.connect(context.destination);
-    source.start(time);source.stop(time+duration);
-
-    var body=context.createOscillator(),bodyGain=context.createGain();
-    body.type="triangle";body.frequency.setValueAtTime(pitch,time);
-    body.frequency.exponentialRampToValueAtTime(Math.max(45,pitch*.58),time+.055);
-    bodyGain.gain.setValueAtTime(.0001,time);
-    bodyGain.gain.exponentialRampToValueAtTime(Math.max(.0001,SOUND_PROFILE.volume*strength*.32),time+.002);
-    bodyGain.gain.exponentialRampToValueAtTime(.0001,time+.06);
-    body.connect(bodyGain);bodyGain.connect(context.destination);
-    body.start(time);body.stop(time+.065);
+    soundVolume=Math.max(0,Math.min(1,Number(volume)||0));
+    return soundVolume;
   }
   function playRollSound(sides,index){
-    var context=audioContext();
-    if(!context)return false;
-    var sideCount=Number(sides)||20,sequence=Number(index)||0;
-    var weight=Math.max(.62,Math.min(1.08,1.12-Math.log(sideCount)/8));
-    var pitch=175*weight,offset=context.currentTime+.012+Math.max(0,sequence)*.042;
-    SOUND_PROFILE.impacts.forEach(function(impact,impactIndex){
-      scheduleImpact(context,offset+impact.time,impact.strength,pitch*(1+(impactIndex%3)*.08),sideCount*97+sequence*31+impactIndex);
-    });
-    scheduleImpact(context,offset+SOUND_PROFILE.landing.time,SOUND_PROFILE.landing.strength,pitch*.72,sideCount*131+sequence*43);
+    if(soundMuted||typeof window.Audio!=="function")return false;
+    var sample=SOUND_SAMPLES[soundCursor++%SOUND_SAMPLES.length],audio;
+    try{audio=new window.Audio(soundBase+sample.file);}
+    catch(error){return false;}
+    audio.preload="auto";
+    audio.volume=soundVolume;
+    audio.playbackRate=sample.duration/(ROLL_DURATION_MS/1000);
+    /* Browsers that support pitch preservation can lengthen these short,
+       recorded throws to the approved 960 ms roll without lowering pitch. */
+    audio.preservesPitch=true;
+    audio.webkitPreservesPitch=true;
+    audio.mozPreservesPitch=true;
+    audio.onended=function(){activeSounds=activeSounds.filter(function(item){return item!==audio;});};
+    activeSounds.push(audio);
+    function begin(){
+      try{
+        var playback=audio.play();
+        if(playback&&playback.catch)playback.catch(function(){});
+      }catch(error){}
+    }
+    var delay=Math.max(0,Number(index)||0)*42;
+    if(delay&&typeof window.setTimeout==="function")window.setTimeout(begin,delay);
+    else begin();
     return true;
   }
 
@@ -412,7 +393,7 @@
     number.style.color=(MATERIALS[materialName]||MATERIALS.ivory).num;
     var finalRotation=faceRotation(renderer.geo,faceIndex,renderSides);
     var startRotation=faceRotation(renderer.geo,0,renderSides);
-    var duration=960,delay=animate?sequenceIndex*42:0,start=null;
+    var duration=ROLL_DURATION_MS,delay=animate?sequenceIndex*42:0,start=null;
     function drawFrame(now){
       if(!canvas.isConnected)return;
       if(start===null)start=now+delay;
@@ -485,7 +466,9 @@
       isMuted:function(){return soundMuted;},
       setMuted:setSoundMuted,
       setVolume:setSoundVolume,
-      preview:function(sides){return playRollSound(Number(sides)||20,0);}
+      preview:function(sides){return playRollSound(Number(sides)||20,0);},
+      samples:SOUND_SAMPLES.map(function(sample){return sample.file;}),
+      rollDuration:ROLL_DURATION_MS
     }
   };
 }());
