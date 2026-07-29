@@ -127,7 +127,7 @@ assert.match(lab,/id="fhLabSound"[^>]*aria-pressed="true"/,"the lab exposes a pe
 assert.match(css,/\.fh-cd-static3d-result\{[^}]*top:49%[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"d8 keeps the visually approved result placement and scale");
 assert.match(css,/data-sides="4"[^}]*top:51%/,"d4 keeps the visually approved result placement");
 [
-  [6,"41","27"],[10,"62","24"],[12,"53","24"],[20,"53","20"],[100,"62","19"]
+  [6,"41","324"],[10,"62","24"],[12,"53","24"],[20,"53","20"],[100,"62","19"]
 ].forEach(([sides,top,scale])=>{
   var expected=new RegExp('data-sides="'+sides+'"[^}]*top:'+top+'%[^}]*font-size:calc\\(var\\(--fh-static-die-size\\) \\* \\.'+scale+'\\)');
   assert.match(css,expected,`d${sides} uses its face-calibrated result placement and scale`);
