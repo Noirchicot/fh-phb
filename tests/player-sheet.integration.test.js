@@ -180,6 +180,8 @@ assert.equal(entry.kept,Math.max(entry.d20s[0],entry.d20s[1]),"advantage keeps t
 // REWRITTEN (dock v5): the die is a plain d4 until a seal is put on it.
 assert.equal(entry.bonusDice[0].sides,4,"the picked d4 rolls beside the d20s");
 assert.equal(t.state.trayResults.length,4,"the frame displays both d20s, the bonus die and the +2 token");
+assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="20"]').length,2,"resolved d20s use the static 3D renderer");
+assert.equal(root.querySelector('.fh-cd-static3d').dataset.result,String(entry.d20s[0]),"the renderer receives the face already chosen by FHPC");
 const originalD20=Array.from(entry.d20s);
 
 /* ── Stream ──────────────────────────────────────────────────── */
