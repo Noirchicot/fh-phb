@@ -68,7 +68,10 @@ Read both. Read nothing else to start.
 | A seq **counter** key re-creates the 1-write/sec limit it was meant to dodge | five players rolling at once race on `feed:{CODE}:cursor` | the sequence IS the timestamp — 13-digit padded epoch ms + random tiebreaker, no shared key (plan §11.4) |
 | `addHistory` is **not** where a roll settles | a natural 1 is in history *before* the player chooses, and defying turns it into a 20; an adjusted roll never passes through it at all | broadcast at `openRollState` + the `finish-sequence` branch, gated on `rollTransactionActive()` (plan §11.4b) |
 | `document.hidden` is true for the **main** document while Table mode runs in PiP | gating polling on it kills the feed exactly when it is being used at the table | hidden **slows** the poll to 12s, never stops it |
-| `~/tools/fh-worker` **has no git** — only timestamped `.bak` files | a bad edit to a live 1500-line Worker is unrecoverable | `cp src/worker.js src/worker.js.bak-$(date +%Y%m%d-%H%M%S)` before editing. **It should be a repo; still outstanding** |
+| ~~`~/tools/fh-worker` has no git~~ | — | **FIXED 2026-07-29** — it is a repo now (first commit `7fe6588`). The `.bak` files remain as history; new edits go through git |
+| An HTTPS page **cannot** fetch `http://` | every self-hosting option that skips TLS is dead on arrival — the dock is on `github.io` | the DM's machine must be reachable over **HTTPS with a real cert**; that alone chooses Cloudflare Tunnel over port-forwarding (plan §12.2) |
+| `Content-Type: application/json` on a cross-origin POST **triggers a preflight** | the SSE stream looks perfect and rolls silently fail to submit | any local server the dock talks to needs a real `OPTIONS` handler, not just `Access-Control-Allow-Origin` (plan §12.3) |
+| `http://127.0.0.1` from an HTTPS page drags in mixed-content exemptions **and** Chrome's Private Network Access preflight, and Safari is stricter than both | a loopback shortcut that works in one browser and not another | **no browser talks to loopback** — the DM's own dock uses the tunnel URL like everyone else; only the extension uses `127.0.0.1` (plan §12.2) |
 | `WORKER-ADMIN-API.md` in this repo is a **spec**, not the code | you will "fix" a document and deploy nothing | the deployed source is `~/tools/fh-worker/src/worker.js`, `wrangler deploy` from that directory |
 
 ---
@@ -182,10 +185,22 @@ key (§11.4), and the party log is a zone toggle rather than a belt tab (§11.4c
 > revisions, dedupe, rendering — but a party log that trails half a minute is not
 > the "everyone sees it the moment you roll" this was built for. **That is why
 > the site is not deployed:** shipping it as live would be precisely the silent
-> divergence §2 forbids. The decision — accept a *recent* log, or buy the Workers
-> paid plan for a Durable Object — is Eric's, and the measurement is the evidence
-> for it. Moving to a DO later changes storage only: the event shape, the
-> settlement rules and the whole client stay as they are.
+> divergence §2 forbids.
+
+> ✅ **DECIDED 2026-07-29 — the live feed moves to the DM's machine. Plan §12.**
+> Not a Durable Object, not a paid plan: during a session the DM already runs a
+> program on their own machine (the AboveVTT bridge), so that program also *serves*
+> the feed — SSE down, unchanged `POST` up, reached through a Cloudflare Tunnel,
+> found via a one-key rendezvous record on the Worker. The cloud feed is **kept as
+> a labelled backstop** and the table server mirrors into it. Package 12 splits
+> into **12a (table server, testable with no AboveVTT and no live game)** and
+> **12b (the bridge, original scope, now just another subscriber on loopback)**.
+> **The dock side is architect work, not a package chat** — it is core.
+> Everything above the transport is unchanged and frozen.
+>
+> **Separable and worth doing first:** the site is undeployed because two captions
+> claim the feed is live. Relabelling them to the three states in §12.5 is small,
+> honest, and un-strands all of package 11 today.
 
 > ⚠️ **The live campaign code is `FH2`, not `FH1`.** `FH1` is what the harness and
 > the old memory notes use, and it 403s on the deployed Worker. Check `/party/{code}`
@@ -194,8 +209,10 @@ key (§11.4), and the party log is a zone toggle rather than a belt tab (§11.4c
 **In flight:** package 10 (dice lab) in its own thread, branch `pkg10-dice`, one
 commit not yet merged.
 
-**Next, in order:** 12 (DM bridge, log-only — its starter prompt is written and the
-feed contract it reads is frozen), then 6/5/7 (Actions, Traits, Spells — parallel;
+**Next, in order:** the caption relabelling + deploy (small, unblocks package 11),
+then **12a** (table server — starter prompt written, plan §12 is the spec), then the
+dock's SSE client and the rendezvous route (**architect**, core + Worker), then **12b**
+(the bridge, its prompt also written), then 6/5/7 (Actions, Traits, Spells — parallel;
 they are also what starts producing `damage` and `spell` intents). Package 9 (the
 adversarial bug hunt over the roll engine and the destiny/chaos/awakening state
 machine) is now **more** worth running, not less: the feed broadcasts whatever that

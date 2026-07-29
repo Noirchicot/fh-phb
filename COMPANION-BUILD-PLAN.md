@@ -188,7 +188,9 @@ because they touch disjoint files.
 | 3 | **Minor Arcana + Brick.** Deck extension + the Brick as a tracked, once-shapeable resource. | Sonnet · medium | core (arcana) | 2, and §6 |
 | 4 | ~~**AboveVTT bridge (per player).**~~ **SUPERSEDED by §11** — redesigned as a DM-side consumer of the campaign feed. Research complete, see §10. | — | — | 11 |
 | 11 | ~~**Shared campaign feed.**~~ **DONE.** Worker `feed:{CODE}:{seq}` + `GET/POST/DELETE /feed/:code`, Companion posts on settle, party log live in the stream zone. **Deviations, both on purpose:** no cursor key (§11.4), and the party log is a **zone toggle, not a belt tab** (§11.4c). | Opus · high | Worker + core + CSS + harness | 1 |
-| 12 | **DM bridge (log-only).** One extension on the DM's machine, reads the feed, posts formatted lines into AboveVTT. Degrades by printing what it cannot drive. | Sonnet · high | new repo | 11 |
+| 12a | **Table server.** The live feed moves onto the DM's machine (§12): Node + SSE + Cloudflare Tunnel, serving the Worker's `/feed` contract verbatim plus a stream, mirroring to the cloud backstop. This is what makes "the moment they hit ROLL" true. Verifiable with no AboveVTT and no live game. | Sonnet · high | new repo `fh-table` | 11 |
+| 12b | **AboveVTT bridge (log-only).** The same repo's extension, subscribing to the table server over loopback like any other consumer; posts formatted lines into AboveVTT. Degrades by printing what it cannot drive. | Sonnet · high | `fh-table/extension` | 12a |
+| — | **Dock + rendezvous** — the SSE client, the three table states (§12.5) and `POST/GET/DELETE /table/:code` on the Worker. **Architect work, not a package chat**: it is core (`fh-player-sheet.js`) and the Worker. | Opus · high | core + Worker | 12a |
 | 10 | **Dice lab.** Prototype face-cycling, in-slot 3D tumble, materials, landing weight — side by side, no dock changes. | Sonnet · high | `tools/dice-lab.html` | — |
 | 5 | **Features panel** — abilities, traits, feats, with a real per-rest/per-day tracker. | Sonnet · high | `fh-panel-features.js` | 1 |
 | 6 | **Actions panel** — Action / BA / Reaction, clickable rolls, `showsRoller: true`. | Sonnet · high | `fh-panel-actions.js` | 1 |
@@ -552,33 +554,131 @@ records exactly why it cannot. Both are a successful outcome for this package.
 
 ---
 
-**Package 12 · DM bridge (log-only)** — a NEW repo, not a worktree of this one
+**Package 12a · The table server** — a NEW repo `~/tools/fh-table`, not a worktree
 
 ```
-Build the Fate's Hand DM bridge: a Chrome extension that reads a campaign feed
+Build the Fate's Hand table server: a small Node program the DM runs on their own
+machine during a session, which hosts the live campaign feed for a party of
+remote players. It replaces a cloud feed that was measured at ~27s of latency.
+Players install NOTHING -- they open a web page, as they do today.
+
+READ COMPANION-BUILD-PLAN.md SECTION 12 IN FULL BEFORE WRITING ANY CODE, then
+section 11 for the event shapes you are carrying. Both are in ~/tools/fh-phb.
+Section 12 is the design and it is decided -- you are implementing it, not
+revisiting it. Section 11's settlement rules, rollId+rev revisions, dedupe-by-id
+and fh-event/1 / fh-roll/1 shapes are VERIFIED AND FROZEN: you change the
+transport and nothing above it.
+
+WHAT YOU ARE BUILDING (12.8): one file, `table-server.mjs`, ZERO npm
+dependencies, run as `node table-server.mjs FH2`. It binds node:http to
+127.0.0.1:8791 (--port to override), spawns `cloudflared tunnel --url
+http://127.0.0.1:8791` and scrapes the assigned https URL from its output,
+registers that URL with the cloud Worker and re-registers every 5 minutes, and
+serves:
+
+  GET    /feed/:code?since=&limit=   IDENTICAL to the Worker's response shape:
+                                     {schemaVersion, lookbackMs, cursor, events[]}
+  POST   /feed/:code                 IDENTICAL body and {ok, seq, id} response
+  GET    /feed/:code/stream          NEW -- SSE, the contract is in 12.3
+  DELETE /feed/:code                 clear the log
+  GET    /health                     {ok, code, startedAt, connected, events}
+  OPTIONS *                          the preflight, see below
+
+The Worker's implementation of the first two is ~/tools/fh-worker/src/worker.js
+lines 916-1010 (helpers, safeFeedEvent, readFeed) and 1153-1195 (the routes).
+READ IT AND MATCH IT -- serving the poll contract
+verbatim is what makes this a transport swap, and it is how you test before any
+SSE client exists.
+
+SIX THINGS THAT WILL BITE, ALL ALREADY PAID FOR:
+
+1. CORS PREFLIGHT. The dock is on https://noirchicot.github.io, you are on
+   *.trycloudflare.com. EventSource sends no custom headers so the stream is a
+   simple request, but the POST carries Content-Type: application/json and DOES
+   trigger an OPTIONS preflight. Without a real OPTIONS handler the stream looks
+   perfect and rolls silently fail to submit. Mirror the Worker's allow-list
+   (worker.js:38). Never ship `*`.
+2. NO COMPRESSION ON THE STREAM. Cache-Control: no-cache, no-transform, no gzip.
+   A buffering layer reintroduces exactly the latency this package exists to
+   remove.
+3. Last-Event-ID BEATS ?since. EventSource resends it automatically on reconnect.
+   Replay the ring buffer from there, then stream live. The replay WILL overlap
+   what the client already has -- that is fine and expected, because every reader
+   dedupes by event.id. Do not try to make replay exact.
+4. seq KEEPS THE 13-DIGIT FORMAT from 11.4 (padded epoch ms + 4-char tiebreaker),
+   even though one process could use a counter -- the dock must not need to know
+   which source it is talking to. Guard the clock: seq = max(now, lastSeq+1).
+   Publish lookbackMs: 0 (one process assigns every seq, so there is no skew).
+5. MIRROR EVERY EVENT ONWARD to the cloud Worker as it arrives, one POST each,
+   NEVER batched (12.6). The Worker re-stamps ts on arrival, so mirroring within
+   a second keeps the backstop's timestamps true; a retry queue would silently
+   skew them. --no-mirror disables it. This needs no Worker change: safeFeedEvent
+   preserves id, rollId and rev verbatim.
+6. BIND TO 127.0.0.1, NEVER 0.0.0.0 (12.9). The tunnel is the only way in. Serve
+   the feed routes and nothing else -- no static files, no path that reaches the
+   filesystem. Cap bodies at ~8KB. Reject any code that is not the one the server
+   was started for.
+
+THE RULE THAT OUTRANKS EVERYTHING: NEVER FAIL SILENTLY. The DM's terminal is an
+instrument panel readable across a room (12.8) -- campaign, player URL, connected
+count, event count, mirror state. When the tunnel drops or the Worker refuses the
+heartbeat, it says so IN THAT BLOCK, in red. The DM must never read a log to
+learn the table is down.
+
+MEASURE, DO NOT ASSUME (12.11). This package exists because a 27s number was
+measured instead of assumed. Before you report success:
+  - six probes, post-to-visible, through the tunnel. Target under 500ms.
+    Over ~2s means something is buffering.
+  - confirm Cloudflare Tunnel passes SSE UNBUFFERED. This is the one assumption
+    the transport choice rests on. If it fails, say so and stop -- WebSocket is
+    the pre-approved plan B (12.11) and it changes no event shape, but that is
+    Eric's call to take, not yours.
+  - a four-hour soak with a connection held open. Sleeping laptops and silently
+    half-open tunnels are where the boring failures live, and four hours is the
+    actual requirement.
+
+DO NOT TOUCH ~/tools/fh-phb. The dock's side of this -- source resolution, the
+SSE client, the three table states -- is core and belongs to the architect.
+You build the server and freeze nothing but your own contract.
+
+Done when: `node table-server.mjs FH2` prints a URL; two browsers pointed at it
+see each other's rolls in under 500ms measured; a revised roll updates one line
+instead of adding a second; killing the tunnel turns the panel red; and the six
+probes plus the soak are in the report as numbers, not adjectives.
+```
+
+---
+
+**Package 12b · AboveVTT bridge (log-only)** — the `extension/` folder of `fh-table`
+
+```
+Build the Fate's Hand DM bridge: a Chrome extension that reads the campaign feed
 and writes the rolls into AboveVTT's game log. It runs on the DM's machine only.
-Players install nothing.
+Players install nothing. Package 12a (the table server) must be working first.
 
-READ COMPANION-BUILD-PLAN.md SECTIONS 10 AND 11 BEFORE WRITING ANY CODE. They
-are in ~/tools/fh-phb. Section 10 is verified research into what AboveVTT will
-and will not accept; section 11 is the feed you are consuming, and its contract
-is frozen -- you are a reader of it, you do not change it.
+READ COMPANION-BUILD-PLAN.md SECTIONS 10, 11 AND 12 BEFORE WRITING ANY CODE.
+They are in ~/tools/fh-phb. Section 10 is verified research into what AboveVTT
+will and will not accept; 11 is the event contract; 12 is the server you are
+subscribing to. All three are frozen -- you are a reader.
 
-The feed, in one paragraph. GET https://fh-builds.noirchicot.workers.dev/feed/FH1
-returns {schemaVersion, lookbackMs, cursor, events[]}. Poll it every 2-3s passing
-?since=<the cursor you last got>. Each event is fh-event/1 and carries TWO
-layers: `display` (an fh-roll/1 view model -- display STRINGS, do not try to
-parse them) and `intent` (the semantic layer -- act on this). Today only
-intent.kind === "check" is ever produced; "damage" and "spell" shapes are frozen
-in 11.3 and will start arriving when the Actions and Spells panels land, so
-handle an unknown kind by printing it rather than crashing.
+YOU ARE JUST ANOTHER SUBSCRIBER. Connect to
+http://127.0.0.1:8791/feed/{CODE}/stream on loopback, exactly as a player's dock
+connects over the tunnel. You get no privileged path into the server and you need
+none -- which also means you can be built and tested with no tunnel at all, and
+with fake events posted by curl.
+
+Each event is fh-event/1 and carries TWO layers: `display` (an fh-roll/1 view
+model -- display STRINGS, do not try to parse them) and `intent` (the semantic
+layer -- act on this). Today only intent.kind === "check" is ever produced;
+"damage" and "spell" shapes are frozen in 11.3 and will start arriving when the
+Actions and Spells panels land, so handle an unknown kind by PRINTING it rather
+than crashing.
 
 THREE RULES YOU MUST NOT BREAK, all three already paid for:
 
-1. DEDUPE BY event.id. The poll deliberately re-reads a few seconds every time
-   (edge clocks disagree; see 11.4), so you WILL see events you have already
-   seen. A bridge that does not dedupe will post every line twice and, later,
-   apply every point of damage twice.
+1. DEDUPE BY event.id. A stream replays on reconnect (12.3), so you WILL see
+   events you have already seen. A bridge that does not dedupe posts every line
+   twice and, later, applies every point of damage twice.
 2. A revision is not a new roll. Events carry rollId + rev; an open roll that
    gains a bonus die reappends with the same rollId and a higher rev. Key on
    rollId, keep the highest rev, and EDIT or supersede the line you already
@@ -590,9 +690,8 @@ Graceful degradation is the whole design (11.3): translate what you can, PRINT
 what you cannot. Log-only is a complete, shippable outcome for this package --
 do not attempt damage application or AoE in this pass.
 
-Testing needs Eric at the keyboard with a live campaign and AboveVTT running,
-so build against the feed first (it works standalone, and you can post fake
-events to it with curl), and only then ask for a live session.
+Testing needs Eric at the keyboard with a live campaign and AboveVTT running, so
+build against the local feed first and only then ask for a live session.
 
 Done when: a roll made in the Companion appears as a formatted line in the
 AboveVTT game log on the DM's machine, exactly once, and a revised roll does not
@@ -853,10 +952,31 @@ DELETE /feed/:code         -> clear the log (GM token)
 > is wrong**, so moving to a DO later replaces the storage and touches neither the
 > event shape, the settlement rules, nor the client.
 
-**Polling every 2–3s is enough** for a party of five and costs nothing. A Durable
-Object gives instant push over WebSocket and strict ordering, and is the honest
-upgrade — but it requires the Workers **paid** plan. Given Railway was cancelled on
-cost, start with polling and treat the DO as a later, deliberate purchase.
+> ✅ **RESOLVED 2026-07-29 — Eric's decision: neither. The live feed moves to the
+> DM's machine.** Not a Durable Object, not a paid plan. During a session the DM
+> already runs a program on their own machine (the AboveVTT bridge, package 12),
+> everyone including the DM is connected remotely for four hours, and a server
+> that only has to exist while the DM is present can hold an open socket per
+> player and answer in milliseconds. The precedent is ordinary: self-hosted
+> Foundry VTT is how a large share of tables already work.
+>
+> **What this section still governs:** everything above the transport. The
+> settlement rules (§11.4b), `rollId` + `rev` revisions, dedupe by `id`, and the
+> `fh-event/1` / `fh-roll/1` shapes are **unchanged and correct** — they were
+> built against this transport and they carry over untouched. Only *where the
+> events are stored and how they reach a dock* moves.
+>
+> **What the cloud feed becomes:** the backstop, not the feed. It keeps its
+> routes, keeps working, and is relabelled honestly in the dock — see §12.5 and
+> §12.6. It is not deleted and it is never selected silently.
+>
+> **The full design is §12.** Read it before touching any of this.
+
+**Polling every 2–3s was the right call for a cloud KV feed and is retained as
+the fallback path** — the backstop log in §12.6 is still read this way, and the
+poll route is what the table server implements verbatim so a dock can talk to
+either source with the same code. What polling could never do is beat a 27s
+write-visibility lag, which is not a polling problem at all.
 
 Polling backs off to 12s when the tab is hidden or the table has been quiet for two
 minutes. It **never stops**: gating it on `document.hidden` was tried and is wrong,
@@ -914,6 +1034,16 @@ identically by construction.
 A feed that is not reaching the Worker **says so on the tab itself** (`is-off`,
 red) and in the caption: *"not reaching the table"*. Never fall back silently.
 
+> ⚠️ **Two captions in the shipped code are now lies and must be fixed before the
+> site is deployed.** `streamZoneInner()` says *"every roll in the campaign,
+> live"* and the empty state says *"Nothing from the table yet."* Against the
+> cloud feed both are false — it is ~30s behind, and "nothing yet" may mean "four
+> rolls you cannot see yet". This is the whole reason the site is undeployed.
+> §12.5 replaces the binary on/off with **three named states**, and the amber one
+> carries the lag in its own caption. Relabelling is separable from, and much
+> smaller than, the table server: it is what makes the finished package-11 work
+> shippable today rather than stranded.
+
 ### 11.5 Staging
 
 The feed is worth building **on its own, with zero AboveVTT** — right now every
@@ -926,8 +1056,12 @@ the prerequisite for the bridge, so it is step one either way.
 2. ~~**Intent vocabulary**~~ — **DONE.** `check` is emitted; damage and spell shapes
    are frozen and already accepted by the Worker, so the panels that produce them
    need no Worker deploy.
-3. **DM bridge, log-only** — one extension, reads the feed, posts formatted lines.
-   Low risk, immediate table value. **This is next; the feed contract is frozen.**
+3. ~~**DM bridge, log-only**~~ — **restaged 2026-07-29.** The bridge is no longer
+   the next thing on its own: the same program on the DM's machine now also
+   *serves* the live feed (§12). Package 12 therefore splits — **12a the table
+   server**, which is what finally makes "the moment they hit ROLL" true and is
+   verifiable with no AboveVTT and no live game; then **12b the bridge**, which is
+   the original scope, reading the table server over loopback.
 4. **Deepen** — damage application, then AoE if it proves reachable at all (§10 rates
    AoE as doubtful; the degradation rule is what makes failing at it safe).
 
@@ -944,3 +1078,421 @@ the prerequisite for the bridge, so it is step one either way.
   is the membership model for the whole app; the feed does not invent a second one.
 - **Damage and spell intents are not produced** — there are no Actions or Spells
   panels yet (packages 6 and 7). The vocabulary is frozen so they can just emit.
+
+---
+
+## 12. The table server (design, 2026-07-29)
+
+**Eric's decision, and the reasoning is his:** rather than buy the Workers paid
+plan for a Durable Object, host the live feed **on the DM's machine, during the
+session**, fused with the AboveVTT bridge that was already going to run there.
+
+> Sessions last four hours and everybody — the DM included — is connected
+> remotely for all of it. The live feed only means anything while the DM is
+> present anyway. Sheet edits and solo rolls between sessions stay on the cloud
+> Worker, untouched. Only the live feed moves.
+
+Self-hosted Foundry VTT is the same shape, and a great many tables run that way.
+This is not an exotic choice.
+
+### 12.1 What moves, and what emphatically does not
+
+| Stays on the cloud Worker, unchanged | Moves to the DM's machine |
+|---|---|
+| `/builds`, `/party/:code`, `/party/:code/:pseudo` | the **live** campaign feed |
+| `/profile/:code/:pseudo` | |
+| `/inv/:code` (+ Soulforge) | |
+| the GM tools, `gm.html`, the join-code model | |
+| `/feed/:code` — **kept as the backstop** (§12.6) | |
+
+And, above the transport, **nothing moves at all**. Acquisition at
+`openRollState`, the `finish-sequence` branch, `rollTransactionActive()` gating,
+the signature test, `rollId` + `rev` revisions, dedupe by `id`, `fh-event/1`,
+`fh-roll/1`, the intent vocabulary: all verified, all correct, all carried over
+byte-for-byte. **This package changes one thing: the base URL the feed talks to,
+and how events arrive.** Any proposal that reopens the settlement logic has
+misread this section.
+
+### 12.2 The rule that decides the access question before anything else
+
+The Companion is served from `https://noirchicot.github.io`. **An HTTPS page
+cannot fetch `http://`** — the browser blocks it as mixed content. So whatever
+the DM runs must be reachable over **HTTPS with a valid certificate**, and that
+one sentence eliminates most of the option space:
+
+- ❌ **Port forwarding on the router.** No certificate, so no browser will talk
+  to it. Adding one means owning DNS and renewals, plus an inbound hole in Eric's
+  home network. Rejected.
+- ❌ **ngrok free.** Random URL per run *and* a browser interstitial on the free
+  tier, which `fetch` and `EventSource` cannot click through. Rejected.
+- ⚠️ **Tailscale Funnel.** Works, stable hostname, free — but it is a second
+  account and a second daemon for a problem the first one already solves.
+  Keep as a known alternative; do not build on it first.
+- ✅ **Cloudflare Tunnel (`cloudflared`).** TLS terminated at Cloudflare's edge
+  with a valid cert, **no inbound port opened at all** (the tunnel dials out),
+  free, WebSocket- and SSE-capable, and Eric already has the Cloudflare account
+  the Worker lives in.
+
+Two flavours, and the design is **deliberately indifferent to which** because of
+§12.4:
+
+- **Quick Tunnel** — `cloudflared tunnel --url http://127.0.0.1:8791` prints a
+  fresh `https://<random-words>.trycloudflare.com`. Zero configuration, **no
+  domain required**. The URL changes every run, which §12.4 makes a non-issue.
+  Cloudflare labels these as for testing and offers no uptime guarantee — a real
+  caveat, named here rather than discovered at the table.
+- **Named Tunnel** — a stable `https://table.<domain>`, requires a domain on
+  Cloudflare. Better if Eric has or wants one; **strictly a config change**, not
+  a design change.
+
+**Start on Quick Tunnel.** It needs nothing Eric does not already have.
+
+> **Nobody's browser talks to loopback except the extension.** The DM's own dock
+> uses the tunnel URL like every player's, costing one round-trip to the edge and
+> back. This is on purpose: fetching `http://127.0.0.1` from an HTTPS page drags
+> in per-browser mixed-content exemptions *and* Chrome's Private Network Access
+> preflight (`Access-Control-Allow-Private-Network`), and Safari is stricter than
+> both. The extension has a `chrome-extension://` origin and a host permission,
+> so none of that applies to it. One path for browsers, one for the extension.
+
+### 12.3 Transport: SSE down, ordinary POST up
+
+**Decided: Server-Sent Events for delivery, unchanged HTTP POST for submission.**
+WebSocket is the pre-approved plan B (§12.11), and the event shape is identical
+either way.
+
+The traffic is **asymmetric**, and that is what settles it. Upstream is rare,
+discrete and already works: one `POST /feed/:code` when a roll settles, whose
+response is the ack that clears the dock's `offline` status and whose failure
+sets it. Downstream is the half that must be instant.
+
+SSE fits that asymmetry exactly:
+
+1. **The upstream path is preserved verbatim.** Same route, same body, same ack,
+   same failure semantics — code that is already verified is not rewritten. A
+   WebSocket would replace both halves with one channel and force us to invent an
+   app-level ack to get back what `POST` gives for free.
+2. **`Last-Event-ID` *is* the `since` cursor**, already designed. `EventSource`
+   reconnects on its own and replays its last id; resume-after-drop is implemented
+   by the browser rather than by us. With a WebSocket, reconnection, backoff and
+   resync are all ours to write and ours to get wrong.
+3. **Failure is loud by construction** — `onerror` fires, and a server heartbeat
+   every 15s makes a silent half-open connection detectable. No hand-rolled
+   ping/pong. This is the §2 rule getting cheaper to obey, which is the best kind
+   of argument.
+4. **It degrades to the existing poll** without a second implementation, because
+   the table server serves both (§12.4).
+5. WebSocket's bidirectionality buys nothing here. The dock has exactly one thing
+   to say and says it a few times a minute.
+
+**The stream contract:**
+
+```text
+GET /feed/{CODE}/stream[?since=SEQ]        Accept: text/event-stream
+  → 200  Content-Type: text/event-stream
+         Cache-Control: no-cache, no-transform
+         Connection: keep-alive
+
+     retry: 3000                    once, on open
+     : hb                           a comment line every 15s — the liveness signal
+
+     id: 0001753822451000-a3f9      the seq; EventSource echoes it as Last-Event-ID
+     event: fh-event
+     data: {…one fh-event/1…}
+```
+
+- `Last-Event-ID` (sent automatically on reconnect) **takes precedence over**
+  `?since`.
+- On connect the server replays the ring buffer from that point, then streams
+  live. Replay may overlap what the dock already holds — **dedupe by `id` still
+  applies**, exactly as §11.4 requires. Never remove it.
+- **Compression must be off on this route** (`no-transform`, no gzip). A buffering
+  proxy is the one thing that would quietly reintroduce latency.
+
+**`seq` keeps the 13-digit-ms + tiebreaker format** from §11.4, even though a
+single process could use a plain counter. Two reasons: the dock's cursor code
+then needs no knowledge of which source it is talking to, and a mirrored event
+(§12.6) sorts correctly in the cloud. Guard against clock adjustment with
+`seq = max(now, lastSeq + 1)`.
+
+The clock-skew *lookback* becomes unnecessary — one process assigns every seq, so
+ordering is total and exact. The table server publishes **`lookbackMs: 0`** and the
+dock's existing `feedRewind` then rewinds by nothing. Dedupe stays regardless.
+
+**CORS is not optional and is not free.** The dock is on `noirchicot.github.io`,
+the server is on `*.trycloudflare.com`: cross-origin. `EventSource` sends no
+custom headers so the stream is a simple request, but the `POST` carries
+`Content-Type: application/json` and therefore **triggers a preflight** — the
+table server needs a real `OPTIONS` handler or the submit path dies while the
+stream looks perfect. Mirror the Worker's allow-list (`ADMIN_ORIGINS`,
+`worker.js:38`); do not ship `*`.
+
+### 12.4 The rendezvous: how a remote dock finds a machine whose URL changes
+
+This is the piece that makes a Quick Tunnel acceptable, and it is one small route
+on the **cloud Worker** — which is exactly the right place, because the Worker is
+already the campaign's directory and already gates on the join code.
+
+```text
+POST   /table/:code   (GM token)  { url }   → register / heartbeat, TTL 15 min
+GET    /table/:code   (public)              → { live:true, url, startedAt, … }
+                                            → { live:false }
+DELETE /table/:code   (GM token)            → the table is over
+```
+
+Stored as **one key**, `table:{CODE}` — a single-key `get`, never a `list()`.
+The 27s measurement was `list()` walking a key index for freshly created keys;
+this is the operation KV is actually good at. It is read about once a minute per
+dock and written once per five.
+
+`POST` (not `PUT`) on purpose: `adminCors` already advertises `GET, POST, DELETE,
+OPTIONS` (`worker.js:49`), so the rendezvous reuses the exact shape `/feed`
+already proves — public `GET` behind `validCode`, GM-token `POST`/`DELETE` behind
+`adminCors`. No new auth, no new CORS surface.
+
+**The TTL is the liveness model, and it is why there is no shutdown handshake.**
+The table server re-POSTs every 5 minutes with `expirationTtl: 900`. Close the
+laptop, kill the process, lose the wifi — within 15 minutes the record simply
+ceases to exist and every dock says *no table running*. Nothing has to be
+cleaned up, and a crash cannot leave a stale "live" claim forever.
+
+That 15-minute window sounds long and is not, because **the record answers "where
+do I connect?", never "am I connected?"** A dock knows its own stream state
+first-hand and turns red the instant it drops. The TTL only bounds how long a
+*newly arriving* dock keeps retrying a dead URL.
+
+> **Assumed, not measured: KV single-key `get` is fast enough here.** Cloudflare
+> documents up to ~60s global propagation for a changed value. The design is
+> insensitive to it — the DM starts the server before players arrive, and a dock
+> that reads a stale record retries and self-heals (§12.5) — but **it is one
+> probe to check, using the same method that condemned `list()`, and 12a should
+> check it rather than assume it.** That discipline is what produced the 27s
+> number in the first place.
+
+**A manual override must exist anyway.** A field where the DM pastes a URL into
+the dock (and the DM reads it out over voice) is the escape hatch for every
+rendezvous failure, and it is three lines. The design is indifferent to where the
+URL came from — including a human.
+
+### 12.5 Three table states, and the discipline that keeps them honest
+
+§2 forbids **silent** fallback. It does not forbid fallback — it forbids the user
+not knowing. So the dock stops having a binary `offline` flag and gets three named
+states, each with its own caption:
+
+| State | When | Caption | Tab |
+|---|---|---|---|
+| **LIVE** | rendezvous says a table is live **and** the stream is up | *every roll at the table, live* | green |
+| **RECENT** | rendezvous says **no table is running** | *no live table — cloud log, about 30s behind* | amber |
+| **OFF** | rendezvous says live, stream is **down** | *not reaching the table* | red |
+
+Three rules make this safe rather than clever:
+
+1. **OFF never becomes RECENT.** A dropped stream while a table is live means
+   *stop and say so* — it does **not** mean quietly reroute to the cloud. That
+   reroute is precisely the silent divergence §2 exists to forbid, and it is the
+   tempting bug.
+2. **One writer at a time.** In LIVE, the dock posts **only** to the table server.
+   In OFF it posts **nowhere** and says so — a roll the table did not see must
+   look like a roll the table did not see. In RECENT it posts to the cloud. Never
+   both; a dual write would double every line for anyone reading the other source.
+3. **Promotion is automatic; demotion needs the record to disappear.** A dock in
+   RECENT re-checks the rendezvous every 60s and switches to LIVE the moment a
+   table appears, announcing it in the caption. Going the other way requires
+   `GET /table/:code` to return `live:false` — not a connection blip.
+
+Rule 3 closes the split-brain that would otherwise be the real hazard here: a
+player joining two minutes late, reading a stale rendezvous, going to cloud mode,
+rolling, and **never being seen by a table that is right there**. The residual
+window is ~60s and self-heals, and §12.6 makes even that window truthful.
+
+### 12.6 The cloud feed becomes the backstop — and the table server mirrors into it
+
+Keep `/feed/:code` on the Worker. Demote it from *the feed* to *the backstop*, and
+have the table server **POST every event onward to the cloud as it arrives**.
+
+Four things fall out, all of them cheap:
+
+- The RECENT state stops being a decoy. A dock that has not yet promoted sees a
+  complete log, merely late, instead of an empty panel that reads as *nobody is
+  rolling*.
+- **The session survives the DM's laptop.** The cloud copy is an off-site backup
+  with a 12h TTL.
+- Package 11's Worker code stays exercised instead of rotting unused.
+- **It needs no Worker change whatsoever.** `safeFeedEvent` preserves `id`,
+  `rollId` and `rev` verbatim (`worker.js:976`, `989`, `990`), so a mirrored event keeps its
+  identity — and every reader already dedupes by `id`, so a dock that saw an event
+  live and later reads it from the backstop merges it into the same line. That
+  property falls straight out of §11 being id-based rather than position-based.
+
+**Mirror immediately, one POST per event, never batched.** The Worker re-stamps
+`ts` with its own arrival time (`worker.js:977`), and the dock renders `event.ts`
+(`fh-player-sheet.js:2201`). Mirroring within a second of the roll keeps that
+timestamp true to the second; batching or retry queues would silently skew the
+backstop's clock. If mirroring ever needs to be deferred, the Worker must start
+accepting a caller-supplied `ts` instead — a small change, but do not let it
+happen by accident.
+
+Mirroring is **on by default, `--no-mirror` to disable**. Volume is far under the
+Worker's 90-posts-per-minute-per-IP limit; a table does not roll 90 times a minute.
+
+### 12.7 Persistence: a ring buffer, a session file, nothing more
+
+**Ephemeral in intent.** The question is only what "ephemeral" has to survive.
+
+- **Across a reconnect — required.** A closed lid, a dropped wifi, a
+  picture-in-picture window reopening. This is what makes `Last-Event-ID` mean
+  anything, and it needs an **in-memory ring buffer** (400 events is generous for
+  a session), not storage.
+- **Across a server restart — cheap enough to be worth it.** One append-only
+  **JSONL file per campaign per day**, one line per event, `fsync` never needed.
+  On startup, replay the tail: the last 200 events **newer than 4 hours**. One
+  rule, no flags, and it does the right thing whether the DM restarts mid-fight or
+  starts a fresh session next week.
+- **Across sessions — no.** §11.6 already settled this: a table log, not an
+  archive. Personal history lives in each dock's own STREAM.
+
+> **A side benefit worth naming because it costs nothing:** that JSONL is a
+> complete, timestamped, machine-readable transcript of every roll the table made.
+> Eric already runs a *Journal de campagne PDF* and a *Réécriture littéraire*
+> pipeline; this is free raw material for both. The program never prunes these
+> files and never reads yesterday's — deleting them is the DM's business.
+
+### 12.8 What the DM actually runs
+
+**One command, zero npm dependencies, one file.** This program runs immediately
+before a game, with players waiting; it must never fail on an install.
+
+```bash
+node table-server.mjs FH2
+```
+
+It: binds `node:http` to **127.0.0.1:8791** (`--port` to override — deliberately
+clear of wrangler's 8787 and of the worktree ports 8130–8136); spawns
+`cloudflared tunnel --url http://127.0.0.1:8791` and reads the assigned hostname
+from its output; registers that URL with the Worker and heartbeats it every 5
+minutes; serves the routes below; mirrors to the cloud; appends the JSONL.
+
+**The routes are the Worker's contract, plus one:**
+
+```text
+GET    /feed/:code?since=&limit=     identical response to the Worker's — same
+                                     {schemaVersion, lookbackMs, cursor, events[]}
+POST   /feed/:code                   identical body, identical {ok, seq, id}
+GET    /feed/:code/stream            NEW — §12.3
+DELETE /feed/:code                   clear the log
+GET    /health                       {ok, code, startedAt, connected, events}
+OPTIONS *                            the preflight §12.3 requires
+```
+
+Implementing the poll route verbatim is what makes the whole thing a genuine
+transport swap: **the dock's existing cloud-mode code path works against the
+table server unchanged**, which is also how 12a gets tested before any SSE client
+exists.
+
+The terminal is the DM's instrument panel and must be readable across a room:
+
+```text
+  FATE'S HAND — TABLE SERVER
+  campaign   FH2
+  players    https://<assigned>.trycloudflare.com
+  status     LIVE · 3 connected · 47 events · mirroring ✓
+```
+
+…and when the tunnel drops or the Worker refuses the heartbeat, it says so, in
+red, in that block. The DM must never have to read a log to learn the table is
+down. **The §2 rule binds this program exactly as it binds the dock.**
+
+Worth wiring into the **Dashboard Widget / Raccourcis Campagnes** one-click
+session launcher once it works — it belongs with the windows that already open at
+the start of a game.
+
+### 12.9 Security surface
+
+The DM's laptop is now answering the internet. Proportionate, not paranoid:
+
+- **Bind to `127.0.0.1`, never `0.0.0.0`.** The tunnel is then the *only* way in,
+  and a tunnel that is down means genuinely closed — not quietly exposed to the
+  café wifi.
+- **The join code stays the whole membership model** (§11.6 — the feed does not
+  invent a second one). The server is started *for one campaign* and rejects every
+  other code with a flat 403; it has no builds KV to consult and needs none.
+- **Serve the feed routes and nothing else.** No static files, no directory
+  listing, no path that reaches the filesystem. This program is not a web server
+  that happens to do feeds.
+- **Cap the body** (~8 KB, matching `safeOpaque`) and rate-limit per IP the way
+  the Worker does. Validate with the same shape as `safeFeedEvent`.
+- The URL is unguessable and lives one session. **If a URL ever leaks**, the
+  upgrade is a per-session token in the rendezvous record — handed only to someone
+  who already has the campaign code, so it adds rotation rather than a second
+  membership model. Not built now; noted so it is a config decision later rather
+  than a redesign.
+
+### 12.10 Package 12 splits in two — and the dock is not part of it
+
+| | What | Where | Needs Eric live? |
+|---|---|---|---|
+| **12a** | the table server | new repo `fh-table` | no |
+| **12b** | the AboveVTT bridge | same repo, `extension/` | yes |
+
+**12a is verifiable alone, tonight, with no AboveVTT and no live game:** run it,
+open the dock in two browser profiles pointed at the tunnel, roll in one, watch it
+land in the other. The latency promise is either delivered or it is not, and the
+same six-probe method that condemned KV settles it.
+
+**12b is the original package 12, unchanged in scope** — and it gets simpler,
+because the bridge subscribes to `http://127.0.0.1:8791/feed/{CODE}/stream` like
+any other consumer. **The bridge has no privileged path into the server**; it is
+just another subscriber that happens to be on loopback. It can therefore be built
+and tested with no tunnel at all.
+
+> **The dock side belongs to the architect, not to package 12.** Source
+> resolution, the SSE client, and the three states all live in
+> `docs/javascripts/fh-player-sheet.js` — core, which HANDOFF §1 puts off-limits
+> to package chats. Package 12 builds against a client contract the architect
+> freezes; it does not edit the Companion. The rendezvous route on the Worker is
+> likewise architect work (~40 lines beside `/feed`).
+
+**Order:** Worker rendezvous and 12a in parallel (12a can hardcode a URL until the
+route exists) → dock client and the three states → 12b.
+
+### 12.11 What must be measured before any of this is believed
+
+The 27s number is why this package exists. Do not replace one assumption with
+three.
+
+1. **End-to-end roll latency through the tunnel.** Six probes, post-to-visible,
+   same method as §11.4. Target: **under 500 ms.** Anything over ~2s means
+   something is buffering and the design has not delivered.
+2. **Does Cloudflare Tunnel pass SSE unbuffered?** Streaming through Cloudflare is
+   ubiquitous — every LLM chat product does it — so this is *expected* to pass,
+   but it is expectation, not measurement, and it is the single assumption the
+   transport choice rests on. **If it fails, switch to WebSocket** (Tunnel
+   documents WebSocket support explicitly). The event shape, the seq, the
+   settlement rules and the dock's merge layer are all unchanged by that switch —
+   which is exactly why SSE-first is a safe bet rather than a gamble.
+3. **KV single-key `get` freshness** for the rendezvous (§12.4).
+4. **A four-hour soak.** Held-open connections are where the boring failures live:
+   a laptop sleeping, a tunnel silently half-open, a heartbeat that stops without
+   `onerror` firing. Four hours is the actual requirement, so four hours is the
+   test.
+
+### 12.12 What is deliberately not built
+
+- **No Durable Object, no paid plan.** That option stays documented and available;
+  if the tunnel ever proves unworkable it is the fallback, and §11's design still
+  drops onto it unchanged.
+- **No auto-start of the table server.** The DM starts a session deliberately. A
+  daemon that is always up is a machine that is always exposed.
+- **No player-side install, ever.** That is the property §11.1 bought and it is
+  worth more than any feature that would cost it. Players open a web page.
+- **No chat, no presence, no "who is connected" in the dock.** The feed is rolls.
+  The table is already on voice.
+- **No cross-session archive.** §11.6 stands; the JSONL is a by-product, not a
+  feature with a retention policy.
+- **No backfill from the cloud into the table server.** Rolls made before the
+  table came up are in the backstop and not in the live log, and that is correct:
+  the table was not running. Importing them would break the one-writer rule of
+  §12.5, duplicate events the mirror is about to write, and put rolls in the DM's
+  bridge that predate the session. It will look like a helpful thing to add. It
+  is not.
