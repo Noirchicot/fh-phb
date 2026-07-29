@@ -242,9 +242,16 @@
     return item;
   }
   function buffer(gl,data){
-    var item=gl.createBuffer();gl.bindBuffer(gl,gl.ARRAY_BUFFER,item);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);return item;
+    /* bindBuffer takes (target, buffer), not (gl, target, buffer). Same bug,
+       same place, third time on this branch (fixed on the audit branch at
+       9f8fd76 for V1, again at 4e8cbd7 for V2; V3 was written fresh from
+       64237e6 again and reintroduced it a third time). Throws a TypeError on
+       the first draw call, silently caught in mountDie, every die falls back
+       to SVG -- undetectable by the Node/linkedom test suite, which has no
+       WebGL context. */
+    var item=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,item);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);return item;
   }
-  function prepareRenderer(canvas,sides,materialName){
+  function prepareRenderer(canvas,sides,materialName,sizePx){
     var gl=canvas.getContext("webgl",{alpha:true,antialias:true,premultipliedAlpha:true});
     if(!gl)throw new Error("WebGL unavailable");
     var geo=geometryFor(sides),material=MATERIALS[materialName]||MATERIALS.ivory;
@@ -257,7 +264,16 @@
       "precision mediump float;uniform vec3 uRim;void main(){gl_FragColor=vec4(uRim,.88);}"
     );
     var positionBuffer=buffer(gl,geo.positions),normalBuffer=buffer(gl,geo.normals),edgeBuffer=buffer(gl,geo.edges);
-    var pixelRatio=Math.max(1,Math.min(2,window.devicePixelRatio||1)),size=Math.max(32,Math.round(canvas.getBoundingClientRect().width||52));
+    /* canvas (and, for the d100 pair, its .fh-cd-static3d-part parent) are
+       both display:none until is-webgl reveals them, which only happens
+       AFTER this function returns -- so getBoundingClientRect() is always
+       0x0 here and every die silently got the ||52 fallback regardless of
+       its real size. Worse for d100 than for a single die: measuring
+       canvas.parentElement doesn't help there either, because the part
+       wrapper is the hidden element. The caller already knows the true
+       target size (it built the inline --fh-static-die-size style), so it
+       is passed straight through instead of re-derived from layout. */
+    var pixelRatio=Math.max(1,Math.min(2,window.devicePixelRatio||1)),size=Math.max(32,Math.round(sizePx||canvas.getBoundingClientRect().width||52));
     canvas.width=Math.round(size*pixelRatio);canvas.height=Math.round(size*pixelRatio);
     gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(0,0,0,0);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);
     if(gl.POLYGON_OFFSET_FILL!=null&&gl.polygonOffset){gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1,1);}
@@ -292,9 +308,9 @@
   function displayValue(sides,result){
     return Number(sides)===10&&Number(result)===10?"0":String(result);
   }
-  function animatePart(host,canvas,number,renderSides,faceIndex,seedResult,sequenceIndex,materialName,animate){
+  function animatePart(host,canvas,number,renderSides,faceIndex,seedResult,sequenceIndex,materialName,animate,sizePx){
     var renderer;
-    try{renderer=prepareRenderer(canvas,renderSides,materialName);}
+    try{renderer=prepareRenderer(canvas,renderSides,materialName,sizePx);}
     catch(error){return false;}
     number.style.color=(MATERIALS[materialName]||MATERIALS.ivory).num;
     var finalRotation=faceRotation(renderer.geo,faceIndex);
@@ -325,16 +341,23 @@
     var materialName=host.dataset.material||"ivory",pending=host.dataset.pending==="1";
     var animate=!pending&&host.dataset.animate==="1"&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var index=Number(host.dataset.index)||0;
+    /* Read straight off the inline style the markup already carries, rather
+       than measuring the DOM: host itself is laid out, but its children
+       (canvas, and for d100 the .fh-cd-static3d-part halves) are all
+       display:none at this point, so any rect-based measurement of them
+       is 0x0 regardless of what the CSS says their eventual size will be. */
+    var hostSizePx=parseFloat(host.style&&host.style.getPropertyValue("--fh-static-die-size"))||52;
     if(sides===100){
       var parts=host.querySelectorAll(".fh-cd-static3d-part");
       if(!parts||parts.length!==2)return;
+      var partSizePx=hostSizePx*.78; /* matches the .78 ratio in companion-dock.css */
       var percentile=result===100?"00":String(result).padStart(2,"0"),mounted=true;
       parts.forEach(function(part,partIndex){
         var canvas=part.querySelector("canvas"),number=part.querySelector(".fh-cd-static3d-result");
         var digit=Number(percentile.charAt(partIndex)),faceIndex=digit===0?9:digit-1;
         if(!canvas||!number){mounted=false;return;}
         number.textContent=pending?"":String(digit);
-        if(!animatePart(host,canvas,number,10,faceIndex,result,index*2+partIndex,materialName,animate))mounted=false;
+        if(!animatePart(host,canvas,number,10,faceIndex,result,index*2+partIndex,materialName,animate,partSizePx))mounted=false;
       });
       if(mounted){host.classList.add("is-webgl");host.classList.add("is-percentile");}
       return;
@@ -342,7 +365,7 @@
     var canvas=host.querySelector("canvas"),number=host.querySelector(".fh-cd-static3d-result");
     if(!canvas||!number)return;
     number.textContent=pending?"":displayValue(sides,result);
-    if(animatePart(host,canvas,number,sides,(result-1)%geometryFor(sides).faceNormals.length,result,index,materialName,animate))host.classList.add("is-webgl");
+    if(animatePart(host,canvas,number,sides,(result-1)%geometryFor(sides).faceNormals.length,result,index,materialName,animate,hostSizePx))host.classList.add("is-webgl");
   }
   function mount(scope){
     if(!scope||!scope.querySelectorAll)return;

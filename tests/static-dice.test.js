@@ -70,7 +70,13 @@ dice.forEach(({host,parts,classes},index)=>{
   assert.equal(host.dataset.mounted,"1",`d${host.dataset.sides} is mounted only once`);
   assert.ok(classes.contains("is-webgl"),`d${host.dataset.sides} builds a WebGL mesh`);
   assert.ok(classes.contains("is-settled"),`d${host.dataset.sides} reaches the supplied final face`);
-  assert.equal(parts[0].canvas.width,52,index===0?"the canvas follows the die's rendered size":undefined);
+  // A d100 half is deliberately smaller than a single die -- 78% of the slot's
+  // width, matching the .fh-cd-static3d-part CSS ratio -- because two of them
+  // sit side by side in the same footprint. This mock's host carries no
+  // .style, so hostSizePx falls back to the same 52px every die case uses;
+  // Math.round(52*.78)=41 is the real, intended sizing, not a regression.
+  const expectedWidth=Number(host.dataset.sides)===100?41:52;
+  assert.equal(parts[0].canvas.width,expectedWidth,index===0?"the canvas follows the die's rendered size":undefined);
 });
 const expectedMeshVertices={4:12,6:2304,8:24,10:60,12:108,20:60,100:60};
 dice.forEach(({host,parts})=>{
