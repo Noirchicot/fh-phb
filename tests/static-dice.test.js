@@ -124,6 +124,8 @@ assert.match(source,/Number\(renderSides\)===6\?\[0,\.28,1\]:\[0,-\.12,1\]/,"d6 
 const css=fs.readFileSync(path.join(__dirname,"..","docs","stylesheets","companion-dock.css"),"utf8");
 const lab=fs.readFileSync(path.join(__dirname,"..","docs","static-dice-lab.html"),"utf8");
 assert.match(lab,/id="fhLabSound"[^>]*aria-pressed="true"/,"the lab exposes a persistent sound toggle");
+assert.match(css,/\.fh-cd-static3d\[data-sides="6"\]\{transform:scale\(\.8\)\}/,"d6 keeps the approved 80% display scale");
+assert.match(lab,/\.fh-cd-static3d\[data-sides="6"\]\{transform:scale\(\.8\)\}/,"the lab mirrors the approved d6 display scale");
 assert.match(css,/\.fh-cd-static3d-result\{[^}]*top:49%[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"d8 keeps the visually approved result placement and scale");
 assert.match(css,/data-sides="4"[^}]*top:51%/,"d4 keeps the visually approved result placement");
 [
