@@ -182,7 +182,10 @@ because they touch disjoint files.
 | 1 | ~~**The split + belt shell.**~~ **DONE — commit `73dedba`.** Belt shipped with all six tabs, colour-coded, active tab lit; panel registry + `ctx` contract frozen; five stub panel files created. **Deviation, on purpose:** core was *not* physically carved into `fh-companion-core.js`. The tests instrument `fh-player-sheet.js` by name, and splitting a 2 633-line closure across script tags is real regression risk on a working roll engine for no extra parallelism — panels being separate files is what unlocks the chats, and that is done. Skills still renders from core, registered through the same contract as everything else. Carve core later, or never. | Opus · high | + 5 panel files | — |
 | 2 | **Tarot visuals.** 78-card deck data, face-down deal, click-to-flip, tray grows during a draw. Major keep/switch UI reskinned onto the card. | Sonnet · high | `fh-panel-*`? no — core (arcana) + new `companion-tarot.css` | 1 |
 | 3 | **Minor Arcana + Brick.** Deck extension + the Brick as a tracked, once-shapeable resource. | Sonnet · medium | core (arcana) | 2, and §6 |
-| 4 | **AboveVTT bridge.** Research first — how AboveVTT ingests external rolls (postMessage? custom event? its chat API?), then send the Companion's resolved rolls into it. | Sonnet · high, research-first | new `fh-abovevtt.js` | 1 |
+| 4 | ~~**AboveVTT bridge (per player).**~~ **SUPERSEDED by §11** — redesigned as a DM-side consumer of the campaign feed. Research complete, see §10. | — | — | 11 |
+| 11 | **Shared campaign feed.** Worker `feed:{CODE}`, Companion posts on ROLL, party log renders live. Standalone value, no extension. **Prerequisite for the bridge.** | Opus · high | Worker + core + new panel | 1 |
+| 12 | **DM bridge (log-only).** One extension on the DM's machine, reads the feed, posts formatted lines into AboveVTT. Degrades by printing what it cannot drive. | Sonnet · high | new repo | 11 |
+| 10 | **Dice lab.** Prototype face-cycling, in-slot 3D tumble, materials, landing weight — side by side, no dock changes. | Sonnet · high | `tools/dice-lab.html` | — |
 | 5 | **Features panel** — abilities, traits, feats, with a real per-rest/per-day tracker. | Sonnet · high | `fh-panel-features.js` | 1 |
 | 6 | **Actions panel** — Action / BA / Reaction, clickable rolls, `showsRoller: true`. | Sonnet · high | `fh-panel-actions.js` | 1 |
 | 7 | **Spells panel** — list, slots, clickable casts. | Sonnet · high | `fh-panel-spells.js` | 1 |
@@ -640,3 +643,138 @@ Eric at the keyboard.
 - Bind by D&D Beyond **`characterId`**, never by character name.
 - **Never fall back to a local roll silently.** A visible error beats two players
   believing a roll reached the table when it did not.
+
+---
+
+## 11. The shared campaign feed (design, 2026-07-28)
+
+Eric's model, and it reshapes everything downstream of it:
+
+> Every player opens a character in the same campaign. Each builds their roll on
+> **their own console**, privately. The moment they hit **ROLL**, everyone sees it.
+> All of it lands in one **common feed** — which is then fed to AboveVTT in an
+> **exploitable** format: damage applied to monsters, a spell opening a cone.
+
+Private assembly, public result. Nobody watches you fiddle; everybody sees the
+outcome. One event per ROLL, appended to a campaign feed.
+
+### 11.1 Why this changes the AboveVTT architecture for the better
+
+The study in §10 designed a bridge **per player**. That was solving the wrong
+shape. With a campaign feed on the Worker, the bridge belongs on the **DM's
+machine**, and three separate problems dissolve at once:
+
+- **Distribution.** Players need **no extension at all** — they POST to the Worker
+  over ordinary HTTPS, so there is no origin problem for them. One install, on the
+  DM's machine, instead of one per player.
+- **Permission.** Applying damage to a monster and drawing on the map are *DM*
+  powers. A player's browser very likely cannot do them; the DM's can.
+- **Correlation — the risk §10 called the whole project's risk — disappears.**
+  Nobody has to catch an unlabelled dice result and guess whose it was. The feed
+  carries the identity, and there is exactly one consumer.
+
+What is traded away: AboveVTT stops being the source of randomness. FHPC rolls,
+and the table sees the result rather than D&D Beyond's 3D dice. That trade is
+already implied by wanting good local dice (package 10).
+
+### 11.2 `fh-roll/1` is a view model, not a domain model
+
+Checked in the source. `rollExport()` produces:
+
+```js
+parts:  [{k:"d20 (adv)", v:"12 / 18 → 18"}, {k:"Hunting", v:"+5"}]
+badges: ["NATURAL 20", "Chaos 2d6 = 7"]
+```
+
+Those are **display strings**. They render a stream line beautifully and are
+useless to a machine: nothing can reliably parse `"d20 (adv)"`, and nothing can
+derive *"apply 9 fire damage to that token"* from a badge that reads `"NATURAL 20"`.
+
+So "exploitable format" is not a reuse of `fh-roll/1`. It needs a second,
+**semantic** layer beside it. The feed carries both, and they serve different
+readers:
+
+```json
+{
+  "schema": "fh-event/1",
+  "id": "uuid",                     // idempotency — a retry must not double-post
+  "seq": 412,                       // server-assigned, monotonic — the poll cursor
+  "ts": "2026-07-28T21:04:11.000Z",
+  "campaign": "FH1",
+  "actor": { "pseudo": "Sol", "character": "Yedrivel", "ddbCharacterId": "123456789" },
+  "type": "roll",
+  "display": { /* exactly today's fh-roll/1 — unchanged */ },
+  "intent":  { /* the semantic layer, below — omitted when there is nothing to act on */ }
+}
+```
+
+`display` costs nothing: other players' Companions render it with the stream
+renderer that already exists. `intent` is what the DM bridge acts on, and it can
+start tiny and grow without ever breaking `display`.
+
+### 11.3 The intent vocabulary
+
+Design it once, now, carefully — everything downstream depends on it. Implement
+only `check` in the first pass; the rest arrive with their panels.
+
+```json
+"intent": { "kind":"check", "check":"Hunting", "ability":"WIS",
+            "total":27, "natural":20, "dc":null,
+            "outcome":"success|failure|critical-success|critical-failure|null" }
+
+"intent": { "kind":"damage", "amounts":[{"amount":9,"type":"fire"}],
+            "targets":[], "halfOnSave":true }
+
+"intent": { "kind":"spell", "name":"Burning Hands", "level":1,
+            "area":{"shape":"cone","size":15,"unit":"ft"},
+            "save":{"ability":"DEX","dc":15,"effect":"half"},
+            "damage":[{"dice":"3d6","type":"fire"}] }
+```
+
+**Damage and spell cannot be produced yet** — FHPC has no Actions or Spells panel
+(packages 6 and 7). Design the vocabulary now, emit `check` now, and let the panels
+fill in the rest as they land.
+
+**Graceful degradation is the load-bearing rule.** The DM bridge translates what it
+can and *prints what it cannot*: if it can drive AboveVTT's cone tool it draws the
+cone; if it cannot, it posts *"Yedrivel — Burning Hands, 15 ft cone, DEX save DC 15,
+9 fire"* to the game log. Value on day one, depth later, and the feed never changes.
+
+### 11.4 Transport
+
+`inv:{CODE}` already proves campaign-scoped shared state in this Worker, so this is
+a trodden path. The feed differs in being append-only and concurrent.
+
+**Do not put the whole feed on one KV key** — KV allows roughly one write per second
+per key and is eventually consistent, so five players rolling at once would lose
+events. Write one key per event and read a range:
+
+```text
+feed:{CODE}:{seq}        -> one event
+feed:{CODE}:cursor       -> last allocated seq
+GET  /feed/:code?since=N -> events after N
+POST /feed/:code         -> append (idempotent on event id)
+```
+
+**Polling every 2–3s is enough** for a party of five and costs nothing. A Durable
+Object gives instant push over WebSocket and strict ordering, and is the honest
+upgrade — but it requires the Workers **paid** plan. Given Railway was cancelled on
+cost, start with polling and treat the DO as a later, deliberate purchase.
+
+**Retention:** cap the feed (a session's worth, or N events) and prune. It is a
+table log, not an archive; the Companion's own stream already keeps personal history.
+
+### 11.5 Staging
+
+The feed is worth building **on its own, with zero AboveVTT** — right now every
+player's dock is an island and nobody can see anyone else's rolls. A live shared
+party log is a real feature at the table even if the bridge never ships. It is also
+the prerequisite for the bridge, so it is step one either way.
+
+1. **Feed + party log** — Worker endpoints, Companion posts on ROLL, Companion shows
+   the party's rolls live. No extension, no AboveVTT. **Standalone value.**
+2. **Intent vocabulary** — emit `check`; freeze the shapes for damage/spell.
+3. **DM bridge, log-only** — one extension, reads the feed, posts formatted lines.
+   Low risk, immediate table value.
+4. **Deepen** — damage application, then AoE if it proves reachable at all (§10 rates
+   AoE as doubtful; the degradation rule is what makes failing at it safe).
