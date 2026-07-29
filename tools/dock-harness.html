@@ -60,6 +60,13 @@
         cursor:rows.length?rows[rows.length-1].seq:decodeURIComponent(since||""),
         events:rows.map(function(row){return row.event;})});}});
     }
+    if(/\/table\//.test(path)){
+      // No table server in the harness by default, so the stream zone starts
+      // RECENT — matching a real campaign between sessions. To see LIVE/OFF,
+      // point this at a real `node table-server.mjs` (plan §12a) and swap
+      // live:true + a real url in temporarily; never commit that swap.
+      return Promise.resolve({ok:true,status:200,json:function(){return Promise.resolve({live:false});}});
+    }
     var body= /\/profile\//.test(path) ? PROFILE
       : /\/party\/[^/]+\/[^/]+/.test(path) ? BUILD
       : /\/party\//.test(path) ? {builds:[{pseudo:"Harness"}]}

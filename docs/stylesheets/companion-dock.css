@@ -875,6 +875,18 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-streamtabs button.is-off{border-color:#8a3b32;color:#e0897e}
 .fh-cd-streamtabs button.is-on.is-off{background:linear-gradient(180deg,#b4564a,#7e2f26);
   border-color:#c86a5c;color:#ffe8e4}
+/* LIVE (plan §12.5): the DM's table server is up and this dock is on it, not
+   the ~30s-behind cloud backstop. RECENT keeps the plain gold .is-on look —
+   it already reads as "active but not the fast path", which is exactly right. */
+.fh-cd-streamtabs button.is-on.is-live{background:linear-gradient(180deg,#5fb37e,#2d7a4c);
+  border-color:var(--cd-ok,#5fb37e);color:#eafff1}
+/* The manual table-URL escape hatch (plan §12.4) — only shown when a table
+   is not already live, so it never competes for attention with the normal
+   green/gold reading. */
+.fh-cd-tableurl{border:1px solid var(--cd-line,#3a3226);border-radius:3px;background:transparent;
+  color:var(--cd-faint);font-family:inherit;font-weight:600;letter-spacing:.04em;
+  font-size:calc(6.6px * var(--cd-fs));padding:0 calc(5px * var(--cd-fs));
+  height:calc(14px * var(--cd-fs));cursor:pointer;flex:none}
 /* Another player's roll is not clickable — there is nothing of theirs to
    reopen — so it drops the affordance the personal stream keeps. */
 .fh-cd-fentry button{cursor:default;opacity:1}

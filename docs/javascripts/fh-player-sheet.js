@@ -78,7 +78,13 @@
     // The shared campaign feed. Live only — it is refetched on load, never
     // persisted, so none of this reaches localStorage or the profile.
     streamView:"mine",
-    feed:{events:[],seen:{},sent:{},cursor:"",status:"",timer:null,lastEventAt:0}
+    // tableState is one of three named states (plan §12.5): "recent" (no live
+    // table, reading the cloud backstop — the default), "live" (the DM's table
+    // server is up and this dock is on it), "off" (a table exists but this
+    // dock cannot reach it — never silently treated as "recent").
+    feed:{events:[],seen:{},sent:{},cursor:"",status:"",timer:null,lastEventAt:0,
+      tableState:"recent",tableUrl:"",wsCursor:"",ws:null,wsRetry:0,wsRetryTimer:null,
+      rendezvousTimer:null,manualUrl:""}
   };
   // The five passives shown in the vitals zone, in Eric's reading order.
   var PASSIVES = [["vigilance","Vigilance"],["delve","Delve"],["survival","Survival"],["insight","Insight"],["investigation","Investigation"]];
@@ -2073,6 +2079,12 @@
      the table can actually see decides whether anything changed, so calling
      broadcastEntry on an unchanged entry costs nothing. */
   var FEED_POLL_FAST=3000,FEED_POLL_IDLE=12000,FEED_IDLE_AFTER=120000,FEED_MAX=60,FEED_LOOKBACK=5000;
+  // The table server (plan §12): the DM's own machine, found through a
+  // one-key rendezvous record on the Worker, reached over WebSocket — a Quick
+  // Tunnel measurably does not stream SSE, so WS is the production path, not
+  // a fallback (plan §12.11). Everything below this line is additive; the
+  // cloud poll above is untouched and remains the RECENT-state reader.
+  var TABLE_RENDEZVOUS_INTERVAL=60000,TABLE_WS_RETRY_MAX=30000;
   function feedActive(){return !!(state.code&&state.pseudo);}
   function feedPad(ms){var text=String(ms);while(text.length<13)text="0"+text;return text;}
   function setFeedStatus(next){if(state.feed.status===next)return;state.feed.status=next;renderFeedZone();}
@@ -2098,16 +2110,36 @@
       entry.dc===""||entry.dc==null?"":entry.dc,entry.adjusted?1:0,entry.natChoice||"",
       entryBonusDice(entry).length,entry.destiny?entry.destiny.result:""].join("|");
   }
+  // The table server serves the same POST shape as the Worker (its whole
+  // point, per plan §12.10), so this is api()'s pattern pointed at a
+  // different base rather than a new protocol.
+  function tablePost(body){
+    return fetch(state.feed.tableUrl+"/feed/"+encodeURIComponent(state.code),
+      {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+      .then(function(response){
+        return response.json().catch(function(){return {};}).then(function(data){
+          if(!response.ok){var error=new Error(data.error||("HTTP "+response.status));error.status=response.status;throw error;}
+          return data;
+        });
+      });
+  }
+  /* One writer at a time (plan §12.5 rule 2): LIVE posts to the table, RECENT
+     posts to the cloud, OFF posts nowhere — a roll the table did not see must
+     look like a roll the table did not see, never quietly land somewhere the
+     player did not expect. */
   function broadcastEntry(entry){
     if(!entry||!feedActive()||rollTransactionActive())return;
     var signature=feedSignature(entry),known=state.feed.sent[entry.id];
     if(known&&known.signature===signature)return;
+    if(state.feed.tableState==="off"){setFeedStatus("offline");return;}
     var rev=known?known.rev+1:0;
     state.feed.sent[entry.id]={signature:signature,rev:rev};
-    post("/feed/"+encodeURIComponent(state.code),{id:uuid(),type:"roll",rollId:entry.id,rev:rev,
+    var body={id:uuid(),type:"roll",rollId:entry.id,rev:rev,
       actor:{pseudo:state.pseudo,character:state.character&&state.character.name||state.pseudo,
         ddbCharacterId:state.profile&&state.profile.characterId||null},
-      display:rollExport(entry),intent:intentFor(entry)}).then(function(){
+      display:rollExport(entry),intent:intentFor(entry)};
+    var sent=state.feed.tableState==="live"?tablePost(body):post("/feed/"+encodeURIComponent(state.code),body);
+    sent.then(function(){
       setFeedStatus("");
     }).catch(function(){
       // The roll happened locally either way; what failed is the table seeing
@@ -2164,20 +2196,134 @@
   function feedTick(){
     feedStopTimer();
     if(!feedActive())return;
-    pollFeed();
+    // The cloud poll is the RECENT-state reader only. LIVE and OFF do not
+    // read it — a table that exists but is unreachable must show OFF, not a
+    // quiet slide onto the ~30s-stale backstop (plan §12.5 rule 1). This timer
+    // chain keeps running regardless, cheaply, so a later demotion back to
+    // RECENT (from checkRendezvous) resumes polling without restarting it.
+    if(state.feed.tableState==="recent")pollFeed();
     var hidden=typeof document!=="undefined"&&document.hidden;
     var quiet=Date.now()-(state.feed.lastEventAt||0)>FEED_IDLE_AFTER;
     state.feed.timer=window.setTimeout(feedTick,hidden||quiet?FEED_POLL_IDLE:FEED_POLL_FAST);
   }
+  function setTableState(next){
+    if(state.feed.tableState===next)return;
+    state.feed.tableState=next;
+    renderFeedZone();
+  }
+  function tableWsUrl(httpUrl,code,since){
+    var base=String(httpUrl||"").replace(/^https:/,"wss:").replace(/^http:/,"ws:").replace(/\/+$/,"");
+    return base+"/feed/"+encodeURIComponent(code)+"/ws"+(since?"?since="+encodeURIComponent(since):"");
+  }
+  function manualTableKey(code){return "fh-table-url-"+code;}
+  function disconnectTableWs(){
+    if(state.feed.wsRetryTimer){clearTimeout(state.feed.wsRetryTimer);state.feed.wsRetryTimer=null;}
+    if(state.feed.ws){
+      var ws=state.feed.ws;state.feed.ws=null;
+      try{ws.onopen=ws.onmessage=ws.onclose=ws.onerror=null;ws.close();}catch(e){}
+    }
+  }
+  function scheduleTableRetry(){
+    if(!state.feed.tableUrl||!feedActive())return;
+    if(state.feed.wsRetryTimer)return;
+    var n=state.feed.wsRetry||0;
+    state.feed.wsRetry=Math.min(n+1,6);
+    var delay=Math.min(1000*Math.pow(2,n),TABLE_WS_RETRY_MAX);
+    state.feed.wsRetryTimer=window.setTimeout(function(){
+      state.feed.wsRetryTimer=null;
+      connectTableWs();
+    },delay);
+  }
+  /* Resume is an explicit ?since= here — WebSocket has no Last-Event-ID, which
+     is the real cost the plan's SSE-to-WS fallback paid (§12.11). Replay may
+     overlap what this dock already holds; feedMerge's dedupe-by-id (unchanged
+     from plan §11) is what makes that safe. */
+  function connectTableWs(){
+    if(!state.feed.tableUrl||!feedActive())return;
+    if(state.feed.ws)return;
+    var url=tableWsUrl(state.feed.tableUrl,state.code,state.feed.wsCursor);
+    var ws;
+    try{ws=new WebSocket(url);}catch(e){scheduleTableRetry();return;}
+    state.feed.ws=ws;
+    ws.onopen=function(){
+      state.feed.wsRetry=0;
+      setTableState("live");
+    };
+    ws.onmessage=function(evt){
+      var data;
+      try{data=JSON.parse(evt.data);}catch(e){return;}
+      if(!data||!data.event)return;
+      if(data.seq&&String(data.seq)>state.feed.wsCursor)state.feed.wsCursor=String(data.seq);
+      state.feed.lastEventAt=Date.now();
+      if(state.feed.status==="offline")state.feed.status="";
+      if(feedMerge([data.event]))renderFeedZone();
+    };
+    ws.onclose=function(){
+      if(state.feed.ws!==ws)return; // a newer socket already replaced this one
+      state.feed.ws=null;
+      // A live table whose socket dropped is OFF, never a silent slide back
+      // to RECENT (plan §12.5 rule 1) — only an explicit live:false from
+      // checkRendezvous does that.
+      if(state.feed.tableUrl)setTableState("off");
+      scheduleTableRetry();
+    };
+    ws.onerror=function(){ /* onclose always follows on a WebSocket; the state
+      transition lives there so it happens exactly once per drop. */ };
+  }
+  /* The one-key rendezvous (plan §12.4): "is a table live, and where." A
+     manual URL (the DM reading it out loud as the escape hatch of last
+     resort) skips this network round trip entirely. Promotion (RECENT→a
+     table appearing) and demotion (a table disappearing) both happen only
+     here — never from a WebSocket drop, which is what keeps rule 1 honest. */
+  function checkRendezvous(){
+    if(!feedActive())return;
+    if(state.feed.manualUrl){
+      if(state.feed.tableUrl!==state.feed.manualUrl){
+        disconnectTableWs();state.feed.tableUrl=state.feed.manualUrl;state.feed.wsRetry=0;connectTableWs();
+      }else if(!state.feed.ws&&!state.feed.wsRetryTimer){
+        connectTableWs();
+      }
+      return;
+    }
+    api("/table/"+encodeURIComponent(state.code)).then(function(data){
+      if(data&&data.live&&data.url){
+        if(state.feed.tableUrl!==data.url){
+          disconnectTableWs();state.feed.tableUrl=data.url;state.feed.wsRetry=0;connectTableWs();
+        }else if(!state.feed.ws&&!state.feed.wsRetryTimer&&state.feed.tableState!=="live"){
+          connectTableWs();
+        }
+      }else if(state.feed.tableUrl){
+        disconnectTableWs();state.feed.tableUrl="";setTableState("recent");
+      }
+    }).catch(function(){
+      // The rendezvous check itself failing changes nothing: a dock already
+      // connected to a live table keeps trusting it rather than demoting on
+      // a Worker hiccup that has nothing to do with the table server.
+    });
+  }
+  function rendezvousTick(){
+    checkRendezvous();
+    state.feed.rendezvousTimer=window.setTimeout(rendezvousTick,TABLE_RENDEZVOUS_INTERVAL);
+  }
   function startFeed(){
     feedStopTimer();
-    state.feed.events=[];state.feed.seen={};state.feed.sent={};state.feed.cursor="";
+    disconnectTableWs();
+    if(state.feed.rendezvousTimer){clearTimeout(state.feed.rendezvousTimer);state.feed.rendezvousTimer=null;}
+    state.feed.events=[];state.feed.seen={};state.feed.sent={};state.feed.cursor="";state.feed.wsCursor="";
+    state.feed.tableUrl="";state.feed.tableState="recent";state.feed.wsRetry=0;
+    try{state.feed.manualUrl=localStorage.getItem(manualTableKey(state.code))||"";}catch(e){state.feed.manualUrl="";}
     // Treat a fresh load as active so the first two minutes poll quickly: a
     // player who just opened the dock is the likeliest to be mid-scene.
     state.feed.status="";state.feed.lastEventAt=Date.now();
-    if(feedActive())feedTick();
+    if(feedActive()){feedTick();rendezvousTick();}
   }
-  function stopFeed(){feedStopTimer();state.feed.events=[];state.feed.seen={};state.feed.sent={};state.feed.cursor="";state.feed.status="";}
+  function stopFeed(){
+    feedStopTimer();
+    disconnectTableWs();
+    if(state.feed.rendezvousTimer){clearTimeout(state.feed.rendezvousTimer);state.feed.rendezvousTimer=null;}
+    state.feed.events=[];state.feed.seen={};state.feed.sent={};state.feed.cursor="";state.feed.wsCursor="";
+    state.feed.tableUrl="";state.feed.tableState="recent";state.feed.status="";
+  }
   function feedTone(display){
     var outcome=String(display&&display.outcome||"");
     if(/critical success|natural 20/i.test(outcome))return "n20";
@@ -2222,20 +2368,32 @@
      — and a feed you have to navigate to defeats the point, which is that the
      moment someone rolls, everyone sees it. Sharing the stream's zone costs no
      vertical space, which the dock does not have to spare. */
+  /* Three named states, three captions (plan §12.5) — never a binary
+     on/off. A post that failed folds into OFF's caption regardless of which
+     source it failed against: if nothing this dock sends is reaching
+     anywhere, "not reaching the table" is the true statement either way. */
   function streamZoneInner(){
     var table=state.streamView==="table";
+    var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
     var caption=table
-      ? (state.feed.status==="offline"?"not reaching the table":"every roll in the campaign, live")
+      ? (offline?"not reaching the table"
+        :ts==="live"?"every roll at the table, live"
+        :"no live table — cloud log, about 30s behind")
       : "every roll, fully resolved";
-    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small>"+esc(caption)+"</small>"+
+    var tableClass=(table?"is-on":"")+(offline?" is-off":ts==="live"?" is-live":"");
+    // The manual override (plan §12.4's escape hatch): only offered when
+    // there is a reason to reach for it — a table is not already live.
+    var manual=table&&ts!=="live"
+      ? "<button type=\"button\" class=\"fh-cd-tableurl\" data-table-url-set title=\"Paste the DM's table URL\">"+(state.feed.manualUrl?"URL set":"URL…")+"</button>"
+      : "";
+    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small>"+esc(caption)+"</small>"+manual+
       "<span class=\"fh-cd-streamtabs\">"+
       "<button type=\"button\" data-stream-view=\"mine\" class=\""+(table?"":"is-on")+"\">Mine</button>"+
-      "<button type=\"button\" data-stream-view=\"table\" class=\""+(table?"is-on":"")+
-        (state.feed.status==="offline"?" is-off":"")+"\">Table</button></span></div>";
+      "<button type=\"button\" data-stream-view=\"table\" class=\""+tableClass+"\">Table</button></span></div>";
     var list;
     if(table){
       list=state.feed.events.length?state.feed.events.map(renderFeedEntry).join("")
-        :"<p>"+(feedActive()?"Nothing from the table yet.":"Load a character to join the campaign feed.")+"</p>";
+        :"<p>"+(!feedActive()?"Load a character to join the campaign feed.":offline?"Not reaching the table.":"Nothing from the table yet.")+"</p>";
     }else{
       var rolls=state.history.slice(0,MAX_HISTORY);
       list=rolls.length?rolls.map(renderStreamEntry).join(""):"<p>No rolls yet.</p>";
@@ -2768,6 +2926,24 @@
     // Switching Mine/Table repaints its own zone only — it must not disturb an
     // open roll, and it is legal in every phase because it changes nothing.
     if(button.dataset.streamView!==undefined){state.streamView=button.dataset.streamView==="table"?"table":"mine";renderFeedZone();return;}
+    /* The escape hatch (plan §12.4): the DM reads the table URL out loud, a
+       player pastes it here. Bypasses the rendezvous entirely — there is
+       nothing to discover once a human has already said where it is. Blank
+       clears the override and returns to normal rendezvous discovery. */
+    if(button.dataset.tableUrlSet!==undefined){
+      var current=state.feed.manualUrl||"";
+      var next=window.prompt("Table server URL from the DM (blank to clear):",current);
+      if(next===null)return;
+      next=next.trim();
+      try{
+        if(next)localStorage.setItem(manualTableKey(state.code),next);
+        else localStorage.removeItem(manualTableKey(state.code));
+      }catch(e){}
+      state.feed.manualUrl=next;
+      disconnectTableWs();state.feed.tableUrl="";state.feed.wsRetry=0;
+      setTableState("recent");checkRendezvous();
+      return;
+    }
     if(button.dataset.clearTray!==undefined){if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}
     if(button.dataset.addTrayDie!==undefined){if(rollOpen())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
     if(button.dataset.removeTrayDie!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDie(button.dataset.removeTrayDie);return;}
