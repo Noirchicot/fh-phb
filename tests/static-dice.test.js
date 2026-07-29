@@ -81,7 +81,7 @@ dice.forEach(({host,parts,classes},index)=>{
   const expectedWidth=Number(host.dataset.sides)===100?41:52;
   assert.equal(parts[0].canvas.width,expectedWidth,index===0?"the canvas follows the die's rendered size":undefined);
 });
-const expectedMeshVertices={4:12,6:2304,8:24,10:60,12:108,20:60,100:60};
+const expectedMeshVertices={4:12,6:36,8:24,10:60,12:108,20:60,100:60};
 dice.forEach(({host,parts})=>{
   parts.forEach(part=>{
     const mesh=part.gl.draws.find(draw=>draw.mode===part.gl.TRIANGLES);
@@ -100,13 +100,14 @@ assert.deepEqual(dice[6].parts.map(part=>part.number.textContent),["0","0"],"d10
 assert.equal(dice[6].parts[0].number.style.color,"#f5edff","both percentile dice use the selected violet material");
 assert.ok(pendingDie.classes.contains("is-webgl"),"the ready pose uses the same opaque 3D geometry");
 assert.equal(pendingDie.parts[0].number.textContent,"","the ready pose does not invent a result");
+assert.match(source,/Number\(renderSides\)===6\?\[0,\.28,1\]:\[0,-\.12,1\]/,"d6 settles in the reference's top-dominant view");
 
 const css=fs.readFileSync(path.join(__dirname,"..","docs","stylesheets","companion-dock.css"),"utf8");
 const lab=fs.readFileSync(path.join(__dirname,"..","docs","static-dice-lab.html"),"utf8");
 assert.match(css,/\.fh-cd-static3d-result\{[^}]*top:49%[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"d8 keeps the visually approved result placement and scale");
 assert.match(css,/data-sides="4"[^}]*top:51%/,"d4 keeps the visually approved result placement");
 [
-  [6,"53","27"],[10,"62","24"],[12,"53","24"],[20,"53","21"],[100,"62","19"]
+  [6,"41","27"],[10,"62","24"],[12,"53","24"],[20,"53","20"],[100,"62","19"]
 ].forEach(([sides,top,scale])=>{
   var expected=new RegExp('data-sides="'+sides+'"[^}]*top:'+top+'%[^}]*font-size:calc\\(var\\(--fh-static-die-size\\) \\* \\.'+scale+'\\)');
   assert.match(css,expected,`d${sides} uses its face-calibrated result placement and scale`);

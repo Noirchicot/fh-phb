@@ -135,6 +135,19 @@
     return faces;
   }
 
+  function cubeGeometry(){
+    var size=.72,vertices=[
+      [-size,-size,-size],[size,-size,-size],[size,size,-size],[-size,size,-size],
+      [-size,-size,size],[size,-size,size],[size,size,size],[-size,size,size]
+    ];
+    var store=polygonGeometry(vertices,[
+      [4,5,6,7],[1,0,3,2],[5,1,2,6],
+      [0,4,7,3],[7,6,2,3],[0,1,5,4]
+    ]);
+    store.faceUps=[[0,1,0],[0,1,0],[0,0,1],[0,0,1],[1,0,0],[1,0,0]];
+    return store;
+  }
+
   function roundedCubeGeometry(){
     var outer=.76,radius=.16,core=outer-radius,steps=8;
     var store={positions:[],normals:[],edges:[],faceNormals:[],faceUps:[]};
@@ -220,7 +233,7 @@
     sides=Number(sides);
     if(!geometryCache[sides]){
       if(sides===4)geometryCache[sides]=tetrahedronGeometry();
-      else if(sides===6)geometryCache[sides]=roundedCubeGeometry();
+      else if(sides===6)geometryCache[sides]=cubeGeometry();
       else if(sides===8)geometryCache[sides]=octahedronGeometry();
       else if(sides===10||sides===100)geometryCache[sides]=trapezohedronGeometry();
       else if(sides===12)geometryCache[sides]=dodecahedronGeometry();
@@ -303,8 +316,8 @@
       }
     };
   }
-  function faceRotation(geo,faceIndex){
-    var target=normalize([0,-.12,1]),normal=geo.faceNormals[faceIndex]||[0,0,1];
+  function faceRotation(geo,faceIndex,renderSides){
+    var target=normalize(Number(renderSides)===6?[0,.28,1]:[0,-.12,1]),normal=geo.faceNormals[faceIndex]||[0,0,1];
     var base=quaternionBetween(normal,target),up=geo.faceUps[faceIndex]||[0,1,0],rotatedUp=quaternionRotate(base,up);
     var roll=quaternionAxis(target,Math.PI*.5-Math.atan2(rotatedUp[1],rotatedUp[0]));
     return quaternionMultiply(roll,base);
@@ -317,8 +330,8 @@
     try{renderer=prepareRenderer(canvas,renderSides,materialName,sizePx);}
     catch(error){return false;}
     number.style.color=(MATERIALS[materialName]||MATERIALS.ivory).num;
-    var finalRotation=faceRotation(renderer.geo,faceIndex);
-    var startRotation=faceRotation(renderer.geo,0);
+    var finalRotation=faceRotation(renderer.geo,faceIndex,renderSides);
+    var startRotation=faceRotation(renderer.geo,0,renderSides);
     var duration=960,delay=animate?sequenceIndex*42:0,start=null;
     function drawFrame(now){
       if(!canvas.isConnected)return;
