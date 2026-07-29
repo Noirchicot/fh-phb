@@ -57,6 +57,9 @@ extra_javascript:
   - javascripts/fh-panel-gear.js
   - javascripts/fh-panel-craft.js
   - javascripts/fh-panel-notes.js
+  # Progressive WebGL renderer for d6/d20 results. It never rolls; the dock
+  # passes it faces that have already been resolved by the FHPC state machine.
+  - javascripts/fh-static-dice.js
   - javascripts/fh-player-sheet.js
 
 markdown_extensions:
