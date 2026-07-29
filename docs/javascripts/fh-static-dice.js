@@ -4,18 +4,19 @@
 (function () {
   "use strict";
 
+  var SUPPORTED_SIDES = [4,6,8,10,12,20,100];
   var MATERIALS = {
-    ivory:{fill:"#f3ead6",dark:"#d5c9a9",rim:"#8a6a2a",num:"#58180d"},
-    gold:{fill:"#d9b25e",dark:"#a87f26",rim:"#6d4a10",num:"#3a2606"},
-    green:{fill:"#3d7d56",dark:"#1f4a30",rim:"#143020",num:"#f2ead2"},
-    crit:{fill:"#f0c550",dark:"#c68c22",rim:"#6d4a10",num:"#3a2606"},
-    fumble:{fill:"#b51d25",dark:"#6c1015",rim:"#4a0c10",num:"#fff0ee"},
-    chaos:{fill:"#8f1118",dark:"#3f0407",rim:"#ff5f67",num:"#fff0ee"},
-    crimson:{fill:"#93303a",dark:"#5b1620",rim:"#4a1018",num:"#ffeceb"},
-    azure:{fill:"#2f5f86",dark:"#173b57",rim:"#12293c",num:"#eef6fd"},
-    violet:{fill:"#5c3d7e",dark:"#372049",rim:"#241432",num:"#f5edff"},
-    slate:{fill:"#4a4f55",dark:"#2b2f34",rim:"#1c1f22",num:"#f0f2f4"},
-    white:{fill:"#fbf8f1",dark:"#e3dccb",rim:"#9c8a5f",num:"#5a4a2a"}
+    ivory:{fill:"#f3ead6",light:"#fffaf0",dark:"#c6b78f",rim:"#76551e",num:"#58180d"},
+    gold:{fill:"#d9b25e",light:"#f3d98c",dark:"#97701d",rim:"#62420c",num:"#3a2606"},
+    green:{fill:"#3d7d56",light:"#72aa83",dark:"#193d27",rim:"#10271a",num:"#f2ead2"},
+    crit:{fill:"#f0c550",light:"#ffe49b",dark:"#b87918",rim:"#62420c",num:"#3a2606"},
+    fumble:{fill:"#b51d25",light:"#e35559",dark:"#600c12",rim:"#41090d",num:"#fff0ee"},
+    chaos:{fill:"#8f1118",light:"#d02d35",dark:"#350306",rim:"#ff6c73",num:"#fff0ee"},
+    crimson:{fill:"#93303a",light:"#c05a63",dark:"#51121b",rim:"#3d0c13",num:"#ffeceb"},
+    azure:{fill:"#2f5f86",light:"#6596bb",dark:"#12334d",rim:"#0d2334",num:"#eef6fd"},
+    violet:{fill:"#5c3d7e",light:"#906db0",dark:"#301a42",rim:"#1d1029",num:"#f5edff"},
+    slate:{fill:"#4a4f55",light:"#7b828a",dark:"#25292e",rim:"#171a1d",num:"#f0f2f4"},
+    white:{fill:"#fbf8f1",light:"#ffffff",dark:"#d9cfb9",rim:"#8b7546",num:"#5a4a2a"}
   };
   var geometryCache = {};
 
@@ -23,11 +24,18 @@
     var value=parseInt(String(hex||"#ffffff").replace("#",""),16);
     return [((value>>16)&255)/255,((value>>8)&255)/255,(value&255)/255];
   }
+  function add(a,b){return [a[0]+b[0],a[1]+b[1],a[2]+b[2]];}
+  function scaleVector(v,amount){return [v[0]*amount,v[1]*amount,v[2]*amount];}
   function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
   function cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
-  function normalize(v){var length=Math.sqrt(dot(v,v))||1;return [v[0]/length,v[1]/length,v[2]/length];}
+  function length(v){return Math.sqrt(dot(v,v));}
+  function normalize(v){var amount=length(v)||1;return [v[0]/amount,v[1]/amount,v[2]/amount];}
   function subtract(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];}
-  function quaternionNormalize(q){var length=Math.sqrt(q[0]*q[0]+q[1]*q[1]+q[2]*q[2]+q[3]*q[3])||1;return [q[0]/length,q[1]/length,q[2]/length,q[3]/length];}
+  function centreOf(points){
+    var sum=points.reduce(function(total,point){return add(total,point);},[0,0,0]);
+    return scaleVector(sum,1/points.length);
+  }
+  function quaternionNormalize(q){var amount=Math.sqrt(q[0]*q[0]+q[1]*q[1]+q[2]*q[2]+q[3]*q[3])||1;return [q[0]/amount,q[1]/amount,q[2]/amount,q[3]/amount];}
   function quaternionMultiply(a,b){
     return [
       a[3]*b[0]+a[0]*b[3]+a[1]*b[2]-a[2]*b[1],
@@ -43,8 +51,8 @@
   function quaternionBetween(from,to){
     var a=normalize(from),b=normalize(to),cosine=dot(a,b);
     if(cosine<-0.999999){
-      var axis=Math.abs(a[0])<.8?cross(a,[1,0,0]):cross(a,[0,1,0]);
-      return quaternionAxis(axis,Math.PI);
+      var fallback=Math.abs(a[0])<.8?cross(a,[1,0,0]):cross(a,[0,1,0]);
+      return quaternionAxis(fallback,Math.PI);
     }
     var axis=cross(a,b);
     return quaternionNormalize([axis[0],axis[1],axis[2],1+cosine]);
@@ -58,56 +66,156 @@
       2*(xz+wy),2*(yz-wx),1-2*(xx+yy)
     ]);
   }
-  function pushTriangle(store,a,b,c){
-    var normal=normalize(cross(subtract(b,a),subtract(c,a)));
-    var centre=[(a[0]+b[0]+c[0])/3,(a[1]+b[1]+c[1])/3,(a[2]+b[2]+c[2])/3];
-    if(dot(normal,centre)<0){var swap=b;b=c;c=swap;normal=normalize(cross(subtract(b,a),subtract(c,a)));}
-    [a,b,c].forEach(function(vertex){store.positions.push(vertex[0],vertex[1],vertex[2]);store.normals.push(normal[0],normal[1],normal[2]);});
-    return normal;
+  function pushVertex(store,position,normal){
+    store.positions.push(position[0],position[1],position[2]);
+    store.normals.push(normal[0],normal[1],normal[2]);
+  }
+  function pushFlatTriangle(store,a,b,c,normal){
+    pushVertex(store,a,normal);pushVertex(store,b,normal);pushVertex(store,c,normal);
+  }
+  function pushSmoothTriangle(store,a,b,c){
+    var orientation=cross(subtract(b.position,a.position),subtract(c.position,a.position));
+    if(dot(orientation,centreOf([a.position,b.position,c.position]))<0){var swap=b;b=c;c=swap;}
+    pushVertex(store,a.position,a.normal);pushVertex(store,b.position,b.normal);pushVertex(store,c.position,c.normal);
   }
   function pushEdge(store,a,b){store.edges.push(a[0],a[1],a[2],b[0],b[1],b[2]);}
-  function cubeGeometry(){
-    var s=.72,vertices=[
-      [-s,-s,-s],[s,-s,-s],[s,s,-s],[-s,s,-s],
-      [-s,-s,s],[s,-s,s],[s,s,s],[-s,s,s]
-    ];
-    var faces=[[4,5,6,7],[1,0,3,2],[5,1,2,6],[0,4,7,3],[7,6,2,3],[0,1,5,4]];
+
+  function polygonGeometry(vertices,faces){
     var store={positions:[],normals:[],edges:[],faceNormals:[]},seen={};
-    faces.forEach(function(face){
-      store.faceNormals.push(pushTriangle(store,vertices[face[0]],vertices[face[1]],vertices[face[2]]));
-      pushTriangle(store,vertices[face[0]],vertices[face[2]],vertices[face[3]]);
-      for(var i=0;i<4;i++){
-        var a=face[i],b=face[(i+1)%4],key=Math.min(a,b)+":"+Math.max(a,b);
+    faces.forEach(function(originalFace){
+      var face=originalFace.slice(),points=face.map(function(index){return vertices[index];});
+      var normal=normalize(cross(subtract(points[1],points[0]),subtract(points[2],points[0])));
+      if(dot(normal,centreOf(points))<0){
+        face.reverse();points=face.map(function(index){return vertices[index];});
+        normal=normalize(cross(subtract(points[1],points[0]),subtract(points[2],points[0])));
+      }
+      store.faceNormals.push(normal);
+      for(var triangle=1;triangle<points.length-1;triangle++)pushFlatTriangle(store,points[0],points[triangle],points[triangle+1],normal);
+      for(var edge=0;edge<face.length;edge++){
+        var a=face[edge],b=face[(edge+1)%face.length],key=Math.min(a,b)+":"+Math.max(a,b);
         if(!seen[key]){seen[key]=true;pushEdge(store,vertices[a],vertices[b]);}
       }
     });
     return store;
   }
-  function d20Geometry(){
+
+  /* Find the planar hull faces of a small, centred convex polyhedron. This
+     keeps the source readable for solids such as the d12's dodecahedron. */
+  function convexFaces(vertices){
+    var epsilon=.00001,faces=[],seen={};
+    for(var a=0;a<vertices.length-2;a++)for(var b=a+1;b<vertices.length-1;b++)for(var c=b+1;c<vertices.length;c++){
+      var raw=cross(subtract(vertices[b],vertices[a]),subtract(vertices[c],vertices[a]));
+      if(length(raw)<epsilon)continue;
+      var normal=normalize(raw),distance=dot(normal,vertices[a]),positive=false,negative=false;
+      vertices.forEach(function(vertex){
+        var side=dot(normal,vertex)-distance;
+        if(side>epsilon)positive=true;if(side<-epsilon)negative=true;
+      });
+      if(positive&&negative)continue;
+      var indices=[];
+      vertices.forEach(function(vertex,index){if(Math.abs(dot(normal,vertex)-distance)<epsilon)indices.push(index);});
+      if(indices.length<3)continue;
+      var key=indices.slice().sort(function(x,y){return x-y;}).join(":");
+      if(seen[key])continue;seen[key]=true;
+      var faceCentre=centreOf(indices.map(function(index){return vertices[index];}));
+      if(dot(normal,faceCentre)<0)normal=scaleVector(normal,-1);
+      var basisU=normalize(subtract(vertices[indices[0]],faceCentre)),basisV=cross(normal,basisU);
+      indices.sort(function(left,right){
+        var l=subtract(vertices[left],faceCentre),r=subtract(vertices[right],faceCentre);
+        return Math.atan2(dot(l,basisV),dot(l,basisU))-Math.atan2(dot(r,basisV),dot(r,basisU));
+      });
+      faces.push(indices);
+    }
+    return faces;
+  }
+
+  function roundedCubeGeometry(){
+    var outer=.76,radius=.16,core=outer-radius,steps=8;
+    var store={positions:[],normals:[],edges:[],faceNormals:[]};
+    var faces=[
+      {normal:[0,0,1],u:[1,0,0],v:[0,1,0]},
+      {normal:[0,0,-1],u:[-1,0,0],v:[0,1,0]},
+      {normal:[1,0,0],u:[0,1,0],v:[0,0,1]},
+      {normal:[-1,0,0],u:[0,-1,0],v:[0,0,1]},
+      {normal:[0,1,0],u:[0,0,1],v:[1,0,0]},
+      {normal:[0,-1,0],u:[0,0,-1],v:[1,0,0]}
+    ];
+    function surfacePoint(face,u,v){
+      var raw=add(scaleVector(face.normal,outer),add(scaleVector(face.u,u),scaleVector(face.v,v)));
+      var clamped=raw.map(function(value){return Math.max(-core,Math.min(core,value));});
+      var delta=subtract(raw,clamped),normal=normalize(delta);
+      return {position:add(clamped,scaleVector(normal,radius)),normal:normal};
+    }
+    faces.forEach(function(face){
+      store.faceNormals.push(face.normal);
+      for(var row=0;row<steps;row++)for(var column=0;column<steps;column++){
+        var u0=-outer+2*outer*column/steps,u1=-outer+2*outer*(column+1)/steps;
+        var v0=-outer+2*outer*row/steps,v1=-outer+2*outer*(row+1)/steps;
+        var p00=surfacePoint(face,u0,v0),p10=surfacePoint(face,u1,v0),p11=surfacePoint(face,u1,v1),p01=surfacePoint(face,u0,v1);
+        pushSmoothTriangle(store,p00,p10,p11);pushSmoothTriangle(store,p00,p11,p01);
+      }
+      var corners=[[-core,-core],[core,-core],[core,core],[-core,core]];
+      corners.forEach(function(corner,index){
+        var next=corners[(index+1)%corners.length];
+        pushEdge(store,surfacePoint(face,corner[0],corner[1]).position,surfacePoint(face,next[0],next[1]).position);
+      });
+    });
+    return store;
+  }
+  function tetrahedronGeometry(){
+    var vertices=[[1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1]].map(function(vertex){return scaleVector(normalize(vertex),.88);});
+    return polygonGeometry(vertices,convexFaces(vertices));
+  }
+  function octahedronGeometry(){
+    var vertices=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]].map(function(vertex){return scaleVector(vertex,.91);});
+    return polygonGeometry(vertices,convexFaces(vertices));
+  }
+  function trapezohedronGeometry(){
+    var vertices=[[0,0,.94],[0,0,-.94]],radius=.75,ringHeight=.0992;
+    for(var i=0;i<5;i++)vertices.push([Math.cos(i*Math.PI*2/5)*radius,Math.sin(i*Math.PI*2/5)*radius,ringHeight]);
+    for(var j=0;j<5;j++)vertices.push([Math.cos((j+.5)*Math.PI*2/5)*radius,Math.sin((j+.5)*Math.PI*2/5)*radius,-ringHeight]);
+    var faces=[];
+    for(var face=0;face<5;face++){
+      var upper=2+face,nextUpper=2+(face+1)%5,lower=7+face,nextLower=7+(face+1)%5;
+      faces.push([0,upper,lower,nextUpper]);
+      faces.push([1,lower,nextUpper,nextLower]);
+    }
+    return polygonGeometry(vertices,faces);
+  }
+  function dodecahedronGeometry(){
+    var phi=(1+Math.sqrt(5))/2,inverse=1/phi,raw=[];
+    [-1,1].forEach(function(x){[-1,1].forEach(function(y){[-1,1].forEach(function(z){raw.push([x,y,z]);});});});
+    [-1,1].forEach(function(a){[-1,1].forEach(function(b){
+      raw.push([0,a*inverse,b*phi]);raw.push([a*inverse,b*phi,0]);raw.push([a*phi,0,b*inverse]);
+    });});
+    var vertices=raw.map(function(vertex){return scaleVector(vertex,.89/Math.sqrt(3));});
+    return polygonGeometry(vertices,convexFaces(vertices));
+  }
+  function icosahedronGeometry(){
     var phi=(1+Math.sqrt(5))/2;
     var vertices=[
       [-1,phi,0],[1,phi,0],[-1,-phi,0],[1,-phi,0],
       [0,-1,phi],[0,1,phi],[0,-1,-phi],[0,1,-phi],
       [phi,0,-1],[phi,0,1],[-phi,0,-1],[-phi,0,1]
-    ].map(function(vertex){var unit=normalize(vertex);return [unit[0]*.87,unit[1]*.87,unit[2]*.87];});
+    ].map(function(vertex){return scaleVector(normalize(vertex),.89);});
     var faces=[
       [0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],
       [1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],
       [3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],
       [4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]
     ];
-    var store={positions:[],normals:[],edges:[],faceNormals:[]},seen={};
-    faces.forEach(function(face){
-      store.faceNormals.push(pushTriangle(store,vertices[face[0]],vertices[face[1]],vertices[face[2]]));
-      for(var i=0;i<3;i++){
-        var a=face[i],b=face[(i+1)%3],key=Math.min(a,b)+":"+Math.max(a,b);
-        if(!seen[key]){seen[key]=true;pushEdge(store,vertices[a],vertices[b]);}
-      }
-    });
-    return store;
+    return polygonGeometry(vertices,faces);
   }
   function geometryFor(sides){
-    if(!geometryCache[sides])geometryCache[sides]=Number(sides)===6?cubeGeometry():d20Geometry();
+    sides=Number(sides);
+    if(!geometryCache[sides]){
+      if(sides===4)geometryCache[sides]=tetrahedronGeometry();
+      else if(sides===6)geometryCache[sides]=roundedCubeGeometry();
+      else if(sides===8)geometryCache[sides]=octahedronGeometry();
+      else if(sides===10||sides===100)geometryCache[sides]=trapezohedronGeometry();
+      else if(sides===12)geometryCache[sides]=dodecahedronGeometry();
+      else geometryCache[sides]=icosahedronGeometry();
+    }
     return geometryCache[sides];
   }
   function shader(gl,type,source){
@@ -132,16 +240,18 @@
     var geo=geometryFor(sides),material=MATERIALS[materialName]||MATERIALS.ivory;
     var meshProgram=program(gl,
       "attribute vec3 aPosition;attribute vec3 aNormal;uniform mat3 uRotation;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 p=uRotation*aPosition;vNormal=normalize(uRotation*aNormal);vPosition=p;gl_Position=vec4(p.xy*.91,p.z*.22,1.0);}",
-      "precision mediump float;uniform vec3 uFill;uniform vec3 uDark;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 light=normalize(vec3(-.45,.72,1.0));float diffuse=max(dot(normalize(vNormal),light),0.0);float rim=pow(1.0-max(vNormal.z,0.0),2.0)*.14;float shade=.30+.70*diffuse;vec3 colour=mix(uDark,uFill,shade)+rim;gl_FragColor=vec4(colour,1.0);}"
+      "precision mediump float;uniform vec3 uFill;uniform vec3 uLight;uniform vec3 uDark;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-.48,.72,1.0));vec3 fillLight=normalize(vec3(.68,-.28,.52));vec3 view=vec3(0.0,0.0,1.0);float diffuse=max(dot(n,key),0.0);float bounce=max(dot(n,fillLight),0.0);float shade=clamp(.16+.68*diffuse+.16*bounce,0.0,1.0);float specular=pow(max(dot(n,normalize(key+view)),0.0),28.0);float fresnel=pow(1.0-max(dot(n,view),0.0),3.0);vec3 colour=mix(uDark,uFill,shade);colour=mix(colour,uLight,clamp(specular*.32+fresnel*.075,0.0,.38));gl_FragColor=vec4(colour,1.0);}"
     );
     var lineProgram=program(gl,
-      "attribute vec3 aPosition;uniform mat3 uRotation;void main(){vec3 p=uRotation*aPosition;gl_Position=vec4(p.xy*.91,p.z*.22,1.0);}",
-      "precision mediump float;uniform vec3 uRim;void main(){gl_FragColor=vec4(uRim,.92);}"
+      "attribute vec3 aPosition;uniform mat3 uRotation;void main(){vec3 p=uRotation*aPosition;gl_Position=vec4(p.xy*.91,p.z*.22-.001,1.0);}",
+      "precision mediump float;uniform vec3 uRim;void main(){gl_FragColor=vec4(uRim,.88);}"
     );
     var positionBuffer=buffer(gl,geo.positions),normalBuffer=buffer(gl,geo.normals),edgeBuffer=buffer(gl,geo.edges);
-    var scale=Math.max(1,Math.min(2,window.devicePixelRatio||1)),size=Math.max(32,Math.round(canvas.getBoundingClientRect().width||52));
-    canvas.width=Math.round(size*scale);canvas.height=Math.round(size*scale);
+    var pixelRatio=Math.max(1,Math.min(2,window.devicePixelRatio||1)),size=Math.max(32,Math.round(canvas.getBoundingClientRect().width||52));
+    canvas.width=Math.round(size*pixelRatio);canvas.height=Math.round(size*pixelRatio);
     gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(0,0,0,0);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);
+    if(gl.POLYGON_OFFSET_FILL!=null&&gl.polygonOffset){gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1,1);}
+    if(gl.lineWidth)gl.lineWidth(Math.max(1,pixelRatio));
     function attribute(programObject,name,item,sizeValue){
       var location=gl.getAttribLocation(programObject,name);gl.bindBuffer(gl.ARRAY_BUFFER,item);gl.enableVertexAttribArray(location);gl.vertexAttribPointer(location,sizeValue,gl.FLOAT,false,0,0);
     }
@@ -153,6 +263,7 @@
         attribute(meshProgram,"aPosition",positionBuffer,3);attribute(meshProgram,"aNormal",normalBuffer,3);
         gl.uniformMatrix3fv(gl.getUniformLocation(meshProgram,"uRotation"),false,rotation);
         gl.uniform3fv(gl.getUniformLocation(meshProgram,"uFill"),hexRgb(material.fill));
+        gl.uniform3fv(gl.getUniformLocation(meshProgram,"uLight"),hexRgb(material.light));
         gl.uniform3fv(gl.getUniformLocation(meshProgram,"uDark"),hexRgb(material.dark));
         gl.drawArrays(gl.TRIANGLES,0,geo.positions.length/3);
         gl.useProgram(lineProgram);attribute(lineProgram,"aPosition",edgeBuffer,3);
@@ -174,7 +285,7 @@
     var face=renderer.geo.faceNormals[(result-1)%renderer.geo.faceNormals.length]||[0,0,1];
     var finalRotation=quaternionBetween(face,[0,0,1]);
     var animate=host.dataset.animate==="1"&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var index=Number(host.dataset.index)||0,duration=920,delay=index*65,start=null;
+    var index=Number(host.dataset.index)||0,duration=960,delay=animate?index*65:0,start=null;
     function drawFrame(now){
       if(!canvas.isConnected)return;
       if(start===null)start=now+delay;
@@ -201,5 +312,5 @@
     });
   }
 
-  window.FHStaticDice={mount:mount};
+  window.FHStaticDice={mount:mount,supportedSides:SUPPORTED_SIDES.slice(),materials:Object.keys(MATERIALS)};
 }());

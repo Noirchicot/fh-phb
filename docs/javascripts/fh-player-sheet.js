@@ -1691,9 +1691,9 @@
     }
     var materialName=dieMaterialName(die),face=dieSvg(die.sides,size,materialName,die.result==null?"?":die.result);
     /* The WebGL renderer is deliberately only a renderer: the face was chosen
-       before this markup exists. d6/d20 are the first private-branch prototype;
-       larger pools retain the lightweight SVG tray and its lower GPU cost. */
-    if(die.result!=null&&(Number(die.sides)===6||Number(die.sides)===20)&&count<=LIGHTWEIGHT_DICE_THRESHOLD){
+       before this markup exists. Larger pools retain the lightweight SVG tray
+       and its lower GPU cost. */
+    if(die.result!=null&&ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0&&count<=LIGHTWEIGHT_DICE_THRESHOLD){
       face="<span class=\"fh-cd-static3d\" data-sides=\""+Number(die.sides)+"\" data-result=\""+Number(die.result)+"\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(index||0)+"\" data-animate=\""+(animate?"1":"0")+"\" style=\"--fh-static-die-size:"+size+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" result "+Number(die.result)+"\">"+
         "<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+Number(die.result)+"</b><span class=\"fh-cd-static3d-fallback\">"+face+"</span></span>";
       dieClasses+=" is-static3d";
