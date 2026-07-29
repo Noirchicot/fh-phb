@@ -106,7 +106,7 @@ const lab=fs.readFileSync(path.join(__dirname,"..","docs","static-dice-lab.html"
 assert.match(css,/\.fh-cd-static3d-result\{[^}]*top:49%[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"d8 keeps the visually approved result placement and scale");
 assert.match(css,/data-sides="4"[^}]*top:51%/,"d4 keeps the visually approved result placement");
 [
-  [6,"53","26"],[10,"62","24"],[12,"53","24"],[20,"53","23"],[100,"62","19"]
+  [6,"53","27"],[10,"62","24"],[12,"53","24"],[20,"53","22"],[100,"62","19"]
 ].forEach(([sides,top,scale])=>{
   var expected=new RegExp('data-sides="'+sides+'"[^}]*top:'+top+'%[^}]*font-size:calc\\(var\\(--fh-static-die-size\\) \\* \\.'+scale+'\\)');
   assert.match(css,expected,`d${sides} uses its face-calibrated result placement and scale`);
