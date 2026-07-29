@@ -830,6 +830,29 @@ DELETE /feed/:code         -> clear the log (GM token)
 > including the DM bridge, **must treat `id` as identity and ignore repeats**, or
 > it will apply the same damage twice.
 
+> 🚨 **MEASURED ON THE LIVE WORKER, 2026-07-29 — KV `list()` lags ~27 seconds,
+> and this defeats the promise.** Six probes posted to `FH2` and polled every 2s
+> until visible: **22s, 27s, 28s, 27s, 28s** (one outlier at 0s, almost certainly
+> the read landing on the edge that took the write). The event is *written*
+> immediately — `POST` returns its seq — but it does not appear in the key index
+> that `GET /feed` walks for around half a minute.
+>
+> Polling every 3s against a source that lags 27s is pointless. "The moment they
+> hit ROLL, everyone sees it" is **not** what this delivers; what it delivers is a
+> party log that is right about half a minute ago.
+>
+> This is not fixable by reading differently. Putting the feed back on one key to
+> get a single-key `get` trades a latency problem for a **correctness** one —
+> concurrent appends to one KV key are last-write-wins and silently lose rolls,
+> which is why the per-event design exists.
+>
+> **The honest fix is the Durable Object**, and this measurement is exactly the
+> evidence for deciding it is worth the Workers paid plan. Until then the party
+> log is a *recent* log, not a live one, and should not be described to players as
+> live. **The design below is unchanged and correct — only the transport's latency
+> is wrong**, so moving to a DO later replaces the storage and touches neither the
+> event shape, the settlement rules, nor the client.
+
 **Polling every 2–3s is enough** for a party of five and costs nothing. A Durable
 Object gives instant push over WebSocket and strict ordering, and is the honest
 upgrade — but it requires the Workers **paid** plan. Given Railway was cancelled on

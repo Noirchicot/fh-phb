@@ -173,11 +173,23 @@ revises that line in place instead of adding a second.
 **Two deliberate deviations from what §11 said, both documented there:** no cursor
 key (§11.4), and the party log is a zone toggle rather than a belt tab (§11.4c).
 
-> ⚠️ **Nothing is live until two deploys happen**, and neither has been run:
-> `wrangler deploy` from `~/tools/fh-worker`, and `./.venv/bin/mkdocs gh-deploy
-> --force` here. The dock will POST to `/feed/…` and get a 404 from the deployed
-> Worker until the Worker ships — so **deploy the Worker first**, then the site.
-> Eric's call to make; ask before running either.
+**The Worker IS deployed** (2026-07-29, version `5649831e`). The site is **not** —
+`./.venv/bin/mkdocs gh-deploy --force` has deliberately not been run, see below.
+
+> 🚨 **The feed works and is ~27s slow.** Measured against the live Worker, not
+> the harness: KV `list()` takes 22–28s to show a freshly written event (plan
+> §11.4). Every layer above the transport is correct and verified — settlement,
+> revisions, dedupe, rendering — but a party log that trails half a minute is not
+> the "everyone sees it the moment you roll" this was built for. **That is why
+> the site is not deployed:** shipping it as live would be precisely the silent
+> divergence §2 forbids. The decision — accept a *recent* log, or buy the Workers
+> paid plan for a Durable Object — is Eric's, and the measurement is the evidence
+> for it. Moving to a DO later changes storage only: the event shape, the
+> settlement rules and the whole client stay as they are.
+
+> ⚠️ **The live campaign code is `FH2`, not `FH1`.** `FH1` is what the harness and
+> the old memory notes use, and it 403s on the deployed Worker. Check `/party/{code}`
+> before assuming a code exists.
 
 **In flight:** package 10 (dice lab) in its own thread, branch `pkg10-dice`, one
 commit not yet merged.
