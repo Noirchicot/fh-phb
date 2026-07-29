@@ -187,7 +187,7 @@ because they touch disjoint files.
 | 2 | **Tarot visuals.** 78-card deck data, face-down deal, click-to-flip, tray grows during a draw. Major keep/switch UI reskinned onto the card. | Sonnet · high | `fh-panel-*`? no — core (arcana) + new `companion-tarot.css` | 1 |
 | 3 | **Minor Arcana + Brick.** Deck extension + the Brick as a tracked, once-shapeable resource. | Sonnet · medium | core (arcana) | 2, and §6 |
 | 4 | ~~**AboveVTT bridge (per player).**~~ **SUPERSEDED by §11** — redesigned as a DM-side consumer of the campaign feed. Research complete, see §10. | — | — | 11 |
-| 11 | **Shared campaign feed.** Worker `feed:{CODE}`, Companion posts on ROLL, party log renders live. Standalone value, no extension. **Prerequisite for the bridge.** | Opus · high | Worker + core + new panel | 1 |
+| 11 | ~~**Shared campaign feed.**~~ **DONE.** Worker `feed:{CODE}:{seq}` + `GET/POST/DELETE /feed/:code`, Companion posts on settle, party log live in the stream zone. **Deviations, both on purpose:** no cursor key (§11.4), and the party log is a **zone toggle, not a belt tab** (§11.4c). | Opus · high | Worker + core + CSS + harness | 1 |
 | 12 | **DM bridge (log-only).** One extension on the DM's machine, reads the feed, posts formatted lines into AboveVTT. Degrades by printing what it cannot drive. | Sonnet · high | new repo | 11 |
 | 10 | **Dice lab.** Prototype face-cycling, in-slot 3D tumble, materials, landing weight — side by side, no dock changes. | Sonnet · high | `tools/dice-lab.html` | — |
 | 5 | **Features panel** — abilities, traits, feats, with a real per-rest/per-day tracker. | Sonnet · high | `fh-panel-features.js` | 1 |
@@ -552,6 +552,55 @@ records exactly why it cannot. Both are a successful outcome for this package.
 
 ---
 
+**Package 12 · DM bridge (log-only)** — a NEW repo, not a worktree of this one
+
+```
+Build the Fate's Hand DM bridge: a Chrome extension that reads a campaign feed
+and writes the rolls into AboveVTT's game log. It runs on the DM's machine only.
+Players install nothing.
+
+READ COMPANION-BUILD-PLAN.md SECTIONS 10 AND 11 BEFORE WRITING ANY CODE. They
+are in ~/tools/fh-phb. Section 10 is verified research into what AboveVTT will
+and will not accept; section 11 is the feed you are consuming, and its contract
+is frozen -- you are a reader of it, you do not change it.
+
+The feed, in one paragraph. GET https://fh-builds.noirchicot.workers.dev/feed/FH1
+returns {schemaVersion, lookbackMs, cursor, events[]}. Poll it every 2-3s passing
+?since=<the cursor you last got>. Each event is fh-event/1 and carries TWO
+layers: `display` (an fh-roll/1 view model -- display STRINGS, do not try to
+parse them) and `intent` (the semantic layer -- act on this). Today only
+intent.kind === "check" is ever produced; "damage" and "spell" shapes are frozen
+in 11.3 and will start arriving when the Actions and Spells panels land, so
+handle an unknown kind by printing it rather than crashing.
+
+THREE RULES YOU MUST NOT BREAK, all three already paid for:
+
+1. DEDUPE BY event.id. The poll deliberately re-reads a few seconds every time
+   (edge clocks disagree; see 11.4), so you WILL see events you have already
+   seen. A bridge that does not dedupe will post every line twice and, later,
+   apply every point of damage twice.
+2. A revision is not a new roll. Events carry rollId + rev; an open roll that
+   gains a bonus die reappends with the same rollId and a higher rev. Key on
+   rollId, keep the highest rev, and EDIT or supersede the line you already
+   posted rather than adding a second one.
+3. NEVER FALL BACK SILENTLY. If you cannot reach AboveVTT, say so visibly. A DM
+   believing the table saw a roll it never saw is the one failure that matters.
+
+Graceful degradation is the whole design (11.3): translate what you can, PRINT
+what you cannot. Log-only is a complete, shippable outcome for this package --
+do not attempt damage application or AoE in this pass.
+
+Testing needs Eric at the keyboard with a live campaign and AboveVTT running,
+so build against the feed first (it works standalone, and you can post fake
+events to it with curl), and only then ask for a live session.
+
+Done when: a roll made in the Companion appears as a formatted line in the
+AboveVTT game log on the DM's machine, exactly once, and a revised roll does not
+produce a second line.
+```
+
+---
+
 ## 9. The belt, settled (2026-07-28)
 
 **Skills · Traits · Actions · Spells · Gear · Craft · Notes.**
@@ -754,19 +803,93 @@ per key and is eventually consistent, so five players rolling at once would lose
 events. Write one key per event and read a range:
 
 ```text
-feed:{CODE}:{seq}        -> one event
-feed:{CODE}:cursor       -> last allocated seq
-GET  /feed/:code?since=N -> events after N
-POST /feed/:code         -> append (idempotent on event id)
+feed:{CODE}:{seq}          -> one event, TTL 12h
+GET  /feed/:code?since=SEQ -> events after SEQ (+ cursor, lookbackMs)
+POST /feed/:code           -> append
+DELETE /feed/:code         -> clear the log (GM token)
 ```
+
+> ⚠️ **CORRECTED WHILE BUILDING — there is no cursor key.** This section used to
+> specify `feed:{CODE}:cursor` holding the last allocated seq. That reintroduces
+> the exact defect the rest of the paragraph exists to avoid: allocating a seq is
+> a read-modify-write on **one key**, so every append in the campaign serialises
+> through it at ~1 write/sec and five simultaneous rolls race on it. The cursor
+> *was* the bottleneck, just moved.
+>
+> **The sequence is the timestamp instead:** epoch ms zero-padded to 13 digits
+> (so lexicographic order — which is the order KV `list()` returns — matches
+> chronological order) plus a 4-char random tiebreaker. No shared key, no
+> contention, no allocation round-trip.
+>
+> The price is that edge clocks disagree by a few ms, so `since` is not exact: an
+> event written by a lagging edge can sort behind a cursor the reader has passed.
+> Readers therefore poll with a **lookback** (`lookbackMs`, 5s, published in every
+> response) and drop ids they already hold. **Writer-side idempotency is
+> deliberately absent** — recording each id would cost an extra KV write per roll,
+> and readers must dedupe by `id` anyway because of the lookback. Any consumer,
+> including the DM bridge, **must treat `id` as identity and ignore repeats**, or
+> it will apply the same damage twice.
 
 **Polling every 2–3s is enough** for a party of five and costs nothing. A Durable
 Object gives instant push over WebSocket and strict ordering, and is the honest
 upgrade — but it requires the Workers **paid** plan. Given Railway was cancelled on
 cost, start with polling and treat the DO as a later, deliberate purchase.
 
+Polling backs off to 12s when the tab is hidden or the table has been quiet for two
+minutes. It **never stops**: gating it on `document.hidden` was tried and is wrong,
+because Table mode runs the dock in a picture-in-picture window while the main
+document is hidden — the feed would have gone silent exactly when it was in use.
+
 **Retention:** cap the feed (a session's worth, or N events) and prune. It is a
 table log, not an archive; the Companion's own stream already keeps personal history.
+
+### 11.4b When a roll has settled — and why it is not `addHistory`
+
+Built and verified. This was the hard half, and the plan had not looked at it.
+
+`addHistory` is the funnel every roll passes through, so it looks like the place
+to post. It is not:
+
+- `finishRolledEntry` calls `addHistory` and then **returns** on a natural 1,
+  leaving the player to accept or defy. Defying turns the 1 into a **20**.
+  Posting there shows the table a critical failure that silently becomes a crit.
+- `completeHistoryAdjustment` never calls `addHistory` at all — it mutates the
+  entry in place, so an adjusted roll would never reach the table.
+
+**`openRollState` is where every d20 path converges**, plus the `finish-sequence`
+branch of `runQueueDone` for a standalone Destiny die. But an open roll can still
+accrete staged dice, so the same entry legitimately settles **more than once** —
+which is why events carry `rollId` + `rev`:
+
+- the wire stays strictly append-only;
+- a **signature** of what the table can see (total, outcome, natural, DC,
+  adjusted, natChoice, bonus-die count, destiny result) decides whether anything
+  actually changed, so re-broadcasting an unchanged entry costs nothing;
+- readers key on `rollId` and keep the highest `rev`, so the log shows **one line
+  per roll that updates in place** rather than three lines for one roll.
+
+`rollTransactionActive()` gates the whole thing: nothing is broadcast while the
+dock is still asking the player a question.
+
+### 11.4c The party log is a zone, not a belt tab
+
+The package table said "new panel". It is not one, for two reasons that both come
+from rules already written down:
+
+- **The belt is everything *inside the character*** (HANDOFF §2). The party is not
+  inside the character.
+- A feed you have to navigate to defeats its own purpose — the point is that the
+  moment someone rolls, *everyone sees it*.
+
+So the **stream zone reads two ways**: `STREAM` (this character's resolved rolls,
+unchanged) and `TABLE` (the campaign feed, live), one toggle in the zone caption.
+Zero extra vertical space, which the dock does not have to spare, and the feed is
+one click away from every tab. `display` being `fh-roll/1` means the party log
+renders through the same shape the personal stream exports — the two read
+identically by construction.
+
+A feed that is not reaching the Worker **says so on the tab itself** (`is-off`,
+red) and in the caption: *"not reaching the table"*. Never fall back silently.
 
 ### 11.5 Staging
 
@@ -775,10 +898,26 @@ player's dock is an island and nobody can see anyone else's rolls. A live shared
 party log is a real feature at the table even if the bridge never ships. It is also
 the prerequisite for the bridge, so it is step one either way.
 
-1. **Feed + party log** — Worker endpoints, Companion posts on ROLL, Companion shows
-   the party's rolls live. No extension, no AboveVTT. **Standalone value.**
-2. **Intent vocabulary** — emit `check`; freeze the shapes for damage/spell.
+1. ~~**Feed + party log**~~ — **DONE.** Worker endpoints, Companion posts on settle,
+   Companion shows the party's rolls live. No extension, no AboveVTT.
+2. ~~**Intent vocabulary**~~ — **DONE.** `check` is emitted; damage and spell shapes
+   are frozen and already accepted by the Worker, so the panels that produce them
+   need no Worker deploy.
 3. **DM bridge, log-only** — one extension, reads the feed, posts formatted lines.
-   Low risk, immediate table value.
+   Low risk, immediate table value. **This is next; the feed contract is frozen.**
 4. **Deepen** — damage application, then AoE if it proves reachable at all (§10 rates
    AoE as doubtful; the degradation rule is what makes failing at it safe).
+
+### 11.6 What is deliberately not built
+
+- **Retention is a 12h TTL per event**, not a pruning sweep. It is a table log, not
+  an archive, and the Companion's own stream keeps personal history. A reader caps
+  at 200 events.
+- **`GET /feed` costs one KV `list` per poll.** At five players on a 4h session that
+  is roughly 24k reads — inside the free tier, but it is the metered thing here, and
+  it is why the backoff exists. If it ever bites, the honest fix is the Durable
+  Object, not a cleverer polling scheme.
+- **Anyone with the join code can post**, exactly like `POST /builds`. The join code
+  is the membership model for the whole app; the feed does not invent a second one.
+- **Damage and spell intents are not produced** — there are no Actions or Spells
+  panels yet (packages 6 and 7). The vocabulary is frozen so they can just emit.

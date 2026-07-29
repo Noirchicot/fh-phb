@@ -859,3 +859,25 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;
   font-family:inherit;font-weight:700;font-size:calc(8px * var(--cd-fs));cursor:pointer}
 .fh-cd-notes-status{font-size:calc(7.4px * var(--cd-fs));color:var(--cd-faint);font-style:italic}
+
+/* ── Campaign feed: the stream zone reads two ways ────────────────────
+   Mine is this character's resolved rolls; Table is the shared campaign
+   feed. One zone, one toggle — the dock has no vertical space for two. */
+.fh-cd-streamtabs{display:flex;gap:2px;margin-left:6px;flex:none}
+.fh-cd-streamtabs button{border:1px solid var(--cd-line,#3a3226);border-radius:3px;
+  padding:0 calc(6px * var(--cd-fs));height:calc(14px * var(--cd-fs));
+  background:transparent;color:var(--cd-faint);font-family:inherit;font-weight:600;
+  letter-spacing:.06em;font-size:calc(7px * var(--cd-fs));cursor:pointer}
+.fh-cd-streamtabs button.is-on{background:linear-gradient(180deg,#d3ab55,#9c6b16);
+  border-color:var(--cd-gold-bright);color:#fff8e2}
+/* A feed that is not reaching the table says so on the tab itself: a player
+   must never think the party saw a roll that never left this browser. */
+.fh-cd-streamtabs button.is-off{border-color:#8a3b32;color:#e0897e}
+.fh-cd-streamtabs button.is-on.is-off{background:linear-gradient(180deg,#b4564a,#7e2f26);
+  border-color:#c86a5c;color:#ffe8e4}
+/* Another player's roll is not clickable — there is nothing of theirs to
+   reopen — so it drops the affordance the personal stream keeps. */
+.fh-cd-fentry button{cursor:default;opacity:1}
+.fh-cd-fentry .fh-cd-who{color:var(--cd-gold)}
+.fh-cd-fentry.is-mine .fh-cd-who{color:var(--cd-faint)}
+.fh-cd-fentry.is-mine{opacity:.72}

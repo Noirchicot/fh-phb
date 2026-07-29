@@ -27,8 +27,39 @@
     destiny:{score:8,arcana:{name:"The Hermit"}}
   }};
   var PROFILE={profile:{ddbLinked:false,snapshot:null,levelUps:[],preparation:{transferEssence:false,identify:false,tools:[]}}};
-  window.fetch=function(url){
-    var path=String(url);
+  /* A live campaign feed, in memory. Two other players are already at the
+     table so the TABLE view has something to show offline, and anything this
+     dock posts is appended -- so a roll made here comes back through the same
+     path it would take in a real campaign. Sequences mimic the Worker's:
+     13-digit epoch ms plus a tiebreaker, which is what makes them sortable. */
+  var FEED_SEQ=Date.now()-60000;
+  function feedSeq(){FEED_SEQ+=1;var s=String(FEED_SEQ);while(s.length<13)s="0"+s;return s+"-aaaa";}
+  function seed(character,pseudo,title,total,outcome,parts,badges){
+    return {seq:feedSeq(),event:{schema:"fh-event/1",id:"seed-"+title,ts:new Date().toISOString(),
+      campaign:"FH1",actor:{pseudo:pseudo,character:character,ddbCharacterId:null},type:"roll",
+      rollId:"seed-"+title,rev:0,display:{schema:"fh-roll/1",title:title,total:total,outcome:outcome,
+      parts:parts,badges:badges,dc:null},intent:null}};
+  }
+  var FEED=[
+    seed("Brakka","Mara","Athletics",19,"Success",[{k:"d20",v:"14"},{k:"Athletics",v:"+5"}],[]),
+    seed("Ilyra","Wen","Perception",27,"Natural 20",[{k:"d20 (adv)",v:"9 / 20 → 20"},{k:"Perception",v:"+7"}],["NATURAL 20"])
+  ];
+  window.fetch=function(url,options){
+    var path=String(url),method=(options&&options.method)||"GET";
+    if(/\/feed\//.test(path)){
+      if(method==="POST"){
+        var posted=JSON.parse(options.body);
+        posted.ts=new Date().toISOString();
+        FEED.push({seq:feedSeq(),event:posted});
+        return Promise.resolve({ok:true,status:200,json:function(){return Promise.resolve({ok:true});}});
+      }
+      var since=(path.split("since=")[1]||"").split("&")[0];
+      var rows=FEED.filter(function(row){return !since||row.seq>decodeURIComponent(since);});
+      return Promise.resolve({ok:true,status:200,json:function(){return Promise.resolve({
+        schemaVersion:1,lookbackMs:5000,
+        cursor:rows.length?rows[rows.length-1].seq:decodeURIComponent(since||""),
+        events:rows.map(function(row){return row.event;})});}});
+    }
     var body= /\/profile\//.test(path) ? PROFILE
       : /\/party\/[^/]+\/[^/]+/.test(path) ? BUILD
       : /\/party\//.test(path) ? {builds:[{pseudo:"Harness"}]}

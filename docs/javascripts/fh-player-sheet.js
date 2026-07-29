@@ -74,7 +74,11 @@
     dockOpen:false, menuOpen:false, popOpen:"", diceSignature:"",
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:FS_MIN,
-    panel:"skills", panelData:{}
+    panel:"skills", panelData:{},
+    // The shared campaign feed. Live only — it is refetched on load, never
+    // persisted, so none of this reaches localStorage or the profile.
+    streamView:"mine",
+    feed:{events:[],seen:{},sent:{},cursor:"",status:"",timer:null,lastEventAt:0}
   };
   // The five passives shown in the vitals zone, in Eric's reading order.
   var PASSIVES = [["vigilance","Vigilance"],["delve","Delve"],["survival","Survival"],["insight","Insight"],["investigation","Investigation"]];
@@ -1007,6 +1011,9 @@
     state.trayPrompt=null;state.queueDone="";
     state.rollConfig=configFromEntry(entry);
     startCalling();refreshOpenTray(entry);persistPlayState();render();
+    // Every d20 path converges here, and an open roll that gains a staged die
+    // comes back through — which is exactly when the table wants the update.
+    broadcastEntry(entry);
   }
   function stageBonusDie(sides,label,sourceIcon){
     var entry=openEntry();if(!rollOpen()||!entry)return;
@@ -1216,7 +1223,11 @@
     if(action==="roll-remaining"){rollSequenceRemaining();return;}
     if(action==="adjustment-remaining"){var sequence=state.rollSequence,adjusted=sequence&&state.history.find(function(item){return item.id===sequence.entryId;})||sequence&&sequence.entry;if(adjusted&&sequence&&sequence.cfg){if(sequence.entry&&sequence.entry.destiny)adjusted.destiny=sequence.entry.destiny;applyHistoryAdjustmentRemaining(adjusted,sequence.cfg);}else render();return;}
     if(action==="open-roll"){var landed=openEntry();if(landed)openRollState(landed);else render();return;}
-    if(action==="finish-sequence"){state.rollSequence=null;persistPlayState();render();return;}
+    // A standalone Destiny die never opens a roll, so it settles here instead.
+    if(action==="finish-sequence"){
+      var settled=state.rollSequence&&state.history.find(function(item){return item.id===state.rollSequence.entryId;});
+      if(settled)broadcastEntry(settled);
+      state.rollSequence=null;persistPlayState();render();return;}
     render();
   }
   /* ── Deferred fate ───────────────────────────────────────────────
@@ -2043,6 +2054,157 @@
       parts:rollParts(entry),badges:rollBadges(entry).map(function(badge){return badge.t;})};
   }
   function attrJson(value){return esc(JSON.stringify(value)).replace(/'/g,"&#39;");}
+
+  /* ── The shared campaign feed ─────────────────────────────────────
+     Private assembly, public result: the moment a roll settles it is posted to
+     a campaign-wide log every Companion polls, so the table sees the outcome
+     without watching anyone build it.
+
+     WHEN a roll has settled is the whole difficulty, and addHistory is not the
+     answer even though every roll passes through it. finishRolledEntry calls
+     addHistory and then RETURNS on a natural 1, leaving the player to accept or
+     defy — broadcasting there would show the table a critical failure that then
+     silently becomes a 20. And an adjusted roll never reaches addHistory at
+     all: completeHistoryAdjustment mutates the entry in place.
+
+     openRollState is where every path converges. But an open roll can still
+     accrete staged dice, so the same entry legitimately settles more than once
+     — hence revisions. The post carries rollId + rev, and a signature of what
+     the table can actually see decides whether anything changed, so calling
+     broadcastEntry on an unchanged entry costs nothing. */
+  var FEED_POLL_FAST=3000,FEED_POLL_IDLE=12000,FEED_IDLE_AFTER=120000,FEED_MAX=60,FEED_LOOKBACK=5000;
+  function feedActive(){return !!(state.code&&state.pseudo);}
+  function feedPad(ms){var text=String(ms);while(text.length<13)text="0"+text;return text;}
+  function setFeedStatus(next){if(state.feed.status===next)return;state.feed.status=next;renderFeedZone();}
+  /* The display layer says "Natural 20"; a machine needs "critical-success".
+     Anything genuinely undecided stays null rather than guessing a verdict —
+     a nat 20 with no DC is a great roll, not a stated success. */
+  function intentOutcome(entry){
+    if(entry.destiny&&entry.destiny.criticalFailure)return "critical-failure";
+    if(entry.destiny&&entry.destiny.criticalSuccess)return "critical-success";
+    if(entry.natChoice==="chaos"||entry.natural===20)return "critical-success";
+    if(entry.natural===1)return entry.natChoice==="accept"?"critical-failure":null;
+    if(entry.dc!==""&&entry.dc!=null&&isFinite(Number(entry.dc)))return entry.total>=Number(entry.dc)?"success":"failure";
+    return null;
+  }
+  function intentFor(entry){
+    if(entry.kind!=="d20")return null;
+    return {kind:"check",check:entry.name||null,ability:entry.ability||null,
+      total:Number(entry.total)||0,natural:entry.natural==null?null:entry.natural,
+      dc:entry.dc===""||entry.dc==null?null:Number(entry.dc),outcome:intentOutcome(entry)};
+  }
+  function feedSignature(entry){
+    return [entry.total,entry.outcome||"",entry.natural==null?"":entry.natural,
+      entry.dc===""||entry.dc==null?"":entry.dc,entry.adjusted?1:0,entry.natChoice||"",
+      entryBonusDice(entry).length,entry.destiny?entry.destiny.result:""].join("|");
+  }
+  function broadcastEntry(entry){
+    if(!entry||!feedActive()||rollTransactionActive())return;
+    var signature=feedSignature(entry),known=state.feed.sent[entry.id];
+    if(known&&known.signature===signature)return;
+    var rev=known?known.rev+1:0;
+    state.feed.sent[entry.id]={signature:signature,rev:rev};
+    post("/feed/"+encodeURIComponent(state.code),{id:uuid(),type:"roll",rollId:entry.id,rev:rev,
+      actor:{pseudo:state.pseudo,character:state.character&&state.character.name||state.pseudo,
+        ddbCharacterId:state.profile&&state.profile.characterId||null},
+      display:rollExport(entry),intent:intentFor(entry)}).then(function(){
+      setFeedStatus("");
+    }).catch(function(){
+      // The roll happened locally either way; what failed is the table seeing
+      // it. Say so — a player must never believe they were heard when they
+      // were not.
+      setFeedStatus("offline");
+    });
+  }
+  function feedMerge(events){
+    var changed=false;
+    (events||[]).forEach(function(event){
+      if(!event||!event.id||state.feed.seen[event.id])return;
+      state.feed.seen[event.id]=1;
+      // A revision replaces the line it revises instead of adding a second one.
+      var key=event.rollId||event.id,at=-1;
+      state.feed.events.forEach(function(item,index){if(at<0&&(item.rollId||item.id)===key)at=index;});
+      if(at>=0){
+        if(Number(event.rev||0)<Number(state.feed.events[at].rev||0))return;
+        state.feed.events.splice(at,1);
+      }
+      state.feed.events.unshift(event);changed=true;
+    });
+    if(state.feed.events.length>FEED_MAX)state.feed.events=state.feed.events.slice(0,FEED_MAX);
+    return changed;
+  }
+  /* Edge clocks disagree by a few milliseconds, so an event written by a
+     lagging edge can sort behind a cursor we have already passed. Rewinding
+     the cursor by the server's own lookback window re-reads a few seconds on
+     every poll; seen ids make that free. */
+  function feedRewind(cursor,lookbackMs){
+    var ms=Number(String(cursor).split("-")[0]);
+    if(!isFinite(ms))return cursor;
+    return feedPad(Math.max(0,ms-(Number(lookbackMs)||FEED_LOOKBACK)))+"-0000";
+  }
+  function pollFeed(){
+    if(!feedActive())return;
+    var since=state.feed.cursor;
+    api("/feed/"+encodeURIComponent(state.code)+(since?"?since="+encodeURIComponent(since):"")).then(function(data){
+      var events=data.events||[];
+      if(data.cursor)state.feed.cursor=feedRewind(data.cursor,data.lookbackMs);
+      if(events.length)state.feed.lastEventAt=Date.now();
+      var changed=feedMerge(events);
+      if(state.feed.status==="offline"){state.feed.status="";changed=true;}
+      if(changed)renderFeedZone();
+    }).catch(function(){setFeedStatus("offline");});
+  }
+  function feedStopTimer(){if(state.feed.timer){clearTimeout(state.feed.timer);state.feed.timer=null;}}
+  /* KV reads are the one metered resource here, so a hidden tab and a quiet
+     table both poll slowly — but neither ever stops. Suppressing the poll
+     outright looked cheaper and was wrong: Table mode runs the dock in a
+     picture-in-picture window, and this reads the MAIN document, which is
+     hidden precisely then. The feed would have gone silent exactly when a
+     player was using it at the table. Slower, never off. */
+  function feedTick(){
+    feedStopTimer();
+    if(!feedActive())return;
+    pollFeed();
+    var hidden=typeof document!=="undefined"&&document.hidden;
+    var quiet=Date.now()-(state.feed.lastEventAt||0)>FEED_IDLE_AFTER;
+    state.feed.timer=window.setTimeout(feedTick,hidden||quiet?FEED_POLL_IDLE:FEED_POLL_FAST);
+  }
+  function startFeed(){
+    feedStopTimer();
+    state.feed.events=[];state.feed.seen={};state.feed.sent={};state.feed.cursor="";
+    // Treat a fresh load as active so the first two minutes poll quickly: a
+    // player who just opened the dock is the likeliest to be mid-scene.
+    state.feed.status="";state.feed.lastEventAt=Date.now();
+    if(feedActive())feedTick();
+  }
+  function stopFeed(){feedStopTimer();state.feed.events=[];state.feed.seen={};state.feed.sent={};state.feed.cursor="";state.feed.status="";}
+  function feedTone(display){
+    var outcome=String(display&&display.outcome||"");
+    if(/critical success|natural 20/i.test(outcome))return "n20";
+    if(/failure/i.test(outcome))return "bad";
+    if(/^success/i.test(outcome))return "ok";
+    return "";
+  }
+  /* Renders another player's roll from the fh-roll/1 `display` layer alone —
+     the same shape this dock exports, so the table log and the personal stream
+     read identically. */
+  function renderFeedEntry(event){
+    var display=event.display||{},tone=feedTone(display);
+    var icon=tone==="ok"?"✓":tone==="bad"?"✗":tone==="n20"?"✦":"";
+    var parts=(display.parts||[]).map(function(part){
+      return "<span class=\"fh-cd-part\">"+esc(part.k)+" <b>"+esc(part.v)+"</b></span>";}).join("<span>·</span>");
+    var badges=(display.badges||[]).map(function(badge){
+      return "<span class=\"fh-cd-badge\">"+esc(badge)+"</span>";}).join("");
+    var dc=display.dc!=null?"<span class=\"fh-cd-vs\">vs DC "+esc(display.dc)+"</span>":"";
+    var mine=!!(event.actor&&event.actor.pseudo===state.pseudo);
+    return "<li class=\"fh-cd-sentry fh-cd-fentry"+(mine?" is-mine":"")+"\"><button type=\"button\" disabled>"+
+      "<span class=\"fh-cd-sl1\"><time>"+nowLabel(event.ts)+"</time>"+
+      "<span class=\"fh-cd-who\">"+esc(event.actor&&event.actor.character||"—")+"</span>"+
+      "<span class=\"fh-cd-title\">"+esc(display.title||"Roll")+"</span>"+
+      "<span class=\"fh-cd-total is-"+tone+"\">"+esc(display.total)+"</span>"+
+      "<span class=\"fh-cd-oic\">"+icon+"</span></span>"+
+      "<span class=\"fh-cd-sl2\">"+parts+dc+badges+"</span></button></li>";
+  }
   function renderStreamEntry(entry){
     var tone=outcomeTone(entry),icon=tone==="ok"?"✓":tone==="bad"?"✗":tone==="n20"?"✦":"";
     var who=state.character&&state.character.name||state.pseudo||"Character";
@@ -2055,10 +2217,43 @@
       "<span class=\"fh-cd-title\">"+esc(entry.name)+"</span><span class=\"fh-cd-total is-"+tone+"\">"+entry.total+"</span><span class=\"fh-cd-oic\">"+icon+"</span></span>"+
       "<span class=\"fh-cd-sl2\">"+parts+dc+badges+"</span></button></li>";
   }
+  /* One zone, two readings. The table log is NOT a belt tab: the belt is
+     everything inside the character, and the party is not inside the character
+     — and a feed you have to navigate to defeats the point, which is that the
+     moment someone rolls, everyone sees it. Sharing the stream's zone costs no
+     vertical space, which the dock does not have to spare. */
+  function streamZoneInner(){
+    var table=state.streamView==="table";
+    var caption=table
+      ? (state.feed.status==="offline"?"not reaching the table":"every roll in the campaign, live")
+      : "every roll, fully resolved";
+    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small>"+esc(caption)+"</small>"+
+      "<span class=\"fh-cd-streamtabs\">"+
+      "<button type=\"button\" data-stream-view=\"mine\" class=\""+(table?"":"is-on")+"\">Mine</button>"+
+      "<button type=\"button\" data-stream-view=\"table\" class=\""+(table?"is-on":"")+
+        (state.feed.status==="offline"?" is-off":"")+"\">Table</button></span></div>";
+    var list;
+    if(table){
+      list=state.feed.events.length?state.feed.events.map(renderFeedEntry).join("")
+        :"<p>"+(feedActive()?"Nothing from the table yet.":"Load a character to join the campaign feed.")+"</p>";
+    }else{
+      var rolls=state.history.slice(0,MAX_HISTORY);
+      list=rolls.length?rolls.map(renderStreamEntry).join(""):"<p>No rolls yet.</p>";
+    }
+    return cap+"<ul class=\"fh-cd-streamlist\">"+list+"</ul>";
+  }
+  /* Polling must never call render(): a full re-render every three seconds
+     would tear the console out from under a player who is mid-configuration.
+     Only this one zone is repainted, and only when its markup actually moved. */
+  function renderFeedZone(){
+    if(!root)return;
+    var zone=root.querySelector("[data-zone=\"stream\"]");
+    if(!zone)return;
+    var next=streamZoneInner();
+    if(zone.innerHTML!==next)zone.innerHTML=next;
+  }
   function renderStream(){
-    var rolls=state.history.slice(0,MAX_HISTORY);
-    return "<section class=\"fh-cd-zone fh-cd-stream\" data-zone=\"stream\"><div class=\"fh-cd-cap\">STREAM<small>every roll, fully resolved</small></div>"+
-      "<ul class=\"fh-cd-streamlist\">"+(rolls.length?rolls.map(renderStreamEntry).join(""):"<p>No rolls yet.</p>")+"</ul></section>";
+    return "<section class=\"fh-cd-zone fh-cd-stream\" data-zone=\"stream\">"+streamZoneInner()+"</section>";
   }
   function configFromEntry(entry) {
     var dice=entryBonusDice(entry).map(function(die){die.locked=true;return die;});
@@ -2517,8 +2712,8 @@
   function removeGenericBonusDie(index){var cfg=state.rollConfig;if(!cfg)return;syncConsoleInputs();index=Number(index);if(!cfg.bonusDice[index]||cfg.bonusDice[index].locked)return;cfg.bonusDice.splice(index,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
   function openConfig(name,ability,bonus,note,dc){clearDiceTray(false);state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});prepareTrayForConfig(state.rollConfig);state.message="";state.messageKind="";render();window.setTimeout(function(){var roll=root&&root.querySelector("[data-roll-now]");if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
   function loadInventory(){if(!state.code)return;state.inventory={loading:true};api("/inv/"+encodeURIComponent(state.code)).then(function(data){state.inventory=data;render();}).catch(function(error){state.inventory={error:"Could not load inventory: "+error.message};render();});}
-  function loadParty(){var input=root.querySelector("#fhPsCode"),code=(input?input.value:state.code).trim().toUpperCase();state.code=code;state.party=[];state.record=null;state.character=null;state.pseudo="";state.inventory=null;state.loading=!!code;render();if(!code)return;try{localStorage.setItem("fh-my-campcode",code);}catch(e){}api("/party/"+encodeURIComponent(code)).then(function(data){state.party=(data.builds||[]).map(function(entry){return entry.pseudo;}).sort();var last=state.requestedPseudo||"";if(!last)try{last=localStorage.getItem("fh-my-pseudo")||"";}catch(e){}state.requestedPseudo="";state.loading=false;if(state.party.indexOf(last)>=0){state.pseudo=last;loadBuild();}else render();}).catch(function(error){state.requestedPseudo="";state.loading=false;state.message=error.message||"Could not reach the campaign server.";state.messageKind="danger";render();});}
-  function loadBuild(){var who=state.pseudo;if(!state.code||!who)return;state.loading=true;render();try{localStorage.setItem("fh-my-pseudo",who);}catch(e){}Promise.all([api("/party/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)),api("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)).catch(function(){return {profile:emptyProfile()};})]).then(function(results){state.record=results[0];state.profile=results[1].profile||emptyProfile();state.character=effectiveCharacter();loadPlayState(state.character);state.loading=false;state.inventory=null;state.message="";rememberRoute();render();}).catch(function(error){state.loading=false;state.record=null;state.character=null;state.message=error.message||"Could not load this character.";state.messageKind="danger";render();});}
+  function loadParty(){var input=root.querySelector("#fhPsCode"),code=(input?input.value:state.code).trim().toUpperCase();state.code=code;state.party=[];state.record=null;state.character=null;state.pseudo="";state.inventory=null;state.loading=!!code;stopFeed();render();if(!code)return;try{localStorage.setItem("fh-my-campcode",code);}catch(e){}api("/party/"+encodeURIComponent(code)).then(function(data){state.party=(data.builds||[]).map(function(entry){return entry.pseudo;}).sort();var last=state.requestedPseudo||"";if(!last)try{last=localStorage.getItem("fh-my-pseudo")||"";}catch(e){}state.requestedPseudo="";state.loading=false;if(state.party.indexOf(last)>=0){state.pseudo=last;loadBuild();}else render();}).catch(function(error){state.requestedPseudo="";state.loading=false;state.message=error.message||"Could not reach the campaign server.";state.messageKind="danger";render();});}
+  function loadBuild(){var who=state.pseudo;if(!state.code||!who)return;state.loading=true;render();try{localStorage.setItem("fh-my-pseudo",who);}catch(e){}Promise.all([api("/party/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)),api("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)).catch(function(){return {profile:emptyProfile()};})]).then(function(results){state.record=results[0];state.profile=results[1].profile||emptyProfile();state.character=effectiveCharacter();loadPlayState(state.character);state.loading=false;state.inventory=null;state.message="";rememberRoute();render();startFeed();}).catch(function(error){state.loading=false;state.record=null;state.character=null;stopFeed();state.message=error.message||"Could not load this character.";state.messageKind="danger";render();});}
 
   function showModal(html){var overlay=document.createElement("div");overlay.className="fh-mc-modal-wrap";overlay.innerHTML="<div class=\"fh-mc-modal\" role=\"dialog\" aria-modal=\"true\"><button class=\"fh-mc-modal-x\" type=\"button\" aria-label=\"Close\">×</button>"+html+"</div>";function close(){overlay.remove();}overlay.addEventListener("click",function(event){if(event.target===overlay||event.target.closest(".fh-mc-modal-x"))close();});document.body.appendChild(overlay);return {element:overlay,close:close};}
   function announceRoll(entry){
@@ -2570,6 +2765,9 @@
     }
     if(button.dataset.pendingSave!==undefined){savePendingLabel(button.dataset.pendingSave);return;}
     if(button.dataset.pendingDrop!==undefined){dropPendingFate(button.dataset.pendingDrop);state.trayPrompt=null;persistPlayState();render();return;}
+    // Switching Mine/Table repaints its own zone only — it must not disturb an
+    // open roll, and it is legal in every phase because it changes nothing.
+    if(button.dataset.streamView!==undefined){state.streamView=button.dataset.streamView==="table"?"table":"mine";renderFeedZone();return;}
     if(button.dataset.clearTray!==undefined){if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}
     if(button.dataset.addTrayDie!==undefined){if(rollOpen())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
     if(button.dataset.removeTrayDie!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDie(button.dataset.removeTrayDie);return;}
@@ -2759,6 +2957,9 @@
        and a delegated listener would never see it. */
     root.addEventListener("input",function(event){delegateToPanel(event,"onInput");});
     root.addEventListener("focusout",function(event){delegateToPanel(event,"onBlur");});
+    // Coming back to the tab should show the table as it is now, not as it was
+    // when the tab was hidden and polling had backed off.
+    document.addEventListener("visibilitychange",function(){if(!document.hidden&&feedActive())feedTick();});
     root.addEventListener("contextmenu",onTrayContext);
     root.addEventListener("touchstart",onTrayTouchStart,{passive:true});
     root.addEventListener("touchend",onTrayTouchEnd);root.addEventListener("touchcancel",onTrayTouchEnd);

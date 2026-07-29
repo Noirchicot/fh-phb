@@ -65,6 +65,11 @@ Read both. Read nothing else to start.
 | `fh-roll/1` is a **view** model | `parts` are display strings like `"d20 (adv)"`; unparseable | machines read the separate `intent` layer (plan §11.2) |
 | Codex sometimes pushes straight to `origin/main` | your local `main` is silently behind | `git fetch` and check `origin/main` before assuming you are current |
 | `linkedom` lives in `/tmp/fh-player-test` | macOS clears `/tmp`; three integration suites fail for no reason | reinstall: `npm install --prefix /tmp/fh-player-test linkedom@0.18.12`. **Worth moving into the repo as a devDependency** — still outstanding |
+| A seq **counter** key re-creates the 1-write/sec limit it was meant to dodge | five players rolling at once race on `feed:{CODE}:cursor` | the sequence IS the timestamp — 13-digit padded epoch ms + random tiebreaker, no shared key (plan §11.4) |
+| `addHistory` is **not** where a roll settles | a natural 1 is in history *before* the player chooses, and defying turns it into a 20; an adjusted roll never passes through it at all | broadcast at `openRollState` + the `finish-sequence` branch, gated on `rollTransactionActive()` (plan §11.4b) |
+| `document.hidden` is true for the **main** document while Table mode runs in PiP | gating polling on it kills the feed exactly when it is being used at the table | hidden **slows** the poll to 12s, never stops it |
+| `~/tools/fh-worker` **has no git** — only timestamped `.bak` files | a bad edit to a live 1500-line Worker is unrecoverable | `cp src/worker.js src/worker.js.bak-$(date +%Y%m%d-%H%M%S)` before editing. **It should be a repo; still outstanding** |
+| `WORKER-ADMIN-API.md` in this repo is a **spec**, not the code | you will "fix" a document and deploy nothing | the deployed source is `~/tools/fh-worker/src/worker.js`, `wrangler deploy` from that directory |
 
 ---
 
@@ -154,19 +159,35 @@ Docs-only changes (plan, this file) need no deploy — they are not in the built
 
 ---
 
-## 6. State at handoff (2026-07-28)
+## 6. State at handoff (2026-07-29)
 
 **Done and live:** the belt and panel contract; text-size and sizing standard;
 Notes and Tarot panels; the Brick rule and Minor Arcana points; AboveVTT research
 verified and redesigned around a campaign feed.
 
-**In flight:** package 10 (dice lab) in its own thread.
+**Done, not yet deployed — package 11, the shared campaign feed.** Committed on
+`main` here, and in `~/tools/fh-worker` (which has no git — see §3). Seven suites
+green in this repo, 21 in the Worker. Verified end to end in the harness: a roll
+posts, comes back through the poll, and a bonus die staged onto the open roll
+revises that line in place instead of adding a second.
+**Two deliberate deviations from what §11 said, both documented there:** no cursor
+key (§11.4), and the party log is a zone toggle rather than a belt tab (§11.4c).
 
-**Next, in order:** package 11 (shared campaign feed — the real unlock, and a
-prerequisite for the bridge), then 6/5/7 (Actions, Traits, Spells — parallel), then
-12 (DM bridge, log-only). Package 9 (adversarial bug hunt over the roll engine and
-the destiny/chaos/awakening state machine) is worth running before the feed leans
-on that engine.
+> ⚠️ **Nothing is live until two deploys happen**, and neither has been run:
+> `wrangler deploy` from `~/tools/fh-worker`, and `./.venv/bin/mkdocs gh-deploy
+> --force` here. The dock will POST to `/feed/…` and get a 404 from the deployed
+> Worker until the Worker ships — so **deploy the Worker first**, then the site.
+> Eric's call to make; ask before running either.
+
+**In flight:** package 10 (dice lab) in its own thread, branch `pkg10-dice`, one
+commit not yet merged.
+
+**Next, in order:** 12 (DM bridge, log-only — its starter prompt is written and the
+feed contract it reads is frozen), then 6/5/7 (Actions, Traits, Spells — parallel;
+they are also what starts producing `damage` and `spell` intents). Package 9 (the
+adversarial bug hunt over the roll engine and the destiny/chaos/awakening state
+machine) is now **more** worth running, not less: the feed broadcasts whatever that
+engine concludes, so a wrong verdict is no longer a private mistake.
 
 **Unresolved:** whether Actions/Traits/Spells have any source data at all — the
 build payload may not carry feats, actions or a spell list. Every one of those
