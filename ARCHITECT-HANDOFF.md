@@ -72,6 +72,8 @@ Read both. Read nothing else to start.
 | An HTTPS page **cannot** fetch `http://` | every self-hosting option that skips TLS is dead on arrival — the dock is on `github.io` | the DM's machine must be reachable over **HTTPS with a real cert**; that alone chooses Cloudflare Tunnel over port-forwarding (plan §12.2) |
 | `Content-Type: application/json` on a cross-origin POST **triggers a preflight** | the SSE stream looks perfect and rolls silently fail to submit | any local server the dock talks to needs a real `OPTIONS` handler, not just `Access-Control-Allow-Origin` (plan §12.3) |
 | `http://127.0.0.1` from an HTTPS page drags in mixed-content exemptions **and** Chrome's Private Network Access preflight, and Safari is stricter than both | a loopback shortcut that works in one browser and not another | **no browser talks to loopback** — the DM's own dock uses the tunnel URL like everyone else; only the extension uses `127.0.0.1` (plan §12.2) |
+| **Cloudflare Quick Tunnel (`*.trycloudflare.com`) does not deliver a streamed HTTP response body** — headers arrive, the body never does; isolated with a 10-line SSE server that streams fine on loopback and sends zero bytes through the tunnel | a live SSE stream through this tunnel shows nothing, ever, while an ordinary `GET` on the same server is fast | measured 2026-07-29 — **use WebSocket**, which is clean through the same tunnel (57ms avg end to end). SSE is loopback/debug only. Plan §12.11 |
+| A browser applies **no CORS to a WebSocket upgrade** — no preflight, no `Allow-Origin`, no enforcement | any page anywhere can open a socket to a reachable server; the CORS work done for the POST path protects nothing here | the server must check the `Origin` header **itself** against the allow-list. No `Origin` at all = a non-browser client (curl, the bridge) and is allowed — the campaign code stays the single membership model. `ws.mjs`, unit-tested |
 | `WORKER-ADMIN-API.md` in this repo is a **spec**, not the code | you will "fix" a document and deploy nothing | the deployed source is `~/tools/fh-worker/src/worker.js`, `wrangler deploy` from that directory |
 
 ---
@@ -209,10 +211,52 @@ key (§11.4), and the party log is a zone toggle rather than a belt tab (§11.4c
 **In flight:** package 10 (dice lab) in its own thread, branch `pkg10-dice`, one
 commit not yet merged.
 
-**Next, in order:** the caption relabelling + deploy (small, unblocks package 11),
-then **12a** (table server — starter prompt written, plan §12 is the spec), then the
-dock's SSE client and the rendezvous route (**architect**, core + Worker), then **12b**
-(the bridge, its prompt also written), then 6/5/7 (Actions, Traits, Spells — parallel;
+> ✅ **12a BUILT AND LOCALLY VERIFIED 2026-07-29** — `~/tools/fh-table`
+> (`table-server.mjs` + `lib.mjs`, 19 tests green, zero npm deps). Every route
+> works end to end on loopback: health, `GET/POST/DELETE /feed/:code`, SSE
+> stream with replay, CORS preflight, 403 on a wrong code, revision handling,
+> rate limiting. Not yet a git commit — `git init` run, files staged, waiting on
+> Eric to review before committing.
+>
+> The Worker got its half too: `/table/:code` GET/POST/DELETE, the rendezvous
+> route from plan §12.4, added to `~/tools/fh-worker/src/worker.js` and covered
+> by the existing 21-test suite (still green). **Not deployed** — `wrangler
+> deploy` was blocked by the auto-mode classifier (a production Worker is a
+> shared system; correctly so). Eric needs to either approve the deploy or run
+> `cd ~/tools/fh-worker && npx wrangler deploy` himself.
+>
+> 🔄 **The transport changed mid-build, on evidence: WebSocket, not SSE.**
+> Cloudflare Quick Tunnel delivers no streamed HTTP body — isolated with a
+> 10-line SSE server that worked on loopback and sent zero bytes through the
+> tunnel, so it is the tunnel and not our code. WebSocket through the same
+> tunnel is clean. **Measured end to end, six probes: 115, 49, 43, 46, 42,
+> 46 ms — avg 57 ms**, against the cloud feed's 22–28 s. Two clients both
+> receive a roll; a dropped client reconnecting with `?since=` replays exactly
+> what it missed. Full evidence and what the switch cost: plan §12.11 point 2.
+> The plan's own pre-approval of WebSocket is what made this a swap rather than
+> a redesign — nothing above the transport moved.
+
+**Next, in order:**
+
+1. **Eric: deploy the Worker** (or approve it) — `cd ~/tools/fh-worker && npx
+   wrangler deploy`. The `/table` rendezvous route is written and the 21-test
+   suite is green, but `wrangler deploy` is correctly blocked from this seat.
+   **Not on the critical path** — the manual URL override (plan §12.4) reaches a
+   working live table without it.
+2. **The dock's transport client** — architect work, core: WebSocket with
+   reconnect-and-resume (~40 lines, the one thing the SSE fallback cost),
+   source resolution, and the three table states of §12.5. This is the last
+   piece between here and a live table.
+3. **The caption relabelling + site deploy** — small, independent, and it
+   un-strands all of package 11 today. Worth doing alongside 2.
+4. **12b, the bridge** — its starter prompt is written and did not need
+   rewriting: it reads the feed and does not care which transport carries it.
+   On loopback it may use SSE or WS, both of which work there.
+5. **The four-hour soak** — now the largest open risk (plan §12.11 point 4).
+   WebSocket moves the question from "does it stream" to "does it survive a
+   session"; the 20s server ping exists for that and is untested over hours.
+
+Then 6/5/7 (Actions, Traits, Spells — parallel;
 they are also what starts producing `damage` and `spell` intents). Package 9 (the
 adversarial bug hunt over the roll engine and the destiny/chaos/awakening state
 machine) is now **more** worth running, not less: the feed broadcasts whatever that

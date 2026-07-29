@@ -1155,11 +1155,23 @@ Two flavours, and the design is **deliberately indifferent to which** because of
 > both. The extension has a `chrome-extension://` origin and a host permission,
 > so none of that applies to it. One path for browsers, one for the extension.
 
-### 12.3 Transport: SSE down, ordinary POST up
+### 12.3 Transport: push down, ordinary POST up
 
-**Decided: Server-Sent Events for delivery, unchanged HTTP POST for submission.**
-WebSocket is the pre-approved plan B (§12.11), and the event shape is identical
-either way.
+> 🔄 **SUPERSEDED IN PART, 2026-07-29 — the delivery half is WebSocket, not SSE.**
+> Cloudflare Quick Tunnel delivers no streamed HTTP body at all (isolated with a
+> 10-line server; measurements and the full elimination in §12.11 point 2).
+> WebSocket through the same tunnel: 57 ms avg end to end. **The upstream half of
+> this section is unchanged and still correct** — `POST` remains the submission
+> path, for the reasons given below. Read reason 1 as still binding, reasons 2–4
+> as the case for SSE that the measurement overruled, and §12.11 for what the
+> switch actually cost (~40 lines of reconnect in the dock; nothing above the
+> transport). The stream contract below is the **loopback/debug** shape now; the
+> production one is `GET /feed/:code/ws[?since=SEQ]`.
+
+**Originally decided: Server-Sent Events for delivery, unchanged HTTP POST for
+submission.** WebSocket was the pre-approved plan B (§12.11) — and it was called
+in. The event shape is identical either way, which is exactly why the bet was
+safe.
 
 The traffic is **asymmetric**, and that is what settles it. Upstream is rare,
 discrete and already works: one `POST /feed/:code` when a roll settles, whose
@@ -1373,17 +1385,28 @@ clear of wrangler's 8787 and of the worktree ports 8130–8136); spawns
 from its output; registers that URL with the Worker and heartbeats it every 5
 minutes; serves the routes below; mirrors to the cloud; appends the JSONL.
 
-**The routes are the Worker's contract, plus one:**
+**The routes are the Worker's contract, plus two:**
 
 ```text
 GET    /feed/:code?since=&limit=     identical response to the Worker's — same
                                      {schemaVersion, lookbackMs, cursor, events[]}
 POST   /feed/:code                   identical body, identical {ok, seq, id}
-GET    /feed/:code/stream            NEW — §12.3
-DELETE /feed/:code                   clear the log
-GET    /health                       {ok, code, startedAt, connected, events}
+GET    /feed/:code/ws[?since=SEQ]    NEW — the production push channel.
+                                     WebSocket; frames are {seq, event}.
+                                     Replays from `since`, then streams live.
+GET    /feed/:code/stream            SSE — LOOPBACK AND DEBUG ONLY. Works
+                                     perfectly on 127.0.0.1 and is the quickest
+                                     way to watch a feed with `curl -N`, but a
+                                     Quick Tunnel delivers none of it (§12.11).
+                                     Never a path a remote dock may take.
+DELETE /feed/:code                   clear the live ring buffer (GM token)
+GET    /health                       {ok, code, startedAt, connected, ws, sse,
+                                      events, tunnel, tunnelHealthy, rendezvous}
 OPTIONS *                            the preflight §12.3 requires
 ```
+
+**The WebSocket upgrade is origin-checked by the server itself** — a browser
+applies no CORS to it, so nothing else will. See §12.11.
 
 Implementing the poll route verbatim is what makes the whole thing a genuine
 transport swap: **the dock's existing cloud-mode code path works against the
@@ -1461,21 +1484,119 @@ route exists) → dock client and the three states → 12b.
 The 27s number is why this package exists. Do not replace one assumption with
 three.
 
-1. **End-to-end roll latency through the tunnel.** Six probes, post-to-visible,
-   same method as §11.4. Target: **under 500 ms.** Anything over ~2s means
-   something is buffering and the design has not delivered.
-2. **Does Cloudflare Tunnel pass SSE unbuffered?** Streaming through Cloudflare is
-   ubiquitous — every LLM chat product does it — so this is *expected* to pass,
-   but it is expectation, not measurement, and it is the single assumption the
-   transport choice rests on. **If it fails, switch to WebSocket** (Tunnel
-   documents WebSocket support explicitly). The event shape, the seq, the
-   settlement rules and the dock's merge layer are all unchanged by that switch —
-   which is exactly why SSE-first is a safe bet rather than a gamble.
-3. **KV single-key `get` freshness** for the rendezvous (§12.4).
-4. **A four-hour soak.** Held-open connections are where the boring failures live:
-   a laptop sleeping, a tunnel silently half-open, a heartbeat that stops without
-   `onerror` firing. Four hours is the actual requirement, so four hours is the
-   test.
+1. ✅ **MEASURED 2026-07-29 — end-to-end roll latency through a Quick Tunnel.**
+   Six probes, post-to-visible, same method as §11.4, against a real
+   `*.trycloudflare.com` tunnel: **522, 426, 436, 337, 340, 407 ms.** Target was
+   under 500 ms; five of six landed inside it, the sixth (522ms) is explained by
+   cold DNS/TLS on the first request. **This alone is the headline win** — 27s
+   down to under half a second — and it holds with plain polling, independent of
+   whether SSE works (point 2).
+2. ✅ **RESOLVED 2026-07-29 — the transport is WebSocket. SSE is dead through
+   the tunnel; WebSocket works, and the fallback cost nothing above the
+   transport exactly as this section promised.**
+   >
+   > **The SSE failure was isolated, not guessed.** A 10-line SSE server — no
+   > `Connection` header, nothing exotic — behind its own Quick Tunnel delivered
+   > **zero bytes**, while the same server on loopback streamed instantly. It is
+   > the tunnel, not our code. Also ruled out: the missing `Accept:
+   > text/event-stream` header (a real `EventSource` always sends it; adding it
+   > changed nothing), backgrounding artifacts, a size threshold (40 events
+   > queued), and HTTP/2 framing (HTTP/1.1 forced).
+   >
+   > **WebSocket through the same Quick Tunnel, measured:** connect **290 ms**,
+   > first frame **291 ms**, then ticks on the millisecond. No buffering.
+   >
+   > **End-to-end with the real table server, six probes, POST → tunnel → server
+   > → WS → back: 115, 49, 43, 46, 42, 46 ms — avg 57 ms.** Against the cloud
+   > feed's 22–28 s, that is a factor of ~470. (Both ends of this probe sit on
+   > one machine, so a remote player adds their own hop to the CF edge — expect
+   > roughly 60–150 ms in the room, not 57. The order of magnitude is settled.)
+   >
+   > **Also verified against the real server through the tunnel:** two clients
+   > connected at once both receive the same roll; a client that drops,
+   > reconnects with `?since=<cursor>` and replays **exactly** the events it
+   > missed, no more and no less.
+   >
+   > **What the fallback actually cost**, honestly stated: `Last-Event-ID` and
+   > browser-managed reconnection are gone. Resume is now an explicit `?since=`
+   > query param (the same cursor the poll route uses), and the dock must own
+   > its own reconnect-with-backoff. That is ~40 lines in the dock. Everything
+   > else — the event shape, the seq format, settlement, `rollId`+`rev`,
+   > dedupe-by-id, the merge layer, the mirror, the poll route — is untouched,
+   > which is the whole reason SSE-first was a safe bet rather than a gamble.
+   >
+   > **`POST` stays the upstream.** WebSocket is a pure downstream push channel;
+   > rolls still go up over HTTP so the per-roll ack that drives the dock's
+   > offline state survives intact (§12.3 reason 1, which the switch does not
+   > invalidate).
+   >
+   > **New security consequence, and it is not optional.** A browser applies
+   > **no CORS to a WebSocket upgrade** — no preflight, no `Allow-Origin`, no
+   > enforcement. Any page anywhere may open a socket to a reachable server, so
+   > the `Origin` header is the only gate that exists and the server must check
+   > it itself against the §12.9 allow-list. A request with **no** `Origin` at
+   > all is a non-browser client (curl, the 12b bridge on loopback) and is
+   > allowed, which keeps the campaign code as the single membership model
+   > (§11.6). Implemented and unit-tested in `ws.mjs`.
+   >
+   > **SSE is kept, scoped, and labelled** — it works perfectly over loopback and
+   > `curl -N` on it is the fastest way to eyeball a live feed. It is a debugging
+   > and bridge affordance, **never** a path a remote dock may take.
+
+   <details><summary>The original SSE failure measurement, kept as evidence</summary>
+
+   🚨 **MEASURED 2026-07-29 — Cloudflare Quick Tunnel does NOT stream SSE.**
+   Contrary to the plan's stated expectation, the assumption failed. Headers
+   arrive immediately and correctly (`200`, `Content-Type: text/event-stream`,
+   `Cache-Control: no-cache, no-transform`) — but the body never does. Confirmed
+   with a foreground `curl -N` (ruling out shell/backgrounding artifacts), with
+   40 events already sitting in the buffer to replay (ruling out "nothing to
+   send"), with a 10-second wait (ruling out a size-threshold flush), and with
+   HTTP/1.1 forced (ruling out an HTTP/2 framing quirk). An ordinary buffered
+   `GET` on the same server, same tunnel, returns instantly. **The response body
+   of a long-lived streamed request is fully withheld — likely full buffering
+   somewhere between cloudflared and Cloudflare's edge for the free Quick Tunnel
+   product specifically**, which the plan already flagged as "for testing", but
+   the *streaming* limitation was not anticipated; only the uptime disclaimer
+   was.
+   >
+   > **This is Eric's decision, not a default to pick alone (§12.11 said so in
+   > advance, and that holds):** three live options, none built —
+   > - **(a) Plain polling against the table server**, unchanged from the dock's
+   >   existing cloud-mode code (§12.10) — already proven fast by point 1. A
+   >   2–3s poll interval against a *local* server turns "30s stale" into
+   >   "≤3s stale", with **zero new code**: the dock already polls, it would
+   >   just point at a different URL. The honest loss: not truly *instant*, and
+   >   `lookbackMs: 0` plus a poll cadence reintroduce a small, bounded staleness
+   >   the SSE design was meant to remove entirely.
+   > - **(b) WebSocket**, the plan's pre-approved fallback (Tunnel documents
+   >   WebSocket support explicitly, separately from plain HTTP streaming). Needs
+   >   measuring in its own right — nothing here proves WebSocket works either,
+   >   only that this specific failure mode doesn't obviously apply to a
+   >   different protocol.
+   > - **(c) A Named Tunnel** (a domain on Cloudflare, §12.2) instead of Quick
+   >   Tunnel — untested here for lack of a domain to point at. Quick and Named
+   >   Tunnels share `cloudflared` but not necessarily the same edge path, so
+   >   this failure may be Quick-Tunnel-specific rather than fundamental to
+   >   Cloudflare Tunnel as a category.
+
+   **Option (b) was taken**, and it is built and measured — see the RESOLVED
+   block above. (a) and (c) are moot: (a) is strictly worse than a working push
+   channel, and (c) is unnecessary since Quick Tunnel carries WebSocket fine —
+   though a Named Tunnel remains the upgrade for a **stable URL** (§12.2), which
+   is a separate concern from streaming.
+
+   </details>
+
+3. **KV single-key `get` freshness** for the rendezvous — not yet measured; the
+   Worker route (§12.4) is written and unit-tested but **not deployed** (blocked
+   on Eric, see ARCHITECT-HANDOFF §6). Not on the critical path: the manual URL
+   override (§12.4) reaches a working live table without it.
+4. **A four-hour soak.** Not yet run, and now the largest open risk. WebSocket
+   moves the failure mode from "does it stream at all" to "does it survive four
+   hours" — a sleeping laptop, a tunnel silently half-open, a socket that dies
+   without `onclose` firing. The 20s server-side ping is there for exactly this
+   and is the thing the soak must prove.
 
 ### 12.12 What is deliberately not built
 
