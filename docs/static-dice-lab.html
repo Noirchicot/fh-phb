@@ -16,6 +16,7 @@
     .tray{height:310px;display:grid;place-items:center;overflow:hidden;background:#121827;border:1px solid #9d783a;border-radius:16px;box-shadow:inset 0 1px rgba(255,255,255,.045),inset 0 -30px 60px rgba(0,0,0,.12),0 20px 60px rgba(0,0,0,.48)}
     #fhLabDie{display:grid;place-items:center;width:178px;height:178px}
     .fh-cd-static3d{position:relative;display:block;width:var(--fh-static-die-size);height:var(--fh-static-die-size)}
+    .fh-cd-static3d[data-sides="6"]{transform:scale(.8)}
     .fh-cd-static3d.is-percentile{width:calc(var(--fh-static-die-size) * 1.42)}
     .fh-cd-static3d-part{position:relative;display:none;flex:0 0 calc(var(--fh-static-die-size) * .78);width:calc(var(--fh-static-die-size) * .78);height:calc(var(--fh-static-die-size) * .78)}
     .fh-cd-static3d.is-percentile.is-webgl{display:flex;align-items:center;justify-content:center}
