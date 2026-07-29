@@ -796,6 +796,18 @@ Eric at the keyboard.
 - **Never fall back to a local roll silently.** A visible error beats two players
   believing a roll reached the table when it did not.
 
+> 📖 **A second AboveVTT reference exists**, `~/obsidian-vault/Gpt in FH/
+> FHPC-AboveVTT-DDB-Integration-Bible.md` — genuinely useful for AoE
+> shape/placement geometry and a capability-handshake pattern that this study
+> did not cover, when package 12's "deepen" phase (§11.5 point 4) gets there.
+> **It also recommends, as its headline pattern, sending dice *expressions*
+> via AboveVTT slash commands (`/hit`, `/dmg`, `/save`, `/heal`) so "AboveVTT
+> creates a real roll."** Its own text confirms that makes AboveVTT roll its
+> own dice — which is exactly the second-source-of-randomness this page just
+> forbade, if applied to a roll FHPC's engine already resolved. A correction
+> is appended at the top of that file. Package 12b (log-only, current scope)
+> already avoids this by posting plain resolved text, not slash commands.
+
 ---
 
 ## 11. The shared campaign feed (design, 2026-07-28)
