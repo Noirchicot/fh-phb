@@ -103,8 +103,14 @@ assert.equal(pendingDie.parts[0].number.textContent,"","the ready pose does not 
 
 const css=fs.readFileSync(path.join(__dirname,"..","docs","stylesheets","companion-dock.css"),"utf8");
 const lab=fs.readFileSync(path.join(__dirname,"..","docs","static-dice-lab.html"),"utf8");
-assert.match(css,/\.fh-cd-static3d-result\{[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"the tray uses one .28 result ratio for the whole dice set");
-assert.doesNotMatch(css,/data-sides=\"(?:4|6|8|10|12|20|100)\"[^}]*font-size/,"no die shape overrides the shared result scale");
-assert.match(lab,/\.fh-cd-static3d-result\{[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"the lab previews the same shared .28 result ratio");
+assert.match(css,/\.fh-cd-static3d-result\{[^}]*top:49%[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"d8 keeps the visually approved result placement and scale");
+assert.match(css,/data-sides="4"[^}]*top:51%/,"d4 keeps the visually approved result placement");
+[
+  [6,"53","26"],[10,"62","24"],[12,"53","24"],[20,"53","23"],[100,"62","19"]
+].forEach(([sides,top,scale])=>{
+  var expected=new RegExp('data-sides="'+sides+'"[^}]*top:'+top+'%[^}]*font-size:calc\\(var\\(--fh-static-die-size\\) \\* \\.'+scale+'\\)');
+  assert.match(css,expected,`d${sides} uses its face-calibrated result placement and scale`);
+  assert.match(lab,expected,`the lab mirrors d${sides}'s face-calibrated result placement and scale`);
+});
 
 console.log("Static 3D dice tests passed.");

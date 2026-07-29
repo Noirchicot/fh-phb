@@ -404,6 +404,11 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-static3d.is-webgl .fh-cd-static3d-fallback{display:none}
 .fh-cd-static3d-result{position:absolute;z-index:2;left:50%;top:49%;display:block;min-width:1.35em;transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(.7);opacity:0;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:calc(var(--fh-static-die-size) * .28);font-weight:700;line-height:1;text-align:center;text-shadow:0 1px rgba(255,255,255,.2),0 2px 3px rgba(0,0,0,.2);transition:opacity .16s ease,transform .2s ease}
 .fh-cd-static3d[data-sides="4"] .fh-cd-static3d-result{top:51%}
+.fh-cd-static3d[data-sides="6"] .fh-cd-static3d-result{top:53%;font-size:calc(var(--fh-static-die-size) * .26)}
+.fh-cd-static3d[data-sides="10"] .fh-cd-static3d-result{top:62%;font-size:calc(var(--fh-static-die-size) * .24)}
+.fh-cd-static3d[data-sides="12"] .fh-cd-static3d-result{top:53%;font-size:calc(var(--fh-static-die-size) * .24)}
+.fh-cd-static3d[data-sides="20"] .fh-cd-static3d-result{top:53%;font-size:calc(var(--fh-static-die-size) * .23)}
+.fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result{top:62%;font-size:calc(var(--fh-static-die-size) * .19)}
 .fh-cd-static3d.is-settled .fh-cd-static3d-result{transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(1);opacity:1}
 .fh-cd-diewrap em{font-size:calc(7.3px * var(--cd-fs));font-style:normal;font-weight:600;color:var(--cd-muted);letter-spacing:.03em;
   max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
