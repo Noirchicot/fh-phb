@@ -393,6 +393,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-die.is-static3d{width:var(--fh-static-die-size);height:var(--fh-static-die-size);animation:none}
 .fh-cd-die.is-static3d.is-percentile{width:calc(var(--fh-static-die-size) * 1.42)}
 .fh-cd-static3d{position:relative;display:block;width:var(--fh-static-die-size);height:var(--fh-static-die-size)}
+.fh-cd-static3d[data-sides="6"]{transform:scale(.8)}
 .fh-cd-static3d.is-percentile{width:calc(var(--fh-static-die-size) * 1.42)}
 .fh-cd-static3d-part{position:relative;display:none;flex:0 0 calc(var(--fh-static-die-size) * .78);width:calc(var(--fh-static-die-size) * .78);height:calc(var(--fh-static-die-size) * .78)}
 .fh-cd-static3d.is-percentile.is-webgl{display:flex;align-items:center;justify-content:center}
