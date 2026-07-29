@@ -68,6 +68,25 @@ vm.runInNewContext(source,sandbox,{filename:"fh-static-dice.js"});
 assert.equal(typeof window.FHStaticDice.mount,"function","the renderer exposes one progressive-enhancement mount");
 assert.deepEqual(Array.from(window.FHStaticDice.supportedSides),[4,6,8,10,12,20,100],"the complete tabletop dice set is supported");
 assert.ok(window.FHStaticDice.materials.includes("crimson"),"player colours are exposed to every die shape");
+assert.equal(typeof window.FHStaticDice.sound.preview,"function","the renderer exposes an iterable procedural sound preview");
+assert.equal(window.FHStaticDice.sound.isMuted(),false,"dice sound starts enabled when no preference is stored");
+window.FHStaticDice.sound.setMuted(true);
+assert.equal(window.FHStaticDice.sound.isMuted(),true,"dice sound can be muted without changing the renderer");
+window.FHStaticDice.sound.setMuted(false);
+assert.equal(window.FHStaticDice.sound.preview(6),false,"sound degrades safely when Web Audio is unavailable");
+const audioEvents=[];
+function audioParam(){return {setValueAtTime:()=>{},exponentialRampToValueAtTime:()=>{}};}
+window.AudioContext=function(){
+  this.currentTime=2;this.sampleRate=1000;this.state="running";this.destination={};
+  this.createBuffer=(_channels,length)=>({getChannelData:()=>new Float32Array(length)});
+  this.createBufferSource=()=>({connect:()=>{},start:time=>audioEvents.push(["noise",time]),stop:()=>{}});
+  this.createBiquadFilter=()=>({type:"",frequency:audioParam(),Q:audioParam(),connect:()=>{}});
+  this.createGain=()=>({gain:audioParam(),connect:()=>{}});
+  this.createOscillator=()=>({type:"",frequency:audioParam(),connect:()=>{},start:time=>audioEvents.push(["body",time]),stop:()=>{}});
+};
+assert.equal(window.FHStaticDice.sound.preview(6),true,"procedural sound schedules when Web Audio is available");
+assert.equal(audioEvents.filter(event=>event[0]==="noise").length,7,"one roll schedules six clacks and a landing impact");
+assert.equal(audioEvents.filter(event=>event[0]==="body").length,7,"each impact receives a short resonant body");
 window.FHStaticDice.mount(root);
 dice.forEach(({host,parts,classes},index)=>{
   assert.equal(host.dataset.mounted,"1",`d${host.dataset.sides} is mounted only once`);
@@ -104,6 +123,7 @@ assert.match(source,/Number\(renderSides\)===6\?\[0,\.28,1\]:\[0,-\.12,1\]/,"d6 
 
 const css=fs.readFileSync(path.join(__dirname,"..","docs","stylesheets","companion-dock.css"),"utf8");
 const lab=fs.readFileSync(path.join(__dirname,"..","docs","static-dice-lab.html"),"utf8");
+assert.match(lab,/id="fhLabSound"[^>]*aria-pressed="true"/,"the lab exposes a persistent sound toggle");
 assert.match(css,/\.fh-cd-static3d-result\{[^}]*top:49%[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"d8 keeps the visually approved result placement and scale");
 assert.match(css,/data-sides="4"[^}]*top:51%/,"d4 keeps the visually approved result placement");
 [

@@ -37,14 +37,15 @@
     fieldset{min-width:0;margin:0;padding:12px;border:1px solid #38475a;border-radius:10px;background:#0d1724}
     legend{padding:0 7px;color:#aeb8c6;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
     .shapes{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-    .shape,.roll,.ready{min-height:42px;color:#eadbbf;background:#101a28;border:1px solid #65543b;border-radius:7px;font-weight:750;cursor:pointer}
+    .shape,.roll,.ready,.sound{min-height:42px;color:#eadbbf;background:#101a28;border:1px solid #65543b;border-radius:7px;font-weight:750;cursor:pointer}
     .shape[aria-pressed="true"]{color:#271b07;background:#d9ae54;border-color:#f0cc77}
     .palette{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
     .colour{min-height:42px;display:flex;align-items:center;justify-content:center;gap:7px;color:#cad2dc;background:#101a28;border:1px solid #38475a;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
     .colour::before{content:"";width:15px;height:15px;border-radius:50%;background:var(--swatch);border:1px solid rgba(255,255,255,.38);box-shadow:0 1px 3px rgba(0,0,0,.4)}
     .colour[aria-pressed="true"]{color:#fff5df;border-color:#d9ae54;box-shadow:inset 0 0 0 1px #d9ae54}
-    .actions{display:grid;grid-template-columns:1fr 1.35fr;gap:9px}
-    .ready,.roll{width:100%;min-height:50px;letter-spacing:.06em}
+    .actions{display:grid;grid-template-columns:.8fr 1fr 1.35fr;gap:9px}
+    .sound,.ready,.roll{width:100%;min-height:50px;letter-spacing:.06em}
+    .sound[aria-pressed="true"]{color:#271b07;background:#c5a251;border-color:#e2c16f}
     .roll{color:#271b07;background:#d9ae54;border-color:#f0cc77}
     small{color:#9aa5b4;text-align:center}
     @media(max-width:560px){
@@ -86,6 +87,7 @@
       </fieldset>
     </section>
     <div class="actions">
+      <button type="button" class="sound" id="fhLabSound" aria-pressed="true">SOUND ON</button>
       <button type="button" class="ready" id="fhLabReady">READY POSE</button>
       <button type="button" class="roll" id="fhLabRoll">ROLL</button>
     </div>
@@ -126,6 +128,11 @@
       }
       function ready(){pending=true;face=1;render(false);}
       function roll(){pending=false;face=randomFace(sides);render(true);}
+      function updateSoundButton(){
+        var button=document.getElementById("fhLabSound"),enabled=!window.FHStaticDice.sound.isMuted();
+        button.textContent=enabled?"SOUND ON":"SOUND OFF";
+        button.setAttribute("aria-pressed",String(enabled));
+      }
       document.querySelectorAll("[data-lab-sides]").forEach(function(button){
         button.addEventListener("click",function(){
           sides=Number(button.dataset.labSides);
@@ -140,9 +147,14 @@
           render(false);
         });
       });
+      document.getElementById("fhLabSound").addEventListener("click",function(){
+        var sound=window.FHStaticDice.sound,enable=sound.isMuted();
+        sound.setMuted(!enable);updateSoundButton();
+        if(enable)sound.preview(sides);
+      });
       document.getElementById("fhLabReady").addEventListener("click",ready);
       document.getElementById("fhLabRoll").addEventListener("click",roll);
-      ready();
+      updateSoundButton();ready();
     }());
   </script>
 </body>
