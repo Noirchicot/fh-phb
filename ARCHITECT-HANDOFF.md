@@ -236,23 +236,22 @@ commit not yet merged.
 > The plan's own pre-approval of WebSocket is what made this a swap rather than
 > a redesign — nothing above the transport moved.
 
+> ✅ **DEPLOYED 2026-07-29** — version `4bc33715`, run by Eric directly (blocked
+> from this seat, correctly). Verified live: `GET /table/FH2` → `{"live":false}`,
+> `POST` without a GM token → `401`, `/feed/FH2` unaffected.
+
 **Next, in order:**
 
-1. **Eric: deploy the Worker** (or approve it) — `cd ~/tools/fh-worker && npx
-   wrangler deploy`. The `/table` rendezvous route is written and the 21-test
-   suite is green, but `wrangler deploy` is correctly blocked from this seat.
-   **Not on the critical path** — the manual URL override (plan §12.4) reaches a
-   working live table without it.
-2. **The dock's transport client** — architect work, core: WebSocket with
+1. **The dock's transport client** — architect work, core: WebSocket with
    reconnect-and-resume (~40 lines, the one thing the SSE fallback cost),
    source resolution, and the three table states of §12.5. This is the last
    piece between here and a live table.
-3. **The caption relabelling + site deploy** — small, independent, and it
-   un-strands all of package 11 today. Worth doing alongside 2.
-4. **12b, the bridge** — its starter prompt is written and did not need
+2. **The caption relabelling + site deploy** — small, independent, and it
+   un-strands all of package 11 today. Worth doing alongside 1.
+3. **12b, the bridge** — its starter prompt is written and did not need
    rewriting: it reads the feed and does not care which transport carries it.
    On loopback it may use SSE or WS, both of which work there.
-5. **The four-hour soak** — now the largest open risk (plan §12.11 point 4).
+4. **The four-hour soak** — now the largest open risk (plan §12.11 point 4).
    WebSocket moves the question from "does it stream" to "does it survive a
    session"; the 20s server ping exists for that and is untested over hours.
 
