@@ -364,7 +364,11 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 @keyframes fh-cd-pulse{to{opacity:.35}}
 
 /* ── Console ────────────────────────────────────────────────────── */
-.fh-cd-console{padding-bottom:8px}
+/* ROLL (55px) is taller than the white dice's icon+label column (40px), so
+   the same bottom padding that gives them clear air left ROLL's own drop
+   shadow bleeding into the section's border. More room, not a shift, is the
+   fix: shifting the whole row up would just tighten the ⋮ row above it. */
+.fh-cd-console{padding-bottom:16px}
 .fh-cd-crow{display:flex;align-items:center;gap:5px;margin-top:5px}
 /* .fh-cd-chead now only ever holds the free roll's naming field: a loaded
    check has no header, the tray below names it. The check name, its ability,
