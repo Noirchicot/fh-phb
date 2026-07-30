@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FH Static Dice Lab</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#07101b;color:#f4ead8}
+    *{box-sizing:border-box}
+    body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 15%,#192b44,#07101b 68%)}
+    button{font:inherit}
+    main{width:min(680px,100%);display:grid;gap:18px}
+    header{display:flex;justify-content:space-between;align-items:end;gap:12px}
+    h1{margin:0;color:#d9b35b;font:600 18px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
+    #fhLabResult{margin:0;color:#f4ead8;font:700 15px Georgia,serif}
+    .tray{height:310px;display:grid;place-items:center;overflow:hidden;background:#121827;border:1px solid #9d783a;border-radius:16px;box-shadow:inset 0 1px rgba(255,255,255,.045),inset 0 -30px 60px rgba(0,0,0,.12),0 20px 60px rgba(0,0,0,.48)}
+    #fhLabDie{display:grid;place-items:center;width:178px;height:178px}
+    .fh-cd-static3d{position:relative;display:block;width:var(--fh-static-die-size);height:var(--fh-static-die-size)}
+    .fh-cd-static3d[data-sides="6"]{transform:scale(.8)}
+    .fh-cd-static3d.is-percentile{width:calc(var(--fh-static-die-size) * 1.42)}
+    .fh-cd-static3d-part{position:relative;display:none;flex:0 0 calc(var(--fh-static-die-size) * .78);width:calc(var(--fh-static-die-size) * .78);height:calc(var(--fh-static-die-size) * .78)}
+    .fh-cd-static3d.is-percentile.is-webgl{display:flex;align-items:center;justify-content:center}
+    .fh-cd-static3d.is-percentile.is-webgl .fh-cd-static3d-part{display:block}
+    .fh-cd-static3d-part+.fh-cd-static3d-part{margin-left:calc(var(--fh-static-die-size) * -.14)}
+    .fh-cd-static3d canvas{display:none;width:100%;height:100%;filter:drop-shadow(0 14px 14px rgba(0,0,0,.65))}
+    .fh-cd-static3d.is-webgl canvas{display:block}
+    .fh-cd-static3d-result{position:absolute;z-index:2;left:50%;top:49%;display:block;min-width:1.35em;transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(.7);opacity:0;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:calc(var(--fh-static-die-size) * .28);font-weight:700;line-height:1;text-align:center;text-shadow:0 1px rgba(255,255,255,.2),0 3px 4px rgba(0,0,0,.2);transition:opacity .16s ease,transform .2s ease}
+    .fh-cd-static3d[data-sides="4"] .fh-cd-static3d-result{top:51%}
+    .fh-cd-static3d[data-sides="6"] .fh-cd-static3d-result{top:41%;font-size:calc(var(--fh-static-die-size) * .324)}
+    .fh-cd-static3d[data-sides="10"] .fh-cd-static3d-result{top:62%;font-size:calc(var(--fh-static-die-size) * .24)}
+    .fh-cd-static3d[data-sides="12"] .fh-cd-static3d-result{top:53%;font-size:calc(var(--fh-static-die-size) * .24)}
+    .fh-cd-static3d[data-sides="20"] .fh-cd-static3d-result{top:53%;font-size:calc(var(--fh-static-die-size) * .20)}
+    .fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result{top:62%;font-size:calc(var(--fh-static-die-size) * .19)}
+    .fh-cd-static3d.is-settled .fh-cd-static3d-result{transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(1);opacity:1}
+    .fh-cd-static3d-fallback{display:grid;place-items:center;width:100%;height:100%;color:var(--fh-static-num,#58180d);background:var(--fh-static-fill,#f3ead6);border:3px solid var(--fh-static-rim,#8a6a2a);border-radius:20px;font:700 48px Georgia,serif}
+    .fh-cd-static3d.is-webgl .fh-cd-static3d-fallback{display:none}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    fieldset{min-width:0;margin:0;padding:12px;border:1px solid #38475a;border-radius:10px;background:#0d1724}
+    legend{padding:0 7px;color:#aeb8c6;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .shapes{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+    .shape,.roll,.ready,.sound{min-height:42px;color:#eadbbf;background:#101a28;border:1px solid #65543b;border-radius:7px;font-weight:750;cursor:pointer}
+    .shape[aria-pressed="true"]{color:#271b07;background:#d9ae54;border-color:#f0cc77}
+    .palette{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+    .colour{min-height:42px;display:flex;align-items:center;justify-content:center;gap:7px;color:#cad2dc;background:#101a28;border:1px solid #38475a;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
+    .colour::before{content:"";width:15px;height:15px;border-radius:50%;background:var(--swatch);border:1px solid rgba(255,255,255,.38);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+    .colour[aria-pressed="true"]{color:#fff5df;border-color:#d9ae54;box-shadow:inset 0 0 0 1px #d9ae54}
+    .actions{display:grid;grid-template-columns:.8fr 1fr 1.35fr;gap:9px}
+    .sound,.ready,.roll{width:100%;min-height:50px;letter-spacing:.06em}
+    .sound[aria-pressed="true"]{color:#271b07;background:#c5a251;border-color:#e2c16f}
+    .roll{color:#271b07;background:#d9ae54;border-color:#f0cc77}
+    small{color:#9aa5b4;text-align:center}
+    @media(max-width:560px){
+      body{padding:16px}
+      .tray{height:270px}
+      .controls{grid-template-columns:1fr}
+      .shapes{grid-template-columns:repeat(4,1fr)}
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header><h1>Static Dice Lab</h1><p id="fhLabResult" aria-live="polite">d6 · ready · Ivory</p></header>
+    <section class="tray" aria-label="Fate's Hand static dice tray"><div id="fhLabDie"></div></section>
+    <section class="controls" aria-label="Die appearance">
+      <fieldset>
+        <legend>Shape</legend>
+        <div class="shapes">
+          <button class="shape" type="button" data-lab-sides="4" aria-pressed="false">d4</button>
+          <button class="shape" type="button" data-lab-sides="6" aria-pressed="true">d6</button>
+          <button class="shape" type="button" data-lab-sides="8" aria-pressed="false">d8</button>
+          <button class="shape" type="button" data-lab-sides="10" aria-pressed="false">d10</button>
+          <button class="shape" type="button" data-lab-sides="12" aria-pressed="false">d12</button>
+          <button class="shape" type="button" data-lab-sides="20" aria-pressed="false">d20</button>
+          <button class="shape" type="button" data-lab-sides="100" aria-pressed="false">d100</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Colour</legend>
+        <div class="palette">
+          <button class="colour" type="button" data-lab-material="ivory" aria-pressed="true" style="--swatch:#f3ead6">Ivory</button>
+          <button class="colour" type="button" data-lab-material="green" aria-pressed="false" style="--swatch:#3d7d56">Green</button>
+          <button class="colour" type="button" data-lab-material="gold" aria-pressed="false" style="--swatch:#d9b25e">Gold</button>
+          <button class="colour" type="button" data-lab-material="crimson" aria-pressed="false" style="--swatch:#93303a">Crimson</button>
+          <button class="colour" type="button" data-lab-material="azure" aria-pressed="false" style="--swatch:#2f5f86">Azure</button>
+          <button class="colour" type="button" data-lab-material="violet" aria-pressed="false" style="--swatch:#5c3d7e">Violet</button>
+          <button class="colour" type="button" data-lab-material="slate" aria-pressed="false" style="--swatch:#4a4f55">Slate</button>
+        </div>
+      </fieldset>
+    </section>
+    <div class="actions">
+      <button type="button" class="sound" id="fhLabSound" aria-pressed="true">SOUND ON</button>
+      <button type="button" class="ready" id="fhLabReady">READY POSE</button>
+      <button type="button" class="roll" id="fhLabRoll">ROLL</button>
+    </div>
+    <small>The result is chosen first. The die then rotates in place without travelling across the tray.</small>
+  </main>
+  <script src="javascripts/fh-static-dice.js"></script>
+  <script>
+    (function(){
+      "use strict";
+      var sides=6,material="ivory",face=1,pending=true;
+      var host=document.getElementById("fhLabDie"),result=document.getElementById("fhLabResult");
+      var materials={
+        ivory:{label:"Ivory",fill:"#f3ead6",rim:"#76551e",num:"#58180d"},
+        green:{label:"Green",fill:"#3d7d56",rim:"#10271a",num:"#f2ead2"},
+        gold:{label:"Gold",fill:"#d9b25e",rim:"#62420c",num:"#3a2606"},
+        crimson:{label:"Crimson",fill:"#93303a",rim:"#3d0c13",num:"#ffeceb"},
+        azure:{label:"Azure",fill:"#2f5f86",rim:"#0d2334",num:"#eef6fd"},
+        violet:{label:"Violet",fill:"#5c3d7e",rim:"#1d1029",num:"#f5edff"},
+        slate:{label:"Slate",fill:"#4a4f55",rim:"#171a1d",num:"#f0f2f4"}
+      };
+      function randomFace(max){
+        if(window.crypto&&crypto.getRandomValues){
+          var values=new Uint32Array(1),limit=Math.floor(0x100000000/max)*max;
+          do{crypto.getRandomValues(values);}while(values[0]>=limit);
+          return values[0]%max+1;
+        }
+        return Math.floor(Math.random()*max)+1;
+      }
+      function render(animate){
+        var palette=materials[material],text=sides===10&&face===10?"0":String(face),body="";
+        if(sides===100){
+          var percentile=face===100?"00":String(face).padStart(2,"0");
+          body='<span class="fh-cd-static3d-part"><canvas aria-hidden="true"></canvas><b class="fh-cd-static3d-result" aria-hidden="true">'+(pending?"":percentile.charAt(0))+'</b></span><span class="fh-cd-static3d-part"><canvas aria-hidden="true"></canvas><b class="fh-cd-static3d-result" aria-hidden="true">'+(pending?"":percentile.charAt(1))+'</b></span>';
+        }else body='<canvas aria-hidden="true"></canvas><b class="fh-cd-static3d-result" aria-hidden="true">'+(pending?"":text)+'</b>';
+        result.textContent="d"+sides+" · "+(pending?"ready":face)+" · "+palette.label;
+        host.innerHTML='<span class="fh-cd-static3d'+(sides===100?" is-percentile":"")+'" data-sides="'+sides+'" data-result="'+face+'" data-pending="'+(pending?"1":"0")+'" data-material="'+material+'" data-index="0" data-animate="'+(!pending&&animate?"1":"0")+'" style="--fh-static-die-size:178px;--fh-static-fill:'+palette.fill+';--fh-static-rim:'+palette.rim+';--fh-static-num:'+palette.num+'" role="img" aria-label="d'+sides+' '+(pending?"ready":"result "+face)+', '+palette.label+'">'+body+'<span class="fh-cd-static3d-fallback">'+(pending?"?":text)+'</span></span>';
+        window.FHStaticDice.mount(host);
+      }
+      function ready(){pending=true;face=1;render(false);}
+      function roll(){pending=false;face=randomFace(sides);render(true);}
+      function updateSoundButton(){
+        var button=document.getElementById("fhLabSound"),enabled=!window.FHStaticDice.sound.isMuted();
+        button.textContent=enabled?"SOUND ON":"SOUND OFF";
+        button.setAttribute("aria-pressed",String(enabled));
+      }
+      document.querySelectorAll("[data-lab-sides]").forEach(function(button){
+        button.addEventListener("click",function(){
+          sides=Number(button.dataset.labSides);
+          document.querySelectorAll("[data-lab-sides]").forEach(function(item){item.setAttribute("aria-pressed",String(item===button));});
+          ready();
+        });
+      });
+      document.querySelectorAll("[data-lab-material]").forEach(function(button){
+        button.addEventListener("click",function(){
+          material=button.dataset.labMaterial;
+          document.querySelectorAll("[data-lab-material]").forEach(function(item){item.setAttribute("aria-pressed",String(item===button));});
+          render(false);
+        });
+      });
+      document.getElementById("fhLabSound").addEventListener("click",function(){
+        var sound=window.FHStaticDice.sound,enable=sound.isMuted();
+        sound.setMuted(!enable);updateSoundButton();
+        if(enable)sound.preview(sides);
+      });
+      document.getElementById("fhLabReady").addEventListener("click",ready);
+      document.getElementById("fhLabRoll").addEventListener("click",roll);
+      updateSoundButton();ready();
+    }());
+  </script>
+</body>
+</html>

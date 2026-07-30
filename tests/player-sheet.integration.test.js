@@ -90,6 +90,15 @@ assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"],[
 assert.equal(root.querySelectorAll("[data-zone]").length,7,"the dock shows its seven zones at once");
 openMenu();
 assert.ok(root.querySelector("#fhPsLevel"),"an unlinked character keeps Level Up under the menu");
+/* General rule: a click outside an open dropdown closes it. root itself is
+   not a button, so handleClick no-ops on it -- a click that changes nothing
+   else, only proving the outside-close rule on its own. */
+root.click();
+assert.equal(root.querySelector(".fh-cd-menu"),null,"a click outside the header menu closes it");
+
+openMenu();
+document.body.click();
+assert.equal(root.querySelector(".fh-cd-menu"),null,"a click outside the dock entirely closes it too");
 
 t.state.profile.ddbLinked=true;
 t.state.menuOpen=true;
@@ -153,6 +162,7 @@ assert.equal(root.querySelector("#fhPsRunRoll"),null,"the console no longer carr
 assert.match(root.querySelector("[data-roll-now]").textContent,/^ROLL/,"one permanent ROLL leads with its label");
 
 root.querySelector('.fh-cd-whiterow [data-add-tray-die="4"]').click();
+assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="4"][data-pending="1"]').length,1,"the d4 already uses its opaque 3D ready pose before rolling");
 root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
 assert.equal(t.state.rollConfig.bonusDice.length,1,"a white die joins the prepared roll");
 assert.equal(t.state.rollConfig.bonusDice[0].sides,4,"and keeps the size that was clicked");
@@ -180,6 +190,9 @@ assert.equal(entry.kept,Math.max(entry.d20s[0],entry.d20s[1]),"advantage keeps t
 // REWRITTEN (dock v5): the die is a plain d4 until a seal is put on it.
 assert.equal(entry.bonusDice[0].sides,4,"the picked d4 rolls beside the d20s");
 assert.equal(t.state.trayResults.length,4,"the frame displays both d20s, the bonus die and the +2 token");
+assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="20"]').length,2,"resolved d20s use the static 3D renderer");
+assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="4"]').length,1,"the resolved bonus d4 uses the same static 3D renderer");
+assert.equal(root.querySelector('.fh-cd-static3d').dataset.result,String(entry.d20s[0]),"the renderer receives the face already chosen by FHPC");
 const originalD20=Array.from(entry.d20s);
 
 /* ── Stream ──────────────────────────────────────────────────── */
@@ -294,6 +307,15 @@ root.querySelector("[data-clear-tray]").click();
 assert.equal(t.state.trayResults.length,0,"Clear empties every die and result");
 assert.equal(t.state.rollConfig,null,"Clear also releases the active roll setup");
 
+root.querySelector('[data-add-tray-die="100"]').click();
+assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="100"] .fh-cd-static3d-part').length,2,"a ready d100 is already represented by two physical d10s");
+root.querySelector("[data-roll-now]").click();
+const percentileEntry=t.state.history[0],percentileResult=percentileEntry.dice[0].result;
+const percentileText=percentileResult===100?"00":String(percentileResult).padStart(2,"0");
+assert.equal(Array.from(root.querySelectorAll('.fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result')).map(item=>item.textContent).join(""),percentileText,"the two d10 overlays compose the resolved percentile value");
+settleRoll();
+root.querySelector("[data-clear-tray]").click();
+
 for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
 assert.match(root.querySelector(".fh-cd-dicerow").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in the frame");
@@ -304,7 +326,21 @@ assert.equal(t.state.history[0].dice.length,8,"all damage dice are recorded");
 // REWRITTEN (dock v5): a free roll drops its trailing result popup too — the
 // tray shows the verdict and the stream keeps it. Only a nat 20/1 stops the table.
 assert.equal(root.querySelector("[data-event-ok]"),null,"a free roll no longer ends in a result popup");
-assert.match(root.querySelector(".fh-cd-status b").textContent,/^Fireball /,"its verdict reads straight off the tray");
+/* REWRITTEN (round 5b): the tray used to print the total the instant the roll
+   resolved, while the dice still had most of a second left to roll -- it
+   answered the question before the roll could. The verdict now names the roll
+   while the dice are in the air and adds the total once they settle. */
+assert.equal(root.querySelector(".fh-cd-status b").textContent,"Fireball","while the dice are rolling the verdict names the roll without spoiling it");
+assert.match(root.querySelector(".fh-cd-status em").textContent,/Rolling/,"and says the dice have not landed yet");
+assert.equal(root.querySelector(".fh-cd-sentry .fh-cd-total").textContent,"…","the newest stream line withholds its total too -- it sits right under the tray");
+assert.ok(root.querySelectorAll(".fh-cd-die.is-spinning").length>0,"dice that have just landed do roll");
+t.state.trayRevealAt=0;t.render();
+assert.match(root.querySelector(".fh-cd-status b").textContent,/^Fireball /,"once the dice settle its verdict reads straight off the tray");
+assert.equal(root.querySelector(".fh-cd-sentry .fh-cd-total").textContent,String(t.state.history[0].total),"and the stream line gives up its total");
+/* Animation is decided per die, not per tray. A tray-wide signature meant any
+   later render -- picking up one more die, a Destiny die, anything -- re-rolled
+   every die already lying in the tray, whose values had not changed. */
+assert.equal(root.querySelectorAll(".fh-cd-die.is-spinning").length,0,"a later render leaves dice that have already landed alone");
 settleRoll();
 
 /* ── Portents live in each die's own right-click menu ─────────── */
@@ -360,6 +396,14 @@ scoreInput.dispatchEvent(new window.Event("change",{bubbles:true}));
 assert.equal(t.state.destiny.score,Number(scoreBefore)+1,"the typed Score is committed");
 assert.equal(root.querySelector('[data-destiny-field="score"]'),null,"committing closes the inline editor");
 t.state.destiny.score=Number(scoreBefore);t.render();
+
+/* ── One ⋮ pilots every Destiny size's pool; outside-click closes it ── */
+root.querySelector("[data-destiny-poolmenu]").click();
+assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"the ⋮ opens the pool menu");
+root.querySelector('.fh-cd-dpoolmenu [data-destiny-pool="4:1"]').click();
+assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"acting inside the menu (Add) keeps it open for the next size");
+root.click();
+assert.equal(root.querySelector(".fh-cd-dpoolmenu"),null,"a click outside the pool menu closes it, same general rule as the header menu");
 
 /* ── Vitals: full words, five passives, tracked hit points ───── */
 assert.match(root.querySelector(".fh-cd-vsave").textContent,/^Save /,"saves are spelled out instead of SV");

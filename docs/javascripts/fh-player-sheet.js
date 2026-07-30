@@ -47,6 +47,9 @@
   var MAX_BONUS_DICE = 3;
   var MAX_FREE_DICE = 40;
   var LIGHTWEIGHT_DICE_THRESHOLD = 6;
+  /* Both picker rows (Destiny, white dice) render at this size. Kept in step
+     with the .fh-cd-ddie / .fh-cd-wdie widths in companion-dock.css. */
+  var PICKER_DIE_PX = 31;
   var MAX_HISTORY = 20;
   var MAX_EXHAUSTION = 6;
 
@@ -71,7 +74,8 @@
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayLabel:"Damage roll",trayResultText:"",queueDone:"",rollSequence:null,chromeOpen:false,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
-    dockOpen:false, menuOpen:false, popOpen:"", diceSignature:"",
+    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false,
+    trayQuietTitle:"", trayRevealAt:0, trayRevealTimer:null,
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:FS_MIN,
     panel:"skills", panelData:{},
@@ -935,6 +939,8 @@
       });
     }
     state.trayResults=results;state.trayTitle=rollVerdictText(entry);state.trayResultText=rollDetailText(entry);
+    // The name alone, for the moment the dice are still in the air.
+    state.trayQuietTitle=entry.name||"Roll";
   }
   function prepareTrayForConfig(cfg){
     if(!cfg)return;
@@ -958,7 +964,7 @@
   /* CLEAR TRAY empties the hand and, with it, the running commentary above the
      dice — the Stream keeps the permanent record. Badges are debts, not
      commentary, so they stay. */
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.diceSignatures={};state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
@@ -975,6 +981,31 @@
     state.callTimer=window.setTimeout(function(){state.callUntil=0;if(root)render();},CALL_MS+40);
   }
   function stopCalling(){state.callUntil=0;clearTimeout(state.callTimer);}
+  /* ── Holding the answer until the dice stop ──────────────────────
+     The result used to be printed the instant the roll resolved, while the
+     dice still had most of a second of rolling left -- so the tray spoiled
+     its own reveal. The verdict, the arithmetic and the newest stream line
+     all wait for the last die to settle. Nothing about the roll itself
+     changes: the result is still resolved before the animation begins. */
+  var ROLL_STAGGER_MS=42;
+  function prefersReducedMotion(){
+    try{return !!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);}
+    catch(error){return false;}
+  }
+  function rollAnimationMs(){
+    var renderer=window.FHStaticDice&&window.FHStaticDice.sound&&Number(window.FHStaticDice.sound.rollDuration);
+    return renderer>0?renderer:960;
+  }
+  function armTrayReveal(dieCount){
+    // Nothing is rolling when motion is suppressed, so nothing needs hiding.
+    if(prefersReducedMotion()){state.trayRevealAt=0;return;}
+    var span=rollAnimationMs()+Math.max(0,(Number(dieCount)||1)-1)*ROLL_STAGGER_MS+90;
+    state.trayRevealAt=Date.now()+span;
+    clearTimeout(state.trayRevealTimer);
+    state.trayRevealTimer=window.setTimeout(function(){state.trayRevealAt=0;if(root)render();},span);
+  }
+  function trayRevealPending(){return !!(state.trayRevealAt&&Date.now()<state.trayRevealAt);}
+  function stopTrayReveal(){state.trayRevealAt=0;clearTimeout(state.trayRevealTimer);}
   function warnRollLocked(){state.message="Finish the current roll before starting or clearing another one.";state.messageKind="warn";renderMessage();}
   /* ── The APPLY flow ──────────────────────────────────────────────
      A landed roll no longer ends in a blocking result popup. It stays
@@ -1654,6 +1685,18 @@
     out+='<text class="fh-cd-num" x="50" y="'+geo.ny+'" font-size="'+geo.fs+'" text-anchor="middle" dominant-baseline="middle" fill="'+m.num+'">'+esc(text==null?"?":text)+'</text>';
     return out+"</svg>";
   }
+  /* The Destiny and white-dice pickers are buttons, not rolled dice: no
+     rotation, no result face, ever. They show the same static 3D shapes as
+     the tray, pre-rendered to a cached image by fh-static-dice.js so the
+     picker row never opens a live WebGL context. Falls back to the flat SVG
+     glyph -- with its label painted on the face -- if the renderer or WebGL
+     is unavailable. */
+  function pickerFace(sides,size,materialName,label){
+    var image=window.FHStaticDice&&window.FHStaticDice.pickerImage&&window.FHStaticDice.pickerImage(sides,materialName,size);
+    if(!image)return dieSvg(sides,size,materialName,label);
+    return "<img class=\"fh-cd-pickerimg\" data-sides=\""+Number(sides)+"\" width=\""+size+"\" height=\""+size+"\" alt=\"\" aria-hidden=\"true\" src=\""+image+"\">"+
+      "<b class=\"fh-cd-pickerlabel\">"+esc(label)+"</b>";
+  }
   /* Tokens are not dice — they are the flat numbers a roll carries. Gold is the
      Fate's Hand bonus, yellow is Exhaustion, red is the Overreach a Chaos roll
      adds, copper is anything the player typed in by hand. */
@@ -1706,8 +1749,28 @@
         " title=\"Right click or long press: colour, Portent\"";
       classes.push("is-tunable");
     }
+    var materialName=dieMaterialName(die),face=dieSvg(die.sides,size,materialName,die.result==null?"?":die.result);
+    /* The WebGL renderer is deliberately only a renderer: the face was chosen
+       before this markup exists. Larger pools retain the lightweight SVG tray
+       and its lower GPU cost. */
+    if(ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0&&count<=LIGHTWEIGHT_DICE_THRESHOLD){
+      var resolved=die.result!=null,staticResult=resolved?Number(die.result):1,staticLabel=resolved?"result "+staticResult:"ready";
+      var staticBody="";
+      if(Number(die.sides)===100){
+        var percentile=staticResult===100?"00":String(staticResult).padStart(2,"0");
+        staticBody="<span class=\"fh-cd-static3d-part\"><canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?percentile.charAt(0):"")+"</b></span>"+
+          "<span class=\"fh-cd-static3d-part\"><canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?percentile.charAt(1):"")+"</b></span>";
+        dieClasses+=" is-percentile";
+      }else{
+        var staticText=Number(die.sides)===10&&staticResult===10?"0":staticResult;
+        staticBody="<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?staticText:"")+"</b>";
+      }
+      face="<span class=\"fh-cd-static3d"+(Number(die.sides)===100?" is-percentile":"")+"\" data-sides=\""+Number(die.sides)+"\" data-result=\""+staticResult+"\" data-pending=\""+(resolved?"0":"1")+"\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(index||0)+"\" data-animate=\""+(resolved&&animate?"1":"0")+"\" style=\"--fh-static-die-size:"+size+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" "+staticLabel+"\">"+
+        staticBody+"<span class=\"fh-cd-static3d-fallback\">"+face+"</span></span>";
+      dieClasses+=" is-static3d";
+    }
     return "<span class=\""+classes.join(" ")+"\""+handle+">"+source+
-      "<span class=\""+dieClasses+"\">"+dieSvg(die.sides,size,dieMaterialName(die),die.result==null?"?":die.result)+"</span>"+
+      "<span class=\""+dieClasses+"\">"+face+"</span>"+
       "<em>"+esc((die.label||("d"+die.sides))+status)+"</em></span>";
   }
   /* ── The event list, above the dice ─────────────────────────────
@@ -1908,15 +1971,40 @@
     return {"arcane-critical-success":"arcane-success","arcane-critical-failure":"arcane-failure",
       nat20:"crit-success",nat1:"crit-failure",awakening:"awakening",chaos:"chaos-owed"}[newest.kind]||"";
   }
+  /* A die's animation identity. entryId is folded in so re-rolling the same
+     skill to the same number still counts as a new landing, while a die that
+     is merely being re-rendered keeps its key and stays still. */
+  function dieAnimationKey(die,index){
+    if(die.entryId&&die.landedKey)return die.entryId+"/"+die.landedKey;
+    return String(die.landedKey||die.stagedId||die.bonusId||die.poolDestinyId||die.destinyDieId||die.freeId||
+      ((die.dieRole||"die")+":"+die.sides+":"+index));
+  }
   function renderFrameInner(){
     var dice=trayDiceForDisplay();
-    var signature=dice.map(function(die){return (die.label||"")+":"+(die.result==null?"?":die.result);}).join("|");
-    var animate=signature!==state.diceSignature;state.diceSignature=signature;
-    var status=state.trayResultText||state.trayTitle
-      ? "<b>"+esc(state.trayTitle||"")+"</b>"+(state.trayResultText?"<em>"+esc(state.trayResultText)+"</em>":"")
+    /* Each die decides for itself whether it has just landed. This used to be
+       one tray-wide signature, which meant that adding a single bonus die
+       re-rolled every die already lying in the tray -- the landed d20 span
+       again without its value ever changing. */
+    var previous=state.diceSignatures||{},signatures={},animated=false;
+    dice.forEach(function(die,index){signatures[dieAnimationKey(die,index)]=die.result==null?"?":String(die.result);});
+    var flags=dice.map(function(die,index){
+      var key=dieAnimationKey(die,index);
+      var animate=die.result!=null&&previous[key]!==signatures[key];
+      if(animate)animated=true;
+      return animate;
+    });
+    state.diceSignatures=signatures;
+    if(animated)armTrayReveal(dice.length);
+    /* While the dice are in the air the total stays out of sight: printing it
+       instantly answered the question before the roll could. */
+    var quiet=trayRevealPending();
+    var title=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
+    var detail=quiet?"Rolling…":state.trayResultText;
+    var status=detail||title
+      ? "<b>"+esc(title||"")+"</b>"+(detail?"<em>"+esc(detail)+"</em>":"")
       : "<em>Ready — click a skill, a save or an ability.</em>";
     // The verdict docks to the bottom of the frame; popups now live outside it.
-    return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,animate);}).join("")+"</div>"+
+    return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,flags[index]);}).join("")+"</div>"+
       "<div class=\"fh-cd-status\" aria-live=\"polite\">"+status+"</div>";
   }
   /* One ROLL, one CLEAR TRAY. Nothing else is permanent. Below them the
@@ -1973,18 +2061,26 @@
       var selected=!!die&&((state.rollConfig&&state.rollConfig.destinyDieId===die.id)||
         (state.destinyStaged&&state.destinyStaged.dieId===die.id)||
         stagedList().some(function(item){return item.kind==="destiny"&&item.destinyDieId===die.id;}));
-      return "<span class=\"fh-cd-poolwrap\"><span class=\"fh-cd-poolstack\">"+
-        "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(available.length>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button>"+
-        "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(available.length?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button></span>"+
-        "<button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
-        dieSvg(sides,26,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
+      return "<span class=\"fh-cd-poolwrap\"><button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
+        pickerFace(sides,PICKER_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
     }).join("");
+    // One ⋮ pilots every size's pool from a single popup -- not five separate
+    // menus scattered across the row. It never touches Points or Score, only
+    // how many dice of each size are in the pool.
+    var poolMenuOpen=!!state.destinyPoolMenu;
+    var poolMenu=poolMenuOpen?"<div class=\"fh-cd-dpoolmenu\">"+DIE_SEQUENCE.map(function(sides){
+      var count=state.destiny.dice.filter(function(die){return die.sides===sides&&die.available;}).length;
+      return "<div class=\"fh-cd-dpoolrow\"><b>d"+sides+"</b><span class=\"fh-cd-dpoolcount\">"+count+"</span>"+
+        "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(count?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button>"+
+        "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(count>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button></div>";
+    }).join("")+"</div>":"";
     // The Score changes once in a campaign, so it is plain text with a
     // click-to-edit affordance instead of a permanently locked input.
     var score=state.scoreEditing
       ? "<input class=\"fh-cd-scorein\" data-destiny-field=\"score\" type=\"number\" value=\""+state.destiny.score+"\" aria-label=\"Destiny Score\">"
       : "<button class=\"fh-cd-score\" type=\"button\" data-score-edit title=\"Click to change the Destiny Score\">"+state.destiny.score+"</button>";
-    return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-destiny-row\">"+
+    return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-cap\">DESTINY<small>⋮ manages the pool · click a die to spend it</small></div>"+
+      "<div class=\"fh-cd-destiny-row\">"+
       "<span class=\"fh-cd-dgroup is-pts\"><span class=\"fh-cd-pts\">"+
       "<button type=\"button\" data-destiny-step=\"points:-1\" aria-label=\"One Destiny Point less\">−</button>"+
       "<input data-destiny-field=\"points\" type=\"number\" value=\""+state.destiny.points+"\" aria-label=\"Current Destiny Points\">"+
@@ -1993,7 +2089,10 @@
       "<span class=\"fh-cd-dslash\">/</span>"+
       "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
-      "<span class=\"fh-cd-pool\">"+dice+"</span>"+
+      /* The ⋮ lives INSIDE .fh-cd-pool, right against d4 -- .fh-cd-pool carries
+         margin-left:auto to push the whole dice group toward the Arcana side,
+         which left a ~100px gap when the ⋮ sat just outside it as a sibling. */
+      "<span class=\"fh-cd-pool\"><span class=\"fh-cd-poolmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny dice pool\">"+glyph("dots")+"</button>"+poolMenu+"</span>"+dice+"</span>"+
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
       esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
@@ -2029,6 +2128,10 @@
     }
     return parts;
   }
+  /* Badges that report how the roll GAVE, not how it was set up: these are the
+     ones a still-rolling line has to keep quiet about. "MANUAL" and "adjusted"
+     say something about the roll's construction and give nothing away. */
+  var SPOILER_BADGE_KINDS={n20:true,chaos:true,destiny:true};
   function rollBadges(entry){
     var badges=[];
     if(entry.natural===20)badges.push({t:"NATURAL 20",k:"n20"});
@@ -2351,16 +2454,23 @@
       "<span class=\"fh-cd-oic\">"+icon+"</span></span>"+
       "<span class=\"fh-cd-sl2\">"+parts+dc+badges+"</span></button></li>";
   }
-  function renderStreamEntry(entry){
+  function renderStreamEntry(entry,index){
     var tone=outcomeTone(entry),icon=tone==="ok"?"✓":tone==="bad"?"✗":tone==="n20"?"✦":"";
     var who=state.character&&state.character.name||state.pseudo||"Character";
-    var parts=rollParts(entry).map(function(part){return "<span class=\"fh-cd-part\">"+esc(part.k)+" <b>"+esc(part.v)+"</b></span>";}).join("<span>·</span>");
+    /* The newest line is the roll still rolling in the tray just above, so it
+       keeps the outcome to itself until the dice settle. What it still shows is
+       everything the player already knew before rolling: the DC, and the
+       badges that describe how the roll was set up rather than how it went.
+       Older lines are history and always read plainly. */
+    var quiet=index===0&&trayRevealPending();
+    var parts=quiet?"":rollParts(entry).map(function(part){return "<span class=\"fh-cd-part\">"+esc(part.k)+" <b>"+esc(part.v)+"</b></span>";}).join("<span>·</span>");
     var dc=entry.dc!==""&&entry.dc!=null?"<span class=\"fh-cd-vs\">vs DC "+esc(entry.dc)+"</span>":"";
-    var badges=rollBadges(entry).map(function(badge){return "<span class=\"fh-cd-badge is-"+badge.k+"\">"+esc(badge.t)+"</span>";}).join("");
+    var badges=rollBadges(entry).filter(function(badge){return !(quiet&&SPOILER_BADGE_KINDS[badge.k]);})
+      .map(function(badge){return "<span class=\"fh-cd-badge is-"+badge.k+"\">"+esc(badge.t)+"</span>";}).join("");
     var reopen=entry.kind==="d20";
     return "<li class=\"fh-cd-sentry\"><button type=\"button\""+(reopen?" data-history-id=\""+esc(entry.id)+"\"":" disabled")+" data-roll='"+attrJson(rollExport(entry))+"'>"+
       "<span class=\"fh-cd-sl1\"><time>"+nowLabel(entry.createdAt)+"</time><span class=\"fh-cd-who\">"+esc(who)+"</span>"+
-      "<span class=\"fh-cd-title\">"+esc(entry.name)+"</span><span class=\"fh-cd-total is-"+tone+"\">"+entry.total+"</span><span class=\"fh-cd-oic\">"+icon+"</span></span>"+
+      "<span class=\"fh-cd-title\">"+esc(entry.name)+"</span><span class=\"fh-cd-total is-"+(quiet?"quiet":tone)+"\">"+(quiet?"…":entry.total)+"</span><span class=\"fh-cd-oic\">"+(quiet?"":icon)+"</span></span>"+
       "<span class=\"fh-cd-sl2\">"+parts+dc+badges+"</span></button></li>";
   }
   /* One zone, two readings. The table log is NOT a belt tab: the belt is
@@ -2459,7 +2569,7 @@
       var disabled=!!state.pendingArmed||(checkLoaded&&(sides===20||sides===100))||(full&&!count)||(!checkLoaded&&state.traySelection.length>=MAX_FREE_DICE&&!count);
       return "<button type=\"button\" class=\"fh-cd-wdie"+(calling&&!disabled?" is-calling":"")+"\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+
         " title=\"Left click adds a d"+sides+" · right click or long press takes one back\" aria-label=\"Add a d"+sides+"; right-click to remove one\">"+
-        dieSvg(sides,26,"white","d"+(sides===100?"%":sides))+(count?"<span class=\"fh-cd-mult\">×"+count+"</span>":"")+"</button>";
+        pickerFace(sides,PICKER_DIE_PX,"white","d"+(sides===100?"%":sides))+(count?"<span class=\"fh-cd-mult\">×"+count+"</span>":"")+"</button>";
     }).join("")+"</div>";
   }
   /* Every die still in the hand answers to a right click, wherever it lives:
@@ -2855,6 +2965,12 @@
     }
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
+    if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
+    /* Picker buttons (Destiny row, white-dice row) are cached static images,
+       not live dice -- their generator canvas exists only long enough to
+       fill that cache. releasePickerContext is a no-op once the cache is
+       warm, so calling it every render costs nothing after the first. */
+    if(window.FHStaticDice&&window.FHStaticDice.releasePickerContext)window.FHStaticDice.releasePickerContext();
     if(state.scoreEditing){var scoreInput=root.querySelector(".fh-cd-scorein");if(scoreInput&&scoreInput.focus){scoreInput.focus();if(scoreInput.select)scoreInput.select();}}
     if((state.popOpen==="inventory"||state.popOpen==="forge")&&state.inventory===null)loadInventory();
   }
@@ -2967,7 +3083,7 @@
     if(button.dataset.scoreEdit!==undefined){state.scoreEditing=true;render();return;}
     /* A gold die is picked up exactly like a white one: the click stages it,
        ROLL spends it, and a right click on it in the tray puts it back. */
-    if(button.dataset.destinyDie!==undefined){stageDestinyFromPool(button.dataset.destinyDie);return;}
+    if(button.dataset.destinyDie!==undefined){state.destinyPoolMenu=false;stageDestinyFromPool(button.dataset.destinyDie);return;}
     if(rollTransactionActive()){warnRollLocked();return;}
     if(button.id==="fhPsChromeToggle"){state.chromeOpen=!state.chromeOpen;render();return;}
     if(button.id==="fhPsSync"||button.id==="fhPsRelink"||button.id==="fhPsLevel"||button.id==="fhPsCorrect")state.menuOpen=false;
@@ -2981,6 +3097,7 @@
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;prepareTrayForConfig(state.rollConfig);render();return;}
     if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}if(button.id==="fhPsCloseConsole"){clearDiceTray(true);return;}
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
+    if(button.dataset.destinyPoolmenu!==undefined){state.destinyPoolMenu=!state.destinyPoolMenu;render();return;}
     if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
     if(button.dataset.exhStep!==undefined){setExhaustion(exhaustionLevel()+Number(button.dataset.exhStep),"Adjusted by hand");render();return;}
@@ -3057,6 +3174,28 @@
      clickable row or tracker pip would otherwise never reach it. Core still
      handles everything outside a panel body, and anything the panel declines. */
   function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
+  /* ── General rule: a click outside an open dropdown closes it ─────
+     Applies to every small anchored popup (the header's ⋮, the Destiny pool
+     menu, and whatever the same pattern grows next) -- not to the belt's
+     full panels or a roll's decision prompts, which already carry their own
+     explicit close/cancel and shouldn't vanish on a stray click. New popups
+     of the same kind register themselves here rather than each wiring up
+     their own outside-click listener. */
+  var OUTSIDE_CLICK_POPUPS=[
+    {isOpen:function(){return !!state.menuOpen;},close:function(){state.menuOpen=false;},box:".fh-cd-menu",toggle:"[data-menu-toggle]"},
+    {isOpen:function(){return !!state.destinyPoolMenu;},close:function(){state.destinyPoolMenu=false;},box:".fh-cd-dpoolmenu",toggle:"[data-destiny-poolmenu]"}
+  ];
+  function onOutsideClick(event){
+    if(!root)return;
+    var changed=false;
+    OUTSIDE_CLICK_POPUPS.forEach(function(popup){
+      if(!popup.isOpen())return;
+      var target=event.target;
+      if(target&&target.closest&&(target.closest(popup.box)||target.closest(popup.toggle)))return;
+      popup.close();changed=true;
+    });
+    if(changed)render();
+  }
   function onChange(event){
     if(delegateToPanel(event,"onChange"))return;
     if(event.target.dataset.diePortent!==undefined){mutateStagedDie({forcedResult:event.target.value===""?null:Number(event.target.value)});return;}
@@ -3129,6 +3268,11 @@
     root=mount;root.className="fh-cd-root";
     homeParent=root.parentNode;homeNext=root.nextSibling;
     root.addEventListener("click",onClick);root.addEventListener("change",onChange);root.addEventListener("keydown",onKeydown);
+    /* Bubble-phase on document, not root: it must also fire for a click on the
+       Handbook page around the dock while the dock floats, and it runs after
+       root's own click handling so a click that just opened a popup (via its
+       toggle) is not immediately read as "outside" and closed again. */
+    document.addEventListener("click",onOutsideClick);
     /* Panel-only hooks. focusout rather than blur, because blur does not bubble
        and a delegated listener would never see it. */
     root.addEventListener("input",function(event){delegateToPanel(event,"onInput");});

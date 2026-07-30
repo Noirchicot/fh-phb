@@ -275,14 +275,14 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-notools{grid-column:1/-1;font-size:calc(8px * var(--cd-fs));color:var(--cd-faint);font-style:italic;margin:0}
 
 /* ── Destiny ────────────────────────────────────────────────────── */
-/* One row, no caption: POINTS labels below its number, SCORE above its own,
-   both tucked into the height the die pool already occupies. */
+/* The zone now carries its own DESTINY caption (.fh-cd-cap, above), so both
+   POINTS and SCORE labels sit below their value at the same offset -- they
+   used to sit on opposite sides of their value (POINTS below, SCORE above),
+   which read as two rows fighting each other rather than one aligned row. */
 .fh-cd-destiny-row{display:flex;align-items:center;gap:5px;min-height:34px}
 .fh-cd-dgroup{position:relative;display:flex;align-items:center}
-.fh-cd-dlab{position:absolute;left:50%;transform:translateX(-50%);font-size:calc(6.4px * var(--cd-fs));letter-spacing:.14em;
+.fh-cd-dlab{position:absolute;top:100%;margin-top:1.5px;left:50%;transform:translateX(-50%);font-size:calc(6.4px * var(--cd-fs));letter-spacing:.14em;
   color:var(--cd-faint);line-height:1;white-space:nowrap;pointer-events:none}
-.fh-cd-dgroup.is-pts .fh-cd-dlab{top:100%;margin-top:1.5px}
-.fh-cd-dgroup.is-score .fh-cd-dlab{bottom:100%;margin-bottom:1.5px}
 .fh-cd-dslash{font-size:calc(11px * var(--cd-fs));color:var(--cd-faint);margin:0 1px}
 .fh-cd-score{font-size:calc(12px * var(--cd-fs));font-weight:700;color:var(--cd-gold-bright);font-family:inherit;
   border:0;background:none;padding:0 3px;cursor:pointer;line-height:1;border-bottom:1px dashed transparent}
@@ -310,17 +310,41 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-pts input::-webkit-outer-spin-button,.fh-cd-pts input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .fh-cd-overflow{color:var(--cd-red);font-weight:700;font-size:calc(9px * var(--cd-fs))}
 .fh-cd-pool{display:flex;gap:5px;align-items:center;margin-left:auto}
-.fh-cd-ddie{position:relative;width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer}
+.fh-cd-ddie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer}
 .fh-cd-ddie svg{width:100%;height:100%;display:block}
 .fh-cd-ddie.is-empty{opacity:.28;cursor:default}
-.fh-cd-ddie:not(.is-empty):hover svg{filter:brightness(1.12) drop-shadow(0 0 4px rgba(241,201,111,.7))}
-.fh-cd-ddie.is-selected svg{filter:drop-shadow(0 0 5px var(--cd-gold-glow))}
-.fh-cd-ddie.is-selected::after{content:"";position:absolute;inset:-3px;border:1.5px solid var(--cd-gold-glow);border-radius:6px;animation:fh-cd-pulse 1s ease-in-out infinite alternate}
+.fh-cd-ddie:not(.is-empty):hover svg,.fh-cd-ddie:not(.is-empty):hover .fh-cd-pickerimg{filter:brightness(1.12) drop-shadow(0 0 4px rgba(241,201,111,.7))}
+/* Selection is a pulsing glow on the die itself -- a hard gold rectangle
+   around a round-ish 3D shape read as a box, not as a highlight. The glow
+   gets its own keyframes: the shared fh-cd-pulse fades opacity to .35, which
+   would dim the die instead of lighting it. */
+.fh-cd-ddie.is-selected svg,.fh-cd-ddie.is-selected .fh-cd-pickerimg{
+  animation:fh-cd-dieglow 1s ease-in-out infinite alternate}
+.fh-cd-ddie.is-selected .fh-cd-pickerlabel{color:var(--cd-gold-bright)}
+@keyframes fh-cd-dieglow{
+  from{filter:drop-shadow(0 0 2px var(--cd-gold-glow)) brightness(1.04)}
+  to{filter:drop-shadow(0 0 4px var(--cd-gold-glow)) drop-shadow(0 0 8px var(--cd-gold-glow)) brightness(1.15)}}
 .fh-cd-mult{position:absolute;top:-4px;right:-5px;font-size:calc(6.5px * var(--cd-fs));font-weight:700;color:var(--cd-parch);
   background:var(--cd-gold-bright);border-radius:5px;padding:0 3px;line-height:8.5px}
-.fh-cd-poolstack{display:flex;flex-direction:column;gap:1px;margin-right:-3px}
-.fh-cd-poolstack button{width:11px;height:11px;border:1px solid var(--cd-line-soft);background:var(--cd-parch-2);
-  border-radius:2px;font-size:calc(7px * var(--cd-fs));line-height:1;color:var(--cd-muted);cursor:pointer;padding:0;font-family:inherit}
+/* Round 6: one ⋮ pilots every size's pool from a single popup, rather than
+   five separate menus scattered across the row -- it never touches Points or
+   Score, only how many dice of each size are in the pool. Freeing up four of
+   the five ⋮ slots also opens room for the Destiny card Eric wants on the
+   right (a later round). */
+.fh-cd-poolmenuwrap{position:relative;flex:none}
+.fh-cd-dmenu{width:15px;height:31px;flex:none;display:grid;place-items:center;border:0;background:none;
+  color:var(--cd-faint);cursor:pointer;padding:0;border-radius:3px}
+.fh-cd-dmenu svg{width:9px;height:9px;display:block}
+.fh-cd-dmenu:hover,.fh-cd-dmenu.is-active{color:var(--cd-gold);background:var(--cd-parch-2)}
+.fh-cd-dpoolmenu{position:absolute;top:calc(100% + 3px);left:0;z-index:22;display:flex;flex-direction:column;gap:1px;min-width:112px;
+  background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:6px;box-shadow:0 6px 16px rgba(40,25,5,.35);padding:4px}
+.fh-cd-dpoolrow{display:flex;align-items:center;gap:5px;height:20px;padding:0 3px}
+.fh-cd-dpoolrow b{width:24px;font-size:calc(8.6px * var(--cd-fs));font-weight:700;color:var(--cd-ink)}
+.fh-cd-dpoolcount{flex:1;text-align:right;font-size:calc(8.6px * var(--cd-fs));font-weight:700;color:var(--cd-gold-bright);font-variant-numeric:tabular-nums}
+.fh-cd-dpoolrow button{width:16px;height:16px;flex:none;border:1px solid var(--cd-line);background:var(--cd-parch-2);border-radius:3px;
+  font-size:calc(9px * var(--cd-fs));font-family:inherit;color:var(--cd-muted);cursor:pointer;line-height:1;padding:0}
+.fh-cd-dpoolrow button:hover{border-color:var(--cd-gold-hi);color:var(--cd-gold)}
+.fh-cd-dpoolrow button:disabled{opacity:.35;cursor:not-allowed}
 @keyframes fh-cd-pulse{to{opacity:.35}}
 
 /* ── Console ────────────────────────────────────────────────────── */
@@ -390,6 +414,27 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-die .fh-cd-num{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:700}
 .fh-cd-die.is-spinning{animation:fh-cd-spin var(--cd-spin,1.15s) cubic-bezier(.22,.72,.24,1) both}
 .fh-cd-die.is-landed .fh-cd-glint{animation:fh-cd-glint .55s ease-out both}
+.fh-cd-die.is-static3d{width:var(--fh-static-die-size);height:var(--fh-static-die-size);animation:none}
+.fh-cd-die.is-static3d.is-percentile{width:calc(var(--fh-static-die-size) * 1.42)}
+.fh-cd-static3d{position:relative;display:block;width:var(--fh-static-die-size);height:var(--fh-static-die-size)}
+.fh-cd-static3d[data-sides="6"]{transform:scale(.8)}
+.fh-cd-static3d.is-percentile{width:calc(var(--fh-static-die-size) * 1.42)}
+.fh-cd-static3d-part{position:relative;display:none;flex:0 0 calc(var(--fh-static-die-size) * .78);width:calc(var(--fh-static-die-size) * .78);height:calc(var(--fh-static-die-size) * .78)}
+.fh-cd-static3d.is-percentile.is-webgl{display:flex;align-items:center;justify-content:center}
+.fh-cd-static3d.is-percentile.is-webgl .fh-cd-static3d-part{display:block}
+.fh-cd-static3d-part+.fh-cd-static3d-part{margin-left:calc(var(--fh-static-die-size) * -.14)}
+.fh-cd-static3d canvas{display:none;width:100%;height:100%;filter:drop-shadow(0 5px 6px rgba(0,0,0,.55))}
+.fh-cd-static3d.is-webgl canvas{display:block}
+.fh-cd-static3d-fallback{display:block}
+.fh-cd-static3d.is-webgl .fh-cd-static3d-fallback{display:none}
+.fh-cd-static3d-result{position:absolute;z-index:2;left:50%;top:49%;display:block;min-width:1.35em;transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(.7);opacity:0;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:calc(var(--fh-static-die-size) * .28);font-weight:700;line-height:1;text-align:center;text-shadow:0 1px rgba(255,255,255,.2),0 2px 3px rgba(0,0,0,.2);transition:opacity .16s ease,transform .2s ease}
+.fh-cd-static3d[data-sides="4"] .fh-cd-static3d-result{top:51%}
+.fh-cd-static3d[data-sides="6"] .fh-cd-static3d-result{top:41%;font-size:calc(var(--fh-static-die-size) * .324)}
+.fh-cd-static3d[data-sides="10"] .fh-cd-static3d-result{top:62%;font-size:calc(var(--fh-static-die-size) * .24)}
+.fh-cd-static3d[data-sides="12"] .fh-cd-static3d-result{top:53%;font-size:calc(var(--fh-static-die-size) * .24)}
+.fh-cd-static3d[data-sides="20"] .fh-cd-static3d-result{top:53%;font-size:calc(var(--fh-static-die-size) * .20)}
+.fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result{top:62%;font-size:calc(var(--fh-static-die-size) * .19)}
+.fh-cd-static3d.is-settled .fh-cd-static3d-result{transform:translate(-50%,-47%) perspective(calc(var(--fh-static-die-size) * 4)) rotateX(7deg) scale(1);opacity:1}
 .fh-cd-diewrap em{font-size:calc(7.3px * var(--cd-fs));font-style:normal;font-weight:600;color:var(--cd-muted);letter-spacing:.03em;
   max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fh-cd-diewrap.is-dropped{opacity:.38}
@@ -451,21 +496,26 @@ select.fh-cd-chip.is-on{color:#fff8e2}
    visible at rest. */
 @keyframes fh-cd-call{0%,100%{opacity:1}50%{opacity:.42}}
 .fh-cd-wdie.is-calling{animation:fh-cd-call 1.15s ease-in-out infinite}
-.fh-cd-ddie.is-calling svg{animation:fh-cd-call 1.15s ease-in-out infinite;filter:drop-shadow(0 0 4px var(--cd-gold-glow))}
+.fh-cd-ddie.is-calling svg,.fh-cd-ddie.is-calling .fh-cd-pickerimg{animation:fh-cd-call 1.15s ease-in-out infinite;filter:drop-shadow(0 0 4px var(--cd-gold-glow))}
 /* :not(.is-flashing) so a Destiny die keeps its own empty/full blink instead of
    losing it to this rule's higher specificity — caught at the DOM, not by eye. */
 .fh-cd-diewrap.is-tunable.is-pending:not(.is-flashing) .fh-cd-die{animation:fh-cd-call 1.15s ease-in-out infinite}
 
 /* ── The white picker: the one place dice come from ─────────────── */
 .fh-cd-whiterow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding-top:2px}
-.fh-cd-wdie{position:relative;width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer;flex:none}
+.fh-cd-wdie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer;flex:none}
 .fh-cd-wdie svg{width:100%;height:100%;display:block}
-.fh-cd-wdie:hover svg{filter:brightness(1.06) drop-shadow(0 0 4px rgba(241,201,111,.8))}
+.fh-cd-wdie:hover svg,.fh-cd-wdie:hover .fh-cd-pickerimg{filter:brightness(1.06) drop-shadow(0 0 4px rgba(241,201,111,.8))}
 .fh-cd-wdie:disabled{opacity:.3;cursor:not-allowed}
-/* top:auto matters — the shared .fh-cd-mult sets top, and both edges together
-   stretch the badge down the whole die. Caught at the DOM, not by eye. */
-.fh-cd-wdie .fh-cd-mult{position:absolute;top:auto;right:-3px;bottom:-2px;background:var(--cd-oxblood);color:var(--cd-parch);
-  border-radius:6px;padding:0 3px;font-size:calc(6.6px * var(--cd-fs));font-weight:800;line-height:10px}
+/* The count badge deliberately carries NO override here: it uses the shared
+   .fh-cd-mult treatment (top-right, gold), same as the Destiny row. The old
+   bottom-right oxblood variant sat on top of the die's label once the label
+   moved out of the die's face and under it. */
+/* ── Picker faces: the cached static-3D image FHStaticDice bakes, plus its
+   separate HTML caption -- never painted onto the die's own small face. ── */
+.fh-cd-pickerimg{display:block;width:100%;height:100%}
+.fh-cd-pickerimg[data-sides="6"]{transform:scale(.8)}
+.fh-cd-pickerlabel{font-size:calc(7px * var(--cd-fs));font-weight:700;line-height:1;color:var(--cd-muted);font-family:inherit}
 
 /* ── ROLL and CLEAR TRAY: the only permanent buttons ────────────── */
 .fh-cd-acts-bar{display:flex;align-items:stretch;gap:6px;padding:6px 10px 0}
@@ -639,6 +689,8 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-total.is-ok{color:var(--cd-ok)}
 .fh-cd-total.is-bad{color:var(--cd-bad)}
 .fh-cd-total.is-n20{color:var(--cd-gold-bright)}
+/* The newest line while its dice are still rolling: present, but not telling. */
+.fh-cd-total.is-quiet{color:var(--cd-faint);letter-spacing:.08em}
 .fh-cd-oic{font-size:calc(8px * var(--cd-fs));flex:none;width:10px;text-align:center}
 .fh-cd-sl2{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px;margin:2px 0 0 34px;font-size:calc(7.8px * var(--cd-fs));color:var(--cd-muted)}
 .fh-cd-sl2 .fh-cd-part b{color:var(--cd-ink);font-weight:600}
@@ -753,7 +805,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   .fh-cd-srow{height:calc(13.2px * var(--cd-fs));font-size:calc(8.7px * var(--cd-fs))}
   .fh-cd-srow>button{font-size:calc(8.7px * var(--cd-fs))}
   .fh-cd-destiny-row{gap:5px}
-  .fh-cd-ddie{width:23px;height:23px}
+  .fh-cd-ddie{width:28px}
   .fh-cd-crow{margin-top:4px}
   .fh-cd-frame{height:112px;margin:5px 10px 3px}
   .fh-cd-zone{padding:5px 10px}
@@ -814,7 +866,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-player-sheet-body .md-header,.fh-player-sheet-body .md-sidebar,.fh-player-sheet-body .md-footer{display:revert}
 
 /* ── Late additions: pool wrapper, skills overflow guard, breakdown ─ */
-.fh-cd-poolwrap{display:flex;align-items:center;gap:1px}
+.fh-cd-poolwrap{position:relative;display:flex;align-items:center;gap:1px}
 /* The floor belongs to the ZONE, not to the scroller inside it. Putting it on
    .fh-cd-skillcols made the scroller taller than the box holding it, and with no
    clipping on the zone the rows spilled straight over the Destiny row below. */

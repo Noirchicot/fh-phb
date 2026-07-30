@@ -89,7 +89,7 @@
 // Same order as mkdocs.yml: the data globals must exist before the dock reads them.
 ["chaos-tables","arcana",
  "fh-panel-traits","fh-panel-actions","fh-panel-spells","fh-panel-gear","fh-panel-craft","fh-panel-notes",
- "fh-player-sheet"].forEach(function(name){
+ "fh-static-dice","fh-player-sheet"].forEach(function(name){
   document.write('<scr'+'ipt src="/javascripts/'+name+'.js?v='+Date.now()+'"><\/scr'+'ipt>');
 });
 </script>
