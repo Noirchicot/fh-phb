@@ -2072,8 +2072,10 @@
       "<span class=\"fh-cd-dslash\">/</span>"+
       "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
-      "<span class=\"fh-cd-poolmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny dice pool\">"+glyph("dots")+"</button>"+poolMenu+"</span>"+
-      "<span class=\"fh-cd-pool\">"+dice+"</span>"+
+      /* The ⋮ lives INSIDE .fh-cd-pool, right against d4 -- .fh-cd-pool carries
+         margin-left:auto to push the whole dice group toward the Arcana side,
+         which left a ~100px gap when the ⋮ sat just outside it as a sibling. */
+      "<span class=\"fh-cd-pool\"><span class=\"fh-cd-poolmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny dice pool\">"+glyph("dots")+"</button>"+poolMenu+"</span>"+dice+"</span>"+
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
       esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
