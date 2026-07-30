@@ -310,14 +310,20 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-pts input::-webkit-outer-spin-button,.fh-cd-pts input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .fh-cd-overflow{color:var(--cd-red);font-weight:700;font-size:calc(9px * var(--cd-fs))}
 .fh-cd-pool{display:flex;gap:5px;align-items:center;margin-left:auto}
-.fh-cd-ddie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:26px;height:auto;padding:0;border:0;background:none;cursor:pointer}
+.fh-cd-ddie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer}
 .fh-cd-ddie svg{width:100%;height:100%;display:block}
 .fh-cd-ddie.is-empty{opacity:.28;cursor:default}
 .fh-cd-ddie:not(.is-empty):hover svg,.fh-cd-ddie:not(.is-empty):hover .fh-cd-pickerimg{filter:brightness(1.12) drop-shadow(0 0 4px rgba(241,201,111,.7))}
-.fh-cd-ddie.is-selected svg,.fh-cd-ddie.is-selected .fh-cd-pickerimg{filter:drop-shadow(0 0 5px var(--cd-gold-glow))}
-/* The gold ring belongs to the 26px die image, not the taller button that
-   now also carries the label caption underneath it. */
-.fh-cd-ddie.is-selected::after{content:"";position:absolute;top:-3px;left:-3px;right:-3px;bottom:auto;height:26px;border:1.5px solid var(--cd-gold-glow);border-radius:6px;animation:fh-cd-pulse 1s ease-in-out infinite alternate}
+/* Selection is a pulsing glow on the die itself -- a hard gold rectangle
+   around a round-ish 3D shape read as a box, not as a highlight. The glow
+   gets its own keyframes: the shared fh-cd-pulse fades opacity to .35, which
+   would dim the die instead of lighting it. */
+.fh-cd-ddie.is-selected svg,.fh-cd-ddie.is-selected .fh-cd-pickerimg{
+  animation:fh-cd-dieglow 1s ease-in-out infinite alternate}
+.fh-cd-ddie.is-selected .fh-cd-pickerlabel{color:var(--cd-gold-bright)}
+@keyframes fh-cd-dieglow{
+  from{filter:drop-shadow(0 0 2px var(--cd-gold-glow)) brightness(1.04)}
+  to{filter:drop-shadow(0 0 4px var(--cd-gold-glow)) drop-shadow(0 0 8px var(--cd-gold-glow)) brightness(1.15)}}
 .fh-cd-mult{position:absolute;top:-4px;right:-5px;font-size:calc(6.5px * var(--cd-fs));font-weight:700;color:var(--cd-parch);
   background:var(--cd-gold-bright);border-radius:5px;padding:0 3px;line-height:8.5px}
 .fh-cd-poolstack{display:flex;flex-direction:column;gap:1px;margin-right:-3px}
@@ -481,15 +487,14 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 
 /* ── The white picker: the one place dice come from ─────────────── */
 .fh-cd-whiterow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding-top:2px}
-.fh-cd-wdie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:26px;height:auto;padding:0;border:0;background:none;cursor:pointer;flex:none}
+.fh-cd-wdie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer;flex:none}
 .fh-cd-wdie svg{width:100%;height:100%;display:block}
 .fh-cd-wdie:hover svg,.fh-cd-wdie:hover .fh-cd-pickerimg{filter:brightness(1.06) drop-shadow(0 0 4px rgba(241,201,111,.8))}
 .fh-cd-wdie:disabled{opacity:.3;cursor:not-allowed}
-/* The badge sits at the die image's own bottom-right corner, not the
-   button's -- the button now runs taller than 26px to fit the label
-   underneath, but the badge still belongs on the picture, not the caption. */
-.fh-cd-wdie .fh-cd-mult{position:absolute;top:22px;right:-3px;bottom:auto;background:var(--cd-oxblood);color:var(--cd-parch);
-  border-radius:6px;padding:0 3px;font-size:calc(6.6px * var(--cd-fs));font-weight:800;line-height:10px}
+/* The count badge deliberately carries NO override here: it uses the shared
+   .fh-cd-mult treatment (top-right, gold), same as the Destiny row. The old
+   bottom-right oxblood variant sat on top of the die's label once the label
+   moved out of the die's face and under it. */
 /* ── Picker faces: the cached static-3D image FHStaticDice bakes, plus its
    separate HTML caption -- never painted onto the die's own small face. ── */
 .fh-cd-pickerimg{display:block;width:100%;height:100%}
@@ -782,7 +787,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
   .fh-cd-srow{height:calc(13.2px * var(--cd-fs));font-size:calc(8.7px * var(--cd-fs))}
   .fh-cd-srow>button{font-size:calc(8.7px * var(--cd-fs))}
   .fh-cd-destiny-row{gap:5px}
-  .fh-cd-ddie{width:23px}
+  .fh-cd-ddie{width:28px}
   .fh-cd-crow{margin-top:4px}
   .fh-cd-frame{height:112px;margin:5px 10px 3px}
   .fh-cd-zone{padding:5px 10px}

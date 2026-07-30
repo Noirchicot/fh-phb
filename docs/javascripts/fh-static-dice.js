@@ -454,10 +454,17 @@
         /* Each half keeps a SQUARE viewport (matching every other shape's
            projection, which assumes square pixels) and only the pair's
            horizontal placement overlaps -- a non-square viewport here would
-           stretch the geometry instead of just repositioning it. */
-        var geo=geometryFor(10),part=Math.round(full*.62),vOffset=Math.round((full-part)/2),inset=full-part;
+           stretch the geometry instead of just repositioning it.
+           At .58 the two silhouettes just touch: the drawn shape spans
+           part*.89, the centres sit (full-part) apart, so the pair reads as
+           two dice resting against each other rather than one blob or two
+           strangers. The depth buffer is cleared between them so the right
+           die sits cleanly in front instead of z-fighting its twin in the
+           overlap, which is what made the seam look notched. */
+        var geo=geometryFor(10),part=Math.round(full*.58),vOffset=Math.round((full-part)/2),inset=full-part;
         var rotation=quaternionMatrix(faceRotation(geo,0,10));
         drawPickerShape(gl,programs,geo,material,rotation,[0,vOffset,part,part]);
+        gl.clear(gl.DEPTH_BUFFER_BIT);
         drawPickerShape(gl,programs,geo,material,rotation,[inset,vOffset,part,part]);
       }else{
         var geo=geometryFor(sides);
@@ -494,7 +501,9 @@
       var qz=quaternionAxis([.05,.18,1],remaining*Math.PI*2*(.35+(seed%3)*.11));
       var rotation=quaternionMultiply(qz,quaternionMultiply(qy,quaternionMultiply(qx,finalRotation)));
       renderer.draw(quaternionMatrix(rotation));
-      if(progress>.72)host.classList.add("is-settled");
+      /* The number waits for the die to stop. It used to fade in at 72% of
+         the roll, while the die was still turning; Eric asked for the result
+         to arrive after the dice have rolled, not during. */
       if(progress<1)requestAnimationFrame(drawFrame);
       else host.classList.add("is-settled");
     }
