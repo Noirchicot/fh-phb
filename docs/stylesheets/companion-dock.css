@@ -319,7 +319,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    width instead: whichever group is narrower just leaves a little air before
    its ⋮, and both ⋮ land at the same x without a magic absolute offset that
    would drift the moment either group's content changed width. */
-:root{--cd-leadcol-w:calc(96px * var(--cd-fs))}
+:root{--cd-leadcol-w:calc(88px * var(--cd-fs))}
 .fh-cd-leadcol{display:flex;align-items:center;gap:5px;flex:none;min-width:var(--cd-leadcol-w)}
 /* The dice column: seven dice, their own width, nothing else -- the ⋮ no
    longer lives in here (it moved to .fh-cd-leadcol's far side), so gold and
@@ -527,7 +527,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-diewrap.is-tunable.is-pending:not(.is-flashing) .fh-cd-die{animation:fh-cd-call 1.15s ease-in-out infinite}
 
 /* ── The white picker: the one place dice come from ─────────────── */
-:root{--cd-rollbtn:50px}
+:root{--cd-rollbtn:55px}
 .fh-cd-whiterow{display:flex;align-items:center;gap:5px;width:calc(var(--cd-rollbtn) + 5px + var(--cd-dicecol));justify-content:flex-start;margin-left:auto}
 .fh-cd-wdie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer;flex:none}
 .fh-cd-wdie svg{width:100%;height:100%;display:block}
