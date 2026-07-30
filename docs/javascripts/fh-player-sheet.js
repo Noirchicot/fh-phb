@@ -1637,6 +1637,18 @@
     out+='<text class="fh-cd-num" x="50" y="'+geo.ny+'" font-size="'+geo.fs+'" text-anchor="middle" dominant-baseline="middle" fill="'+m.num+'">'+esc(text==null?"?":text)+'</text>';
     return out+"</svg>";
   }
+  /* The Destiny and white-dice pickers are buttons, not rolled dice: no
+     rotation, no result face, ever. They show the same static 3D shapes as
+     the tray, pre-rendered to a cached image by fh-static-dice.js so the
+     picker row never opens a live WebGL context. Falls back to the flat SVG
+     glyph -- with its label painted on the face -- if the renderer or WebGL
+     is unavailable. */
+  function pickerFace(sides,size,materialName,label){
+    var image=window.FHStaticDice&&window.FHStaticDice.pickerImage&&window.FHStaticDice.pickerImage(sides,materialName,size);
+    if(!image)return dieSvg(sides,size,materialName,label);
+    return "<img class=\"fh-cd-pickerimg\" data-sides=\""+Number(sides)+"\" width=\""+size+"\" height=\""+size+"\" alt=\"\" aria-hidden=\"true\" src=\""+image+"\">"+
+      "<b class=\"fh-cd-pickerlabel\">"+esc(label)+"</b>";
+  }
   /* Tokens are not dice — they are the flat numbers a roll carries. Gold is the
      Fate's Hand bonus, yellow is Exhaustion, red is the Overreach a Chaos roll
      adds, copper is anything the player typed in by hand. */
@@ -1980,7 +1992,7 @@
         "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(available.length>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button>"+
         "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(available.length?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button></span>"+
         "<button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
-        dieSvg(sides,26,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
+        pickerFace(sides,26,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
     }).join("");
     // The Score changes once in a campaign, so it is plain text with a
     // click-to-edit affordance instead of a permanently locked input.
@@ -2126,7 +2138,7 @@
       var disabled=!!state.pendingArmed||(checkLoaded&&(sides===20||sides===100))||(full&&!count)||(!checkLoaded&&state.traySelection.length>=MAX_FREE_DICE&&!count);
       return "<button type=\"button\" class=\"fh-cd-wdie"+(calling&&!disabled?" is-calling":"")+"\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+
         " title=\"Left click adds a d"+sides+" · right click or long press takes one back\" aria-label=\"Add a d"+sides+"; right-click to remove one\">"+
-        dieSvg(sides,26,"white","d"+(sides===100?"%":sides))+(count?"<span class=\"fh-cd-mult\">×"+count+"</span>":"")+"</button>";
+        pickerFace(sides,26,"white","d"+(sides===100?"%":sides))+(count?"<span class=\"fh-cd-mult\">×"+count+"</span>":"")+"</button>";
     }).join("")+"</div>";
   }
   /* Every die still in the hand answers to a right click, wherever it lives:
@@ -2523,6 +2535,11 @@
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
     if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
+    /* Picker buttons (Destiny row, white-dice row) are cached static images,
+       not live dice -- their generator canvas exists only long enough to
+       fill that cache. releasePickerContext is a no-op once the cache is
+       warm, so calling it every render costs nothing after the first. */
+    if(window.FHStaticDice&&window.FHStaticDice.releasePickerContext)window.FHStaticDice.releasePickerContext();
     if(state.scoreEditing){var scoreInput=root.querySelector(".fh-cd-scorein");if(scoreInput&&scoreInput.focus){scoreInput.focus();if(scoreInput.select)scoreInput.select();}}
     if((state.popOpen==="inventory"||state.popOpen==="forge")&&state.inventory===null)loadInventory();
   }

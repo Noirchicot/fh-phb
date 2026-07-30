@@ -325,18 +325,16 @@
        WebGL context. */
     var item=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,item);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);return item;
   }
+  var MESH_VERTEX_SRC="attribute vec3 aPosition;attribute vec3 aNormal;uniform mat3 uRotation;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;vNormal=normalize(uRotation*aNormal);vPosition=p;gl_Position=vec4(p.xy*.89*depth,-p.z*.22,1.0);}";
+  var MESH_FRAGMENT_SRC="precision mediump float;uniform vec3 uFill;uniform vec3 uLight;uniform vec3 uDark;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-.48,.72,1.0));vec3 fillLight=normalize(vec3(.68,-.28,.52));vec3 view=vec3(0.0,0.0,1.0);float diffuse=max(dot(n,key),0.0);float bounce=max(dot(n,fillLight),0.0);float shade=clamp(.16+.68*diffuse+.16*bounce,0.0,1.0);float specular=pow(max(dot(n,normalize(key+view)),0.0),28.0);float fresnel=pow(1.0-max(dot(n,view),0.0),3.0);vec3 colour=mix(uDark,uFill,shade);colour=mix(colour,uLight,clamp(specular*.32+fresnel*.075,0.0,.38));gl_FragColor=vec4(colour,1.0);}";
+  var LINE_VERTEX_SRC="attribute vec3 aPosition;uniform mat3 uRotation;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;gl_Position=vec4(p.xy*.89*depth,-p.z*.22-.001,1.0);}";
+  var LINE_FRAGMENT_SRC="precision mediump float;uniform vec3 uRim;void main(){gl_FragColor=vec4(uRim,1.0);}";
   function prepareRenderer(canvas,sides,materialName,sizePx){
     var gl=canvas.getContext("webgl",{alpha:true,antialias:true,premultipliedAlpha:true});
     if(!gl)throw new Error("WebGL unavailable");
     var geo=geometryFor(sides),material=MATERIALS[materialName]||MATERIALS.ivory;
-    var meshProgram=program(gl,
-      "attribute vec3 aPosition;attribute vec3 aNormal;uniform mat3 uRotation;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;vNormal=normalize(uRotation*aNormal);vPosition=p;gl_Position=vec4(p.xy*.89*depth,-p.z*.22,1.0);}",
-      "precision mediump float;uniform vec3 uFill;uniform vec3 uLight;uniform vec3 uDark;varying vec3 vNormal;varying vec3 vPosition;void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-.48,.72,1.0));vec3 fillLight=normalize(vec3(.68,-.28,.52));vec3 view=vec3(0.0,0.0,1.0);float diffuse=max(dot(n,key),0.0);float bounce=max(dot(n,fillLight),0.0);float shade=clamp(.16+.68*diffuse+.16*bounce,0.0,1.0);float specular=pow(max(dot(n,normalize(key+view)),0.0),28.0);float fresnel=pow(1.0-max(dot(n,view),0.0),3.0);vec3 colour=mix(uDark,uFill,shade);colour=mix(colour,uLight,clamp(specular*.32+fresnel*.075,0.0,.38));gl_FragColor=vec4(colour,1.0);}"
-    );
-    var lineProgram=program(gl,
-      "attribute vec3 aPosition;uniform mat3 uRotation;void main(){vec3 p=uRotation*aPosition;float depth=1.0+p.z*.10;gl_Position=vec4(p.xy*.89*depth,-p.z*.22-.001,1.0);}",
-      "precision mediump float;uniform vec3 uRim;void main(){gl_FragColor=vec4(uRim,1.0);}"
-    );
+    var meshProgram=program(gl,MESH_VERTEX_SRC,MESH_FRAGMENT_SRC);
+    var lineProgram=program(gl,LINE_VERTEX_SRC,LINE_FRAGMENT_SRC);
     var positionBuffer=buffer(gl,geo.positions),normalBuffer=buffer(gl,geo.normals),edgeBuffer=buffer(gl,geo.edges);
     /* canvas (and, for the d100 pair, its .fh-cd-static3d-part parent) are
        both display:none until is-webgl reveals them, which only happens
@@ -382,6 +380,95 @@
     var base=quaternionBetween(normal,target),up=geo.faceUps[faceIndex]||[0,1,0],rotatedUp=quaternionRotate(base,up);
     var roll=quaternionAxis(target,Math.PI*.5-Math.atan2(rotatedUp[1],rotatedUp[0]));
     return quaternionMultiply(roll,base);
+  }
+  /* Picker buttons (Destiny row, white-dice console row) want the same
+     shapes as the tray but never a live context: browsers cap simultaneous
+     WebGL contexts (~16 in Chrome), and the tray alone can already reach 7
+     (6 dice, d100=2 canvases). One shared temporary canvas renders every
+     picker image a render pass needs into a cache, then the caller releases
+     its context explicitly -- see releasePickerContext below -- instead of
+     leaving that to the garbage collector's unpredictable timing. */
+  var pickerCache={},pickerGenerator=null;
+  function pickerAttribute(gl,programObject,name,item,sizeValue){
+    var location=gl.getAttribLocation(programObject,name);
+    gl.bindBuffer(gl.ARRAY_BUFFER,item);gl.enableVertexAttribArray(location);gl.vertexAttribPointer(location,sizeValue,gl.FLOAT,false,0,0);
+  }
+  function drawPickerShape(gl,programs,geo,material,rotation,viewportRect){
+    gl.viewport(viewportRect[0],viewportRect[1],viewportRect[2],viewportRect[3]);
+    var positionBuffer=buffer(gl,geo.positions),normalBuffer=buffer(gl,geo.normals),edgeBuffer=buffer(gl,geo.edges);
+    gl.useProgram(programs.mesh);
+    pickerAttribute(gl,programs.mesh,"aPosition",positionBuffer,3);pickerAttribute(gl,programs.mesh,"aNormal",normalBuffer,3);
+    gl.uniformMatrix3fv(gl.getUniformLocation(programs.mesh,"uRotation"),false,rotation);
+    gl.uniform3fv(gl.getUniformLocation(programs.mesh,"uFill"),hexRgb(material.fill));
+    gl.uniform3fv(gl.getUniformLocation(programs.mesh,"uLight"),hexRgb(material.light));
+    gl.uniform3fv(gl.getUniformLocation(programs.mesh,"uDark"),hexRgb(material.dark));
+    gl.drawArrays(gl.TRIANGLES,0,geo.positions.length/3);
+    gl.useProgram(programs.line);pickerAttribute(gl,programs.line,"aPosition",edgeBuffer,3);
+    gl.uniformMatrix3fv(gl.getUniformLocation(programs.line,"uRotation"),false,rotation);
+    gl.uniform3fv(gl.getUniformLocation(programs.line,"uRim"),hexRgb(material.rim));
+    gl.drawArrays(gl.LINES,0,geo.edges.length/3);
+  }
+  /* Releases the shared generator context. Callers invoke this once at the
+     end of a render pass (after every pickerImage call it needed has run),
+     not on a timer -- the generation phase has a clear end, the caller
+     knows it. A no-op once nothing is left to release. */
+  function releasePickerContext(){
+    if(!pickerGenerator)return false;
+    var canvas=pickerGenerator.canvas;
+    pickerGenerator=null;
+    try{
+      var gl=canvas.getContext("webgl");
+      var ext=gl&&gl.getExtension&&gl.getExtension("WEBGL_lose_context");
+      if(ext&&ext.loseContext){ext.loseContext();return true;}
+    }catch(error){}
+    return false;
+  }
+  function pickerImage(sides,materialName,sizePx){
+    sides=Number(sides);
+    if(SUPPORTED_SIDES.indexOf(sides)<0)return null;
+    materialName=materialName||"ivory";
+    var pixelRatio=Math.max(1,Math.min(2,(typeof window!=="undefined"&&window.devicePixelRatio)||1));
+    var size=Math.max(16,Math.round(sizePx||26));
+    var key=sides+"|"+materialName+"|"+size+"|"+pixelRatio+"|ready";
+    if(pickerCache[key])return pickerCache[key];
+    if(!pickerGenerator){
+      if(typeof document==="undefined"||!document.createElement)return null;
+      pickerGenerator={canvas:document.createElement("canvas")};
+    }
+    var canvas=pickerGenerator.canvas,dataUrl=null;
+    try{
+      var gl=canvas.getContext("webgl",{alpha:true,antialias:true,premultipliedAlpha:true});
+      if(!gl)throw new Error("WebGL unavailable");
+      var full=Math.round(size*pixelRatio);
+      canvas.width=full;canvas.height=full;
+      gl.clearColor(0,0,0,0);
+      gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.depthMask(true);
+      gl.enable(gl.CULL_FACE);gl.frontFace(gl.CCW);gl.cullFace(gl.BACK);gl.disable(gl.BLEND);
+      if(gl.POLYGON_OFFSET_FILL!=null&&gl.polygonOffset){gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1,1);}
+      if(gl.lineWidth)gl.lineWidth(Math.max(1,pixelRatio));
+      gl.viewport(0,0,full,full);
+      gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+      var programs={mesh:program(gl,MESH_VERTEX_SRC,MESH_FRAGMENT_SRC),line:program(gl,LINE_VERTEX_SRC,LINE_FRAGMENT_SRC)};
+      var material=MATERIALS[materialName]||MATERIALS.ivory;
+      if(sides===100){
+        /* Each half keeps a SQUARE viewport (matching every other shape's
+           projection, which assumes square pixels) and only the pair's
+           horizontal placement overlaps -- a non-square viewport here would
+           stretch the geometry instead of just repositioning it. */
+        var geo=geometryFor(10),part=Math.round(full*.62),vOffset=Math.round((full-part)/2),inset=full-part;
+        var rotation=quaternionMatrix(faceRotation(geo,0,10));
+        drawPickerShape(gl,programs,geo,material,rotation,[0,vOffset,part,part]);
+        drawPickerShape(gl,programs,geo,material,rotation,[inset,vOffset,part,part]);
+      }else{
+        var geo=geometryFor(sides);
+        var rotation=quaternionMatrix(faceRotation(geo,0,sides));
+        drawPickerShape(gl,programs,geo,material,rotation,[0,0,full,full]);
+      }
+      dataUrl=canvas.toDataURL("image/png");
+    }catch(error){dataUrl=null;}
+    if(!dataUrl)return null;
+    pickerCache[key]=dataUrl;
+    return dataUrl;
   }
   function displayValue(sides,result){
     return Number(sides)===10&&Number(result)===10?"0":String(result);
@@ -462,6 +549,8 @@
     mount:mount,
     supportedSides:SUPPORTED_SIDES.slice(),
     materials:Object.keys(MATERIALS),
+    pickerImage:pickerImage,
+    releasePickerContext:releasePickerContext,
     sound:{
       isMuted:function(){return soundMuted;},
       setMuted:setSoundMuted,
