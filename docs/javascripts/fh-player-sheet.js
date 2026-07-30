@@ -2010,6 +2010,9 @@
   /* One ROLL, one CLEAR TRAY. Nothing else is permanent. Below them the
      transient badges, then the tray, then whatever popup is owed — which
      pushes the stream down instead of covering the dice. */
+  /* Currently uncalled, on purpose: this composition line came off the ROLL
+     die (round 7c) and is going into the tray's legend next round rather than
+     being rewritten from scratch there. */
   function rollSummaryText(){
     var cfg=state.rollConfig,staged=stagedList().length;
     if(state.pendingArmed)return state.pendingArmed.kind==="chaos"?"2d6 · Chaos table":"d20 save · DC "+(Number(state.pendingArmed.dc)||10);
@@ -2041,16 +2044,14 @@
        them so it never pushes the roll off screen. */
     return "<section class=\"fh-cd-stage\" data-zone=\"roller\">"+
       "<div class=\"fh-cd-acts-bar\">"+
-      /* The d20 carries the word ROLL on its own face, so the button is the
-         die: no separate label competing with it. What the roll is made of
-         stays as text beside the die, where it can be read without crowding
-         the face. */
-      /* alt carries the word rather than aria-label: it names the button for a
+      /* The die IS the button -- the artwork carries the word on its own face,
+         and nothing else rides along: the composition line moved out to the
+         tray's legend, where the dice it describes actually are.
+         alt carries the word rather than aria-label: it names the button for a
          screen reader AND is what the browser paints if the artwork ever fails
          to load, so the primary action is never a blank square. */
       "<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">"+
-      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\">"+
-      "<small>"+esc(rollSummaryText())+"</small></button>"+
+      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\"></button>"+
       "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
       "<div class=\"fh-cd-temps\">"+badges+"</div>"+
       renderEventList()+
@@ -2088,7 +2089,7 @@
     var score=state.scoreEditing
       ? "<input class=\"fh-cd-scorein\" data-destiny-field=\"score\" type=\"number\" value=\""+state.destiny.score+"\" aria-label=\"Destiny Score\">"
       : "<button class=\"fh-cd-score\" type=\"button\" data-score-edit title=\"Click to change the Destiny Score\">"+state.destiny.score+"</button>";
-    return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-cap\">DESTINY<small>⋮ manages the pool · click a die to spend it</small></div>"+
+    return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-cap\">DESTINY</div>"+
       "<div class=\"fh-cd-destiny-row\">"+
       "<span class=\"fh-cd-dgroup is-pts\"><span class=\"fh-cd-pts\">"+
       "<button type=\"button\" data-destiny-step=\"points:-1\" aria-label=\"One Destiny Point less\">−</button>"+
@@ -2542,17 +2543,15 @@
     var cfg=state.rollConfig,entry=cfg&&cfg.editingId?state.history.find(function(item){return item.id===cfg.editingId;}):null;
     var locked=!!entry,open=rollOpen();
     var bonusDice=cfg?(cfg.bonusDice||[]):[];
-    /* A loaded check gets no head at all: the tray already names it, right
-       under this console, so repeating "Arcana +10 INT" here was saying the
-       same thing twice. Its ✕ went with it and is not missed -- it only ever
-       called clearDiceTray, which is exactly what CLEAR TRAY and Escape do,
-       both of which also refuse mid-transaction where the ✕ did not.
-       A free roll keeps its field, because that one is not a label repeating
-       the tray: it is how the roll gets named in the first place. */
-    var head=cfg
-      ? ""
-      : "<div class=\"fh-cd-crow fh-cd-chead\">"+
-        "<input id=\"fhPsTrayLabel\" class=\"fh-cd-freelabel\" maxlength=\"48\" value=\""+esc(state.trayLabel)+"\" placeholder=\"Damage / free roll…\" aria-label=\"Roll label\"></div>";
+    /* The console has no head at all now, loaded check or free roll: the tray
+       right below already names what is being rolled, so anything here was
+       saying it twice. The check's ✕ went with it and is not missed -- it only
+       ever called clearDiceTray, which is what CLEAR TRAY and Escape do, and
+       both of those refuse mid-transaction where the ✕ did not.
+       NOTE: the free roll's naming field went too. state.trayLabel still names
+       free rolls (it persists, and the read at roll time is guarded), but until
+       that field reappears in the tray's legend it cannot be edited. */
+    var head="";
     /* Row 1 is what a check is rolled WITH: its mode, the fixed +2, and the
        white dice. MOD and DC are set once and then just sit there taking room,
        so they move behind the ⋮ -- which is also where the standing damage

@@ -21,7 +21,7 @@ window.scrollTo = () => {};
 
 const sourcePath = path.join(__dirname,"..","docs","javascripts","fh-player-sheet.js");
 const source = fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/, `
-  globalThis.__fhPlayerSheetIntegration = {state, render, effectiveCharacter, loadPlayState};
+  globalThis.__fhPlayerSheetIntegration = {state, render, effectiveCharacter, loadPlayState, rollSummaryText};
 })();
 `);
 const sandbox = {
@@ -282,7 +282,10 @@ assert.ok(whiteD6.classList.contains("is-calling"),"it calls for one, briefly");
 assert.ok(root.querySelector(".fh-cd-ddie.is-calling"),"the Destiny pool calls too");
 whiteD6.click();
 assert.equal(t.state.rollSequence.staged.length,1,"the picked die is staged, not rolled on the spot");
-assert.match(root.querySelector("[data-roll-now]").textContent,/1 new die/,"ROLL says what it is about to roll");
+/* REWRITTEN (round 7c): the composition line came off the button -- it is the
+   bare die now -- and is headed for the tray's legend. What a press is about
+   to roll is announced in the tray, which is where the dice already are. */
+assert.match(t.state.trayResultText,/1 new die/,"the tray says what ROLL is about to roll");
 root.querySelector("[data-roll-now]").click();
 assert.deepEqual(Array.from(entry.d20s),failedD20,"rolling a late modifier never rerolls the failed d20");
 assert.equal(entry.bonusDice.length,1,"the staged die is rolled and folded into the same entry");
@@ -332,7 +335,12 @@ root.querySelector("[data-clear-tray]").click();
 for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
 assert.match(root.querySelector(".fh-cd-dicerow").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in the frame");
-const freeLabel=root.querySelector("#fhPsTrayLabel");freeLabel.value="Fireball";freeLabel.dispatchEvent(new window.Event("change",{bubbles:true}));
+/* REWRITTEN (round 7c): the console no longer carries the naming field -- it
+   is headed for the tray's legend. The label itself still names the roll and
+   still persists, so that contract is asserted here by setting it directly;
+   restore a UI assertion once the field reappears in the legend. */
+assert.equal(root.querySelector("#fhPsTrayLabel"),null,"the console no longer carries the free roll's naming field");
+t.state.trayLabel="Fireball";
 root.querySelector("[data-roll-now]").click();
 assert.equal(t.state.history[0].name,"Fireball","the free roll keeps its purpose in history");
 assert.equal(t.state.history[0].dice.length,8,"all damage dice are recorded");
@@ -491,7 +499,9 @@ assert.equal(t.state.destiny.points,pointsBeforeStandalone,"and clicking a gold 
 const waitingGold=root.querySelector("[data-die-pool]");
 assert.ok(waitingGold,"it is reachable by right click in the tray");
 assert.ok(waitingGold.classList.contains("is-flashing"),"and blinks between empty and full until ROLL");
-assert.match(root.querySelector("[data-roll-now]").textContent,/Destiny d\d+/,"ROLL says what it is about to spend");
+/* REWRITTEN (round 7c): same as the other two -- the composition line left the
+   button for the tray's legend, so what ROLL is about to spend is read there. */
+assert.match(t.rollSummaryText(),/Destiny d\d+/,"the roll's composition says what ROLL is about to spend");
 waitingGold.dispatchEvent(new window.Event("contextmenu",{bubbles:true,cancelable:true}));
 root.querySelector("[data-die-drop]").click();
 assert.equal(t.state.destinyStaged,null,"and a right click puts it back in the pool");

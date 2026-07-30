@@ -167,11 +167,12 @@ assert.equal(t.state.trayPrompt,null,"a failed DC no longer stops the table with
 assert.equal(t.rollOpen(),true,"the failed roll waits on APPLY with every die source still live");
 t.stageBonusDie(6,"Bardic","bardic");
 assert.equal(t.stagedList().length,1,"a die chosen after the roll is staged, not rolled on the spot");
-// REWRITTEN (dock v5): the button never changes its name. Only the line under
-// it says what pressing ROLL is about to do.
-/* The point stands after round 7: what changes is the summary beside the die,
-   never the die's own face -- the button does not rename itself to the action. */
-assert.match(t.renderStageZone(),/alt="ROLL"[^>]*><small>1 new die<\/small>/,"ROLL announces the staged die beside itself instead of renaming itself");
+/* REWRITTEN (round 7c): the button is now only the die -- its composition line
+   moved off to the tray, next to the dice it describes. The original point is
+   unchanged and still worth guarding: a staged die is announced SOMEWHERE, and
+   never by renaming the button. */
+assert.match(t.renderStageZone(),/data-roll-now[^>]*><img[^>]*alt="ROLL"[^>]*><\/button>/,"the button is the die and nothing else");
+assert.match(t.state.trayResultText,/1 new die/,"a staged die is announced in the tray, not on the button's face");
 queueRolls(6);t.rollStagedDice();
 assert.deepEqual(Array.from(entry.d20s),locked,"applying a modifier never rerolls the d20");
 assert.equal(entry.bardic.result,6);assert.equal(entry.total,14);

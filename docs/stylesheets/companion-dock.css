@@ -536,30 +536,33 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-pickerlabel{font-size:calc(7px * var(--cd-fs));font-weight:700;line-height:1;color:var(--cd-muted);font-family:inherit}
 
 /* ── ROLL and CLEAR TRAY: the only permanent buttons ────────────────
-   ROLL is the die itself: the artwork already carries the word on its
-   face, so the button drops its own gold plate and label and becomes the
-   d20, with the roll's composition read as text beside it. */
-.fh-cd-acts-bar{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 10px 0}
-/* The die centres itself in the bar and the summary sits under it, so ROLL
-   reads as the one thing this bar is for rather than as a left-hand icon
-   with a caption trailing off to the right. CLEAR TRAY is absolutely
-   positioned out of the flow so the die stays centred on the bar itself,
-   not on the space CLEAR TRAY leaves behind. */
-.fh-cd-mainroll{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  padding:0;border:0;background:none;color:var(--cd-gold);font-family:inherit;cursor:pointer}
+   ROLL is the die itself -- the artwork carries the word on its own face,
+   so the button is nothing but the d20.
+   The bar keeps only the height CLEAR TRAY needs, and the die is lifted out
+   of the flow to break out of it on purpose: its top point rises into the
+   gap between the white d4 and d6 above, its base rests over the tray below.
+   Its centre is pinned to that gap rather than to the bar -- measured in from
+   the dice column's right edge, the gap sits at ⋮ + gap + one die + half a
+   gap, so it tracks the column instead of a hardcoded pixel. */
+/* The negative bottom margin pulls the badges and the tray up under the die:
+   the span from the white dice down to the tray is a touch wider than the die
+   itself, so without closing it the die could break out above or below but not
+   both. Closing it lets the point sit in the dice and the base on the tray. */
+.fh-cd-acts-bar{position:relative;display:flex;align-items:center;gap:6px;padding:0 10px;min-height:24px;margin-bottom:-16px}
+.fh-cd-mainroll{position:absolute;z-index:6;top:50%;
+  left:calc(100% - 10px - var(--cd-dicecol) + 15px + 5px + 31px + 2.5px);
+  transform:translate(-50%,calc(-50% - 5px));
+  display:block;padding:0;border:0;background:none;line-height:0;cursor:pointer}
 .fh-cd-rolldie{flex:none;width:62px;height:62px;display:block;
   filter:drop-shadow(0 3px 5px rgba(40,20,5,.45));transition:transform .12s ease,filter .12s ease}
 .fh-cd-mainroll:hover .fh-cd-rolldie{transform:scale(1.05);filter:drop-shadow(0 4px 8px rgba(40,20,5,.55)) brightness(1.08)}
 .fh-cd-mainroll:active .fh-cd-rolldie{transform:scale(.97)}
-.fh-cd-mainroll small{flex:none;text-align:center;font-size:calc(7.6px * var(--cd-fs));font-weight:600;letter-spacing:.04em;
-  color:var(--cd-muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fh-cd-mainroll:disabled{cursor:not-allowed}
 .fh-cd-mainroll:disabled .fh-cd-rolldie{filter:grayscale(.65) opacity(.5)}
 .fh-cd-mainroll:disabled:hover .fh-cd-rolldie{transform:none}
 /* An armed Chaos roll pulses the die rather than repainting a plate. */
 .fh-cd-mainroll.is-chaos .fh-cd-rolldie{animation:fh-cd-call 1s ease-in-out infinite;
   filter:drop-shadow(0 0 6px rgba(255,95,103,.85)) drop-shadow(0 3px 5px rgba(40,20,5,.45))}
-.fh-cd-mainroll.is-chaos small{color:var(--cd-red);font-weight:800}
 .fh-cd-mainclear{position:absolute;right:10px;top:50%;transform:translateY(-50%);flex:none;height:24px;padding:0 9px;
   border:1px solid var(--cd-line);border-radius:6px;background:var(--cd-parch-2);
   color:var(--cd-muted);font-family:inherit;font-size:calc(7.6px * var(--cd-fs));font-weight:700;letter-spacing:.08em;cursor:pointer}
