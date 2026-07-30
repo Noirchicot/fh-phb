@@ -212,7 +212,12 @@ assert.ok(exported.parts.length>=3,"the export keeps the d20, the base bonus and
 /* ── Reopening a roll never rerolls its d20 ──────────────────── */
 root.querySelector('[data-history-id="'+entry.id+'"]').click();
 assert.equal(t.state.rollConfig.editingId,entry.id,"clicking a stream line reopens that roll");
+/* REWRITTEN (round 7b): MOD and DC live behind the console's ⋮ now, so the
+   test opens it exactly as a player would. */
+assert.equal(root.querySelector("#fhPsCustom"),null,"the manual modifier is not taking room in the row until it is asked for");
+root.querySelector("[data-console-menu]").click();
 const custom=root.querySelector("#fhPsCustom");
+assert.ok(custom,"the ⋮ reveals the manual modifier");
 custom.value="3";
 custom.dispatchEvent(new window.Event("change",{bubbles:true}));
 root.querySelector("[data-roll-now]").click();
@@ -258,6 +263,7 @@ settleRoll();
 // REWRITTEN (dock v5): no rescue popup, no APPLY. The roll stays open, the
 // sources call for three seconds, and ROLL rolls whatever was added since.
 root.querySelector('[data-config-name="Arcana"]').click();
+root.querySelector("[data-console-menu]").click();
 const dc=root.querySelector("#fhPsDc");dc.value="20";dc.dispatchEvent(new window.Event("change",{bubbles:true}));
 root.querySelector("[data-roll-now]").click();
 entry=t.state.history[0];

@@ -74,7 +74,7 @@
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayLabel:"Damage roll",trayResultText:"",queueDone:"",rollSequence:null,chromeOpen:false,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
-    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false,
+    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false,
     trayQuietTitle:"", trayRevealAt:0, trayRevealTimer:null,
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:FS_MIN,
@@ -2542,23 +2542,20 @@
     var cfg=state.rollConfig,entry=cfg&&cfg.editingId?state.history.find(function(item){return item.id===cfg.editingId;}):null;
     var locked=!!entry,open=rollOpen();
     var bonusDice=cfg?(cfg.bonusDice||[]):[];
-    /* Head: a loaded check names itself, its DC beside its own ability -- not
-       down in the modifier row, which is about the roll's mechanics, not its
-       target. A free roll gets a plain, borderless field to name itself: no
-       "FREE ROLL" label repeating what the empty console already says, no box
-       around it competing with the boxed controls that actually need one. */
+    /* Head: a loaded check names itself. A free roll gets a plain, borderless
+       field to name itself: no "FREE ROLL" label repeating what the empty
+       console already says, no box competing with the boxed controls that
+       actually need one. */
     var head=cfg
       ? "<div class=\"fh-cd-crow fh-cd-chead\"><span class=\"fh-cd-cname\">"+esc(cfg.name)+" <b>"+signed(cfg.baseBonus)+"</b></span>"+
         "<span class=\"fh-cd-cmeta\">"+esc(cfg.note||cfg.ability||"")+"</span>"+
-        "<span class=\"fh-cd-dc\">DC <input id=\"fhPsDc\" type=\"number\" min=\"0\" value=\""+esc(cfg.dc)+"\" placeholder=\"—\"></span>"+
         "<button class=\"fh-cd-cclose\" id=\"fhPsCloseConsole\" type=\"button\" aria-label=\"Close the roll console\">"+iconSvg("close")+"</button></div>"
       : "<div class=\"fh-cd-crow fh-cd-chead\">"+
         "<input id=\"fhPsTrayLabel\" class=\"fh-cd-freelabel\" maxlength=\"48\" value=\""+esc(state.trayLabel)+"\" placeholder=\"Damage / free roll…\" aria-label=\"Roll label\"></div>";
-    /* Row 1 belongs to a check: modes, the fixed +2, the manual modifier --
-       and, pushed to the right by the white dice group's own auto margin, the
-       picker itself. It used to sit on its own row below; now it lines up
-       with the controls that feed the same roll, in the same column the
-       Destiny pool's dice start from. */
+    /* Row 1 is what a check is rolled WITH: its mode, the fixed +2, and the
+       white dice. MOD and DC are set once and then just sit there taking room,
+       so they move behind the ⋮ -- which is also where the standing damage
+       rules will land once that design is settled. */
     var row1="";
     if(cfg){
       row1="<div class=\"fh-cd-crow fh-cd-consolerow\"><span class=\"fh-cd-seg\">"+
@@ -2566,24 +2563,43 @@
         "<button type=\"button\" class=\""+(cfg.d20Mode==="flat"?"is-on":"")+"\" data-die-mode=\"flat\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Flat roll\">—</button>"+
         "<button type=\"button\" class=\"is-advantage"+(cfg.d20Mode==="advantage"?" is-on":"")+"\" data-die-mode=\"advantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Advantage\">A</button></span>"+
         "<button type=\"button\" id=\"fhPsPlusTwo\" class=\"fh-cd-chip"+(cfg.plusTwo?" is-on":"")+"\" title=\"Fixed Fate's Hand +2\">FH +2</button>"+
-        "<span class=\"fh-cd-modctl\"><small>MOD</small>"+
-        "<input id=\"fhPsCustom\" type=\"number\" value=\""+(Number(cfg.custom)||0)+"\" aria-label=\"Manual modifier\"></span>"+
-        renderWhiteDice()+"</div>";
+        renderWhiteDice(cfg)+"</div>";
     }else{
-      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\">"+renderWhiteDice()+"</div>";
+      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\">"+renderWhiteDice(null)+"</div>";
     }
     // The FINE TUNE drawer is gone: a Portent belongs to one die, so it lives in
     // that die's own right-click menu rather than in a console-wide panel.
-    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE<small>left click adds a die · right click tunes it</small></div>"+
+    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE</div>"+
       head+row1+"</section>";
+  }
+  /* The console's ⋮: what a roll is tuned WITH rather than rolled with. MOD and
+     the DC live here -- both are set once and would otherwise sit in the row
+     taking space from the dice. The standing damage rules (minimums on damage
+     dice) are meant to join them, once Eric settles whether they belong here or
+     with the badges, which is why this is a list and not two controls. */
+  function renderConsoleMenu(cfg){
+    var open=!!state.consoleMenu;
+    if(!open)return "<span class=\"fh-cd-cmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu\" data-console-menu aria-haspopup=\"true\" aria-expanded=\"false\" aria-label=\"Roll options\">"+glyph("dots")+"</button></span>";
+    var rows=cfg
+      ? "<div class=\"fh-cd-cmenurow\"><span>MOD</span>"+
+        "<input id=\"fhPsCustom\" type=\"number\" value=\""+(Number(cfg.custom)||0)+"\" aria-label=\"Manual modifier\"></div>"+
+        "<div class=\"fh-cd-cmenurow\"><span>DC</span>"+
+        "<input id=\"fhPsDc\" type=\"number\" min=\"0\" value=\""+esc(cfg.dc)+"\" placeholder=\"—\" aria-label=\"Difficulty Class\"></div>"
+      : "<div class=\"fh-cd-cmenunote\">Load a check to set a modifier or a DC.</div>";
+    return "<span class=\"fh-cd-cmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu is-active\" data-console-menu aria-haspopup=\"true\" aria-expanded=\"true\" aria-label=\"Roll options\">"+glyph("dots")+"</button>"+
+      "<div class=\"fh-cd-cmenu\">"+rows+"</div></span>";
   }
   /* The one place dice come from. A blank die per size: left click adds one to
      the tray, right click takes one back. Once in the tray, a right click on the
      die itself gives it a colour, a seal and its own advantage. */
-  function renderWhiteDice(){
-    var cfg=state.rollConfig,checkLoaded=!!cfg,counts=trayDieCounts(),calling=callingNow();
+  /* The ⋮ leads this row exactly as it leads the Destiny pool, so both dice
+     groups share one shape -- [⋮][dice…] -- and can therefore share one column
+     and line up die-for-die, without either row needing a magic offset that
+     would drift the moment the Arcana's name changed width. */
+  function renderWhiteDice(cfg){
+    var checkLoaded=!!cfg,counts=trayDieCounts(),calling=callingNow();
     var full=checkLoaded&&trayBonusCount()>=MAX_BONUS_DICE;
-    return "<div class=\"fh-cd-whiterow\">"+ROLL_DIE_SIZES.map(function(sides){
+    return "<div class=\"fh-cd-whiterow\">"+renderConsoleMenu(cfg)+ROLL_DIE_SIZES.map(function(sides){
       var count=counts[sides]||0;
       var disabled=!!state.pendingArmed||(checkLoaded&&(sides===20||sides===100))||(full&&!count)||(!checkLoaded&&state.traySelection.length>=MAX_FREE_DICE&&!count);
       return "<button type=\"button\" class=\"fh-cd-wdie"+(calling&&!disabled?" is-calling":"")+"\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+
@@ -3117,6 +3133,9 @@
     if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}if(button.id==="fhPsCloseConsole"){clearDiceTray(true);return;}
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
     if(button.dataset.destinyPoolmenu!==undefined){state.destinyPoolMenu=!state.destinyPoolMenu;render();return;}
+    // Opening the console's ⋮ syncs first: its own inputs are what render()
+    // is about to rebuild, so an unsynced value would be thrown away.
+    if(button.dataset.consoleMenu!==undefined){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=!state.consoleMenu;render();return;}
     if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
     if(button.dataset.exhStep!==undefined){setExhaustion(exhaustionLevel()+Number(button.dataset.exhStep),"Adjusted by hand");render();return;}
@@ -3202,7 +3221,10 @@
      their own outside-click listener. */
   var OUTSIDE_CLICK_POPUPS=[
     {isOpen:function(){return !!state.menuOpen;},close:function(){state.menuOpen=false;},box:".fh-cd-menu",toggle:"[data-menu-toggle]"},
-    {isOpen:function(){return !!state.destinyPoolMenu;},close:function(){state.destinyPoolMenu=false;},box:".fh-cd-dpoolmenu",toggle:"[data-destiny-poolmenu]"}
+    {isOpen:function(){return !!state.destinyPoolMenu;},close:function(){state.destinyPoolMenu=false;},box:".fh-cd-dpoolmenu",toggle:"[data-destiny-poolmenu]"},
+    /* Closing this one commits first: it holds live MOD/DC inputs, and a
+       value typed and then dismissed by clicking away must not be lost. */
+    {isOpen:function(){return !!state.consoleMenu;},close:function(){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=false;},box:".fh-cd-cmenu",toggle:"[data-console-menu]"}
   ];
   function onOutsideClick(event){
     if(!root)return;

@@ -279,7 +279,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    POINTS and SCORE labels sit below their value at the same offset -- they
    used to sit on opposite sides of their value (POINTS below, SCORE above),
    which read as two rows fighting each other rather than one aligned row. */
-.fh-cd-destiny-row{display:flex;align-items:center;gap:5px;min-height:34px}
+.fh-cd-destiny-row{position:relative;display:flex;align-items:center;gap:5px;min-height:34px}
 .fh-cd-dgroup{position:relative;display:flex;align-items:center}
 .fh-cd-dlab{position:absolute;top:100%;margin-top:1.5px;left:50%;transform:translateX(-50%);font-size:calc(6.4px * var(--cd-fs));letter-spacing:.14em;
   color:var(--cd-faint);line-height:1;white-space:nowrap;pointer-events:none}
@@ -293,8 +293,11 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-scorein::-webkit-outer-spin-button,.fh-cd-scorein::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 /* The Arcana became a button when the draw became real. It keeps looking like a
    label until there is something to do — then it says so, and keeps saying so. */
-.fh-cd-arcana{font-size:calc(7.4px * var(--cd-fs));letter-spacing:.05em;color:var(--cd-gold);text-align:right;
-  max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none;
+/* Out of the flow, in the empty right-hand part of the dice column's box:
+   in the flow it pushed the gold dice left by its own width, so the column
+   moved every time the drawn card's name changed length. */
+.fh-cd-arcana{position:absolute;right:0;bottom:1px;font-size:calc(7.4px * var(--cd-fs));letter-spacing:.05em;color:var(--cd-gold);text-align:right;
+  max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none;
   padding:0;border:0;background:none;font-family:inherit;cursor:pointer}
 .fh-cd-arcana:hover{color:var(--cd-gold-bright);text-decoration:underline}
 .fh-cd-arcana.is-empty{font-style:italic;color:var(--cd-faint)}
@@ -309,7 +312,12 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   -moz-appearance:textfield;appearance:textfield}
 .fh-cd-pts input::-webkit-outer-spin-button,.fh-cd-pts input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .fh-cd-overflow{color:var(--cd-red);font-weight:700;font-size:calc(9px * var(--cd-fs))}
-.fh-cd-pool{display:flex;gap:5px;align-items:center;margin-left:auto}
+/* One column for both dice groups. Both are [⋮][dice…] and both get the same
+   box, right-aligned, with their contents packed left -- so the gold d4 sits
+   exactly above the white d4 whatever else shares their rows. The width is
+   the wider of the two groups (the white row: 7 dice + the ⋮). */
+:root{--cd-dicecol:calc(7 * 31px + 6 * 5px + 15px + 5px)}
+.fh-cd-pool{display:flex;gap:5px;align-items:center;margin-left:auto;width:var(--cd-dicecol);justify-content:flex-start}
 .fh-cd-ddie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer}
 .fh-cd-ddie svg{width:100%;height:100%;display:block}
 .fh-cd-ddie.is-empty{opacity:.28;cursor:default}
@@ -380,21 +388,22 @@ select.fh-cd-chip{appearance:none;-webkit-appearance:none;padding-right:14px;
   background-image:linear-gradient(45deg,transparent 50%,var(--cd-gold) 50%),linear-gradient(135deg,var(--cd-gold) 50%,transparent 50%);
   background-position:calc(100% - 8px) 10px,calc(100% - 5px) 10px;background-size:3px 3px,3px 3px;background-repeat:no-repeat}
 select.fh-cd-chip.is-on{color:#fff8e2}
-/* Round 7: the custom +/- stepper is gone -- a number input already carries
-   its own up/down arrows, and repeating them next to it was redundant. MOD
-   no longer pushes itself right either: the white dice picker is the last
-   thing in this row now, and it does the pushing. */
-.fh-cd-modctl{display:flex;align-items:center;gap:2px;flex:none}
-.fh-cd-modctl input{width:30px;height:16px;border:1px solid var(--cd-line-soft);background:#fffdf6;border-radius:3px;
+/* Round 7b: MOD and DC moved behind the console's ⋮ -- both are set once and
+   then just sit in the row taking width from the dice. Same popup pattern as
+   the Destiny pool's, and the future home of the standing damage rules. */
+.fh-cd-cmenuwrap{position:relative;flex:none}
+.fh-cd-cmenu{position:absolute;top:calc(100% + 3px);left:0;z-index:22;display:flex;flex-direction:column;gap:2px;min-width:118px;
+  background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:6px;box-shadow:0 6px 16px rgba(40,25,5,.35);padding:4px}
+.fh-cd-cmenurow{display:flex;align-items:center;gap:6px;height:22px;padding:0 3px}
+.fh-cd-cmenurow>span{flex:1;font-size:calc(8.4px * var(--cd-fs));font-weight:700;color:var(--cd-gold);letter-spacing:.05em}
+.fh-cd-cmenurow input{width:44px;height:18px;border:1px solid var(--cd-line);background:#fffdf6;border-radius:3px;
   text-align:center;font-size:calc(9px * var(--cd-fs));font-family:inherit;color:var(--cd-ink);padding:0}
-.fh-cd-modctl small{font-size:calc(7px * var(--cd-fs));color:var(--cd-gold);letter-spacing:.05em;margin-right:2px}
+.fh-cd-cmenunote{padding:3px 5px;max-width:150px;font-size:calc(7.6px * var(--cd-fs));color:var(--cd-faint);line-height:1.35}
 /* The white picker now lives in the same row as D/-/A, FH+2 and MOD, pushed
    to the right so it starts in the same column the Destiny pool's dice do,
    instead of its own row underneath. Wraps to its own line when the row is
    too narrow to hold both the controls and seven dice at once. */
-.fh-cd-consolerow{flex-wrap:wrap}
-.fh-cd-consolerow .fh-cd-whiterow{margin-left:auto}
-.fh-cd-consolerow.is-free .fh-cd-whiterow{margin-left:auto;padding-top:0}
+.fh-cd-consolerow{flex-wrap:nowrap}
 /* No box, no repeated "FREE ROLL" label -- the empty console already says
    this is a free roll; the field just needs to look like part of the head
    row, not a form control bolted onto it. */
@@ -517,7 +526,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-diewrap.is-tunable.is-pending:not(.is-flashing) .fh-cd-die{animation:fh-cd-call 1.15s ease-in-out infinite}
 
 /* ── The white picker: the one place dice come from ─────────────── */
-.fh-cd-whiterow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding-top:2px}
+.fh-cd-whiterow{display:flex;align-items:center;gap:5px;width:var(--cd-dicecol);justify-content:flex-start;margin-left:auto}
 .fh-cd-wdie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer;flex:none}
 .fh-cd-wdie svg{width:100%;height:100%;display:block}
 .fh-cd-wdie:hover svg,.fh-cd-wdie:hover .fh-cd-pickerimg{filter:brightness(1.06) drop-shadow(0 0 4px rgba(241,201,111,.8))}
@@ -544,7 +553,7 @@ select.fh-cd-chip.is-on{color:#fff8e2}
    not on the space CLEAR TRAY leaves behind. */
 .fh-cd-mainroll{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
   padding:0;border:0;background:none;color:var(--cd-gold);font-family:inherit;cursor:pointer}
-.fh-cd-rolldie{flex:none;width:104px;height:104px;display:block;
+.fh-cd-rolldie{flex:none;width:62px;height:62px;display:block;
   filter:drop-shadow(0 3px 5px rgba(40,20,5,.45));transition:transform .12s ease,filter .12s ease}
 .fh-cd-mainroll:hover .fh-cd-rolldie{transform:scale(1.05);filter:drop-shadow(0 4px 8px rgba(40,20,5,.55)) brightness(1.08)}
 .fh-cd-mainroll:active .fh-cd-rolldie{transform:scale(.97)}
