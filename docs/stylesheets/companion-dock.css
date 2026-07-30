@@ -532,18 +532,33 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-pickerimg[data-sides="6"]{transform:scale(.8)}
 .fh-cd-pickerlabel{font-size:calc(7px * var(--cd-fs));font-weight:700;line-height:1;color:var(--cd-muted);font-family:inherit}
 
-/* ── ROLL and CLEAR TRAY: the only permanent buttons ────────────── */
-.fh-cd-acts-bar{display:flex;align-items:stretch;gap:6px;padding:6px 10px 0}
-.fh-cd-mainroll{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-  min-height:30px;padding:3px 8px;border:1px solid #6d4a10;border-radius:6px;
-  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-family:inherit;font-size:calc(10px * var(--cd-fs));font-weight:800;
-  letter-spacing:.1em;cursor:pointer}
-.fh-cd-mainroll small{font-size:calc(6.8px * var(--cd-fs));font-weight:600;letter-spacing:.04em;opacity:.85;max-width:100%;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fh-cd-mainroll:disabled{filter:grayscale(.5) opacity(.6);cursor:not-allowed}
-.fh-cd-mainroll.is-chaos{background:linear-gradient(180deg,#c8353c,#7c0f15);border-color:#ff5f67;color:#fff1ef;
-  animation:fh-cd-call 1s ease-in-out infinite}
-.fh-cd-mainclear{flex:none;padding:0 9px;border:1px solid var(--cd-line);border-radius:6px;background:var(--cd-parch-2);
+/* ── ROLL and CLEAR TRAY: the only permanent buttons ────────────────
+   ROLL is the die itself: the artwork already carries the word on its
+   face, so the button drops its own gold plate and label and becomes the
+   d20, with the roll's composition read as text beside it. */
+.fh-cd-acts-bar{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 10px 0}
+/* The die centres itself in the bar and the summary sits under it, so ROLL
+   reads as the one thing this bar is for rather than as a left-hand icon
+   with a caption trailing off to the right. CLEAR TRAY is absolutely
+   positioned out of the flow so the die stays centred on the bar itself,
+   not on the space CLEAR TRAY leaves behind. */
+.fh-cd-mainroll{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:0;border:0;background:none;color:var(--cd-gold);font-family:inherit;cursor:pointer}
+.fh-cd-rolldie{flex:none;width:104px;height:104px;display:block;
+  filter:drop-shadow(0 3px 5px rgba(40,20,5,.45));transition:transform .12s ease,filter .12s ease}
+.fh-cd-mainroll:hover .fh-cd-rolldie{transform:scale(1.05);filter:drop-shadow(0 4px 8px rgba(40,20,5,.55)) brightness(1.08)}
+.fh-cd-mainroll:active .fh-cd-rolldie{transform:scale(.97)}
+.fh-cd-mainroll small{flex:none;text-align:center;font-size:calc(7.6px * var(--cd-fs));font-weight:600;letter-spacing:.04em;
+  color:var(--cd-muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-mainroll:disabled{cursor:not-allowed}
+.fh-cd-mainroll:disabled .fh-cd-rolldie{filter:grayscale(.65) opacity(.5)}
+.fh-cd-mainroll:disabled:hover .fh-cd-rolldie{transform:none}
+/* An armed Chaos roll pulses the die rather than repainting a plate. */
+.fh-cd-mainroll.is-chaos .fh-cd-rolldie{animation:fh-cd-call 1s ease-in-out infinite;
+  filter:drop-shadow(0 0 6px rgba(255,95,103,.85)) drop-shadow(0 3px 5px rgba(40,20,5,.45))}
+.fh-cd-mainroll.is-chaos small{color:var(--cd-red);font-weight:800}
+.fh-cd-mainclear{position:absolute;right:10px;top:50%;transform:translateY(-50%);flex:none;height:24px;padding:0 9px;
+  border:1px solid var(--cd-line);border-radius:6px;background:var(--cd-parch-2);
   color:var(--cd-muted);font-family:inherit;font-size:calc(7.6px * var(--cd-fs));font-weight:700;letter-spacing:.08em;cursor:pointer}
 .fh-cd-mainclear i{font-style:normal}
 .fh-cd-mainclear:hover{border-color:var(--cd-gold-hi);color:var(--cd-ink)}

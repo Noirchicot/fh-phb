@@ -129,7 +129,10 @@ assert.equal(t.state.trayResults[0].label,"Destiny","Destiny remains first in th
 // REWRITTEN (dock v5): the result popup is gone and so is APPLY. A landed roll
 // stays OPEN behind the one permanent ROLL, and it no longer locks the dock.
 assert.equal(t.rollOpen(),true,"it stays open, with every source of a new die still reachable");
-assert.match(t.renderStageZone(),/data-roll-now[^>]*>ROLL</,"there is one button, and it says ROLL");
+/* REWRITTEN (round 7): ROLL is now the d20 artwork, which carries the word on
+   its own face. The button must still NAME itself ROLL -- via the image's alt,
+   so a screen reader announces it and a failed image still paints the word. */
+assert.match(t.renderStageZone(),/data-roll-now[^>]*>\s*<img[^>]*alt="ROLL"/,"there is one button, and it names itself ROLL");
 assert.doesNotMatch(t.renderStageZone(),/APPLY/,"APPLY is gone from the dock entirely");
 assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),false,"an open roll no longer holds the dock hostage");
 assert.equal(t.rollTransactionActive(),false,"only a question that must be answered locks the dock now");
@@ -166,7 +169,9 @@ t.stageBonusDie(6,"Bardic","bardic");
 assert.equal(t.stagedList().length,1,"a die chosen after the roll is staged, not rolled on the spot");
 // REWRITTEN (dock v5): the button never changes its name. Only the line under
 // it says what pressing ROLL is about to do.
-assert.match(t.renderStageZone(),/>ROLL<small>1 new die<\/small>/,"ROLL announces the staged die instead of renaming itself");
+/* The point stands after round 7: what changes is the summary beside the die,
+   never the die's own face -- the button does not rename itself to the action. */
+assert.match(t.renderStageZone(),/alt="ROLL"[^>]*><small>1 new die<\/small>/,"ROLL announces the staged die beside itself instead of renaming itself");
 queueRolls(6);t.rollStagedDice();
 assert.deepEqual(Array.from(entry.d20s),locked,"applying a modifier never rerolls the d20");
 assert.equal(entry.bardic.result,6);assert.equal(entry.total,14);

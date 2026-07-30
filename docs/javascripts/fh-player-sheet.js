@@ -2041,7 +2041,16 @@
        them so it never pushes the roll off screen. */
     return "<section class=\"fh-cd-stage\" data-zone=\"roller\">"+
       "<div class=\"fh-cd-acts-bar\">"+
-      "<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">ROLL<small>"+esc(rollSummaryText())+"</small></button>"+
+      /* The d20 carries the word ROLL on its own face, so the button is the
+         die: no separate label competing with it. What the roll is made of
+         stays as text beside the die, where it can be read without crowding
+         the face. */
+      /* alt carries the word rather than aria-label: it names the button for a
+         screen reader AND is what the browser paints if the artwork ever fails
+         to load, so the primary action is never a blank square. */
+      "<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">"+
+      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\">"+
+      "<small>"+esc(rollSummaryText())+"</small></button>"+
       "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
       "<div class=\"fh-cd-temps\">"+badges+"</div>"+
       renderEventList()+

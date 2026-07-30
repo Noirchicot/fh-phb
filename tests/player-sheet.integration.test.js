@@ -159,7 +159,10 @@ assert.equal(root.querySelectorAll("[data-bonus-preset]").length,0,"the Guidance
 assert.equal(root.querySelector("#fhPsDestinyDie"),null,"and so is the Destiny selector — the gold pool is the only way in");
 assert.equal(root.querySelectorAll(".fh-cd-whiterow .fh-cd-wdie").length,7,"the white picker offers d4 through d100");
 assert.equal(root.querySelector("#fhPsRunRoll"),null,"the console no longer carries a second roll button");
-assert.match(root.querySelector("[data-roll-now]").textContent,/^ROLL/,"one permanent ROLL leads with its label");
+/* REWRITTEN (round 7): ROLL is the d20 artwork now, which carries the word on
+   its face; the button names itself through the image's alt so it still has an
+   accessible name and still paints "ROLL" if the artwork fails to load. */
+assert.equal(root.querySelector("[data-roll-now] .fh-cd-rolldie").getAttribute("alt"),"ROLL","one permanent ROLL, named by its die");
 
 root.querySelector('.fh-cd-whiterow [data-add-tray-die="4"]').click();
 assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="4"][data-pending="1"]').length,1,"the d4 already uses its opaque 3D ready pose before rolling");
