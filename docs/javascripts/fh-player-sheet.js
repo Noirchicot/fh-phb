@@ -74,7 +74,7 @@
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayLabel:"Damage roll",trayResultText:"",queueDone:"",rollSequence:null,chromeOpen:false,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
-    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:0,
+    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false,
     trayQuietTitle:"", trayRevealAt:0, trayRevealTimer:null,
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:FS_MIN,
@@ -2044,20 +2044,19 @@
       var selected=!!die&&((state.rollConfig&&state.rollConfig.destinyDieId===die.id)||
         (state.destinyStaged&&state.destinyStaged.dieId===die.id)||
         stagedList().some(function(item){return item.kind==="destiny"&&item.destinyDieId===die.id;}));
-      // The pool's own +/− live behind a ⋮ menu now, off to the side of the
-      // die itself, so the die's own footprint stops carrying two extra tiny
-      // buttons -- they never touched Points or Score, only how many dice of
-      // this size are in the pool.
-      var menuOpen=state.destinyPoolMenu===sides;
-      var poolMenu=menuOpen?"<div class=\"fh-cd-dpoolmenu\">"+
-        "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(available.length>=3?" disabled":"")+">+ Add d"+sides+"</button>"+
-        "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(available.length?"":" disabled")+">− Remove d"+sides+"</button></div>":"";
-      return "<span class=\"fh-cd-poolwrap\">"+
-        "<button type=\"button\" class=\"fh-cd-dmenu"+(menuOpen?" is-active":"")+"\" data-destiny-menu=\""+sides+"\" aria-haspopup=\"true\" aria-expanded=\""+(menuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny d"+sides+" pool\">"+glyph("dots")+"</button>"+
-        "<button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
-        pickerFace(sides,PICKER_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button>"+
-        poolMenu+"</span>";
+      return "<span class=\"fh-cd-poolwrap\"><button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
+        pickerFace(sides,PICKER_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
     }).join("");
+    // One ⋮ pilots every size's pool from a single popup -- not five separate
+    // menus scattered across the row. It never touches Points or Score, only
+    // how many dice of each size are in the pool.
+    var poolMenuOpen=!!state.destinyPoolMenu;
+    var poolMenu=poolMenuOpen?"<div class=\"fh-cd-dpoolmenu\">"+DIE_SEQUENCE.map(function(sides){
+      var count=state.destiny.dice.filter(function(die){return die.sides===sides&&die.available;}).length;
+      return "<div class=\"fh-cd-dpoolrow\"><b>d"+sides+"</b><span class=\"fh-cd-dpoolcount\">"+count+"</span>"+
+        "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(count?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button>"+
+        "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(count>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button></div>";
+    }).join("")+"</div>":"";
     // The Score changes once in a campaign, so it is plain text with a
     // click-to-edit affordance instead of a permanently locked input.
     var score=state.scoreEditing
@@ -2073,6 +2072,7 @@
       "<span class=\"fh-cd-dslash\">/</span>"+
       "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
+      "<span class=\"fh-cd-poolmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny dice pool\">"+glyph("dots")+"</button>"+poolMenu+"</span>"+
       "<span class=\"fh-cd-pool\">"+dice+"</span>"+
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
@@ -2707,7 +2707,7 @@
     if(button.dataset.scoreEdit!==undefined){state.scoreEditing=true;render();return;}
     /* A gold die is picked up exactly like a white one: the click stages it,
        ROLL spends it, and a right click on it in the tray puts it back. */
-    if(button.dataset.destinyDie!==undefined){state.destinyPoolMenu=0;stageDestinyFromPool(button.dataset.destinyDie);return;}
+    if(button.dataset.destinyDie!==undefined){state.destinyPoolMenu=false;stageDestinyFromPool(button.dataset.destinyDie);return;}
     if(rollTransactionActive()){warnRollLocked();return;}
     if(button.id==="fhPsChromeToggle"){state.chromeOpen=!state.chromeOpen;render();return;}
     if(button.id==="fhPsSync"||button.id==="fhPsRelink"||button.id==="fhPsLevel"||button.id==="fhPsCorrect")state.menuOpen=false;
@@ -2721,8 +2721,8 @@
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;prepareTrayForConfig(state.rollConfig);render();return;}
     if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}if(button.id==="fhPsCloseConsole"){clearDiceTray(true);return;}
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
-    if(button.dataset.destinyMenu!==undefined){var menuSides=Number(button.dataset.destinyMenu);state.destinyPoolMenu=state.destinyPoolMenu===menuSides?0:menuSides;render();return;}
-    if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");state.destinyPoolMenu=0;adjustDestinyDie(pool[0],pool[1]);return;}
+    if(button.dataset.destinyPoolmenu!==undefined){state.destinyPoolMenu=!state.destinyPoolMenu;render();return;}
+    if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
     if(button.dataset.exhStep!==undefined){setExhaustion(exhaustionLevel()+Number(button.dataset.exhStep),"Adjusted by hand");render();return;}
     /* A long rest always clears a level; a short rest may clear one MORE, but

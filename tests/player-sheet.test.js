@@ -104,8 +104,15 @@ assert.match(destiny, /fh-cd-arcana[^>]*>The Hermit</, "the Arcana name still si
 // REWRITTEN (round 6): Eric asked for the caption back, matching SKILLS & TOOLS --
 // the Arcana name alone did not read as a section title.
 assert.match(destiny, /fh-cd-cap">DESTINY/, "the Destiny zone carries the same caption style as Skills & Tools");
-assert.match(destiny, /class="fh-cd-dmenu"/, "each pool has a ⋮ menu instead of separate +\/- stepper buttons");
+// REWRITTEN: Eric asked for one ⋮ piloting every size, not five scattered menus.
+assert.equal((destiny.match(/class="fh-cd-dmenu/g) || []).length,1,"a single ⋮ pilots every size's pool, not one per die");
 assert.doesNotMatch(destiny, /fh-cd-poolstack/, "the old two-button stepper is gone");
+t.state.destinyPoolMenu=true;
+const destinyMenuOpen=t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}});
+assert.equal((destinyMenuOpen.match(/fh-cd-dpoolrow/g)||[]).length,5,"the single popup lists all five sizes at once");
+assert.match(destinyMenuOpen,/data-destiny-pool="4:1"/,"and each row can still add");
+assert.match(destinyMenuOpen,/data-destiny-pool="4:-1"/,"and remove that size specifically");
+t.state.destinyPoolMenu=false;
 t.state.destiny.points=10;
 assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}),/fh-cd-overflow"[^>]*>\+2</,"points above the Score use a label-free visual overflow cue");
 t.state.destiny.points=8;
