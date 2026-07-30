@@ -90,6 +90,15 @@ assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"],[
 assert.equal(root.querySelectorAll("[data-zone]").length,7,"the dock shows its seven zones at once");
 openMenu();
 assert.ok(root.querySelector("#fhPsLevel"),"an unlinked character keeps Level Up under the menu");
+/* General rule: a click outside an open dropdown closes it. root itself is
+   not a button, so handleClick no-ops on it -- a click that changes nothing
+   else, only proving the outside-close rule on its own. */
+root.click();
+assert.equal(root.querySelector(".fh-cd-menu"),null,"a click outside the header menu closes it");
+
+openMenu();
+document.body.click();
+assert.equal(root.querySelector(".fh-cd-menu"),null,"a click outside the dock entirely closes it too");
 
 t.state.profile.ddbLinked=true;
 t.state.menuOpen=true;
@@ -387,6 +396,14 @@ scoreInput.dispatchEvent(new window.Event("change",{bubbles:true}));
 assert.equal(t.state.destiny.score,Number(scoreBefore)+1,"the typed Score is committed");
 assert.equal(root.querySelector('[data-destiny-field="score"]'),null,"committing closes the inline editor");
 t.state.destiny.score=Number(scoreBefore);t.render();
+
+/* ── One ⋮ pilots every Destiny size's pool; outside-click closes it ── */
+root.querySelector("[data-destiny-poolmenu]").click();
+assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"the ⋮ opens the pool menu");
+root.querySelector('.fh-cd-dpoolmenu [data-destiny-pool="4:1"]').click();
+assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"acting inside the menu (Add) keeps it open for the next size");
+root.click();
+assert.equal(root.querySelector(".fh-cd-dpoolmenu"),null,"a click outside the pool menu closes it, same general rule as the header menu");
 
 /* ── Vitals: full words, five passives, tracked hit points ───── */
 assert.match(root.querySelector(".fh-cd-vsave").textContent,/^Save /,"saves are spelled out instead of SV");

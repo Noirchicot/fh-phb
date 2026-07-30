@@ -2798,6 +2798,28 @@
      clickable row or tracker pip would otherwise never reach it. Core still
      handles everything outside a panel body, and anything the panel declines. */
   function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
+  /* ── General rule: a click outside an open dropdown closes it ─────
+     Applies to every small anchored popup (the header's ⋮, the Destiny pool
+     menu, and whatever the same pattern grows next) -- not to the belt's
+     full panels or a roll's decision prompts, which already carry their own
+     explicit close/cancel and shouldn't vanish on a stray click. New popups
+     of the same kind register themselves here rather than each wiring up
+     their own outside-click listener. */
+  var OUTSIDE_CLICK_POPUPS=[
+    {isOpen:function(){return !!state.menuOpen;},close:function(){state.menuOpen=false;},box:".fh-cd-menu",toggle:"[data-menu-toggle]"},
+    {isOpen:function(){return !!state.destinyPoolMenu;},close:function(){state.destinyPoolMenu=false;},box:".fh-cd-dpoolmenu",toggle:"[data-destiny-poolmenu]"}
+  ];
+  function onOutsideClick(event){
+    if(!root)return;
+    var changed=false;
+    OUTSIDE_CLICK_POPUPS.forEach(function(popup){
+      if(!popup.isOpen())return;
+      var target=event.target;
+      if(target&&target.closest&&(target.closest(popup.box)||target.closest(popup.toggle)))return;
+      popup.close();changed=true;
+    });
+    if(changed)render();
+  }
   function onChange(event){
     if(delegateToPanel(event,"onChange"))return;
     if(event.target.dataset.diePortent!==undefined){mutateStagedDie({forcedResult:event.target.value===""?null:Number(event.target.value)});return;}
@@ -2870,6 +2892,11 @@
     root=mount;root.className="fh-cd-root";
     homeParent=root.parentNode;homeNext=root.nextSibling;
     root.addEventListener("click",onClick);root.addEventListener("change",onChange);root.addEventListener("keydown",onKeydown);
+    /* Bubble-phase on document, not root: it must also fire for a click on the
+       Handbook page around the dock while the dock floats, and it runs after
+       root's own click handling so a click that just opened a popup (via its
+       toggle) is not immediately read as "outside" and closed again. */
+    document.addEventListener("click",onOutsideClick);
     /* Panel-only hooks. focusout rather than blur, because blur does not bubble
        and a delegated listener would never see it. */
     root.addEventListener("input",function(event){delegateToPanel(event,"onInput");});
