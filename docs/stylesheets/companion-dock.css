@@ -380,12 +380,27 @@ select.fh-cd-chip{appearance:none;-webkit-appearance:none;padding-right:14px;
   background-image:linear-gradient(45deg,transparent 50%,var(--cd-gold) 50%),linear-gradient(135deg,var(--cd-gold) 50%,transparent 50%);
   background-position:calc(100% - 8px) 10px,calc(100% - 5px) 10px;background-size:3px 3px,3px 3px;background-repeat:no-repeat}
 select.fh-cd-chip.is-on{color:#fff8e2}
-.fh-cd-modctl{display:flex;align-items:center;gap:2px;margin-left:auto;flex:none}
-.fh-cd-modctl button{width:16px;height:16px;border:1px solid var(--cd-line);background:var(--cd-parch-2);border-radius:3px;
-  font-size:calc(9px * var(--cd-fs));font-family:inherit;color:var(--cd-muted);cursor:pointer;line-height:1;padding:0}
+/* Round 7: the custom +/- stepper is gone -- a number input already carries
+   its own up/down arrows, and repeating them next to it was redundant. MOD
+   no longer pushes itself right either: the white dice picker is the last
+   thing in this row now, and it does the pushing. */
+.fh-cd-modctl{display:flex;align-items:center;gap:2px;flex:none}
 .fh-cd-modctl input{width:30px;height:16px;border:1px solid var(--cd-line-soft);background:#fffdf6;border-radius:3px;
   text-align:center;font-size:calc(9px * var(--cd-fs));font-family:inherit;color:var(--cd-ink);padding:0}
 .fh-cd-modctl small{font-size:calc(7px * var(--cd-fs));color:var(--cd-gold);letter-spacing:.05em;margin-right:2px}
+/* The white picker now lives in the same row as D/-/A, FH+2 and MOD, pushed
+   to the right so it starts in the same column the Destiny pool's dice do,
+   instead of its own row underneath. Wraps to its own line when the row is
+   too narrow to hold both the controls and seven dice at once. */
+.fh-cd-consolerow{flex-wrap:wrap}
+.fh-cd-consolerow .fh-cd-whiterow{margin-left:auto}
+.fh-cd-consolerow.is-free .fh-cd-whiterow{margin-left:auto;padding-top:0}
+/* No box, no repeated "FREE ROLL" label -- the empty console already says
+   this is a free roll; the field just needs to look like part of the head
+   row, not a form control bolted onto it. */
+.fh-cd-freelabel{flex:1 1 auto;min-width:0;border:0;background:none;padding:0;
+  font-size:calc(11px * var(--cd-fs));font-weight:700;color:var(--cd-oxblood);font-family:inherit}
+.fh-cd-freelabel::placeholder{color:var(--cd-faint);font-weight:600}
 
 /* Advanced drawer (portents, per-die A/D, bonus rows) */
 .fh-cd-srcmark{width:12px;flex:none;color:var(--cd-gold-bright);display:grid;place-items:center;font-size:calc(7.5px * var(--cd-fs));font-weight:800}

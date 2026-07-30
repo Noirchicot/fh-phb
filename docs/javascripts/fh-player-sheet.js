@@ -2533,30 +2533,40 @@
     var cfg=state.rollConfig,entry=cfg&&cfg.editingId?state.history.find(function(item){return item.id===cfg.editingId;}):null;
     var locked=!!entry,open=rollOpen();
     var bonusDice=cfg?(cfg.bonusDice||[]):[];
-    // Head: a loaded check names itself; a free roll gets a label to name itself.
+    /* Head: a loaded check names itself, its DC beside its own ability -- not
+       down in the modifier row, which is about the roll's mechanics, not its
+       target. A free roll gets a plain, borderless field to name itself: no
+       "FREE ROLL" label repeating what the empty console already says, no box
+       around it competing with the boxed controls that actually need one. */
     var head=cfg
       ? "<div class=\"fh-cd-crow fh-cd-chead\"><span class=\"fh-cd-cname\">"+esc(cfg.name)+" <b>"+signed(cfg.baseBonus)+"</b></span>"+
         "<span class=\"fh-cd-cmeta\">"+esc(cfg.note||cfg.ability||"")+"</span>"+
+        "<span class=\"fh-cd-dc\">DC <input id=\"fhPsDc\" type=\"number\" min=\"0\" value=\""+esc(cfg.dc)+"\" placeholder=\"—\"></span>"+
         "<button class=\"fh-cd-cclose\" id=\"fhPsCloseConsole\" type=\"button\" aria-label=\"Close the roll console\">"+iconSvg("close")+"</button></div>"
-      : "<div class=\"fh-cd-crow fh-cd-chead\"><span class=\"fh-cd-cname is-free\">FREE ROLL</span>"+
-        "<input id=\"fhPsTrayLabel\" maxlength=\"48\" value=\""+esc(state.trayLabel)+"\" placeholder=\"Damage / free roll…\" aria-label=\"Roll label\"></div>";
-    // Row 1 belongs to a check: modes, the fixed +2, the manual modifier, the DC.
+      : "<div class=\"fh-cd-crow fh-cd-chead\">"+
+        "<input id=\"fhPsTrayLabel\" class=\"fh-cd-freelabel\" maxlength=\"48\" value=\""+esc(state.trayLabel)+"\" placeholder=\"Damage / free roll…\" aria-label=\"Roll label\"></div>";
+    /* Row 1 belongs to a check: modes, the fixed +2, the manual modifier --
+       and, pushed to the right by the white dice group's own auto margin, the
+       picker itself. It used to sit on its own row below; now it lines up
+       with the controls that feed the same roll, in the same column the
+       Destiny pool's dice start from. */
     var row1="";
     if(cfg){
-      row1="<div class=\"fh-cd-crow\"><span class=\"fh-cd-seg\">"+
+      row1="<div class=\"fh-cd-crow fh-cd-consolerow\"><span class=\"fh-cd-seg\">"+
         "<button type=\"button\" class=\"is-disadvantage"+(cfg.d20Mode==="disadvantage"?" is-on":"")+"\" data-die-mode=\"disadvantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Disadvantage\">D</button>"+
         "<button type=\"button\" class=\""+(cfg.d20Mode==="flat"?"is-on":"")+"\" data-die-mode=\"flat\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Flat roll\">—</button>"+
         "<button type=\"button\" class=\"is-advantage"+(cfg.d20Mode==="advantage"?" is-on":"")+"\" data-die-mode=\"advantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Advantage\">A</button></span>"+
         "<button type=\"button\" id=\"fhPsPlusTwo\" class=\"fh-cd-chip"+(cfg.plusTwo?" is-on":"")+"\" title=\"Fixed Fate's Hand +2\">FH +2</button>"+
-        "<span class=\"fh-cd-modctl\"><small>MOD</small><button type=\"button\" data-custom-step=\"-1\" aria-label=\"Lower the manual modifier\">−</button>"+
-        "<input id=\"fhPsCustom\" type=\"number\" value=\""+(Number(cfg.custom)||0)+"\" aria-label=\"Manual modifier\">"+
-        "<button type=\"button\" data-custom-step=\"1\" aria-label=\"Raise the manual modifier\">+</button></span>"+
-        "<span class=\"fh-cd-dc\">DC <input id=\"fhPsDc\" type=\"number\" min=\"0\" value=\""+esc(cfg.dc)+"\" placeholder=\"—\"></span></div>";
+        "<span class=\"fh-cd-modctl\"><small>MOD</small>"+
+        "<input id=\"fhPsCustom\" type=\"number\" value=\""+(Number(cfg.custom)||0)+"\" aria-label=\"Manual modifier\"></span>"+
+        renderWhiteDice()+"</div>";
+    }else{
+      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\">"+renderWhiteDice()+"</div>";
     }
     // The FINE TUNE drawer is gone: a Portent belongs to one die, so it lives in
     // that die's own right-click menu rather than in a console-wide panel.
     return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE<small>left click adds a die · right click tunes it</small></div>"+
-      head+row1+renderWhiteDice()+"</section>";
+      head+row1+"</section>";
   }
   /* The one place dice come from. A blank die per size: left click adds one to
      the tray, right click takes one back. Once in the tray, a right click on the
