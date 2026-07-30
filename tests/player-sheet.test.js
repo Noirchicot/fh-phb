@@ -100,8 +100,12 @@ assert.doesNotMatch(destiny, /data-destiny-lock/, "the padlock is gone with the 
 assert.match(destiny, /fh-cd-dlab">POINTS</, "POINTS labels the left number");
 assert.match(destiny, /fh-cd-dlab">SCORE</, "SCORE labels the right number");
 assert.doesNotMatch(destiny, /fhPsLongRest/, "Rest moved out of Destiny into the vitals line");
-assert.match(destiny, /fh-cd-arcana[^>]*>The Hermit</, "the Arcana name replaces the two-line caption");
-assert.doesNotMatch(destiny, /fh-cd-cap/, "the Destiny caption line is gone");
+assert.match(destiny, /fh-cd-arcana[^>]*>The Hermit</, "the Arcana name still sits at the end of the row");
+// REWRITTEN (round 6): Eric asked for the caption back, matching SKILLS & TOOLS --
+// the Arcana name alone did not read as a section title.
+assert.match(destiny, /fh-cd-cap">DESTINY/, "the Destiny zone carries the same caption style as Skills & Tools");
+assert.match(destiny, /class="fh-cd-dmenu"/, "each pool has a ⋮ menu instead of separate +\/- stepper buttons");
+assert.doesNotMatch(destiny, /fh-cd-poolstack/, "the old two-button stepper is gone");
 t.state.destiny.points=10;
 assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}),/fh-cd-overflow"[^>]*>\+2</,"points above the Score use a label-free visual overflow cue");
 t.state.destiny.points=8;
