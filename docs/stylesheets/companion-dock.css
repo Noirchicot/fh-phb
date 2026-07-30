@@ -877,7 +877,20 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   .fh-cd-srow>button{font-size:calc(10px * var(--cd-fs))}
   .fh-cd-gear{width:20px;height:20px}
   .fh-cd-gear svg{width:13px;height:13px}
-  .fh-cd-chip{height:26px}
+  .fh-cd-toggle{height:26px}
+}
+
+/* Round 8 fix: below ~453px the console row (leadcol + ⋮ + ROLL + 7 dice) no
+   longer fits on one line -- flex-wrap:nowrap was clipping the d20/d% off the
+   edge instead of the "wraps to its own line" the row was always meant to do
+   (an old comment said as much while the CSS said nowrap; never true until
+   now). Breaks BEFORE the overflow starts, not after, so nothing ever clips,
+   right down to --cd-floor. Verified: at 360px the wrapped whiterow (307px)
+   and the leadcol+⋮ line (121px) both fit inside the 340px content box with
+   room to spare. */
+@media(max-width:460px){
+  .fh-cd-consolerow{flex-wrap:wrap;row-gap:5px}
+  .fh-cd-whiterow{margin-left:0}
 }
 
 /* Seven tabs stop fitting one row somewhere under ~420px, and a belt that
