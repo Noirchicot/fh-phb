@@ -9,6 +9,7 @@
   --cd-gold:#8a6a2a; --cd-gold-bright:#9c6b16; --cd-gold-hi:#c9a45a; --cd-gold-glow:#f1c96f;
   --cd-oxblood:#58180d; --cd-red:#9f2f31;
   --cd-ok:#4a7a3a; --cd-bad:#9f2f31;
+  --cd-yellow:#d9a520; --cd-yellow-hi:#a8760f;
   /* Text scale. JS writes --cd-fs-PREF (what the player picked); --cd-fs is what
      the dock actually uses. Keeping them separate is what lets a media query cap
      the scale on a screen too narrow to afford it -- a property cannot be defined
@@ -312,11 +313,18 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   -moz-appearance:textfield;appearance:textfield}
 .fh-cd-pts input::-webkit-outer-spin-button,.fh-cd-pts input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .fh-cd-overflow{color:var(--cd-red);font-weight:700;font-size:calc(9px * var(--cd-fs))}
-/* One column for both dice groups. Both are [⋮][dice…] and both get the same
-   box, right-aligned, with their contents packed left -- so the gold d4 sits
-   exactly above the white d4 whatever else shares their rows. The width is
-   the wider of the two groups (the white row: 7 dice + the ⋮). */
-:root{--cd-dicecol:calc(7 * 31px + 6 * 5px + 15px + 5px)}
+/* Round 8: the Destiny ⋮ and the console ⋮ (below it) both sit right after
+   whatever leads their row -- Score here, D/A/+2 there -- and those two lead
+   groups are not the same width. .fh-cd-leadcol gives both a shared MIN
+   width instead: whichever group is narrower just leaves a little air before
+   its ⋮, and both ⋮ land at the same x without a magic absolute offset that
+   would drift the moment either group's content changed width. */
+:root{--cd-leadcol-w:calc(96px * var(--cd-fs))}
+.fh-cd-leadcol{display:flex;align-items:center;gap:5px;flex:none;min-width:var(--cd-leadcol-w)}
+/* The dice column: seven dice, their own width, nothing else -- the ⋮ no
+   longer lives in here (it moved to .fh-cd-leadcol's far side), so gold and
+   white no longer need to share one box to line up die-for-die. */
+:root{--cd-dicecol:calc(7 * 31px + 6 * 5px)}
 .fh-cd-pool{display:flex;gap:5px;align-items:center;margin-left:auto;width:var(--cd-dicecol);justify-content:flex-start}
 .fh-cd-ddie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer}
 .fh-cd-ddie svg{width:100%;height:100%;display:block}
@@ -362,26 +370,26 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    check has no header, the tray below names it. The check name, its ability,
    the inline DC and the ✕ that lived here are gone with it. */
 .fh-cd-chead{margin-top:2px}
+/* .fh-cd-seg is still what the text-size control (top of the dock) uses --
+   D/A/+2 used to share it too, but round 8 split them into three independent
+   buttons (below), so this stays only for whoever else picks one of a set. */
 .fh-cd-seg{display:flex;border:1px solid var(--cd-line);border-radius:5px;overflow:hidden;flex:none}
 .fh-cd-seg button{width:24px;height:22px;border:0;background:var(--cd-parch-2);font-size:calc(8.5px * var(--cd-fs));font-family:inherit;
   font-weight:700;color:var(--cd-faint);cursor:pointer;border-right:1px solid var(--cd-line)}
 .fh-cd-seg button:last-child{border-right:0}
 .fh-cd-seg button.is-on{background:var(--cd-gold-bright);color:#fff8e2}
-.fh-cd-seg button.is-disadvantage.is-on{background:var(--cd-red)}
-/* A/D needs room for two glyphs and a slash. */
-.fh-cd-seg button.is-choice{width:30px;font-size:calc(7.4px * var(--cd-fs));letter-spacing:-.02em}
-.fh-cd-seg button.is-choice.is-on{background:var(--cd-oxblood)}
 .fh-cd-seg button:disabled{opacity:.4;cursor:not-allowed}
-.fh-cd-chip{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 7px;border:1px solid var(--cd-line);
-  border-radius:11px;background:var(--cd-parch-2);font-size:calc(8.3px * var(--cd-fs));font-family:inherit;font-weight:600;color:var(--cd-muted);cursor:pointer;flex:none}
-.fh-cd-chip svg{width:10px;height:10px;display:block}
-.fh-cd-chip.is-on{background:linear-gradient(180deg,#caa752,#9c6b16);border-color:#6d4a10;color:#fff8e2}
-.fh-cd-chip .fh-cd-sz{font-size:calc(7px * var(--cd-fs));background:rgba(0,0,0,.14);border-radius:3px;padding:0 3px;margin-left:1px}
-.fh-cd-chip:disabled{opacity:.4;cursor:not-allowed}
-select.fh-cd-chip{appearance:none;-webkit-appearance:none;padding-right:14px;
-  background-image:linear-gradient(45deg,transparent 50%,var(--cd-gold) 50%),linear-gradient(135deg,var(--cd-gold) 50%,transparent 50%);
-  background-position:calc(100% - 8px) 10px,calc(100% - 5px) 10px;background-size:3px 3px,3px 3px;background-repeat:no-repeat}
-select.fh-cd-chip.is-on{color:#fff8e2}
+/* Round 8: D, A and +2 stand alone -- not a single-selection segment -- each
+   with its own colour when lit, because only one of the three (or none, i.e.
+   flat) is ever on; see toggleRollMode() in the JS for the mutual exclusion. */
+.fh-cd-toggle{width:22px;height:22px;flex:none;border:1px solid var(--cd-line);border-radius:5px;
+  background:var(--cd-parch-2);font-size:calc(8.5px * var(--cd-fs));font-family:inherit;font-weight:700;
+  color:var(--cd-faint);cursor:pointer;padding:0;line-height:1}
+.fh-cd-toggle:disabled{opacity:.4;cursor:not-allowed}
+.fh-cd-toggle.is-d.is-on{background:var(--cd-red);border-color:var(--cd-oxblood);color:#fff8e2}
+.fh-cd-toggle.is-a.is-on{background:var(--cd-ok);border-color:#2f5423;color:#fff8e2}
+.fh-cd-toggle.is-plus2{border-radius:50%;font-size:calc(7.4px * var(--cd-fs))}
+.fh-cd-toggle.is-plus2.is-on{background:var(--cd-yellow);border-color:var(--cd-yellow-hi);color:#3a2c05}
 /* Round 7b: MOD and DC moved behind the console's ⋮ -- both are set once and
    then just sit in the row taking width from the dice. Same popup pattern as
    the Destiny pool's, and the future home of the standing damage rules. */
@@ -393,10 +401,9 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-cmenurow input{width:44px;height:18px;border:1px solid var(--cd-line);background:#fffdf6;border-radius:3px;
   text-align:center;font-size:calc(9px * var(--cd-fs));font-family:inherit;color:var(--cd-ink);padding:0}
 .fh-cd-cmenunote{padding:3px 5px;max-width:150px;font-size:calc(7.6px * var(--cd-fs));color:var(--cd-faint);line-height:1.35}
-/* The white picker now lives in the same row as D/-/A, FH+2 and MOD, pushed
-   to the right so it starts in the same column the Destiny pool's dice do,
-   instead of its own row underneath. Wraps to its own line when the row is
-   too narrow to hold both the controls and seven dice at once. */
+/* The white picker lives in the same row as D/A/+2 and the ⋮, pushed to the
+   right (margin-left:auto, see .fh-cd-whiterow) so it stays flush against
+   the row's far edge whatever .fh-cd-leadcol's content does. */
 .fh-cd-consolerow{flex-wrap:nowrap}
 /* No box, no repeated "FREE ROLL" label -- the empty console already says
    this is a free roll; the field just needs to look like part of the head
@@ -520,7 +527,8 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-diewrap.is-tunable.is-pending:not(.is-flashing) .fh-cd-die{animation:fh-cd-call 1.15s ease-in-out infinite}
 
 /* ── The white picker: the one place dice come from ─────────────── */
-.fh-cd-whiterow{display:flex;align-items:center;gap:5px;width:var(--cd-dicecol);justify-content:flex-start;margin-left:auto}
+:root{--cd-rollbtn:50px}
+.fh-cd-whiterow{display:flex;align-items:center;gap:5px;width:calc(var(--cd-rollbtn) + 5px + var(--cd-dicecol));justify-content:flex-start;margin-left:auto}
 .fh-cd-wdie{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;width:31px;height:auto;padding:0;border:0;background:none;cursor:pointer;flex:none}
 .fh-cd-wdie svg{width:100%;height:100%;display:block}
 .fh-cd-wdie:hover svg,.fh-cd-wdie:hover .fh-cd-pickerimg{filter:brightness(1.06) drop-shadow(0 0 4px rgba(241,201,111,.8))}
@@ -535,25 +543,14 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-pickerimg[data-sides="6"]{transform:scale(.8)}
 .fh-cd-pickerlabel{font-size:calc(7px * var(--cd-fs));font-weight:700;line-height:1;color:var(--cd-muted);font-family:inherit}
 
-/* ── ROLL and CLEAR TRAY: the only permanent buttons ────────────────
-   ROLL is the die itself -- the artwork carries the word on its own face,
-   so the button is nothing but the d20.
-   The bar keeps only the height CLEAR TRAY needs, and the die is lifted out
-   of the flow to break out of it on purpose: its top point rises into the
-   gap between the white d4 and d6 above, its base rests over the tray below.
-   Its centre is pinned to that gap rather than to the bar -- measured in from
-   the dice column's right edge, the gap sits at ⋮ + gap + one die + half a
-   gap, so it tracks the column instead of a hardcoded pixel. */
-/* The negative bottom margin pulls the badges and the tray up under the die:
-   the span from the white dice down to the tray is a touch wider than the die
-   itself, so without closing it the die could break out above or below but not
-   both. Closing it lets the point sit in the dice and the base on the tray. */
-.fh-cd-acts-bar{position:relative;display:flex;align-items:center;gap:6px;padding:0 10px;min-height:24px;margin-bottom:-16px}
-.fh-cd-mainroll{position:absolute;z-index:6;top:50%;
-  left:calc(100% - 10px - var(--cd-dicecol) + 15px + 5px + 31px + 2.5px);
-  transform:translate(-50%,calc(-50% - 5px));
-  display:block;padding:0;border:0;background:none;line-height:0;cursor:pointer}
-.fh-cd-rolldie{flex:none;width:62px;height:62px;display:block;
+/* ── ROLL: the one permanent action, now living IN the white dice row ──
+   ROLL is the die itself -- the artwork carries the word on its own face, so
+   the button is nothing but the d20. Round 8: it leads .fh-cd-whiterow, in
+   the slot the console's ⋮ vacated, in normal flow -- it no longer needs to
+   break out of a separate bar to reach the dice above it, now that the whole
+   console (D/A/+2/⋮ and the dice both) is always on screen at once. */
+.fh-cd-mainroll{flex:none;display:block;padding:0;border:0;background:none;line-height:0;cursor:pointer}
+.fh-cd-rolldie{flex:none;width:var(--cd-rollbtn);height:var(--cd-rollbtn);display:block;
   filter:drop-shadow(0 3px 5px rgba(40,20,5,.45));transition:transform .12s ease,filter .12s ease}
 .fh-cd-mainroll:hover .fh-cd-rolldie{transform:scale(1.05);filter:drop-shadow(0 4px 8px rgba(40,20,5,.55)) brightness(1.08)}
 .fh-cd-mainroll:active .fh-cd-rolldie{transform:scale(.97)}
@@ -563,6 +560,8 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 /* An armed Chaos roll pulses the die rather than repainting a plate. */
 .fh-cd-mainroll.is-chaos .fh-cd-rolldie{animation:fh-cd-call 1s ease-in-out infinite;
   filter:drop-shadow(0 0 6px rgba(255,95,103,.85)) drop-shadow(0 3px 5px rgba(40,20,5,.45))}
+/* ── CLEAR TRAY: the only permanent button left in this bar ── */
+.fh-cd-acts-bar{position:relative;display:flex;align-items:center;gap:6px;padding:0 10px;min-height:24px}
 .fh-cd-mainclear{position:absolute;right:10px;top:50%;transform:translateY(-50%);flex:none;height:24px;padding:0 9px;
   border:1px solid var(--cd-line);border-radius:6px;background:var(--cd-parch-2);
   color:var(--cd-muted);font-family:inherit;font-size:calc(7.6px * var(--cd-fs));font-weight:700;letter-spacing:.08em;cursor:pointer}

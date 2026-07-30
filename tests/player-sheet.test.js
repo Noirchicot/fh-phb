@@ -119,10 +119,15 @@ t.state.destiny.points=8;
 assert.doesNotMatch(destiny, /TRAY/, "Destiny remains a compact horizontal strip");
 assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted");
 // REWRITTEN (dock v5): the tray bar of die buttons is gone. Dice now come from
-// the white picker in the console, and the roller carries only ROLL / CLEAR TRAY.
+// the white picker in the console.
+// REWRITTEN (round 8): ROLL itself moved out of the roller and into the
+// console's white dice row (the slot the console's ⋮ vacated) -- the whole
+// console is always on screen now, so ROLL no longer needs a separate bar to
+// break out of. The roller carries only CLEAR TRAY.
 assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray\b/, "the roller no longer carries a bar of die buttons");
-assert.match(t.renderStageZone(), /data-roll-now/, "it carries the one permanent ROLL");
-assert.match(t.renderStageZone(), /data-clear-tray/, "and CLEAR TRAY beside it");
+assert.doesNotMatch(t.renderStageZone(), /data-roll-now/, "ROLL no longer lives in the roller");
+assert.match(t.renderConsole(), /data-roll-now/, "it carries the one permanent ROLL, in the white dice row instead");
+assert.match(t.renderStageZone(), /data-clear-tray/, "and CLEAR TRAY stays in the roller");
 assert.match(t.renderConsole(), /data-add-tray-die="100"/, "the white picker in the console exposes d4 through d100");
 
 t.state.record = {build:{

@@ -174,9 +174,17 @@ root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
 assert.equal(t.state.rollConfig.bonusDice.length,1,"a white die joins the prepared roll");
 assert.equal(t.state.rollConfig.bonusDice[0].sides,4,"and keeps the size that was clicked");
 assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),"advantage stays selected");
+// REWRITTEN (round 8): D, A and +2 are one mutually-exclusive set now (Eric:
+// "when A/D/+2 are off it's a flat roll ... can't be 2 or 3 at a time") --
+// lighting +2 turns advantage back off instead of stacking with it, and
+// clicking advantage again turns +2 back off in turn.
 root.querySelector("#fhPsPlusTwo").click();
+assert.equal(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),false,"+2 turns advantage back off");
 assert.ok(root.querySelector(".fh-cd-diewrap.is-modifier"),"the +2 option appears as a visible token beside the dice");
 assert.equal(root.querySelector(".fh-cd-diewrap.is-modifier .fh-cd-src").textContent.trim(),"","the fixed +2 token stays free of a source seal");
+root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
+assert.equal(root.querySelector("#fhPsPlusTwo").classList.contains("is-on"),false,"advantage turns +2 back off in turn");
+assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),"advantage is back on for the roll below");
 
 /* the tray feeds bonus dice into an open console, capped at three */
 root.querySelector('[data-add-tray-die="8"]').click();
@@ -196,7 +204,9 @@ assert.equal(entry.d20s.length,2,"advantage rolls two d20s");
 assert.equal(entry.kept,Math.max(entry.d20s[0],entry.d20s[1]),"advantage keeps the higher d20");
 // REWRITTEN (dock v5): the die is a plain d4 until a seal is put on it.
 assert.equal(entry.bonusDice[0].sides,4,"the picked d4 rolls beside the d20s");
-assert.equal(t.state.trayResults.length,4,"the frame displays both d20s, the bonus die and the +2 token");
+// REWRITTEN (round 8): +2 was turned back off (by re-clicking advantage,
+// above) before this roll, so the frame carries no +2 token here.
+assert.equal(t.state.trayResults.length,3,"the frame displays both d20s and the bonus die");
 assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="20"]').length,2,"resolved d20s use the static 3D renderer");
 assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="4"]').length,1,"the resolved bonus d4 uses the same static 3D renderer");
 assert.equal(root.querySelector('.fh-cd-static3d').dataset.result,String(entry.d20s[0]),"the renderer receives the face already chosen by FHPC");

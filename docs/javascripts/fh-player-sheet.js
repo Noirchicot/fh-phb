@@ -2025,7 +2025,7 @@
     return summary.join(" · ");
   }
   function renderStageZone(){
-    var busy=rollTransactionActive(),armed=state.pendingArmed;
+    var busy=rollTransactionActive();
     /* The badge strip is always there: it carries what the table still owes,
        and the … pins a reminder of your own beside it. */
     /* Exhaustion is not a debt the player pinned, it is a condition the sheet
@@ -2043,15 +2043,11 @@
        above the dice it happened to, and a menu the player opened stays under
        them so it never pushes the roll off screen. */
     return "<section class=\"fh-cd-stage\" data-zone=\"roller\">"+
+      /* Round 8: ROLL itself moved into the console's white dice row (the slot
+         its ⋮ vacated) now that the whole console is always visible and the
+         die no longer needs to break out of flow to reach the gap above it.
+         Only CLEAR TRAY is left here. */
       "<div class=\"fh-cd-acts-bar\">"+
-      /* The die IS the button -- the artwork carries the word on its own face,
-         and nothing else rides along: the composition line moved out to the
-         tray's legend, where the dice it describes actually are.
-         alt carries the word rather than aria-label: it names the button for a
-         screen reader AND is what the browser paints if the artwork ever fails
-         to load, so the primary action is never a blank square. */
-      "<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">"+
-      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\"></button>"+
       "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
       "<div class=\"fh-cd-temps\">"+badges+"</div>"+
       renderEventList()+
@@ -2071,7 +2067,7 @@
       var selected=!!die&&((state.rollConfig&&state.rollConfig.destinyDieId===die.id)||
         (state.destinyStaged&&state.destinyStaged.dieId===die.id)||
         stagedList().some(function(item){return item.kind==="destiny"&&item.destinyDieId===die.id;}));
-      return "<span class=\"fh-cd-poolwrap\"><button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
+      return "<span class=\"fh-cd-poolwrap\"><button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" title=\""+(die?"Left click waits it in the tray · right click takes it back":"")+"\" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
         pickerFace(sides,PICKER_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
     }).join("");
     // One ⋮ pilots every size's pool from a single popup -- not five separate
@@ -2091,6 +2087,10 @@
       : "<button class=\"fh-cd-score\" type=\"button\" data-score-edit title=\"Click to change the Destiny Score\">"+state.destiny.score+"</button>";
     return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-cap\">DESTINY</div>"+
       "<div class=\"fh-cd-destiny-row\">"+
+      /* Round 8: Points/Score share a .fh-cd-leadcol with the console's D/A/+2
+         (see renderConsole) -- a shared min-width, not a magic offset, is
+         what lines this ⋮ up with the console's ⋮ below it. */
+      "<span class=\"fh-cd-leadcol\">"+
       "<span class=\"fh-cd-dgroup is-pts\"><span class=\"fh-cd-pts\">"+
       "<button type=\"button\" data-destiny-step=\"points:-1\" aria-label=\"One Destiny Point less\">−</button>"+
       "<input data-destiny-field=\"points\" type=\"number\" value=\""+state.destiny.points+"\" aria-label=\"Current Destiny Points\">"+
@@ -2099,10 +2099,9 @@
       "<span class=\"fh-cd-dslash\">/</span>"+
       "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
-      /* The ⋮ lives INSIDE .fh-cd-pool, right against d4 -- .fh-cd-pool carries
-         margin-left:auto to push the whole dice group toward the Arcana side,
-         which left a ~100px gap when the ⋮ sat just outside it as a sibling. */
-      "<span class=\"fh-cd-pool\"><span class=\"fh-cd-poolmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny dice pool\">"+glyph("dots")+"</button>"+poolMenu+"</span>"+dice+"</span>"+
+      "</span>"+
+      "<span class=\"fh-cd-poolmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny dice pool\">"+glyph("dots")+"</button>"+poolMenu+"</span>"+
+      "<span class=\"fh-cd-pool\">"+dice+"</span>"+
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
       esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
@@ -2552,20 +2551,25 @@
        free rolls (it persists, and the read at roll time is guarded), but until
        that field reappears in the tray's legend it cannot be edited. */
     var head="";
-    /* Row 1 is what a check is rolled WITH: its mode, the fixed +2, and the
-       white dice. MOD and DC are set once and then just sit there taking room,
-       so they move behind the ⋮ -- which is also where the standing damage
-       rules will land once that design is settled. */
+    /* Row 1 is what a check is rolled WITH: its mode, the fixed +2, the ⋮ (MOD
+       and DC, set once and tucked away rather than sitting in the row), and
+       the white dice.
+       Round 8: D, A and +2 are three independent toggles now, not a single-
+       selection segment -- left OR right click lights one on, which turns any
+       other of the three off (all off = flat). See toggleRollMode(). The ⋮
+       used to lead the white dice row; it sits here now, right after +2. */
     var row1="";
     if(cfg){
-      row1="<div class=\"fh-cd-crow fh-cd-consolerow\"><span class=\"fh-cd-seg\">"+
-        "<button type=\"button\" class=\"is-disadvantage"+(cfg.d20Mode==="disadvantage"?" is-on":"")+"\" data-die-mode=\"disadvantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Disadvantage\">D</button>"+
-        "<button type=\"button\" class=\""+(cfg.d20Mode==="flat"?"is-on":"")+"\" data-die-mode=\"flat\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Flat roll\">—</button>"+
-        "<button type=\"button\" class=\"is-advantage"+(cfg.d20Mode==="advantage"?" is-on":"")+"\" data-die-mode=\"advantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" aria-label=\"Advantage\">A</button></span>"+
-        "<button type=\"button\" id=\"fhPsPlusTwo\" class=\"fh-cd-chip"+(cfg.plusTwo?" is-on":"")+"\" title=\"Fixed Fate's Hand +2\">FH +2</button>"+
+      row1="<div class=\"fh-cd-crow fh-cd-consolerow\">"+
+        "<span class=\"fh-cd-leadcol\">"+
+        "<button type=\"button\" class=\"fh-cd-toggle is-d"+(cfg.d20Mode==="disadvantage"?" is-on":"")+"\" data-die-mode=\"disadvantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" title=\"Disadvantage · left or right click to toggle\" aria-label=\"Disadvantage\" aria-pressed=\""+(cfg.d20Mode==="disadvantage"?"true":"false")+"\">D</button>"+
+        "<button type=\"button\" class=\"fh-cd-toggle is-a"+(cfg.d20Mode==="advantage"?" is-on":"")+"\" data-die-mode=\"advantage\" data-die-scope=\"d20\""+(locked?" disabled":"")+" title=\"Advantage · left or right click to toggle\" aria-label=\"Advantage\" aria-pressed=\""+(cfg.d20Mode==="advantage"?"true":"false")+"\">A</button>"+
+        "<button type=\"button\" id=\"fhPsPlusTwo\" class=\"fh-cd-toggle is-plus2"+(cfg.plusTwo?" is-on":"")+"\""+(locked?" disabled":"")+" title=\"Fixed Fate's Hand +2 · left or right click to toggle\" aria-label=\"Fate's Hand plus two\" aria-pressed=\""+(cfg.plusTwo?"true":"false")+"\">+2</button>"+
+        "</span>"+
+        renderConsoleMenu(cfg)+
         renderWhiteDice(cfg)+"</div>";
     }else{
-      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\">"+renderWhiteDice(null)+"</div>";
+      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\"><span class=\"fh-cd-leadcol\"></span>"+renderConsoleMenu(null)+renderWhiteDice(null)+"</div>";
     }
     // The FINE TUNE drawer is gone: a Portent belongs to one die, so it lives in
     // that die's own right-click menu rather than in a console-wide panel.
@@ -2592,14 +2596,17 @@
   /* The one place dice come from. A blank die per size: left click adds one to
      the tray, right click takes one back. Once in the tray, a right click on the
      die itself gives it a colour, a seal and its own advantage. */
-  /* The ⋮ leads this row exactly as it leads the Destiny pool, so both dice
-     groups share one shape -- [⋮][dice…] -- and can therefore share one column
-     and line up die-for-die, without either row needing a magic offset that
-     would drift the moment the Arcana's name changed width. */
+  /* Round 8: ROLL itself leads this row now, in the slot the ⋮ vacated -- the
+     die IS the button, same artwork-carries-the-word design it always had,
+     just no longer needing to break out of .fh-cd-acts-bar to reach here since
+     it now lives in the row it used to only visually overlap. */
   function renderWhiteDice(cfg){
     var checkLoaded=!!cfg,counts=trayDieCounts(),calling=callingNow();
     var full=checkLoaded&&trayBonusCount()>=MAX_BONUS_DICE;
-    return "<div class=\"fh-cd-whiterow\">"+renderConsoleMenu(cfg)+ROLL_DIE_SIZES.map(function(sides){
+    var busy=rollTransactionActive(),armed=state.pendingArmed;
+    var rollBtn="<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">"+
+      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\"></button>";
+    return "<div class=\"fh-cd-whiterow\">"+rollBtn+ROLL_DIE_SIZES.map(function(sides){
       var count=counts[sides]||0;
       var disabled=!!state.pendingArmed||(checkLoaded&&(sides===20||sides===100))||(full&&!count)||(!checkLoaded&&state.traySelection.length>=MAX_FREE_DICE&&!count);
       return "<button type=\"button\" class=\"fh-cd-wdie"+(calling&&!disabled?" is-calling":"")+"\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+
@@ -3045,6 +3052,16 @@
   function pullDdb(value,modal){var url=null;if(value){try{url=canonicalDdbUrl(value);}catch(error){modal.element.querySelector("#fhPsPullError").textContent=error.message;return;}}var preservedOverrides=cloneData(state.profile&&state.profile.manualOverrides||{});state.message="Syncing D&D Beyond…";state.messageKind="roll";renderMessage();post("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(state.pseudo)+"/pull",url?{shareUrl:url}:{}).then(function(data){state.profile=Object.assign({},state.profile||{},data.profile||{});state.profile.manualOverrides=preservedOverrides;state.character=effectiveCharacter();if(modal)modal.close();var report=state.character.importReport||emptyImportReport(),warnings=report.unmappedSkills.length+report.unmappedTools.length;state.message="Character refreshed · "+report.importedTools.length+" DDB tool"+(report.importedTools.length===1?"":"s")+" imported"+(warnings?" · "+warnings+" unrecognized entr"+(warnings===1?"y":"ies")+" ignored":"")+".";state.messageKind=warnings?"warn":"success";render();}).catch(function(error){var message=friendlyPullError(error);if(modal)modal.element.querySelector("#fhPsPullError").textContent=message;else{state.message=message;state.messageKind="danger";render();}});}
   function openLevelUp(ch){var classes=CLASS_NAMES.slice();ch.classes.forEach(function(entry){if(classes.indexOf(entry.name)<0)classes.unshift(entry.name);});var classOptions=classes.map(function(name){return "<option "+(ch.classes[0]&&ch.classes[0].name===name?"selected":"")+">"+esc(name)+"</option>";}).join("");var statOptions="<option value=\"\">No increase</option>"+ABILITIES.map(function(key){return "<option value=\""+key+"\">"+key+" — "+ABILITY_NAMES[key]+"</option>";}).join("");var skillOptions="<option value=\"\">No skill</option>"+SKILLS.map(function(s){return "<option>"+s[0]+"</option>";}).join("");var modal=showModal("<p class=\"fh-mc-modal-kicker\">LEVEL "+(ch.level+1)+"</p><h3>What gains a level?</h3><label><span>Class</span><select id=\"fhPsLevelClass\">"+classOptions+"</select></label><div class=\"fh-mc-modal-grid\"><label><span>Ability increase 1</span><select id=\"fhPsStat1\">"+statOptions+"</select></label><label><span>Ability increase 2</span><select id=\"fhPsStat2\">"+statOptions+"</select></label></div><div class=\"fh-mc-modal-grid\"><label><span>Essential skill</span><select id=\"fhPsSkill1\">"+skillOptions+"</select></label><label><span>New tier</span><select id=\"fhPsTier1\"><option value=\"half\">Half</option><option value=\"proficient\" selected>Proficient</option><option value=\"expert\">Expert</option></select></label></div><label><span>New essential spells</span><textarea id=\"fhPsNewSpells\" placeholder=\"One per line or comma-separated\"></textarea></label><p class=\"fh-mc-modal-error\" id=\"fhPsLevelError\"></p><button class=\"fh-mc-modal-save\" id=\"fhPsLevelSave\">Apply Level Up</button>");modal.element.querySelector("#fhPsLevelSave").onclick=function(){var increases={};["#fhPsStat1","#fhPsStat2"].forEach(function(sel){var value=modal.element.querySelector(sel).value;if(value)increases[value]=(increases[value]||0)+1;});var skillName=modal.element.querySelector("#fhPsSkill1").value;var entry={id:uuid(),targetLevel:ch.level+1,className:modal.element.querySelector("#fhPsLevelClass").value,abilityIncreases:increases,essentialSkills:skillName?[{name:skillName,tier:modal.element.querySelector("#fhPsTier1").value}]:[],spells:modal.element.querySelector("#fhPsNewSpells").value.split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean),createdAt:new Date().toISOString()};saveProfile({levelUps:(state.profile.levelUps||[]).concat([entry])}).then(function(){modal.close();state.character=effectiveCharacter();state.message="Level-up saved. PB updated automatically.";state.messageKind="success";render();}).catch(function(error){modal.element.querySelector("#fhPsLevelError").textContent=error.message;});};}
 
+  /* D, A and the +2 chip are one mutually-exclusive set now (Eric, round 8):
+     lighting one turns off whichever of the other two was on, and lighting
+     the one already on turns it back off -- landing on flat. Both a left
+     click (handleClick) and a right click (onTrayContext) call this. */
+  function toggleRollMode(node){
+    var cfg=state.rollConfig;if(!cfg||cfg.editingId)return;
+    if(node.id==="fhPsPlusTwo"){cfg.plusTwo=!cfg.plusTwo;if(cfg.plusTwo)cfg.d20Mode="flat";}
+    else{var next=node.dataset.dieMode;cfg.d20Mode=cfg.d20Mode===next?"flat":next;cfg.plusTwo=false;}
+    prepareTrayForConfig(cfg);render();
+  }
   function handleClick(event){var button=event.target.closest("button");if(!button||!root.contains(button))return;
     if(state.rollConfig)syncConsoleInputs();
     if(button.dataset.dieChoice!==undefined){resolveDieChoice(button.dataset.dieChoice);return;}
@@ -3126,9 +3143,10 @@
     if(button.id==="fhPsLoad"){state.editDraft=null;loadParty();return;}if(button.id==="fhPsSync"){openPull(false);return;}if(button.id==="fhPsRelink"){openPull(true);return;}if(button.id==="fhPsLevel"){openLevelUp(state.character);return;}if(button.id==="fhPsCorrect"||button.dataset.sheetEdit!==undefined){if(!state.editDraft)beginSheetEdit();return;}if(button.id==="fhPsSaveCorrections"){saveCorrections();return;}
     if(button.dataset.quickName){quickRoll(button.dataset.quickName,button.dataset.ability,button.dataset.bonus,button.dataset.note);return;}
     if(button.dataset.configName){openConfig(button.dataset.configName,button.dataset.ability,button.dataset.bonus,button.dataset.note,button.dataset.dc);return;}
-    if(button.id==="fhPsPlusTwo"){state.rollConfig.plusTwo=!state.rollConfig.plusTwo;prepareTrayForConfig(state.rollConfig);render();return;}
+    if(button.id==="fhPsPlusTwo"){toggleRollMode(button);return;}
     if(button.dataset.removeBonus!==undefined){removeGenericBonusDie(button.dataset.removeBonus);return;}
-    if(button.dataset.dieMode){var cfg=state.rollConfig,scope=button.dataset.dieScope,index=Number(button.dataset.dieIndex),next=button.dataset.dieMode;if(!cfg)return;if(scope==="d20")cfg.d20Mode=cfg.d20Mode===next?"flat":next;else if(scope==="destiny")cfg.destinyMode=cfg.destinyMode===next?"flat":next;else if(scope==="bonus"&&cfg.bonusDice[index]&&!cfg.bonusDice[index].locked)cfg.bonusDice[index].advantageMode=cfg.bonusDice[index].advantageMode===next?"flat":next;prepareTrayForConfig(cfg);render();return;}
+    if(button.dataset.dieMode&&button.dataset.dieScope==="d20"){toggleRollMode(button);return;}
+    if(button.dataset.dieMode){var cfg=state.rollConfig,scope=button.dataset.dieScope,index=Number(button.dataset.dieIndex),next=button.dataset.dieMode;if(!cfg)return;if(scope==="destiny")cfg.destinyMode=cfg.destinyMode===next?"flat":next;else if(scope==="bonus"&&cfg.bonusDice[index]&&!cfg.bonusDice[index].locked)cfg.bonusDice[index].advantageMode=cfg.bonusDice[index].advantageMode===next?"flat":next;prepareTrayForConfig(cfg);render();return;}
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;prepareTrayForConfig(state.rollConfig);render();return;}
     if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
@@ -3156,13 +3174,23 @@
     if(button.dataset.natChoice){state.trayPrompt=null;resolveNatOne(button.dataset.entryId,button.dataset.natChoice);return;}
     if(button.dataset.context){state.activeContext=button.dataset.context;render();return;}
   }
-  /* Two right-click surfaces, two meanings, two places:
-     on a WHITE console die it takes one back; on a die already IN THE TRAY it
-     opens that die's own menu (colour, seal, advantage). */
+  /* Right-click surfaces, and what each one means:
+     on a WHITE console die it takes one back; on a GOLD Destiny pool die it
+     unstages it if it is the one currently waiting (round 8 -- left click
+     adds exactly like the white picker, right click undoes it, same as the
+     white/bonus dice; still only one Destiny die can wait at a time, enforced
+     where it always was, in stageDestinyFromPool/stageDestinyDie); on D/A/+2
+     it is just another way to fire the same toggle a left click does; on a
+     die already IN THE TRAY it opens that die's own menu (colour, seal,
+     advantage). */
   function trayDieTarget(event){
     if(!event.target||!event.target.closest)return null;
     var picker=event.target.closest("[data-add-tray-die]");
     if(picker)return picker.disabled?null:{kind:"picker",node:picker};
+    var destinyPicker=event.target.closest("[data-destiny-die]");
+    if(destinyPicker)return destinyPicker.disabled?null:{kind:"destinyPicker",node:destinyPicker};
+    var rollToggle=event.target.closest("#fhPsPlusTwo,[data-die-mode][data-die-scope=\"d20\"]");
+    if(rollToggle)return rollToggle.disabled?null:{kind:"rollToggle",node:rollToggle};
     var badge=event.target.closest("[data-pending-id]");
     if(badge)return {kind:"badge",node:badge};
     var tunable=event.target.closest("[data-die-staged],[data-die-bonus],[data-die-destiny],[data-die-pool],[data-die-free],[data-die-base],[data-die-landed]");
@@ -3184,11 +3212,33 @@
     else if(rollTransactionActive())warnRollLocked();
     else dropTrayDie(node.dataset.addTrayDie);
   }
+  /* The mirror of stageDestinyFromPool: undoes whichever of the three places
+     a waiting Destiny die can live (the open roll's staged list, a prepared
+     console's destinyDieId, or the bare destinyStaged) -- but only if the die
+     right-clicked is the one actually waiting. Right-clicking any other pool
+     die (nothing is staged, or a different one is) does nothing, same as the
+     white picker does nothing on a size you haven't added. Reuses
+     dropStagedDie rather than repeating its three destiny branches here --
+     just aims state.diePrompt at the right one first, the same shapes
+     findStagedDie already recognizes. */
+  function takeBackDestinyDie(node){
+    var dieId=node.dataset.destinyDie;if(!dieId)return;
+    if(rollOpen()){
+      var item=stagedList().find(function(die){return die.kind==="destiny"&&die.destinyDieId===dieId;});
+      if(!item)return;
+      state.diePrompt={stagedId:item.id};dropStagedDie();return;
+    }
+    if(rollTransactionActive()){warnRollLocked();return;}
+    if(state.rollConfig&&state.rollConfig.destinyDieId===dieId){state.diePrompt={destinyDieId:dieId};dropStagedDie();return;}
+    if(state.destinyStaged&&state.destinyStaged.dieId===dieId){state.diePrompt={poolId:dieId};dropStagedDie();return;}
+  }
   function onTrayContext(event){
     var target=trayDieTarget(event);if(!target)return;
     event.preventDefault();
     if(target.kind==="badge")openBadgeMenu(target.node);
     else if(target.kind==="die")openDieMenu(target.node);
+    else if(target.kind==="destinyPicker")takeBackDestinyDie(target.node);
+    else if(target.kind==="rollToggle")toggleRollMode(target.node);
     else takeBackDie(target.node);
   }
   function openBadgeMenu(node){state.trayPrompt={type:"pending-menu",id:node.dataset.pendingId};state.diePrompt=null;render();}
@@ -3200,6 +3250,8 @@
       state.trayHeld=true;
       if(target.kind==="badge")openBadgeMenu(target.node);
       else if(target.kind==="die")openDieMenu(target.node);
+      else if(target.kind==="destinyPicker")takeBackDestinyDie(target.node);
+      else if(target.kind==="rollToggle")toggleRollMode(target.node);
       else takeBackDie(target.node);
     },500);
   }

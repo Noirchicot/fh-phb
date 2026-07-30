@@ -132,7 +132,10 @@ assert.equal(t.rollOpen(),true,"it stays open, with every source of a new die st
 /* REWRITTEN (round 7): ROLL is now the d20 artwork, which carries the word on
    its own face. The button must still NAME itself ROLL -- via the image's alt,
    so a screen reader announces it and a failed image still paints the word. */
-assert.match(t.renderStageZone(),/data-roll-now[^>]*>\s*<img[^>]*alt="ROLL"/,"there is one button, and it names itself ROLL");
+/* REWRITTEN (round 8): ROLL lives in the console's white dice row now, not
+   the roller -- see renderWhiteDice/renderStageZone in fh-player-sheet.js. */
+assert.match(t.renderConsole(),/data-roll-now[^>]*>\s*<img[^>]*alt="ROLL"/,"there is one button, and it names itself ROLL");
+assert.doesNotMatch(t.renderStageZone(),/data-roll-now/,"and it is not duplicated in the roller");
 assert.doesNotMatch(t.renderStageZone(),/APPLY/,"APPLY is gone from the dock entirely");
 assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),false,"an open roll no longer holds the dock hostage");
 assert.equal(t.rollTransactionActive(),false,"only a question that must be answered locks the dock now");
@@ -171,7 +174,9 @@ assert.equal(t.stagedList().length,1,"a die chosen after the roll is staged, not
    moved off to the tray, next to the dice it describes. The original point is
    unchanged and still worth guarding: a staged die is announced SOMEWHERE, and
    never by renaming the button. */
-assert.match(t.renderStageZone(),/data-roll-now[^>]*><img[^>]*alt="ROLL"[^>]*><\/button>/,"the button is the die and nothing else");
+/* REWRITTEN (round 8): ROLL renders inside renderConsole()'s white dice row
+   now, not renderStageZone() -- see the round-8 note near line 130 above. */
+assert.match(t.renderConsole(),/data-roll-now[^>]*><img[^>]*alt="ROLL"[^>]*><\/button>/,"the button is the die and nothing else");
 assert.match(t.state.trayResultText,/1 new die/,"a staged die is announced in the tray, not on the button's face");
 queueRolls(6);t.rollStagedDice();
 assert.deepEqual(Array.from(entry.d20s),locked,"applying a modifier never rerolls the d20");
