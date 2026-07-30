@@ -74,7 +74,8 @@
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayLabel:"Damage roll",trayResultText:"",queueDone:"",rollSequence:null,chromeOpen:false,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
-    dockOpen:false, menuOpen:false, popOpen:"", diceSignature:"",
+    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{},
+    trayQuietTitle:"", trayRevealAt:0, trayRevealTimer:null,
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:FS_MIN,
     panel:"skills", panelData:{}
@@ -928,6 +929,8 @@
       });
     }
     state.trayResults=results;state.trayTitle=rollVerdictText(entry);state.trayResultText=rollDetailText(entry);
+    // The name alone, for the moment the dice are still in the air.
+    state.trayQuietTitle=entry.name||"Roll";
   }
   function prepareTrayForConfig(cfg){
     if(!cfg)return;
@@ -951,7 +954,7 @@
   /* CLEAR TRAY empties the hand and, with it, the running commentary above the
      dice — the Stream keeps the permanent record. Badges are debts, not
      commentary, so they stay. */
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.diceSignatures={};state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
@@ -968,6 +971,31 @@
     state.callTimer=window.setTimeout(function(){state.callUntil=0;if(root)render();},CALL_MS+40);
   }
   function stopCalling(){state.callUntil=0;clearTimeout(state.callTimer);}
+  /* ── Holding the answer until the dice stop ──────────────────────
+     The result used to be printed the instant the roll resolved, while the
+     dice still had most of a second of rolling left -- so the tray spoiled
+     its own reveal. The verdict, the arithmetic and the newest stream line
+     all wait for the last die to settle. Nothing about the roll itself
+     changes: the result is still resolved before the animation begins. */
+  var ROLL_STAGGER_MS=42;
+  function prefersReducedMotion(){
+    try{return !!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);}
+    catch(error){return false;}
+  }
+  function rollAnimationMs(){
+    var renderer=window.FHStaticDice&&window.FHStaticDice.sound&&Number(window.FHStaticDice.sound.rollDuration);
+    return renderer>0?renderer:960;
+  }
+  function armTrayReveal(dieCount){
+    // Nothing is rolling when motion is suppressed, so nothing needs hiding.
+    if(prefersReducedMotion()){state.trayRevealAt=0;return;}
+    var span=rollAnimationMs()+Math.max(0,(Number(dieCount)||1)-1)*ROLL_STAGGER_MS+90;
+    state.trayRevealAt=Date.now()+span;
+    clearTimeout(state.trayRevealTimer);
+    state.trayRevealTimer=window.setTimeout(function(){state.trayRevealAt=0;if(root)render();},span);
+  }
+  function trayRevealPending(){return !!(state.trayRevealAt&&Date.now()<state.trayRevealAt);}
+  function stopTrayReveal(){state.trayRevealAt=0;clearTimeout(state.trayRevealTimer);}
   function warnRollLocked(){state.message="Finish the current roll before starting or clearing another one.";state.messageKind="warn";renderMessage();}
   /* ── The APPLY flow ──────────────────────────────────────────────
      A landed roll no longer ends in a blocking result popup. It stays
@@ -1926,15 +1954,40 @@
     return {"arcane-critical-success":"arcane-success","arcane-critical-failure":"arcane-failure",
       nat20:"crit-success",nat1:"crit-failure",awakening:"awakening",chaos:"chaos-owed"}[newest.kind]||"";
   }
+  /* A die's animation identity. entryId is folded in so re-rolling the same
+     skill to the same number still counts as a new landing, while a die that
+     is merely being re-rendered keeps its key and stays still. */
+  function dieAnimationKey(die,index){
+    if(die.entryId&&die.landedKey)return die.entryId+"/"+die.landedKey;
+    return String(die.landedKey||die.stagedId||die.bonusId||die.poolDestinyId||die.destinyDieId||die.freeId||
+      ((die.dieRole||"die")+":"+die.sides+":"+index));
+  }
   function renderFrameInner(){
     var dice=trayDiceForDisplay();
-    var signature=dice.map(function(die){return (die.label||"")+":"+(die.result==null?"?":die.result);}).join("|");
-    var animate=signature!==state.diceSignature;state.diceSignature=signature;
-    var status=state.trayResultText||state.trayTitle
-      ? "<b>"+esc(state.trayTitle||"")+"</b>"+(state.trayResultText?"<em>"+esc(state.trayResultText)+"</em>":"")
+    /* Each die decides for itself whether it has just landed. This used to be
+       one tray-wide signature, which meant that adding a single bonus die
+       re-rolled every die already lying in the tray -- the landed d20 span
+       again without its value ever changing. */
+    var previous=state.diceSignatures||{},signatures={},animated=false;
+    dice.forEach(function(die,index){signatures[dieAnimationKey(die,index)]=die.result==null?"?":String(die.result);});
+    var flags=dice.map(function(die,index){
+      var key=dieAnimationKey(die,index);
+      var animate=die.result!=null&&previous[key]!==signatures[key];
+      if(animate)animated=true;
+      return animate;
+    });
+    state.diceSignatures=signatures;
+    if(animated)armTrayReveal(dice.length);
+    /* While the dice are in the air the total stays out of sight: printing it
+       instantly answered the question before the roll could. */
+    var quiet=trayRevealPending();
+    var title=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
+    var detail=quiet?"Rolling…":state.trayResultText;
+    var status=detail||title
+      ? "<b>"+esc(title||"")+"</b>"+(detail?"<em>"+esc(detail)+"</em>":"")
       : "<em>Ready — click a skill, a save or an ability.</em>";
     // The verdict docks to the bottom of the frame; popups now live outside it.
-    return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,animate);}).join("")+"</div>"+
+    return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,flags[index]);}).join("")+"</div>"+
       "<div class=\"fh-cd-status\" aria-live=\"polite\">"+status+"</div>";
   }
   /* One ROLL, one CLEAR TRAY. Nothing else is permanent. Below them the
@@ -2047,6 +2100,10 @@
     }
     return parts;
   }
+  /* Badges that report how the roll GAVE, not how it was set up: these are the
+     ones a still-rolling line has to keep quiet about. "MANUAL" and "adjusted"
+     say something about the roll's construction and give nothing away. */
+  var SPOILER_BADGE_KINDS={n20:true,chaos:true,destiny:true};
   function rollBadges(entry){
     var badges=[];
     if(entry.natural===20)badges.push({t:"NATURAL 20",k:"n20"});
@@ -2078,16 +2135,23 @@
       parts:rollParts(entry),badges:rollBadges(entry).map(function(badge){return badge.t;})};
   }
   function attrJson(value){return esc(JSON.stringify(value)).replace(/'/g,"&#39;");}
-  function renderStreamEntry(entry){
+  function renderStreamEntry(entry,index){
     var tone=outcomeTone(entry),icon=tone==="ok"?"✓":tone==="bad"?"✗":tone==="n20"?"✦":"";
     var who=state.character&&state.character.name||state.pseudo||"Character";
-    var parts=rollParts(entry).map(function(part){return "<span class=\"fh-cd-part\">"+esc(part.k)+" <b>"+esc(part.v)+"</b></span>";}).join("<span>·</span>");
+    /* The newest line is the roll still rolling in the tray just above, so it
+       keeps the outcome to itself until the dice settle. What it still shows is
+       everything the player already knew before rolling: the DC, and the
+       badges that describe how the roll was set up rather than how it went.
+       Older lines are history and always read plainly. */
+    var quiet=index===0&&trayRevealPending();
+    var parts=quiet?"":rollParts(entry).map(function(part){return "<span class=\"fh-cd-part\">"+esc(part.k)+" <b>"+esc(part.v)+"</b></span>";}).join("<span>·</span>");
     var dc=entry.dc!==""&&entry.dc!=null?"<span class=\"fh-cd-vs\">vs DC "+esc(entry.dc)+"</span>":"";
-    var badges=rollBadges(entry).map(function(badge){return "<span class=\"fh-cd-badge is-"+badge.k+"\">"+esc(badge.t)+"</span>";}).join("");
+    var badges=rollBadges(entry).filter(function(badge){return !(quiet&&SPOILER_BADGE_KINDS[badge.k]);})
+      .map(function(badge){return "<span class=\"fh-cd-badge is-"+badge.k+"\">"+esc(badge.t)+"</span>";}).join("");
     var reopen=entry.kind==="d20";
     return "<li class=\"fh-cd-sentry\"><button type=\"button\""+(reopen?" data-history-id=\""+esc(entry.id)+"\"":" disabled")+" data-roll='"+attrJson(rollExport(entry))+"'>"+
       "<span class=\"fh-cd-sl1\"><time>"+nowLabel(entry.createdAt)+"</time><span class=\"fh-cd-who\">"+esc(who)+"</span>"+
-      "<span class=\"fh-cd-title\">"+esc(entry.name)+"</span><span class=\"fh-cd-total is-"+tone+"\">"+entry.total+"</span><span class=\"fh-cd-oic\">"+icon+"</span></span>"+
+      "<span class=\"fh-cd-title\">"+esc(entry.name)+"</span><span class=\"fh-cd-total is-"+(quiet?"quiet":tone)+"\">"+(quiet?"…":entry.total)+"</span><span class=\"fh-cd-oic\">"+(quiet?"":icon)+"</span></span>"+
       "<span class=\"fh-cd-sl2\">"+parts+dc+badges+"</span></button></li>";
   }
   function renderStream(){

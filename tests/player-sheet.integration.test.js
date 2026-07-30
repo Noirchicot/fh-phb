@@ -317,7 +317,21 @@ assert.equal(t.state.history[0].dice.length,8,"all damage dice are recorded");
 // REWRITTEN (dock v5): a free roll drops its trailing result popup too — the
 // tray shows the verdict and the stream keeps it. Only a nat 20/1 stops the table.
 assert.equal(root.querySelector("[data-event-ok]"),null,"a free roll no longer ends in a result popup");
-assert.match(root.querySelector(".fh-cd-status b").textContent,/^Fireball /,"its verdict reads straight off the tray");
+/* REWRITTEN (round 5b): the tray used to print the total the instant the roll
+   resolved, while the dice still had most of a second left to roll -- it
+   answered the question before the roll could. The verdict now names the roll
+   while the dice are in the air and adds the total once they settle. */
+assert.equal(root.querySelector(".fh-cd-status b").textContent,"Fireball","while the dice are rolling the verdict names the roll without spoiling it");
+assert.match(root.querySelector(".fh-cd-status em").textContent,/Rolling/,"and says the dice have not landed yet");
+assert.equal(root.querySelector(".fh-cd-sentry .fh-cd-total").textContent,"…","the newest stream line withholds its total too -- it sits right under the tray");
+assert.ok(root.querySelectorAll(".fh-cd-die.is-spinning").length>0,"dice that have just landed do roll");
+t.state.trayRevealAt=0;t.render();
+assert.match(root.querySelector(".fh-cd-status b").textContent,/^Fireball /,"once the dice settle its verdict reads straight off the tray");
+assert.equal(root.querySelector(".fh-cd-sentry .fh-cd-total").textContent,String(t.state.history[0].total),"and the stream line gives up its total");
+/* Animation is decided per die, not per tray. A tray-wide signature meant any
+   later render -- picking up one more die, a Destiny die, anything -- re-rolled
+   every die already lying in the tray, whose values had not changed. */
+assert.equal(root.querySelectorAll(".fh-cd-die.is-spinning").length,0,"a later render leaves dice that have already landed alone");
 settleRoll();
 
 /* ── Portents live in each die's own right-click menu ─────────── */

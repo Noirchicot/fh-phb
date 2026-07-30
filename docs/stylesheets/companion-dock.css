@@ -673,6 +673,8 @@ select.fh-cd-chip.is-on{color:#fff8e2}
 .fh-cd-total.is-ok{color:var(--cd-ok)}
 .fh-cd-total.is-bad{color:var(--cd-bad)}
 .fh-cd-total.is-n20{color:var(--cd-gold-bright)}
+/* The newest line while its dice are still rolling: present, but not telling. */
+.fh-cd-total.is-quiet{color:var(--cd-faint);letter-spacing:.08em}
 .fh-cd-oic{font-size:calc(8px * var(--cd-fs));flex:none;width:10px;text-align:center}
 .fh-cd-sl2{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px;margin:2px 0 0 34px;font-size:calc(7.8px * var(--cd-fs));color:var(--cd-muted)}
 .fh-cd-sl2 .fh-cd-part b{color:var(--cd-ink);font-weight:600}
