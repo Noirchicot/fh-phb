@@ -2542,14 +2542,15 @@
     var cfg=state.rollConfig,entry=cfg&&cfg.editingId?state.history.find(function(item){return item.id===cfg.editingId;}):null;
     var locked=!!entry,open=rollOpen();
     var bonusDice=cfg?(cfg.bonusDice||[]):[];
-    /* Head: a loaded check names itself. A free roll gets a plain, borderless
-       field to name itself: no "FREE ROLL" label repeating what the empty
-       console already says, no box competing with the boxed controls that
-       actually need one. */
+    /* A loaded check gets no head at all: the tray already names it, right
+       under this console, so repeating "Arcana +10 INT" here was saying the
+       same thing twice. Its ✕ went with it and is not missed -- it only ever
+       called clearDiceTray, which is exactly what CLEAR TRAY and Escape do,
+       both of which also refuse mid-transaction where the ✕ did not.
+       A free roll keeps its field, because that one is not a label repeating
+       the tray: it is how the roll gets named in the first place. */
     var head=cfg
-      ? "<div class=\"fh-cd-crow fh-cd-chead\"><span class=\"fh-cd-cname\">"+esc(cfg.name)+" <b>"+signed(cfg.baseBonus)+"</b></span>"+
-        "<span class=\"fh-cd-cmeta\">"+esc(cfg.note||cfg.ability||"")+"</span>"+
-        "<button class=\"fh-cd-cclose\" id=\"fhPsCloseConsole\" type=\"button\" aria-label=\"Close the roll console\">"+iconSvg("close")+"</button></div>"
+      ? ""
       : "<div class=\"fh-cd-crow fh-cd-chead\">"+
         "<input id=\"fhPsTrayLabel\" class=\"fh-cd-freelabel\" maxlength=\"48\" value=\""+esc(state.trayLabel)+"\" placeholder=\"Damage / free roll…\" aria-label=\"Roll label\"></div>";
     /* Row 1 is what a check is rolled WITH: its mode, the fixed +2, and the
@@ -3130,7 +3131,7 @@
     if(button.dataset.removeBonus!==undefined){removeGenericBonusDie(button.dataset.removeBonus);return;}
     if(button.dataset.dieMode){var cfg=state.rollConfig,scope=button.dataset.dieScope,index=Number(button.dataset.dieIndex),next=button.dataset.dieMode;if(!cfg)return;if(scope==="d20")cfg.d20Mode=cfg.d20Mode===next?"flat":next;else if(scope==="destiny")cfg.destinyMode=cfg.destinyMode===next?"flat":next;else if(scope==="bonus"&&cfg.bonusDice[index]&&!cfg.bonusDice[index].locked)cfg.bonusDice[index].advantageMode=cfg.bonusDice[index].advantageMode===next?"flat":next;prepareTrayForConfig(cfg);render();return;}
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;prepareTrayForConfig(state.rollConfig);render();return;}
-    if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}if(button.id==="fhPsCloseConsole"){clearDiceTray(true);return;}
+    if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}
     if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
     if(button.dataset.destinyPoolmenu!==undefined){state.destinyPoolMenu=!state.destinyPoolMenu;render();return;}
     // Opening the console's ⋮ syncs first: its own inputs are what render()

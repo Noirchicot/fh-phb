@@ -358,16 +358,10 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 /* ── Console ────────────────────────────────────────────────────── */
 .fh-cd-console{padding-bottom:8px}
 .fh-cd-crow{display:flex;align-items:center;gap:5px;margin-top:5px}
+/* .fh-cd-chead now only ever holds the free roll's naming field: a loaded
+   check has no header, the tray below names it. The check name, its ability,
+   the inline DC and the ✕ that lived here are gone with it. */
 .fh-cd-chead{margin-top:2px}
-.fh-cd-cname{font-size:calc(11px * var(--cd-fs));font-weight:700;color:var(--cd-oxblood)}
-.fh-cd-cname b{color:var(--cd-ink)}
-.fh-cd-cmeta{font-size:calc(7.8px * var(--cd-fs));color:var(--cd-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fh-cd-dc{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:calc(7.8px * var(--cd-fs));color:var(--cd-gold)}
-.fh-cd-dc input{width:38px;height:18px;border:1px solid var(--cd-line);background:#fffdf6;border-radius:4px;
-  text-align:center;font-size:calc(9px * var(--cd-fs));color:var(--cd-ink);font-family:inherit;padding:0}
-.fh-cd-cclose{width:18px;height:18px;border:0;background:none;color:var(--cd-faint);font-size:calc(11px * var(--cd-fs));cursor:pointer;padding:0;display:grid;place-items:center}
-.fh-cd-cclose:hover{color:var(--cd-oxblood)}
-.fh-cd-cclose svg{width:11px;height:11px}
 .fh-cd-seg{display:flex;border:1px solid var(--cd-line);border-radius:5px;overflow:hidden;flex:none}
 .fh-cd-seg button{width:24px;height:22px;border:0;background:var(--cd-parch-2);font-size:calc(8.5px * var(--cd-fs));font-family:inherit;
   font-weight:700;color:var(--cd-faint);cursor:pointer;border-right:1px solid var(--cd-line)}

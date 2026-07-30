@@ -150,7 +150,11 @@ assert.equal(root.querySelector(".fh-cd-events"),null,"an empty list costs the d
 
 /* ── Console ─────────────────────────────────────────────────── */
 root.querySelector('[data-config-name="Arcana"]').click();
-assert.match(root.querySelector(".fh-cd-cname").textContent,/Arcana \+6/,"opening a console names the prepared check");
+/* REWRITTEN (round 7b): the console no longer repeats the check's name above
+   the dice -- the tray right below it already says what is being rolled, so
+   the console header was saying the same thing twice. */
+assert.equal(root.querySelector(".fh-cd-cname"),null,"the console does not repeat what the tray already names");
+assert.match(root.querySelector(".fh-cd-status").textContent,/Arcana \+6/,"opening a console names the prepared check, in the tray");
 assert.match(root.querySelector(".fh-cd-status").textContent,/Arcana \+6/,"the roller frame echoes the prepared check");
 assert.equal(root.querySelectorAll(".fh-cd-dicerow .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
 // REWRITTEN (dock v5): the Guid / Bard / Destiny chips are gone. Every die now
