@@ -177,8 +177,8 @@
     }
     return 1 + Math.floor(Math.random() * sides);
   }
-  function api(path, options) {
-    return fetch(API + path, options).then(function (response) {
+  function apiAt(base, path, options) {
+    return fetch(base + path, options).then(function (response) {
       return response.json().catch(function () { return {}; }).then(function (data) {
         if (!response.ok) {
           var error = new Error(data.error || ("HTTP " + response.status));
@@ -195,8 +195,14 @@
       });
     });
   }
+  function api(path, options) {
+    return apiAt(API, path, options);
+  }
   function post(path, body) {
     return api(path, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  }
+  function postAt(base, path, body) {
+    return apiAt(base, path, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   }
   /* Every write to a profile record states the revision it was based on
      (plan §13.13.2). A 409 means the record changed elsewhere since load —
@@ -222,7 +228,8 @@
   }
   function profileWrite(suffix, body) {
     var payload = Object.assign({}, body, {revision: state.profileRevision});
-    return post("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(state.pseudo)+suffix, payload)
+    var base = state.feed.tableState === "live" ? state.feed.tableUrl : API;
+    return postAt(base, "/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(state.pseudo)+suffix, payload)
       .then(function (data) {
         if (data && data.revision != null) state.profileRevision = data.revision;
         return data;

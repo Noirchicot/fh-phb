@@ -87,8 +87,67 @@ const flush = () => new Promise(resolve => setTimeout(resolve, 0));
   assert.equal(writeCall.body.revision, 7, "the write carries the revision the dock knew before this call");
   assert.equal(t.state.profileRevision, 8, "a successful write adopts the new revision the server stamped");
 
-  // 3. A 409 is never retried automatically and never silently applied
+  // 3. Character writes follow the same LIVE/RECENT/OFF authority split as
+  // the roll feed, but keep writing to the cloud whenever the dock is not LIVE.
+  t.state.feed.tableUrl = "https://table.example.test";
+
+  t.state.feed.tableState = "live";
+  queue = [{status:200, body:{profile:{note:"table"}, revision:9}}];
+  fetchLog = [];
+  await t.saveProfile({note:"table"});
+  assert.equal(fetchLog.length, 1, "LIVE profile writes have exactly one destination");
+  assert.match(fetchLog[0].url, /^https:\/\/table\.example\.test\/profile\/FH1\/Conflict(?:%20|\+)Tester$/);
+  assert.equal(fetchLog[0].body.revision, 8, "LIVE writes still carry the known revision");
+  assert.equal(t.state.profileRevision, 9, "LIVE writes adopt the table server's stamped revision");
+
+  t.state.feed.tableState = "recent";
+  queue = [{status:200, body:{profile:{note:"recent"}, revision:10}}];
+  fetchLog = [];
+  await t.saveProfile({note:"recent"});
+  assert.equal(fetchLog.length, 1, "RECENT profile writes have exactly one destination");
+  assert.match(fetchLog[0].url, /^https:\/\/fh-builds\.noirchicot\.workers\.dev\/profile\/FH1\/Conflict(?:%20|\+)Tester$/);
+  assert.equal(t.state.profileRevision, 10, "RECENT writes keep the cloud revision chain");
+
+  t.state.feed.tableState = "off";
+  queue = [{status:200, body:{profile:{note:"off"}, revision:11}}];
+  fetchLog = [];
+  await t.saveProfile({note:"off"});
+  assert.equal(fetchLog.length, 1, "OFF profile writes have exactly one destination");
+  assert.match(fetchLog[0].url, /^https:\/\/fh-builds\.noirchicot\.workers\.dev\/profile\/FH1\/Conflict(?:%20|\+)Tester$/);
+  assert.equal(t.state.profileRevision, 11, "OFF writes keep the cloud revision chain");
+
+  // 4. The destination is chosen when the write happens, so a dock that opened
+  // in RECENT starts writing to the table as soon as the rendezvous promotes it.
+  t.state.feed.tableState = "recent";
+  t.state.profileRevision = 20;
+  t.state.feed.tableState = "live";
+  queue = [{status:200, body:{profile:{note:"promoted"}, revision:21}}];
+  fetchLog = [];
+  await t.saveProfile({note:"promoted"});
+  assert.equal(fetchLog.length, 1, "a mid-session promotion still produces one write");
+  assert.match(fetchLog[0].url, /^https:\/\/table\.example\.test\/profile\/FH1\/Conflict(?:%20|\+)Tester$/);
+  assert.equal(fetchLog[0].body.revision, 20, "the promoted write uses the revision already loaded in the dock");
+
+  // 5. A table-server 409 follows the same conflict UI as the cloud path.
+  t.state.feed.tableState = "live";
+  const tableCurrentDoc = {vitalsState:{current:6,max:10}, note:"table-side edit"};
+  queue = [{status:409, body:{error:"conflict", currentRevision:30, current:tableCurrentDoc}}];
+  fetchLog = [];
+  let tableRejected = null;
+  await t.saveProfile({note:"my table edit"}).catch(error => { tableRejected = error; });
+  assert.ok(tableRejected, "a table-server conflict rejects the write");
+  assert.equal(tableRejected.silent, true, "a table-server conflict is surfaced by profileWrite");
+  assert.equal(fetchLog.length, 1, "a table-server conflict is not retried");
+  assert.match(fetchLog[0].url, /^https:\/\/table\.example\.test\/profile\/FH1\/Conflict(?:%20|\+)Tester$/);
+  const tableModal = document.querySelector(".fh-mc-modal-wrap");
+  assert.ok(tableModal, "a table-server conflict opens the same reload modal");
+  tableModal.querySelector("#fhPsConflictReload").click();
+  assert.equal(t.state.profileRevision, 30, "the table-server reload adopts the returned revision");
+  assert.deepEqual(t.state.profile, tableCurrentDoc, "the table-server reload adopts the returned document");
+
+  // 6. A cloud 409 is never retried automatically and never silently applied
   // (§13.13.4) -- it surfaces a modal with a "Recharger" action instead.
+  t.state.feed.tableState = "recent";
   const currentDoc = {vitalsState:{current:3,max:10}, note:"someone else's edit"};
   queue = [{status:409, body:{error:"conflict", currentRevision:12, current:currentDoc}}];
   fetchLog = [];
@@ -105,7 +164,7 @@ const flush = () => new Promise(resolve => setTimeout(resolve, 0));
   const reload = modal.querySelector("#fhPsConflictReload");
   assert.ok(reload, "the modal offers an explicit Recharger action");
 
-  // 4. Clicking Recharger adopts the server's document and revision, and
+  // 7. Clicking Recharger adopts the server's document and revision, and
   // does NOT resend the rejected write or attempt any merge (§13.13.4).
   reload.click();
   assert.equal(t.state.profileRevision, 12, "reloading adopts the server's revision");
