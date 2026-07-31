@@ -991,6 +991,12 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   color:var(--cd-faint);font-family:inherit;font-weight:600;letter-spacing:.04em;
   font-size:calc(6.6px * var(--cd-fs));padding:0 calc(5px * var(--cd-fs));
   height:calc(14px * var(--cd-fs));cursor:pointer;flex:none}
+/* RECENT is loaded once, not polled (plan §13.9 fix 1) — this button is the
+   only way to pull a newer cloud log short of leaving and reopening the tab. */
+.fh-cd-refresh{border:1px solid var(--cd-line,#3a3226);border-radius:3px;background:transparent;
+  color:var(--cd-faint);font-family:inherit;font-weight:600;letter-spacing:.04em;
+  font-size:calc(6.6px * var(--cd-fs));padding:0 calc(5px * var(--cd-fs));
+  height:calc(14px * var(--cd-fs));cursor:pointer;flex:none}
 /* Another player's roll is not clickable — there is nothing of theirs to
    reopen — so it drops the affordance the personal stream keeps. */
 .fh-cd-fentry button{cursor:default;opacity:1}

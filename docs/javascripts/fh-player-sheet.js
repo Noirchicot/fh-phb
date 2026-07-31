@@ -86,7 +86,7 @@
     // table, reading the cloud backstop — the default), "live" (the DM's table
     // server is up and this dock is on it), "off" (a table exists but this
     // dock cannot reach it — never silently treated as "recent").
-    feed:{events:[],seen:{},sent:{},cursor:"",status:"",timer:null,lastEventAt:0,
+    feed:{events:[],seen:{},sent:{},cursor:"",status:"",
       tableState:"recent",tableUrl:"",wsCursor:"",ws:null,wsRetry:0,wsRetryTimer:null,
       rendezvousTimer:null,manualUrl:""}
   };
@@ -2190,7 +2190,7 @@
      — hence revisions. The post carries rollId + rev, and a signature of what
      the table can actually see decides whether anything changed, so calling
      broadcastEntry on an unchanged entry costs nothing. */
-  var FEED_POLL_FAST=3000,FEED_POLL_IDLE=12000,FEED_IDLE_AFTER=120000,FEED_MAX=60,FEED_LOOKBACK=5000;
+  var FEED_MAX=60,FEED_LOOKBACK=5000;
   // The table server (plan §12): the DM's own machine, found through a
   // one-key rendezvous record on the Worker, reached over WebSocket — a Quick
   // Tunnel measurably does not stream SSE, so WS is the production path, not
@@ -2292,36 +2292,27 @@
     api("/feed/"+encodeURIComponent(state.code)+(since?"?since="+encodeURIComponent(since):"")).then(function(data){
       var events=data.events||[];
       if(data.cursor)state.feed.cursor=feedRewind(data.cursor,data.lookbackMs);
-      if(events.length)state.feed.lastEventAt=Date.now();
       var changed=feedMerge(events);
       if(state.feed.status==="offline"){state.feed.status="";changed=true;}
       if(changed)renderFeedZone();
     }).catch(function(){setFeedStatus("offline");});
   }
-  function feedStopTimer(){if(state.feed.timer){clearTimeout(state.feed.timer);state.feed.timer=null;}}
-  /* KV reads are the one metered resource here, so a hidden tab and a quiet
-     table both poll slowly — but neither ever stops. Suppressing the poll
-     outright looked cheaper and was wrong: Table mode runs the dock in a
-     picture-in-picture window, and this reads the MAIN document, which is
-     hidden precisely then. The feed would have gone silent exactly when a
-     player was using it at the table. Slower, never off. */
-  function feedTick(){
-    feedStopTimer();
-    if(!feedActive())return;
-    // The cloud poll is the RECENT-state reader only. LIVE and OFF do not
-    // read it — a table that exists but is unreachable must show OFF, not a
-    // quiet slide onto the ~30s-stale backstop (plan §12.5 rule 1). This timer
-    // chain keeps running regardless, cheaply, so a later demotion back to
-    // RECENT (from checkRendezvous) resumes polling without restarting it.
-    if(state.feed.tableState==="recent")pollFeed();
-    var hidden=typeof document!=="undefined"&&document.hidden;
-    var quiet=Date.now()-(state.feed.lastEventAt||0)>FEED_IDLE_AFTER;
-    state.feed.timer=window.setTimeout(feedTick,hidden||quiet?FEED_POLL_IDLE:FEED_POLL_FAST);
+  /* KV list() is the one metered resource here (plan §13.9 fix 1 — the
+     2026-07-30 outage), so RECENT is never polled on a timer. It reads the
+     cloud backstop once when a player opens the TABLE tab, once again on any
+     transition into RECENT (a table going offline shouldn't leave the view
+     stuck on stale data), and otherwise only on an explicit refresh. It is
+     also the honest cadence: the cloud feed is itself ~30s stale (plan
+     §11.4), so polling it every few seconds was never buying freshness. */
+  function refreshFeed(){
+    if(!feedActive()||state.feed.tableState!=="recent")return;
+    pollFeed();
   }
   function setTableState(next){
     if(state.feed.tableState===next)return;
     state.feed.tableState=next;
     renderFeedZone();
+    if(next==="recent"&&state.streamView==="table")refreshFeed();
   }
   function tableWsUrl(httpUrl,code,since){
     var base=String(httpUrl||"").replace(/^https:/,"wss:").replace(/^http:/,"ws:").replace(/\/+$/,"");
@@ -2366,7 +2357,6 @@
       try{data=JSON.parse(evt.data);}catch(e){return;}
       if(!data||!data.event)return;
       if(data.seq&&String(data.seq)>state.feed.wsCursor)state.feed.wsCursor=String(data.seq);
-      state.feed.lastEventAt=Date.now();
       if(state.feed.status==="offline")state.feed.status="";
       if(feedMerge([data.event]))renderFeedZone();
     };
@@ -2418,19 +2408,17 @@
     state.feed.rendezvousTimer=window.setTimeout(rendezvousTick,TABLE_RENDEZVOUS_INTERVAL);
   }
   function startFeed(){
-    feedStopTimer();
     disconnectTableWs();
     if(state.feed.rendezvousTimer){clearTimeout(state.feed.rendezvousTimer);state.feed.rendezvousTimer=null;}
     state.feed.events=[];state.feed.seen={};state.feed.sent={};state.feed.cursor="";state.feed.wsCursor="";
     state.feed.tableUrl="";state.feed.tableState="recent";state.feed.wsRetry=0;
     try{state.feed.manualUrl=localStorage.getItem(manualTableKey(state.code))||"";}catch(e){state.feed.manualUrl="";}
-    // Treat a fresh load as active so the first two minutes poll quickly: a
-    // player who just opened the dock is the likeliest to be mid-scene.
-    state.feed.status="";state.feed.lastEventAt=Date.now();
-    if(feedActive()){feedTick();rendezvousTick();}
+    state.feed.status="";
+    // The backstop is not polled here: it loads once when the player opens
+    // the TABLE tab (or on an explicit refresh), never on a timer (§13.9).
+    if(feedActive())rendezvousTick();
   }
   function stopFeed(){
-    feedStopTimer();
     disconnectTableWs();
     if(state.feed.rendezvousTimer){clearTimeout(state.feed.rendezvousTimer);state.feed.rendezvousTimer=null;}
     state.feed.events=[];state.feed.seen={};state.feed.sent={};state.feed.cursor="";state.feed.wsCursor="";
@@ -2505,7 +2493,12 @@
     var manual=table&&ts!=="live"
       ? "<button type=\"button\" class=\"fh-cd-tableurl\" data-table-url-set title=\"Paste the DM's table URL\">"+(state.feed.manualUrl?"URL set":"URL…")+"</button>"
       : "";
-    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small>"+esc(caption)+"</small>"+manual+
+    // RECENT is not polled (plan §13.9 fix 1) — this is the only way to
+    // pull a newer cloud log short of leaving and reopening the tab.
+    var refresh=table&&ts==="recent"
+      ? "<button type=\"button\" class=\"fh-cd-refresh\" data-feed-refresh title=\"Check the cloud log now\">Refresh</button>"
+      : "";
+    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small>"+esc(caption)+"</small>"+manual+refresh+
       "<span class=\"fh-cd-streamtabs\">"+
       "<button type=\"button\" data-stream-view=\"mine\" class=\""+(table?"":"is-on")+"\">Mine</button>"+
       "<button type=\"button\" data-stream-view=\"table\" class=\""+tableClass+"\">Table</button></span></div>";
@@ -3093,7 +3086,14 @@
     if(button.dataset.pendingDrop!==undefined){dropPendingFate(button.dataset.pendingDrop);state.trayPrompt=null;persistPlayState();render();return;}
     // Switching Mine/Table repaints its own zone only — it must not disturb an
     // open roll, and it is legal in every phase because it changes nothing.
-    if(button.dataset.streamView!==undefined){state.streamView=button.dataset.streamView==="table"?"table":"mine";renderFeedZone();return;}
+    if(button.dataset.streamView!==undefined){
+      var openingTable=button.dataset.streamView==="table"&&state.streamView!=="table";
+      state.streamView=button.dataset.streamView==="table"?"table":"mine";
+      renderFeedZone();
+      if(openingTable)refreshFeed();
+      return;
+    }
+    if(button.dataset.feedRefresh!==undefined){refreshFeed();return;}
     /* The escape hatch (plan §12.4): the DM reads the table URL out loud, a
        player pastes it here. Bypasses the rendezvous entirely — there is
        nothing to discover once a human has already said where it is. Blank
@@ -3370,9 +3370,10 @@
        and a delegated listener would never see it. */
     root.addEventListener("input",function(event){delegateToPanel(event,"onInput");});
     root.addEventListener("focusout",function(event){delegateToPanel(event,"onBlur");});
-    // Coming back to the tab should show the table as it is now, not as it was
-    // when the tab was hidden and polling had backed off.
-    document.addEventListener("visibilitychange",function(){if(!document.hidden&&feedActive())feedTick();});
+    // Coming back to the tab is treated like reopening the TABLE tab: one
+    // refresh, not a resumed poll (plan §13.9 fix 1 — RECENT is never on a
+    // timer). No-op unless the TABLE tab is actually the one showing.
+    document.addEventListener("visibilitychange",function(){if(!document.hidden&&state.streamView==="table")refreshFeed();});
     root.addEventListener("contextmenu",onTrayContext);
     root.addEventListener("touchstart",onTrayTouchStart,{passive:true});
     root.addEventListener("touchend",onTrayTouchEnd);root.addEventListener("touchcancel",onTrayTouchEnd);
