@@ -91,4 +91,11 @@ click('[data-trait-id="'+firstId+'"] [data-trait-delete]');
 assert.equal(store.items.some(item=>item.id===firstId),false,"Delete removes only the selected trait");
 assert.ok(saves>=10,"every mutation persists through the panel contract");
 
+const css=fs.readFileSync(path.join(__dirname,"..","docs","stylesheets","companion-dock.css"),"utf8");
+const mobileTraitsCss=css.slice(css.lastIndexOf("@media(max-width:520px){"));
+assert.match(mobileTraitsCss,/\.fh-cd-traits button\{[^}]*min-width:44px;min-height:44px[^}]*\}/,
+  "Traits keeps 44px mobile button targets");
+assert.match(mobileTraitsCss,/\.fh-cd-trait-field input,.fh-cd-trait-field select\{[^}]*min-height:44px[^}]*\}/,
+  "Traits keeps 44px mobile targets for buttons and compact form controls");
+
 console.log("Traits panel: all tests passed");

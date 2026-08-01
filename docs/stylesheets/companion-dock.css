@@ -1063,3 +1063,17 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trait-editacts button{height:calc(19px * var(--cd-fs));padding:0 calc(7px * var(--cd-fs));
   border:1px solid #4d733e;border-radius:4px;background:#eef4e8;color:#355e2b;font-size:calc(7.2px * var(--cd-fs));font-weight:700}
 .fh-cd-trait-editacts button.is-danger{border-color:#9a5a51;background:#f8ebe8;color:#84372d}
+
+@media(max-width:520px){
+  /* 44px is the mobile touch target, independent of the user's text scale.
+     The list already owns its scroller, so the larger controls cannot push
+     the stream or the rest of the dock outside the 360×620 floor. */
+  .fh-cd-traits button{min-width:44px;min-height:44px;touch-action:manipulation}
+  .fh-cd-trait-field input,.fh-cd-trait-field select{min-height:44px}
+  .fh-cd-traits-head{position:relative}
+  .fh-cd-traits-head>button{position:absolute;z-index:1;right:0;top:calc(100% + 6px)}
+  .fh-cd-traits-resets{box-sizing:border-box;min-height:44px;padding-right:50px;flex-wrap:nowrap}
+  .fh-cd-traits-resets span{display:none}
+  .fh-cd-trait-card{padding-top:0;padding-bottom:0}
+  .fh-cd-trait-tracker{margin-top:2px}
+}
