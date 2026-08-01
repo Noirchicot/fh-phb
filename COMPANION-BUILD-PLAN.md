@@ -433,6 +433,16 @@ the harness. Then report back what you built and whether the ctx contract gave
 you everything you needed -- if you had to work around it, say so.
 ```
 
+> **Package 7 V1 finding (2026-08-01):** verified against the harness and the
+> checked-in build fixtures: `ctx.character` has no usable spell list or spell
+> slots. Package 7 therefore uses explicit manual state in `ctx.store("spells")`
+> and does not infer class data. The frozen panel API can open the shared roller
+> and write a local event, but exposes no way to attach or emit the §11.3
+> `intent.kind:"spell"`. The panel preserves that exact intent locally and marks
+> the cast **LOCAL ONLY**. Architect decision needed: add one core spell-cast
+> hook that owns feed emission (and can associate a spell attack with the shared
+> roller) before casts may claim table delivery.
+
 ---
 
 **Package 2 · Tarot visuals** — worktree `~/tools/fh-worktrees/tarot`, branch `pkg2-tarot`, port 8131

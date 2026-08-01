@@ -1003,3 +1003,46 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-fentry .fh-cd-who{color:var(--cd-gold)}
 .fh-cd-fentry.is-mine .fh-cd-who{color:var(--cd-faint)}
 .fh-cd-fentry.is-mine{opacity:.72}
+
+/* ── Spells panel: manual spellbook + slot tracker ────────────────── */
+.fh-cd-spells{display:flex;flex-direction:column;gap:calc(6px * var(--cd-fs));flex:0 1 auto;
+  min-height:calc(78px * var(--cd-fs));overflow-y:auto}
+.fh-cd-spell-source,.fh-cd-spell-feedgap{display:flex;align-items:center;gap:calc(6px * var(--cd-fs));
+  border:1px solid var(--cd-line-soft);border-radius:5px;padding:calc(5px * var(--cd-fs)) calc(7px * var(--cd-fs));
+  background:var(--cd-parch-2);color:var(--cd-muted);font-size:calc(7.5px * var(--cd-fs))}
+.fh-cd-spell-source b,.fh-cd-spell-feedgap b{flex:none;color:var(--cd-gold);font-size:calc(7px * var(--cd-fs));letter-spacing:.09em}
+.fh-cd-spell-feedgap{border-color:#a34c43;background:#f7e8e1;color:#7e2f26}.fh-cd-spell-feedgap b{color:#8a3b32}
+.fh-cd-spell-slots,.fh-cd-spell-book{display:flex;flex-direction:column;gap:calc(4px * var(--cd-fs))}
+.fh-cd-spell-head{display:flex;align-items:baseline;gap:calc(6px * var(--cd-fs));border-bottom:1px solid var(--cd-line-soft);padding-bottom:2px}
+.fh-cd-spell-head>b{color:var(--cd-oxblood);font-size:calc(8px * var(--cd-fs));letter-spacing:.1em}
+.fh-cd-spell-head>small{color:var(--cd-faint);font-size:calc(7px * var(--cd-fs))}
+.fh-cd-spell-slotlist{display:flex;align-items:center;gap:calc(4px * var(--cd-fs));flex-wrap:wrap}
+.fh-cd-spell-slot{display:flex;align-items:center;border:1px solid var(--cd-line);border-radius:4px;overflow:hidden;background:var(--cd-parch-2)}
+.fh-cd-spell-slot b,.fh-cd-spell-slot span{padding:0 calc(4px * var(--cd-fs));font-size:calc(7.6px * var(--cd-fs))}
+.fh-cd-spell-slot b{color:var(--cd-gold)}.fh-cd-spell-slot span{color:var(--cd-ink);font-variant-numeric:tabular-nums}
+.fh-cd-spell-slot button{width:calc(18px * var(--cd-fs));height:calc(18px * var(--cd-fs));border:0;border-left:1px solid var(--cd-line-soft);
+  background:transparent;color:var(--cd-muted);font-family:inherit;font-size:calc(12px * var(--cd-fs));line-height:1;cursor:pointer}
+.fh-cd-spell-config summary,.fh-cd-spell-add summary{color:var(--cd-gold);font-size:calc(7.5px * var(--cd-fs));cursor:pointer}
+.fh-cd-spell-config>div{display:flex;gap:calc(4px * var(--cd-fs));margin-top:calc(4px * var(--cd-fs))}
+.fh-cd-spell-config select,.fh-cd-spell-config input,.fh-cd-spell-form input,.fh-cd-spell-form select{min-width:0;height:calc(21px * var(--cd-fs));
+  border:1px solid var(--cd-line);border-radius:4px;background:#fffdf6;color:var(--cd-ink);font-family:inherit;font-size:calc(8px * var(--cd-fs));padding:0 calc(4px * var(--cd-fs))}
+.fh-cd-spell-config input{width:calc(48px * var(--cd-fs))}
+.fh-cd-spell-config button,.fh-cd-spell-form>button,.fh-cd-spell-castrow button{height:calc(21px * var(--cd-fs));border:1px solid var(--cd-gold-bright);
+  border-radius:4px;background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;font-family:inherit;font-weight:700;
+  font-size:calc(7.5px * var(--cd-fs));padding:0 calc(8px * var(--cd-fs));cursor:pointer}
+.fh-cd-spell-card{border:1px solid var(--cd-line);border-left:3px solid var(--cd-line);border-radius:5px;background:var(--cd-parch-2);
+  padding:calc(5px * var(--cd-fs)) calc(6px * var(--cd-fs))}.fh-cd-spell-card.is-prepared{border-left-color:#6b4a8c}
+.fh-cd-spell-title{display:flex;align-items:flex-start;gap:calc(5px * var(--cd-fs))}.fh-cd-spell-title>div{display:flex;flex:1;min-width:0;flex-direction:column}
+.fh-cd-spell-title b{color:var(--cd-ink);font-size:calc(9px * var(--cd-fs));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-spell-title small{color:var(--cd-faint);font-size:calc(6.8px * var(--cd-fs));letter-spacing:.05em}
+.fh-cd-spell-prep,.fh-cd-spell-delete{border:0;background:transparent;color:#6b4a8c;font-family:inherit;cursor:pointer;padding:0}
+.fh-cd-spell-prep{font-size:calc(12px * var(--cd-fs))}.fh-cd-spell-delete{color:var(--cd-faint);font-size:calc(13px * var(--cd-fs))}
+.fh-cd-spell-card>p{margin:calc(3px * var(--cd-fs)) 0;color:var(--cd-muted);font-size:calc(7.5px * var(--cd-fs));line-height:1.35}
+.fh-cd-spell-castrow{display:flex;align-items:center;justify-content:flex-end;gap:calc(6px * var(--cd-fs));margin-top:calc(4px * var(--cd-fs))}
+.fh-cd-spell-castrow span{margin-right:auto;color:var(--cd-faint);font-size:calc(7px * var(--cd-fs))}.fh-cd-spell-castrow button:disabled{cursor:not-allowed;filter:grayscale(1);opacity:.45}
+.fh-cd-spell-empty{color:var(--cd-faint);font-size:calc(7.5px * var(--cd-fs));font-style:italic}
+.fh-cd-spell-empty-list{display:flex;flex-direction:column;gap:2px;border:1px dashed var(--cd-line);border-radius:5px;padding:calc(8px * var(--cd-fs));text-align:center}
+.fh-cd-spell-empty-list b{color:var(--cd-muted);font-size:calc(8px * var(--cd-fs))}
+.fh-cd-spell-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(4px * var(--cd-fs));margin-top:calc(5px * var(--cd-fs))}
+.fh-cd-spell-form label{display:flex;flex-direction:column;gap:2px;color:var(--cd-faint);font-size:calc(6.8px * var(--cd-fs))}
+.fh-cd-spell-form .is-wide{grid-column:1/-1}.fh-cd-spell-check{flex-direction:row!important;align-items:center}.fh-cd-spell-check input{width:auto;height:auto}.fh-cd-spell-form>button{justify-self:start}
