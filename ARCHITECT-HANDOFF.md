@@ -187,9 +187,11 @@ Docs-only changes (plan, this file) need no deploy — they are not in the built
 > deployed as `gh-pages` `5889eac`. The served JS/HTML was read back from
 > GitHub Pages with a cache-buster — this is verified production state.
 >
-> **One real check remains before closing character ownership:** repeat Yedrivel
-> AC 15→16→15 against the deployed client and confirm both saves plus reload,
-> with no false conflict. Yedrivel was restored to AC 15 after the failed trial.
+> ✅ **CHARACTER OWNERSHIP VALIDATED 2026-08-01:** the real LIVE-table repeat
+> passed against the deployed client. Yedrivel saved AC 15→16 and 16→15, then a
+> full reload returned 15, with no false-conflict modal. The local table archive
+> and cloud copy matched at revision 18 / AC 15; server, tunnel and rendezvous
+> were cleaned up (`live:false`).
 > Build-conflict recovery is safe but rough: if local revision storage is lost,
 > a 409 refuses the overwrite but the Skill Builder has no guided recovery UI.
 > Full account: vault logbook `Fate's Hand — Player Companion — Character
@@ -230,9 +232,9 @@ Docs-only changes (plan, this file) need no deploy — they are not in the built
 > verified live. Full account: `COMPANION-BUILD-PLAN.md` §13.13, logbook entry
 > 2026-07-30/31.
 >
-> **Superseded 2026-08-01:** the live trial and soak have now run. The soak passed;
-> the character trial found the two client-chain gaps above, now deployed. Only
-> the short post-deploy AC 15→16→15 confirmation remains.
+> **Closed 2026-08-01:** the live trial, soak and post-deploy confirmation have
+> all passed. Yedrivel completed AC 15→16→15 with two saves, no false conflict,
+> and reload returned 15. The Mac-owned character path is validated.
 
 > Two findings from that work that outlive the decision: **`GM_TOKEN` is a single
 > global secret** (`worker.js:177`) granting root over every campaign on the
@@ -336,12 +338,18 @@ commit not yet merged.
 
 **Next, in order** *(2026-08-01)*:
 
-1. **One short post-deploy character check:** Yedrivel AC 15→16, save; then
-   16→15, save; reload and confirm 15. No false-conflict modal may appear. This
-   is the final gate on the Mac-owned character path.
-2. **12b, the bridge** — its starter prompt is written and did not need
-   rewriting: it reads the feed and does not care which transport carries it.
-   On loopback it may use SSE or WS, both of which work there.
+1. ✅ **Character ownership validated:** real LIVE-table Yedrivel check passed:
+   AC 15→16→15, both saves accepted, no false-conflict modal, reload returned 15;
+   local and cloud copies matched at revision 18. Server, tunnel and rendezvous
+   were cleaned up after the test.
+2. **12b, the bridge — BUILT LOCALLY / LIVE TEST PENDING** — `fh-table`
+   branch `pkg12b-abovevtt`, commit `a7a8036`. Manifest V3 DM-only extension,
+   loopback WebSocket subscriber, visible delivery state, id dedupe and explicit
+   higher-revision supersession. The real server+harness test printed one initial
+   line and one `UPDATE` for initial+duplicate+revision input; 67 tests pass again
+   from an independent clone. No push or deployment has occurred. Final gate:
+   load the unpacked extension in Eric's Chrome/Edge and make one real Companion
+   roll plus one revision in a live AboveVTT DM table.
 3. **Then 6/5/7 (Actions, Traits, Spells — parallel).** Actions V1 is
    **READY / QUEUED**, not in flight; Eric's detailed SOL prompt is preserved at
    `architect-prompts/actions-v1.md` and supersedes the old short prompt in plan
