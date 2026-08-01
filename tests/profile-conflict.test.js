@@ -5,14 +5,14 @@
 // silently applied, and the offered "Recharger" action adopts the server's
 // current document without attempting any auto-merge (§13.13.4 explicitly rules
 // that out). Install linkedom first, same as player-sheet.integration.test.js:
-//   npm install --prefix /tmp/fh-player-test linkedom@0.18.12
+//   npm install   (linkedom is a devDependency in package.json)
 const assert = require("node:assert/strict");
 const webcrypto = require("node:crypto").webcrypto;
 const crypto = {randomUUID:()=>webcrypto.randomUUID(),getRandomValues:array=>{array[0]=10;return array;}};
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const {parseHTML} = require("/tmp/fh-player-test/node_modules/linkedom");
+const {parseHTML} = require("linkedom");
 
 const {window} = parseHTML("<html><body><div id=\"fhPlayerSheet\" data-rules=\"../\" data-inventory=\"../party-inventory.html\" data-soulforge=\"../soulforge-tool.html\"></div></body></html>");
 const {document} = window;

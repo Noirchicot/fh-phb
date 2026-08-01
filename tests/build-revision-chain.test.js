@@ -8,13 +8,13 @@
 // inline script, via linkedom) so the test drives the actual "Send to GM"
 // button rather than a reimplementation of its logic.
 // Install linkedom first, same as player-sheet.integration.test.js:
-//   npm install --prefix /tmp/fh-player-test linkedom@0.18.12
+//   npm install   (linkedom is a devDependency in package.json)
 const assert = require("node:assert/strict");
 const webcrypto = require("node:crypto").webcrypto;
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const {parseHTML} = require("/tmp/fh-player-test/node_modules/linkedom");
+const {parseHTML} = require("linkedom");
 
 const htmlPath = path.join(__dirname, "..", "docs", "skill-builder.html");
 const html = fs.readFileSync(htmlPath, "utf8");
