@@ -131,7 +131,7 @@ clicks were delegated inside `handleClick`, which bails on non-`<button>` target
 
 ### Tests
 
-Six suites, all must stay green:
+**Fourteen** suites as of 2026-08-01, all must stay green:
 ```bash
 for t in tests/*.test.js; do node "$t"; done
 ```
@@ -145,6 +145,19 @@ the belt goes untested.
 ./.venv/bin/mkdocs gh-deploy --force
 ```
 Docs-only changes (plan, this file) need no deploy — they are not in the built site.
+**`docs/fhpc-guide-vivant.html` is the exception**: it *is* in the built site, so a
+guide update does need a deploy.
+
+### The living guide
+
+`docs/fhpc-guide-vivant.html` is Eric's plain-language view of the whole project;
+`docs/fhpc-guide-HANDOFF.md` beside it says how to regenerate it. **Update it after
+every merge**, in a commit immediately following that merge, and write the *merge's*
+SHA into its provenance block. A guide commit can never name its own SHA — that is
+the self-reference trap, and the rule above is the way around it. The guide must
+stay self-contained: inline CSS, light **and** dark, no CDN, no remote font, no
+third-party script, mobile and desktop, French, jargon explained, glossary
+mandatory. Never let it claim a branch is on `main` when it is not.
 
 ---
 
@@ -169,6 +182,43 @@ Docs-only changes (plan, this file) need no deploy — they are not in the built
 ---
 
 ## 6. State at handoff
+
+> ✅ **PACKAGES 5/6/7 RELEASED, DEPLOYED AND VERIFIED LIVE 2026-08-01 — Traits,
+> Actions, Spells.** `main` = `origin/main` = **`d947dd7`** (release G1), a clean
+> fast-forward from `cbe9acb`. `gh-pages` = **`7e358b3`** ("Deployed d947dd7").
+>
+> The release is `d947dd7` (guide v1.3) on top of the application merge M1
+> **`888a6dd`**, which integrates the three corrected package heads in the CSS
+> order that was mandatory — **Traits `3ecd981` → Actions `575bfde` → Spells
+> `a74de20`**. The two additive conflicts at the end of `companion-dock.css` were
+> resolved by keeping all three blocks; they now sit at lines 1007 / 1080 / 1153
+> in that order. `fh-player-sheet.js` is byte-identical to `cbe9acb` — core
+> untouched, as the panel contract requires. Also carried: `fd8e635`, which bounds
+> the Spells manual id recovery (the MAX_SAFE hostile case).
+>
+> **Verified, not reported:** 14/14 suites on the new `main`, `mkdocs build
+> --strict` clean, then both replayed in an *independent clone* detached at
+> `d947dd7` — 14/14 and strict build again. No conflict markers anywhere. Live
+> read-back from GitHub Pages with a cache-buster: the guide serves as **v1.3**,
+> its provenance block carries the full M1 SHA, and the page pulls **zero**
+> external resources. On `/player/`, the three panel scripts load and each served
+> file is byte-for-byte identical to the released local file (traits 10 633,
+> actions 20 890, spells 21 560, `companion-dock.css` 100 503). No console errors.
+>
+> **The push and the deploy were run by Eric**, not from this seat — the auto-mode
+> classifier blocks `git push` here, the same way it blocked `wrangler deploy` in
+> §6 earlier. Expect that and hand him the two commands rather than working around
+> it.
+>
+> **Unchanged on purpose:** nothing was merged or pushed in `fh-table`; AboveVTT
+> PR #1 stays draft.
+>
+> **The guide is now a versioned artefact**: `docs/fhpc-guide-vivant.html` on
+> `main`, with `docs/fhpc-guide-HANDOFF.md` beside it. It is no longer the
+> unversioned file under a dated `~/Documents/Codex/...` run folder. Standing rule
+> from here on: **regenerate and commit the guide immediately after each merge,
+> and write the merge's SHA into its provenance block** — the guide describes the
+> merge it follows, never its own future SHA.
 
 > ✅ **PACKAGE 12b LIVE GATE PASSED 2026-08-01 — AboveVTT 1.58, real FH2.**
 > The unpacked extension reached `LIVE` in its popup, action badge and page
@@ -370,18 +420,35 @@ commit not yet merged.
    ownership logbook entry.
 2. ~~**12b, the bridge**~~ — **LIVE GATE PASSED.** Commits `a7a8036` and
    `1aa09be` on PR #1; not merged or deployed. See the state block above.
-3. **Next: 6/5/7 (Actions, Traits, Spells — parallel).** Actions V1 is
-   **READY / QUEUED**, not in flight; Eric's detailed SOL prompt is preserved at
-   `architect-prompts/actions-v1.md` and supersedes the old short prompt in plan
-   §8. Refresh only its worktree preamble before delegation. These packages are
-   also what starts producing `damage` and `spell` intents.
+3. ~~**Next: 6/5/7 (Actions, Traits, Spells — parallel)**~~ — **RELEASED, DEPLOYED
+   AND VERIFIED LIVE 2026-08-01.** See the state block at the top of §6.
 4. **Package 9 — adversarial bug hunt** over the roll engine and the
    destiny/chaos/awakening state machine. It is now **more** worth running, not
    less: the feed broadcasts whatever that engine concludes, so a wrong verdict
    is no longer a private mistake.
+5. **SRD 5.2.1 base** — the next package, parallelisable with package 9.
+   Recommended shape: a deterministic import of the official French CC-BY-4.0
+   SRD into a canonical SQLite base, with static JSON exports for FHPC and four
+   separated layers — SRD → optional PHB → Fate's Hand → manual. Attribution,
+   version and provenance are mandatory on every record. **This gives a
+   catalogue, not a character's prepared choices** — it does not replace what a
+   DDB build payload fails to carry.
+6. **Worktree cleanup — audited, not yet executed.** 21 worktrees, six of them at
+   `7347cfb`. **Never `--force`.** Absolutely protect
+   `.claude/worktrees/youthful-taussig-bfa14e`: it holds an uncommitted change to
+   `sync_from_vault.py`. After revalidation *and* Eric's agreement, the ten clean
+   already-merged worktrees can be removed without `--force`, keeping their
+   branches first. The guide/gate/package worktrees can go now that the release
+   has landed.
+7. **Decide separately:** the `linkedom` devDependency commit, the dice lab, and
+   AboveVTT PR #1. The three raw DDB entries are documented test artefacts with
+   no supported deletion path.
 
-**Unresolved:** whether Actions/Traits/Spells have any source data at all — the
-build payload may not carry feats, actions or a spell list. Every one of those
-three prompts tells the chat to check `ctx.character` first and build a
-manual-entry version rather than invent a data source. Expect that decision to
-come back to the architect.
+**Resolved 2026-08-01 — the source-data question came back, and the answer is
+manual entry.** `ctx.character` carries no structured traits, actions or weapons.
+It does expose a minimal spell list `{name, level}` — but no slots, preparation,
+attack bonus, DC or damage. So all three panels are manual and **invent nothing**;
+each one hands the player an entry form rather than a fabricated sheet. Core hooks
+that would fix this were proposed in the branches and deliberately **not**
+implemented — adopting them is an architect decision, and it means touching
+`fh-player-sheet.js`.
