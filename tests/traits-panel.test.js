@@ -92,7 +92,12 @@ assert.equal(store.items.some(item=>item.id===firstId),false,"Delete removes onl
 assert.ok(saves>=10,"every mutation persists through the panel contract");
 
 const css=fs.readFileSync(path.join(__dirname,"..","docs","stylesheets","companion-dock.css"),"utf8");
-const mobileTraitsCss=css.slice(css.lastIndexOf("@media(max-width:520px){"));
+// REWRITTEN: scope the 44px proof to the Traits block because the integrated
+// stylesheet now keeps later Actions and Spells blocks, including media rules.
+const traitsCssStart=css.indexOf("/* ── Traits panel");
+const traitsCssEnd=css.indexOf("/* ── Actions panel V1",traitsCssStart);
+assert.ok(traitsCssStart>=0 && traitsCssEnd>traitsCssStart,"Traits CSS remains an explicit block before Actions");
+const mobileTraitsCss=css.slice(traitsCssStart,traitsCssEnd);
 assert.match(mobileTraitsCss,/\.fh-cd-traits button\{[^}]*min-width:44px;min-height:44px[^}]*\}/,
   "Traits keeps 44px mobile button targets");
 assert.match(mobileTraitsCss,/\.fh-cd-trait-field input,.fh-cd-trait-field select\{[^}]*min-height:44px[^}]*\}/,
