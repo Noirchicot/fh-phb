@@ -75,6 +75,9 @@ Read both. Read nothing else to start.
 | **Cloudflare Quick Tunnel (`*.trycloudflare.com`) does not deliver a streamed HTTP response body** — headers arrive, the body never does; isolated with a 10-line SSE server that streams fine on loopback and sends zero bytes through the tunnel | a live SSE stream through this tunnel shows nothing, ever, while an ordinary `GET` on the same server is fast | measured 2026-07-29 — **use WebSocket**, which is clean through the same tunnel (57ms avg end to end). SSE is loopback/debug only. Plan §12.11 |
 | A browser applies **no CORS to a WebSocket upgrade** — no preflight, no `Allow-Origin`, no enforcement | any page anywhere can open a socket to a reachable server; the CORS work done for the POST path protects nothing here | the server must check the `Origin` header **itself** against the allow-list. No `Origin` at all = a non-browser client (curl, the bridge) and is allowed — the campaign code stays the single membership model. `ws.mjs`, unit-tested |
 | `WORKER-ADMIN-API.md` in this repo is a **spec**, not the code | you will "fix" a document and deploy nothing | the deployed source is `~/tools/fh-worker/src/worker.js`, `wrangler deploy` from that directory |
+| **Cloudflare KV meters `list()` separately from reads — 100,000 reads/day but ~1,000 `list()`/day on the free plan** | the dock's 3s feed poll is one `list()` each: **1,200/hour from a single open sheet**, so one player alone exhausts the day's allowance in 50 minutes and `/party` + `/feed` return `500` / code `1101` for everyone. This took production down on 2026-07-30 | **no `list()` on any path a page can call on a timer.** Prefix scans belong on DM-driven routes only; anything polled reads a single key. Plan §13.1 and §13.9 |
+| `git branch -v` shows `gh-pages | Deployed <sha>` — the site's real deployed state | you reason about production from a plan note that says "not deployed" while the deploy happened weeks ago, and you misdate an incident by a whole architecture | check `gh-pages` and `git merge-base --is-ancestor <sha> main`, not the prose |
+| `cloudflared` does not die with `table-server.mjs` | an orphaned tunnel answers `1033` while the rendezvous record still says `live:true` for up to 15 min (`TABLE_TTL_SECONDS`, `worker.js:956`) | observed live 2026-07-30. Docks correctly show **OFF** — the design holds. But when killing a table server, kill its `cloudflared` too, or the next `ps` lies to you |
 | The vault's `Gpt in FH/FHPC-AboveVTT-DDB-Integration-Bible.md` recommends `/hit`/`/dmg`/`/save`/`/heal` **with a dice expression** as the production pattern — that makes AboveVTT roll its own dice (its own text confirms this) | posting one of these for a roll FHPC's engine already resolved shows the table a second, independently-rolled number, not the one Destiny/Chaos/Soulforge actually produced | a correction is appended at the top of that file (2026-07-29). Package 12b already avoids this (plain resolved text, plan §11.3) — the trap is only for a future "deepen" phase that follows the bible literally instead of "translate what you can, print what you cannot" |
 
 ---
@@ -165,7 +168,81 @@ Docs-only changes (plan, this file) need no deploy — they are not in the built
 
 ---
 
-## 6. State at handoff (2026-07-29)
+## 6. State at handoff
+
+> ✅ **DEPLOYED AND VERIFIED 2026-08-01 — soak + revision-chain corrections.**
+> The real four-hour WebSocket soak passed: 4:00:02, 242/242 probes, no loss,
+> duplicate, reordering, POST failure or disconnect. The orphan-tunnel case was
+> reproduced (`502` while rendezvous still said `live:true`) and cleaned up.
+> Full measurements: vault logbook `Fate's Hand — Table Server Soak 4h`.
+>
+> The first real character-ownership edit then found a **client revision bug**,
+> not a server conflict: Yedrivel's AC 15→16 was saved, but the dock read
+> `response.revision` while `/profile` returns `profile.revision`, so the next
+> write falsely 409'd. `4e36c63` fixes and tests the nested response. Review
+> then found the separate `/builds` chain gap: Skill Builder never sent the
+> last revision, so its second send always 409'd. `207f597` stores revisions per
+> campaign+pseudo and never retries a real conflict. Both commits were verified
+> in independent clones (11 suites + strict build), pushed to `origin/main`, and
+> deployed as `gh-pages` `5889eac`. The served JS/HTML was read back from
+> GitHub Pages with a cache-buster — this is verified production state.
+>
+> **One real check remains before closing character ownership:** repeat Yedrivel
+> AC 15→16→15 against the deployed client and confirm both saves plus reload,
+> with no false conflict. Yedrivel was restored to AC 15 after the failed trial.
+> Build-conflict recovery is safe but rough: if local revision storage is lost,
+> a 409 refuses the overwrite but the Skill Builder has no guided recovery UI.
+> Full account: vault logbook `Fate's Hand — Player Companion — Character
+> ownership validation`.
+
+> ✅ **RESOLVED 2026-07-31 — the 2026-07-30 outage is fixed, deployed, verified.**
+> Two commits: `b4adb19` (dock stops polling the cloud feed on a 3s timer; RECENT
+> loads the backstop once when the TABLE zone opens, plus a Refresh button) and
+> `99275b2` (Worker maintains `party:{CODE}` incrementally instead of scanning
+> KV on every `GET /party/:code`). Both live: `GET /party/FH2` → `200`, verified
+> against production, not assumed.
+
+> ✅ **DONE 2026-07-31 — §13.13 is built, merged, deployed, all four phases.**
+> Eric ratified a decision that is **not** the architect's recommendation:
+> §13.3–§13.4 argued for the Worker staying the sole owner of characters (his
+> Mac only replicates, read-only). Asked directly — because it decides whether a
+> sync protocol is needed at all — he chose the harder option: his Mac owns the
+> characters and becomes the server during a session (like self-hosted Foundry),
+> **and** the cloud copy stays writable by players while he is offline.
+>
+> The design (§13.13): a `revision` number per character; a write states the
+> revision it saw; a mismatch is `409` with the current document, never a
+> silent overwrite — the same "one writer at a time" discipline §12.5 already
+> uses for the roll feed, applied per-record. Built in 4 phases, each in its own
+> worktree, verified independently before merge (never trust a "done" report
+> without re-running it — two of the four phases were reported done with
+> uncommitted work still sitting in the tree):
+> 1. `fh-worker` `84e134b` — `revision`/`409` on `/builds` and `/profile`.
+> 2. `fh-phb` `7a6efd9` — dock sends revision, shows the conflict, offers reload.
+> 3. `fh-table` `28abcb3` — the table server owns characters during a session:
+>    local archive, pull-then-serve on start, mirror writes to cloud. Refuses to
+>    bind its port if the initial cloud pull fails, rather than claim a freshness
+>    it never confirmed.
+> 4. `fh-phb` `7981960` — **built by Codex**, not Claude — dock routes character
+>    writes to the live table server, same one-writer rule as the roll feed.
+>
+> All pushed to `origin/main`, deployed (`gh-pages`="Deployed 7981960"),
+> verified live. Full account: `COMPANION-BUILD-PLAN.md` §13.13, logbook entry
+> 2026-07-30/31.
+>
+> **Superseded 2026-08-01:** the live trial and soak have now run. The soak passed;
+> the character trial found the two client-chain gaps above, now deployed. Only
+> the short post-deploy AC 15→16→15 confirmation remains.
+
+> Two findings from that work that outlive the decision: **`GM_TOKEN` is a single
+> global secret** (`worker.js:177`) granting root over every campaign on the
+> Worker — a second DM on Eric's instance is not rough-edged multi-tenancy, it is
+> mutual root; and the dock reaches the Worker through exactly **one** helper
+> (`api()`, `fh-player-sheet.js:181`) behind **one** constant (line 7), so
+> re-pointing it is a one-line change. Seven other hard-coded origins live in the
+> standalone pages (§13.5 lists them).
+
+### State as of 2026-07-29 (below this line, and partly superseded above)
 
 **Done and live:** the belt and panel contract; text-size and sizing standard;
 Notes and Tarot panels; the Brick rule and Minor Arcana points; AboveVTT research
@@ -179,8 +256,10 @@ revises that line in place instead of adding a second.
 **Two deliberate deviations from what §11 said, both documented there:** no cursor
 key (§11.4), and the party log is a zone toggle rather than a belt tab (§11.4c).
 
-**The Worker IS deployed** (2026-07-29, version `5649831e`). The site is **not** —
-`./.venv/bin/mkdocs gh-deploy --force` has deliberately not been run, see below.
+**The Worker IS deployed** (2026-07-29, version `5649831e`). ~~The site is **not**~~
+— **superseded: the site was deployed** (`gh-pages` = "Deployed 0aad96e"), which
+is what put the polling dock into production and caused the outage at the top of
+this section.
 
 > 🚨 **The feed works and is ~27s slow.** Measured against the live Worker, not
 > the harness: KV `list()` takes 22–28s to show a freshly written event (plan
@@ -255,26 +334,23 @@ commit not yet merged.
 > All seven existing test suites still green, unchanged, because default state
 > is RECENT and behaves exactly as package 11 shipped it.
 
-**Next, in order:**
+**Next, in order** *(2026-08-01)*:
 
-1. **12b, the bridge** — its starter prompt is written and did not need
+1. **One short post-deploy character check:** Yedrivel AC 15→16, save; then
+   16→15, save; reload and confirm 15. No false-conflict modal may appear. This
+   is the final gate on the Mac-owned character path.
+2. **12b, the bridge** — its starter prompt is written and did not need
    rewriting: it reads the feed and does not care which transport carries it.
    On loopback it may use SSE or WS, both of which work there.
-2. **The four-hour soak** — the largest open risk (plan §12.11 point 4).
-   WebSocket moves the question from "does it stream" to "does it survive a
-   session"; the 20s server ping exists for that and is untested over hours.
-3. **The caption relabelling is done as part of the client work above** — the
-   three states already ship honest captions, and OFF is what a real network
-   failure produces (verified, not assumed) rather than a silent lie. What is
-   left of "unblock package 11" is just `mkdocs gh-deploy` itself. Technically
-   safe to run now; deliberately not run from this seat — **that decision is
-   Eric's**, same as every deploy in this project.
-
-Then 6/5/7 (Actions, Traits, Spells — parallel;
-they are also what starts producing `damage` and `spell` intents). Package 9 (the
-adversarial bug hunt over the roll engine and the destiny/chaos/awakening state
-machine) is now **more** worth running, not less: the feed broadcasts whatever that
-engine concludes, so a wrong verdict is no longer a private mistake.
+3. **Then 6/5/7 (Actions, Traits, Spells — parallel).** Actions V1 is
+   **READY / QUEUED**, not in flight; Eric's detailed SOL prompt is preserved at
+   `architect-prompts/actions-v1.md` and supersedes the old short prompt in plan
+   §8. Refresh only its worktree preamble before delegation. These packages are
+   also what starts producing `damage` and `spell` intents.
+4. **Package 9 — adversarial bug hunt** over the roll engine and the
+   destiny/chaos/awakening state machine. It is now **more** worth running, not
+   less: the feed broadcasts whatever that engine concludes, so a wrong verdict
+   is no longer a private mistake.
 
 **Unresolved:** whether Actions/Traits/Spells have any source data at all — the
 build payload may not carry feats, actions or a spell list. Every one of those

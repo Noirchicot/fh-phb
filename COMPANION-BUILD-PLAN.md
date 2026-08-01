@@ -193,7 +193,7 @@ because they touch disjoint files.
 | — | **Dock + rendezvous** — the SSE client, the three table states (§12.5) and `POST/GET/DELETE /table/:code` on the Worker. **Architect work, not a package chat**: it is core (`fh-player-sheet.js`) and the Worker. | Opus · high | core + Worker | 12a |
 | 10 | **Dice lab.** Prototype face-cycling, in-slot 3D tumble, materials, landing weight — side by side, no dock changes. | Sonnet · high | `tools/dice-lab.html` | — |
 | 5 | **Features panel** — abilities, traits, feats, with a real per-rest/per-day tracker. | Sonnet · high | `fh-panel-features.js` | 1 |
-| 6 | **Actions panel** — Action / BA / Reaction, clickable rolls, `showsRoller: true`. | Sonnet · high | `fh-panel-actions.js` | 1 |
+| 6 | **Actions panel — READY / QUEUED.** Action / BA / Reaction, clickable rolls, `showsRoller: true`. The detailed V1 starter prompt is preserved in `architect-prompts/actions-v1.md`; it supersedes the short prompt in §8 and launches only after the character-validation gate and 12b. | Sonnet · high | `fh-panel-actions.js` | 1 |
 | 7 | **Spells panel** — list, slots, clickable casts. | Sonnet · high | `fh-panel-spells.js` | 1 |
 | 8 | **Notes panel.** | Sonnet · medium | `fh-panel-notes.js` | 1 |
 | 9 | **Bug hunt.** Adversarial pass over the roll engine and destiny/chaos/awakening state machine. | Opus · high | tests/ | after a few land |
@@ -381,48 +381,12 @@ you everything you needed -- if you had to work around it, say so.
 
 **Package 6 · Actions** — worktree `~/tools/fh-worktrees/actions`, branch `pkg6-actions`, port 8133
 
-```
-Work in ~/tools/fh-worktrees/actions (branch pkg6-actions).
-
-Build the Actions panel by filling in docs/javascripts/fh-panel-actions.js.
-
-Actions = what you can do on your turn, split Action / Bonus Action /
-Reaction, each one a clickable roll (ctx.roll for a flat d20, ctx.openConsole
-for the advanced console). This panel already declares showsRoller: true, so
-core draws Destiny + Console + Tray underneath it exactly as under Skills --
-do not build your own roller.
-
-FIRST, find out what data you actually have: log ctx.character in the harness
-and look. The build payload is an FH level-1 builder record plus DDB sync, and
-it may well NOT carry attacks, actions or class actions. If it does not, say so and build a
-manual-entry version rather than inventing a data source -- then note the gap
-in COMPANION-BUILD-PLAN.md so the architect chat can decide where the data
-comes from. Do not fake it.
-
-Read COMPANION-BUILD-PLAN.md first. The full ctx contract is documented at the
-top of docs/javascripts/fh-panel-features.js -- you should not need to open
-fh-player-sheet.js at all, and you MUST NOT edit it: core is the architect
-chat's file and another chat may be changing it right now.
-
-Style must match the dock. Add your panel's CSS at the END of
-docs/stylesheets/companion-dock.css. Every font-size goes through
-calc(Npx * var(--cd-fs)) -- the dock has a user text-size control and a
-hardcoded px will not scale with it.
-
-The harness is already built and your worktree has its own port, so just
-preview_start the fh-site-b entry in .claude/launch.json and open
-/dock-harness.html. Do not commit .claude/launch.json (it is skip-worktree'd).
-
-Tests: for t in tests/*.test.js; do node "$t"; done -- all six must pass.
-
-COMMIT YOUR WORK on your branch before reporting back. Both of the first two
-packages reported "done" with everything still uncommitted in the working tree,
-one stray git command away from being lost. Reporting is not delivering.
-
-Done when: the Actions tab works, all six test suites pass, and it looks right in
-the harness. Then report back what you built and whether the ctx contract gave
-you everything you needed -- if you had to work around it, say so.
-```
+**READY / QUEUED (2026-08-01).** The original short starter prompt is superseded
+by the reviewed, table-usable V1 brief in
+[`architect-prompts/actions-v1.md`](architect-prompts/actions-v1.md). It adds the
+manual-first data model, turn economy, SRD/Fate's Hand boundaries, explicit core
+hook gaps, persistence and adversarial tests. Before dispatch, refresh only its
+worktree/branch preamble against the handoff; do not shrink its scope silently.
 
 ---
 
@@ -1050,7 +1014,10 @@ red) and in the caption: *"not reaching the table"*. Never fall back silently.
 > site is deployed.** `streamZoneInner()` says *"every roll in the campaign,
 > live"* and the empty state says *"Nothing from the table yet."* Against the
 > cloud feed both are false — it is ~30s behind, and "nothing yet" may mean "four
-> rolls you cannot see yet". This is the whole reason the site is undeployed.
+> rolls you cannot see yet". ~~This is the whole reason the site is undeployed.~~
+> **Stale as of 2026-07-30 — the site was deployed** (`gh-pages` = "Deployed
+> `0aad96e`") with the three honest states in place. What shipped with it is the
+> 3-second cloud poll, which is what took production down; see §13.1.
 > §12.5 replaces the binary on/off with **three named states**, and the amber one
 > carries the lag in its own caption. Relabelling is separable from, and much
 > smaller than, the table server: it is what makes the finished package-11 work
@@ -1600,15 +1567,27 @@ three.
 
    </details>
 
-3. **KV single-key `get` freshness** for the rendezvous — not yet measured; the
-   Worker route (§12.4) is written and unit-tested but **not deployed** (blocked
-   on Eric, see ARCHITECT-HANDOFF §6). Not on the critical path: the manual URL
-   override (§12.4) reaches a working live table without it.
-4. **A four-hour soak.** Not yet run, and now the largest open risk. WebSocket
-   moves the failure mode from "does it stream at all" to "does it survive four
-   hours" — a sleeping laptop, a tunnel silently half-open, a socket that dies
-   without `onclose` firing. The 20s server-side ping is there for exactly this
-   and is the thing the soak must prove.
+3. **KV single-key `get` freshness** for the rendezvous — ⚠️ **the "not deployed"
+   note here was stale.** The route is deployed and working: `GET /table/FH2` →
+   `200` in **102 ms** with a live record, measured 2026-07-30 22:40 UTC, on a day
+   when `/party` and `/feed` were both returning `500` for exhausted `list()`
+   quota. That is §12.4's central claim — single-key `get` is the operation KV is
+   good at — confirmed under load it was not designed for. **Freshness itself is
+   still unmeasured**: how long a *changed* value takes to propagate is a
+   different question from whether a read is fast, and only the six-probe method
+   settles it. Not on the critical path: the manual URL override (§12.4) reaches a
+   working live table without it.
+4. **A four-hour soak — PASS WITH RESERVATIONS, 2026-07-31.** The real chain
+   `table-server.mjs` → Quick Tunnel → WebSocket held **4:00:02**: 242 probes
+   sent and received, zero loss, duplicate, reordering, failed POST or socket
+   close. Latency: p50 114 ms, p95 191 ms, p99 298 ms, with one isolated
+   10.122 s spike and no associated loss. A reconnecting `?since=` client
+   replayed exactly two missed events.
+   > The wider failure scope was exercised too: killing the server while leaving
+   > `cloudflared` alive produced a tunnel `502` while rendezvous still returned
+   > `live:true`. Cleanup then stopped both processes and deleted rendezvous.
+   > Sleep/wake was not tested. Full evidence is in the vault logbook `Fate's
+   > Hand — Table Server Soak 4h`.
 
 ### 12.12 What is deliberately not built
 
@@ -1629,3 +1608,615 @@ three.
   §12.5, duplicate events the mirror is about to write, and put rolls in the DM's
   bridge that predate the session. It will look like a helpful thing to add. It
   is not.
+
+---
+
+## 13. Where the campaign lives (design, 2026-07-30)
+
+> 🟡 **PROPOSED — NOT RATIFIED.** Eric decides architecture; this section is the
+> architect's recommendation and the reasoning behind it. Nothing here is built.
+> §13.9 is the exception: those fixes are due whichever way the decision goes,
+> and one of them is a live outage.
+
+**The question put to this seat:** should the table server become the source of
+truth for the whole campaign — characters included — and not merely for the roll
+feed?
+
+**The recommendation, in one line: no — but the *hosting* moves, not the
+*storage*.** Characters stay in a Worker + KV; what changes is that the Worker
+stops being *FHPC's server* and becomes *one campaign's home*, deployable by
+whoever runs the table. Plus a local read replica, because the DM asking to read
+his own characters offline is a real requirement that does not need the
+architecture inverted to satisfy it.
+
+The two arguments that produced the question are both correct and neither is
+answered by moving characters to a laptop. §13.5 and §13.6 are where that is
+argued rather than asserted.
+
+### 13.1 What the 2026-07-30 outage actually proves
+
+The Worker returned `500` / Cloudflare `1101` on `/party` and `/feed`, logging
+`KV list() limit exceeded for the day`. `/table` kept working, because it is a
+single-key `get`.
+
+**Verified in source, not inferred:**
+
+| Fact | Where |
+|---|---|
+| `GET /party/:code` calls `listAllKeys()` on every request | `worker.js:1065` |
+| `readFeed()` calls `listAllKeys()` on every poll | `worker.js:1007` |
+| the dock polls the cloud feed every **3 s**, 12 s when hidden or quiet ≥2 min | `fh-player-sheet.js:2193`, `2319` |
+| the poll runs whenever a character is open in RECENT — the default state | `fh-player-sheet.js:2311–2316` |
+| `gh-pages` = *"Deployed 0aad96e"*, and `dbf6072` is an ancestor of it | `git branch -v`, `git merge-base` |
+
+That last row is the missing half of the incident report: **the polling dock is
+in production.** It went live with the deploy, and the quota died the next day.
+
+**The arithmetic, and it is not close.** Cloudflare's free plan meters `list()`
+separately from reads: 100,000 reads/day but **1,000 `list()`/day** (from
+Cloudflare's published free-tier table and the error string itself — not measured
+here). One dock polling at 3 s spends **1,200 `list()`/hour**. One player, alone,
+with a sheet open: **the entire daily allowance in 50 minutes.**
+
+> ⚠️ **§11.6 counted the operations correctly and compared them to the wrong
+> ceiling.** It says, verbatim: *"`GET /feed` costs one KV `list` per poll. At
+> five players on a 4h session that is roughly 24k reads — inside the free
+> tier."* The count is right — 5 × 4 h × 1,200 = 24,000 — and 24,000 *reads*
+> would indeed be inside the free tier. They are not reads. They are 24,000
+> `list()` against an allowance of 1,000: **24× over, per session.** One
+> mislabelled noun is the whole incident.
+
+**Correction to the framing this design was handed.** The handoff attributes the
+burn to `/party`'s `listAllKeys()` *and* to `readFeed`'s. Both do call it, but
+the terms are three orders of magnitude apart: `/party` costs one `list()` per
+**page load** (a few dozen a day), `/feed` costs one per **3 seconds per open
+dock**. The consequence is not academic — **fixing `/party` alone leaves the app
+broken.** A campaign index key is worth doing (§13.9) and would have removed the
+symptom's most visible route, but the quota would still be gone by lunchtime.
+
+**Measured live while writing this, 2026-07-30 22:40 UTC:**
+
+```text
+GET /table/FH2  → 200  {"live":true,"url":"https://institutes-…trycloudflare.com"}
+GET /party/FH2  → 500  error code: 1101          ← still down, right now
+```
+
+The outage is **ongoing, not historical**, and the KV counters reset at 00:00
+UTC — so it will recur every day the deployed dock keeps polling. Two further
+things fell out of the same probe, both worth recording:
+
+- The registered tunnel answers **1033** (*Cloudflare cannot resolve this
+  tunnel*), and `ps` shows `cloudflared` alive for 33 minutes with **no
+  `table-server.mjs` behind it** — an orphaned tunnel and a rendezvous record
+  that outlives its server by up to `TABLE_TTL_SECONDS` (15 min, `worker.js:956`).
+  A dock in that state reads `live:true`, fails to connect, and shows **OFF** —
+  which is §12.5 rule 1 behaving exactly as designed, in the wild, under a
+  failure nobody staged. Good news, recorded as such.
+- `~/tools/fh-table/data/` is **empty**. The JSONL persistence of §12.7 is built
+  and unit-tested but has **never written a byte in anger.** Relevant to §13.7:
+  any proposal to put characters on that disk is proposing to trust a path with
+  no operational history.
+
+**The verdict this section exists to deliver:** the outage was caused by a code
+defect with a known, small fix. It is **not** evidence that hosted storage is the
+wrong model, and the architecture decision must not be taken under its shadow. A
+laptop running the same 3-second poll against a `list()`-shaped index would have
+been equally wrong; it would merely have failed later and more quietly.
+
+### 13.2 The property that decided §12 does not carry to characters
+
+§12 is sound, and it is sound for reasons that are specific to a roll feed. Set
+the two workloads side by side and they are near-opposites:
+
+| | The live feed (§12) | Characters, profiles, inventory |
+|---|---|---|
+| **When is it read?** | during a session, while the DM is present | *between* sessions — a Tuesday tweak, a phone check, the builder at 2am |
+| **Mutability** | append-only; events are immutable | mutable records, edited in place |
+| **Writers** | one event, one writer, unique id | the player, the DM, the builder, a DDB pull |
+| **Conflict model** | dedupe by `id`, keep highest `rev` — merge is free | last-write-wins on a whole record — merge is a real problem |
+| **Loss tolerance** | 12 h TTL by design; it is a table log, not an archive | loss is a character sheet gone |
+| **Availability needed** | exactly as long as the DM is at the table | always |
+
+Every column that made "put it on the DM's machine" obviously right for the feed
+points the other way for characters. The clean statement:
+
+> **The feed moved local because it is ephemeral, append-only, single-writer and
+> session-scoped. Characters are none of those four things.** §12's reasoning
+> does not extend to them; it has to be re-argued from scratch, and it loses.
+
+The conflict row is the one that would bite hardest and is easiest to
+under-estimate. §11 got merging for free because events are immutable and
+identified — a dock that sees the same roll twice keeps one line. A character
+profile has no such property. Two writers and a mutable record means either a
+real sync protocol (versions, vector clocks, conflict UI) or silent loss — and
+silent loss is precisely what §2 forbids. **Any local-truth design owes an answer
+to "the player edited their sheet while the DM's Mac was off"** and none of the
+cheap answers are honest.
+
+> 🔴 **DECIDED AGAINST, 2026-07-31 — Eric ratified a different architecture.**
+> §13.3–13.4 below argue for the Worker staying the sole owner of characters.
+> Eric considered this and chose otherwise: **his Mac owns the characters and
+> becomes the server during a session, exactly like a self-hosted Foundry world**,
+> with a cloud copy that players can also **write to** while he is offline (not
+> merely read, which was the safer option offered and declined). §13.3–13.4 are
+> kept because the risk they name — two writers, a mutable record, silent loss —
+> is real and does not go away; it is now a problem §13.13 has to solve rather
+> than a problem avoided by not building this. Read §13.13 for the ratified
+> design.
+
+### 13.3 The recommendation: three tiers, each holding what suits it — superseded, kept for the risk analysis
+
+**Tier A — the campaign home. Cloud Worker + KV, one per DM. Source of truth.**
+Characters, profiles, inventory, campaign codes, the rendezvous record, the feed
+backstop. Shape unchanged from today. What changes is ownership: it stops being
+*the* FHPC server and becomes *this campaign's home*, deployed by whoever runs
+the table into their own Cloudflare account (§13.5).
+
+**Tier B — the table server. Local, while the session runs.** Source of truth for
+the live feed, exactly as §12 built it, unchanged. **Plus a read-only replica** of
+the home's characters, refreshed on start and on demand. The replica exists so the
+DM can read his own sheets with the cloud unreachable — which is his stated
+requirement, satisfied without inverting anything. **The table server never
+accepts a character write.** One writer stays one writer.
+
+**Tier C — the DM's archive. Plain files on the DM's disk, always.** The replica
+*is* the archive: a directory of JSON, one file per character, plus the roll
+JSONL §12.7 already writes. Readable with `cat`, greppable, backed up by whatever
+already backs up that machine, and useful when FHPC itself is not running.
+
+The layering rule that keeps this honest, and it is one sentence:
+
+> **Tier A is the only writer of characters. Tier B and Tier C are copies that
+> know they are copies, and say so.** A replica older than its home is labelled
+> with its age, never silently served as current.
+
+### 13.4 The options, and why the other three lose
+
+**Option 1 — local server is the whole source of truth, cloud deleted.**
+*Rejected.* It makes the character sheet unavailable whenever the DM's machine is
+off, which is most of the week; it destroys the "players install nothing and it
+just works" property §12.12 calls worth more than any feature; it makes the DM's
+disk a single point of failure for the campaign; and it does not actually remove
+the cloud (§13.6). This is Foundry's shape, and players-cannot-see-their-sheet is
+Foundry's best-known complaint, not an incidental one.
+
+**Option 2 — local is truth, cloud is a mirror.**
+*Rejected, and it is the tempting one.* It reads like §12.6's mirror applied one
+layer up, but the mirror worked because events are immutable and id-addressed.
+Mirroring mutable records means the copy can be edited too, and then you own a
+sync protocol — versions, conflict detection, a UI for "these two disagree". That
+is a large, subtle system, and the failure mode of getting it slightly wrong is
+**silently losing a player's edits**, which §2 forbids more strongly than it
+forbids anything else.
+
+**Option 3 — status quo: Eric's Worker hosts every table.**
+*Rejected on Eric's reasoning, which is correct.* He would pay for strangers'
+storage and quota, their traffic would take his campaign down (the free tier is
+small enough that this is not hypothetical — see §13.1), and he would be
+custodian of other people's data. Additionally, and this is worth stating
+because it is invisible from the outside: **`GM_TOKEN` is a single global secret**
+(`worker.js:177`). One token authorises listing every campaign, downloading every
+build, and cascade-deleting any campaign with its characters and profiles
+(`worker.js:1559–1573`). There is no per-campaign authority. A second DM on this
+Worker is not "multi-tenant with rough edges" — it is **every tenant holding root
+on every other tenant.**
+
+**Option 4 — the home is a deployment, not a service. ✅ Recommended.**
+Another DM runs `wrangler deploy` into their own free Cloudflare account with
+their own KV namespace and their own `GM_TOKEN`. They get their own quota, their
+own bill (zero), their own data, their own root. Eric's Worker holds Eric's table
+and nothing else. Foundry's ownership property — *your data is on hardware you
+control* — obtained without Foundry's availability cost, because a Worker is up
+when the laptop is not.
+
+### 13.5 What "another DM uses FHPC" actually costs under Option 4
+
+Concretely, for the second DM:
+
+1. A free Cloudflare account, one KV namespace, `npx wrangler deploy` — the
+   Worker is a single file with no build step.
+2. `wrangler secret put GM_TOKEN`.
+3. A campaign code, created through their own `gm.html` against their own Worker.
+
+That is more setup than "Eric adds you to his server" and dramatically less than
+"install Node and keep a server running whenever your players want to look at
+their sheet". It is also the same order of effort as installing Foundry, for a
+strictly better availability story.
+
+**The one thing that must be true for any of this, and it is small:** the site
+must not hard-code one origin. Today it does, in **seven places** — `docs/javascripts/fh-player-sheet.js:7`,
+`fh-gm.js:4`, `docs/gm.html:122` and `:208`, `docs/skill-builder.html:1506`,
+`docs/party-inventory.html:86`, `docs/soulforge-tool.html:223`. The dock's is the
+easy one: it flows through exactly **one** helper, `api()` at
+`fh-player-sheet.js:181`, so redirecting the dock is a one-line change behind a
+single choke point. This is the only structural work Option 4 requires, and it is
+worth doing **now** even though there is no second DM, because it is what keeps
+the door open at near-zero cost.
+
+**How a player reaches the right home — and what is deliberately deferred.**
+Two answers, and the recommendation is the cheaper one:
+
+- ✅ **The second DM forks the site too.** `mkdocs gh-deploy` onto their own
+  GitHub Pages, one constant changed. Their players get a URL from their DM, as
+  they already do. Eric holds *nothing* for them — no record, no traffic, no
+  liability. Recommended, because it is the only option with zero ongoing
+  obligation on Eric.
+- ⏸️ **A public campaign directory on Eric's Worker** (`GET /home/:code →
+  {api}`), so every table can keep using `noirchicot.github.io`. Elegant, one
+  tiny KV `get` per session per player, and Eric stores a pointer rather than
+  data. **Deferred deliberately:** it makes Eric a directory operator, it needs
+  a host allow-list or it becomes a way to point somebody's dock (and their
+  character data) at an arbitrary origin, and there is no second DM yet. Named
+  here so it stays a config decision later rather than a redesign.
+
+### 13.6 The deposit point — the argument that closes the question
+
+The handoff asks whether the builder needs "a drop-off point that exists when the
+DM's machine is off". Under the recommendation the question dissolves: the
+builder POSTs to the campaign home, which is where characters live anyway. No
+special surface, no second store.
+
+Under a local-truth model it does not dissolve — it multiplies. Local-truth still
+needs, in the cloud:
+
+1. a deposit box, so `POST /builds` works at 2am;
+2. the rendezvous, so a dock can find the tunnel (§12.4 — already true today);
+3. somewhere for players to read their sheets between sessions, or the app is
+   session-only.
+
+> **Local-truth does not remove the cloud. It replaces one cloud store with a
+> laptop plus two or three cloud surfaces, and adds a sync protocol between
+> them.** That is the whole argument in one sentence, and it is why the answer to
+> the question as put is *no*.
+
+### 13.7 Persistence, backup, and the dead-disk question
+
+Asked directly: *characters must not be lost — what storage, what backup, what
+happens when the DM's disk dies?*
+
+**Under the recommendation the question inverts, and that is the point.** The
+truth is in KV, which Cloudflare replicates; a dead laptop costs the DM a replica
+he re-downloads in one command. Nothing about the campaign is at risk. Under
+local-truth the same dead disk costs the campaign, unless the DM has maintained
+a backup discipline — and DMs do not, which is exactly why hosted VTTs exist.
+
+What Tier C is, concretely, when it is built:
+
+- **`~/fh-archive/{CODE}/{pseudo}.json`** — one file per character, rewritten on
+  every replica refresh, `.tmp` + `rename()` so a crash mid-write cannot truncate
+  a sheet. Plain JSON, identical to what `GET /party/:code/:pseudo` returns, so it
+  is re-importable by `POST /builds` with no transform.
+- **`~/fh-archive/{CODE}/feed-YYYY-MM-DD.jsonl`** — where §12.7's session log
+  already goes, moved out of the repo's `data/` directory so a `git clean` cannot
+  take the transcript with it.
+- **Backup is whatever already backs up that directory.** Time Machine covers it
+  by default; the DM chooses. The archive is deliberately plain files precisely
+  so no FHPC-specific backup tool has to exist.
+- **`node table-server.mjs FH2 --offline`** — serve the replica and the archive
+  with no tunnel, no rendezvous, no cloud. This is the answer to *"MJ sur son
+  propre Mac doit pouvoir consulter ses persos sans dépendre d'un cloud"*, and it
+  is perhaps forty lines on top of what exists.
+
+**Named honestly:** the replica is only as fresh as its last refresh, and a
+replica served without its age stated would be exactly the silent divergence §2
+forbids. Every offline read is captioned with the refresh timestamp, in the same
+spirit as LIVE/RECENT/OFF — *"local copy, synced 2 h ago"*. A stale copy that
+says so is useful. A stale copy that does not is a bug that looks like a feature.
+
+### 13.8 What changes in the dock
+
+Almost nothing, which is a good sign for a design.
+
+- `API` (`fh-player-sheet.js:7`) becomes resolved rather than literal: a build-time
+  constant with a `localStorage`/query override for development. One choke point
+  (`api()`, line 181) means one edit.
+- **No change to the three states.** LIVE/RECENT/OFF describe the *feed*, and the
+  feed's design is untouched by any of this.
+- **No new state for characters.** They come from the home or the request fails
+  loudly, as today. The replica is the DM's offline reader, not a fallback the
+  players' dock may silently take. If a session ever does lose the cloud
+  mid-game, the escalation is a labelled read-through on the table server — a
+  designed-not-built item (§13.12), not a thing to add speculatively.
+
+### 13.9 The fixes that are due regardless of the decision
+
+These are not part of the architecture question. **One of them is a live
+outage** and should not wait for a ratification.
+
+1. **Stop the dock polling the cloud feed.** This is the whole quota. RECENT
+   should load the backstop **once when the TABLE zone is opened**, plus an
+   explicit refresh — not every 3 seconds. It is also the *honest* cadence:
+   §11.4 already established the cloud feed is ~27 s stale, and polling a 27 s
+   source every 3 s was never buying anything. Note that slowing the poll is
+   **not** sufficient: even 60 s costs 1,200 `list()`/day for five players over
+   four hours, still over the 1,000 allowance. The periodic `list()` has to go,
+   not shrink.
+2. **`/party/:code` reads a maintained index key** — `party:{CODE}` →
+   `[{pseudo, updatedAt}]`, written on `POST /builds` and on admin delete.
+   `campaign-index` (`worker.js:88`) is the precedent; this is the same move.
+   Removes `list()` from the most-loaded public route.
+3. **Leave the `/admin` listings alone** — they are DM-driven and infrequent. The
+   rule to write down is narrower and permanent: **no `list()` on any path a page
+   can call on a timer.**
+4. ⏸️ **A single-key cloud backstop becomes possible, and is worth noting rather
+   than building.** The per-event key design (§11.4) exists because five browsers
+   wrote the feed concurrently and KV allows ~1 write/s per key. Since §12, there
+   is exactly **one** writer to the cloud feed — the table server's mirror. One
+   writer can coalesce into `feed-recent:{CODE}`, making `GET /feed` a single-key
+   `get`: no `list()`, and no 27 s index lag either. The catch is that RECENT-mode
+   docks still post directly when no table is running, which reintroduces
+   concurrent writers; resolving that means deciding what the backstop is *for*
+   when nobody is at the table. Designed, not built, and not urgent once fix 1
+   lands.
+
+**Suggested order:** 1 today (it is an outage), 2 next, then ratify §13, then
+Tier B/C. Fix 1 is a dock change and a deploy; fix 2 is a Worker change and a
+deploy Eric runs.
+
+### 13.10 Migration, and the rollback in both directions
+
+**If Option 4 is ratified, there is no data migration.** Nothing moves. The work
+is: parameterise the origin (§13.5), build the replica and archive (§13.7),
+document the deploy. Every step is independently revertable and none of them
+touch stored data. That is a genuine argument in its favour: **the recommended
+architecture is reachable without a migration**, and any design that requires one
+should have to beat that.
+
+**If Eric chooses local-truth instead**, the order matters and is written here so
+the choice is informed rather than discovered:
+
+1. **Export first, verify, keep.** `GET /builds` + `/party/:code/:pseudo` +
+   `/profile/:code/:pseudo` for every character, to files. Verify by count and by
+   round-tripping one character through `POST /builds` into a scratch campaign.
+2. **Run both, cloud still authoritative, for at least two sessions.** The local
+   store is read-only and compared against the cloud after each session. Any
+   divergence at this stage is a design flaw surfacing cheaply.
+3. **Flip the writer**, one route at a time, `/profile` last — it has the most
+   writers (player, DM, DDB pull) and is where conflicts will appear first.
+4. **Keep the cloud readable for a month**, then delete deliberately.
+5. **Rollback** is re-pointing the dock's `API`, at any point up to step 4, which
+   is why step 4 waits a month.
+
+Non-negotiable in either direction: **no step deletes cloud data until a local
+copy has been read back and verified**, and no step leaves two writers on the
+same record — that is the state where losses happen silently.
+
+### 13.11 Measured vs assumed
+
+**Measured (2026-07-30, this session):**
+- `/party/FH2` → `500` / `1101` at 22:40 UTC. The outage is current.
+- `/table/FH2` → `200` in 102 ms with a live record. Single-key `get` is
+  unaffected by the exhausted `list()` quota, as §12.4 predicted.
+- The registered tunnel → `1033`; `cloudflared` alive 33 min with no
+  `table-server.mjs`. Stale rendezvous → dock shows OFF: §12.5 rule 1 confirmed
+  under an unstaged failure.
+- `~/tools/fh-table/data/` empty — the JSONL path has never run in anger.
+- Source-verified: `worker.js:1065`, `1007`, `177`, `1559`; `fh-player-sheet.js:7`,
+  `181`, `2193`, `2319`; seven hard-coded origins; `gh-pages` deployed `0aad96e`.
+
+**Assumed, and each carries its label:**
+- **The 1,000 `list()`/day free-tier figure** comes from the logged error and
+  Cloudflare's published limits, not from a probe here. The *shape* of the
+  conclusion (a 3 s poll is untenable against a per-day allowance three orders of
+  magnitude smaller than the poll count) survives even if the number is off by a
+  factor of a few.
+- **Nobody has measured KV read latency for a `get`-shaped `/party`.** Fix
+  §13.9.2 is expected to be fast because `/table` is; expected, not measured. The
+  same six-probe method that condemned `list()` settles it, and should.
+- **The replica refresh cost is unmeasured** — a full party fetch is a handful of
+  `get`s, which should be trivial, but "should" is the word §12.11 exists to
+  distrust.
+- **No second DM has ever deployed this Worker.** The claim that `wrangler
+  deploy` into a fresh account is a ten-minute job is an assumption until someone
+  does it once, start to finish, from the written instructions.
+
+### 13.12 What is deliberately not built
+
+- **No sync protocol.** Tier A writes, Tiers B and C copy. The moment two tiers
+  can write the same record, this section's cheapest property is gone.
+- **No write-through proxy on the table server.** A dock whose home is
+  unreachable fails loudly, as today. If a real session loses the cloud mid-game,
+  the escalation is a labelled outbox — designed then, on evidence, not now on
+  speculation.
+- **No campaign directory on Eric's Worker.** §13.5: a second DM forks the site.
+  Revisit when there is a second DM, not before.
+- **No per-campaign GM tokens on Eric's Worker.** Under Option 4 each home has
+  exactly one DM, so a single token is the right granularity. This stops being
+  true the instant two DMs share a Worker — which is precisely the arrangement
+  Option 4 exists to avoid.
+- **No account system, ever.** The join code is the membership model (§11.6) and
+  survives untouched. Self-hosting is what replaces accounts, not the reverse.
+- **No archive UI.** Tier C is files. A folder of JSON that `jq` can read is worth
+  more than a viewer, and Eric's existing pipelines (*Journal de campagne PDF*,
+  *Réécriture littéraire*) already consume exactly this shape.
+
+---
+
+## 13.13 Eric's ratified decision, and the design it requires (2026-07-31)
+
+> ✅ **DECIDED — overrides §13.3/§13.4's recommendation.** Eric's own words: *"je
+> veux que mon ordinateur soit propriétaire des fichiers, qu'il se transforme en
+> serveur durant la partie — idem Foundry — et qu'une copie des éléments soit sur
+> le cloud pour être utilisée par les joueurs lorsque je suis hors connexion."*
+> Asked directly whether that cloud copy should be read-only or writable while he
+> is offline — because the answer decides whether this needs a sync protocol at
+> all — **he chose writable.** That closes off the cheapest version of this
+> design (§13.3's "Tier A is the only writer") and reopens exactly the risk
+> §13.4 raised against Option 2: a mutable record with two possible writers.
+> **This section is the design for making that safe, not an argument against it.**
+> Nothing below is built yet.
+
+### 13.13.1 The shape, restated in the vocabulary already in this plan
+
+- **The DM's Mac is the owner.** While the table server (§12) is running, it holds
+  the authoritative character documents for its campaign — not just the live roll
+  feed. Same program, wider job.
+- **The cloud Worker + KV holds a copy that accepts writes.** Players read and
+  write their own characters there — build, level-up, profile edits — through the
+  existing `/builds` and `/profile/:code/:pseudo` routes, unchanged in shape.
+  This is what makes "hors connexion" actually mean something: today's `/builds`
+  and `/profile` already work with no table server running, because §12 never
+  touched them (§12.1's table). Nothing here removes that.
+- **The two must reconcile**, because both can now be written to. This is the
+  part that has to be designed, and Foundry's own shape does not answer it —
+  self-hosted Foundry has exactly one server, ever; it never had this problem to
+  solve. Eric is asking for something a stock self-hosted VTT does not do:
+  own the data **and** stay writable while offline. That combination is why a
+  reconciliation rule is unavoidable, not optional polish.
+
+### 13.13.2 The rule: one active writer per record, enforced by a revision number
+
+Not a merge system, not a CRDT, not real-time collaborative editing on the same
+sheet. A single rule, already proven in this project at smaller scale:
+
+> **§12.5 rule 2 says "one writer at a time" for the roll feed. The same rule
+> governs characters — it just has to be enforced per-record instead of
+> per-campaign, because who the writer is can differ character by character.**
+
+Every character document carries a `revision` counter (this is not new — the
+ChatGPT audit already sketched exactly this field in `fh-character/2`, §2 of
+that document, independently arriving at the same primitive: optimistic
+concurrency by revision number is the standard, boring answer to this problem,
+which is a point in its favour, not against it).
+
+- **A write must state the revision it is based on.** `POST /profile/:code/:pseudo`
+  (or the table server's equivalent route) includes `{ revision: N, ...patch }`.
+- **The store accepts the write only if `N` matches its current revision**, then
+  stamps `N+1`. If it does not match, the write is **rejected with `409
+  Conflict`**, not silently applied and not silently dropped. The caller is told
+  *"this character changed elsewhere since you loaded it"* and must reload before
+  retrying — the same shape as any optimistic-locking system (this is not a novel
+  invention, it is the standard fix for exactly this problem).
+- **This is enough because true simultaneous editing of the same sheet is not the
+  real case here.** The real case is *alternating* access: a player edits at home
+  on Tuesday (cloud is the only thing up), the table server starts Thursday and
+  has to catch up, or the DM tweaks a profile at the table and a player checks
+  their phone between fights. A conflict — two edits to the *same* character
+  landing within the same short window with neither side having seen the other —
+  is rare, and rejecting it loudly is the honest answer, not preventing it from
+  ever being possible.
+
+### 13.13.3 Who is authoritative when, and the handoff between them
+
+- **Table server not running:** the cloud Worker is the only thing there is.
+  Every write lands there, bumps the revision, done. This is exactly today's
+  behaviour — §12 never changed it and this does not either.
+- **Table server starting up:** before it will call itself ready, it pulls the
+  current `party`/`profile` records for its campaign from the cloud and adopts
+  their revisions as its own starting point. **This is the step that makes the
+  ownership claim honest** — a table server that started from a stale local copy
+  and began overwriting would be exactly the silent-loss failure this whole
+  section exists to prevent. Modelled directly on how the roll feed's replay
+  already works (§12.7): pull the tail, then go live.
+- **Table server running:** it is now the writer players in LIVE mode reach
+  (mirroring the roll feed's own LIVE/RECENT split, §12.5) — but unlike the feed,
+  **the cloud path is not turned off**. A player who is not connected to the
+  table server (phone on data, table server unreachable, or simply not a player
+  at tonight's session) still hits the Worker directly, and the Worker still
+  accepts their write, bumping its own revision. The table server's mirror
+  (§12.6, already built for feed events) extends to character writes: every local
+  write is pushed to the cloud immediately, carrying the revision forward on both
+  sides in step. **A write on either side that races the other loses the 409, not
+  the data** — the rejected caller reloads and reapplies, exactly §13.13.2.
+- **Table server stopping:** nothing extra to do. Because every local write was
+  already mirrored as it happened (same discipline as §12.6's roll mirror,
+  "never batched, one POST per event"), the cloud is caught up the moment the
+  last mirror call lands. There is no "sync back" step separate from ordinary
+  operation — this is what makes the design cheap.
+
+### 13.13.4 What a player or the DM actually sees on a conflict
+
+§2's rule applies here exactly as it does everywhere else in this plan: **never
+fail silently.** A `409` is not an error to swallow — it is shown, plainly:
+
+> *"Cette fiche a été modifiée ailleurs depuis ton dernier chargement. Recharge-la
+> avant de renvoyer tes changements."*
+
+with a reload action attached. This is more friction than silent overwrite and
+less harm than silent loss — the honest trade §2 has made everywhere else in this
+project (the three feed states, the outage caption, the OFF state that never
+slides to RECENT). No auto-merge is attempted; a conflict is rare enough at this
+table's scale that asking a human to look is the right amount of engineering.
+
+### 13.13.5 What this changes about §13.3–§13.9, concretely
+
+- **§13.5's "another DM forks the site" still holds** — this section is
+  orthogonal to who owns the Worker. A second DM under this design still runs
+  their own Worker and their own table server; the reconciliation rule is the
+  same either way.
+- **§13.7's Tier C (plain-file archive) is unaffected in shape, changed in
+  role.** It stops being merely a read-only convenience and becomes the actual
+  local copy of the owner's data — still plain JSON files, still `.tmp` +
+  `rename()`, still backed up by whatever already backs up the DM's Mac. What
+  changes: it needs the `revision` field written alongside each character so a
+  restarted table server can resume from where it left off without re-fetching
+  everything from the cloud on every boot.
+- **§13.9's fixes are still due first, unchanged.** The `list()` quota outage
+  does not care which side owns the data — it is caused by a 3-second poll on a
+  route this design does not touch. Fix it before building any of this.
+- **§13.4's Option 1 and Option 2 analysis is not wasted** — it is what told us
+  the shape of the actual risk (mutable record, two writers, silent loss is the
+  failure mode to guard against) that §13.13.2 now answers directly instead of
+  avoiding.
+
+### 13.13.6 Measured vs assumed
+
+**Assumed, not yet measured, and worth naming before building:**
+- **How often a real conflict will actually happen.** The claim in §13.13.2 that
+  simultaneous edits to the same sheet are rare is a judgment about how this
+  table plays, not a measurement. If it turns out wrong — players editing
+  profiles constantly while the DM is also at the keyboard — the honest fix is
+  still not silent merge; it would mean revisiting whether `revision` should be
+  scoped more finely than "the whole profile document" (e.g. per-field), which is
+  a real redesign, not a tuning knob.
+- **Whether the table server can reach the Worker reliably enough to mirror
+  character writes the instant they happen**, the same way it already does for
+  roll events. No reason to expect otherwise — it is the same network path
+  already proven for the feed mirror — but not yet run against this workload.
+
+### 13.13.7 What is deliberately not built
+
+- **No field-level merge.** A conflict rejects the whole write. Splitting
+  `revision` per field is a redesign to reach for only if §13.13.6's assumption
+  about conflict frequency turns out false.
+- **No offline queue on the player's own device.** If a player's browser cannot
+  reach the Worker at all (not just "table server down" — the Worker itself
+  unreachable), the write fails loudly, as every write in this project already
+  does when its destination is unreachable. Queuing writes for later delivery is
+  a distinct, larger feature and is not assumed here.
+- **No automatic conflict resolution UI beyond "reload and reapply."** A richer
+  diff-and-merge view is a real feature someone could want later; it is not
+  cheap, and the plain rejection above is the §2-honest minimum, not a stopgap
+  apologized for.
+
+### 13.14 Operational validation and two client-chain corrections (2026-08-01)
+
+The first real character-ownership edit used Yedrivel. AC 15→16 reached the
+table server and was persisted, but the next dock write showed a false conflict.
+The server's optimistic locking was correct; the client failed to adopt the new
+revision because `/profile` returns `{profile:{revision}}`, while the dock read
+`response.revision`.
+
+- `4e36c63` normalizes the response shape in `profileWrite()` and `loadBuild()`
+  and adds the two-successive-saves regression case.
+- Review then found a separate existing gap: `skill-builder.html` sent
+  `POST /builds` without any revision, making its second send always 409.
+  `207f597` remembers the last successful revision per campaign+pseudo, sends
+  it, and never retries a real conflict.
+- Both were independently verified from separate clones: all **11** suites pass
+  and `mkdocs build --strict` succeeds.
+- Both are pushed on `origin/main` at `207f597` and deployed on `gh-pages` at
+  `5889eac`; the served files were fetched back and checked with a cache-buster.
+
+**Safety held during the failure:** no stale client write was accepted and no
+character data was silently overwritten. Yedrivel was restored to AC 15 after
+the failed trial.
+
+**Final gate:** repeat AC 15→16→15 against production and reload. If both saves
+advance without a conflict modal and reload returns 15, the Mac-owned character
+path is operationally validated and 12b is next.
+
+**Known rough edge, not data loss:** if Skill Builder's local revision storage is
+lost while the server already has that build, the server safely returns 409 but
+the builder has no guided recovery/explicit replacement workflow yet. Design
+that only if it occurs in real use; never solve it with blind fetch-and-retry.
