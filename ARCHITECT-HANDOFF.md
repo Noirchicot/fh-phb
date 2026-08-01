@@ -170,6 +170,35 @@ Docs-only changes (plan, this file) need no deploy — they are not in the built
 
 ## 6. State at handoff
 
+> ✅ **PACKAGE 12b LIVE GATE PASSED 2026-08-01 — AboveVTT 1.58, real FH2.**
+> The unpacked extension reached `LIVE` in its popup, action badge and page
+> pill against the real DM table. A live Yedrivel Arcana 20 and Stealth 13 were
+> replayed from the loopback feed exactly once each. More than two minutes after
+> the extension reload, adding Bonus d4=1 to the still-open Stealth roll produced
+> the same `rollId` at `rev:1`, total 14, and exactly one explicit
+> `UPDATE r1 ... supersedes 13` line — not a second ordinary roll.
+>
+> The first attempt found a real Manifest V3 lifecycle bug: the bridge showed
+> `LIVE` but remained at zero delivered lines after Chrome idled its service
+> worker. A protocol ping keeps the TCP socket alive but does not reset Chrome's
+> 30-second JavaScript idle timer. Commit **`1aa09be`** adds the application-level
+> WebSocket message every 20 seconds prescribed by Chrome and tests it; the full
+> suite is **68/68 green**. Branch `pkg12b-abovevtt` and PR #1 now contain
+> `a7a8036` + `1aa09be`. Nothing is merged or deployed.
+>
+> **AboveVTT limitation, measured rather than assumed:** `MB.inject_chat()` in
+> both AboveVTT 1.58 and the pinned 1.59 source hard-codes `persist:false`.
+> Formatted custom text is therefore session-local and disappears when the DM
+> reloads the AboveVTT page; this is AboveVTT's own chat behaviour, not a bridge
+> fallback. A rejected experiment with `persist:true` proved why that flag is
+> unsupported: D&D Beyond retained three raw `ABOVETT / FH-...` roll placeholders
+> instead of formatted lines. The experiment was fully reverted before the
+> final tests and is not in Git; D&D Beyond exposes no supported way to delete
+> those three test records, so they remain in campaign 6392226's log as disclosed
+> test artifacts. Full evidence: vault logbook `Fate's Hand — AboveVTT Bridge
+> Live Gate`. Cleanup passed: server and tunnel stopped, port 8791 free, no
+> orphan process, and rendezvous `FH2` verified `live:false`.
+
 > ✅ **DEPLOYED AND VERIFIED 2026-08-01 — soak + revision-chain corrections.**
 > The real four-hour WebSocket soak passed: 4:00:02, 242/242 probes, no loss,
 > duplicate, reordering, POST failure or disconnect. The orphan-tunnel case was
@@ -336,13 +365,12 @@ commit not yet merged.
 
 **Next, in order** *(2026-08-01)*:
 
-1. **One short post-deploy character check:** Yedrivel AC 15→16, save; then
-   16→15, save; reload and confirm 15. No false-conflict modal may appear. This
-   is the final gate on the Mac-owned character path.
-2. **12b, the bridge** — its starter prompt is written and did not need
-   rewriting: it reads the feed and does not care which transport carries it.
-   On loopback it may use SSE or WS, both of which work there.
-3. **Then 6/5/7 (Actions, Traits, Spells — parallel).** Actions V1 is
+1. ~~**Post-deploy character check**~~ — **PASSED.** Yedrivel AC 15→16→15,
+   reload returned 15, no false conflict. Full evidence in the character
+   ownership logbook entry.
+2. ~~**12b, the bridge**~~ — **LIVE GATE PASSED.** Commits `a7a8036` and
+   `1aa09be` on PR #1; not merged or deployed. See the state block above.
+3. **Next: 6/5/7 (Actions, Traits, Spells — parallel).** Actions V1 is
    **READY / QUEUED**, not in flight; Eric's detailed SOL prompt is preserved at
    `architect-prompts/actions-v1.md` and supersedes the old short prompt in plan
    §8. Refresh only its worktree preamble before delegation. These packages are
