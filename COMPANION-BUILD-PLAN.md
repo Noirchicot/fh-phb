@@ -433,6 +433,18 @@ the harness. Then report back what you built and whether the ctx contract gave
 you everything you needed -- if you had to work around it, say so.
 ```
 
+> **Package 7 V1 finding (corrected 2026-08-01):** `ctx.character.spells` does
+> expose a minimal spell catalogue containing `{name, level}`. Package 7 renders
+> those two fields, but they are insufficient for automatic casting: the payload
+> supplies no slots, preparation state, attack/save numbers, area or damage.
+> Those fields therefore remain explicit manual state in `ctx.store("spells")`;
+> the panel does not infer class data. The frozen panel API can open the shared
+> roller and write a local event, but exposes no way to attach or emit the §11.3
+> `intent.kind:"spell"`. The panel preserves that exact intent locally and marks
+> the cast **LOCAL ONLY**. Architect decision needed: add one core spell-cast
+> hook that owns feed emission (and can associate a spell attack with the shared
+> roller) before casts may claim table delivery.
+
 ---
 
 **Package 2 · Tarot visuals** — worktree `~/tools/fh-worktrees/tarot`, branch `pkg2-tarot`, port 8131
@@ -2220,3 +2232,26 @@ path is operationally validated and 12b is next.
 lost while the server already has that build, the server safely returns 409 but
 the builder has no guided recovery/explicit replacement workflow yet. Design
 that only if it occurs in real use; never solve it with blind fetch-and-retry.
+
+### Actions V1 — required core hooks
+
+Actions V1 deliberately stays manual because the panel contract has no typed
+weapon/damage surface, no settled-roll event and no shared-effect API. A later
+automation pass should expose the following minimum hooks rather than teaching
+the panel to reach into core state:
+
+```js
+ctx.openAttack({ actionId, name, ability, attackBonus, damage, properties, riders })
+ctx.setRollMode(mode, source) // `flat`, `advantage`, `disadvantage`
+ctx.onRollSettled(function (result) {}) // unsubscribe function; stable roll id + totals/outcome
+ctx.addEffect({ id, name, source, concentration })
+ctx.removeEffect(id)
+```
+
+`openAttack()` must be the typed home for weapon damage, Great Weapon Fighting,
+Two-Weapon Fighting and per-attack riders such as Sneak Attack, Smite and
+Hunter's Mark. `onRollSettled()` needs enough outcome data to arm Vex or Light
+only after the relevant attack, while target identity remains a player
+confirmation. `addEffect()` / `removeEffect()` must operate on the future shared
+badge strip so Hunter's Mark can own Concentration without Actions inventing a
+second effect system. None of these hooks is implemented by Package 6.
