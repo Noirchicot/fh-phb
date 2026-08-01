@@ -2220,3 +2220,26 @@ path is operationally validated and 12b is next.
 lost while the server already has that build, the server safely returns 409 but
 the builder has no guided recovery/explicit replacement workflow yet. Design
 that only if it occurs in real use; never solve it with blind fetch-and-retry.
+
+### Actions V1 — required core hooks
+
+Actions V1 deliberately stays manual because the panel contract has no typed
+weapon/damage surface, no settled-roll event and no shared-effect API. A later
+automation pass should expose the following minimum hooks rather than teaching
+the panel to reach into core state:
+
+```js
+ctx.openAttack({ actionId, name, ability, attackBonus, damage, properties, riders })
+ctx.setRollMode(mode, source) // `flat`, `advantage`, `disadvantage`
+ctx.onRollSettled(function (result) {}) // unsubscribe function; stable roll id + totals/outcome
+ctx.addEffect({ id, name, source, concentration })
+ctx.removeEffect(id)
+```
+
+`openAttack()` must be the typed home for weapon damage, Great Weapon Fighting,
+Two-Weapon Fighting and per-attack riders such as Sneak Attack, Smite and
+Hunter's Mark. `onRollSettled()` needs enough outcome data to arm Vex or Light
+only after the relevant attack, while target identity remains a player
+confirmation. `addEffect()` / `removeEffect()` must operate on the future shared
+badge strip so Hunter's Mark can own Concentration without Actions inventing a
+second effect system. None of these hooks is implemented by Package 6.
