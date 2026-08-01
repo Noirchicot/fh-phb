@@ -669,8 +669,10 @@ AboveVTT's `MB.inject_chat`, visibly reports `LIVE` versus `NOT DELIVERING`,
 deduplicates by event id, and emits an explicit `UPDATE ... supersedes ...` for
 higher revisions. A real local server+harness run with an initial event, exact
 duplicate and higher revision produced exactly two lines. All 67 repository
-tests pass from a separate clone of the commit. Nothing has been pushed or
-deployed. The remaining done gate is the live AboveVTT test with Eric present.
+tests pass from a separate clone of the commit. The repository was created
+public at `github.com/Noirchicot/fh-table`; remote `main` is `28abcb3` and draft
+PR #1 carries `pkg12b-abovevtt` at `a7a8036`. Nothing has been deployed. The
+remaining done gate is the live AboveVTT test with Eric present.
 
 ---
 

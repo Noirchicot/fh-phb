@@ -356,7 +356,9 @@ commit not yet merged.
    loopback WebSocket subscriber, visible delivery state, id dedupe and explicit
    higher-revision supersession. The real server+harness test printed one initial
    line and one `UPDATE` for initial+duplicate+revision input; 67 tests pass again
-   from an independent clone. No push or deployment has occurred. Final gate:
+   from an independent clone. Published 2026-08-01 to the public repository
+   `Noirchicot/fh-table`; `main` is `28abcb3`, branch/PR head is `a7a8036`, and
+   draft PR #1 targets `main`. No deployment has occurred. Final gate:
    load the unpacked extension in Eric's Chrome/Edge and make one real Companion
    roll plus one revision in a live AboveVTT DM table.
 3. **Then 6/5/7 (Actions, Traits, Spells — parallel).** Actions V1 is
