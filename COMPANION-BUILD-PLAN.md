@@ -662,6 +662,18 @@ AboveVTT game log on the DM's machine, exactly once, and a revised roll does not
 produce a second line.
 ```
 
+**Implementation status — BUILT LOCALLY / LIVE TEST PENDING (2026-08-01):**
+`fh-table` branch `pkg12b-abovevtt`, commit `a7a8036`. The DM-only Manifest V3
+extension subscribes to the loopback WebSocket, injects resolved plain text via
+AboveVTT's `MB.inject_chat`, visibly reports `LIVE` versus `NOT DELIVERING`,
+deduplicates by event id, and emits an explicit `UPDATE ... supersedes ...` for
+higher revisions. A real local server+harness run with an initial event, exact
+duplicate and higher revision produced exactly two lines. All 67 repository
+tests pass from a separate clone of the commit. The repository was created
+public at `github.com/Noirchicot/fh-table`; remote `main` is `28abcb3` and draft
+PR #1 carries `pkg12b-abovevtt` at `a7a8036`. Nothing has been deployed. The
+remaining done gate is the live AboveVTT test with Eric present.
+
 ---
 
 ## 9. The belt, settled (2026-07-28)
@@ -2212,9 +2224,12 @@ revision because `/profile` returns `{profile:{revision}}`, while the dock read
 character data was silently overwritten. Yedrivel was restored to AC 15 after
 the failed trial.
 
-**Final gate:** repeat AC 15→16→15 against production and reload. If both saves
-advance without a conflict modal and reload returns 15, the Mac-owned character
-path is operationally validated and 12b is next.
+**Final gate — PASSED 2026-08-01:** the deployed client was exercised against a
+real LIVE table server and Cloudflare Tunnel. Yedrivel advanced AC 15→16, saved,
+then 16→15 and saved again without any conflict modal; a full page reload returned
+AC 15. The local table archive and the cloud Worker both then reported revision
+18 and AC 15. The server, tunnel and rendezvous were cleaned up (`live:false`).
+The Mac-owned character path is operationally validated; package 12b is next.
 
 **Known rough edge, not data loss:** if Skill Builder's local revision storage is
 lost while the server already has that build, the server safely returns 409 but
