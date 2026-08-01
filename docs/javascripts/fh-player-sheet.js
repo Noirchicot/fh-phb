@@ -204,9 +204,10 @@
   function postAt(base, path, body) {
     return apiAt(base, path, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   }
-  // /profile responses nest revision under profile.revision; a build document
-  // nests it under build.revision. Neither carries it at the top level, so
-  // check both documents before falling back to a bare top-level revision.
+  // /profile responses nest revision under profile.revision. POST /builds is
+  // different: it returns the new revision at the top level (response.revision),
+  // not nested under a build document — the build.revision check below only
+  // matters for endpoints that echo back a nested build record.
   function revisionOf(data) {
     if (!data) return null;
     if (data.profile && data.profile.revision != null) return data.profile.revision;

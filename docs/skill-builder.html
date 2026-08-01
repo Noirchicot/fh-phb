@@ -1506,6 +1506,24 @@ $('copyCode').addEventListener('click',()=>{
 const BUILDS_API="https://fh-builds.noirchicot.workers.dev";
 // mirrors the Worker's `clean()` rule — letters, digits, spaces, - and _ (max 40)
 const validWireId = s => /^[\p{L}\p{N} _-]{1,40}$/u.test(s);
+// The Worker treats a missing revision as 0, so a second send of the same
+// character (which is already at revision 1+) looks stale and gets a 409.
+// Remember the last revision this browser actually received, per campaign+
+// pseudo pair — never reused across a different character or campaign —
+// and default to 0 only when this pair has never been sent before.
+function loadSendRevisions(){ try{ return JSON.parse(localStorage.getItem('fh-send-revisions')||"{}"); }catch(e){ return {}; } }
+function storeSendRevisions(r){ try{ localStorage.setItem('fh-send-revisions', JSON.stringify(r)); }catch(e){} }
+function sendRevisionKey(campCode,pseudo){ return campCode+"::"+pseudo; }
+function knownSendRevision(campCode,pseudo){
+  const value=loadSendRevisions()[sendRevisionKey(campCode,pseudo)];
+  return Number.isSafeInteger(value) ? value : 0;
+}
+function rememberSendRevision(campCode,pseudo,revision){
+  if(!Number.isSafeInteger(revision)) return;
+  const revisions=loadSendRevisions();
+  revisions[sendRevisionKey(campCode,pseudo)]=revision;
+  storeSendRevisions(revisions);
+}
 try{
   $('sendPseudo').value = localStorage.getItem('fh-send-pseudo')||"";
   $('sendCampCode').value = localStorage.getItem('fh-send-campcode')||"";
@@ -1524,10 +1542,18 @@ $('sendGM').addEventListener('click', async ()=>{
     const r=await fetch(BUILDS_API+"/builds",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({pseudo, campaign:campCode, build:buildUnifiedJSON()})
+      body:JSON.stringify({pseudo, campaign:campCode, build:buildUnifiedJSON(), revision:knownSendRevision(campCode,pseudo)})
     });
     const res=await r.json().catch(()=>({}));
+    // A 409 means this character was saved elsewhere since our last known
+    // revision. Never retried and never overwritten (§13.13.4) — the player
+    // has to reload before sending again.
+    if(r.status===409){
+      fail("This character was changed elsewhere since your last send — reload it before sending again. Nothing was overwritten.");
+      return;
+    }
     if(!r.ok) throw new Error(r.status===403 ? "unknown campaign code — ask your GM." : (res.error||("HTTP "+r.status)));
+    rememberSendRevision(campCode,pseudo,res.revision);
     try{
       localStorage.setItem('fh-send-pseudo',pseudo);
       localStorage.setItem('fh-send-campcode',campCode);
