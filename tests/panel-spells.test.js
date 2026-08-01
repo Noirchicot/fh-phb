@@ -1,13 +1,15 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const {spawnSync} = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
 const sandbox = {window:{FH:{panels:[]}},console};
+const spellPanelSourcePath = path.join(__dirname,"..","docs","javascripts","fh-panel-spells.js");
 vm.runInNewContext(
-  fs.readFileSync(path.join(__dirname,"..","docs","javascripts","fh-panel-spells.js"),"utf8"),
+  fs.readFileSync(spellPanelSourcePath,"utf8"),
   sandbox,
   {filename:"fh-panel-spells.js"}
 );
@@ -70,6 +72,46 @@ assert.equal(legacyStore.spells[1].id,"manual-5","duplicate legacy ids are repla
 assert.equal(legacyStore.nextId,6,"nextId advances beyond every normalized manual id");
 assert.deepEqual(JSON.parse(JSON.stringify(legacyStore.slots)),{"1":{max:4,used:4},"9":{max:1,used:0}},"only canonical slot levels 1–9 survive and usage is clamped");
 assert.match(legacyHtml,/CAST DETAILS NEEDED/);
+
+const hostileIdScript = [
+  '"use strict";',
+  'const fs=require("node:fs"),vm=require("node:vm");',
+  'const sandbox={window:{FH:{panels:[]}},console};',
+  'vm.runInNewContext(fs.readFileSync(' + JSON.stringify(spellPanelSourcePath) + ',"utf8"),sandbox);',
+  'const panel=sandbox.window.FH.panels.find(candidate=>candidate.id==="spells");',
+  'const store={spells:[',
+  '  {id:"manual-9007199254740991",name:"Safe edge",level:1},',
+  '  {id:"manual-9007199254740992",name:"Beyond edge",level:1},',
+  '  {id:"manual-9007199254740991",name:"Duplicate edge",level:1}',
+  '],slots:{},nextId:9007199254740992};',
+  'panel.render({character:{},store:()=>store,esc:String});',
+  'process.stdout.write(JSON.stringify({ids:store.spells.map(spell=>spell.id),nextId:store.nextId}));'
+].join("\n");
+const hostileIdRun = spawnSync(process.execPath,["-e",hostileIdScript],{
+  encoding:"utf8",timeout:2000,killSignal:"SIGKILL"
+});
+assert.equal(hostileIdRun.error,undefined,
+  "MAX_SAFE_INTEGER id recovery terminates inside the 2 second isolation deadline");
+assert.equal(hostileIdRun.status,0,"isolated hostile-id normalization exits cleanly: "+hostileIdRun.stderr);
+const hostileIdResult=JSON.parse(hostileIdRun.stdout);
+assert.deepEqual(hostileIdResult,{
+  ids:["manual-9007199254740991","manual-9007199254740992","manual-1"],nextId:2
+},"unsafe edge ids and their duplicate recover deterministically without collisions");
+
+const safeEdgeStore={spells:[
+  {id:"manual-9007199254740990",name:"Near edge",level:1},
+  {id:"manual-9007199254740990",name:"Near-edge duplicate",level:1}
+],slots:{},nextId:Number.MAX_SAFE_INTEGER};
+assert.doesNotThrow(()=>renderStore(safeEdgeStore),"a safe nextId at the numeric edge wraps without hanging");
+assert.deepEqual(JSON.parse(JSON.stringify(safeEdgeStore.spells.map(spell=>spell.id))),
+  ["manual-9007199254740990","manual-9007199254740991"]);
+assert.equal(safeEdgeStore.nextId,1,"the allocator wraps to the first free safe integer after MAX_SAFE_INTEGER");
+
+[9007199254740992,"9007199254740992",Infinity,-1,1.5,"corrupt"].forEach(value=>{
+  const corruptNextIdStore={spells:[],slots:{},nextId:value};
+  assert.doesNotThrow(()=>renderStore(corruptNextIdStore),"non-safe nextId never blocks normalization: "+String(value));
+  assert.equal(corruptNextIdStore.nextId,1,"non-safe nextId resets to the first safe id: "+String(value));
+});
 
 const catalogueStore={spells:[],slots:{},nextId:1};
 const catalogueHtml=renderStore(catalogueStore,{name:"Wizard",spells:[

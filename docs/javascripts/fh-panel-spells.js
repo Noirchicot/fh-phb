@@ -48,6 +48,34 @@
     return isFinite(parsed) ? parsed : null;
   }
 
+  function safePositiveInteger(value) {
+    var parsed = optionalNumber(value);
+    return parsed !== null && Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
+  }
+
+  function manualIdNumber(id) {
+    var match = /^manual-(\d+)$/.exec(id);
+    return match ? safePositiveInteger(match[1]) : null;
+  }
+
+  function advanceManualNumber(value) {
+    return value < Number.MAX_SAFE_INTEGER ? value + 1 : 1;
+  }
+
+  function availableManualNumber(seen, preferred) {
+    var candidate = safePositiveInteger(preferred) || 1;
+    /* There are at most Object.keys(seen).length occupied manual ids. Trying
+       one more distinct safe integer therefore guarantees a free id without
+       relying on an unbounded increment at Number.MAX_SAFE_INTEGER. */
+    var attempts = Object.keys(seen).length + 1;
+    while (attempts > 0) {
+      if (!seen["manual-" + candidate]) return candidate;
+      candidate = advanceManualNumber(candidate);
+      attempts -= 1;
+    }
+    return 1;
+  }
+
   function normalizeSlots(value) {
     var normalized = {};
     if (!value || typeof value !== "object" || Array.isArray(value)) return normalized;
@@ -103,27 +131,29 @@
     var highest = 0;
     raw.forEach(function (spell) {
       var id = spell && typeof spell === "object" ? string(spell.id) : "";
-      var match = /^manual-(\d+)$/.exec(id);
-      var numericId = match ? Number(match[1]) : 0;
-      if (numericId <= Number.MAX_SAFE_INTEGER) highest = Math.max(highest, numericId);
+      var numericId = manualIdNumber(id);
+      if (numericId !== null) highest = Math.max(highest, numericId);
     });
-    var requested = optionalNumber(nextIdValue);
-    var nextId = requested !== null && Math.floor(requested) === requested && requested > 0 &&
-      requested <= Number.MAX_SAFE_INTEGER ? requested : 1;
-    nextId = Math.max(nextId, highest + 1);
+    var requested = safePositiveInteger(nextIdValue);
+    var nextId = requested || 1;
+    /* There is no safe numeric successor to MAX_SAFE_INTEGER. In that corrupt
+       edge case, keep the existing string id and search deterministically from
+       the requested id (or 1) for the next free safe manual id. */
+    if (highest < Number.MAX_SAFE_INTEGER) nextId = Math.max(nextId, highest + 1);
 
     var spells = [];
     raw.forEach(function (value) {
       var spell = normalizeStoredSpell(value);
       if (!spell) return;
       if (!spell.id || seen[spell.id]) {
-        while (seen["manual-" + nextId]) nextId += 1;
-        spell.id = "manual-" + nextId++;
+        nextId = availableManualNumber(seen, nextId);
+        spell.id = "manual-" + nextId;
+        nextId = advanceManualNumber(nextId);
       }
       seen[spell.id] = true;
       spells.push(spell);
     });
-    while (seen["manual-" + nextId]) nextId += 1;
+    nextId = availableManualNumber(seen, nextId);
     return {spells: spells, nextId: nextId};
   }
 
