@@ -433,11 +433,13 @@ the harness. Then report back what you built and whether the ctx contract gave
 you everything you needed -- if you had to work around it, say so.
 ```
 
-> **Package 7 V1 finding (2026-08-01):** verified against the harness and the
-> checked-in build fixtures: `ctx.character` has no usable spell list or spell
-> slots. Package 7 therefore uses explicit manual state in `ctx.store("spells")`
-> and does not infer class data. The frozen panel API can open the shared roller
-> and write a local event, but exposes no way to attach or emit the §11.3
+> **Package 7 V1 finding (corrected 2026-08-01):** `ctx.character.spells` does
+> expose a minimal spell catalogue containing `{name, level}`. Package 7 renders
+> those two fields, but they are insufficient for automatic casting: the payload
+> supplies no slots, preparation state, attack/save numbers, area or damage.
+> Those fields therefore remain explicit manual state in `ctx.store("spells")`;
+> the panel does not infer class data. The frozen panel API can open the shared
+> roller and write a local event, but exposes no way to attach or emit the §11.3
 > `intent.kind:"spell"`. The panel preserves that exact intent locally and marks
 > the cast **LOCAL ONLY**. Architect decision needed: add one core spell-cast
 > hook that owns feed emission (and can associate a spell attack with the shared

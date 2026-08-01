@@ -29,8 +29,63 @@ const ctx = {
 
 let html = panel.render(ctx);
 assert.match(html,/MANUAL V1/);
-assert.match(html,/no spell or slot data/i,"the missing character-data source is explicit");
+assert.match(html,/No character spell catalogue/i,"a genuinely absent character catalogue is explicit");
 assert.equal(store.spells.length,0);
+
+function renderStore(value, character) {
+  const localCtx={...ctx,character:character||{name:"Adversarial"},store:id=>{assert.equal(id,"spells");return value;}};
+  return panel.render(localCtx);
+}
+
+const nullSpellStore={spells:[null],slots:null,nextId:null};
+assert.doesNotThrow(()=>renderStore(nullSpellStore),"spells:[null] never blocks the panel");
+assert.deepEqual(JSON.parse(JSON.stringify(nullSpellStore.spells)),[]);
+assert.deepEqual(JSON.parse(JSON.stringify(nullSpellStore.slots)),{});
+assert.equal(nullSpellStore.nextId,1);
+
+const wrongTypeStore={spells:"not-an-array",slots:[],nextId:true};
+assert.doesNotThrow(()=>renderStore(wrongTypeStore),"wrong top-level store types normalize to an empty V1 store");
+assert.deepEqual(JSON.parse(JSON.stringify(wrongTypeStore)),{spells:[],slots:{},nextId:1,version:1});
+
+const legacyStore={
+  spells:[
+    null,7,{},
+    {id:"manual-4",name:" Legacy Spell ",level:"2",prepared:"yes",castType:"bogus",notes:42},
+    {id:"manual-4",name:"Duplicate Id",level:99,prepared:true,castType:"none"}
+  ],
+  slots:{"0":{max:1},"1":{max:"4",used:"9"},"01":{max:2,used:0},"2":null,"3":{max:"many"},"4":{max:true},"9":{max:1,used:-3},"10":{max:1},bad:{max:1}},
+  nextId:"2"
+};
+const legacyHtml=renderStore(legacyStore);
+assert.match(legacyHtml,/Legacy Spell/);
+assert.match(legacyHtml,/Duplicate Id/);
+assert.equal(legacyStore.spells.length,2,"null, primitives and nameless legacy rows are discarded");
+assert.equal(legacyStore.spells[0].name,"Legacy Spell");
+assert.equal(legacyStore.spells[0].level,2,"numeric legacy levels are normalized");
+assert.equal(legacyStore.spells[0].prepared,null,"bad preparation types are not guessed");
+assert.equal(legacyStore.spells[0].castType,null,"bad cast types require configuration");
+assert.equal(legacyStore.spells[0].notes,"","bad note types do not leak into markup");
+assert.equal(legacyStore.spells[1].level,null,"out-of-range spell levels are not turned into a real level");
+assert.equal(legacyStore.spells[1].id,"manual-5","duplicate legacy ids are replaced deterministically");
+assert.equal(legacyStore.nextId,6,"nextId advances beyond every normalized manual id");
+assert.deepEqual(JSON.parse(JSON.stringify(legacyStore.slots)),{"1":{max:4,used:4},"9":{max:1,used:0}},"only canonical slot levels 1–9 survive and usage is clamped");
+assert.match(legacyHtml,/CAST DETAILS NEEDED/);
+
+const catalogueStore={spells:[],slots:{},nextId:1};
+const catalogueHtml=renderStore(catalogueStore,{name:"Wizard",spells:[
+  null,
+  {name:" Fire Bolt ",level:0,prepared:true,damageDice:"3d10"},
+  {name:"Blur",level:"2",attackBonus:99},
+  {name:"Bad Level",level:null},
+  {name:42,level:1}
+]});
+assert.match(catalogueHtml,/CHARACTER LIST/);
+assert.match(catalogueHtml,/Fire Bolt/);
+assert.match(catalogueHtml,/Blur/);
+assert.match(catalogueHtml,/Preparation, slots and casting details are not provided/);
+assert.doesNotMatch(catalogueHtml,/3d10|99/,"the catalogue imports only name and level");
+assert.doesNotMatch(catalogueHtml,/Bad Level/);
+assert.equal(catalogueStore.spells.length,0,"minimal character spells are rendered without fabricating stored cast data");
 
 function input(value, checked) { return {value:String(value),checked:!!checked}; }
 const fields = {
