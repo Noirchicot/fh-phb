@@ -98,8 +98,28 @@ no chat spends time on setup:
 | `~/tools/fh-worktrees/dice` | `pkg10-dice` | 8136 |
 
 `.claude/launch.json` is tracked but `--skip-worktree`'d in each, so the per-worktree
-port never gets committed. Ignore `.claude/worktrees/relaxed-lumiere-*` and
-`youthful-taussig-*` — stale, from before this system, not part of it.
+port never gets committed.
+
+> ⚠️ **`.claude/worktrees/relaxed-lumiere-*` and `youthful-taussig-*` were written
+> off as "stale, not part of this system". That was wrong — both held real work.**
+> `relaxed-lumiere-438a93` was sitting on the linkedom devDependency commit, now
+> landed (§3). `youthful-taussig-bfa14e` still holds **76 uncommitted lines of
+> `sync_from_vault.py`** that inject the tool shell and nav bar into the builder
+> and roller on every sync — i.e. a real fix for the *first* trap in §3, which
+> currently costs a manual `git checkout` after every sync. **Do not remove that
+> worktree, and do not `git checkout` inside it.** Land the work or decide against
+> it; do not let it rot a third time. Lesson: never dismiss a worktree by its name
+> — run `git status` and `git log main..HEAD` in it first.
+
+**Cleanup done 2026-08-01: 24 worktrees → 15.** Removed nine that were merged into
+`main` and clean, all with `git worktree remove` (never `--force`), every branch
+kept: `architect/close-revision-phase`, `codex/pkg567-integrated-gate-v3`,
+`codex/pkg567-release-guide-v1-3`, `codex/pkg7-spells-safe-id-fix`,
+`codex/pkg5-traits-v1`, `codex/pkg7-spells-v1`, `codex/fhpc-actions-v1`,
+`fix/build-revision-chain`, `fix/profile-revision-response`. The six package
+harnesses at `7347cfb` in the table above were **kept** — they are standing
+infrastructure, not debris, whatever a raw "merged and clean" audit says about
+them.
 
 **After every push to `main`**, rebase all of them:
 ```bash
@@ -440,8 +460,22 @@ commit not yet merged.
    already-merged worktrees can be removed without `--force`, keeping their
    branches first. The guide/gate/package worktrees can go now that the release
    has landed.
-7. **Decide separately:** the `linkedom` devDependency commit, the dice lab, and
-   AboveVTT PR #1. The three raw DDB entries are documented test artefacts with
+7. ~~**Decide separately:** the `linkedom` devDependency commit~~ — **DONE
+   2026-08-01**, on `main` (§3). Two still open, both Eric's call:
+   - **Dice lab (`pkg10-dice`).** Six commits, but branched from an old base: it
+     is **-7 170 lines** against today's `main`, so merging it would delete the
+     released panels. It is an *experiment* — `tools/dice-lab.html`, a WebGL
+     column, a CSS cube, a CSS icosahedron whose geometry works and whose
+     legibility does not. What actually shipped is already on `main`
+     (`docs/static-dice-lab.html`, `fh-static-dice.js`, via `45e7f3f`).
+     **Recommendation: keep the branch as an archive, do not merge.** If a 3D die
+     is wanted later, cherry-pick a single idea onto a fresh branch.
+   - **AboveVTT PR #1** (`Noirchicot/fh-table`, `pkg12b-abovevtt` → `main`,
+     `a7a8036` + `1aa09be`). OPEN, draft, `MERGEABLE`, live gate passed 68/68.
+     Merging it is a distribution decision, not a code one — nothing consumes the
+     extension until it is packaged and installed.
+
+   The three raw DDB entries stay as documented test artefacts; D&D Beyond exposes
    no supported deletion path.
 
 **Resolved 2026-08-01 — the source-data question came back, and the answer is
