@@ -19,6 +19,15 @@ Read both. Read nothing else to start.
   than trusting the report (§4).
 - **Writes the starter prompts** (plan §8) and keeps them true as the code moves.
 - **Does not build panels.** That is what the package chats are for.
+- **Optimizes for architectural continuity, not execution volume.** Keep this
+  thread compact: delegate bounded implementation and verification work to
+  dedicated Codex threads, each with its own branch/worktree, and bring back
+  only decisions, commit ids, evidence and blockers.
+- **Hands off before context becomes uneconomic.** When accumulated history no
+  longer earns its token cost, update this file and the relevant logbook entry,
+  then continue in a fresh architect thread. The successor starts here and reads
+  only the plan sections named by the handoff; it never reloads the full plan by
+  default.
 
 ---
 
