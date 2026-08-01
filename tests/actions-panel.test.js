@@ -68,8 +68,8 @@ assert.match(h.mount.textContent, /Attack/);
 assert.match(h.mount.textContent, /Opportunity Attack/);
 assert.doesNotMatch(h.mount.querySelector('[data-actions-economy="bonus"]').textContent, /Second Wind/, "no universal Bonus Action is invented");
 
-function setField(name, value) {
-  const field = h.mount.querySelector('[data-actions-field="' + name + '"]');
+function setHarnessField(targetHarness, name, value) {
+  const field = targetHarness.mount.querySelector('[data-actions-field="' + name + '"]');
   assert.ok(field, "editor field exists: " + name);
   if (field.localName === "select") {
     Array.from(field.options).forEach(option => {
@@ -79,6 +79,8 @@ function setField(name, value) {
   } else if (field.localName === "textarea") field.textContent = value;
   else field.setAttribute("value", value);
 }
+
+function setField(name, value) { setHarnessField(h, name, value); }
 
 setField("name", "Second Wind");
 setField("economy", "bonus");
@@ -166,6 +168,60 @@ assert.equal(h.store.turn.attackUsed, 0);
 h.draw();
 h.click('[data-actions-run="srd-opportunity"]');
 assert.equal(h.store.turn.reactionUsed, true, "a Reaction card consumes R");
+
+const duplicateStore = harness({schema:"fh-actions/0",entries:[
+  {id:"manual-recovered-1",name:"Occupied recovery id",economy:"action",category:"Utility",custom:true},
+  {id:"manual-recovered-1",name:"Recovered sibling",economy:"bonus",category:"Utility",custom:true},
+  {id:"manual-dup",name:"Duplicate first",economy:"action",category:"Utility",custom:true},
+  {id:"manual-dup",name:"Duplicate second",economy:"reaction",category:"Utility",custom:true}
+],turn:null,editor:{id:"missing-editor"}});
+let normalizedIds = duplicateStore.store.entries.map(entry => entry.id);
+assert.equal(new Set(normalizedIds).size, normalizedIds.length, "normalization produces globally unique ids");
+assert.equal(duplicateStore.store.entries.find(entry => entry.name === "Occupied recovery id").id, "manual-recovered-1", "the first valid id remains stable");
+assert.equal(duplicateStore.store.entries.find(entry => entry.name === "Recovered sibling").id, "manual-recovered-1-2", "a colliding recovery id receives a unique suffix");
+assert.equal(duplicateStore.store.editor.id, "", "a corrupt editor target is cleared");
+const recoveredDuplicate = duplicateStore.store.entries.find(entry => entry.name === "Duplicate second");
+const firstDuplicate = duplicateStore.store.entries.find(entry => entry.name === "Duplicate first");
+assert.notEqual(recoveredDuplicate.id, firstDuplicate.id, "duplicate source ids no longer make actions ambiguous");
+duplicateStore.click('[data-actions-edit="' + recoveredDuplicate.id + '"]');
+setHarnessField(duplicateStore, "name", "Duplicate second edited");
+duplicateStore.click("[data-actions-save]");
+assert.equal(duplicateStore.store.entries.find(entry => entry.id === firstDuplicate.id).name, "Duplicate first", "editing the recovered entry does not alter its former duplicate");
+assert.equal(duplicateStore.store.entries.find(entry => entry.id === recoveredDuplicate.id).name, "Duplicate second edited");
+duplicateStore.click('[data-actions-delete="' + recoveredDuplicate.id + '"]');
+assert.ok(duplicateStore.store.entries.some(entry => entry.id === firstDuplicate.id), "deleting the recovered entry leaves its former duplicate intact");
+assert.equal(duplicateStore.store.entries.some(entry => entry.id === recoveredDuplicate.id), false);
+
+const reservedStore = harness({schema:"legacy-actions",entries:[
+  {id:"srd-attack",name:"Custom reserved attack",economy:"bonus",category:"Check",custom:true},
+  {id:"srd-attack",name:"Configured SRD Attack",economy:"action",category:"Attack",ability:"DEX",bonus:7,custom:false},
+  {id:"srd-attack",name:"Duplicate canonical attack",economy:"reaction",category:"Attack",custom:false},
+  {id:"srd-dash",name:"Custom reserved dash",economy:"bonus",category:"Utility",custom:true},
+  {id:"legacy-locked",name:"Legacy unknown",economy:"reaction",category:"Utility",custom:false}
+],turn:{attackMax:"4",attackUsed:"2"}});
+normalizedIds = reservedStore.store.entries.map(entry => entry.id);
+assert.equal(new Set(normalizedIds).size, normalizedIds.length, "reserved-id recovery also stays globally unique");
+assert.equal(reservedStore.store.entries.filter(entry => entry.id === "srd-attack").length, 1, "exactly one canonical SRD Attack owns the reserved id");
+assert.equal(reservedStore.store.entries.find(entry => entry.id === "srd-attack").name, "Configured SRD Attack", "a legitimate saved SRD configuration keeps its id");
+assert.equal(reservedStore.store.entries.find(entry => entry.name === "Custom reserved attack").custom, true);
+assert.notEqual(reservedStore.store.entries.find(entry => entry.name === "Custom reserved attack").id, "srd-attack", "a custom entry cannot capture an SRD id");
+assert.equal(reservedStore.store.entries.find(entry => entry.name === "Duplicate canonical attack").custom, true, "a second canonical-looking record becomes a removable recovery entry");
+assert.notEqual(reservedStore.store.entries.find(entry => entry.name === "Custom reserved dash").id, "srd-dash");
+assert.equal(reservedStore.store.entries.filter(entry => entry.id === "srd-dash").length, 1, "the missing canonical Dash is restored under its reserved id");
+assert.equal(reservedStore.store.entries.find(entry => entry.name === "Legacy unknown").custom, true, "unknown legacy records cannot become undeletable built-ins");
+
+const legacyStore = harness({schema:null,entries:[null,{},
+  {id:"",name:"Blank id",economy:"wrong",category:"wrong"},
+  {id:"manual-recovered-1",name:"Legacy one",custom:true},
+  {id:"manual-recovered-1",name:"Legacy duplicate",custom:true}
+],turn:"broken",editor:42});
+normalizedIds = legacyStore.store.entries.map(entry => entry.id);
+assert.equal(new Set(normalizedIds).size, normalizedIds.length, "old and malformed records receive unique ids");
+assert.ok(normalizedIds.every(Boolean), "no normalized entry has a blank id");
+assert.equal(legacyStore.store.schema, "fh-actions/1");
+assert.deepEqual({attackMax:legacyStore.store.turn.attackMax,attackUsed:legacyStore.store.turn.attackUsed}, {attackMax:1,attackUsed:0});
+const renderedCardIds = Array.from(legacyStore.mount.querySelectorAll("[data-actions-card]"), card => card.dataset.actionsCard);
+assert.equal(new Set(renderedCardIds).size, renderedCardIds.length, "the rendered edit/delete targets are unambiguous too");
 
 const corrupt = harness({schema:9,entries:"not-an-array",turn:{attackMax:"nope",attackUsed:99,bonusUsed:"yes"},editor:"bad"});
 assert.doesNotThrow(() => corrupt.draw(), "corrupt saved data is normalized without throwing");

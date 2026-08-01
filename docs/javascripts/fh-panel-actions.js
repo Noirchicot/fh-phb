@@ -27,6 +27,7 @@
     ["srd-opportunity", "Opportunity Attack", "reaction", "Attack", "STR", "Make an Opportunity Attack."],
     ["srd-readied", "Readied Action", "reaction", "Utility", "", "Use the action you readied when its trigger occurs."]
   ];
+  var RESERVED_IDS = DEFAULTS.reduce(function (ids, row) { ids[row[0]] = true; return ids; }, Object.create(null));
 
   function text(value, fallback, limit) {
     if (typeof value !== "string") value = fallback || "";
@@ -71,12 +72,25 @@
 
   function normalizeStore(store) {
     var rawEntries = Array.isArray(store.entries) ? store.entries : [];
-    var byId = {}, entries = [];
+    var byId = Object.create(null), entries = [];
+
+    function recoveryId(index) {
+      var base = "manual-recovered-" + index, id = base, suffix = 2;
+      while (byId[id] || RESERVED_IDS[id]) { id = base + "-" + suffix; suffix += 1; }
+      return id;
+    }
+
     rawEntries.forEach(function (raw, index) {
-      var id = text(raw && raw.id, "manual-recovered-" + index, 80);
-      if (!id || byId[id]) id = "manual-recovered-" + index;
-      var entry = normalizeEntry(raw, id, raw && raw.custom !== false);
-      byId[entry.id] = true;
+      raw = raw && typeof raw === "object" ? raw : {};
+      var requestedId = text(raw.id, "", 80);
+      var canonicalReserved = !!(requestedId && RESERVED_IDS[requestedId] && raw.custom === false && !byId[requestedId]);
+      var id = requestedId && !byId[requestedId] && (!RESERVED_IDS[requestedId] || canonicalReserved) ? requestedId : recoveryId(index);
+      var entry = normalizeEntry(raw, id, !canonicalReserved);
+      /* The allocated id is authoritative. normalizeEntry also accepts a
+         fallback for ordinary callers, but must never resurrect raw.id after
+         this function has rejected it as duplicate or reserved. */
+      entry.id = id;
+      byId[id] = true;
       entries.push(entry);
     });
     DEFAULTS.forEach(function (row) {
@@ -103,6 +117,7 @@
     };
     if (!store.editor || typeof store.editor !== "object") store.editor = {id: ""};
     store.editor.id = text(store.editor.id, "", 80);
+    if (!entries.some(function (entry) { return entry.id === store.editor.id; })) store.editor.id = "";
     return store;
   }
 
@@ -111,6 +126,13 @@
       if (store.entries[i].id === id) return store.entries[i];
     }
     return null;
+  }
+
+  function newManualId(store) {
+    var base = "manual-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+    var id = base, suffix = 2;
+    while (RESERVED_IDS[id] || entryById(store, id)) { id = base + "-" + suffix; suffix += 1; }
+    return id;
   }
 
   function selected(current, value) {
@@ -249,7 +271,7 @@
       return null;
     }
     if (!existing) {
-      id = "manual-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+      id = newManualId(store);
       existing = {id: id, custom: true};
       store.entries.push(existing);
     }

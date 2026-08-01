@@ -1012,14 +1012,14 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-actions-turn{border:1px solid var(--cd-line);border-radius:7px;background:var(--cd-parch-2);padding:6px;margin-bottom:7px}
 .fh-cd-actions-turnline,.fh-cd-actions-tools{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .fh-cd-actions-turnline{padding-bottom:5px;border-bottom:1px solid var(--cd-line-soft)}
-.fh-cd-actions-slot,.fh-cd-actions-new-turn,.fh-cd-actions-state{min-height:calc(22px * var(--cd-fs));border:1px solid var(--cd-line);
+.fh-cd-actions-slot,.fh-cd-actions-new-turn,.fh-cd-actions-state{min-height:calc(28px * var(--cd-fs));border:1px solid var(--cd-line);
   border-radius:4px;background:var(--cd-parch);color:var(--cd-muted);padding:0 calc(7px * var(--cd-fs));cursor:pointer;
   font-size:calc(7.4px * var(--cd-fs));font-weight:700;letter-spacing:.03em}
 .fh-cd-actions-slot.is-used,.fh-cd-actions-state.is-used{background:#d8c7aa;color:var(--cd-faint);text-decoration:line-through}
 .fh-cd-actions-new-turn{margin-left:auto;border-color:#6d4a10;background:linear-gradient(180deg,#c59a48,#9c6b16);color:#fff8e2}
 .fh-cd-actions-tools{padding-top:5px}
 .fh-cd-actions-tools label{display:flex;align-items:center;gap:4px;color:var(--cd-gold);font-size:calc(7px * var(--cd-fs));font-weight:700}
-.fh-cd-actions-tools input{width:calc(38px * var(--cd-fs));height:calc(22px * var(--cd-fs));border:1px solid var(--cd-line);border-radius:4px;
+.fh-cd-actions-tools input{width:calc(38px * var(--cd-fs));height:calc(28px * var(--cd-fs));border:1px solid var(--cd-line);border-radius:4px;
   background:#fffdf6;color:var(--cd-ink);padding:0 4px;font-size:calc(8px * var(--cd-fs))}
 .fh-cd-actions-state{margin-left:auto}
 .fh-cd-actions-state+.fh-cd-actions-state{margin-left:0}
@@ -1040,7 +1040,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-actions-cardhead span{display:block;margin-top:1px;color:var(--cd-gold);font-size:calc(6.5px * var(--cd-fs));line-height:1.25;overflow-wrap:anywhere}
 .fh-cd-actions-card>p{margin:3px 0;color:var(--cd-muted);font-size:calc(7px * var(--cd-fs));line-height:1.3;overflow-wrap:anywhere}
 .fh-cd-actions-cardbuttons{display:flex;align-items:center;gap:3px;flex-wrap:wrap;margin-top:4px}
-.fh-cd-actions-cardbuttons button,.fh-cd-actions-editor-buttons button{min-height:calc(20px * var(--cd-fs));border:1px solid #6d4a10;border-radius:4px;
+.fh-cd-actions-cardbuttons button,.fh-cd-actions-editor-buttons button{min-width:calc(30px * var(--cd-fs));min-height:calc(28px * var(--cd-fs));border:1px solid #6d4a10;border-radius:4px;
   background:linear-gradient(180deg,#c59a48,#9c6b16);color:#fff8e2;padding:0 calc(5px * var(--cd-fs));cursor:pointer;
   font-size:calc(6.4px * var(--cd-fs));font-weight:700}
 .fh-cd-actions-cardbuttons button:disabled{cursor:not-allowed;opacity:.45}
@@ -1052,14 +1052,14 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-actions-editor{padding:0 7px 7px;border-top:1px solid var(--cd-line-soft)}
 .fh-cd-actions-editor-title{display:flex;align-items:center;gap:6px;padding:6px 0 4px}
 .fh-cd-actions-editor-title h3{margin:0;color:var(--cd-gold);font-size:calc(7.8px * var(--cd-fs));letter-spacing:.07em}
-.fh-cd-actions-editor-title button{margin-left:auto;border:0;background:transparent;color:var(--cd-muted);cursor:pointer;font-size:calc(7px * var(--cd-fs))}
+.fh-cd-actions-editor-title button{min-width:calc(30px * var(--cd-fs));min-height:calc(28px * var(--cd-fs));margin-left:auto;padding:0 6px;border:0;background:transparent;color:var(--cd-muted);cursor:pointer;font-size:calc(7px * var(--cd-fs))}
 .fh-cd-actions-formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
 .fh-cd-actions-formgrid label{display:flex;flex-direction:column;gap:2px;min-width:0}
 .fh-cd-actions-formgrid label.is-wide{grid-column:span 3}
 .fh-cd-actions-formgrid label span{color:var(--cd-gold);font-size:calc(6.5px * var(--cd-fs));font-weight:700}
 .fh-cd-actions-formgrid input,.fh-cd-actions-formgrid select,.fh-cd-actions-formgrid textarea{width:100%;min-width:0;border:1px solid var(--cd-line);border-radius:4px;
   background:#fffdf6;color:var(--cd-ink);font-size:calc(8px * var(--cd-fs));padding:4px}
-.fh-cd-actions-formgrid input,.fh-cd-actions-formgrid select{height:calc(23px * var(--cd-fs))}
+.fh-cd-actions-formgrid input,.fh-cd-actions-formgrid select{height:calc(30px * var(--cd-fs))}
 .fh-cd-actions-formgrid textarea{resize:vertical;min-height:calc(42px * var(--cd-fs))}
 .fh-cd-actions-editor-buttons{display:flex;gap:5px;margin-top:6px}
 .fh-cd-actions-editor>p{margin:5px 0 0;color:var(--cd-faint);font-size:calc(6.8px * var(--cd-fs));line-height:1.35}
