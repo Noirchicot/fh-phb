@@ -25,8 +25,8 @@ Read both. Read nothing else to start.
 ## 2. Standing rules — these were decided, not guessed
 
 **Layout**
-- **`UI-TERMINOLOGY.md` is the naming authority for the dock** — ten zones, four
-  attributes, and the three collisions they resolve (ratified 2026-08-01 from
+- **`UI-TERMINOLOGY.md` is the naming authority for the dock** — ten zones, five
+  attributes, and the three collisions they resolve (ratified 2026-08-01/02 from
   Eric's structure drawing). Read it before naming anything in the interface, and
   before writing a package prompt that names a zone. The names below are the old
   ones; that file carries the migration table.
@@ -45,8 +45,12 @@ Read both. Read nothing else to start.
   > Reference size **425 × 680** (= 100 % zoom, and what Table mode opens at).
   > **Floors are unchanged: 620 tall, 360 wide**, and the `max-width:420px` belt
   > wrap stays as the net for narrow windows. Zoom becomes 100/125/150/175/200 %
-  > with a Reset, and nothing below 100 %. Table mode opens at the reference
-  > instead of computing an incidental size.
+  > with a Reset. Table mode opens at the reference instead of computing an
+  > incidental size.
+  > **Amended 2026-08-02:** the steps are **80/90/100/125/150 %**, auto-fit picks
+  > the largest that fits and never goes below 90 %, and Reset returns to auto-fit
+  > rather than a hard 100 %. Zoom — not the floor — is how small screens are
+  > served; everything scales together, so nothing can break. **Shipped 2026-08-03.**
 
 **Rules content**
 - **Game rules are written in the VAULT, never in `docs/chapters/`.** Those files
@@ -270,8 +274,9 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 > §6 earlier. Expect that and hand him the two commands rather than working around
 > it.
 >
-> **Unchanged on purpose:** nothing was merged or pushed in `fh-table`; AboveVTT
-> PR #1 stays draft.
+> **Superseded 2026-08-03: AboveVTT PR #1 is merged.** At the time of this block
+> nothing had been merged in `fh-table`; that is no longer true — see the
+> bridge-merged block at the top of §6.
 >
 > **The guide is now a versioned artefact**: `docs/fhpc-guide-vivant.html` on
 > `main`, with `docs/fhpc-guide-HANDOFF.md` beside it. It is no longer the
@@ -293,8 +298,8 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 > worker. A protocol ping keeps the TCP socket alive but does not reset Chrome's
 > 30-second JavaScript idle timer. Commit **`1aa09be`** adds the application-level
 > WebSocket message every 20 seconds prescribed by Chrome and tests it; the full
-> suite is **68/68 green**. Branch `pkg12b-abovevtt` and PR #1 now contain
-> `a7a8036` + `1aa09be`. Nothing is merged or deployed.
+> suite is **68/68 green**. Branch `pkg12b-abovevtt` and PR #1 contained
+> `a7a8036` + `1aa09be`. **Merged 2026-08-03** as `fh-table` `b36c94a`.
 >
 > **AboveVTT limitation, measured rather than assumed:** `MB.inject_chat()` in
 > both AboveVTT 1.58 and the pinned 1.59 source hard-codes `persist:false`.
@@ -478,8 +483,8 @@ commit not yet merged.
 1. ~~**Post-deploy character check**~~ — **PASSED.** Yedrivel AC 15→16→15,
    reload returned 15, no false conflict. Full evidence in the character
    ownership logbook entry.
-2. ~~**12b, the bridge**~~ — **LIVE GATE PASSED.** Commits `a7a8036` and
-   `1aa09be` on PR #1; not merged or deployed. See the state block above.
+2. ~~**12b, the bridge**~~ — **LIVE GATE PASSED, and MERGED 2026-08-03** as
+   `fh-table` `b36c94a`. See the state block above.
 3. ~~**Next: 6/5/7 (Actions, Traits, Spells — parallel)**~~ — **RELEASED, DEPLOYED
    AND VERIFIED LIVE 2026-08-01.** See the state block at the top of §6.
 4. ~~**Package 9 — adversarial bug hunt**~~ — **DONE and merged 2026-08-03.**
@@ -543,10 +548,12 @@ one on the core, one outside it.
      is already on `main` (`docs/static-dice-lab.html`, `fh-static-dice.js`, via
      `45e7f3f`). If a 3D die is ever wanted, cherry-pick one idea onto a fresh
      branch — never merge this one.
-   - **AboveVTT PR #1** (`Noirchicot/fh-table`, `pkg12b-abovevtt` → `main`,
-     `a7a8036` + `1aa09be`). OPEN, draft, `MERGEABLE`, live gate passed 68/68.
-     Merging it is a distribution decision, not a code one — nothing consumes the
-     extension until it is packaged and installed.
+   - ~~**AboveVTT PR #1**~~ — **MERGED 2026-08-03** by Eric's decision, as
+     `fh-table` `b36c94a`. Verified first in an independent clone detached at
+     `1aa09be`: all four suites green. Branch `pkg12b-abovevtt` kept.
+     **Merging changed nothing for anyone by itself** — a Chrome extension is
+     loaded by hand from `chrome://extensions`, so it reaches a DM only when
+     someone installs it. That was always the real question, not the merge.
 
    The three raw DDB entries stay as documented test artefacts; D&D Beyond exposes
    no supported deletion path.
