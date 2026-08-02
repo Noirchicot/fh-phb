@@ -25,10 +25,17 @@ Read both. Read nothing else to start.
 ## 2. Standing rules — these were decided, not guessed
 
 **Layout**
-- **Header = identity + window chrome only.** Portrait, name, seal, ⋯, window
-  modes. No content navigation, ever.
+- **`UI-TERMINOLOGY.md` is the naming authority for the dock** — ten zones, four
+  attributes, and the three collisions they resolve (ratified 2026-08-01 from
+  Eric's structure drawing). Read it before naming anything in the interface, and
+  before writing a package prompt that names a zone. The names below are the old
+  ones; that file carries the migration table.
+- **Identity zone = identity + window chrome only.** Portrait, name, seal, ⋯,
+  window modes. No content navigation, ever. (Was "header".)
 - **Belt = everything inside the character.** Skills · Traits · Actions · Spells ·
   Gear · Craft · Notes.
+- **Never write `Builder` alone** — that is the Skill Builder, the
+  character-creation tool. The roll-assembly zone is the **Roll Builder**.
 - **⋯ menu = things that leave the dock or restructure it.** Sync DDB, Edit sheet,
   Level Up, Change character, the ↗ standalone tools.
 - **Sizing follows the text, never the viewport.** `max(360px, min(400px × scale,
