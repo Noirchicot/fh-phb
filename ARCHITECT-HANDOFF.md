@@ -490,6 +490,31 @@ commit not yet merged.
 4. ~~**Package 9 — adversarial bug hunt**~~ — **DONE and merged 2026-08-03.**
    Four defects, see the state block above.
 
+### Branch and worktree names must be readable — Eric, 2026-08-03
+
+Auto-generated names are the problem: `claude/goofy-mendeleev-e240ee`,
+`claude/nice-albattani-cb9538`, `claude/kind-curran-ff2316`. Nothing in them says
+what the work was. Eric cannot look at a list of branches and know what he is
+looking at, and neither can the next architect three weeks from now.
+
+**Name a branch after the work, before starting it.** `pkg9-roll-engine-hunt`,
+`zone-overlay-zoom`, `docs/ui-terminology` — the last one is what the convention
+should look like. The `pkgN-*` names from the earlier packages were fine too.
+
+When a session opens its own worktree with a generated name, **rename the branch
+before the first commit** (`git branch -m`). After that it is in the reflog, in
+the merge commits, and in this file, and renaming it stops being free.
+
+Two consequences to carry:
+- The **Übersicht status panel** was already told to show a readable label *beside*
+  the real branch name, never instead of it. That stays true — but the real name
+  should not need a translation in the first place.
+- **Do not rename the existing ones now.** Three are merged and named in merge
+  commits; renaming would only break the trail. The convention applies to what
+  comes next.
+
+---
+
 ### 🚦 DEPLOY GATE — Eric, 2026-08-03. Read this before running `gh-deploy`.
 
 **Do not deploy the dock until all five of these are rebuilt:**
