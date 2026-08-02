@@ -53,8 +53,29 @@ stacking three slots:
 em                   the label, truncated at 64px
 ```
 
+Concretely, in a tray showing three dice, **each column is one wrapper**. The
+rightmost might stack: the gold **I** on top, the green triangle showing **1**, and
+the label **Bonus I** underneath. It does not "wrap" a die decoratively — it makes
+provenance, die and label a single movable unit with its own states.
+
 `.fh-cd-src b` is a bold Georgia letter slot — it was built for exactly the
 `I / II / III` numerals the bonus dice need. Nothing to add there.
+
+### The four die types
+
+Their current class names say nothing. Rename them by **function**, so a new
+developer does not have to ask:
+
+| Today | Rename to | What it actually is |
+|---|---|---|
+| `fh-cd-die` | `die` | the base die |
+| `fh-cd-ddie` | **`picker-die`** | 31px, clickable, the d4·d6·d8·d10·d12·d20·d% row |
+| `fh-cd-wdie` | **`calling-die`** | a die that pulses (`is-calling`) because it is waiting on something |
+| `fh-cd-static3d` | **`static-die`** | the pseudo-3D render used in the tray |
+
+> `fh-cd-dieglow` is **not a die type** — it is the name of a keyframes animation
+> (the gold glow on a selected picker die). It appeared in an early inventory as if
+> it were a fourth kind of die; it is not.
 
 Three states, and one of them has a rule worth keeping:
 
@@ -118,15 +139,34 @@ question you answer while scanning it is *whose roll is this*. A face is
 recognised faster than a name at 8px. Name is the fallback when there is no
 portrait.
 
+## 5. Ruling text
+
+The line that appears above a resolved roll:
+
+```
+ARCANE CRITICAL SUCCESS   Destiny d8 rolled 8 · Lost 1 Destiny Point · Current 5
+```
+
+Two parts: a **verdict** in oxblood, then the **account** — what was rolled, what
+it cost, where it leaves you.
+
+**It is never flavour.** The name was chosen against "narrative text" for exactly
+that reason: call a field narrative and within months someone writes *"the blade
+hisses in the dark"* into it, and the day you need to check why you lost four
+Destiny points the fact is drowned in prose.
+
+Ruling is the right word because at the table a *ruling* is what the DM decides —
+here it is what the engine decided, said out loud. It is the concrete form of the
+dock's founding rule, **never fall back silently**: the Ruling is where the engine
+discloses what it just did to you.
+
+It follows the same discipline as badges (§3): derived from the entry, not written
+at render time, so every surface says the same thing about the same roll.
+
 ---
 
 ## Open questions
 
 1. **The Tactical glyph** (§1).
-2. **"Suggestion" popups.** Eric listed these among the things to design; the
-   referent is not established. Two readings, and they land in different places:
-   the engine proposing a move (*"you can spend a Destiny point here"*) belongs to
-   the Console; a tooltip explaining what an Overreach *is* belongs to the Info
-   Panel. Asked twice, still open — do not guess.
-3. **How tall is a tray line with dice shown**, as opposed to the compact
+2. **How tall is a tray line with dice shown**, as opposed to the compact
    Stream-style line. Needs a drawing before it can be budgeted.
