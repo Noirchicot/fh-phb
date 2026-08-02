@@ -41,6 +41,12 @@ Read both. Read nothing else to start.
 - **Sizing follows the text, never the viewport.** `max(360px, min(400px × scale,
   100vw))`, scale 1.15/1.3/1.45 → 460/520/580px. Floors: 360 wide, 620 tall; past
   either the shell scrolls rather than the layout folding.
+  > **Superseded 2026-08-02 — see `UI-DIMENSIONS.md`, which is now the authority.**
+  > Reference size **425 × 680** (= 100 % zoom, and what Table mode opens at).
+  > **Floors are unchanged: 620 tall, 360 wide**, and the `max-width:420px` belt
+  > wrap stays as the net for narrow windows. Zoom becomes 100/125/150/175/200 %
+  > with a Reset, and nothing below 100 %. Table mode opens at the reference
+  > instead of computing an incidental size.
 
 **Rules content**
 - **Game rules are written in the VAULT, never in `docs/chapters/`.** Those files
