@@ -9,8 +9,12 @@ player-facing chapters, converting Obsidian-isms to MkDocs markdown:
   - [[Note]]            -> Note
   - > [!type]+ Title    -> > **Title**   (editorial CANONICAL blocks dropped)
   - ensures each page starts with an H1
+
+The two standalone tool pages (builder, roller) are copied over as well, with
+the site's tool shell — stylesheet and nav bar — injected on the way in; the
+sources stay standalone, so nothing here should ever be patched by hand.
 """
-import re, pathlib, shutil
+import re, pathlib
 
 VAULT = pathlib.Path(
     "/Users/Eric/obsidian-vault/5.RPG/Fate's Hand/0. D&D 5+ Rules"
@@ -21,6 +25,12 @@ BUILDER_SRC = pathlib.Path("/Users/Eric/tools/fh-skills/fh-skill-builder.html")
 BUILDER_DST = ROOT / "docs" / "skill-builder.html"
 ROLLER_SRC = pathlib.Path("/Users/Eric/tools/fh-skills/stat-roller.html")
 ROLLER_DST = ROOT / "docs" / "stat-roller.html"
+
+# source, published page, body class, the page's own slot in the nav bar
+TOOL_PAGES = [
+    (BUILDER_SRC, BUILDER_DST, "fh-tool-builder", ("skill-builder.html", "Create")),
+    (ROLLER_SRC,  ROLLER_DST,  "fh-tool-roller",  ("stat-roller.html",   "Roller")),
+]
 
 # dest filename : (source relative to VAULT, H1 title to guarantee)
 MAP = {
@@ -297,6 +307,60 @@ def ensure_h1(text: str, title: str) -> str:
     return f"# {title}\n\n{text}"
 
 
+# The tool sources are standalone by design: open the .html anywhere and it
+# works, with no site chrome. The published copies need the shell every other
+# tool page wears — the shared stylesheet and the nav bar (see
+# docs/party-inventory.html, which lives in the repo and carries it in the
+# file). Injecting it on every sync is what stops a plain copy from quietly
+# shipping two tool pages with no way back to the handbook.
+TOOL_CSS = '<link rel="stylesheet" href="stylesheets/tool-ui.css">'
+TOOLBAR_LEAD = [("./", "Handbook"), ("player/", "Character")]
+TOOLBAR_TAIL = [("party-inventory.html", "Inventory"),
+                ("soulforge-tool.html", "Soulforge")]
+_BODY_RE = re.compile(r"^<body([^>]*)>([ \t]*\n+)", re.MULTILINE)
+
+
+def toolbar(self_href: str, self_label: str) -> str:
+    """The five-item bar: two fixed links, the page itself, two more. It is a
+    bottom dock at 760px and below, which is why five is the whole budget and
+    each tool spends the middle slot on itself rather than on its sibling."""
+    rows = []
+    for href, label in TOOLBAR_LEAD + [(self_href, self_label)] + TOOLBAR_TAIL:
+        here = ' aria-current="page"' if href == self_href else ""
+        rows.append(f'    <a href="{href}"{here}>{label}</a>')
+    rows = "\n".join(rows)
+    return ('<nav class="fh-toolbar" aria-label="Player tools">\n'
+            '  <a class="fh-toolbar__brand" href="./">'
+            '<span class="fh-toolbar__mark">FH</span>Fate\'s Hand</a>\n'
+            '  <div class="fh-toolbar__links">\n'
+            f'{rows}\n'
+            '  </div>\n'
+            '</nav>')
+
+
+def add_tool_chrome(html: str, body_class: str, self_link) -> str:
+    """Dress a standalone tool page in the site shell: the shared stylesheet
+    before </head>, the nav bar right after <body>, and the body class the
+    shell styles hang off. Idempotent — a source that already carries the bar
+    passes through untouched. Raises if the anchors aren't there, so a page
+    that can't be dressed is left alone instead of published bald."""
+    if TOOL_CSS not in html:
+        if "</head>" not in html:
+            raise ValueError("no </head> to hang the tool stylesheet on")
+        html = html.replace("</head>", TOOL_CSS + "\n</head>", 1)
+    if 'class="fh-toolbar"' in html:
+        return html
+    m = _BODY_RE.search(html)
+    if not m:
+        raise ValueError("no <body> tag to hang the toolbar on")
+    attrs = m.group(1)
+    if "class=" in attrs:
+        raise ValueError("<body> already carries a class — merge it by hand")
+    sep = m.group(2)  # keep the page's own spacing, on both sides of the bar
+    return (html[:m.start()] + f'<body{attrs} class="{body_class}">'
+            + sep + toolbar(*self_link) + sep + html[m.end():])
+
+
 def main():
     DOCS.mkdir(parents=True, exist_ok=True)
     for dest, (rel, title) in MAP.items():
@@ -317,12 +381,17 @@ def main():
         body = collapse_blanks(body)
         (DOCS / dest).write_text(body, encoding="utf-8")
         print(f"  ok  {dest:24s} <- {rel}")
-    if BUILDER_SRC.exists():
-        shutil.copy(BUILDER_SRC, BUILDER_DST)
-        print(f"  ok  skill-builder.html      <- {BUILDER_SRC.name}")
-    if ROLLER_SRC.exists():
-        shutil.copy(ROLLER_SRC, ROLLER_DST)
-        print(f"  ok  stat-roller.html        <- {ROLLER_SRC.name}")
+    for src, dst, body_class, self_link in TOOL_PAGES:
+        if not src.exists():
+            print(f"  !! MISSING {src}")
+            continue
+        try:
+            page = add_tool_chrome(src.read_text(encoding="utf-8"), body_class, self_link)
+        except ValueError as err:
+            print(f"  !! {dst.name}: {err} — kept the published copy")
+            continue
+        dst.write_text(page, encoding="utf-8")
+        print(f"  ok  {dst.name:24s} <- {src.name}")
     build_soulforge_data()
 
 
