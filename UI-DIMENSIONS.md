@@ -13,8 +13,12 @@ button opens at, and the size every layout decision is judged against.
 | | Value | What it means |
 |---|---|---|
 | **Reference** | **425 × 680** | Comfort. Design here. 100 % zoom. Table mode opens here. |
-| **Height floor** | **620** | Survival. Below it the dock **scrolls** — it never re-arranges. |
+| **Height floor** | **620** | Survival only. Below it the dock **scrolls** — it never re-arranges. **Not a design target** (see Zoom). |
 | **Width floor** | **360** | Unchanged. Below 420 the belt wraps to 4 + 3, which is the existing net. |
+
+Small screens are served by **zooming out, not by shrinking the layout**. Design
+at 100 %; a viewport that cannot give 680 gets 90 % and a 612-tall dock, with every
+proportion intact.
 
 Where 425 comes from: it is a sixth of Eric's 2560px screen, so six Table windows
 tile across it exactly, two rows deep. It also clears **421px**, the width below
@@ -58,17 +62,41 @@ iPad is not "mobile" here — it has the room.
 ## Zoom
 
 Replace the current `1.15 / 1.3 / 1.45` scales — which mean nothing to a reader —
-with the convention every browser, map and design tool already uses:
+with the convention every browser, map and design tool already uses.
 
 | | |
 |---|---|
-| Steps | **100 · 125 · 150 · 175 · 200 %** |
+| Steps (manual) | **80 · 90 · 100 · 125 · 150 %** |
 | 100 % | **425 × 680** — the reference |
-| Below 100 % | **does not exist.** Eric: *"faire moins non."* |
-| Controls | `⌘ +` / `⌘ −`, and a **Reset** that returns to 100 % |
+| Auto-fit | picks the largest step that fits the viewport, **never below 90 %** |
+| Controls | `⌘ +` / `⌘ −`, and a **Reset** that returns to auto-fit |
 
-Reset is not a nicety: zoom is the one control a user can get lost inside, and a
-one-click way back to a known size is what makes experimenting with it safe.
+**Zoom, not a layout floor, is how small screens are served.** Everything scales
+together, so nothing can break: the belt needs `7 × 44 × fs` and has `425 × zoom`,
+and both sides carry the same factor — seven tabs fit at every step. The 620px
+height floor therefore stops being a design constraint. It is no longer a number
+anyone designs against; it is roughly what 90 % happens to produce.
+
+**Auto-fit stops at 90 %, and that asymmetry is the point.** Measured type sizes:
+
+| Zoom | Dock | Belt label | Skill row | Ability number |
+|---|---|---|---|---|
+| 80 % | 340 × 544 | **6.8px** | 9.2px | **7.0px** |
+| 90 % | 383 × 612 | 7.7px | 10.3px | 7.9px |
+| **100 %** | **425 × 680** | 8.5px | 11.5px | 8.7px |
+| 125 % | 531 × 850 | 10.6px | 14.4px | 10.9px |
+| 150 % | 638 × 1020 | 12.8px | 17.3px | 13.1px |
+
+At 80 % the belt reads 6.8px and ability numbers 7.0px. **Chosen**, that is a
+trade-off someone accepted. **Imposed by auto-fit**, it lands on the low-density
+laptop panel that triggered it — the one display where those sizes are worst — for
+a user who asked for nothing. So 80 % stays reachable by hand and is never chosen
+for anyone. Auto-fit aims at comfort; the manual list goes further in both
+directions, which is what these controls do everywhere else.
+
+Reset returns to **auto-fit**, not to a hard 100 %: zoom is the one control a user
+can get lost inside, and the way back should be the sane default, not a fixed
+number that may not fit their screen.
 
 `--cd-fs` keeps doing the work internally — 100 % maps to today's 1.15, so nothing
 about the type scale itself changes. What changes is what the user is shown and
@@ -84,9 +112,24 @@ var height = Math.round(Math.min(1000, Math.max(520, availHeight * 0.92)));
 ```
 
 That is why a Table window arrives at some incidental size — 520 × 805 on a
-1440-tall screen. **It should open at `425 × 680`**, the reference, every time:
-predictable, tiles six across on a 2560 screen, and the user resizes from a known
-starting point instead of an accidental one.
+1440-tall screen. **It should open at the current zoom's size**, which at 100 % is
+the reference `425 × 680`: predictable, and the user resizes from a known starting
+point instead of an accidental one.
+
+How Table windows tile on a 2560 × 1440 screen, allowing ~30px of Chrome PiP title
+bar per window and 25px of menu bar:
+
+| Zoom | Window | Tiles |
+|---|---|---|
+| 100 % | 425 × 680 | **6 across × 2 down = 12** |
+| 125 % | 531 × 850 | 4 × 1 = 4 |
+| 150 % | 638 × 1020 | 4 × 1 = 4 |
+
+125 % and 150 % give the same count, so between those two there is nothing to pay
+for the larger one. **Large zoom steps are perfectly usable in Table mode on a big
+screen** — you lose the second row, not the window. (An earlier claim in this
+project that high zoom "doesn't fit Table mode" was wrong: it generalised from one
+1440-tall screen without doing the arithmetic.)
 
 ---
 
