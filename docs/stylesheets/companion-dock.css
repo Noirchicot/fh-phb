@@ -10,19 +10,22 @@
   --cd-oxblood:#58180d; --cd-red:#9f2f31;
   --cd-ok:#4a7a3a; --cd-bad:#9f2f31;
   --cd-yellow:#d9a520; --cd-yellow-hi:#a8760f;
-  /* Text scale. JS writes --cd-fs-PREF (what the player picked); --cd-fs is what
-     the dock actually uses. Keeping them separate is what lets a media query cap
-     the scale on a screen too narrow to afford it -- a property cannot be defined
-     in terms of itself, so --cd-fs:min(var(--cd-fs),N) would be a cycle and get
-     thrown away. Steps are 1.15 / 1.3 / 1.45: the old 1.0 baseline was too small
-     to read at the table and no longer exists. */
-  --cd-fs-pref:1.15;
-  --cd-fs:var(--cd-fs-pref);
-  /* Width follows the TEXT, not the monitor. The old 25vw preferred value meant
-     a 2560px screen got a 640px dock and the text-size control moved nothing at
-     all, because 25vw sat above every floor. 400px x scale puts the default at
-     460px -- the original design target -- and identical on every display. */
-  --cd-ideal:calc(400px * var(--cd-fs));
+  /* Zoom (UI-DIMENSIONS.md): 80/90/100/125/150%, JS writes --cd-zoom-PREF as a
+     factor (1 = 100%). --cd-zoom reads from it rather than from itself, for the
+     same reason --cd-fs used to: a custom property cannot be defined in terms
+     of itself, so a media query capping it directly would be a cycle and get
+     thrown away silently. --cd-fs is now derived from zoom, not the other way
+     around -- 100% keeps mapping to the pre-zoom 1.15, so the type scale itself
+     is unchanged, only what the user is shown and what the steps are named. */
+  --cd-zoom-pref:1;
+  --cd-zoom:var(--cd-zoom-pref);
+  --cd-fs:calc(1.15 * var(--cd-zoom));
+  /* The reference is 425 x 680 at 100% zoom (UI-DIMENSIONS.md), not the old
+     400px x --cd-fs formula -- that read 460px at the old 1.15 default, which
+     was never the measured reference. Width now follows ZOOM, not the text
+     scale, so the belt's 7 x 44 x fs and the dock's 425 x zoom carry the same
+     factor and neither can outrun the other. */
+  --cd-ideal:calc(425px * var(--cd-zoom));
   /* The dock's own grids stop fitting below this: six vitals columns, seven belt
      tabs, two skill columns. It never renders narrower, whatever the viewport --
      a hair of page scroll on a 320px phone beats a dock that has folded in on
@@ -31,9 +34,10 @@
   --cd-width:max(var(--cd-floor),min(var(--cd-ideal),100vw));
   /* Same idea vertically, and the dock is more exposed here: it is pinned
      top-to-bottom, so its height is simply the window's, and Table mode lets
-     that window be dragged to any size at all. Seven stacked zones stop having
-     room below this. Under it the dock keeps its floor and the shell scrolls,
-     rather than every zone folding into its neighbour. */
+     that window be dragged to any size at all. Survival only now -- zoom, not
+     this floor, is how a short window is served (UI-DIMENSIONS.md "Zoom").
+     Auto-fit never choosing below 90% (612px) is what keeps this floor from
+     ever being the thing standing between a player and a working dock. */
   --cd-floor-h:620px;
 }
 
@@ -120,12 +124,16 @@ body.fh-cd-docked .md-footer{padding-right:var(--cd-width)}
 .fh-cd-menu .fh-cd-msep{border-top:1px solid var(--cd-line-soft);margin:3px 4px}
 .fh-cd-menurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 8px}
 .fh-cd-menurow>span{font-size:9.3px;color:var(--cd-ink)}
-.fh-cd-textsize.fh-cd-seg{flex:none}
+.fh-cd-zoomctl.fh-cd-seg{flex:none}
 .fh-cd-tsz-btn{width:26px;height:22px;border:0;background:var(--cd-parch-2);font-family:Georgia,serif;
   font-weight:700;color:var(--cd-faint);cursor:pointer;border-right:1px solid var(--cd-line);
   display:grid;place-items:center;line-height:1}
 .fh-cd-tsz-btn:last-child{border-right:0}
 .fh-cd-tsz-btn.is-on{background:var(--cd-gold-bright);color:#fff8e2}
+/* Five percent labels plus Reset need more than the old single-letter "A"
+   width; kept the shared button chrome above and only widened these. */
+.fh-cd-zoomctl .fh-cd-tsz-btn{width:auto;padding:0 6px;font-family:inherit;font-weight:600;font-size:8.4px}
+.fh-cd-zoom-reset{font-style:italic}
 
 /* ── Access panel (campaign / character) ────────────────────────── */
 .fh-cd-access{padding:6px 10px;background:var(--cd-parch-3);border-bottom:1px solid var(--cd-line)}
@@ -363,6 +371,19 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-dpoolrow button:disabled{opacity:.35;cursor:not-allowed}
 @keyframes fh-cd-pulse{to{opacity:.35}}
 
+/* ── Summoned bottom group (Console + Roll Builder) ───────────────
+   Both are `summoned` (UI-TERMINOLOGY.md zone 7-8): they must float above the
+   persistent stack, anchored to the dock's bottom edge, and never push
+   Character Info / Belt / Panel / Dice Pool down. .fh-cd-dock is already
+   `position:absolute`, which is enough of a containing block -- no extra
+   wrapper positioning needed on it. max-height + overflow-y is the safety net
+   for a short window: the group scrolls internally instead of shoving its
+   top edge above the dock's own top and getting clipped by .fh-cd-dock's
+   overflow:hidden. */
+.fh-cd-floatbottom{position:absolute;left:0;right:0;bottom:0;z-index:24;
+  display:flex;flex-direction:column;max-height:100%;overflow-y:auto;scrollbar-width:thin;
+  background:var(--cd-parch);box-shadow:0 -6px 20px rgba(20,12,4,.4)}
+
 /* ── Console ────────────────────────────────────────────────────── */
 /* ROLL (55px) is taller than the white dice's icon+label column (40px), so
    the same bottom padding that gives them clear air left ROLL's own drop
@@ -374,7 +395,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    check has no header, the tray below names it. The check name, its ability,
    the inline DC and the ✕ that lived here are gone with it. */
 .fh-cd-chead{margin-top:2px}
-/* .fh-cd-seg is still what the text-size control (top of the dock) uses --
+/* .fh-cd-seg is still what the zoom control (in the ⋯ menu) uses --
    D/A/+2 used to share it too, but round 8 split them into three independent
    buttons (below), so this stays only for whoever else picks one of a set. */
 .fh-cd-seg{display:flex;border:1px solid var(--cd-line);border-radius:5px;overflow:hidden;flex:none}
@@ -714,7 +735,18 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    the Destiny row has no 4px to spare — measured, not guessed. */
 
 /* ── Stream ─────────────────────────────────────────────────────── */
-.fh-cd-stream{flex:1 1 0;min-height:128px;display:flex;flex-direction:column;border-bottom:0;padding-bottom:0}
+/* `optional`, off by default (UI-TERMINOLOGY.md zone 10) -- rendered only
+   while state.streamOpen is true, and then as a full-dock overlay, the same
+   inset:0 pattern .fh-cd-pop already uses, topmost of every floating zone so
+   it reads on top of the summoned Console/Roll Builder group too. Its own
+   `‹` in the cap row is the way back, exactly like a pop's header button. */
+.fh-cd-stream{position:absolute;inset:0;z-index:27;display:flex;flex-direction:column;
+  background:var(--cd-parch);border-bottom:0;padding:6px 10px 8px;
+  box-shadow:0 -4px 18px rgba(20,12,4,.35)}
+.fh-cd-stream>.fh-cd-cap{flex:none}
+.fh-cd-streamclose{flex:none;width:20px;height:20px;padding:0;border:0;background:none;
+  color:var(--cd-faint);cursor:pointer;display:grid;place-items:center}
+.fh-cd-streamclose:hover{color:var(--cd-gold-bright)}
 .fh-cd-streamlist{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;margin:0 -4px;padding:0 4px 8px;list-style:none}
 .fh-cd-sentry{border-bottom:1px solid var(--cd-line-soft);padding:4px 2px}
 .fh-cd-sentry>button{display:block;width:100%;border:0;background:none;padding:0;font-family:inherit;color:inherit;text-align:left;cursor:pointer}
@@ -850,10 +882,9 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   .fh-cd-zone{padding:5px 10px}
 }
 @media(max-height:640px){
-  /* Last stop before the floor: the stream gives up its reserved room -- it is
-     a log, it scrolls, and it is the one zone that can be short without
-     becoming unusable. */
-  .fh-cd-stream{min-height:calc(54px * var(--cd-fs))}
+  /* The stream's reserved-room comment is stale now that it overlays inset:0
+     (it no longer competes with the persistent stack for height) -- kept as
+     history in git blame, not carried forward as a rule. */
   .fh-cd-frame{height:calc(84px * var(--cd-fs))}
   .fh-cd-belttab{padding:calc(3.5px * var(--cd-fs)) 3px}
 }
@@ -861,20 +892,18 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   .fh-cd-frame{height:96px}
   .fh-cd-portrait{width:38px;height:38px;font-size:calc(11px * var(--cd-fs))}
   .fh-cd-srow{height:calc(12.4px * var(--cd-fs))}
-  .fh-cd-stream{min-height:96px}
 }
 
 /* ── Mobile: the dock becomes a full-width sheet ──────────────────
    The base --cd-width already refuses to exceed 100vw, so there is nothing to
-   override here; what a narrow screen cannot afford is the TEXT. Capping the
-   scale is the other half of the floor: pinning the width at 360px while the
-   type keeps growing is exactly how the layout breaks. --cd-fs reads from
-   --cd-fs-pref, never from itself, so these caps are legal. */
-@media(max-width:900px){
-  :root{--cd-fs:min(var(--cd-fs-pref),1.3)}
-}
+   override here. Capping --cd-fs by viewport WIDTH here used to be the other
+   half of the floor -- superseded 2026-08-03: zoom is JS-computed from both
+   width and height (UI-DIMENSIONS.md "Zoom, not a layout floor, is how small
+   screens are served"), which a blind width media query can't be, and the two
+   mechanisms fighting over the same variable is how the zoom control's active
+   step would stop matching what actually rendered. Auto-fit already lands a
+   narrow window on a step at or below 100% on its own. */
 @media(max-width:520px){
-  :root{--cd-fs:min(var(--cd-fs-pref),1.15)}
   .fh-cd-root{width:100vw}
   .fh-cd-dock{border-left-width:0}
   .fh-cd-srow{height:calc(17px * var(--cd-fs));font-size:calc(10px * var(--cd-fs))}
