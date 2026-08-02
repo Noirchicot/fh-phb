@@ -86,8 +86,17 @@ showPanel("craft");
 assert.ok(root.querySelector('[data-open-pop="loop"]')&&root.querySelector('[data-open-pop="forge"]'),"Craft reaches the Soulforging Loop and the Soulforge");
 showPanel("skills");
 assert.equal(root.querySelector(".fh-cd-seal").textContent,"FH","the gold FH seal links back to the handbook");
+/* REWRITTEN (zone overlay pass, 2026-08-03): Stream is `optional`, off by
+   default (UI-TERMINOLOGY.md zone 10) and now a real toggle instead of an
+   always-mounted zone, so it is absent from the DOM until opened -- the old
+   counts of 3 and 7 assumed it was always there. Opened once here and left
+   open, since everything from the "Stream" section below reads finished
+   rolls straight out of its zone, the same way the file always has. */
+assert.equal(root.querySelector('[data-zone="stream"]'),null,"Stream starts closed, off by default");
+openMenu();
+root.querySelector('[data-stream-toggle]').click();
 assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"],[data-zone="stream"]').length,3,"console, roller and stream are distinct zones");
-assert.equal(root.querySelectorAll("[data-zone]").length,7,"the dock shows its seven zones at once");
+assert.equal(root.querySelectorAll("[data-zone]").length,7,"the dock shows its seven zones at once, Stream opened");
 openMenu();
 assert.ok(root.querySelector("#fhPsLevel"),"an unlinked character keeps Level Up under the menu");
 /* General rule: a click outside an open dropdown closes it. root itself is

@@ -65,9 +65,15 @@
     return "";
   })();
   var TOOL_PATHS = {inventory:"party-inventory.html", soulforge:"soulforge-tool.html", rules:"", builder:"skill-builder.html"};
-  /* The text scale's usable range. Declared here because `var state` below
-     reads FS_MIN when it is evaluated, and var hoists the name, not the value. */
-  var FS_MIN=1.15,FS_MAX=1.45;
+  /* Zoom (UI-DIMENSIONS.md): five manual steps, a 90% auto-fit floor, and the
+     425x680 reference the steps scale from. Declared here because `var state`
+     below reads ZOOM_DEFAULT when it is evaluated, and var hoists the name,
+     not the value. */
+  var ZOOM_STEPS=[80,90,100,125,150];
+  var ZOOM_AUTO_FLOOR=90;
+  var ZOOM_REF_W=425,ZOOM_REF_H=680;
+  var ZOOM_BASE_FS=1.15; // --cd-fs at 100% zoom -- unchanged from the old default
+  var ZOOM_DEFAULT=100;
   var state = {
     code:"", pseudo:"", requestedPseudo:"", party:[], record:null, profile:null, profileRevision:null, character:null,
     destiny:null, history:[], events:[], prefs:{bardicSides:6}, rollConfig:null, trayPrompt:null,
@@ -75,9 +81,12 @@
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
     dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false,
+    // Stream is `optional`, off by default (UI-TERMINOLOGY.md zone 10) -- the
+    // only zone the player toggles rather than one that opens on its own.
+    streamOpen:false,
     trayQuietTitle:"", trayRevealAt:0, trayRevealTimer:null,
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
-    diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, textSize:FS_MIN,
+    diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, zoom:ZOOM_DEFAULT, zoomAuto:true,
     panel:"skills", panelData:{},
     // The shared campaign feed. Live only — it is refetched on load, never
     // persisted, so none of this reaches localStorage or the profile.
@@ -148,17 +157,61 @@
       return "<button class=\"fh-cd-hbtn fh-cd-mode"+(on?" is-on":"")+"\" type=\"button\" data-cd-mode=\""+entry[0]+"\" title=\""+entry[1]+" — "+entry[2]+"\" aria-label=\""+entry[1]+": "+entry[2]+"\""+(on?" aria-pressed=\"true\"":"")+">"+glyph(entry[0])+"</button>";
     }).join("")+"</span>";
   }
-  // Text size. The old 1.0 baseline is gone -- it was too small to read at the
-  // table, so the scale starts where the useful range starts. Width follows the
-  // same number (400px x scale), which is why these read as sizes of the whole
-  // dock rather than of the type alone: 460 / 520 / 580px.
-  var TEXT_SIZES=[["1.15","A","Compact — 460px"],["1.3","A","Comfortable — 520px"],["1.45","A","Large — 580px"]];
-  function renderTextSizeControl() {
-    var active=String(state.textSize);
-    return "<div class=\"fh-cd-seg fh-cd-textsize\" role=\"group\" aria-label=\"Companion text size\">"+TEXT_SIZES.map(function(entry,i){
-      var on=entry[0]===active;
-      return "<button class=\"fh-cd-tsz-btn"+(on?" is-on":"")+"\" type=\"button\" data-text-size=\""+entry[0]+"\" title=\""+entry[2]+"\" aria-label=\"Text size: "+entry[2]+"\""+(on?" aria-pressed=\"true\"":"")+" style=\"font-size:"+(11+i*2)+"px\">"+entry[1]+"</button>";
-    }).join("")+"</div>";
+  // Zoom (UI-DIMENSIONS.md): the browser/map/design-tool convention, replacing
+  // the old 1.15/1.3/1.45 scale that meant nothing to a reader. 100% is the
+  // 425x680 reference; Reset returns to auto-fit, never to a hard 100%.
+  function renderZoomControl() {
+    var active=state.zoom;
+    return "<div class=\"fh-cd-seg fh-cd-zoomctl\" role=\"group\" aria-label=\"Companion zoom\">"+ZOOM_STEPS.map(function(step){
+      var on=step===active;
+      return "<button class=\"fh-cd-tsz-btn"+(on?" is-on":"")+"\" type=\"button\" data-zoom-set=\""+step+"\" title=\"Zoom "+step+"%\" aria-label=\"Zoom: "+step+"%\""+(on?" aria-pressed=\"true\"":"")+">"+step+"%</button>";
+    }).join("")+
+      "<button class=\"fh-cd-tsz-btn fh-cd-zoom-reset"+(state.zoomAuto?" is-on":"")+"\" type=\"button\" data-zoom-reset title=\"Reset to auto-fit\" aria-label=\"Reset zoom to auto-fit\""+(state.zoomAuto?" aria-pressed=\"true\"":"")+">Reset</button>"+
+      "</div>";
+  }
+  // Largest step that fits the actual window, never below 90% on its own --
+  // 80% is reachable only by hand (UI-DIMENSIONS.md: "chosen" vs "imposed").
+  function autoFitZoom(){
+    var w=(typeof window!=="undefined"&&window.innerWidth)||1024;
+    var h=(typeof window!=="undefined"&&window.innerHeight)||768;
+    var best=ZOOM_AUTO_FLOOR;
+    ZOOM_STEPS.forEach(function(step){
+      if(step<ZOOM_AUTO_FLOOR||step<=best)return;
+      /* Rounded the same way UI-DIMENSIONS.md's own table is (425 * 1.25 =
+         531.25, listed there as 531): comparing against the unrounded value
+         made a window sized to exactly the documented step (531x850) fail
+         its own fit check by a fraction of a pixel. */
+      if(Math.round(ZOOM_REF_W*step/100)<=w&&Math.round(ZOOM_REF_H*step/100)<=h)best=step;
+    });
+    return best;
+  }
+  // Migrates an old fh-cd-textsize value (a raw --cd-fs like "1.3") to the
+  // nearest of the five new steps -- compared in cd-fs space, since that is
+  // the number the player actually saw represented by their old pick.
+  function nearestZoomStep(pct){
+    var best=ZOOM_STEPS[0],bestDiff=Infinity;
+    ZOOM_STEPS.forEach(function(step){var diff=Math.abs(step-pct);if(diff<bestDiff){bestDiff=diff;best=step;}});
+    return best;
+  }
+  function setZoom(pct){
+    pct=Number(pct);
+    if(ZOOM_STEPS.indexOf(pct)<0)return;
+    state.zoom=pct;state.zoomAuto=false;
+    try{localStorage.setItem("fh-cd-zoom",String(pct));localStorage.setItem("fh-cd-zoom-auto","0");}catch(error){}
+    render();
+  }
+  function resetZoom(){
+    state.zoomAuto=true;state.zoom=autoFitZoom();
+    try{localStorage.setItem("fh-cd-zoom-auto","1");}catch(error){}
+    render();
+  }
+  // ⌘+ / ⌘− step through the five manual stops in order, same as Reset does
+  // for auto-fit: whichever step is closest to wherever zoom currently sits.
+  function stepZoom(direction){
+    var idx=ZOOM_STEPS.indexOf(state.zoom);
+    if(idx<0){var bestDiff=Infinity;ZOOM_STEPS.forEach(function(step,i){var diff=Math.abs(step-state.zoom);if(diff<bestDiff){bestDiff=diff;idx=i;}});}
+    idx=clamp(idx+direction,0,ZOOM_STEPS.length-1);
+    setZoom(ZOOM_STEPS[idx]);
   }
   function clamp(value, min, max) { return Math.min(max, Math.max(min, Number(value) || 0)); }
   function numberOr(value,fallback){return value!==null&&value!==""&&isFinite(Number(value))?Number(value):fallback;}
@@ -2563,7 +2616,8 @@
     var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small>"+esc(caption)+"</small>"+manual+refresh+
       "<span class=\"fh-cd-streamtabs\">"+
       "<button type=\"button\" data-stream-view=\"mine\" class=\""+(table?"":"is-on")+"\">Mine</button>"+
-      "<button type=\"button\" data-stream-view=\"table\" class=\""+tableClass+"\">Table</button></span></div>";
+      "<button type=\"button\" data-stream-view=\"table\" class=\""+tableClass+"\">Table</button></span>"+
+      "<button type=\"button\" class=\"fh-cd-streamclose\" data-stream-toggle aria-label=\"Close the stream\" title=\"Close\">"+iconSvg("close")+"</button></div>";
     var list;
     if(table){
       list=state.feed.events.length?state.feed.events.map(renderFeedEntry).join("")
@@ -2920,7 +2974,8 @@
       ? "<img class=\"fh-cd-portrait\" src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'fh-cd-portrait',textContent:'"+esc(initials)+"'}))\">"
       : "<span class=\"fh-cd-portrait\">"+esc(initials)+"</span>";
     var menu=state.menuOpen?"<div class=\"fh-cd-menu\">"+
-      "<div class=\"fh-cd-menurow\"><span>Text size</span>"+renderTextSizeControl()+"</div>"+
+      "<div class=\"fh-cd-menurow\"><span>Zoom</span>"+renderZoomControl()+"</div>"+
+      "<button type=\"button\" data-stream-toggle>"+(state.streamOpen?"Close Stream":"Open Stream")+"<small>consultable history</small></button>"+
       "<div class=\"fh-cd-msep\"></div>"+
       "<button type=\"button\" id=\"fhPsSync\">"+(linked?"Sync D&amp;D Beyond":"Link D&amp;D Beyond")+"<small>pull</small></button>"+
       (linked?"<button type=\"button\" id=\"fhPsRelink\">Replace the DDB link</button>":"")+
@@ -3035,13 +3090,13 @@
     if(!root)return;
     var floating=inPip();
     root.className="fh-cd-root"+(state.dockOpen?" is-open":"")+(floating?" is-floating":"");
-    /* --cd-width is computed at :root from var(--cd-fs), so the override has to land
-       on :root (the <html> element) too — setting it on the dock's own node only
-       reaches the font-size rules that read --cd-fs directly at their own selector,
-       leaving --cd-width locked to whatever it resolved to at :root (1). Use
-       ownerDocument so this still lands on the right :root when Table mode has
-       moved the node into the Picture-in-Picture window. */
-    (root.ownerDocument||document).documentElement.style.setProperty("--cd-fs-pref",state.textSize);
+    /* --cd-width and --cd-fs both derive from --cd-zoom now, so the override has
+       to land on :root (the <html> element) — setting it on the dock's own node
+       only reaches the font-size rules that read --cd-fs directly at their own
+       selector, leaving --cd-width locked to whatever it resolved to at :root
+       (1). Use ownerDocument so this still lands on the right :root when Table
+       mode has moved the node into the Picture-in-Picture window. */
+    (root.ownerDocument||document).documentElement.style.setProperty("--cd-zoom-pref",String(state.zoom/100));
     // While the dock floats, the page must not keep a gutter for it.
     try{if(document.body&&document.body.classList)document.body.classList.toggle("fh-cd-docked",!!state.dockOpen&&!floating);}catch(error){}
     var seal="<button class=\"fh-cd-seal-fab\" type=\"button\" data-dock-open aria-label=\"Open the Player Companion\">FH</button>";
@@ -3055,10 +3110,17 @@
          not normally carry it -- otherwise switching tabs mid-transaction
          strands the dice where nobody can finish them. */
       var roller=!!(panel&&panel.showsRoller)||rollTransactionActive()||rollOpen();
+      /* Console and the roller (Roll Builder + its still-fused Dice Tray) are
+         `summoned` (UI-TERMINOLOGY.md zones 7-8): floated in .fh-cd-floatbottom,
+         anchored to the dock's bottom edge, on top of Dice Pool -- never in the
+         document flow that pushes the persistent stack down. Dice Pool itself
+         (renderDestiny) stays in flow: it is `persistent`, not summoned, even
+         though today it shares the same `roller` gate (a pre-existing gap, not
+         this pass's job to close). */
       inner=renderDockHeader(ch)+(state.chromeOpen?renderAccessZone():"")+
         renderStats(ch)+renderBelt()+renderPanelBody()+
-        (roller?renderDestiny(ch)+renderConsole()+renderStageZone():"")+
-        renderStream()+renderPops(ch);
+        (roller?renderDestiny(ch)+"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
+        (state.streamOpen?renderStream():"")+renderPops(ch);
     }
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
@@ -3144,6 +3206,7 @@
       if(drawPrompt&&drawPrompt.card)keepArcana(drawPrompt.card,button.dataset.arcanaTake!==undefined);
       return;
     }
+    if(button.dataset.streamToggle!==undefined){state.streamOpen=!state.streamOpen;state.menuOpen=false;render();return;}
     if(button.dataset.pendingSave!==undefined){savePendingLabel(button.dataset.pendingSave);return;}
     if(button.dataset.pendingDrop!==undefined){dropPendingFate(button.dataset.pendingDrop);state.trayPrompt=null;persistPlayState();render();return;}
     // Switching Mine/Table repaints its own zone only — it must not disturb an
@@ -3189,7 +3252,8 @@
     if(button.dataset.closePop!==undefined){if(state.editDraft)state.editDraft=null;state.popOpen="";render();return;}
     if(button.dataset.chromeToggle!==undefined){state.chromeOpen=!state.chromeOpen;state.menuOpen=false;render();return;}
     if(button.dataset.cdMode!==undefined){setWindowMode(button.dataset.cdMode);return;}
-    if(button.dataset.textSize!==undefined){setTextSize(button.dataset.textSize);return;}
+    if(button.dataset.zoomSet!==undefined){setZoom(button.dataset.zoomSet);return;}
+    if(button.dataset.zoomReset!==undefined){resetZoom();return;}
     if(button.dataset.panel!==undefined){setPanel(button.dataset.panel);return;}
     if(button.dataset.hpOpen!==undefined){state.hpOpen=!state.hpOpen;render();return;}
     if(button.dataset.hpStep!==undefined){var hp=state.vitals||{};if(hp.max==null){state.message="Set a maximum first.";state.messageKind="warn";renderMessage();return;}setVitals({current:(hp.current==null?hp.max:hp.current)+Number(button.dataset.hpStep)});render();return;}
@@ -3355,7 +3419,14 @@
     if(delegateToPanel(event,"onChange"))return;
     if(event.target.dataset.diePortent!==undefined){mutateStagedDie({forcedResult:event.target.value===""?null:Number(event.target.value)});return;}
     if(/^fhPs(Custom|Dc)$/.test(event.target.id)||event.target.dataset.bonusLabel!==undefined||event.target.dataset.bonusSides!==undefined||event.target.dataset.bonusForced!==undefined){syncConsoleInputs();prepareTrayForConfig(state.rollConfig);render();return;}if(event.target.id==="fhPsTrayLabel"){state.trayLabel=String(event.target.value||"Damage roll").slice(0,48);persistPlayState();return;}if(event.target.id==="fhPsWho"){state.editDraft=null;state.pseudo=event.target.value;if(state.pseudo)loadBuild();return;}if(event.target.id==="fhPsCode"){return;}if(event.target.dataset.hpField){setVitals(event.target.dataset.hpField==="max"?{max:event.target.value}:{current:event.target.value});render();return;}if(event.target.dataset.exhField!==undefined){setExhaustion(event.target.value,"Set by hand");render();return;}if(event.target.dataset.destinyField){if(event.target.dataset.destinyField==="score")state.scoreEditing=false;updateDestinyField(event.target.dataset.destinyField,event.target.value,"Manual correction");return;}if(event.target.id==="fhPsTarget"){state.target=event.target.value;render();return;}if(event.target.id==="fhPsCr"){state.cr=event.target.value||"0";render();return;}}
-  function onKeydown(event){if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
+  function onKeydown(event){
+    // Scoped to the dock (root's own listener, not a document-level one) so
+    // this never fights the browser's own Cmd/Ctrl+/- when the player is just
+    // reading the handbook beside it.
+    if((event.metaKey||event.ctrlKey)&&/^[=+_-]$/.test(event.key)){
+      event.preventDefault();stepZoom(event.key==="-"||event.key==="_"?-1:1);return;
+    }
+    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
 
   function setDockOpen(open){
     state.dockOpen=!!open;state.menuOpen=false;
@@ -3382,9 +3453,14 @@
   function enterPip(){
     if(inPip())return;
     if(!pipSupported()){state.message="Table mode needs Chrome or Edge 116+.";state.messageKind="warn";state.menuOpen=false;render();return;}
-    var box=root.getBoundingClientRect();
-    var width=Math.round(Math.min(760,Math.max(380,box.width||440)));
-    var height=Math.round(Math.min(1000,Math.max(520,(window.screen&&window.screen.availHeight||900)*0.92)));
+    /* Table mode opens at the reference (UI-DIMENSIONS.md), not an incidental
+       size computed from the current box and the screen -- 425x680 scaled by
+       the dock's own current zoom, so the window a player gets is predictable
+       and they resize from a known starting point instead of an accidental
+       one. */
+    var factor=state.zoom/100;
+    var width=Math.round(ZOOM_REF_W*factor);
+    var height=Math.round(ZOOM_REF_H*factor);
     window.documentPictureInPicture.requestWindow({width:width,height:height}).then(function(win){
       pipWindow=win;
       copyStylesInto(win);
@@ -3403,11 +3479,6 @@
     try{if(homeParent)homeParent.insertBefore(root,homeNext);else document.body.appendChild(root);}catch(error){document.body.appendChild(root);}
     try{if(!closing.closed)closing.close();}catch(error){}
     state.windowMode="margin";render();
-  }
-  function setTextSize(size){
-    state.textSize=clamp(size,FS_MIN,FS_MAX)||FS_MIN;
-    try{localStorage.setItem("fh-cd-textsize",String(state.textSize));}catch(error){}
-    render();
   }
   function setWindowMode(mode){
     state.menuOpen=false;
@@ -3444,11 +3515,27 @@
     state.requestedPseudo=linkedCharacter;
     var remembered=null;try{remembered=localStorage.getItem("fh-cd-open");}catch(error){}
     state.dockOpen=ownsPage||!!linkedCampaign||remembered==="1";
-    var rememberedSize=null;try{rememberedSize=localStorage.getItem("fh-cd-textsize");}catch(error){}
-    /* The scale was rebased from 1/1.15/1.3 to 1.15/1.3/1.45. Anything at or
-       below the old baseline lands on the new floor rather than on a step that
-       no longer exists, so a returning player never gets the size we removed. */
-    if(rememberedSize)state.textSize=clamp(rememberedSize,FS_MIN,FS_MAX)||FS_MIN;
+    var rememberedZoom=null,rememberedZoomAuto=null;
+    try{rememberedZoom=localStorage.getItem("fh-cd-zoom");rememberedZoomAuto=localStorage.getItem("fh-cd-zoom-auto");}catch(error){}
+    if(rememberedZoomAuto==="0"&&ZOOM_STEPS.indexOf(Number(rememberedZoom))>=0){
+      state.zoom=Number(rememberedZoom);state.zoomAuto=false;
+    }else{
+      /* The scale was rebased from 1.15/1.3/1.45 (a raw --cd-fs) to percent
+         steps. A pre-zoom pick was an explicit choice, not a default, so it
+         migrates as a manual step rather than being dropped into auto-fit. */
+      var oldSize=null;try{oldSize=localStorage.getItem("fh-cd-textsize");}catch(error){}
+      if(oldSize&&!rememberedZoomAuto){
+        state.zoom=nearestZoomStep(Number(oldSize)/ZOOM_BASE_FS*100);state.zoomAuto=false;
+        try{localStorage.setItem("fh-cd-zoom",String(state.zoom));localStorage.setItem("fh-cd-zoom-auto","0");}catch(error){}
+      }else{
+        state.zoomAuto=true;state.zoom=autoFitZoom();
+      }
+    }
+    window.addEventListener("resize",function(){
+      if(!state.zoomAuto||inPip())return;
+      var next=autoFitZoom();
+      if(next!==state.zoom){state.zoom=next;render();}
+    });
     /* Only honour a remembered tab that still exists -- a panel file that was
        removed must not leave the belt pointing at nothing. */
     var rememberedPanel=null;try{rememberedPanel=localStorage.getItem("fh-cd-panel");}catch(error){}
