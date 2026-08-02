@@ -567,13 +567,27 @@ time on the core, and always trial-merge before merging for real.
 an appended CSS block (Actions), and anything outside the dock entirely (the SRD
 base). Each parallel session starts cold, so two tracks is the sane maximum —
 one on the core, one outside it.
-5. **SRD 5.2.1 base** — the next package, parallelisable with package 9.
-   Recommended shape: a deterministic import of the official French CC-BY-4.0
-   SRD into a canonical SQLite base, with static JSON exports for FHPC and four
-   separated layers — SRD → optional PHB → Fate's Hand → manual. Attribution,
-   version and provenance are mandatory on every record. **This gives a
-   catalogue, not a character's prepared choices** — it does not replace what a
-   DDB build payload fails to carry.
+5. **SRD 5.2.1 base** — ✅ **DELIVERED, REVIEWED AND MERGED 2026-08-03.**
+   Lives in its own repo `~/tools/fh-srd` (deliberate: different licence
+   posture — CC-BY derivative there, Eric's own work here), `main` = merge
+   `2fe355f`. French spell catalogue: 339 spells, zero exclusions, `srd` layer
+   only, attribution transcribed from the PDF and tested character-for-character
+   on every run, source pinned by SHA-256 (WotC reissued the FR PDF 2025-12-08
+   under the same version number — the pin is not paranoia). Verified from this
+   seat, not trusted: 8/8 suites in an independent detached clone, then the full
+   pipeline replayed there — PDF fetched, hash matched, 339 records, committed
+   exports reproduced byte-identical (clean tree after build).
+   **One scope gap found in review, now documented in its README: records carry
+   the stat line only, NO description text** — `parse_spells.py` stops at the
+   blank line that closes the stat block. v1 is a picker index, not a reader.
+   Importing descriptions is that base's named next step.
+   **Two things wait on Eric:** the attribution-wording finding in its
+   `ATTRIBUTION.md` (the vault audit's B5 block adds a "neither approved nor
+   endorsed" line the SRD's own legal page asks you to omit — decide before
+   publishing anything); and the sync into `fh-phb`
+   (`docs/FHPC-INTEGRATION-PROPOSAL.md`, a `sync_srd.py` with
+   verify-before-overwrite) — **do not sync until the Spells panel actually
+   consumes it**, i.e. after the dock lots. Nothing in `fh-phb` was touched.
 6. **`architect/yedrivel-pass` — superseded, not pending. Do not merge.** Three
    documentation commits from 2026-08-01 that were never merged and looked like
    an outstanding debt. They are not: **their content reached `main` by another
