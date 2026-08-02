@@ -28,8 +28,8 @@ someone fixing the wrong file.
 | 6 | **Dice Pool** | `dice-pool` | Destiny score and points, ordinary dice, Major Arcana card | persistent · fixed |
 | 7 | **Console** | `console` | The active console: Skill, Action, Spell, … | **summoned** · fixed |
 | 8 | **Roll Builder** | `roll-builder` | Assembles one roll: dice, modifiers, ROLL button | **summoned** · fixed |
-| 9 | **Dice Tray** | `dice-tray` | Where dice land and results read out, party and DM included | persistent · scrollable |
-| 10 | **Stream** | `stream` | The long feed | optional · scrollable · **off by default** |
+| 9 | **Dice Tray** | `dice-tray` | Where dice land and results read out — **yours, the party's and the DM's, together** | persistent · scrollable |
+| 10 | **Stream** | `stream` | Consultable history, and the debugging surface | optional · scrollable · **off by default** |
 
 Zone names are **Title Case in prose**, `kebab-case` in `data-zone` and CSS.
 
@@ -90,6 +90,19 @@ reason this zone was hard to name.
 **Dice Tray** has a **Static Area**: everything below the first four rolls. Dice
 never animate there. Rolls scroll into it and stop moving; the tray holds twenty.
 
+**The Dice Tray is the shared surface** (Eric, 2026-08-02). Your roll, the party's
+and the DM's land in the same place — you never navigate to see what someone else
+rolled. This overrules plan §11.4c, which put the party log in the Stream's zone
+on the argument that *the belt is what is inside the character, and the party is
+not*. That argument held for the **belt**; it does not decide the tray, and the
+moment of play wins: the point of a shared roll is that everyone sees it where
+they are already looking.
+
+**What is left of the Stream:** consultable history, and debugging. It is no
+longer the party's live feed. The table also has AboveVTT's own stream, so a
+second live feed inside the dock was solving a problem that was already solved
+elsewhere. This is a demotion, and it is deliberate.
+
 **Info Panel** is summoned by pointing at a thing, not by opening a screen. Hover
 or right-click a spell, a feat, an action — the zone describes *that* thing.
 Its purpose is subtractive: **it is what lets the Actions and Spells lists stay
@@ -97,11 +110,30 @@ short.** A list row carries a name and the few numbers you roll with; everything
 else lives here, one gesture away. Any proposal to "just add the description to
 the row" is a proposal to delete this zone, and should be refused as such.
 
-> ⚠️ **Hover is not available on touch, and this dock is used on touch** — the
-> panels ship 44px targets for exactly that reason. Hover can be the *fast* path
-> on a pointer, but it cannot be the *only* path. The summoning gesture needs a
-> touch equivalent (long-press is the usual answer) decided before the Info Panel
-> is built, not after.
+### The summoning gestures (Eric, 2026-08-02)
+
+**Pointer — this is what gets built.**
+
+| Gesture on a stat, action, spell or feat | Result |
+|---|---|
+| Left click / press | **Rolls it** |
+| Right click, or hover | Opens the **Info Panel** on that thing |
+| Middle click (wheel) | Opens the **Info Panel and the Console** |
+
+Long-press was considered and rejected: *"c'est pas toujours facile à faire."*
+
+**Touch — deferred, deliberately.** The intent is: press to roll, and one gesture
+that brings up Info Panel + Console + Dice Tray **with every persistent zone
+hidden** — there is not enough room, so it is a different logic, not a narrower
+version of the same one.
+
+> ⚠️ **There is no middle click on a touchscreen**, so the gesture above has no
+> touch equivalent yet. That is a known hole, not an oversight: Eric's ruling is
+> that **the mobile interface is a separate project, designed later**. Build the
+> pointer behaviour now, apply whatever seems reasonable on touch, and expect to
+> redo it. **iPad is allowed to live outside the mobile format** — it has the room
+> that a phone does not, and inheriting the phone's compromises there would be a
+> mistake.
 
 **Panel** hosts the seven belt panels. **Actions** is a panel name *and* a column
 inside that panel — inside the Actions panel, the three columns are **Actions**,

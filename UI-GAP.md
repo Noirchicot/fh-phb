@@ -42,7 +42,25 @@ confirmed. Check before scheduling.
 
 ---
 
-## A. Conflict — party rolls in the Dice Tray
+## A. ~~Conflict~~ — **SETTLED 2026-08-02: the Dice Tray wins**
+
+Eric ruled for the drawing. The Dice Tray is the shared surface: your roll, the
+party's and the DM's, in the same place. The Stream keeps only consultable history
+and debugging — and the table already has AboveVTT's own stream, so a second live
+feed inside the dock was solving a problem that was solved elsewhere.
+
+Consequences to carry into the work: the Dice Tray becomes a *feed consumer*, not
+just a local animation surface, so it inherits everything §12.5 says about LIVE /
+RECENT / OFF and the never-fall-back-silently rule. And the Stream's reason to
+exist shrinks — worth re-checking whether it still earns a zone at all once the
+height budget is measured.
+
+The original disagreement is kept below because the argument it lost on is still
+correct for the *belt*.
+
+---
+
+## A′. The original conflict — party rolls in the Dice Tray
 
 The drawing says the Dice Tray shows **all the party rolls + DM**.
 
