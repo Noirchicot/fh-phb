@@ -81,6 +81,7 @@ Read both. Read nothing else to start.
 | ~~`linkedom` lives in `/tmp/fh-player-test`~~ | — | **FIXED 2026-08-01.** It is a pinned devDependency (`package.json`, linkedom 0.18.12) and every suite does a plain `require("linkedom")`. Setup is now `npm install`. Verified by moving `/tmp/fh-player-test` aside entirely: 14/14 still green |
 | A seq **counter** key re-creates the 1-write/sec limit it was meant to dodge | five players rolling at once race on `feed:{CODE}:cursor` | the sequence IS the timestamp — 13-digit padded epoch ms + random tiebreaker, no shared key (plan §11.4) |
 | `addHistory` is **not** where a roll settles | a natural 1 is in history *before* the player chooses, and defying turns it into a 20; an adjusted roll never passes through it at all | broadcast at `openRollState` + the `finish-sequence` branch, gated on `rollTransactionActive()` (plan §11.4b) |
+| **Marking something delivered before knowing whether it was** | `broadcastEntry` set the sent flag ahead of the `POST` result, so a transient network failure lost that roll from the shared table log **permanently** — and a later unrelated successful poll cleared the offline indicator, showing the player a false all-clear | found by package 9, fixed 2026-08-03. Claim optimistically if you must, but **un-claim on failure**, and never let an unrelated success clear a failure someone else recorded. This is a *family* of bug, not one site: any optimistic flag that is never rolled back |
 | `document.hidden` is true for the **main** document while Table mode runs in PiP | gating polling on it kills the feed exactly when it is being used at the table | hidden **slows** the poll to 12s, never stops it |
 | ~~`~/tools/fh-worker` has no git~~ | — | **FIXED 2026-07-29** — it is a repo now (first commit `7fe6588`). The `.bak` files remain as history; new edits go through git |
 | An HTTPS page **cannot** fetch `http://` | every self-hosting option that skips TLS is dead on arrival — the dock is on `github.io` | the DM's machine must be reachable over **HTTPS with a real cert**; that alone chooses Cloudflare Tunnel over port-forwarding (plan §12.2) |
@@ -216,6 +217,31 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 ---
 
 ## 6. State at handoff
+
+> ✅ **TWO LOTS MERGED 2026-08-03 — zone overlay + percentage zoom, and the
+> package 9 engine hunt.** `main` = **`f89583f`**. 15/15 suites and a clean strict
+> build **after** the merge. **Not deployed**, and this time that matters: unlike
+> every commit since 2026-08-01, these two touch the built site
+> (`fh-player-sheet.js`, `companion-dock.css`), so a deploy would put them in
+> front of players.
+>
+> **Both were verified independently before merging**, each in its own detached
+> clone — zoom at `e5bd999` (14/14), package 9 at `89d8c59` (15/15).
+>
+> **And they were verified *together*, which neither session could do.** Both
+> edited `fh-player-sheet.js`; a trial merge in a throwaway clone produced **no
+> conflict** (zoom works in the constants and in the menu/keydown/`enterPip` tail,
+> package 9 in the middle — broadcast, awakening counter, chaos debts, forced-die
+> sanitation) and the combined state passed 15/15 with a clean strict build.
+> **Two branches on one file is the case to check before merging, every time.**
+>
+> Package 9's four defects are in the logbook; the one worth carrying is now a
+> trap in §3. It found 32 net lines of core change worth of bugs and wrote 162
+> lines of tests to hold them — that ratio is what an adversarial pass should
+> look like.
+>
+> The Stream, incidentally, **had no open/close mechanism at all** despite
+> shipping documented as `optional · off by default`. It has one now.
 
 > ✅ **PACKAGES 5/6/7 RELEASED, DEPLOYED AND VERIFIED LIVE 2026-08-01 — Traits,
 > Actions, Spells.** `main` = `origin/main` = **`d947dd7`** (release G1), a clean
@@ -456,10 +482,36 @@ commit not yet merged.
    `1aa09be` on PR #1; not merged or deployed. See the state block above.
 3. ~~**Next: 6/5/7 (Actions, Traits, Spells — parallel)**~~ — **RELEASED, DEPLOYED
    AND VERIFIED LIVE 2026-08-01.** See the state block at the top of §6.
-4. **Package 9 — adversarial bug hunt** over the roll engine and the
-   destiny/chaos/awakening state machine. It is now **more** worth running, not
-   less: the feed broadcasts whatever that engine concludes, so a wrong verdict
-   is no longer a private mistake.
+4. ~~**Package 9 — adversarial bug hunt**~~ — **DONE and merged 2026-08-03.**
+   Four defects, see the state block above.
+
+### The dock lots, in order — and the order is the point
+
+The dock **serialises on two files**: `fh-player-sheet.js` (the core) and
+`companion-dock.css` (one file, everyone appends to the end). CSS conflicts are
+additive and mechanical — the 5/6/7 release proved the recipe: keep every block,
+in a stated order. **The core has no mechanical resolution.** So: one lot at a
+time on the core, and always trial-merge before merging for real.
+
+1. **The roll vocabulary — next, and it must come before the surfaces.**
+   Source tokens, `condition → badge` derivation, Ruling text (`UI-ROLL-VOCABULARY.md`).
+   The Dice Tray, the Roll Builder, the Stream and every Console all render these
+   same objects. Build a surface first and it will invent its own way to draw a
+   badge; build the second and there are two. Done in this order, each later lot
+   *consumes* the vocabulary instead of reinventing it.
+2. **Dice Tray** — extracted from `roller`, four visible rolls, Static Area.
+   **Heavier than its name**: since 2026-08-02 it is the *shared surface*, so it
+   inherits the LIVE/RECENT/OFF states and the never-fall-back-silently rule.
+3. **Roll Builder** — merged with the Dice Pool, ROLL button moved.
+4. **Info Panel** — new zone, and it needs the core addition that makes panels
+   announce a selection. Architect work.
+5. **Panel/Skills** without scroll, **Actions in three columns**, then the
+   **Console family** (one component, three field specs).
+
+**Parallelisable, no collision:** anything touching only one `fh-panel-*.js` plus
+an appended CSS block (Actions), and anything outside the dock entirely (the SRD
+base). Each parallel session starts cold, so two tracks is the sane maximum —
+one on the core, one outside it.
 5. **SRD 5.2.1 base** — the next package, parallelisable with package 9.
    Recommended shape: a deterministic import of the official French CC-BY-4.0
    SRD into a canonical SQLite base, with static JSON exports for FHPC and four
@@ -467,7 +519,14 @@ commit not yet merged.
    version and provenance are mandatory on every record. **This gives a
    catalogue, not a character's prepared choices** — it does not replace what a
    DDB build payload fails to carry.
-6. **Worktree cleanup — audited, not yet executed.** 21 worktrees, six of them at
+6. **`architect/yedrivel-pass` — superseded, not pending. Do not merge.** Three
+   documentation commits from 2026-08-01 that were never merged and looked like
+   an outstanding debt. They are not: **their content reached `main` by another
+   route** (the public `fh-table` publication, the Yedrivel validation and the 12b
+   bridge status are all in this file already). And the branch sits on an old
+   base — merging it would delete **4 134 lines**, including the tests merged on
+   2026-08-03. Checked and closed 2026-08-03.
+7. **Worktree cleanup — audited, not yet executed.** 21 worktrees, six of them at
    `7347cfb`. **Never `--force`.** Absolutely protect
    `.claude/worktrees/youthful-taussig-bfa14e`: it holds an uncommitted change to
    `sync_from_vault.py`. After revalidation *and* Eric's agreement, the ten clean
@@ -476,14 +535,14 @@ commit not yet merged.
    has landed.
 7. ~~**Decide separately:** the `linkedom` devDependency commit~~ — **DONE
    2026-08-01**, on `main` (§3). Two still open, both Eric's call:
-   - **Dice lab (`pkg10-dice`).** Six commits, but branched from an old base: it
-     is **-7 170 lines** against today's `main`, so merging it would delete the
-     released panels. It is an *experiment* — `tools/dice-lab.html`, a WebGL
-     column, a CSS cube, a CSS icosahedron whose geometry works and whose
-     legibility does not. What actually shipped is already on `main`
-     (`docs/static-dice-lab.html`, `fh-static-dice.js`, via `45e7f3f`).
-     **Recommendation: keep the branch as an archive, do not merge.** If a 3D die
-     is wanted later, cherry-pick a single idea onto a fresh branch.
+   - ~~**Dice lab (`pkg10-dice`)**~~ — **ARCHIVED by Eric, 2026-08-03. Do not
+     merge, do not revisit.** Six commits from an old base: **-7 170 lines**
+     against `main`, so merging would delete the released panels. It is an
+     experiment — `tools/dice-lab.html`, a WebGL column, a CSS cube, a CSS
+     icosahedron whose geometry works and whose legibility does not. What shipped
+     is already on `main` (`docs/static-dice-lab.html`, `fh-static-dice.js`, via
+     `45e7f3f`). If a 3D die is ever wanted, cherry-pick one idea onto a fresh
+     branch — never merge this one.
    - **AboveVTT PR #1** (`Noirchicot/fh-table`, `pkg12b-abovevtt` → `main`,
      `a7a8036` + `1aa09be`). OPEN, draft, `MERGEABLE`, live gate passed 68/68.
      Merging it is a distribution decision, not a code one — nothing consumes the
