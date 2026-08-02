@@ -639,8 +639,11 @@
     var overreach = Math.max(0, Number(raw.overreach)||0, points<0 ? -points : 0);
     // Deferred fate: Chaos and Overreach saves are carried, not rolled on the spot.
     var pending = Array.isArray(raw.pending) ? raw.pending.filter(function(item){return item&&(item.kind==="chaos"||item.kind==="overreach"||item.kind==="note");}).slice(0,6) : [];
+    // A count of owed Arcana draws. Older saved profiles stored this as a
+    // plain boolean — Number(true)===1 and Number(false)===0, so a saved
+    // "true" upgrades cleanly into a single owed draw.
     return {score:score,points:Math.max(0,points),dice:dice,overreach:overreach,pending:pending,
-      awakeningOwed:!!raw.awakeningOwed,lastChange:raw.lastChange || null};
+      awakeningOwed:Math.max(0,Number(raw.awakeningOwed)||0),lastChange:raw.lastChange || null};
   }
   // Hit points are tracked here, not imported: DDB stays the source for the
   // standard sheet but the dock is what the player touches mid-combat.
@@ -853,7 +856,10 @@
   // disadvantage are decisions taken *before* the roll, so they resolve
   // themselves — offering a choice on top of them was the old bug.
   function rollMode(value){return value==="advantage"||value==="disadvantage"||value==="choice"?value:"flat";}
-  function forcedDieResult(value,sides){if(value==null||value==="")return null;return clamp(value,1,Number(sides)||20);}
+  // A die face is always an integer — a fractional or hostile value surviving
+  // from stored state (a corrupted profile, a hand-edited localStorage entry)
+  // must land on a real face, not ride into the total as a decimal.
+  function forcedDieResult(value,sides){if(value==null||value==="")return null;return clamp(Math.round(Number(value)),1,Number(sides)||20);}
   function bonusSourceFor(label,index,source){
     if(source)return String(source);
     var key=String(label||"").trim().toLowerCase();
@@ -1012,7 +1018,9 @@
       entry.destinyPointChange={before:before,after:state.destiny.points,reason:"Natural 20"};
       entry.awakening=state.destiny.points===0;
       // The draw is owed from this moment until the card is actually dealt.
-      if(entry.awakening)state.destiny.awakeningOwed=true;
+      // A count, not a flag: a second Natural 20 at 0 before the first card is
+      // drawn owes a second draw, not the same one twice.
+      if(entry.awakening)state.destiny.awakeningOwed=(Number(state.destiny.awakeningOwed)||0)+1;
       var parts=[entry.awakening?"ARCANE AWAKENING · Natural 20 at Destiny 0":"NATURAL 20 · Fate bends in your favor","Lost 1 Destiny Point","Current "+state.destiny.points];
       if(recovered)parts.push("Gained a Destiny d"+recovered.sides);
       events.push({text:parts.join(" · "),kind:entry.awakening?"awakening":"nat20",entryId:entry.id});
@@ -1421,7 +1429,9 @@
     var before=state.destiny.score;
     state.destiny.score=clamp(before+1,0,99);
     setDestinyPoints((Number(state.destiny.points)||0)+10,"Arcane Awakening",true,true);
-    state.destiny.awakeningOwed=false;
+    // A draw settles exactly one owed Awakening — a second Natural 20 landed
+    // before this card was dealt still owes its own draw.
+    state.destiny.awakeningOwed=Math.max(0,(Number(state.destiny.awakeningOwed)||0)-1);
     var events=[{text:"ARCANE AWAKENING · Drew "+card.numeral+" · "+card.name+" · Score "+state.destiny.score+" · +10 temporary Points",kind:"awakening"}];
     if(replace){
       var arcana={name:card.name,numeral:card.numeral,power:card.power,vibration:card.vibration,meaning:card.meaning};
@@ -1438,7 +1448,15 @@
   function addPendingFate(spec){
     if(!state.destiny)return null;
     var item=Object.assign({id:uuid(),createdAt:new Date().toISOString()},spec);
-    state.destiny.pending=pendingFate().concat([item]).slice(-4);
+    var next=pendingFate().concat([item]);
+    // The strip holds four; a debt that falls off the front must say so — a
+    // Chaos roll or an Overreach save going quiet is exactly the silent
+    // fallback §2 of the handoff forbids, not a housekeeping detail.
+    if(next.length>4){
+      var dropped=next.shift();
+      pushEvent("A pending "+pendingLabel(dropped)+" debt was never faced and has expired.","chaos");
+    }
+    state.destiny.pending=next;
     return item;
   }
   function dropPendingFate(id){if(state.destiny)state.destiny.pending=pendingFate().filter(function(item){return item.id!==id;});}
@@ -2360,6 +2378,10 @@
     if(known&&known.signature===signature)return;
     if(state.feed.tableState==="off"){setFeedStatus("offline");return;}
     var rev=known?known.rev+1:0;
+    // Recorded optimistically, before the network result is known, so a
+    // second synchronous call for this same still-unchanged entry (the next
+    // render pass, before the first request even settles) never fires a
+    // duplicate POST for the same revision.
     state.feed.sent[entry.id]={signature:signature,rev:rev};
     var body={id:uuid(),type:"roll",rollId:entry.id,rev:rev,
       actor:{pseudo:state.pseudo,character:state.character&&state.character.name||state.pseudo,
@@ -2369,6 +2391,11 @@
     sent.then(function(){
       setFeedStatus("");
     }).catch(function(){
+      // The send did not land. Un-claim it — unless a newer call has already
+      // moved the record on — so the next broadcastEntry for this same entry
+      // retries instead of believing the table already saw it.
+      var current=state.feed.sent[entry.id];
+      if(current&&current.signature===signature&&current.rev===rev)delete state.feed.sent[entry.id];
       // The roll happened locally either way; what failed is the table seeing
       // it. Say so — a player must never believe they were heard when they
       // were not.
