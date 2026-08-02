@@ -20,10 +20,10 @@ everywhere.
 
 | Source | Glyph | Colour |
 |---|---|---|
-| **Destiny** | **∞** | gold |
+| **Destiny** | **∞** lemniscate, heavier stroke | gold |
 | **Guidance** | ★ | blue |
 | **Bardic** | ♪ | violet |
-| **Tactical** | *open* | red |
+| **Tactical** | 🛡 shield | red |
 | **Bonus I · II · III** | I / II / III | grey |
 
 **The glyph carries the identity; the colour reinforces it.** Never colour alone:
@@ -34,6 +34,20 @@ retires is *choosing the two independently*, not the icon itself.
 ∞ was chosen for Destiny partly because it is the only **horizontal** mark in the
 set. A star and a musical note are both "small spiky thing" at 12px; ∞ is not
 mistakable for either.
+
+The shield won Tactical for the mirror reason: it is the only silhouette in the set
+that **narrows towards the bottom**, so it survives being reduced to a smudge.
+Both sword candidates were rejected, and the reason is worth keeping because it is
+not obvious in isolation — **glyphs are judged against their neighbours, not on
+their own.** A single sword becomes a vertical stroke with a bar, which is exactly
+the `I · II · III` numerals sitting beside it in the same tray. Crossed swords
+become a radial spiky mass, which is the Guidance star sitting on the other side.
+Both collisions are a few pixels apart in the same row.
+
+**Draw these properly.** The first ∞ shipped in a mockup was three separate arcs
+whose ends did not meet; at 48px it looked sloppy and at 12px it was a smudge. The
+lemniscate is one continuous path, and the heavier stroke weight is the one to use:
+these glyphs are never seen large, they are seen at 12px, at an angle, mid-session.
 
 > **State today:** only two sources are declared, `guidance` and `bardic`, as two
 > `if`s in `fh-player-sheet.js:1682`. And `.fh-cd-src` is hard-coded to
@@ -167,6 +181,5 @@ at render time, so every surface says the same thing about the same roll.
 
 ## Open questions
 
-1. **The Tactical glyph** (§1).
-2. **How tall is a tray line with dice shown**, as opposed to the compact
+1. **How tall is a tray line with dice shown**, as opposed to the compact
    Stream-style line. Needs a drawing before it can be budgeted.
