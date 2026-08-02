@@ -490,6 +490,31 @@ commit not yet merged.
 4. ~~**Package 9 — adversarial bug hunt**~~ — **DONE and merged 2026-08-03.**
    Four defects, see the state block above.
 
+### 🚦 DEPLOY GATE — Eric, 2026-08-03. Read this before running `gh-deploy`.
+
+**Do not deploy the dock until all five of these are rebuilt:**
+
+1. **Info Panel** — the new zone
+2. **Dice Pool** — Destiny dice and Pool dice, merged with the Roll Builder
+3. **Console**
+4. **Dice Tray** — extracted from `roller`, four visible rolls, Static Area
+5. **Roll Builder**
+
+Eric's reasoning, and it is right: shipping a half-migrated dock to players is
+worse than shipping nothing. The lower half of the dock changes as one thing.
+
+**Consequence to expect, and not to panic about:** `main` will carry undeployed
+site changes for weeks. That is deliberate. The first such commits landed
+2026-08-03 (`fh-player-sheet.js`, `companion-dock.css` — overlay, zoom, the
+package 9 fixes) while `gh-pages` still served `d947dd7` from 2026-08-01.
+**A status panel must not treat that gap as an alarm** — the question is never
+"is main ahead of the site", it is "is the gate open and are we choosing not to
+deploy".
+
+Players keep the version they have, and it works. That is the point.
+
+---
+
 ### The dock lots, in order — and the order is the point
 
 The dock **serialises on two files**: `fh-player-sheet.js` (the core) and
