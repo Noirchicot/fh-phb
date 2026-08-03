@@ -98,7 +98,30 @@ Read both. Read nothing else to start.
   it today.
 - **Everything is hosted by its owner** — each DM/creator runs their own free
   instance. This gives the §13 finding (GM_TOKEN = mutual root; a second DM needs
-  their own copy) its product rationale, not just a quota one.
+  their own copy) its product rationale, not just a quota one. **But the cloud
+  stays the default** — zero-install to start; the owner's machine is an
+  optional live-session accelerator, never the ticket of entry.
+- **Ratified 2026-08-03 — the foundation note.** The full positioning, market
+  reasoning and legal rules live in the vault (private):
+  `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHPC — Positionnement &
+  Stratégie.md`. What the architect must carry from it:
+  - **Design law: the DM's word beats the JSON.** Every field editable, every
+    rule toggleable — build it into each new surface now, retrofitting later
+    is a chantier.
+  - **Legal law: content unlocks are publisher-issued codes with a platform
+    commission — never proof-of-purchase conversion, and no WotC content,
+    ever.** SRD + willing publishers + creators only.
+  - **The AI door**: schema discipline starts now (versioned, documented,
+    example-rich formats — the `fh-event/1` pattern everywhere, plus a written
+    spec of the statblock HTML/keyword conventions); an MCP server comes at
+    step 5 of the sequence, thin over a stable HTTP API; **no embedded AI in
+    the app, ever** — the platform is drivable by the user's own AI, it never
+    drives.
+  - **The sequence** (each step proves the next step's claim): 1. finish the
+    dock and run Eric's table on it → 2. DDB-independent builder → 3. an A5E
+    rules layer from the CC-BY A5ESRD → 4. an Owlbear Rodeo bridge on its
+    official extension API → 5. MCP server + published LLM schemas → 6. only
+    then, publisher partnerships.
 
 ---
 
