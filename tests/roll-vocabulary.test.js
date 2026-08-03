@@ -246,10 +246,15 @@ assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", title:"Roll", account:[
 /* The Ruling's classes are granted by equality with the derived verdict, so a
    Chaos prompt written into the same slot cannot borrow the oxblood authority
    of an engine ruling. */
-assert.match(source, /var isRuling=!quiet&&!!state\.trayVerdict&&title===state\.trayVerdict;/,
+/* REWRITTEN (dock-dice-tray, 2026-08-03): the frame's status line became the
+   tray line's tier 3 (trayTiersHtml) — the equality rule moved with it,
+   wearing the tray's own class names. The claim is unchanged: the oxblood
+   verdict classes are granted by equality with the derived verdict, never by
+   a flag someone could forget to clear. */
+assert.match(source, /var isRuling=!quiet&&!!state\.trayVerdict&&heading===state\.trayVerdict;/,
   "the verdict styling is earned by equality, not by a flag someone could forget to clear");
-assert.match(css, /\.fh-cd-status b\.fh-cd-verdict\{/, "the verdict has its own class");
-assert.match(css, /\.fh-cd-status em\.fh-cd-account\{/, "the account has its own class");
+assert.match(css, /\.fh-cd-tray-verdict\{/, "the verdict has its own class");
+assert.match(css, /\.fh-cd-tray-account\{/, "the account has its own class");
 
 /* ── The renames, and the trap not to wake ──────────────────────────── */
 

@@ -480,6 +480,59 @@
   function displayValue(sides,result){
     return Number(sides)===10&&Number(result)===10?"0":String(result);
   }
+  /* A settled die as a bitmap: the same mesh, the same pose the live canvas
+     would settle into, drawn once through the picker's shared generator and
+     cached. This is what the Dice Tray's Static Area uses (rolls 5-10): a
+     zone that can hold six lines of dice must not hold six lines of WebGL
+     contexts -- the ~16-context browser cap is the whole reason pickerImage
+     exists, and the Static Area is the same problem wearing a result. */
+  function resultImage(sides,result,materialName,sizePx){
+    sides=Number(sides);
+    if(SUPPORTED_SIDES.indexOf(sides)<0)return null;
+    materialName=materialName||"ivory";
+    result=Math.max(1,Math.min(sides,Number(result)||1));
+    var pixelRatio=Math.max(1,Math.min(2,(typeof window!=="undefined"&&window.devicePixelRatio)||1));
+    var size=Math.max(16,Math.round(sizePx||26));
+    var key=sides+"|"+materialName+"|"+size+"|"+pixelRatio+"|r"+result;
+    if(pickerCache[key])return pickerCache[key];
+    if(!pickerGenerator){
+      if(typeof document==="undefined"||!document.createElement)return null;
+      pickerGenerator={canvas:document.createElement("canvas")};
+    }
+    var canvas=pickerGenerator.canvas,dataUrl=null;
+    try{
+      var gl=canvas.getContext("webgl",{alpha:true,antialias:true,premultipliedAlpha:true});
+      if(!gl)throw new Error("WebGL unavailable");
+      var full=Math.round(size*pixelRatio);
+      canvas.width=full;canvas.height=full;
+      gl.clearColor(0,0,0,0);
+      gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.depthMask(true);
+      gl.enable(gl.CULL_FACE);gl.frontFace(gl.CCW);gl.cullFace(gl.BACK);gl.disable(gl.BLEND);
+      if(gl.POLYGON_OFFSET_FILL!=null&&gl.polygonOffset){gl.enable(gl.POLYGON_OFFSET_FILL);gl.polygonOffset(1,1);}
+      if(gl.lineWidth)gl.lineWidth(Math.max(1,pixelRatio));
+      gl.viewport(0,0,full,full);
+      gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+      var programs={mesh:program(gl,MESH_VERTEX_SRC,MESH_FRAGMENT_SRC),line:program(gl,LINE_VERTEX_SRC,LINE_FRAGMENT_SRC)};
+      var material=MATERIALS[materialName]||MATERIALS.ivory;
+      if(sides===100){
+        // Same paired layout as pickerImage, but each half wears its digit's face.
+        var geo=geometryFor(10),part=Math.round(full*.58),vOffset=Math.round((full-part)/2),inset=full-part;
+        var percentile=result===100?"00":String(result).padStart(2,"0");
+        var tensDigit=Number(percentile.charAt(0)),unitDigit=Number(percentile.charAt(1));
+        drawPickerShape(gl,programs,geo,material,quaternionMatrix(faceRotation(geo,tensDigit===0?9:tensDigit-1,10)),[0,vOffset,part,part]);
+        gl.clear(gl.DEPTH_BUFFER_BIT);
+        drawPickerShape(gl,programs,geo,material,quaternionMatrix(faceRotation(geo,unitDigit===0?9:unitDigit-1,10)),[inset,vOffset,part,part]);
+      }else{
+        var solid=geometryFor(sides);
+        var rotation=quaternionMatrix(faceRotation(solid,(result-1)%solid.faceNormals.length,sides));
+        drawPickerShape(gl,programs,solid,material,rotation,[0,0,full,full]);
+      }
+      dataUrl=canvas.toDataURL("image/png");
+    }catch(error){dataUrl=null;}
+    if(!dataUrl)return null;
+    pickerCache[key]=dataUrl;
+    return dataUrl;
+  }
   function animatePart(host,canvas,number,renderSides,faceIndex,seedResult,sequenceIndex,materialName,animate,sizePx){
     var renderer;
     try{renderer=prepareRenderer(canvas,renderSides,materialName,sizePx);}
@@ -510,11 +563,39 @@
     requestAnimationFrame(drawFrame);
     return true;
   }
+  /* The snapshot path: no live context, ever. The host swaps its canvas for
+     a cached bitmap of the settled pose and shows the numeral immediately --
+     dice never animate in the Static Area, so nothing here is lost. Falls
+     back to the SVG face (returns false) exactly like a failed context. */
+  function mountSnapshot(host,sides,result,materialName,pending,hostSizePx){
+    var canvas=host.querySelector("canvas"),number=host.querySelector(".fh-cd-static-die-result");
+    if(!canvas||!number)return false;
+    var dataUrl=resultImage(sides,pending?1:result,materialName,hostSizePx);
+    if(!dataUrl)return false;
+    var image=host.querySelector("img.fh-cd-static-snap");
+    if(!image){
+      image=document.createElement("img");
+      image.className="fh-cd-static-snap";image.alt="";
+      canvas.parentNode.insertBefore(image,canvas);
+    }
+    image.src=dataUrl;
+    // A snapshot d100 is one host with one numeral slot (core emits no part
+    // pair for it), so the two digits print together, percentile-style.
+    number.textContent=pending?"":sides===100?(result===100?"00":String(result).padStart(2,"0")):displayValue(sides,result);
+    number.style.color=(MATERIALS[materialName]||MATERIALS.ivory).num;
+    host.classList.add("is-webgl");host.classList.add("is-settled");
+    return true;
+  }
   function mountDie(host){
     var sides=Number(host.dataset.sides)||20,result=Math.max(1,Math.min(sides,Number(host.dataset.result)||1));
     var materialName=host.dataset.material||"ivory",pending=host.dataset.pending==="1";
     var animate=!pending&&host.dataset.animate==="1"&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var index=Number(host.dataset.index)||0;
+    if(host.dataset.snapshot==="1"){
+      var snapSizePx=parseFloat(host.style&&host.style.getPropertyValue("--fh-static-die-size"))||52;
+      mountSnapshot(host,sides,result,materialName,pending,snapSizePx);
+      return;
+    }
     /* Read straight off the inline style the markup already carries, rather
        than measuring the DOM: host itself is laid out, but its children
        (canvas, and for d100 the .fh-cd-static-die-part halves) are all
@@ -559,6 +640,7 @@
     supportedSides:SUPPORTED_SIDES.slice(),
     materials:Object.keys(MATERIALS),
     pickerImage:pickerImage,
+    resultImage:resultImage,
     releasePickerContext:releasePickerContext,
     sound:{
       isMuted:function(){return soundMuted;},

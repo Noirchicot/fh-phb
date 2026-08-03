@@ -96,7 +96,11 @@ assert.equal(root.querySelector('[data-zone="stream"]'),null,"Stream starts clos
 openMenu();
 root.querySelector('[data-stream-toggle]').click();
 assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"],[data-zone="stream"]').length,3,"console, roller and stream are distinct zones");
-assert.equal(root.querySelectorAll("[data-zone]").length,7,"the dock shows its seven zones at once, Stream opened");
+/* REWRITTEN (dock-dice-tray, 2026-08-03): the Dice Tray is its own zone now
+   (data-zone="dice-tray", extracted from the roller), and it is `persistent`
+   — present on every panel. Seven zones became eight with the Stream open. */
+assert.equal(root.querySelectorAll("[data-zone]").length,8,"the dock shows its eight zones at once, Stream opened");
+assert.ok(root.querySelector('[data-zone="dice-tray"]'),"the Dice Tray is a zone of its own");
 openMenu();
 assert.ok(root.querySelector("#fhPsLevel"),"an unlinked character keeps Level Up under the menu");
 /* General rule: a click outside an open dropdown closes it. root itself is
@@ -145,7 +149,11 @@ assert.equal(root.querySelectorAll(".fh-cd-eline.is-current").length,1,"exactly 
 // class name rather than the whole attribute.
 const stageChildren=Array.from(root.querySelector(".fh-cd-stage").children).map(node=>node.className.split(/\s+/)[0]);
 assert.ok(stageChildren.indexOf("fh-cd-temps")<stageChildren.indexOf("fh-cd-events"),"events come after the badges");
-assert.ok(stageChildren.indexOf("fh-cd-events")<stageChildren.indexOf("fh-cd-frame"),"and before the dice");
+/* REWRITTEN (dock-dice-tray, 2026-08-03): the frame and its dice left the
+   roller for the Dice Tray zone — the stage keeps badges, events and popups,
+   and the live hand's frame renders inside the tray instead. */
+assert.equal(stageChildren.indexOf("fh-cd-frame"),-1,"the roller no longer carries the frame");
+assert.ok(root.querySelector('[data-zone="dice-tray"] .fh-cd-frame.is-trayhand'),"the live hand's frame lives in the Dice Tray");
 t.state.events=[{id:"awaken",kind:"awakening",text:"ARCANE AWAKENING · Natural 20 at Destiny 0",createdAt:new Date().toISOString()}];
 t.render();
 assert.match(root.querySelector(".fh-cd-eline.is-awakening").textContent,/The Hermit/i,"Arcane Awakening reveals the character's Major Arcana");
@@ -163,9 +171,11 @@ root.querySelector('[data-config-name="Arcana"]').click();
    the dice -- the tray right below it already says what is being rolled, so
    the console header was saying the same thing twice. */
 assert.equal(root.querySelector(".fh-cd-cname"),null,"the console does not repeat what the tray already names");
-assert.match(root.querySelector(".fh-cd-status").textContent,/Arcana \+6/,"opening a console names the prepared check, in the tray");
-assert.match(root.querySelector(".fh-cd-status").textContent,/Arcana \+6/,"the roller frame echoes the prepared check");
-assert.equal(root.querySelectorAll(".fh-cd-dicerow .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
+/* REWRITTEN (dock-dice-tray): the status line became the tray line's ruling
+   space (three tiers, right of the dice) and the dice row became the live
+   hand inside the Dice Tray zone. Same claims, new surface. */
+assert.match(root.querySelector(".fh-cd-tray-ruling").textContent,/Arcana \+6/,"opening a console names the prepared check, in the tray");
+assert.equal(root.querySelectorAll(".fh-cd-frame.is-trayhand .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
 // REWRITTEN (dock v5): the Guid / Bard / Destiny chips are gone. Every die now
 // comes from the white picker, and a seal is something you give a die afterwards.
 assert.equal(root.querySelectorAll("[data-bonus-preset]").length,0,"the Guidance and Bardic chips are gone from the console");
@@ -358,7 +368,8 @@ root.querySelector("[data-clear-tray]").click();
 
 for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
-assert.match(root.querySelector(".fh-cd-dicerow").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in the frame");
+/* REWRITTEN (dock-dice-tray): the dice row is the live hand in the tray. */
+assert.match(root.querySelector(".fh-cd-frame.is-trayhand").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in its tray line");
 /* REWRITTEN (round 7c): the console no longer carries the naming field -- it
    is headed for the tray's legend. The label itself still names the roll and
    still persists, so that contract is asserted here by setting it directly;
@@ -375,12 +386,19 @@ assert.equal(root.querySelector("[data-event-ok]"),null,"a free roll no longer e
    resolved, while the dice still had most of a second left to roll -- it
    answered the question before the roll could. The verdict now names the roll
    while the dice are in the air and adds the total once they settle. */
-assert.equal(root.querySelector(".fh-cd-status b").textContent,"Fireball","while the dice are rolling the verdict names the roll without spoiling it");
-assert.match(root.querySelector(".fh-cd-status em").textContent,/Rolling/,"and says the dice have not landed yet");
+/* REWRITTEN (dock-dice-tray): the quiet-reveal reads off the tray line now,
+   and the line says nothing twice — the name is tier 1, the total tier 2
+   (kept quiet as … until the dice stop), the ruling tier 3. */
+assert.equal(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-title").textContent,"Fireball","while the dice are rolling tier 1 names the roll without spoiling it");
+assert.equal(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-total").textContent,"…","the total stays quiet while the dice are in the air");
+assert.match(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-t3").textContent,/Rolling/,"and tier 3 says the dice have not landed yet");
 assert.equal(root.querySelector(".fh-cd-sentry .fh-cd-total").textContent,"…","the newest stream line withholds its total too -- it sits right under the tray");
 assert.ok(root.querySelectorAll(".fh-cd-die.is-spinning").length>0,"dice that have just landed do roll");
 t.state.trayRevealAt=0;t.render();
-assert.match(root.querySelector(".fh-cd-status b").textContent,/^Fireball /,"once the dice settle its verdict reads straight off the tray");
+/* REWRITTEN (dock-dice-tray): same claim, on the tray line's ruling space —
+   the name stays tier 1 and the settled total surfaces in tier 2. */
+assert.equal(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-title").textContent,"Fireball","once the dice settle tier 1 still names the roll");
+assert.equal(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-total").textContent,String(t.state.history[0].total),"and tier 2 gives up the total");
 assert.equal(root.querySelector(".fh-cd-sentry .fh-cd-total").textContent,String(t.state.history[0].total),"and the stream line gives up its total");
 /* Animation is decided per die, not per tray. A tray-wide signature meant any
    later render -- picking up one more die, a Destiny die, anything -- re-rolled
@@ -424,7 +442,8 @@ assert.equal(entry.bonusDice[0].sourceIcon,"other-1","the first custom die keeps
 assert.equal(root.querySelector(".fh-cd-src b").textContent.trim(),"I","the die carries the Other I seal in the frame");
 // REWRITTEN (tranche 2): there is no result popup left to carry the mark, so the
 // dice themselves carry it while the roll stays open on APPLY.
-assert.match(root.querySelector(".fh-cd-dicerow").textContent,/MANUAL/,"a forced die is marked MANUAL in the tray itself");
+/* REWRITTEN (dock-dice-tray): the dice live in the tray's live hand. */
+assert.match(root.querySelector(".fh-cd-frame.is-trayhand").textContent,/MANUAL/,"a forced die is marked MANUAL in the tray itself");
 assert.match(root.querySelector(".fh-cd-sentry").textContent,/MANUAL/,"the stream line marks forced results too");
 settleRoll();
 root.querySelector("[data-clear-tray]").click();

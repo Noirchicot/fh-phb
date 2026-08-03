@@ -13,7 +13,8 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
     renderDestiny, renderStageZone, renderConsole, renderEventContent, renderEventList, resolveNatOne, renderStream, renderStreamEntry, rollExport,
-    outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate
+    outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate,
+    diceTrayInner, renderDiceTray, trayLines, trayDiceFromEntry, rollExportDice, feedLineDice
   };
 })();
 `);
@@ -224,8 +225,11 @@ t.state.profile.manualOverrides={};
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,7,"the free/damage tray accepts pools larger than a structured check");
-assert.match(t.renderStageZone(),/width="34"/,"large pools shrink their dice to stay inside the frame");
-assert.doesNotMatch(t.renderStageZone(),/width="52"/,"a crowded pool never keeps the full-size die");
+/* REWRITTEN (dock-dice-tray): the dice render in the Dice Tray zone now, not
+   in the roller's frame — the shrink-with-the-crowd rule is unchanged, only
+   the surface asserting it moved. */
+assert.match(t.diceTrayInner(),/width="34"/,"large pools shrink their dice to stay inside the tray line");
+assert.doesNotMatch(t.diceTrayInner(),/width="52"/,"a crowded pool never keeps the full-size die");
 t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,8,"an 8d6 Fireball pool fits without a special case");
 

@@ -12,6 +12,7 @@ const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
     rollInput,runConfiguredRoll,resolveDieChoice,announceEvents,renderEventContent,renderEventList,renderStageZone,
     resolveNatOne,resolveArcaneOne,arcaneDecision,rollTransactionActive,entryTotal,outcomeFor,
     rollOpen,stagedList,stageBonusDie,stageDestinyDie,stageDestinyFromPool,rollStagedDice,releaseRoll,clearDiceTray,
+    diceTrayInner,
     pendingFate,addPendingFate,dropPendingFate,armPendingFate,rollPendingFate,renderDestiny,renderConsole,
     findStagedDie,mutateStagedDie,sealStagedDie,dropStagedDie,addTrayDie,rollTrayDice,standaloneDestiny,
     trayDiceForDisplay,setTrayFromEntry,visualDie,retuneLandedDie,sealLabel,
@@ -141,7 +142,11 @@ assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),false,"an 
 assert.equal(t.rollTransactionActive(),false,"only a question that must be answered locks the dock now");
 // The event zone sits between the badges and the dice, and menus stay below them.
 assert.ok(t.renderStageZone().indexOf("fh-cd-temps")<t.renderStageZone().indexOf("fh-cd-events"),"events come after the badge strip");
-assert.ok(t.renderStageZone().indexOf("fh-cd-events")<t.renderStageZone().indexOf("fh-cd-frame"),"and before the dice");
+/* REWRITTEN (dock-dice-tray, 2026-08-03): the frame and the dice left the
+   roller for the Dice Tray zone — the roller keeps no frame at all, and the
+   live hand renders framed inside the tray instead. */
+assert.equal(t.renderStageZone().indexOf("fh-cd-frame"),-1,"the roller no longer carries the frame");
+assert.ok(t.diceTrayInner().indexOf("fh-cd-frame is-trayhand")>=0,"the live hand's frame lives in the Dice Tray");
 t.clearDiceTray(true);
 assert.equal(t.state.events.length,0,"CLEAR TRAY takes the running commentary with the hand");
 

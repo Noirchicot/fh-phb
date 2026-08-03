@@ -51,6 +51,15 @@
      with the .fh-cd-picker-die / .fh-cd-calling-die widths in companion-dock.css. */
   var PICKER_DIE_PX = 31;
   var MAX_HISTORY = 20;
+  /* The Dice Tray holds ten rolls (Eric, 2026-08-03) — the first in large
+     dice, three more in small ones, the rest as static snapshots. Beyond ten
+     the record lives in the Stream, or on AboveVTT's own log. */
+  var TRAY_MAX = 10;
+  /* Die sizes per tray band: the newest roll lands large; the three under it
+     stay small but still able to roll (simultaneous landings must be seen);
+     the Static Area renders at the same small size, frozen. */
+  var TRAY_DIE_BIG = 44;
+  var TRAY_DIE_SMALL = 24;
   var MAX_EXHAUSTION = 6;
 
   var root;
@@ -1157,7 +1166,10 @@
     for(var i=0;i<count;i++)dice.push(Object.assign({sides:sides,result:manual,label:label+(count>1?" #"+(i+1):""),pending:true,forced:manual!=null},extra||{}));
     return dice;
   }
-  function setTrayFromEntry(entry) {
+  /* The dice a settled entry shows — extracted from setTrayFromEntry so every
+     tray LINE can rebuild its own dice (each history roll is a line now), and
+     so rollExport can put the same list on the wire for the table to draw. */
+  function trayDiceFromEntry(entry){
     var results=[];
     if(entry.kind==="d20"){
       var d20Plan=entry.d20Roll||{sides:20,rolls:entry.d20s||[entry.kept],result:entry.kept,chosenIndex:entry.d20Choice!=null?entry.d20Choice:(entry.d20s||[]).indexOf(entry.kept),mode:entry.d20Mode,forced:!!entry.d20Forced};
@@ -1179,6 +1191,10 @@
           .forEach(function(item){item.natural=die.sides===20?item.result:null;results.push(item);});
       });
     }
+    return results;
+  }
+  function setTrayFromEntry(entry) {
+    var results=trayDiceFromEntry(entry);
     /* The Ruling is derived here, once, from the entry — the frame only reads
        it. state.trayVerdict is what lets the frame tell an engine verdict from
        a prompt someone typed into the same slot ("Roll 2d6 and read the Chaos
@@ -1213,7 +1229,10 @@
   /* CLEAR TRAY empties the hand and, with it, the running commentary above the
      dice — the Stream keeps the permanent record. Badges are debts, not
      commentary, so they stay. */
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.diceSignatures={};state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  /* diceSignatures is deliberately NOT wiped here any more: the registre
+     lines under the hand keep their entry-scoped keys, and wiping the map
+     made every one of them re-roll visually the moment the hand was cleared. */
+  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
@@ -1961,7 +1980,13 @@
       '<text class="fh-cd-num" x="50" y="54" font-size="28" text-anchor="middle" dominant-baseline="middle" fill="'+body.num+'">'+esc(label)+'</text></svg>';
   }
   function dieSize(count){return count>8?26:count>5?34:count>3?44:52;}
-  function visualDie(die,index,count,animate){
+  /* opts (all optional): sizePx pins the die size instead of deriving it from
+     the count (the tray's bands are fixed sizes, not crowd-relative), and
+     snapshot renders the settled pose as a cached bitmap with NO live WebGL
+     context — the Static Area's whole requirement (see fh-static-dice.js on
+     the ~16-context browser cap). */
+  function visualDie(die,index,count,animate,opts){
+    opts=opts||{};
     var classes=["fh-cd-diewrap"];
     if(die.dropped)classes.push("is-dropped");
     if(die.pending)classes.push("is-pending");
@@ -1969,7 +1994,7 @@
     if(die.forced)classes.push("is-forced");
     if(die.special==="chaos")classes.push("is-chaosdie");
     var status=die.forced?" · MANUAL":die.pending?" · ready":die.dieRole==="destiny"&&die.result!=null?" · spent":"";
-    var size=dieSize(count||1);
+    var size=Number(opts.sizePx)||dieSize(count||1);
     if(die.kind==="modifier"){
       var tone=die.tone||(die.label==="FH bonus"?"fh":"mod"),text=(Number(die.result)||0)>=0?"+"+Math.abs(Number(die.result)||0):"−"+Math.abs(Number(die.result)||0);
       classes.push("is-modifier");
@@ -1986,7 +2011,11 @@
     var dieClasses="fh-cd-die"+(die.result!=null?" is-landed":"")+(animate&&die.result!=null?" is-spinning":"");
     // A die still in the hand carries its identity so a right click can reach it.
     var handle="";
-    if(die.pending&&die.result==null){
+    if(opts.readOnly){
+      /* Another player's die: the table reads it, nobody here tunes it. No
+         handles means the existing menu delegation never matches it. */
+    }
+    else if(die.pending&&die.result==null){
       if(die.stagedId)handle=" data-die-staged=\""+esc(die.stagedId)+"\"";
       else if(die.bonusId)handle=" data-die-bonus=\""+esc(die.bonusId)+"\"";
       else if(die.poolDestinyId)handle=" data-die-pool=\""+esc(die.poolDestinyId)+"\"";
@@ -2004,6 +2033,20 @@
       classes.push("is-tunable");
     }
     var materialName=dieMaterialName(die),face=dieSvg(die.sides,size,materialName,die.result==null?"?":die.result);
+    /* Static Area (tray rolls 5+): the settled pose as a cached bitmap. One
+       host, one numeral slot — even for d100, whose snapshot pair is drawn
+       into a single image by the generator. data-snapshot is what routes
+       FHStaticDice.mount away from creating a live context. */
+    if(opts.snapshot&&ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0&&die.result!=null){
+      var snapValue=Number(die.result);
+      face="<span class=\"fh-cd-static-die"+(Number(die.sides)===100?" is-percentile":"")+"\" data-snapshot=\"1\" data-sides=\""+Number(die.sides)+"\" data-result=\""+snapValue+"\" data-pending=\"0\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(index||0)+"\" data-animate=\"0\" style=\"--fh-static-die-size:"+size+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" result "+snapValue+"\">"+
+        "<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static-die-result\" aria-hidden=\"true\"></b>"+
+        "<span class=\"fh-cd-static-die-fallback\">"+face+"</span></span>";
+      dieClasses+=" is-static-die";
+      return "<span class=\""+classes.join(" ")+"\">"+source+
+        "<span class=\""+dieClasses+"\">"+face+"</span>"+
+        "<em>"+esc((die.label||("d"+die.sides))+status)+"</em></span>";
+    }
     /* The WebGL renderer is deliberately only a renderer: the face was chosen
        before this markup exists. Larger pools retain the lightweight SVG tray
        and its lower GPU cost. */
@@ -2236,41 +2279,10 @@
     return String(die.landedKey||die.stagedId||die.bonusId||die.poolDestinyId||die.destinyDieId||die.freeId||
       ((die.dieRole||"die")+":"+die.sides+":"+index));
   }
-  function renderFrameInner(){
-    var dice=trayDiceForDisplay();
-    /* Each die decides for itself whether it has just landed. This used to be
-       one tray-wide signature, which meant that adding a single bonus die
-       re-rolled every die already lying in the tray -- the landed d20 span
-       again without its value ever changing. */
-    var previous=state.diceSignatures||{},signatures={},animated=false;
-    dice.forEach(function(die,index){signatures[dieAnimationKey(die,index)]=die.result==null?"?":String(die.result);});
-    var flags=dice.map(function(die,index){
-      var key=dieAnimationKey(die,index);
-      var animate=die.result!=null&&previous[key]!==signatures[key];
-      if(animate)animated=true;
-      return animate;
-    });
-    state.diceSignatures=signatures;
-    if(animated)armTrayReveal(dice.length);
-    /* While the dice are in the air the total stays out of sight: printing it
-       instantly answered the question before the roll could. */
-    var quiet=trayRevealPending();
-    var title=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
-    var detail=quiet?"Rolling…":state.trayResultText;
-    /* The Ruling (§5), when this heading IS one: a verdict, then the account.
-       The class is the surface's only claim about the line, and it is granted
-       by equality rather than by a flag someone might forget to clear — a
-       Chaos or Overreach prompt that overwrote trayTitle is not a verdict and
-       must not be dressed as one. */
-    var isRuling=!quiet&&!!state.trayVerdict&&title===state.trayVerdict;
-    var status=detail||title
-      ? "<b"+(isRuling?" class=\"fh-cd-verdict\"":"")+">"+esc(title||"")+"</b>"+
-        (detail?"<em"+(isRuling?" class=\"fh-cd-account\"":"")+">"+esc(detail)+"</em>":"")
-      : "<em>Ready — click a skill, a save or an ability.</em>";
-    // The verdict docks to the bottom of the frame; popups now live outside it.
-    return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,flags[index]);}).join("")+"</div>"+
-      "<div class=\"fh-cd-status\" aria-live=\"polite\">"+status+"</div>";
-  }
+  /* renderFrameInner is gone: the frame, its dice row and the Ruling line all
+     live in the Dice Tray now (diceTrayInner) — the tray is the surface those
+     things were always describing. The per-die signature machinery moved with
+     them, line-prefixed so ten lines of dice can coexist. */
   /* One ROLL, one CLEAR TRAY. Nothing else is permanent. Below them the
      transient badges, then the tray, then whatever popup is owed — which
      pushes the stream down instead of covering the dice. */
@@ -2315,7 +2327,8 @@
       "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
       "<div class=\"fh-cd-temps\">"+badges+"</div>"+
       renderEventList()+
-      "<div class=\"fh-cd-frame"+(frameMood()?" mood-"+frameMood():"")+"\">"+renderFrameInner()+"</div>"+
+      /* No frame here any more: the dice land in the Dice Tray zone below,
+         which is where the frame, the Ruling and the mood streaks moved. */
       (menu?"<div class=\"fh-cd-popups\">"+menu+"</div>":"")+
       "</section>";
   }
@@ -2518,12 +2531,27 @@
     var ruling=rollRuling(entry);
     return {badges:rollBadges(entry),ruling:ruling,verdict:ruling.verdict};
   }
+  /* The dice of a roll, flattened for the wire. Additive on fh-roll/1: the
+     Dice Tray is the table's shared surface, so another player's dock draws
+     these instead of guessing dice out of the display strings in `parts`.
+     Old events simply lack the field and their lines render without dice —
+     graceful degradation, the bridge's own contract. */
+  function rollExportDice(entry){
+    return trayDiceFromEntry(entry).map(function(die){
+      return {sides:die.sides||null,result:die.result==null?null:Number(die.result),
+        label:die.label||"",role:die.kind==="modifier"?"modifier":(die.dieRole||"base"),
+        source:die.sourceIcon||"",dropped:!!die.dropped,colour:die.colour||"",tone:die.tone||"",
+        special:die.special||""};
+    });
+  }
   function rollExport(entry){
     return {schema:"fh-roll/1",id:entry.id,ts:entry.createdAt,campaign:state.code,
       character:state.character&&state.character.name||state.pseudo,kind:entry.kind,title:entry.name,
       ability:entry.ability||null,total:entry.total,dc:entry.dc===""||entry.dc==null?null:Number(entry.dc),
       outcome:entry.outcome||null,natural:entry.natural==null?null:entry.natural,
-      parts:rollParts(entry),badges:rollBadges(entry).map(function(badge){return badge.t;})};
+      bonus:entry.kind==="d20"?Number(entry.baseBonus)||0:null,
+      parts:rollParts(entry),badges:rollBadges(entry).map(function(badge){return badge.t;}),
+      dice:rollExportDice(entry)};
   }
   function attrJson(value){return esc(JSON.stringify(value)).replace(/'/g,"&#39;");}
 
@@ -2777,9 +2805,12 @@
     state.feed.tableUrl="";state.feed.tableState="recent";state.feed.wsRetry=0;
     try{state.feed.manualUrl=localStorage.getItem(manualTableKey(state.code))||"";}catch(e){state.feed.manualUrl="";}
     state.feed.status="";
-    // The backstop is not polled here: it loads once when the player opens
-    // the TABLE tab (or on an explicit refresh), never on a timer (§13.9).
-    if(feedActive())rendezvousTick();
+    /* The backstop still loads exactly ONCE and never on a timer (§13.9) —
+       but the trigger moved: the Dice Tray is the shared surface now and it
+       is persistent, so "the player opens the TABLE tab" became "the
+       character loads". Same single list() as before, new doorway. Refresh
+       stays the only way to a newer cloud log. */
+    if(feedActive()){rendezvousTick();refreshFeed();}
   }
   function stopFeed(){
     disconnectTableWs();
@@ -2836,6 +2867,208 @@
       "<span class=\"fh-cd-title\">"+esc(entry.name)+"</span><span class=\"fh-cd-total is-"+(quiet?"quiet":tone)+"\">"+(quiet?"…":entry.total)+"</span><span class=\"fh-cd-oic\">"+(quiet?"":icon)+"</span></span>"+
       "<span class=\"fh-cd-sl2\">"+parts+dc+badges+"</span></button></li>";
   }
+  /* ── The Dice Tray (zone 9) — the table's shared surface ──────────
+     Extracted from the roller. Shape ruled by Eric 2026-08-03: TEN rolls,
+     each line THREE spaces left to right with nothing said twice — the
+     name in full (no portrait, no visible time; the time surfaces on
+     hover), then the dice each carrying their full wrapper (source token /
+     die / label), then the ruling on three tiers: the roll's name in bold,
+     the total (with NATURAL 20/1 beside it), and the ruling itself,
+     abridged when long. The newest roll's dice land LARGE; the three
+     under it are small but still able to roll — simultaneous landings
+     must be seen — and below those the Static Area freezes everything as
+     bitmap snapshots (no live WebGL context: the ~16-context browser cap,
+     already paid for once by the picker). Beyond ten rolls, the Stream
+     keeps the record — or AboveVTT's own log does.
+
+     Your roll, the party's and the DM's land in the same list: you never
+     navigate to see what someone else rolled. So the tray inherits the
+     three feed states — LIVE / RECENT / OFF — and the founding rule,
+     never fall back silently: an unreachable table is written on the cap
+     in plain words, not folded into a quieter caption. */
+  function feedLineDice(event){
+    var display=event&&event.display||{};
+    if(!Array.isArray(display.dice))return [];
+    return display.dice.map(function(die){
+      var wire=die||{};
+      var shaped={sides:wire.sides,result:wire.result,label:wire.label||(wire.sides?"d"+wire.sides:"Bonus"),
+        sourceIcon:wire.source||"",dropped:!!wire.dropped,colour:wire.colour||"",tone:wire.tone||"",
+        special:wire.special||""};
+      if(wire.role==="modifier")shaped.kind="modifier";
+      else shaped.dieRole=wire.role||"base";
+      return shaped;
+    });
+  }
+  /* Mine from history, everyone else from the feed, one list newest-first.
+     My own rolls echo back through the feed too; the history copy is the
+     richer one (it can reopen, its dice carry handles), so the echo is
+     dropped rather than shown twice. */
+  function trayLines(){
+    var lines=[];
+    state.history.slice(0,TRAY_MAX).forEach(function(entry){
+      lines.push({kind:"mine",id:entry.id,ts:entry.createdAt||"",entry:entry});
+    });
+    var mineIds={};state.history.forEach(function(entry){mineIds[entry.id]=1;});
+    state.feed.events.forEach(function(event){
+      if(!event||event.type&&event.type!=="roll")return;
+      if(event.actor&&event.actor.pseudo===state.pseudo)return;
+      var key=String(event.rollId||event.id);
+      if(mineIds[key])return;
+      lines.push({kind:"feed",id:key,ts:event.ts||"",event:event});
+    });
+    lines.sort(function(a,b){return String(b.ts).localeCompare(String(a.ts));});
+    return lines.slice(0,TRAY_MAX);
+  }
+  function trayBadgeChip(kindClass,text){
+    return "<span class=\"fh-cd-badge is-"+esc(kindClass)+"\">"+esc(text)+"</span>";
+  }
+  /* The right-hand space: three tiers, nothing repeated from the other two
+     spaces. Tier 3 is the Ruling wearing the same authority rule as the old
+     frame: the oxblood verdict class lands only when the text IS the derived
+     verdict — a Chaos prompt written into the same slot gets neither. */
+  function trayTiersHtml(slot,quiet){
+    var title="",totalHtml="",third="";
+    if(slot.kind==="feed"){
+      var display=slot.event.display||{},tone=feedTone(display);
+      var badges=(display.badges||[]).map(String);
+      var natTexts=badges.filter(function(text){return /^NATURAL (20|1)\b|^ARCANE AWAKENING/i.test(text);});
+      var rest=badges.filter(function(text){return natTexts.indexOf(text)<0;});
+      title=String(display.title||"Roll")+(display.bonus!=null?" "+signed(display.bonus):"");
+      totalHtml="<span class=\"fh-cd-tray-total is-"+(tone||"none")+"\">"+esc(display.total!=null?display.total:"—")+"</span>"+
+        natTexts.map(function(text){return trayBadgeChip("n20",text);}).join("");
+      third=(display.outcome?"<b class=\"fh-cd-tray-outcome is-"+(tone||"none")+"\">"+esc(display.outcome)+"</b>":"")+
+        (display.dc!=null?"<span class=\"fh-cd-vs\">vs DC "+esc(display.dc)+"</span>":"")+
+        rest.map(function(text){return trayBadgeChip("adjusted",text);}).join("");
+    }else if(slot.entry&&(slot.kind==="mine"||slot.structured)){
+      var entry=slot.entry,vocab=rollVocabulary(entry),ruling=vocab.ruling,tone2=outcomeTone(entry);
+      var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler);});
+      var nat=kept.filter(function(badge){return badge.k==="n20";});
+      var others=kept.filter(function(badge){return badge.k!=="n20";});
+      title=String(entry.name||"Roll")+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):"");
+      totalHtml="<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\">"+(quiet?"…":esc(entry.total))+"</span>"+
+        (quiet?"":nat.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join(""));
+      if(quiet)third="<em class=\"fh-cd-tray-account\">Rolling…</em>";
+      else{
+        /* The live hand keeps trayResultText (it carries the open-roll status,
+           staged-dice count included); a settled history line re-derives the
+           account so it can never go stale. */
+        var account=slot.kind==="live"?state.trayResultText:ruling.account.join(" · ");
+        third=(ruling.verdict?"<b class=\"fh-cd-tray-verdict\">"+esc(ruling.verdict)+"</b>":"")+
+          (account?"<em class=\"fh-cd-tray-account\" title=\""+esc(account)+"\">"+esc(account)+"</em>":"")+
+          (entry.dc!==""&&entry.dc!=null?"<span class=\"fh-cd-vs\">vs DC "+esc(entry.dc)+"</span>":"")+
+          others.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
+      }
+    }else{
+      /* The live hand before a roll exists, or a prompt that overwrote the
+         tray fields ("Chaos" · "Roll 2d6 and read the Chaos table"). Raw
+         fields, verdict classes only by equality — never by flag. */
+      var heading=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
+      var detail=quiet?"Rolling…":state.trayResultText;
+      var isRuling=!quiet&&!!state.trayVerdict&&heading===state.trayVerdict;
+      title="";
+      third="<b"+(isRuling?" class=\"fh-cd-tray-verdict\"":" class=\"fh-cd-tray-heading\"")+">"+esc(heading||"Dice Tray")+"</b>"+
+        (detail?"<em"+(isRuling?" class=\"fh-cd-tray-account\"":"")+">"+esc(detail)+"</em>":"");
+    }
+    return "<span class=\"fh-cd-tray-ruling\">"+
+      (title?"<b class=\"fh-cd-tray-title\">"+esc(title)+"</b>":"")+
+      (totalHtml?"<span class=\"fh-cd-tray-t2\">"+totalHtml+"</span>":"")+
+      (third?"<span class=\"fh-cd-tray-t3\">"+third+"</span>":"")+
+      "</span>";
+  }
+  function trayLineHtml(slot,index,flags,quiet){
+    var sizeClass=index===0?"is-l1":index<4?"is-mid":"is-static";
+    /* The band pins the CEILING, the crowd still shrinks below it: an 8d6
+       Fireball must fit its line the same way it had to fit the old frame. */
+    var sizePx=Math.min(dieSize(slot.dice.length||1),index===0?TRAY_DIE_BIG:TRAY_DIE_SMALL);
+    var snapshot=index>=4;
+    var readOnly=slot.kind==="feed";
+    var who=slot.kind==="feed"
+      ? (slot.event.actor&&(slot.event.actor.character||slot.event.actor.pseudo)||"—")
+      : (state.character&&state.character.name||state.pseudo||"Character");
+    var ts=slot.kind==="feed"?slot.ts:(slot.entry&&slot.entry.createdAt||"");
+    var time=ts?nowLabel(ts):"";
+    var diceHtml=slot.dice.map(function(die,di){
+      return visualDie(die,di,slot.dice.length,!!(flags&&flags[di]),
+        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly});
+    }).join("");
+    var reopen=slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
+    var whoHtml="<span class=\"fh-cd-tray-who\""+(time?" title=\""+esc(time)+"\"":"")+">"+
+      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" title=\"Reopen this roll\">"+esc(who)+"</button>":"<b>"+esc(who)+"</b>")+
+      (time?"<time>"+esc(time)+"</time>":"")+"</span>";
+    var row=whoHtml+"<span class=\"fh-cd-tray-dice\">"+diceHtml+"</span>"+trayTiersHtml(slot,quiet);
+    /* The live hand keeps the frame — and with it the mood streaks that say
+       what the table still owes. History and feed lines carry no frame: a
+       debt belongs to the moment, not to the registre under it. */
+    if(slot.kind==="live"){
+      var mood=frameMood();
+      row="<div class=\"fh-cd-frame is-trayhand"+(mood?" mood-"+mood:"")+"\">"+row+"</div>";
+    }
+    return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\">"+row+"</li>";
+  }
+  function diceTrayInner(){
+    var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
+    var caption=offline?"not reaching the table"
+      :ts==="live"?"every roll at the table, live"
+      :"no live table — cloud log, about 30s behind";
+    var manual=feedActive()&&ts!=="live"
+      ? "<button type=\"button\" class=\"fh-cd-tableurl\" data-table-url-set title=\"Paste the DM's table URL\">"+(state.feed.manualUrl?"URL set":"URL…")+"</button>":"";
+    var refresh=feedActive()&&ts==="recent"&&!offline
+      ? "<button type=\"button\" class=\"fh-cd-refresh\" data-feed-refresh title=\"Check the cloud log now\">Refresh</button>":"";
+    var cap="<div class=\"fh-cd-cap\">DICE TRAY<small>"+esc(feedActive()?caption:"your rolls — load a character to join the table")+"</small>"+manual+refresh+
+      "<span class=\"fh-cd-traystate is-"+(offline?"off":ts)+"\">"+(offline?"OFF":ts==="live"?"LIVE":"RECENT")+"</span></div>";
+    /* The live hand (my roll being assembled, rolling, or freshly settled)
+       is always the top line. The settled entry it points at is excluded
+       from the merged list below so the same roll never appears twice. */
+    var live=trayDiceForDisplay();
+    var liveEntry=null;
+    if(live.length){
+      liveEntry=openEntry();
+      if(!liveEntry)for(var i=0;i<live.length&&!liveEntry;i++)if(live[i].entryId)liveEntry=entryById(live[i].entryId);
+    }
+    var slots=[];
+    if(live.length){
+      var ruling=liveEntry?rollRuling(liveEntry):null;
+      slots.push({kind:"live",id:liveEntry?liveEntry.id:"live",entry:liveEntry,dice:live,
+        structured:!!(ruling&&(state.trayTitle===ruling.verdict||state.trayTitle===ruling.title))});
+    }
+    trayLines().forEach(function(line){
+      if(liveEntry&&line.kind==="mine"&&line.entry.id===liveEntry.id)return;
+      line.dice=line.kind==="mine"?trayDiceFromEntry(line.entry):feedLineDice(line.event);
+      slots.push(line);
+    });
+    slots=slots.slice(0,TRAY_MAX);
+    /* Per-die animation identity, prefixed by the line so two lines can hold
+       the same die shape without stealing each other's landings. Only the
+       first four lines may animate; the Static Area never does. */
+    var previous=state.diceSignatures||{},signatures={},liveAnimated=0;
+    slots.forEach(function(slot){
+      slot.dice.forEach(function(die,di){
+        signatures[slot.id+"§"+dieAnimationKey(die,di)]=die.result==null?"?":String(die.result);
+      });
+    });
+    var flags=slots.map(function(slot,si){
+      return slot.dice.map(function(die,di){
+        if(si>=4)return false;
+        var key=slot.id+"§"+dieAnimationKey(die,di);
+        var moved=die.result!=null&&previous[key]!==signatures[key];
+        if(moved&&slot.kind==="live")liveAnimated=slot.dice.length;
+        return moved;
+      });
+    });
+    state.diceSignatures=signatures;
+    /* Only my own landing holds its answer back — the reveal machinery keeps
+       the total quiet until the dice stop. A feed roll was revealed on the
+       dock that rolled it. */
+    if(liveAnimated)armTrayReveal(liveAnimated);
+    var quiet=trayRevealPending();
+    var list=slots.length
+      ? slots.map(function(slot,si){return trayLineHtml(slot,si,flags[si],quiet&&si===0&&slot.kind==="live");}).join("")
+      : "<li class=\"fh-cd-trayline is-empty\"><em>Ready — click a skill, a save or an ability.</em></li>";
+    return cap+"<ul class=\"fh-cd-traylist\">"+list+"</ul>";
+  }
+  function renderDiceTray(){
+    return "<section class=\"fh-cd-zone fh-cd-dicetray\" data-zone=\"dice-tray\">"+diceTrayInner()+"</section>";
+  }
   /* One zone, two readings. The table log is NOT a belt tab: the belt is
      everything inside the character, and the party is not inside the character
      — and a feed you have to navigate to defeats the point, which is that the
@@ -2884,6 +3117,20 @@
      Only this one zone is repainted, and only when its markup actually moved. */
   function renderFeedZone(){
     if(!root)return;
+    /* The Dice Tray is the shared surface, so a feed event repaints it first
+       — same targeted-swap rule as the stream: never a full render() on a
+       poll, and only when the markup actually moved. The remount is what
+       makes freshly merged dice animate (their signatures are new), and the
+       generator release right after is the snapshot pattern's contract. */
+    var tray=root.querySelector("[data-zone=\"dice-tray\"]");
+    if(tray){
+      var nextTray=diceTrayInner();
+      if(tray.innerHTML!==nextTray){
+        tray.innerHTML=nextTray;
+        if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(tray);
+        if(window.FHStaticDice&&window.FHStaticDice.releasePickerContext)window.FHStaticDice.releasePickerContext();
+      }
+    }
     var zone=root.querySelector("[data-zone=\"stream\"]");
     if(!zone)return;
     var next=streamZoneInner();
@@ -3358,16 +3605,21 @@
          not normally carry it -- otherwise switching tabs mid-transaction
          strands the dice where nobody can finish them. */
       var roller=!!(panel&&panel.showsRoller)||rollTransactionActive()||rollOpen();
-      /* Console and the roller (Roll Builder + its still-fused Dice Tray) are
+      /* Console and the roller (now just the Roll Builder's remnant) are
          `summoned` (UI-TERMINOLOGY.md zones 7-8): floated in .fh-cd-floatbottom,
-         anchored to the dock's bottom edge, on top of Dice Pool -- never in the
-         document flow that pushes the persistent stack down. Dice Pool itself
-         (renderDestiny) stays in flow: it is `persistent`, not summoned, even
-         though today it shares the same `roller` gate (a pre-existing gap, not
-         this pass's job to close). */
+         anchored just ABOVE the Dice Tray -- never in the document flow that
+         pushes the persistent stack down, and never covering the tray where
+         the dice land. Dice Pool itself (renderDestiny) stays in flow: it is
+         `persistent`, not summoned, even though today it shares the same
+         `roller` gate (a pre-existing gap, not this pass's job to close).
+         The Dice Tray is `persistent` (zone 9): it renders on every panel,
+         whatever the belt shows -- the table's rolls land here even while
+         you are reading your Notes. */
       inner=renderDockHeader(ch)+(state.chromeOpen?renderAccessZone():"")+
         renderStats(ch)+renderBelt()+renderPanelBody()+
-        (roller?renderDestiny(ch)+"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
+        (roller?renderDestiny(ch):"")+
+        renderDiceTray()+
+        (roller?"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
         (state.streamOpen?renderStream():"")+renderPops(ch);
     }
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";

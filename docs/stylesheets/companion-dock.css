@@ -1249,3 +1249,103 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-spell-form label{display:flex;flex-direction:column;gap:2px;color:var(--cd-faint);font-size:calc(6.8px * var(--cd-fs))}
 .fh-cd-spell-form .is-wide{grid-column:1/-1}.fh-cd-spell-check{flex-direction:row!important;align-items:center}
 .fh-cd-spell-check input{width:calc(20px * var(--cd-fs));height:calc(20px * var(--cd-fs))}.fh-cd-spell-form>button{justify-self:start}
+
+/* ── Dice Tray — zone 9, the table's shared surface (dock-dice-tray) ──
+   APPENDED, never edited above this line. Extracted from the roller
+   2026-08-03; line shape ruled by Eric the same day: three spaces left to
+   right (name in full · dice with their wrapper · ruling on three tiers),
+   the time only on hover, the newest roll large, rolls 2-4 small but able
+   to roll, the Static Area below as frozen snapshots, ten rolls held.
+   Heights are fixed per band so the zone's height is deterministic and the
+   summoned group above can anchor to it -- see --cd-tray-h below. */
+.fh-cd-root{--cd-tray-h:284px}
+.fh-cd-dicetray{height:var(--cd-tray-h);display:flex;flex-direction:column;padding-bottom:0;
+  background:radial-gradient(120% 90% at 50% 8%,var(--cd-parch-2) 0%,var(--cd-parch-deep) 82%,#dccc9f 100%)}
+.fh-cd-dicetray>.fh-cd-cap{flex:none;margin-bottom:2px}
+/* The three feed states, written in plain words on the cap. OFF is loud on
+   purpose: never fall back silently. */
+.fh-cd-traystate{margin-left:auto;flex:none;font-size:calc(6.8px * var(--cd-fs));font-weight:800;letter-spacing:.08em;
+  padding:0 5px;border:1px solid var(--cd-gold-hi);border-radius:3px;color:var(--cd-gold-bright)}
+.fh-cd-traystate.is-live{color:#3d7d56;border-color:#3d7d56}
+.fh-cd-traystate.is-off{color:#fff;border-color:var(--cd-bad);background:var(--cd-bad)}
+.fh-cd-traylist{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;margin:0 -4px;padding:0 4px 6px;list-style:none}
+.fh-cd-trayline{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--cd-line-soft);
+  padding:3px 2px;overflow:hidden;position:relative}
+.fh-cd-trayline:last-child{border-bottom:0}
+.fh-cd-trayline.is-empty{min-height:40px;justify-content:center;color:var(--cd-faint);
+  font-size:calc(8.6px * var(--cd-fs));font-style:italic}
+/* Band heights: fixed, so four lines are always exactly visible.
+   84 + 3x56 + cap ≈ the zone's 284. */
+.fh-cd-trayline.is-l1{min-height:84px}
+.fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{min-height:56px}
+/* The live hand keeps the frame (mood streaks included) but sheds the fixed
+   148px box it had in the roller: the line is the box now. */
+.fh-cd-dicetray .fh-cd-frame.is-trayhand{height:auto;min-height:78px;margin:0;flex:1;flex-direction:row;align-items:center;gap:6px;
+  border-width:1px;box-shadow:inset 0 0 0 2px var(--cd-parch-2),inset 0 0 18px rgba(138,106,42,.14);padding:2px 4px}
+.fh-cd-dicetray .fh-cd-frame.is-trayhand::after{content:none}
+/* Space 1: the name, in full — no portrait, no printed time. The time is
+   there on hover, under the name (and in the title tooltip). */
+.fh-cd-tray-who{flex:none;width:64px;min-width:0;display:flex;flex-direction:column;gap:1px}
+.fh-cd-tray-who b,.fh-cd-tray-who button{font-size:calc(9.2px * var(--cd-fs));font-weight:700;color:var(--cd-oxblood);
+  text-align:left;line-height:1.15;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  border:0;background:none;padding:0;font-family:inherit;cursor:default;word-break:break-word}
+.fh-cd-tray-who button{cursor:pointer}
+.fh-cd-tray-who button:hover{color:var(--cd-gold-bright)}
+.fh-cd-tray-who time{font-size:calc(6.8px * var(--cd-fs));color:var(--cd-faint);font-variant-numeric:tabular-nums;
+  opacity:0;transition:opacity .15s ease}
+.fh-cd-trayline:hover .fh-cd-tray-who time{opacity:1}
+/* Space 2: the dice, each with its full wrapper (source token / die / label). */
+.fh-cd-tray-dice{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:center;gap:8px;
+  flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:1px 2px}
+.fh-cd-trayline.is-mid .fh-cd-tray-dice,.fh-cd-trayline.is-static .fh-cd-tray-dice{gap:5px}
+.fh-cd-trayline.is-mid .fh-cd-diewrap em,.fh-cd-trayline.is-static .fh-cd-diewrap em{font-size:calc(6.4px * var(--cd-fs));max-width:44px}
+/* The snapshot die: a cached bitmap where a live canvas is not allowed.
+   Same box, same numeral overlay, no context. */
+.fh-cd-static-die img.fh-cd-static-snap{display:none;width:100%;height:100%;filter:drop-shadow(0 4px 5px rgba(0,0,0,.45))}
+.fh-cd-static-die.is-webgl img.fh-cd-static-snap{display:block}
+.fh-cd-static-die.is-percentile img.fh-cd-static-snap{width:100%}
+[data-snapshot="1"].fh-cd-static-die.is-percentile{display:block;width:calc(var(--fh-static-die-size) * 1.42)}
+/* Space 3: the ruling, three tiers — title in bold, total (+ NAT beside it),
+   then the ruling text, abridged with the full account on hover. */
+.fh-cd-tray-ruling{flex:none;width:128px;min-width:0;display:flex;flex-direction:column;gap:1px;text-align:right;align-items:flex-end}
+.fh-cd-tray-title{font-size:calc(9px * var(--cd-fs));font-weight:800;color:var(--cd-ink);max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-tray-t2{display:flex;align-items:baseline;gap:4px;justify-content:flex-end;max-width:100%}
+.fh-cd-tray-total{font-size:calc(13px * var(--cd-fs));font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.fh-cd-tray-total.is-ok{color:var(--cd-ok)}
+.fh-cd-tray-total.is-bad{color:var(--cd-bad)}
+.fh-cd-tray-total.is-n20{color:var(--cd-gold-bright)}
+.fh-cd-tray-total.is-quiet{color:var(--cd-faint);letter-spacing:.08em}
+.fh-cd-tray-t3{display:flex;flex-wrap:wrap;gap:2px 4px;justify-content:flex-end;align-items:baseline;max-width:100%;
+  font-size:calc(7.2px * var(--cd-fs));color:var(--cd-muted);max-height:22px;overflow:hidden}
+.fh-cd-tray-verdict{color:var(--cd-oxblood);font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  font-size:calc(7.4px * var(--cd-fs));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-tray-heading{color:var(--cd-ink);font-weight:700;font-size:calc(8.6px * var(--cd-fs));max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-tray-account{font-style:normal;color:var(--cd-faint);font-size:calc(6.9px * var(--cd-fs));line-height:1.2;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-tray-outcome{font-weight:700}
+.fh-cd-tray-outcome.is-ok{color:var(--cd-ok)}
+.fh-cd-tray-outcome.is-bad{color:var(--cd-bad)}
+.fh-cd-tray-outcome.is-n20{color:var(--cd-gold-bright)}
+/* Static Area: rolls 5-10. Nothing moves down here — including the spin that
+   a remounted SVG die would otherwise replay. */
+.fh-cd-trayline.is-static .fh-cd-die.is-spinning{animation:none}
+.fh-cd-trayline.is-static .fh-cd-diewrap.is-flashing .fh-cd-die{animation:none}
+/* The summoned group (Console + Roll Builder) anchors ABOVE the tray: the
+   dice must stay visible while a roll is being configured. Overrides the
+   bottom:0 in the original .fh-cd-floatbottom block by append, not rewrite. */
+.fh-cd-floatbottom{bottom:var(--cd-tray-h,0px);max-height:calc(100% - var(--cd-tray-h,0px))}
+/* The tray must END where the dock ends, always: the summoned group anchors
+   bottom:var(--cd-tray-h) from the DOCK's bottom edge, so a tray left in
+   normal flow only lines up with it when the flow happens to fill the dock
+   exactly — at 80% zoom it did not, and the Console landed on top of the
+   tray list. Anchor the tray to the same edge the group measures from, and
+   give the flow the tray's height back as padding so nothing hides under it.
+   (:has keeps the welcome screen, which has no tray, free of dead space.) */
+.fh-cd-dock:has(.fh-cd-dicetray){padding-bottom:var(--cd-tray-h)}
+.fh-cd-dicetray{position:absolute;left:0;right:0;bottom:0;z-index:22}
+/* PiP makes the dock position:static, which would send the absolute tray to
+   the window instead — same visual edge, but only by luck. Pin the
+   containing block explicitly; relative changes nothing else about flow. */
+.fh-cd-pip-body .fh-cd-dock{position:relative}
