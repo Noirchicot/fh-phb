@@ -1534,3 +1534,12 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 /* Line 1 joins the loupe when its hand is a swarm — many small dice are
    the one case its zone is hard to read. */
 .fh-cd-trayline.is-l1 .fh-cd-tray-dice.is-swarm{cursor:zoom-in}
+/* The loupe rides ON TOP (Eric): the zone normally sits under the summoned
+   group (22 < 24), so the plaque slid beneath the builder and the list
+   clipped its upward spill. While a loupe is open the zone outranks the
+   group, and when it is LINE 1 wearing it the list stops clipping — the
+   plaque covers the builder above and the line below, as a glass should.
+   (Below, the dock's own edge still clips: nothing leaks out of the dock.) */
+.fh-cd-dicetray:has(.fh-cd-trayline.is-zoomed){z-index:28}
+.fh-cd-trayline.is-zoomed{z-index:30}
+.fh-cd-dicetray:has(.fh-cd-trayline.is-l1.is-zoomed) .fh-cd-traylist{overflow:visible}
