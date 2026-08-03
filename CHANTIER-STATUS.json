@@ -28,15 +28,13 @@
     {"repo": "fh-worker", "path": "~/tools/fh-worker", "state": "fini",
      "note": "Déployé version 4bc33715 ; schemaVersion 2 ; rien en attente."},
     {"repo": "fh-srd", "path": "~/tools/fh-srd", "state": "fini",
-     "note": "v1 fusionnée (2fe355f) : 339 sorts FR, stats seulement. Décision : tout finir en anglais d'abord."}
+     "note": "Lot 2 EN fusionné (977852f) : 948 records — 339 sorts EN avec texte, 253 objets magiques, 17 feats. Déshyphénation FR fusionnée (9db7bf2, 35→0) + couture de page FR corrigée (635f124, 11 durées nettoyées). 13/13 suites, rejoué en clone indépendant."}
   ],
   "wip": [
     {"name": "Dice Tray (surface partagée)", "repo": "fh-phb", "state": "en-cours",
-     "note": "Session lancée 2026-08-03 (Fable). Consomme le vocabulaire ; hérite LIVE/RECENT/OFF. Hauteur de ligne avec dés : arbitrage d'Eric attendu avant codage."},
-    {"name": "SRD lot 2 anglais", "repo": "fh-srd", "branch": "srd/en-content-v2", "state": "en-cours",
-     "note": "339 sorts EN avec texte livrés (16d2e82, 3 défauts trouvés en mesurant) ; équipement en cours ; feats à suivre."},
-    {"name": "Déshyphénation FR (35 artefacts)", "repo": "fh-srd", "state": "en-attente",
-     "note": "Défaut confirmé par l'architecte dans l'export FR v1. Pastille validée — à lancer APRÈS la fusion du lot 2 (mêmes fichiers)."},
+     "note": "Session lancée 2026-08-03 (branche dock-dice-tray). Consomme le vocabulaire ; hérite LIVE/RECENT/OFF. Hauteur de ligne avec dés : arbitrage d'Eric attendu avant codage."},
+    {"name": "SRD lot 3 anglais (espèces, backgrounds, classes)", "repo": "fh-srd", "state": "en-attente",
+     "note": "Pastille posée après la fusion du lot 2. L'équipement mondain (tables multi-colonnes) reporté au lot 4."},
     {"name": "Widget Übersicht chantier", "repo": "hooks/widget", "state": "en-cours",
      "note": "Section LOGBOOK livrée ; vue pipeline (déployé / site/ / main / WIP) en construction dans le fil Übersicht."}
   ],
