@@ -3128,7 +3128,7 @@
       var mood=frameMood();
       row="<div class=\"fh-cd-frame is-trayhand"+(mood?" mood-"+mood:"")+"\">"+row+"</div>";
     }
-    var zoomed=!big&&state.trayDiceZoom&&state.trayDiceZoom===String(slot.id);
+    var zoomed=state.trayDiceZoom&&state.trayDiceZoom===String(slot.id);
     return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(zoomed?" is-zoomed":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
   function diceTrayInner(){
@@ -3995,7 +3995,12 @@
     if(state.destinyStaged&&state.destinyStaged.dieId===dieId){state.diePrompt={poolId:dieId};dropStagedDie();return;}
   }
   function trayLoupeTarget(event){
-    var flank=event.target&&event.target.closest&&event.target.closest(".fh-cd-trayline.is-mid .fh-cd-tray-dice,.fh-cd-trayline.is-static .fh-cd-tray-dice");
+    /* Lower lines: the loupe always wins the right click. Line 1 joins in
+       only when its hand is a SWARM (Eric, 2026-08-04: with many dice you
+       cannot see well) — at five large dice or fewer, its die menus keep
+       the right click. */
+    var flank=event.target&&event.target.closest&&event.target.closest(
+      ".fh-cd-trayline.is-mid .fh-cd-tray-dice,.fh-cd-trayline.is-static .fh-cd-tray-dice,.fh-cd-trayline.is-l1 .fh-cd-tray-dice.is-swarm");
     return flank?flank.closest(".fh-cd-trayline"):null;
   }
   function toggleTrayLoupe(line){

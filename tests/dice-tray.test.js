@@ -190,8 +190,13 @@ t.state.trayDiceZoom = "s1";
 const zoomedPass = t.diceTrayInner();
 assert.match(zoomedPass, /is-zoomed[^"]*" data-tray-line="s1"/, "the asked line wears the loupe");
 assert.equal((zoomedPass.match(/is-zoomed/g) || []).length, 1, "one line only");
+/* REWRITTEN (same day): Eric extended the loupe to line 1 for the one case
+   its zone is hard to read — a swarm. The markup accepts it anywhere; the
+   TRIGGER stays selective (trayLoupeTarget only matches line 1's flank when
+   it wears is-swarm, so a five-die hand keeps its die menus). */
 t.state.trayDiceZoom = "s0"; // s0 is line 1 (the large band)
-assert.doesNotMatch(t.diceTrayInner(), /is-zoomed/, "the large line never wears it — its dice are already large and keep their menus");
+assert.match(t.diceTrayInner(), /is-zoomed/, "line 1 can wear the loupe too");
+assert.match(source, /is-l1 \.fh-cd-tray-dice\.is-swarm/, "but its right-click trigger only exists on a swarm hand");
 t.state.trayDiceZoom = "";
 assert.match(css, /\.fh-cd-trayline\.is-zoomed \.fh-cd-tray-dice\{transform:scale\(1\.5\)/, "the loupe is a ×1.5 magnification of the dice zone only");
 

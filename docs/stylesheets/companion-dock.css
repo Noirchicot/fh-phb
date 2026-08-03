@@ -1531,3 +1531,6 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   background:linear-gradient(180deg,#453827 0%,#3a2f22 100%);border:1px solid rgba(201,164,90,.45);border-radius:8px;
   box-shadow:0 6px 18px rgba(0,0,0,.55);padding:3px 6px;cursor:zoom-out}
 .fh-cd-trayline.is-mid .fh-cd-tray-dice,.fh-cd-trayline.is-static .fh-cd-tray-dice{cursor:zoom-in}
+/* Line 1 joins the loupe when its hand is a swarm — many small dice are
+   the one case its zone is hard to read. */
+.fh-cd-trayline.is-l1 .fh-cd-tray-dice.is-swarm{cursor:zoom-in}
