@@ -336,7 +336,7 @@
     var meshProgram=program(gl,MESH_VERTEX_SRC,MESH_FRAGMENT_SRC);
     var lineProgram=program(gl,LINE_VERTEX_SRC,LINE_FRAGMENT_SRC);
     var positionBuffer=buffer(gl,geo.positions),normalBuffer=buffer(gl,geo.normals),edgeBuffer=buffer(gl,geo.edges);
-    /* canvas (and, for the d100 pair, its .fh-cd-static3d-part parent) are
+    /* canvas (and, for the d100 pair, its .fh-cd-static-die-part parent) are
        both display:none until is-webgl reveals them, which only happens
        AFTER this function returns -- so getBoundingClientRect() is always
        0x0 here and every die silently got the ||52 fallback regardless of
@@ -517,17 +517,17 @@
     var index=Number(host.dataset.index)||0;
     /* Read straight off the inline style the markup already carries, rather
        than measuring the DOM: host itself is laid out, but its children
-       (canvas, and for d100 the .fh-cd-static3d-part halves) are all
+       (canvas, and for d100 the .fh-cd-static-die-part halves) are all
        display:none at this point, so any rect-based measurement of them
        is 0x0 regardless of what the CSS says their eventual size will be. */
     var hostSizePx=parseFloat(host.style&&host.style.getPropertyValue("--fh-static-die-size"))||52;
     if(sides===100){
-      var parts=host.querySelectorAll(".fh-cd-static3d-part");
+      var parts=host.querySelectorAll(".fh-cd-static-die-part");
       if(!parts||parts.length!==2)return;
       var partSizePx=hostSizePx*.78; /* matches the .78 ratio in companion-dock.css */
       var percentile=result===100?"00":String(result).padStart(2,"0"),mounted=true;
       parts.forEach(function(part,partIndex){
-        var canvas=part.querySelector("canvas"),number=part.querySelector(".fh-cd-static3d-result");
+        var canvas=part.querySelector("canvas"),number=part.querySelector(".fh-cd-static-die-result");
         var digit=Number(percentile.charAt(partIndex)),faceIndex=digit===0?9:digit-1;
         if(!canvas||!number){mounted=false;return;}
         number.textContent=pending?"":String(digit);
@@ -539,7 +539,7 @@
       }
       return;
     }
-    var canvas=host.querySelector("canvas"),number=host.querySelector(".fh-cd-static3d-result");
+    var canvas=host.querySelector("canvas"),number=host.querySelector(".fh-cd-static-die-result");
     if(!canvas||!number)return;
     number.textContent=pending?"":displayValue(sides,result);
     if(animatePart(host,canvas,number,sides,(result-1)%geometryFor(sides).faceNormals.length,result,index,materialName,animate,hostSizePx)){
@@ -549,7 +549,7 @@
   }
   function mount(scope){
     if(!scope||!scope.querySelectorAll)return;
-    scope.querySelectorAll(".fh-cd-static3d:not([data-mounted])").forEach(function(host){
+    scope.querySelectorAll(".fh-cd-static-die:not([data-mounted])").forEach(function(host){
       host.setAttribute("data-mounted","1");mountDie(host);
     });
   }

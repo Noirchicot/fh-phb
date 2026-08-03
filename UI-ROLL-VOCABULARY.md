@@ -49,12 +49,39 @@ whose ends did not meet; at 48px it looked sloppy and at 12px it was a smudge. T
 lemniscate is one continuous path, and the heavier stroke weight is the one to use:
 these glyphs are never seen large, they are seen at 12px, at an angle, mid-session.
 
-> **State today:** only two sources are declared, `guidance` and `bardic`, as two
-> `if`s in `fh-player-sheet.js:1682`. And `.fh-cd-src` is hard-coded to
-> `--cd-gold-bright`, so **every source icon is currently gold**, whatever it is.
-> There is no table. This section is the table.
+> ~~**State today:** only two sources are declared, `guidance` and `bardic`, as
+> two `if`s in `fh-player-sheet.js:1682`. And `.fh-cd-src` is hard-coded to
+> `--cd-gold-bright`, so **every source icon is currently gold**, whatever it
+> is. There is no table.~~
+>
+> ✅ **BUILT 2026-08-03**, branch `roll-vocabulary`. `ROLL_SOURCES` is the table,
+> and it is now the only declaration of a source anywhere: the die's 12px slot,
+> the advanced drawer's mark, the seal card's row and the label a sealed die
+> takes all read it. Each tone is one CSS variable (`--cd-src-*`) and one rule.
+> `.fh-cd-src b` inherits the tone instead of pinning gold — that hard-coding
+> was why a Bonus II read as a Destiny die at a glance.
+>
+> Two things the table being real immediately paid for: **Tactical was drawable
+> by the engine and unreachable from the seal card**, because the card kept its
+> own hand-written list of seals; and **a Destiny die left its 12px slot empty**,
+> the one die in the tray whose provenance the player had to infer. Both are
+> fixed by the row existing, not by a patch.
 
-> **Open:** the Tactical glyph.
+> ~~**Open:** the Tactical glyph.~~ **Decided 2026-08-03: a filled shield with
+> square shoulders and STRAIGHT sides converging to a point** — half block, half
+> wedge.
+>
+> The first attempt was a proper heater shield with curved flanks, and it was
+> wrong for a reason worth keeping: **rasterised at 12px its corners rounded off
+> and it read as a solid blob with no taper at all.** The taper is the entire
+> argument for the shield over the swords, so a shield whose taper does not
+> survive the raster is not a shield, it is a smudge that happens to be red.
+> Straight edges and a flat top survive 12px; curves at this size do not.
+>
+> The general rule, which cost a redraw to learn: **judge a glyph on its 12px
+> RASTER, not on its path.** A path that describes a taper and a raster that
+> shows one are different claims. Measured in the harness by drawing each glyph
+> into a 12×12 canvas and magnifying the actual pixels.
 
 ## 2. The die wrapper
 
@@ -128,6 +155,14 @@ Stream agree about the same roll.
 declarative table of `condition → badge`, evaluated once on the entry. Every
 surface then renders the same list because it reads the same list.
 
+> ✅ **BUILT 2026-08-03.** `ROLL_BADGE_RULES` is the table — thirteen rules, five
+> families, in reading order — and `rollBadges` walks it. `rollVocabulary(entry)`
+> is the single derivation every surface calls; it returns the badges and the
+> Ruling off the same entry in the same pass, so a surface cannot read one
+> without the other and cannot compute either for itself. The spoiler flag now
+> rides **on** the badge, so a surface hiding an unrevealed result no longer
+> needs its own copy of which families are spoilers.
+
 This is the same principle as one Console with three field specs: what comes from
 the engine is computed once; what is specific is declared.
 
@@ -176,6 +211,33 @@ discloses what it just did to you.
 
 It follows the same discipline as badges (§3): derived from the entry, not written
 at render time, so every surface says the same thing about the same roll.
+
+> ✅ **BUILT 2026-08-03.** `rollRuling(entry)` returns `{verdict, title, account}`.
+> The verdict comes from `ROLL_VERDICTS`, **one table with two readings**: the
+> machine-facing `outcome` string that `outcomeTone` and `feedTone` already match
+> on, and the `verdict` the Ruling says out loud — declared side by side so they
+> cannot drift the way thirteen scattered pushes let badges drift. `title` (name
+> + total) is the heading's fallback when the engine decided nothing, and moves
+> into the account when there IS a verdict, so the roll's identity is never lost
+> and never doubled.
+>
+> The frame's status line grants `.fh-cd-verdict` / `.fh-cd-account` **by
+> equality with the derived verdict**, not by a flag: a Chaos or Overreach prompt
+> written into the same slot ("Roll 2d6 and read the Chaos table") is not a
+> ruling and cannot borrow its authority.
+>
+> **It reads as designed and it immediately found something.** On the arcane
+> "Refuse" path, `resolveArcaneOne` calls `setDestinyPoints(0, …)` but never
+> updates `spent.pointsAfter`, so the Ruling says *Gained 1 Destiny Point ·
+> Current 9* while the pool is actually 0. The badge has been saying the same
+> thing (`+1 pt → 9`) all along — the two surfaces agree, which is what this lot
+> is for; they agree on a stale number, which is a roll-engine defect and not a
+> vocabulary one. Out of scope here, and left for the engine.
+
+> **Position, not content:** the Ruling still renders where the old verdict line
+> rendered — docked at the bottom of the frame, not above the dice. Moving it is
+> a Dice Tray decision (§4), and moving it here would have been this lot building
+> the surface it exists to prepare.
 
 ---
 

@@ -97,6 +97,7 @@ Read both. Read nothing else to start.
 | **Cloudflare KV meters `list()` separately from reads — 100,000 reads/day but ~1,000 `list()`/day on the free plan** | the dock's 3s feed poll is one `list()` each: **1,200/hour from a single open sheet**, so one player alone exhausts the day's allowance in 50 minutes and `/party` + `/feed` return `500` / code `1101` for everyone. This took production down on 2026-07-30 | **no `list()` on any path a page can call on a timer.** Prefix scans belong on DM-driven routes only; anything polled reads a single key. Plan §13.1 and §13.9 |
 | `git branch -v` shows `gh-pages | Deployed <sha>` — the site's real deployed state | you reason about production from a plan note that says "not deployed" while the deploy happened weeks ago, and you misdate an incident by a whole architecture | check `gh-pages` and `git merge-base --is-ancestor <sha> main`, not the prose |
 | `cloudflared` does not die with `table-server.mjs` | an orphaned tunnel answers `1033` while the rendezvous record still says `live:true` for up to 15 min (`TABLE_TTL_SECONDS`, `worker.js:956`) | observed live 2026-07-30. Docks correctly show **OFF** — the design holds. But when killing a table server, kill its `cloudflared` too, or the next `ps` lies to you |
+| **A glyph is judged on its 12px RASTER, never on its path** | the Tactical shield shipped as a proper heater shield whose flanks curved — the path describes a taper, and at 12px the corners rounded off and it rendered as a solid blob with no taper at all. The taper is the *entire* argument for the shield over the two rejected swords, so the glyph silently stopped being the thing it was chosen for | found 2026-08-03 building the roll vocabulary. **Straight edges and flat tops survive a 12px raster; curves at that size do not.** Draw each glyph into a 12×12 canvas and magnify the actual pixels — a screenshot of the page is downscaled and hides exactly this. Same measurement caught that `iconSvg`'s 1.65 stroke on a 24 grid is 0.8 device px in the tray, i.e. a hairline: source glyphs are filled, or stroked ≥3 |
 | The vault's `Gpt in FH/FHPC-AboveVTT-DDB-Integration-Bible.md` recommends `/hit`/`/dmg`/`/save`/`/heal` **with a dice expression** as the production pattern — that makes AboveVTT roll its own dice (its own text confirms this) | posting one of these for a roll FHPC's engine already resolved shows the table a second, independently-rolled number, not the one Destiny/Chaos/Soulforge actually produced | a correction is appended at the top of that file (2026-07-29). Package 12b already avoids this (plain resolved text, plan §11.3) — the trap is only for a future "deepen" phase that follows the bible literally instead of "translate what you can, print what you cannot" |
 
 ---
@@ -170,7 +171,7 @@ clicks were delegated inside `handleClick`, which bails on non-`<button>` target
 
 ### Tests
 
-**Fourteen** suites as of 2026-08-01, all must stay green:
+**Sixteen** suites as of 2026-08-03 (`roll-vocabulary` added `tests/roll-vocabulary.test.js`), all must stay green:
 ```bash
 for t in tests/*.test.js; do node "$t"; done
 ```
@@ -548,12 +549,16 @@ additive and mechanical — the 5/6/7 release proved the recipe: keep every bloc
 in a stated order. **The core has no mechanical resolution.** So: one lot at a
 time on the core, and always trial-merge before merging for real.
 
-1. **The roll vocabulary — next, and it must come before the surfaces.**
-   Source tokens, `condition → badge` derivation, Ruling text (`UI-ROLL-VOCABULARY.md`).
-   The Dice Tray, the Roll Builder, the Stream and every Console all render these
-   same objects. Build a surface first and it will invent its own way to draw a
-   badge; build the second and there are two. Done in this order, each later lot
-   *consumes* the vocabulary instead of reinventing it.
+1. ~~**The roll vocabulary — next, and it must come before the surfaces.**~~
+   **BUILT 2026-08-03, branch `roll-vocabulary`.** Source tokens (`ROLL_SOURCES`),
+   `condition → badge` derivation (`ROLL_BADGE_RULES`, thirteen rules replacing
+   thirteen `badges.push` sites in the render path), Ruling text (`rollRuling`,
+   with `ROLL_VERDICTS` declaring the machine-facing `outcome` and the spoken
+   `verdict` side by side). `rollVocabulary(entry)` is the single derivation
+   every surface calls. Die classes renamed by function. 16/16 suites, strict
+   build clean, replayed in an independent clone.
+   **The four surfaces now consume this instead of reinventing it** — which was
+   the whole reason for the ordering.
 2. **Dice Tray** — extracted from `roller`, four visible rolls, Static Area.
    **Heavier than its name**: since 2026-08-02 it is the *shared surface*, so it
    inherits the LIVE/RECENT/OFF states and the never-fall-back-silently rule.
