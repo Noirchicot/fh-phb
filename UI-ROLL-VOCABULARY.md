@@ -275,6 +275,26 @@ at render time, so every surface says the same thing about the same roll.
    are gone — only the badge strip remains, and the Stream keeps the
    record. `state.events` persists (the newest entry still drives the
    window's mood streaks); it simply no longer renders as lines.
+   **Fourth fitting (Eric, 2026-08-04), measured then built.** The judgment
+   window is a shallow WOODEN box (CSS grain, no image) glued to the dock's
+   edges — badges above it, zero text; CLEAR TRAY sits provisionally in the
+   console. Inside, three spaces: informative centred on the left, the dice
+   **building left to right** (strict construction order — the Destiny die
+   lost its head-of-row exception and takes its chronological place), and
+   the roll's identity "History / +1" centred on the right; nothing said
+   twice, so a heading that only restates that identity yields to it. The
+   Dice Tray is a dark woven CARPET: no boxes (the live hand's gold frame
+   is gone; a thin separator between lines is the forgiven box), flanks at
+   **80/68** (validated against measurement: dice space 165→~260px), no
+   visible account (hover keeps it), no scrollbars anywhere.
+   **The choreography, ruled by count:** 1–5 dice roll LARGE (44px) and
+   stay; past five they are a swarm — 6–12 tumble together at 18px and
+   settle to 22; 13+ tumble in **3D waves of ten, row after row** (each
+   row's contexts are freed by the settle-swap before the next row starts —
+   Eric chose the wave over the SVG relay, longer animation accepted), at
+   16px settling to 20. The stop is a snapshot swap at the settled size on
+   a CSS transition: roll small, stop, zoom, tighten. The +2/+X coins ride
+   naked at swarm scale, last (construction order), and never roll.
    Sizes are banded, not per-line-negotiated: the newest roll's dice land
    **large (44px ceiling)**, rolls 2–4 are **small (24px) but still able to
    roll** — simultaneous landings must be seen — and the **Static Area

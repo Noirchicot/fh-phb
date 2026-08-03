@@ -129,7 +129,10 @@ assert.ok(t.state.events.some(event=>/Destiny d4 rolled 3.*Lost 3 Destiny Points
 entry=t.state.history[0];
 assert.deepEqual(Array.from(entry.d20s),[15]);
 assert.equal(entry.guidance.result,2);assert.equal(entry.bardic.result,5);
-assert.equal(t.state.trayResults[0].label,"Destiny","Destiny remains first in the visible tray");
+/* REWRITTEN (fourth fitting, 2026-08-04): strict construction order, left
+   to right — the Destiny die takes its chronological place at the END of
+   the hand instead of jumping to the head. */
+assert.equal(t.state.trayResults[t.state.trayResults.length-1].label,"Destiny","Destiny sits at its construction-order place, last staged");
 // REWRITTEN (dock v5): the result popup is gone and so is APPLY. A landed roll
 // stays OPEN behind the one permanent ROLL, and it no longer locks the dock.
 assert.equal(t.rollOpen(),true,"it stays open, with every source of a new die still reachable");
@@ -296,7 +299,9 @@ t.stageDestinyFromPool("pool-d6");
 assert.equal(t.state.trayPrompt,null,"no popup stands between the pool and the tray any more");
 assert.equal(t.state.destiny.dice[0].available,true,"the click spends nothing");
 assert.equal(t.state.destinyStaged.dieId,"pool-d6","with nothing prepared it waits in the free tray");
-assert.equal(t.trayDiceForDisplay()[0].flash,true,"and it blinks there until ROLL");
+/* REWRITTEN (fourth fitting): strict construction order — the staged pool
+   die waits at its chronological place (last), still blinking forever. */
+assert.equal(t.trayDiceForDisplay().slice(-1)[0].flash,true,"and it blinks there until ROLL");
 assert.match(latest().text,/Destiny d6 waits in the tray/,"a line says so");
 t.state.diePrompt={poolId:"pool-d6"};
 assert.equal(t.findStagedDie(t.state.diePrompt).scope,"pool-destiny","and a right click reaches it");

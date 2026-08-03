@@ -165,7 +165,11 @@ assert.equal(root.querySelector(".fh-cd-cname"),null,"the console does not repea
 /* REWRITTEN (dock-dice-tray): the status line became the tray line's ruling
    space (three tiers, right of the dice) and the dice row became the live
    hand inside the Dice Tray zone. Same claims, new surface. */
-assert.match(root.querySelector(".fh-cd-frame.is-judgment .fh-cd-judgment").textContent,/Arcana \+6/,"opening a console names the prepared check, in the judgment window");
+/* REWRITTEN (fourth fitting): nothing said twice on the wood — the check's
+   identity lives in the RIGHT column ("Arcana / +6"), and the left keeps
+   only the informative part ("Ready"). */
+assert.match(root.querySelector(".fh-cd-frame.is-judgment .fh-cd-judgeright").textContent,/Arcana/,"opening a console names the prepared check in the right column");
+assert.match(root.querySelector(".fh-cd-frame.is-judgment .fh-cd-judgeright").textContent,/\+6/,"with its flat bonus under the name");
 assert.equal(root.querySelectorAll(".fh-cd-frame.is-assembly .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
 // REWRITTEN (dock v5): the Guid / Bard / Destiny chips are gone. Every die now
 // comes from the white picker, and a seal is something you give a die afterwards.
@@ -280,15 +284,19 @@ assert.equal(root.querySelector(".fh-cd-frame.is-judgment .fh-cd-diewrap.is-flas
 
 root.querySelector("[data-destiny-die]").click();
 assert.ok(root.querySelector(".fh-cd-picker-die.is-selected"),"the staged Destiny die is flagged in the pool");
-assert.equal(t.state.trayResults[0].label,"Destiny","the staged Destiny die appears first in the frame");
+/* REWRITTEN (fourth fitting, 2026-08-04): strict left-to-right construction
+   — the staged Destiny die takes its chronological place, last. */
+assert.equal(t.state.trayResults[t.state.trayResults.length-1].label,"Destiny","the staged Destiny die takes its construction-order place");
 const beforeDestinyHistory=t.state.history.length;
 root.querySelector("[data-roll-now]").click();
 assert.equal(t.state.history.length,beforeDestinyHistory+1,"REWRITTEN (dock v6): no click stands between Destiny and the d20");
 assert.ok(t.state.events.some(event=>/Destiny d\d+ rolled \d+/i.test(event.text)),"the Destiny summary is announced as a line");
 assert.equal(root.querySelector("[data-clear-tray]").disabled,false,"and nothing is blocking, so CLEAR TRAY stays reachable");
 entry=t.state.history[0];
-assert.equal(t.state.trayResults[0].label,"Destiny","the spent Destiny result remains before the d20s");
-assert.equal(t.state.trayResults[1].sides,20,"the d20 result follows Destiny in the frame");
+/* REWRITTEN (fourth fitting): construction order — the spent Destiny result
+   keeps its chronological place after the d20s, not the head of the row. */
+assert.equal(t.state.trayResults[t.state.trayResults.length-1].label,"Destiny","the spent Destiny result keeps its construction-order place");
+assert.equal(t.state.trayResults[0].sides,20,"the d20, first posed, leads the hand");
 settleRoll();
 
 /* ── A landed roll stays open behind the one ROLL ─────────────── */
@@ -365,7 +373,7 @@ assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fi
 /* REWRITTEN (dock-dice-tray, third fitting): past six dice a pending pool
    is a bare SWARM in the judgment window — mini dice, no wrapper, rows. */
 assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/is-naked/,"a crowded pool goes bare");
-assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/width="22"/,"as mini dice");
+assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/width="18"/,"as mini dice (the 6-12 band rolls at 18)");
 assert.ok(root.querySelector(".fh-cd-frame.is-assembly .fh-cd-tray-dice.is-swarm"),"in a wrapping swarm row");
 /* REWRITTEN (round 7c): the console no longer carries the naming field -- it
    is headed for the tray's legend. The label itself still names the roll and

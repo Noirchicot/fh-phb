@@ -1426,3 +1426,97 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-judgeask{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
 .fh-cd-judgeask>b{color:var(--cd-oxblood);font-size:calc(10.5px * var(--cd-fs));font-weight:800;letter-spacing:.03em}
 .fh-cd-judgeask>i{font-style:normal;color:var(--cd-muted);font-size:calc(7.8px * var(--cd-fs));line-height:1.3}
+
+/* ── Fourth fitting (Eric, 2026-08-04): wood, carpet, wave ────────────
+   The judgment box is a shallow WOODEN tray glued to the dock's edges —
+   thin border, no margins, CSS grain, no image. The Dice Tray becomes a
+   dark cosy CARPET: no boxes, thin separators, flanks at 80/68, the dead
+   margins reclaimed. Dice build left to right. Swarm dice roll small and
+   zoom at settle (the size var rides a transition). APPENDED only. */
+
+/* The wooden judgment box. Overrides the earlier is-judgment dress. */
+.fh-cd-frame.is-judgment{margin:0 1px;border:1px solid #3f2c14;border-radius:3px;
+  background:
+    repeating-linear-gradient(92deg,rgba(62,40,16,.12) 0 2px,rgba(0,0,0,0) 2px 11px,rgba(94,66,30,.10) 11px 13px,rgba(0,0,0,0) 13px 26px),
+    repeating-linear-gradient(0deg,rgba(255,236,196,.05) 0 1px,rgba(0,0,0,0) 1px 7px),
+    linear-gradient(180deg,#8a6438 0%,#7a5730 38%,#6b4a26 100%);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.42),inset 0 -1px 0 rgba(255,224,170,.14);
+  padding:5px 8px;min-height:64px;gap:8px}
+.fh-cd-frame.is-judgment.is-assembly{border-style:solid;border-color:#3f2c14}
+/* Light lettering on dark wood. */
+.fh-cd-frame.is-judgment .fh-cd-judgment{flex:0 1 auto;min-width:80px;max-width:118px;align-items:center;text-align:center}
+.fh-cd-frame.is-judgment .fh-cd-judgment>b{color:#f4ecd8}
+.fh-cd-frame.is-judgment .fh-cd-judgment>b.fh-cd-verdict{color:#f1c96f}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em{color:#cdb68c}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em.fh-cd-account{color:#e0cda4}
+/* Dice build LEFT TO RIGHT on the wood: first die at the left of its space. */
+.fh-cd-frame.is-judgment .fh-cd-tray-dice.is-build{flex:1 1 auto;justify-content:flex-start}
+.fh-cd-frame.is-judgment .fh-cd-diewrap em{color:#e0cda4}
+/* The right column: the roll's identity, centred — "History / +1". */
+.fh-cd-judgeright{flex:none;width:68px;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}
+.fh-cd-judgeright b{color:#f4ecd8;font-size:calc(9.4px * var(--cd-fs));font-weight:800;line-height:1.1;max-width:100%;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fh-cd-judgeright i{font-style:normal;color:#f1c96f;font-size:calc(10px * var(--cd-fs));font-weight:800}
+/* A decision covers the whole box. */
+.fh-cd-frame.is-judgment.is-takeover{justify-content:center}
+.fh-cd-frame.is-judgment .fh-cd-judgeask{align-items:center;text-align:center;width:100%}
+.fh-cd-frame.is-judgment .fh-cd-judgeask>b{color:#f1c96f}
+.fh-cd-frame.is-judgment .fh-cd-judgeask>i{color:#e0cda4}
+
+/* The carpet. Dark, warm, woven — and no boxes on it. */
+.fh-cd-dicetray{padding:2px 4px 0;
+  background:
+    radial-gradient(120% 100% at 50% 0%,rgba(122,90,40,.20) 0%,rgba(0,0,0,0) 55%),
+    repeating-linear-gradient(45deg,rgba(255,232,190,.025) 0 3px,rgba(0,0,0,0) 3px 6px),
+    repeating-linear-gradient(-45deg,rgba(0,0,0,.05) 0 3px,rgba(0,0,0,0) 3px 6px),
+    linear-gradient(180deg,#3a2f22 0%,#332a1e 55%,#2c2419 100%)}
+.fh-cd-dicetray>.fh-cd-cap{margin:0 2px 2px;color:#c9a45a}
+.fh-cd-dicetray>.fh-cd-cap small{color:#8d7b57}
+.fh-cd-traylist{margin:0;padding:0 0 4px}
+.fh-cd-trayline{padding:3px 2px;border-bottom:1px solid rgba(244,236,216,.10)}
+/* The large line earns a slightly firmer separator — the forgiven box. */
+.fh-cd-trayline.is-l1{border-bottom-color:rgba(201,164,90,.35)}
+/* The live hand sheds its gold box entirely: the carpet is the container.
+   The mood streaks keep working on the naked frame. */
+.fh-cd-dicetray .fh-cd-frame.is-trayhand{border:0;background:none;box-shadow:none;padding:0 2px;min-height:0}
+/* Flanks at 80 / 68 (validated) — the dice take what they free. */
+.fh-cd-tray-left{width:80px}
+.fh-cd-tray-right{width:68px;align-items:center;text-align:center}
+.fh-cd-tray-right .fh-cd-tray-title{font-size:calc(8.2px * var(--cd-fs));color:#f4ecd8;white-space:normal;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.1}
+.fh-cd-tray-right .fh-cd-tray-total{font-size:calc(13px * var(--cd-fs))}
+/* No visible account on the carpet: it survives in the hover title. */
+.fh-cd-tray-right .fh-cd-tray-account{display:none}
+/* Light lettering on the carpet. */
+.fh-cd-dicetray .fh-cd-tray-total.is-none{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-tray-total.is-ok{color:#8fc97a}
+.fh-cd-dicetray .fh-cd-tray-total.is-bad{color:#e07a70}
+.fh-cd-dicetray .fh-cd-tray-total.is-n20{color:#f1c96f}
+.fh-cd-dicetray .fh-cd-tray-total.is-quiet{color:#8d7b57}
+.fh-cd-dicetray .fh-cd-tray-verdict{color:#f1c96f}
+.fh-cd-dicetray .fh-cd-tray-heading{color:#f4ecd8}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-ok{color:#8fc97a}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-bad{color:#e07a70}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-n20,.fh-cd-dicetray .fh-cd-tray-outcome.is-none{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-tray-account,.fh-cd-dicetray .fh-cd-vs{color:#a89877}
+.fh-cd-dicetray .fh-cd-diewrap em{color:#cdb68c}
+.fh-cd-dicetray .fh-cd-tray-initials{background:#4a3d2c;border-color:#8d7b57;color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-tray-who img{border-color:#8d7b57}
+.fh-cd-dicetray .fh-cd-tray-name{background:#3a2f22;border-color:#8d7b57;color:#f4ecd8}
+.fh-cd-dicetray .fh-cd-trayline.is-empty{color:#8d7b57}
+.fh-cd-dicetray .fh-cd-badge{filter:brightness(1.35)}
+/* Roll small, stop, ZOOM: the size var rides a transition, so the settle
+   swap from live canvas to bigger snapshot glides instead of popping. */
+.fh-cd-static-die{transition:width .28s ease,height .28s ease}
+.fh-cd-static-die img.fh-cd-static-snap{transition:width .28s ease,height .28s ease}
+@media(prefers-reduced-motion:reduce){.fh-cd-static-die,.fh-cd-static-die img.fh-cd-static-snap{transition:none}}
+/* CLEAR TRAY's provisional console seat. */
+.fh-cd-mainclear.is-inconsole{position:static;transform:none;margin-left:auto;height:18px;padding:0 8px;font-size:calc(7.4px * var(--cd-fs))}
+/* The lateral scroller between the summoned group and the tray: killed
+   (Eric). The console row already fits the reference; anything wider is
+   clipped rather than growing a bar that eats a line of height. */
+.fh-cd-floatbottom{overflow-x:hidden}
+.fh-cd-consolerow{overflow-x:hidden}
+/* The judgment account stays an account, not a novel: a 29-die list clamps
+   to four lines — the full text lives in the entry and the Stream. */
+.fh-cd-frame.is-judgment .fh-cd-judgment>em{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}

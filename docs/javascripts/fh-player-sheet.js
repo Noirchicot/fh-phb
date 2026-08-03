@@ -1178,7 +1178,7 @@
       trayDiceForPlan(d20Plan,"d20",{dieRole:"base",colour:entry.d20Colour||"",landedKey:"d20",entryId:entry.id}).forEach(function(die,index){die.natural=die.result;if(entry.transformed&&index===Number(d20Plan.chosenIndex)){die.label="Original d20";die.dropped=true;}results.push(die);});
       if(entry.transformed)results.push({sides:20,result:20,label:"FATE 1→20",natural:20,special:"transformed"});
       entryBonusDice(entry).forEach(function(die){trayDiceForPlan(die,die.label,{dieRole:"bonus",landedKey:"bonus:"+die.id,entryId:entry.id}).forEach(function(item){results.push(item);});});
-      if(entry.destiny)trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){results.unshift(item);});
+      if(entry.destiny)trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""}).forEach(function(item){results.push(item);});
       if(entry.plusTwo)results.push({kind:"modifier",result:2,label:"FH bonus"});
       if(entry.exhaustion)results.push({kind:"modifier",result:-Number(entry.exhaustion),label:"Exhaustion",tone:"exhaustion"});
     }else if(entry.kind==="destiny")results=trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""});
@@ -1214,14 +1214,14 @@
       var originalD20=original.d20Roll||{sides:20,rolls:original.d20s||[original.kept],result:original.kept,chosenIndex:original.d20Choice!=null?original.d20Choice:(original.d20s||[]).indexOf(original.kept),mode:original.d20Mode,forced:!!original.d20Forced};trayDiceForPlan(originalD20,"d20",{dieRole:"base"}).forEach(function(die){die.natural=die.result;locked.push(die);});
       var existingIds={};entryBonusDice(original).forEach(function(die){existingIds[die.id]=true;trayDiceForPlan(die,die.label,{dieRole:"bonus"}).forEach(function(item){locked.push(item);});});
       (cfg.bonusDice||[]).filter(function(die){return !existingIds[die.id];}).forEach(function(die){pendingTrayDice(die.sides,die.label,die.advantageMode,die.forcedResult,{dieRole:"bonus",sourceIcon:die.sourceIcon,colour:die.colour||"",bonusId:die.id}).forEach(function(item){locked.push(item);});});
-      if(original.destiny)trayDiceForPlan(original.destiny,"Destiny",{dieRole:"destiny",special:original.destiny.criticalSuccess?"arcane-critical-success":original.destiny.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){locked.unshift(item);});
-      else if(cfg.destinyDieId){var pendingDestiny=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(pendingDestiny)pendingTrayDice(pendingDestiny.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:pendingDestiny.id,dieRole:"destiny"}).reverse().forEach(function(item){locked.unshift(item);});}
+      if(original.destiny)trayDiceForPlan(original.destiny,"Destiny",{dieRole:"destiny",special:original.destiny.criticalSuccess?"arcane-critical-success":original.destiny.criticalFailure?"arcane-critical-failure":""}).forEach(function(item){locked.push(item);});
+      else if(cfg.destinyDieId){var pendingDestiny=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(pendingDestiny)pendingTrayDice(pendingDestiny.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:pendingDestiny.id,dieRole:"destiny"}).forEach(function(item){locked.push(item);});}
       if(cfg.plusTwo)locked.push({kind:"modifier",result:2,label:"FH bonus",pending:!original.plusTwo});
       state.traySelection=[];state.trayResults=locked;state.trayTitle=cfg.name+" "+signed(cfg.baseBonus);state.trayResultText="Original d20 locked";return;
     }
     var dice=pendingTrayDice(20,"d20",cfg.d20Mode,cfg.d20ForcedResult,{dieRole:"base"});
     (cfg.bonusDice||[]).forEach(function(bonusDie){pendingTrayDice(bonusDie.sides,bonusDie.label,bonusDie.advantageMode,bonusDie.forcedResult,{dieRole:"bonus",sourceIcon:bonusDie.sourceIcon,colour:bonusDie.colour||"",bonusId:bonusDie.id}).forEach(function(item){dice.push(item);});});
-    if(cfg.destinyDieId){var die=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(die)pendingTrayDice(die.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:die.id,dieRole:"destiny"}).reverse().forEach(function(item){dice.unshift(item);});}
+    if(cfg.destinyDieId){var die=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(die)pendingTrayDice(die.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:die.id,dieRole:"destiny"}).forEach(function(item){dice.push(item);});}
     if(cfg.plusTwo)dice.push({kind:"modifier",result:2,label:"FH bonus",pending:true});
     if(exhaustionLevel())dice.push({kind:"modifier",result:exhaustionPenalty(),label:"Exhaustion",tone:"exhaustion",pending:true});
     state.traySelection=[];state.trayResults=dice;state.trayTitle=cfg.name+" "+signed(cfg.baseBonus);state.trayResultText="Ready";
@@ -1300,8 +1300,9 @@
     setTrayFromEntry(entry);
     stagedList().forEach(function(item){
       var dice=pendingTrayDice(item.sides,item.label,item.advantageMode||"flat",null,{dieRole:item.kind==="destiny"?"destiny":"bonus",sourceIcon:item.sourceIcon||"",colour:item.colour||"",flash:item.kind==="destiny",stagedId:item.id});
-      if(item.kind==="destiny")dice.reverse().forEach(function(die){state.trayResults.unshift(die);});
-      else dice.forEach(function(die){state.trayResults.push(die);});
+      // Strict construction order (Eric, 2026-08-04): a staged Destiny die takes
+      // its chronological place at the end, like every other die.
+      dice.forEach(function(die){state.trayResults.push(die);});
     });
     state.trayResultText=openStatusText(entry);
   }
@@ -1474,10 +1475,10 @@
   function rollSequenceDestiny(){
     var sequence=state.rollSequence;if(!sequence||!sequence.cfg)return;var cfg=sequence.cfg,die=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId&&item.available;});if(!die){pushEvent("That Destiny die is no longer available.","error");state.rollSequence=null;render();return;}
     if(!sequence.destinyPlan)sequence.destinyPlan=makeDiePlan(die.sides,cfg.destinyMode,cfg.destinyForcedResult);
-    prepareTrayForConfig(cfg);state.trayResults=state.trayResults.filter(function(item){return item.destinyDieId!==die.id;});trayDiceForPlan(sequence.destinyPlan,"Destiny",{flash:true,destinyDieId:die.id,dieRole:"destiny"}).reverse().forEach(function(item){state.trayResults.unshift(item);});state.trayResultText=sequence.destinyPlan.result==null?"Choose the Destiny result":"Destiny result selected";
+    prepareTrayForConfig(cfg);state.trayResults=state.trayResults.filter(function(item){return item.destinyDieId!==die.id;});trayDiceForPlan(sequence.destinyPlan,"Destiny",{flash:true,destinyDieId:die.id,dieRole:"destiny"}).forEach(function(item){state.trayResults.push(item);});state.trayResultText=sequence.destinyPlan.result==null?"Choose the Destiny result":"Destiny result selected";
     if(sequence.destinyPlan.result==null){showDieChoice("destiny",0,sequence.destinyPlan,"Destiny d"+die.sides);return;}
     var spent=spendDestinyDie(cfg.destinyDieId,true,sequence.destinyPlan);if(!spent){pushEvent("That Destiny die is no longer available.","error");state.rollSequence=null;render();return;}
-    sequence.entry.destiny=spent;sequence.phase="destiny-events";prepareTrayForConfig(sequence.cfg);state.trayResults=state.trayResults.filter(function(item){return item.destinyDieId!==spent.dieId;});trayDiceForPlan(spent,"Destiny",{destinyDieId:spent.dieId,dieRole:"destiny",special:spent.criticalSuccess?"arcane-critical-success":spent.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){state.trayResults.unshift(item);});state.trayResultText="Destiny d"+spent.sides+" = "+spent.result;announceEvents(destinyEventSpecs(spent,sequence.entry.id),sequence.adjustment?"adjustment-remaining":"roll-remaining",arcaneDecision(spent,sequence.entry.id));
+    sequence.entry.destiny=spent;sequence.phase="destiny-events";prepareTrayForConfig(sequence.cfg);state.trayResults=state.trayResults.filter(function(item){return item.destinyDieId!==spent.dieId;});trayDiceForPlan(spent,"Destiny",{destinyDieId:spent.dieId,dieRole:"destiny",special:spent.criticalSuccess?"arcane-critical-success":spent.criticalFailure?"arcane-critical-failure":""}).forEach(function(item){state.trayResults.push(item);});state.trayResultText="Destiny d"+spent.sides+" = "+spent.result;announceEvents(destinyEventSpecs(spent,sequence.entry.id),sequence.adjustment?"adjustment-remaining":"roll-remaining",arcaneDecision(spent,sequence.entry.id));
   }
   function rollSequenceRemaining(){
     var sequence=state.rollSequence;if(!sequence||!sequence.cfg||!sequence.entry)return;var cfg=sequence.cfg,entry=sequence.entry;
@@ -2002,6 +2003,11 @@
     if(die.kind==="modifier"){
       var tone=die.tone||(die.label==="FH bonus"?"fh":"mod"),text=(Number(die.result)||0)>=0?"+"+Math.abs(Number(die.result)||0):"−"+Math.abs(Number(die.result)||0);
       classes.push("is-modifier");
+      /* In a swarm the coin sheds its label and rides at swarm scale — the
+         value is printed on the coin, which is its nature. It never rolls. */
+      if(opts.naked){
+        return "<span class=\""+classes.join(" ")+" is-naked\"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.max(14,Math.round(size*.9)),text,tone)+"</span></span>";
+      }
       return "<span class=\""+classes.join(" ")+"\"><span class=\"fh-cd-src\"></span><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span><em>"+esc(die.label||"Bonus")+"</em></span>";
     }
     /* The source token (§1). A Destiny die reads its provenance off the table
@@ -2037,11 +2043,27 @@
       classes.push("is-tunable");
     }
     var materialName=dieMaterialName(die),face=dieSvg(die.sides,size,materialName,die.result==null?"?":die.result);
-    /* naked (Eric, 2026-08-03): a swarm die — no source token, no label, just
-       the die. Past six dice a hand is a POOL, and a pool reads as rows of
-       small bare dice (28d in three rows), not 28 captioned columns. Colour
-       will carry damage type later; the die keeps its colour classes now. */
+    /* naked (Eric, 2026-08-03, sizes and wave 2026-08-04): a swarm die — no
+       source token, no label, just the die, in real pseudo-3D. A die that is
+       LANDING now is a live host: it tumbles at the roll size, and when its
+       wave settles the renderer swaps it for the cached bitmap at
+       data-settle-size — roll small, stop, zoom. A die merely re-rendered is
+       born as the snapshot directly: zero live contexts. Pending dice keep
+       the flat "?" face at roll scale. Colour will carry damage type later. */
     if(opts.naked&&die.kind!=="modifier"){
+      if(ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0&&die.result!=null){
+        var nakedValue=Number(die.result);
+        var rolling=!!animate;
+        var rollSize=Number(opts.rollSizePx)||size;
+        var settleSize=Number(opts.settleSizePx)||size;
+        var hostSize=rolling?rollSize:settleSize;
+        face="<span class=\"fh-cd-static-die"+(Number(die.sides)===100?" is-percentile":"")+"\""+
+          (rolling?" data-wave=\""+(opts.wave!=null?opts.wave:0)+"\" data-settle-size=\""+settleSize+"\"":" data-snapshot=\"1\"")+
+          " data-sides=\""+Number(die.sides)+"\" data-result=\""+nakedValue+"\" data-pending=\"0\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(opts.waveIndex!=null?opts.waveIndex:index||0)+"\" data-animate=\""+(rolling?"1":"0")+"\" style=\"--fh-static-die-size:"+hostSize+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" result "+nakedValue+"\">"+
+          "<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static-die-result\" aria-hidden=\"true\"></b>"+
+          "<span class=\"fh-cd-static-die-fallback\">"+dieSvg(die.sides,hostSize,materialName,nakedValue)+"</span></span>";
+        dieClasses+=" is-static-die";
+      }
       return "<span class=\""+classes.join(" ")+" is-naked\""+handle+">"+
         "<span class=\""+dieClasses+"\">"+face+"</span></span>";
     }
@@ -2219,12 +2241,13 @@
     if(state.trayResults.length)return state.trayResults;
     if(state.rollConfig)return [];
     var dice=state.traySelection.map(function(die){return {sides:die.sides,result:forcedDieResult(die.forcedResult,die.sides),label:"d"+die.sides,dieRole:"base",pending:true,freeId:die.id,colour:die.colour||"",forced:die.forcedResult!=null};});
-    // A Destiny die picked up with nothing else prepared waits here, first in
-    // the row and pulsing, until ROLL decides to spend it.
+    // A Destiny die picked up with nothing else prepared waits here, pulsing,
+    // until ROLL decides to spend it — at its construction-order place, like
+    // every die since Eric's left-to-right ruling (2026-08-04).
     var waiting=state.destinyStaged;
     if(waiting){
       if(state.destiny&&state.destiny.dice.some(function(die){return die.id===waiting.dieId&&die.available;}))
-        dice.unshift({sides:waiting.sides,result:forcedDieResult(waiting.forcedResult,waiting.sides),label:"Destiny",dieRole:"destiny",pending:true,flash:true,poolDestinyId:waiting.dieId,forced:waiting.forcedResult!=null});
+        dice.push({sides:waiting.sides,result:forcedDieResult(waiting.forcedResult,waiting.sides),label:"Destiny",dieRole:"destiny",pending:true,flash:true,poolDestinyId:waiting.dieId,forced:waiting.forcedResult!=null});
       else state.destinyStaged=null;
     }
     return dice;
@@ -2294,12 +2317,9 @@
        keeps the record. A menu the player opened still stays under the
        window so it never pushes anything off screen. */
     return "<section class=\"fh-cd-stage\" data-zone=\"roller\">"+
-      /* Round 8: ROLL itself moved into the console's white dice row (the slot
-         its ⋮ vacated) now that the whole console is always visible and the
-         die no longer needs to break out of flow to reach the gap above it.
-         Only CLEAR TRAY is left here. */
-      "<div class=\"fh-cd-acts-bar\">"+
-      "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
+      /* CLEAR TRAY moved to the console (Eric, 2026-08-04, provisional seat
+         — its final place is an open discussion). Above the judgment box
+         there is only the badge strip: zero text. */
       "<div class=\"fh-cd-temps\">"+badges+"</div>"+
       renderJudgmentFrame()+
       (menu?"<div class=\"fh-cd-popups\">"+menu+"</div>":"")+
@@ -2351,26 +2371,44 @@
     var assembly="";
     if(assembling&&!decision){
       var realDice=dice.filter(function(die){return die.kind!=="modifier";}).length;
-      var swarm=realDice>LIGHTWEIGHT_DICE_THRESHOLD;
-      var sizePx=swarm?22:Math.min(dieSize(dice.length||1),34);
-      assembly="<span class=\"fh-cd-tray-dice"+(swarm?" is-swarm":"")+"\">"+dice.map(function(die,index){
+      var swarm=realDice>5;
+      var sizePx=swarm?(realDice>12?16:18):Math.min(dieSize(dice.length||1),34);
+      assembly="<span class=\"fh-cd-tray-dice is-build"+(swarm?" is-swarm":"")+"\">"+dice.map(function(die,index){
         return visualDie(die,index,dice.length,false,{sizePx:sizePx,plainLabel:true,naked:swarm});
       }).join("")+"</span>";
     }
-    var judgment;
-    if(decision)judgment=decision;
-    else{
-      var quiet=trayRevealPending();
-      var heading=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
-      var detail=quiet?"Rolling…":state.trayResultText;
-      var isRuling=!quiet&&!!state.trayVerdict&&heading===state.trayVerdict;
-      judgment=(heading&&heading!=="Dice Tray")||detail
-        ? "<b"+(isRuling?" class=\"fh-cd-verdict\"":"")+">"+esc(heading||"")+"</b>"+
-          (detail?"<em"+(isRuling?" class=\"fh-cd-account\"":"")+">"+esc(detail)+"</em>":"")
-        : "<em>Ready — click a skill, a save or an ability.</em>";
+    /* A decision COVERS the whole box (Eric: "pour les grandes occasions le
+       texte couvre tout le builder") — no columns, just the question. */
+    if(decision){
+      return "<div class=\"fh-cd-frame is-judgment is-takeover"+(mood?" mood-"+mood:"")+"\">"+decision+"</div>";
     }
+    /* Otherwise three spaces on the wood, left to right: the informative
+       column (what Fate said — the Ruling, or the invitation), the dice
+       building left→right, and the roll's identity — "History / +1" —
+       centred on the right. The verdict-equality rule is unchanged. */
+    var quiet=trayRevealPending();
+    var heading=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
+    var detail=quiet?"Rolling…":state.trayResultText;
+    var isRuling=!quiet&&!!state.trayVerdict&&heading===state.trayVerdict;
+    /* The right column: the roll's name and flat bonus, nothing else — the
+       config while one is open, the open entry's identity otherwise. */
+    var cfg=state.rollConfig,idEntry=openEntry();
+    var rightName=cfg?cfg.name:idEntry?idEntry.name:(assembling?state.trayLabel||"Free roll":"");
+    var rightBonus=cfg&&isFinite(Number(cfg.baseBonus))?signed(Number(cfg.baseBonus)+(cfg.plusTwo?2:0)+(Number(cfg.custom)||0))
+      :idEntry&&idEntry.kind==="d20"&&isFinite(Number(idEntry.baseBonus))?signed(idEntry.baseBonus):"";
+    /* Nothing said twice on the wood either: a heading that only restates
+       the right column's identity — "Arcana +10" while preparing, "Arcana
+       22" once landed (the no-verdict fallback title) — yields to it, and
+       the left keeps the informative part alone. A real verdict, or a
+       prompt like "Chaos", never starts with the roll's name and stays. */
+    if(heading&&rightName&&heading.indexOf(rightName)===0)heading="";
+    var judgment=(heading&&heading!=="Dice Tray")||detail
+      ? (heading&&heading!=="Dice Tray"?"<b"+(isRuling?" class=\"fh-cd-verdict\"":"")+">"+esc(heading)+"</b>":"")+
+        (detail?"<em"+(isRuling?" class=\"fh-cd-account\"":"")+">"+esc(detail)+"</em>":"")
+      : "<em>Ready — click a skill, a save or an ability.</em>";
+    var right=rightName?"<span class=\"fh-cd-judgeright\"><b>"+esc(rightName)+"</b>"+(rightBonus?"<i>"+esc(rightBonus)+"</i>":"")+"</span>":"";
     return "<div class=\"fh-cd-frame is-judgment"+(assembling?" is-assembly":"")+(mood?" mood-"+mood:"")+"\">"+
-      "<span class=\"fh-cd-judgment\">"+judgment+"</span>"+assembly+"</div>";
+      "<span class=\"fh-cd-judgment\">"+judgment+"</span>"+assembly+right+"</div>";
   }
   function renderDestiny(ch) {
     var arcana=ch.destinyBuild&&ch.destinyBuild.arcana||{};
@@ -3018,14 +3056,19 @@
     var sizeClass=index===0?"is-l1":index<4?"is-mid":"is-static";
     /* The band pins the CEILING, the crowd still shrinks below it: an 8d6
        Fireball must fit its line the same way it had to fit the old frame. */
-    /* Past six real dice a hand is a SWARM (Eric, 2026-08-03): bare mini
-       dice, no wrapper, wrapping into rows — 28d reads as three rows, not
-       28 captioned columns. Up to six, the wrapper stays and the band pins
-       the CEILING while the crowd still shrinks under it. */
+    /* Past FIVE real dice a hand is a SWARM (Eric, final threshold
+       2026-08-04): bare mini 3D dice, no wrapper, wrapping into rows. The
+       choreography is roll-small-stop-zoom — 6-12 tumble together at 18px
+       and settle to 22; 13+ tumble in WAVES of ten at 16px, row after row,
+       and settle to 20. Up to five, the wrapper stays and the band pins the
+       CEILING while the crowd still shrinks under it. */
     var realDice=slot.dice.filter(function(die){return die.kind!=="modifier";}).length;
-    var swarm=realDice>LIGHTWEIGHT_DICE_THRESHOLD;
-    var sizePx=swarm?(index===0?22:16)
-      :Math.min(dieSize(slot.dice.length||1),index===0?TRAY_DIE_BIG:TRAY_DIE_SMALL);
+    var swarm=realDice>5;
+    var big=index===0;
+    var waved=realDice>12;
+    var rollPx=big?(waved?16:18):16;
+    var settlePx=big?(waved?20:22):16;
+    var sizePx=swarm?rollPx:Math.min(dieSize(slot.dice.length||1),big?TRAY_DIE_BIG:TRAY_DIE_SMALL);
     var snapshot=index>=4;
     var readOnly=slot.kind==="feed";
     var who=slot.kind==="feed"
@@ -3035,7 +3078,9 @@
     var time=ts?nowLabel(ts):"";
     var diceHtml=slot.dice.map(function(die,di){
       return visualDie(die,di,slot.dice.length,!!(flags&&flags[di]),
-        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true,naked:swarm});
+        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true,naked:swarm,
+         rollSizePx:rollPx,settleSizePx:settlePx,
+         wave:swarm&&waved?Math.floor(di/10):null,waveIndex:swarm?di%10:null});
     }).join("");
     var reopen=slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
     /* The who is a CHIP, not a column (Eric, 2026-08-03: "faut gagner de la
@@ -3249,7 +3294,12 @@
     }
     // The FINE TUNE drawer is gone: a Portent belongs to one die, so it lives in
     // that die's own right-click menu rather than in a console-wide panel.
-    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE</div>"+
+    /* CLEAR TRAY sits here provisionally (Eric, 2026-08-04) — the roller's
+       acts-bar is gone so the judgment box can glue to the dock's edges.
+       Its final seat is an open discussion. */
+    var busy=rollTransactionActive();
+    var clear="<button class=\"fh-cd-mainclear is-inconsole\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button>";
+    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE"+clear+"</div>"+
       head+row1+"</section>";
   }
   /* The console's ⋮: what a roll is tuned WITH rather than rolled with. MOD and

@@ -145,6 +145,32 @@ assert.match(lines[4], /data-animate="0"/, "and nothing animates, ever");
 assert.match(css, /\.fh-cd-trayline\.is-static \.fh-cd-die\.is-spinning\{animation:none\}/,
   "even a remounted SVG die cannot replay its spin down there");
 
+/* ── 4b. The swarm choreography (Eric, 2026-08-04) ─────────────────────
+   Past five dice: roll small, stop, zoom. 13+ roll in WAVES of ten (row
+   after row, under the ~16-context cap); a re-rendered swarm die is born
+   as a snapshot at the settled size — zero live contexts. The +2/+X coin
+   rides naked at swarm scale, never rolls, never had a label to lose. */
+
+t.state.feed.events = [];
+t.state.trayResults = []; t.state.rollSequence = null;
+const bigHand = [];
+for (let i = 0; i < 14; i++) bigHand.push({sides:6, result:(i % 6) + 1});
+t.state.history = [{id:"swarm-roll", kind:"tray", name:"Damage roll", dice:bigHand, total:49, createdAt:isoAt(0)}];
+t.state.diceSignatures = {};
+const rollingPass = t.diceTrayInner();
+assert.match(rollingPass, /data-wave="0"/, "the first ten dice roll as wave zero");
+assert.match(rollingPass, /data-wave="1"/, "the next ten as wave one — row after row");
+assert.match(rollingPass, /data-settle-size="20"/, "each die knows the size it will zoom to at settle");
+assert.match(rollingPass, /--fh-static-die-size:16px/, "and rolls small");
+const settledPass = t.diceTrayInner();
+assert.doesNotMatch(settledPass, /data-wave=/, "a re-rendered swarm die does not roll again");
+assert.match(settledPass, /data-snapshot="1"/, "it is born as a snapshot — zero live contexts");
+assert.match(settledPass, /--fh-static-die-size:20px/, "at the settled, zoomed size");
+
+const coin = t.visualDie({kind:"modifier", result:2, label:"FH bonus"}, 9, 10, false, {naked:true, sizePx:20, plainLabel:true});
+assert.match(coin, /is-naked/, "the +2 coin rides naked in a swarm");
+assert.doesNotMatch(coin, /<em>/, "no label — the value is printed on the coin");
+
 /* ── 5. The wire: fh-roll/1 carries the dice ───────────────────────── */
 
 const exported = t.rollExport(d20Entry("wire", "Arcana", 14, 21, 0, {

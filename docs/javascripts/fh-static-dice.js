@@ -628,10 +628,69 @@
       if(animate)playRollSound(sides,index);
     }
   }
+  /* Frees one canvas's WebGL context deterministically instead of waiting on
+     the garbage collector — the same discipline releasePickerContext applies
+     to the shared generator, per die. */
+  function loseCanvasContext(canvas){
+    try{
+      var gl=canvas.getContext("webgl");
+      var ext=gl&&gl.getExtension&&gl.getExtension("WEBGL_lose_context");
+      if(ext&&ext.loseContext){ext.loseContext();return true;}
+    }catch(error){}
+    return false;
+  }
+  /* The stop of Eric's roll-small-stop-zoom (2026-08-04): once a die has
+     settled, its live canvas is swapped for the cached bitmap of the same
+     pose at the SETTLED size (data-settle-size), the size change riding a
+     CSS transition — the die grows and the row tightens. The freed context
+     is what lets the next wave row start rolling. d100 keeps its live pair:
+     its two-part markup has no single snapshot slot, and it is rare. */
+  function settleToSnapshot(host){
+    if(host.dataset.snapped==="1")return;
+    var sides=Number(host.dataset.sides)||20;
+    if(sides===100)return;
+    var result=Math.max(1,Math.min(sides,Number(host.dataset.result)||1));
+    var materialName=host.dataset.material||"ivory";
+    var settleSize=parseFloat(host.dataset.settleSize)||parseFloat(host.style&&host.style.getPropertyValue("--fh-static-die-size"))||52;
+    var canvas=host.querySelector("canvas");
+    if(!mountSnapshot(host,sides,result,materialName,false,settleSize))return;
+    host.dataset.snapped="1";
+    host.style.setProperty("--fh-static-die-size",settleSize+"px");
+    if(canvas){canvas.style.display="none";loseCanvasContext(canvas);}
+  }
+  /* The wave (Eric, 2026-08-04): a hand too large for the ~16-context cap
+     rolls ROW BY ROW — each data-wave group tumbles in real 3D, settles,
+     snapshots (freeing its contexts), and only then does the next row start.
+     A longer animation, deliberately: everyone rolls in 3D, just not all at
+     once. Dice without data-wave keep the old immediate mount, and still
+     settle to snapshots so their contexts never linger. */
+  var WAVE_GAP_MS=140;
   function mount(scope){
     if(!scope||!scope.querySelectorAll)return;
+    var waves={};
     scope.querySelectorAll(".fh-cd-static-die:not([data-mounted])").forEach(function(host){
-      host.setAttribute("data-mounted","1");mountDie(host);
+      host.setAttribute("data-mounted","1");
+      var wave=host.dataset.wave;
+      if(wave!=null&&wave!==""&&host.dataset.animate==="1"&&host.dataset.snapshot!=="1"){
+        (waves[wave]=waves[wave]||[]).push(host);
+      }else{
+        mountDie(host);
+        if(host.dataset.animate==="1"&&host.dataset.snapshot!=="1"&&host.dataset.settleSize){
+          window.setTimeout(function(){if(host.isConnected)settleToSnapshot(host);},
+            ROLL_DURATION_MS+Number(host.dataset.index||0)*42+120);
+        }
+      }
+    });
+    var rows=Object.keys(waves).sort(function(a,b){return Number(a)-Number(b);});
+    var delay=0;
+    rows.forEach(function(row){
+      var hosts=waves[row];
+      var span=ROLL_DURATION_MS+hosts.length*42;
+      window.setTimeout(function(){
+        hosts.forEach(function(host){if(host.isConnected)mountDie(host);});
+        window.setTimeout(function(){hosts.forEach(function(host){if(host.isConnected)settleToSnapshot(host);});},span+80);
+      },delay);
+      delay+=span+WAVE_GAP_MS;
     });
   }
 

@@ -132,7 +132,11 @@ assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted
 assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray[" ]/, "the roller no longer carries a bar of die buttons");
 assert.doesNotMatch(t.renderStageZone(), /data-roll-now/, "ROLL no longer lives in the roller");
 assert.match(t.renderConsole(), /data-roll-now/, "it carries the one permanent ROLL, in the white dice row instead");
-assert.match(t.renderStageZone(), /data-clear-tray/, "and CLEAR TRAY stays in the roller");
+/* REWRITTEN (fourth fitting, 2026-08-04): CLEAR TRAY moved to the console
+   (provisional seat) so the wooden judgment box can glue to the dock's
+   edges with nothing but badges above it. */
+assert.doesNotMatch(t.renderStageZone(), /data-clear-tray/, "CLEAR TRAY left the roller");
+assert.match(t.renderConsole(), /data-clear-tray/, "and sits in the console for now");
 assert.match(t.renderConsole(), /data-add-tray-die="100"/, "the white picker in the console exposes d4 through d100");
 
 t.state.record = {build:{
@@ -236,7 +240,7 @@ assert.equal(t.state.traySelection.length,7,"the free/damage tray accepts pools 
    Seven dice therefore render naked at 22px, not wrapped at 34. */
 assert.match(t.renderStageZone(),/fh-cd-frame is-judgment is-assembly/,"a pending hand renders in the judgment window, dressed as assembly");
 assert.match(t.renderStageZone(),/is-naked/,"past six dice the pool is a bare swarm");
-assert.match(t.renderStageZone(),/width="22"/,"swarm dice are minis");
+assert.match(t.renderStageZone(),/width="18"/,"swarm dice are minis (roll size of the 6-12 band)");
 assert.doesNotMatch(t.renderStageZone(),/width="52"/,"a crowded pool never keeps the full-size die");
 assert.doesNotMatch(t.diceTrayInner(),/is-livehand/,"and the tray shows no live hand while nothing has landed");
 t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);
