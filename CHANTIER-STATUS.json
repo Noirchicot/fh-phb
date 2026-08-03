@@ -43,7 +43,7 @@
       "repo": "fh-srd",
       "path": "~/tools/fh-srd",
       "state": "fini",
-      "note": "Lot 3 EN fusionné (adf9af0) : 973 records — + backgrounds (4), espèces (9), classes (12, sous-classe imbriquée). 16/16 suites, rejoué en clone indépendant."
+      "note": "CONTENU ANGLAIS COMPLET (d954ee7) : 1613 records — sorts, objets, feats, backgrounds, espèces, classes, glossaire, équipement, 330 monstres. 22/22 suites, chaque lot rejoué en clone indépendant."
     }
   ],
   "wip": [
@@ -54,10 +54,10 @@
       "note": "Session lancée 2026-08-03 (branche dock-dice-tray). Consomme le vocabulaire ; hérite LIVE/RECENT/OFF. Hauteur de ligne avec dés : arbitrage d'Eric attendu avant codage."
     },
     {
-      "name": "SRD lot 4 anglais (glossaire, monstres, équipement)",
+      "name": "SRD passe française (tout le contenu FR)",
       "repo": "fh-srd",
       "state": "en-attente",
-      "note": "Pastille posée après la fusion du lot 3. Dernier lot de contenu EN ; ensuite la passe française."
+      "note": "Pastille posée après le lot 4. Dernière étape de contenu ; ensuite le branchement site (après les lots dock)."
     },
     {
       "name": "Widget Übersicht chantier",
