@@ -130,7 +130,7 @@ Read both. Read nothing else to start.
 | Trap | What happens | The rule |
 |---|---|---|
 | ~~`sync_from_vault.py` clobbers the hand-added toolbar in `docs/skill-builder.html` and `docs/stat-roller.html`~~ | — | **FIXED 2026-08-02** (`106782f`). The sync now injects the shell itself — `add_tool_chrome()`, idempotent, and it raises rather than guess, so a page it cannot dress keeps its published copy instead of going out bald. No more `git checkout` after a sync |
-| **Patching a published copy instead of its source** — the deeper version of the trap above | the next sync silently **reverts a deployed bugfix**, and the tests still pass because they read the same reverted file | found 2026-08-02: `207f597` fixed the `/builds` revision chain in `docs/skill-builder.html`, the *published* copy, and never touched the source `~/tools/fh-skills/fh-skill-builder.html`. Running the sync would have undone a production fix, quietly. **A published page under `docs/` that has a source outside the repo is a generated artefact — fix the source, then sync.** The source is now correct; proof is that a sync leaves the working tree clean. `~/tools/fh-skills` **has no git**, so back it up before editing it |
+| **Patching a published copy instead of its source** — the deeper version of the trap above | the next sync silently **reverts a deployed bugfix**, and the tests still pass because they read the same reverted file | found 2026-08-02: `207f597` fixed the `/builds` revision chain in `docs/skill-builder.html`, the *published* copy, and never touched the source `~/tools/fh-skills/fh-skill-builder.html`. Running the sync would have undone a production fix, quietly. **A published page under `docs/` that has a source outside the repo is a generated artefact — fix the source, then sync.** The source is now correct; proof is that a sync leaves the working tree clean. ~~`~/tools/fh-skills` **has no git**, so back it up before editing it~~ **FIXED 2026-08-04** — git since `532516a`, private GitHub remote; `captures/` (recorded DDB traffic) deliberately untracked |
 | A flex item whose `overflow` is not `visible` gets an automatic minimum size of **0**, not `min-content` | the belt measured **1px** tall in a short window and vanished | `flex:none` on dock chrome; floor the **zone**, never the scroller inside it (a scroller taller than its box overflows the row below) |
 | A custom property cannot be defined in terms of itself | `--cd-fs:min(var(--cd-fs),N)` is a cycle and is silently discarded | derive: JS writes `--cd-fs-pref`, CSS computes `--cd-fs` from it, media queries clamp |
 | `--cd-width` resolves at `:root` | writing `--cd-fs` on the dock node moved the fonts but left the width pinned | write to `root.ownerDocument.documentElement` — `ownerDocument` keeps Table mode (PiP) correct |
@@ -168,6 +168,30 @@ incident, or lot launch** — an out-of-date board is worse than none, because
 Eric reads it as truth. The deploy-gate entry must always say the main↔site gap
 is deliberate while the gate is closed (§ DEPLOY GATE below): the widget shows
 it neutral, never orange.
+
+**The single-source-of-truth map — audited and locked 2026-08-04.** One
+authority per kind of thing, everything on a git with a GitHub remote:
+
+| What | Source of truth | Backed by |
+|---|---|---|
+| Code (site+dock, table server, worker, SRD base, builder source) | `main` of `fh-phb` / `fh-table` / `fh-worker` / `fh-srd` / `fh-skills` | GitHub (all five; worker/srd/skills went remote 2026-08-04) |
+| Deployed site | `gh-pages` ("Deployed X") | GitHub Pages |
+| Deployed Worker | what `wrangler deploy` shipped — verify live, never assume from git | Cloudflare |
+| Decisions & rules | this file + `COMPANION-BUILD-PLAN.md` + the `UI-*.md` authorities | fh-phb git |
+| Chantier colours (fini/en-cours/probleme) | `CHANTIER-STATUS.json`, architect-maintained | fh-phb git |
+| Build recipes & session accounts | vault logbook, `Chantier FH & FHPC/` folder only | vault git → GitHub → iPad |
+| Volatile per-machine state | Claude memory (Mac only) — never load-bearing | — |
+
+The iPad is a **replica, never an authority**: it may lag by a sync cycle and
+that is fine. What is NOT fine is the Mac side silently not committing —
+which happened 07-31→08-04 (Obsidian closed, plugin silent, three days of
+logbook invisible to origin while origin advanced). Detection:
+`git -C ~/obsidian-vault log -1 --format=%ci` older than a few hours after
+vault writes = the plugin is dead → check Obsidian is running; until it is, a
+clean manual commit by the architect is the documented exception to the
+"never commit the vault by hand" rule (that rule guards against racing a
+LIVE plugin, not against a dead one). Full incident: vault, `Setup & Infra/
+Vault Sync.md`.
 
 **Logbook single source: every chantier entry lives in the vault folder
 `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/` — never at the logbook root,
