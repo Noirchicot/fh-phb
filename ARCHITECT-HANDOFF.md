@@ -182,6 +182,12 @@ authority per kind of thing, everything on a git with a GitHub remote:
 | Build recipes & session accounts | vault logbook, `Chantier FH & FHPC/` folder only | vault git → GitHub → iPad |
 | Volatile per-machine state | Claude memory (Mac only) — never load-bearing | — |
 
+**This file has a read-only mirror in the vault** — `Chantier FH & FHPC/
+ARCHITECT-HANDOFF (miroir).md`, so Eric can read it on the iPad. It is
+regenerated whole by the SessionStart hook (`~/.claude/hooks/vault-sync.sh`,
+Job 1b) with a banner carrying the source commit; any edit made to the mirror
+is lost at the next session start, by design. Edit HERE, never there.
+
 The iPad is a **replica, never an authority**: it may lag by a sync cycle and
 that is fine. What is NOT fine is the Mac side silently not committing —
 which happened 07-31→08-04 (Obsidian closed, plugin silent, three days of
