@@ -68,6 +68,38 @@ Read both. Read nothing else to start.
   it, hold the story, get out of the way. Inventing a spend action contradicts the
   rule (plan §6, vault §5.1).
 
+**Ecosystem & posture — Eric, 2026-08-03**
+- **Good relations with the AboveVTT people are a project asset.** Per direct
+  exchanges (2026-08-03, archived in the vault): **Azmoria is the technical
+  door** for integration and future-change questions, and answered ours the same
+  day. **Cyruzzo gets appreciation only** — feedback, never requests, never
+  pressure. In every exchange we arrive with a diagnosis and a PR offer, never
+  with "please build this for us". Our problems are ours to solve on our side of
+  the fence. **This file is in a public repo: never quote their private messages
+  here, and never editorialize about the people** — exact words live in the
+  vault note, which is private.
+- **When writing to either of them, say why we like AboveVTT — and mean it**: it
+  is free, open-source, volunteer-run, and it lives *inside* D&D Beyond where the
+  characters already are. It is the reason the table never had to leave DDB, and
+  the reason FHPC attaches to a VTT instead of building one.
+- **SRD discipline is also diplomacy.** Everything FHPC sends toward AboveVTT/DDB
+  stays scrupulously SRD 5.2 (CC-BY-4.0)-clean — our integration must never put
+  AboveVTT at odds with D&D Beyond/WotC. The vault's `SRD 5.2 Compliance.md`
+  audit is the reference.
+
+**What FHPC is aiming at — Eric, 2026-08-03** (the sentence the lots serve)
+- A **character sheet wired to the SRD** plus a **dice roller** — and **attach to
+  a VTT** (AboveVTT today) rather than build one.
+- **Every rule in your pocket as JSON**: the SRD base layer, with Eric's world
+  (Fate's Hand) as a layer *on top of* it, never mixed into it. `fh-srd` is that
+  base; the vault is the world layer.
+- **Other creators are not excluded**: the platform can serve as a base for
+  someone else's world over the same SRD layer, the same way Fate's Hand sits on
+  it today.
+- **Everything is hosted by its owner** — each DM/creator runs their own free
+  instance. This gives the §13 finding (GM_TOKEN = mutual root; a second DM needs
+  their own copy) its product rationale, not just a quota one.
+
 ---
 
 ## 3. Traps already paid for — do not rediscover these
@@ -246,6 +278,51 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 ---
 
 ## 6. State at handoff
+
+> ✅ **CLOSED 2026-08-03 — AboveVTT chat persistence will not happen. Stop
+> treating it as pending.** Azmoria, asked directly: `inject_chat` rides DDB's
+> gamelog message broker with `persist:false`; AboveVTT has **no server-side
+> storage for chat and no backend maintainer** — *"server changes stopped a
+> while ago for us (Cyruzzo prefers to do that stuff himself and hasn't been
+> around)"*. Even if they persisted, only standard DDB roll data would be safe:
+> bad gamelog data **crashes the gamelog for the whole campaign** and cannot be
+> cleared — which our three test placeholders already proved in miniature.
+>
+> **The operational picture, from both exchanges** (exact words in the vault,
+> private — do not quote them here): the client side is actively maintained,
+> the server side is not evolving for now. No disagreement to read into that,
+> and no change to anticipate — plan on what exists today. The standing
+> consequence outlives this question: treat AboveVTT as a **display surface
+> only** — build nothing that depends on its server side evolving. Our
+> architecture already complies (own feed, own table server, `inject_chat` as
+> output only); keep it that way.
+>
+> **And the stake behind the posture (Eric): we want this platform to stay
+> alive.** FHPC chose to attach to AboveVTT rather than build a VTT; a healthy
+> AboveVTT is therefore project infrastructure. What that means in practice:
+> sincere appreciation to its people (that is what keeps volunteer projects
+> alive), bug reports with diagnosis and PR offers when we find something,
+> zero added burden. And the hedge is architectural, not relational: because
+> AboveVTT is display-only for us, if it ever stops, we lose a display surface
+> — never the game, never the history.
+>
+> Confirmed in the same exchange:
+> 1. **The Dice Tray is permanently the history of record.** The living guide
+>    must state the AboveVTT chat is session-local *by design on their side* —
+>    a fact, not a stopgap awaiting a fix.
+> 2. `whisper: ""` **is** "everyone". Send it explicitly — Azmoria offered to
+>    also guard `undefined` on their end; do not depend on that.
+> 3. `rollType` semantics are intended — **but a custom roll gets ALL the DM
+>    apply-buttons by default**, except quick-roll (which fills a save for a
+>    group of tokens). Verify what `"skill"` actually renders before the Dice
+>    Tray lot ships.
+> 4. Small `fh-table` lot to queue: fill the fields the bridge omits —
+>    `whisper:""`, `sendTo:false`, `rollType`/`rollTitle`/`result`, and
+>    per-character `player`/`img` (today every line wears the DM's avatar).
+>
+> Full exchange and the field-by-field gap analysis: vault,
+> `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/AboveVTT — Persistance du
+> chat.md`. Relations posture with both maintainers: §2, Ecosystem & posture.
 
 > ✅ **TWO LOTS MERGED 2026-08-03 — zone overlay + percentage zoom, and the
 > package 9 engine hunt.** `main` = **`f89583f`**. 15/15 suites and a clean strict
