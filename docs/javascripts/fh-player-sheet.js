@@ -1267,7 +1267,16 @@
   function armTrayReveal(dieCount){
     // Nothing is rolling when motion is suppressed, so nothing needs hiding.
     if(prefersReducedMotion()){state.trayRevealAt=0;return;}
-    var span=rollAnimationMs()+Math.max(0,(Number(dieCount)||1)-1)*ROLL_STAGGER_MS+90;
+    var count=Number(dieCount)||1;
+    /* A 13+ hand rolls in WAVES of ten (fh-static-dice, WAVE_GAP 140ms —
+       these two numbers are that scheduler's, mirrored). The reveal must
+       outlive the LAST wave: the render it fires replaces the tray's DOM,
+       and a wave still waiting its turn would be reborn already settled —
+       which is exactly the bug Eric saw (first wave rolled, second did not). */
+    var waves=count>12?Math.ceil(count/10):1;
+    var span=waves>1
+      ? waves*(rollAnimationMs()+10*ROLL_STAGGER_MS+140)+200
+      : rollAnimationMs()+Math.max(0,count-1)*ROLL_STAGGER_MS+90;
     state.trayRevealAt=Date.now()+span;
     clearTimeout(state.trayRevealTimer);
     state.trayRevealTimer=window.setTimeout(function(){state.trayRevealAt=0;if(root)render();},span);
@@ -3063,12 +3072,16 @@
        and settle to 20. Up to five, the wrapper stays and the band pins the
        CEILING while the crowd still shrinks under it. */
     var realDice=slot.dice.filter(function(die){return die.kind!=="modifier";}).length;
-    var swarm=realDice>5;
     var big=index===0;
-    var waved=realDice>12;
-    var rollPx=big?(waved?16:18):16;
-    var settlePx=big?(waved?20:22):16;
-    var sizePx=swarm?rollPx:Math.min(dieSize(slot.dice.length||1),big?TRAY_DIE_BIG:TRAY_DIE_SMALL);
+    /* Lower lines are ALWAYS naked (Eric, 2026-08-04: larger dice beat the
+       seal down there) — a small hand reads at 30px bare where the wrapped
+       24px die plus its token used to sit. The large line keeps the full
+       wrapper up to five dice. */
+    var swarm=big?realDice>5:true;
+    var waved=big&&realDice>12;
+    var rollPx=big?(waved?16:18):(realDice>12?16:realDice>5?20:30);
+    var settlePx=big?(waved?20:22):(realDice>12?16:realDice>5?20:30);
+    var sizePx=swarm?rollPx:Math.min(dieSize(slot.dice.length||1),TRAY_DIE_BIG);
     var snapshot=index>=4;
     var readOnly=slot.kind==="feed";
     var who=slot.kind==="feed"

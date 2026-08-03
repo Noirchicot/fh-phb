@@ -132,13 +132,18 @@ t.state.history = [];
 for (let i = 0; i < 6; i++) t.state.history.push(d20Entry("s" + i, "Arcana", 12, 19, i));
 t.state.feed.events = [];
 t.state.trayResults = []; t.state.traySelection = []; t.state.rollSequence = null; t.state.destinyStaged = null;
+t.diceTrayInner(); // first pass: these six rolls land (and animate); the bands are judged at rest
 const banded = t.diceTrayInner();
 const lines = banded.split("fh-cd-trayline").slice(1);
 assert.match(lines[0], /is-l1/, "the newest roll is the large band");
 assert.match(lines[0], /--fh-static-die-size:44px/, "its dice land at 44px");
 assert.match(lines[1], /is-mid/, "rolls 2-4 are the small band");
-assert.match(lines[1], /--fh-static-die-size:24px/, "their dice are 24px — small, but still able to roll");
-assert.doesNotMatch(lines[1], /data-snapshot/, "a small-band die keeps a live canvas so it CAN animate");
+/* REWRITTEN (Eric, 2026-08-04): lower lines sacrifice the seal for SIZE —
+   always naked, 30px for a small hand. At rest they are snapshots (zero
+   live contexts); a die landing there still animates, as a live host. */
+assert.match(lines[1], /is-naked/, "lower-line dice are bare — the seal is sacrificed for size");
+assert.match(lines[1], /--fh-static-die-size:30px/, "and larger: 30px for a small hand");
+assert.match(lines[1], /data-snapshot="1"/, "at rest they are snapshots — zero live contexts");
 assert.match(lines[4], /is-static/, "roll 5 opens the Static Area");
 assert.match(lines[4], /data-snapshot="1"/, "where dice are frozen snapshots — no live WebGL context");
 assert.match(lines[4], /data-animate="0"/, "and nothing animates, ever");
