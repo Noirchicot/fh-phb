@@ -153,10 +153,41 @@ function testForcedDieResultRejectsFractionalHostileValues() {
   assert.equal(plan.result, 8, "and the plan that actually feeds the total carries the sanitized integer, not the raw hostile input");
 }
 
+function testArcaneRefusalUpdatesThePointRecord() {
+  // Found by the roll-vocabulary lot (UI-ROLL-VOCABULARY.md §5, 2026-08-03):
+  // refusing an Arcane 1 zeroed the pool via setDestinyPoints but never touched
+  // spent.pointsAfter, so the Ruling and the destiny-spend badge kept quoting
+  // the pre-refusal balance ("Current 9") while the real pool was 0.
+  const {t, queue} = loadEngine(["state", "spendDestinyDie", "resolveArcaneOne", "rollRuling", "rollBadges"]);
+  t.state.code = "FH2"; t.state.pseudo = "P";
+  t.state.destiny = baseDestiny(8);
+  t.state.destiny.dice = [{id: "d1", sides: 8, available: true, colour: "gold"}];
+  t.state.vitals = {current: null, max: null, exhaustion: 0, shortRestUsed: false};
+
+  queue(1);
+  const spent = t.spendDestinyDie("d1", true);
+  assert.equal(spent.criticalFailure, true);
+  assert.equal(spent.pointsAfter, 9, "the granted point is on the record at spend time");
+
+  const entry = {id: "e1", kind: "d20", name: "Test", ability: "INT", modifier: 0,
+    kept: 10, natural: null, dc: "", dice: [], destiny: spent};
+  t.state.history.unshift(entry);
+  t.resolveArcaneOne("e1", "chaos");
+
+  assert.equal(t.state.destiny.points, 0, "refusing empties the pool");
+  assert.equal(spent.pointsAfter, 0, "REGRESSION: the record must say the pool is empty, not quote the pre-refusal 9");
+  const ruling = t.rollRuling(entry);
+  assert.equal(ruling.account.some(line => /Current 9/.test(line)), false, "the Ruling no longer quotes the stale balance");
+  assert.equal(ruling.account.some(line => /Current 0/.test(line)), true, "it states where the refusal actually leaves you");
+  const destinyBadge = t.rollBadges(entry).find(badge => badge.id === "destiny-spend");
+  assert.match(destinyBadge.t, /→ 0/, "and the badge agrees with the Ruling on the real balance");
+}
+
 (async () => {
   await testBroadcastRetriesAfterFailedSend();
   testAwakeningOwedCountsEachDraw();
   testPendingFateNeverDropsSilently();
   testForcedDieResultRejectsFractionalHostileValues();
+  testArcaneRefusalUpdatesThePointRecord();
   console.log("Roll-engine adversarial regression tests passed.");
 })().catch(error => { console.error(error); process.exit(1); });

@@ -1116,6 +1116,10 @@
       spent.criticalFailure=false;spent.criticalSuccess=true;
       var hadPoints=state.destiny.points;
       setDestinyPoints(0,"Arcane fate refused",false,true);
+      /* The Ruling and the destiny-spend badge both read pointsAfter off this
+         record; refusing empties the pool, so the record must say so or every
+         surface keeps quoting the pre-refusal balance forever. */
+      spent.pointsAfter=state.destiny.points;
       addPendingFate({kind:"chaos",entryId:entry.id,ability:entry.ability||"",name:entry.name||"Arcane failure refused"});
       events.push({text:"ARCANE FATE REFUSED · The 1 becomes "+spent.sides+" · Arcane Critical Success"+(hadPoints?" · Destiny becomes 0":""),kind:"arcane-critical-success",entryId:entry.id},
         {text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id});
