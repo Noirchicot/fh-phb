@@ -125,7 +125,11 @@ assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted
 // console's white dice row (the slot the console's ⋮ vacated) -- the whole
 // console is always on screen now, so ROLL no longer needs a separate bar to
 // break out of. The roller carries only CLEAR TRAY.
-assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray\b/, "the roller no longer carries a bar of die buttons");
+/* REWRITTEN (dock-dice-tray, second fitting): the roller now hosts the
+   assembly frame, whose inner spans reuse the fh-cd-tray-dice/-ruling
+   classes — the claim is still about the OLD die-button bar, whose class
+   was exactly "fh-cd-tray". Match it as a whole class name. */
+assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray[" ]/, "the roller no longer carries a bar of die buttons");
 assert.doesNotMatch(t.renderStageZone(), /data-roll-now/, "ROLL no longer lives in the roller");
 assert.match(t.renderConsole(), /data-roll-now/, "it carries the one permanent ROLL, in the white dice row instead");
 assert.match(t.renderStageZone(), /data-clear-tray/, "and CLEAR TRAY stays in the roller");
@@ -225,11 +229,14 @@ t.state.profile.manualOverrides={};
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,7,"the free/damage tray accepts pools larger than a structured check");
-/* REWRITTEN (dock-dice-tray): the dice render in the Dice Tray zone now, not
-   in the roller's frame — the shrink-with-the-crowd rule is unchanged, only
-   the surface asserting it moved. */
-assert.match(t.diceTrayInner(),/width="34"/,"large pools shrink their dice to stay inside the tray line");
-assert.doesNotMatch(t.diceTrayInner(),/width="52"/,"a crowded pool never keeps the full-size die");
+/* REWRITTEN (dock-dice-tray, second fitting): a hand with nothing landed is
+   the Roll Builder's, so the free pool renders in the roller's ASSEMBLY
+   frame — the shrink-with-the-crowd rule is unchanged, only the surface
+   asserting it moved (twice, both times with the zone's own ruling). */
+assert.match(t.renderStageZone(),/fh-cd-frame is-assembly/,"a pending hand renders in the roller's assembly frame");
+assert.match(t.renderStageZone(),/width="34"/,"large pools shrink their dice to stay inside the assembly frame");
+assert.doesNotMatch(t.renderStageZone(),/width="52"/,"a crowded pool never keeps the full-size die");
+assert.doesNotMatch(t.diceTrayInner(),/is-livehand/,"and the tray shows no live hand while nothing has landed");
 t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,8,"an 8d6 Fireball pool fits without a special case");
 

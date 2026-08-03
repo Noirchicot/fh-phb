@@ -1993,7 +1993,11 @@
     if(die.flash)classes.push("is-flashing");
     if(die.forced)classes.push("is-forced");
     if(die.special==="chaos")classes.push("is-chaosdie");
-    var status=die.forced?" · MANUAL":die.pending?" · ready":die.dieRole==="destiny"&&die.result!=null?" · spent":"";
+    /* plainLabel (the tray, the assembly frame): the label is the die's name
+       and nothing else — the line's own heading already says ready/spent, and
+       the suffixes were what made neighbouring labels collide (Eric,
+       2026-08-03: "le texte sous les dés plus minimaliste"). */
+    var status=opts.plainLabel?"":die.forced?" · MANUAL":die.pending?" · ready":die.dieRole==="destiny"&&die.result!=null?" · spent":"";
     var size=Number(opts.sizePx)||dieSize(count||1);
     if(die.kind==="modifier"){
       var tone=die.tone||(die.label==="FH bonus"?"fh":"mod"),text=(Number(die.result)||0)>=0?"+"+Math.abs(Number(die.result)||0):"−"+Math.abs(Number(die.result)||0);
@@ -2327,10 +2331,28 @@
       "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
       "<div class=\"fh-cd-temps\">"+badges+"</div>"+
       renderEventList()+
-      /* No frame here any more: the dice land in the Dice Tray zone below,
-         which is where the frame, the Ruling and the mood streaks moved. */
+      renderAssemblyFrame()+
       (menu?"<div class=\"fh-cd-popups\">"+menu+"</div>":"")+
       "</section>";
+  }
+  /* The Roll Builder's own frame: a hand still being assembled — every die
+     pending, nothing landed. The moment ROLL fires, the dice leave here and
+     land in the Dice Tray; this frame is intention, the tray is record.
+     (The landed frame, the Ruling and the mood streaks all live in the tray.) */
+  function renderAssemblyFrame(){
+    var dice=trayDiceForDisplay();
+    if(!dice.length||dice.some(function(die){return die.result!=null;}))return "";
+    var sizePx=Math.min(dieSize(dice.length||1),34);
+    var heading=state.trayTitle&&state.trayTitle!=="Dice Tray"?state.trayTitle:"";
+    var detail=state.trayResultText;
+    return "<div class=\"fh-cd-frame is-assembly\">"+
+      "<span class=\"fh-cd-tray-dice\">"+dice.map(function(die,index){
+        return visualDie(die,index,dice.length,false,{sizePx:sizePx,plainLabel:true});
+      }).join("")+"</span>"+
+      "<span class=\"fh-cd-tray-ruling\">"+
+      (heading?"<b class=\"fh-cd-tray-heading\">"+esc(heading)+"</b>":"")+
+      (detail?"<em class=\"fh-cd-tray-account\">"+esc(detail)+"</em>":"")+
+      "</span></div>";
   }
   function renderDestiny(ch) {
     var arcana=ch.destinyBuild&&ch.destinyBuild.arcana||{};
@@ -2947,7 +2969,11 @@
       title=String(entry.name||"Roll")+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):"");
       totalHtml="<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\">"+(quiet?"…":esc(entry.total))+"</span>"+
         (quiet?"":nat.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join(""));
-      if(quiet)third="<em class=\"fh-cd-tray-account\">Rolling…</em>";
+      /* Quiet hides what the dice have not revealed — never what the player
+         already knew: MANUAL and adjusted describe the roll's construction
+         and stay visible while it rolls, exactly as the Stream always did. */
+      if(quiet)third="<em class=\"fh-cd-tray-account\">Rolling…</em>"+
+        others.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
       else{
         /* The live hand keeps trayResultText (it carries the open-roll status,
            staged-dice count included); a settled history line re-derives the
@@ -2989,12 +3015,27 @@
     var time=ts?nowLabel(ts):"";
     var diceHtml=slot.dice.map(function(die,di){
       return visualDie(die,di,slot.dice.length,!!(flags&&flags[di]),
-        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly});
+        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true});
     }).join("");
     var reopen=slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
-    var whoHtml="<span class=\"fh-cd-tray-who\""+(time?" title=\""+esc(time)+"\"":"")+">"+
-      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" title=\"Reopen this roll\">"+esc(who)+"</button>":"<b>"+esc(who)+"</b>")+
-      (time?"<time>"+esc(time)+"</time>":"")+"</span>";
+    /* The who is a CHIP, not a column (Eric, 2026-08-03: "faut gagner de la
+       place à gauche"): my own face, zoomed — or two letters when there is
+       no portrait, and always two letters for the table (the wire carries no
+       avatar). The full name and the time surface on hover, and ride the
+       title attribute for touch. */
+    /* "Ha" for Harness, "BI" for Brakka Ironmaw: one word lends two letters,
+       two words lend their initials. */
+    var whoWords=String(who).trim().split(/\s+/).filter(Boolean);
+    var initials=whoWords.length>1
+      ? whoWords.slice(0,2).map(function(word){return word.charAt(0);}).join("").toUpperCase()
+      : (whoWords[0]||"?").slice(0,2);
+    var portrait=slot.kind==="feed"?"":portraitFor(state.character||{});
+    var chip=(portrait?"<img src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.parentNode.classList.add('is-noimg')\">":"")+
+      "<i class=\"fh-cd-tray-initials\">"+esc(initials)+"</i>";
+    var hoverText=who+(time?" · "+time:"");
+    var whoHtml="<span class=\"fh-cd-tray-who"+(portrait?"":" is-noimg")+"\" title=\""+esc(hoverText)+"\">"+
+      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+chip+"</button>":"<b aria-label=\""+esc(who)+"\">"+chip+"</b>")+
+      "<i class=\"fh-cd-tray-name\">"+esc(hoverText)+"</i></span>";
     var row=whoHtml+"<span class=\"fh-cd-tray-dice\">"+diceHtml+"</span>"+trayTiersHtml(slot,quiet);
     /* The live hand keeps the frame — and with it the mood streaks that say
        what the table still owes. History and feed lines carry no frame: a
@@ -3016,17 +3057,22 @@
       ? "<button type=\"button\" class=\"fh-cd-refresh\" data-feed-refresh title=\"Check the cloud log now\">Refresh</button>":"";
     var cap="<div class=\"fh-cd-cap\">DICE TRAY<small>"+esc(feedActive()?caption:"your rolls — load a character to join the table")+"</small>"+manual+refresh+
       "<span class=\"fh-cd-traystate is-"+(offline?"off":ts)+"\">"+(offline?"OFF":ts==="live"?"LIVE":"RECENT")+"</span></div>";
-    /* The live hand (my roll being assembled, rolling, or freshly settled)
-       is always the top line. The settled entry it points at is excluded
-       from the merged list below so the same roll never appears twice. */
+    /* The live hand is the top line — but only once it has LANDED something.
+       A hand still being assembled (every die pending, no entry) belongs to
+       the Roll Builder, and renders in the roller's assembly frame instead:
+       the tray shows rolls, the builder shows intentions (Eric, 2026-08-03 —
+       "tu ne distingues pas le Dice Builder du Dice Tray ?"). The settled
+       entry the hand points at is excluded from the merged list below so the
+       same roll never appears twice. */
     var live=trayDiceForDisplay();
+    var engaged=live.some(function(die){return die.result!=null;});
     var liveEntry=null;
-    if(live.length){
+    if(live.length&&engaged){
       liveEntry=openEntry();
       if(!liveEntry)for(var i=0;i<live.length&&!liveEntry;i++)if(live[i].entryId)liveEntry=entryById(live[i].entryId);
     }
     var slots=[];
-    if(live.length){
+    if(live.length&&engaged){
       var ruling=liveEntry?rollRuling(liveEntry):null;
       slots.push({kind:"live",id:liveEntry?liveEntry.id:"live",entry:liveEntry,dice:live,
         structured:!!(ruling&&(state.trayTitle===ruling.verdict||state.trayTitle===ruling.title))});

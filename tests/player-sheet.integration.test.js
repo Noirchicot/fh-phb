@@ -149,11 +149,13 @@ assert.equal(root.querySelectorAll(".fh-cd-eline.is-current").length,1,"exactly 
 // class name rather than the whole attribute.
 const stageChildren=Array.from(root.querySelector(".fh-cd-stage").children).map(node=>node.className.split(/\s+/)[0]);
 assert.ok(stageChildren.indexOf("fh-cd-temps")<stageChildren.indexOf("fh-cd-events"),"events come after the badges");
-/* REWRITTEN (dock-dice-tray, 2026-08-03): the frame and its dice left the
-   roller for the Dice Tray zone — the stage keeps badges, events and popups,
-   and the live hand's frame renders inside the tray instead. */
-assert.equal(stageChildren.indexOf("fh-cd-frame"),-1,"the roller no longer carries the frame");
-assert.ok(root.querySelector('[data-zone="dice-tray"] .fh-cd-frame.is-trayhand'),"the live hand's frame lives in the Dice Tray");
+/* REWRITTEN (dock-dice-tray, 2026-08-03, twice — second fitting the same
+   day): landed dice left the roller for the Dice Tray; what the roller may
+   still carry is the ASSEMBLY frame, a hand with nothing landed. At this
+   point a console is open with a prepared (pending) d20, so the assembly
+   frame is here and the tray shows no live hand. */
+assert.ok(root.querySelector('.fh-cd-stage .fh-cd-frame.is-assembly'),"the roller carries only the assembly frame");
+assert.equal(root.querySelector('.fh-cd-stage .fh-cd-frame.is-trayhand'),null,"never a landed hand");
 t.state.events=[{id:"awaken",kind:"awakening",text:"ARCANE AWAKENING · Natural 20 at Destiny 0",createdAt:new Date().toISOString()}];
 t.render();
 assert.match(root.querySelector(".fh-cd-eline.is-awakening").textContent,/The Hermit/i,"Arcane Awakening reveals the character's Major Arcana");
@@ -174,8 +176,8 @@ assert.equal(root.querySelector(".fh-cd-cname"),null,"the console does not repea
 /* REWRITTEN (dock-dice-tray): the status line became the tray line's ruling
    space (three tiers, right of the dice) and the dice row became the live
    hand inside the Dice Tray zone. Same claims, new surface. */
-assert.match(root.querySelector(".fh-cd-tray-ruling").textContent,/Arcana \+6/,"opening a console names the prepared check, in the tray");
-assert.equal(root.querySelectorAll(".fh-cd-frame.is-trayhand .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
+assert.match(root.querySelector(".fh-cd-frame.is-assembly .fh-cd-tray-ruling").textContent,/Arcana \+6/,"opening a console names the prepared check, in the assembly frame");
+assert.equal(root.querySelectorAll(".fh-cd-frame.is-assembly .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
 // REWRITTEN (dock v5): the Guid / Bard / Destiny chips are gone. Every die now
 // comes from the white picker, and a seal is something you give a die afterwards.
 assert.equal(root.querySelectorAll("[data-bonus-preset]").length,0,"the Guidance and Bardic chips are gone from the console");
@@ -368,8 +370,9 @@ root.querySelector("[data-clear-tray]").click();
 
 for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
-/* REWRITTEN (dock-dice-tray): the dice row is the live hand in the tray. */
-assert.match(root.querySelector(".fh-cd-frame.is-trayhand").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in its tray line");
+/* REWRITTEN (dock-dice-tray, second fitting): a pending pool is the Roll
+   Builder's assembly frame. */
+assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in its assembly frame");
 /* REWRITTEN (round 7c): the console no longer carries the naming field -- it
    is headed for the tray's legend. The label itself still names the roll and
    still persists, so that contract is asserted here by setting it directly;
@@ -442,8 +445,12 @@ assert.equal(entry.bonusDice[0].sourceIcon,"other-1","the first custom die keeps
 assert.equal(root.querySelector(".fh-cd-src b").textContent.trim(),"I","the die carries the Other I seal in the frame");
 // REWRITTEN (tranche 2): there is no result popup left to carry the mark, so the
 // dice themselves carry it while the roll stays open on APPLY.
-/* REWRITTEN (dock-dice-tray): the dice live in the tray's live hand. */
-assert.match(root.querySelector(".fh-cd-frame.is-trayhand").textContent,/MANUAL/,"a forced die is marked MANUAL in the tray itself");
+/* REWRITTEN (dock-dice-tray, second fitting): die labels went minimal — the
+   MANUAL mark moved off the label and reads as the line's badge (tier 3),
+   while the die itself keeps its is-forced dress. Same disclosure, said
+   once instead of twice. */
+assert.match(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-t3").textContent,/MANUAL/,"a forced roll is marked MANUAL on its tray line");
+assert.ok(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-diewrap.is-forced"),"and the forced die itself wears the mark");
 assert.match(root.querySelector(".fh-cd-sentry").textContent,/MANUAL/,"the stream line marks forced results too");
 settleRoll();
 root.querySelector("[data-clear-tray]").click();

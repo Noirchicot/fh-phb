@@ -109,11 +109,14 @@ const diceAt = firstLine.indexOf("fh-cd-tray-dice");
 const rulingAt = firstLine.indexOf("fh-cd-tray-ruling");
 assert.ok(whoAt >= 0 && diceAt > whoAt && rulingAt > diceAt,
   "a line reads left to right: who, then the dice, then the ruling");
-assert.match(inner, />Yedrivel</, "the name is written in full — no initials, no portrait");
-assert.doesNotMatch(inner, /fh-cd-portrait/, "no portrait in the tray line");
-assert.match(inner, /<time>/, "the time exists on the line…");
-assert.match(inner, /fh-cd-trayline:hover \.fh-cd-tray-who time\{opacity:1\}/.test(css) ? /<time>/ : /NEVER/,
-  "…and the stylesheet only surfaces it on hover");
+/* REWRITTEN (same lot, Eric's second fitting 2026-08-03): the who became a
+   CHIP — my face or two letters — because the full name cost the line its
+   flanks. The whole name and the time still exist, on hover and in the
+   title attribute. */
+assert.match(inner, /fh-cd-tray-initials">Ye</, "the who is a chip — two letters when there is no portrait");
+assert.match(inner, /fh-cd-tray-name">Yedrivel/, "the full name rides the hover label…");
+assert.match(inner, /title="Yedrivel · /, "…and the title attribute, with the time");
+assert.match(css, /\.fh-cd-tray-who:hover \.fh-cd-tray-name\{opacity:1\}/, "and the stylesheet only surfaces it on hover");
 assert.match(inner, /fh-cd-tray-title/, "tier 1: the roll's name in bold");
 assert.match(inner, /fh-cd-tray-total/, "tier 2: the total");
 assert.match(inner, /Arcana \+7/, "the title carries the bonus, not the arithmetic");
@@ -163,7 +166,10 @@ t.state.history = [];
 const feedLineHtml = t.diceTrayInner();
 assert.match(feedLineHtml, /is-feed/, "the party's roll renders as a feed line");
 assert.doesNotMatch(feedLineHtml, /data-die-landed/, "another player's dice carry no handles");
-assert.match(feedLineHtml, />Ilyra</, "the who is the character's full name");
+/* REWRITTEN (second fitting): the feed who is a chip too — the wire has no
+   avatar, so it is always the two letters, full name on hover. */
+assert.match(feedLineHtml, /fh-cd-tray-initials">Il</, "the who is the character's chip, two letters");
+assert.match(feedLineHtml, /fh-cd-tray-name">Ilyra/, "with the full name on hover");
 
 /* ── 6. LIVE / RECENT / OFF on the cap — never a silent fallback ───── */
 

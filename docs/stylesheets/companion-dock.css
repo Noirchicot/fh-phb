@@ -1349,3 +1349,46 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    the window instead — same visual edge, but only by luck. Pin the
    containing block explicitly; relative changes nothing else about flow. */
 .fh-cd-pip-body .fh-cd-dock{position:relative}
+
+/* ── Dice Tray, second fitting (Eric, 2026-08-03 pm) ─────────────────
+   Reclaim the flanks: the who becomes a chip (face or two letters, full
+   name + time on hover), the ruling narrows, the scrollbar disappears,
+   die labels go minimal and may wrap to two lines. And the Roll Builder
+   gets its own assembly frame back — a hand with nothing landed renders
+   in the roller, not in the tray. APPENDED, never edited above. */
+.fh-cd-tray-who{width:26px;flex:none;position:relative;display:block}
+.fh-cd-tray-who b,.fh-cd-tray-who button{display:block;width:24px;height:24px;padding:0;border:0;background:none;
+  cursor:default;-webkit-line-clamp:unset;overflow:visible}
+.fh-cd-tray-who button{cursor:pointer}
+.fh-cd-tray-who img{display:block;width:24px;height:24px;border-radius:50%;border:1px solid var(--cd-gold-hi);
+  object-fit:cover;object-position:center 18%}
+.fh-cd-tray-initials{display:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--cd-gold-hi);
+  background:var(--cd-parch-2);color:var(--cd-oxblood);font-style:normal;font-weight:800;
+  font-size:calc(8.2px * var(--cd-fs));line-height:22px;text-align:center;letter-spacing:.02em}
+.fh-cd-tray-who.is-noimg img{display:none}
+.fh-cd-tray-who.is-noimg .fh-cd-tray-initials{display:block}
+/* The name, whole, when asked for: a floating label over the line. */
+.fh-cd-tray-name{position:absolute;left:0;bottom:calc(100% + 2px);z-index:3;display:block;white-space:nowrap;
+  font-style:normal;font-size:calc(8.2px * var(--cd-fs));font-weight:700;color:var(--cd-oxblood);
+  background:var(--cd-parch);border:1px solid var(--cd-gold-hi);border-radius:4px;padding:1px 6px;
+  box-shadow:0 2px 6px rgba(40,25,5,.25);opacity:0;pointer-events:none;transition:opacity .15s ease}
+.fh-cd-tray-who:hover .fh-cd-tray-name{opacity:1}
+/* Right flank: a narrower ruling, and no scrollbar gutter at all — the
+   tray scrolls by gesture; the Stream is the consultable surface. */
+.fh-cd-tray-ruling{width:110px}
+.fh-cd-traylist{scrollbar-width:none}
+.fh-cd-traylist::-webkit-scrollbar{display:none}
+/* Minimal die labels, allowed a second line instead of colliding sideways. */
+.fh-cd-tray-dice .fh-cd-diewrap em,.fh-cd-frame.is-assembly .fh-cd-diewrap em{
+  white-space:normal;text-overflow:clip;line-height:1.06;max-height:2.2em;text-align:center;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* The verdict earns its size back on the large line — the old frame said it
+   at 12px and tier 3 had whispered it. */
+.fh-cd-trayline.is-l1 .fh-cd-tray-verdict{font-size:calc(9.6px * var(--cd-fs))}
+.fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:30px}
+/* The Roll Builder's assembly frame: same bones as the tray's live hand,
+   quieter dress — nothing here has happened yet. */
+.fh-cd-frame.is-assembly{height:auto;min-height:64px;margin:4px 10px;display:flex;flex-direction:row;align-items:center;gap:6px;
+  border-width:1px;border-style:dashed;box-shadow:none;padding:2px 6px;overflow:visible}
+.fh-cd-frame.is-assembly::after{content:none}
+.fh-cd-frame.is-assembly .fh-cd-tray-ruling{width:110px;flex:none}

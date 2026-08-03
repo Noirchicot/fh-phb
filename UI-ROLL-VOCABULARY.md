@@ -247,12 +247,21 @@ at render time, so every surface says the same thing about the same roll.
    Stream-style line. Needs a drawing before it can be budgeted.~~
    **ANSWERED — Eric, 2026-08-03, and it reshaped the line itself** (built on
    branch `dock-dice-tray`). A tray line is **three spaces left to right,
-   nothing said twice**: the **name in full** (no portrait — this supersedes
-   §4's "who: the portrait" — and no printed time; the time surfaces on
-   hover), then **the dice, each with its full §2 wrapper**, then **the
-   ruling on three tiers** — the roll's name in bold ("Arcana +7"), the
-   total with NATURAL 20/1 beside it, and the ruling text, abridged when
-   long (Chaos, a Destiny-point change…) with the full account on hover.
+   nothing said twice**: the **who as a chip** — your own portrait cropped to
+   the face, or two letters ("Ha" for Harness) when there is none, and always
+   two letters for the table since the wire carries no avatar; the full name
+   and the time surface on hover (second fitting, same day — the first cut
+   wrote the name in full and it cost the line its flanks), then **the dice,
+   each with its full §2 wrapper** but a minimal label (no "· ready" suffix —
+   the line's own heading says that — and allowed a second line instead of
+   colliding sideways), then **the ruling on three tiers** — the roll's name
+   in bold ("Arcana +7"), the total with NATURAL 20/1 beside it, and the
+   ruling text, abridged when long (Chaos, a Destiny-point change…) with the
+   full account on hover.
+   **And the builder is not the tray**: a hand still being assembled — every
+   die pending, nothing landed — renders in the Roll Builder's own dashed
+   assembly frame in the roller, and only enters the tray when ROLL lands it.
+   The tray shows rolls; the builder shows intentions.
    Sizes are banded, not per-line-negotiated: the newest roll's dice land
    **large (44px ceiling)**, rolls 2–4 are **small (24px) but still able to
    roll** — simultaneous landings must be seen — and the **Static Area
