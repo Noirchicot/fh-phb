@@ -8,7 +8,7 @@
     "(règle gravée dans ARCHITECT-HANDOFF.md). states: fini | en-cours | en-attente | probleme.",
     "Couleurs côté widget : fini=vert, en-cours=orange, en-attente=blanc, probleme=rouge."
   ],
-  "as_of": "2026-08-03",
+  "as_of": "2026-08-04",
   "gate": {
     "open": false,
     "display": "🚦 Porte de déploiement FERMÉE — écart main↔site VOULU, pas une alerte",
@@ -51,7 +51,7 @@
       "name": "Dice Tray (surface partagée)",
       "repo": "fh-phb",
       "state": "en-cours",
-      "note": "Session lancée 2026-08-03 (branche dock-dice-tray). Consomme le vocabulaire ; hérite LIVE/RECENT/OFF. Hauteur de ligne avec dés : arbitrage d'Eric attendu avant codage."
+      "note": "9 commits sur dock-dice-tray, arbre PROPRE (loupe clic-droit ×1,5 commitée : dbadd07→d18330b, vérifié architecte 2026-08-04). Reste avant livraison : vérif fonctionnelle de la loupe (harnais 8127) + vérif live rollType 'skill' (attente Eric) ; puis routine §4."
     },
     {
       "name": "Widget Übersicht chantier",
