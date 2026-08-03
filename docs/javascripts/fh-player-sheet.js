@@ -2037,6 +2037,14 @@
       classes.push("is-tunable");
     }
     var materialName=dieMaterialName(die),face=dieSvg(die.sides,size,materialName,die.result==null?"?":die.result);
+    /* naked (Eric, 2026-08-03): a swarm die — no source token, no label, just
+       the die. Past six dice a hand is a POOL, and a pool reads as rows of
+       small bare dice (28d in three rows), not 28 captioned columns. Colour
+       will carry damage type later; the die keeps its colour classes now. */
+    if(opts.naked&&die.kind!=="modifier"){
+      return "<span class=\""+classes.join(" ")+" is-naked\""+handle+">"+
+        "<span class=\""+dieClasses+"\">"+face+"</span></span>";
+    }
     /* Static Area (tray rolls 5+): the settled pose as a cached bitmap. One
        host, one numeral slot — even for d100, whose snapshot pair is drawn
        into a single image by the generator. data-snapshot is what routes
@@ -2074,49 +2082,10 @@
       "<span class=\""+dieClasses+"\">"+face+"</span>"+
       "<em>"+esc((die.label||("d"+die.sides))+status)+"</em></span>";
   }
-  /* ── The event list, above the dice ─────────────────────────────
-     Announcements have no button and never wait: they stack, newest first,
-     and the newest is simply larger and brighter than the ones under it.
-     A decision is the one line that carries buttons, because it is the one
-     line that is asking rather than telling. */
-  function eventLine(event,current){
-    var parts=String(event.text||"").split(" · "),headline=parts.shift()||"Fate moves";
-    if(event.kind==="awakening"){var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};if(arcana.name)parts.push(arcana.name);}
-    if(event.chaosRoll)parts.push("total "+(Number(event.chaosRoll[0])+Number(event.chaosRoll[1])));
-    var link=event.kind==="chaos"?"<a class=\"fh-cd-elink\" href=\""+esc(toolUrl("rules",""))+"chapters/chaos-tables/\">table</a>":"";
-    return "<li class=\"fh-cd-eline is-"+esc(event.kind)+(current?" is-current":"")+"\">"+
-      "<b>"+esc(headline)+"</b>"+(parts.length?"<i>"+esc(parts.join(" · "))+"</i>":"")+link+"</li>";
-  }
-  function renderDecisionLine(){
-    var prompt=state.trayPrompt;
-    if(prompt&&prompt.type==="die-choice"){
-      return "<li class=\"fh-cd-eline is-decision is-die-choice is-current\"><b>"+(prompt.mode==="choice"?"A / D":"CHOOSE RESULT")+"</b>"+
-        "<i>"+esc(prompt.label)+" — either result may be kept</i>"+
-        "<span class=\"fh-cd-eacts is-dice\">"+(prompt.rolls||[]).map(function(result,index){
-          return "<button type=\"button\" data-die-choice=\""+index+"\" class=\"fh-cd-die\" aria-label=\"Keep "+result+"\">"+dieSvg(prompt.sides,30,dieMaterialName({sides:prompt.sides,result:result,dieRole:prompt.dieRole}),result)+"</button>";
-        }).join("")+"</span></li>";
-    }
-    if(prompt&&prompt.type==="nat1"){
-      return "<li class=\"fh-cd-eline is-decision is-nat1 is-current\"><b>NATURAL 1 · do you accept your fate?</b>"+
-        "<i>Accept: critical failure, +1 Destiny Point. Refuse: the 1 becomes 20, Destiny falls to 0, Chaos becomes pending.</i>"+
-        "<span class=\"fh-cd-eacts\"><button type=\"button\" data-tray-accept-fate>Accept</button>"+
-        "<button type=\"button\" class=\"is-danger\" data-tray-refuse-fate>Refuse</button></span></li>";
-    }
-    if(prompt&&prompt.type==="arcane1"){
-      var sides=Number(prompt.sides)||4;
-      return "<li class=\"fh-cd-eline is-decision is-arcane-critical-failure is-current\"><b>ARCANE CRITICAL FAILURE · do you accept your fate?</b>"+
-        "<i>Accept: the failure stands, +1 Destiny Point. Refuse: the 1 reads as "+sides+" — Arcane Critical Success — Destiny falls to 0, Chaos becomes pending.</i>"+
-        "<span class=\"fh-cd-eacts\"><button type=\"button\" data-arcane-fate=\"accept\">Accept</button>"+
-        "<button type=\"button\" class=\"is-danger\" data-arcane-fate=\"chaos\">Refuse</button></span></li>";
-    }
-    return "";
-  }
-  function renderEventList(){
-    var decision=renderDecisionLine();
-    var lines=state.events.slice(0,SHOWN_EVENTS).map(function(event,index){return eventLine(event,!index&&!decision);}).join("");
-    if(!decision&&!lines)return "";
-    return "<ul class=\"fh-cd-events\" aria-live=\"polite\">"+decision+lines+"</ul>";
-  }
+  /* The event list and its decision line are gone (third fitting): the
+     judgment window says the ruling and asks the decisions, the badge strip
+     carries the debts, the Stream keeps the record. state.events itself
+     stays — it persists, and frameMood still reads its newest entry. */
   /* Menus, under the dice: a die's own card, a badge's card, and the deferred
      fate cards. These are things the player opened, not things that happened. */
   function renderEventContent(){
@@ -2319,9 +2288,11 @@
     }).join("")+
       "<button type=\"button\" class=\"fh-cd-pendadd\" data-pending-add title=\"Pin a reminder of your own\" aria-label=\"Pin a badge\">…</button>";
     var menu=renderEventContent();
-    /* Events sit between the badges and the dice: what just happened reads
-       above the dice it happened to, and a menu the player opened stays under
-       them so it never pushes the roll off screen. */
+    /* Above the judgment window there are only the badges (Eric, 2026-08-03,
+       third fitting): the stacked announcement lines are gone — a ruling
+       reads in the window, a debt reads on the badge strip, and the Stream
+       keeps the record. A menu the player opened still stays under the
+       window so it never pushes anything off screen. */
     return "<section class=\"fh-cd-stage\" data-zone=\"roller\">"+
       /* Round 8: ROLL itself moved into the console's white dice row (the slot
          its ⋮ vacated) now that the whole console is always visible and the
@@ -2330,29 +2301,76 @@
       "<div class=\"fh-cd-acts-bar\">"+
       "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
       "<div class=\"fh-cd-temps\">"+badges+"</div>"+
-      renderEventList()+
-      renderAssemblyFrame()+
+      renderJudgmentFrame()+
       (menu?"<div class=\"fh-cd-popups\">"+menu+"</div>":"")+
       "</section>";
   }
-  /* The Roll Builder's own frame: a hand still being assembled — every die
-     pending, nothing landed. The moment ROLL fires, the dice leave here and
-     land in the Dice Tray; this frame is intention, the tray is record.
-     (The landed frame, the Ruling and the mood streaks all live in the tray.) */
-  function renderAssemblyFrame(){
+  /* ── The judgment window (Eric, 2026-08-03, third fitting) ────────
+     The Roll Builder's frame is PERMANENT now, and everything the engine
+     says to the player passes through it, by priority:
+       1. a DECISION — Natural 1, an Arcane 1, an A/D choice: the one
+          moment the dock genuinely asks;
+       2. the ASSEMBLY — a hand with nothing landed, dice waiting on ROLL
+          (past six dice, a bare swarm);
+       3. the RULING of the roll just landed — verdict and account, the
+          same equality rule as always: oxblood only when the heading IS
+          the derived verdict;
+       4. rest — an invitation.
+     The stacked announcement lines above it are gone; the badge strip
+     carries the debts and the Stream keeps the record. The mood streaks
+     live here too — the moment's frame, not the registre's. */
+  function judgmentDecisionHtml(){
+    var prompt=state.trayPrompt;
+    if(prompt&&prompt.type==="die-choice"){
+      return "<div class=\"fh-cd-judgeask is-die-choice\"><b>"+(prompt.mode==="choice"?"A / D":"CHOOSE RESULT")+"</b>"+
+        "<i>"+esc(prompt.label)+" — either result may be kept</i>"+
+        "<span class=\"fh-cd-eacts is-dice\">"+(prompt.rolls||[]).map(function(result,index){
+          return "<button type=\"button\" data-die-choice=\""+index+"\" class=\"fh-cd-die\" aria-label=\"Keep "+result+"\">"+dieSvg(prompt.sides,30,dieMaterialName({sides:prompt.sides,result:result,dieRole:prompt.dieRole}),result)+"</button>";
+        }).join("")+"</span></div>";
+    }
+    if(prompt&&prompt.type==="nat1"){
+      return "<div class=\"fh-cd-judgeask is-nat1\"><b>NATURAL 1 · do you accept your fate?</b>"+
+        "<i>Accept: critical failure, +1 Destiny Point. Refuse: the 1 becomes 20, Destiny falls to 0, Chaos becomes pending.</i>"+
+        "<span class=\"fh-cd-eacts\"><button type=\"button\" data-tray-accept-fate>Accept</button>"+
+        "<button type=\"button\" class=\"is-danger\" data-tray-refuse-fate>Refuse</button></span></div>";
+    }
+    if(prompt&&prompt.type==="arcane1"){
+      var sides=Number(prompt.sides)||4;
+      return "<div class=\"fh-cd-judgeask is-arcane-critical-failure\"><b>ARCANE CRITICAL FAILURE · do you accept your fate?</b>"+
+        "<i>Accept: the failure stands, +1 Destiny Point. Refuse: the 1 reads as "+sides+" — Arcane Critical Success — Destiny falls to 0, Chaos becomes pending.</i>"+
+        "<span class=\"fh-cd-eacts\"><button type=\"button\" data-arcane-fate=\"accept\">Accept</button>"+
+        "<button type=\"button\" class=\"is-danger\" data-arcane-fate=\"chaos\">Refuse</button></span></div>";
+    }
+    return "";
+  }
+  function renderJudgmentFrame(){
+    var mood=frameMood();
+    var decision=judgmentDecisionHtml();
     var dice=trayDiceForDisplay();
-    if(!dice.length||dice.some(function(die){return die.result!=null;}))return "";
-    var sizePx=Math.min(dieSize(dice.length||1),34);
-    var heading=state.trayTitle&&state.trayTitle!=="Dice Tray"?state.trayTitle:"";
-    var detail=state.trayResultText;
-    return "<div class=\"fh-cd-frame is-assembly\">"+
-      "<span class=\"fh-cd-tray-dice\">"+dice.map(function(die,index){
-        return visualDie(die,index,dice.length,false,{sizePx:sizePx,plainLabel:true});
-      }).join("")+"</span>"+
-      "<span class=\"fh-cd-tray-ruling\">"+
-      (heading?"<b class=\"fh-cd-tray-heading\">"+esc(heading)+"</b>":"")+
-      (detail?"<em class=\"fh-cd-tray-account\">"+esc(detail)+"</em>":"")+
-      "</span></div>";
+    var assembling=dice.length&&!dice.some(function(die){return die.result!=null;});
+    var assembly="";
+    if(assembling&&!decision){
+      var realDice=dice.filter(function(die){return die.kind!=="modifier";}).length;
+      var swarm=realDice>LIGHTWEIGHT_DICE_THRESHOLD;
+      var sizePx=swarm?22:Math.min(dieSize(dice.length||1),34);
+      assembly="<span class=\"fh-cd-tray-dice"+(swarm?" is-swarm":"")+"\">"+dice.map(function(die,index){
+        return visualDie(die,index,dice.length,false,{sizePx:sizePx,plainLabel:true,naked:swarm});
+      }).join("")+"</span>";
+    }
+    var judgment;
+    if(decision)judgment=decision;
+    else{
+      var quiet=trayRevealPending();
+      var heading=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
+      var detail=quiet?"Rolling…":state.trayResultText;
+      var isRuling=!quiet&&!!state.trayVerdict&&heading===state.trayVerdict;
+      judgment=(heading&&heading!=="Dice Tray")||detail
+        ? "<b"+(isRuling?" class=\"fh-cd-verdict\"":"")+">"+esc(heading||"")+"</b>"+
+          (detail?"<em"+(isRuling?" class=\"fh-cd-account\"":"")+">"+esc(detail)+"</em>":"")
+        : "<em>Ready — click a skill, a save or an ability.</em>";
+    }
+    return "<div class=\"fh-cd-frame is-judgment"+(assembling?" is-assembly":"")+(mood?" mood-"+mood:"")+"\">"+
+      "<span class=\"fh-cd-judgment\">"+judgment+"</span>"+assembly+"</div>";
   }
   function renderDestiny(ch) {
     var arcana=ch.destinyBuild&&ch.destinyBuild.arcana||{};
@@ -2948,64 +2966,66 @@
      spaces. Tier 3 is the Ruling wearing the same authority rule as the old
      frame: the oxblood verdict class lands only when the text IS the derived
      verdict — a Chaos prompt written into the same slot gets neither. */
-  function trayTiersHtml(slot,quiet){
-    var title="",totalHtml="",third="";
+  /* The line's two flanks (Eric, 2026-08-03, third fitting): the LEFT
+     speaks — the verdict, what Fate said about this roll ("CRITICAL
+     SUCCESS", "Fate accepted"), badges beside it — and the RIGHT
+     identifies: the roll's name in bold over its total ("Arcana +5 / 24"),
+     the account small under both. Nothing said twice; the dice keep the
+     middle. */
+  function trayLineSides(slot,quiet){
+    var left="",right="";
     if(slot.kind==="feed"){
       var display=slot.event.display||{},tone=feedTone(display);
       var badges=(display.badges||[]).map(String);
       var natTexts=badges.filter(function(text){return /^NATURAL (20|1)\b|^ARCANE AWAKENING/i.test(text);});
       var rest=badges.filter(function(text){return natTexts.indexOf(text)<0;});
-      title=String(display.title||"Roll")+(display.bonus!=null?" "+signed(display.bonus):"");
-      totalHtml="<span class=\"fh-cd-tray-total is-"+(tone||"none")+"\">"+esc(display.total!=null?display.total:"—")+"</span>"+
-        natTexts.map(function(text){return trayBadgeChip("n20",text);}).join("");
-      third=(display.outcome?"<b class=\"fh-cd-tray-outcome is-"+(tone||"none")+"\">"+esc(display.outcome)+"</b>":"")+
-        (display.dc!=null?"<span class=\"fh-cd-vs\">vs DC "+esc(display.dc)+"</span>":"")+
+      left=(display.outcome?"<b class=\"fh-cd-tray-outcome is-"+(tone||"none")+"\">"+esc(display.outcome)+"</b>":"")+
+        natTexts.map(function(text){return trayBadgeChip("n20",text);}).join("")+
         rest.map(function(text){return trayBadgeChip("adjusted",text);}).join("");
+      right="<b class=\"fh-cd-tray-title\">"+esc(String(display.title||"Roll")+(display.bonus!=null?" "+signed(display.bonus):""))+"</b>"+
+        "<span class=\"fh-cd-tray-total is-"+(tone||"none")+"\">"+esc(display.total!=null?display.total:"—")+"</span>"+
+        (display.dc!=null?"<em class=\"fh-cd-tray-account\">vs DC "+esc(display.dc)+"</em>":"");
     }else if(slot.entry&&(slot.kind==="mine"||slot.structured)){
       var entry=slot.entry,vocab=rollVocabulary(entry),ruling=vocab.ruling,tone2=outcomeTone(entry);
-      var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler);});
-      var nat=kept.filter(function(badge){return badge.k==="n20";});
-      var others=kept.filter(function(badge){return badge.k!=="n20";});
-      title=String(entry.name||"Roll")+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):"");
-      totalHtml="<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\">"+(quiet?"…":esc(entry.total))+"</span>"+
-        (quiet?"":nat.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join(""));
       /* Quiet hides what the dice have not revealed — never what the player
          already knew: MANUAL and adjusted describe the roll's construction
          and stay visible while it rolls, exactly as the Stream always did. */
-      if(quiet)third="<em class=\"fh-cd-tray-account\">Rolling…</em>"+
-        others.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
-      else{
-        /* The live hand keeps trayResultText (it carries the open-roll status,
-           staged-dice count included); a settled history line re-derives the
-           account so it can never go stale. */
-        var account=slot.kind==="live"?state.trayResultText:ruling.account.join(" · ");
-        third=(ruling.verdict?"<b class=\"fh-cd-tray-verdict\">"+esc(ruling.verdict)+"</b>":"")+
-          (account?"<em class=\"fh-cd-tray-account\" title=\""+esc(account)+"\">"+esc(account)+"</em>":"")+
-          (entry.dc!==""&&entry.dc!=null?"<span class=\"fh-cd-vs\">vs DC "+esc(entry.dc)+"</span>":"")+
-          others.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
-      }
+      var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler);});
+      left=(quiet?"<em class=\"fh-cd-tray-account\">Rolling…</em>"
+          :ruling.verdict?"<b class=\"fh-cd-tray-verdict\">"+esc(ruling.verdict)+"</b>":"")+
+        kept.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
+      /* The live hand keeps trayResultText (it carries the open-roll status,
+         staged-dice count included); a settled history line re-derives the
+         account so it can never go stale. */
+      var account=quiet?"":(slot.kind==="live"?state.trayResultText:ruling.account.join(" · "));
+      right="<b class=\"fh-cd-tray-title\">"+esc(String(entry.name||"Roll")+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):""))+"</b>"+
+        "<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\">"+(quiet?"…":esc(entry.total))+"</span>"+
+        (account?"<em class=\"fh-cd-tray-account\" title=\""+esc(account)+"\">"+esc(account)+"</em>":"")+
+        (!quiet&&entry.dc!==""&&entry.dc!=null?"<em class=\"fh-cd-tray-account\">vs DC "+esc(entry.dc)+"</em>":"");
     }else{
-      /* The live hand before a roll exists, or a prompt that overwrote the
-         tray fields ("Chaos" · "Roll 2d6 and read the Chaos table"). Raw
-         fields, verdict classes only by equality — never by flag. */
+      /* A prompt that overwrote the tray fields while dice are engaged
+         ("Chaos" · "Roll 2d6 and read the Chaos table"). Raw fields, verdict
+         classes only by equality — never by flag. */
       var heading=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
       var detail=quiet?"Rolling…":state.trayResultText;
       var isRuling=!quiet&&!!state.trayVerdict&&heading===state.trayVerdict;
-      title="";
-      third="<b"+(isRuling?" class=\"fh-cd-tray-verdict\"":" class=\"fh-cd-tray-heading\"")+">"+esc(heading||"Dice Tray")+"</b>"+
-        (detail?"<em"+(isRuling?" class=\"fh-cd-tray-account\"":"")+">"+esc(detail)+"</em>":"");
+      left="<b"+(isRuling?" class=\"fh-cd-tray-verdict\"":" class=\"fh-cd-tray-heading\"")+">"+esc(heading||"Dice Tray")+"</b>";
+      right=detail?"<em class=\"fh-cd-tray-account\">"+esc(detail)+"</em>":"";
     }
-    return "<span class=\"fh-cd-tray-ruling\">"+
-      (title?"<b class=\"fh-cd-tray-title\">"+esc(title)+"</b>":"")+
-      (totalHtml?"<span class=\"fh-cd-tray-t2\">"+totalHtml+"</span>":"")+
-      (third?"<span class=\"fh-cd-tray-t3\">"+third+"</span>":"")+
-      "</span>";
+    return {left:left,right:right};
   }
   function trayLineHtml(slot,index,flags,quiet){
     var sizeClass=index===0?"is-l1":index<4?"is-mid":"is-static";
     /* The band pins the CEILING, the crowd still shrinks below it: an 8d6
        Fireball must fit its line the same way it had to fit the old frame. */
-    var sizePx=Math.min(dieSize(slot.dice.length||1),index===0?TRAY_DIE_BIG:TRAY_DIE_SMALL);
+    /* Past six real dice a hand is a SWARM (Eric, 2026-08-03): bare mini
+       dice, no wrapper, wrapping into rows — 28d reads as three rows, not
+       28 captioned columns. Up to six, the wrapper stays and the band pins
+       the CEILING while the crowd still shrinks under it. */
+    var realDice=slot.dice.filter(function(die){return die.kind!=="modifier";}).length;
+    var swarm=realDice>LIGHTWEIGHT_DICE_THRESHOLD;
+    var sizePx=swarm?(index===0?22:16)
+      :Math.min(dieSize(slot.dice.length||1),index===0?TRAY_DIE_BIG:TRAY_DIE_SMALL);
     var snapshot=index>=4;
     var readOnly=slot.kind==="feed";
     var who=slot.kind==="feed"
@@ -3015,7 +3035,7 @@
     var time=ts?nowLabel(ts):"";
     var diceHtml=slot.dice.map(function(die,di){
       return visualDie(die,di,slot.dice.length,!!(flags&&flags[di]),
-        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true});
+        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true,naked:swarm});
     }).join("");
     var reopen=slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
     /* The who is a CHIP, not a column (Eric, 2026-08-03: "faut gagner de la
@@ -3036,7 +3056,10 @@
     var whoHtml="<span class=\"fh-cd-tray-who"+(portrait?"":" is-noimg")+"\" title=\""+esc(hoverText)+"\">"+
       (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+chip+"</button>":"<b aria-label=\""+esc(who)+"\">"+chip+"</b>")+
       "<i class=\"fh-cd-tray-name\">"+esc(hoverText)+"</i></span>";
-    var row=whoHtml+"<span class=\"fh-cd-tray-dice\">"+diceHtml+"</span>"+trayTiersHtml(slot,quiet);
+    var sides=trayLineSides(slot,quiet);
+    var row="<span class=\"fh-cd-tray-left\">"+whoHtml+"<span class=\"fh-cd-tray-speak\">"+sides.left+"</span></span>"+
+      "<span class=\"fh-cd-tray-dice"+(swarm?" is-swarm":"")+"\">"+diceHtml+"</span>"+
+      "<span class=\"fh-cd-tray-right\">"+sides.right+"</span>";
     /* The live hand keeps the frame — and with it the mood streaks that say
        what the table still owes. History and feed lines carry no frame: a
        debt belongs to the moment, not to the registre under it. */

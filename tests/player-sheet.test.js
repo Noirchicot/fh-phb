@@ -12,7 +12,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
-    renderDestiny, renderStageZone, renderConsole, renderEventContent, renderEventList, resolveNatOne, renderStream, renderStreamEntry, rollExport,
+    renderDestiny, renderStageZone, renderConsole, renderEventContent, renderJudgmentFrame, resolveNatOne, renderStream, renderStreamEntry, rollExport,
     outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate,
     diceTrayInner, renderDiceTray, trayLines, trayDiceFromEntry, rollExportDice, feedLineDice
   };
@@ -229,12 +229,14 @@ t.state.profile.manualOverrides={};
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,7,"the free/damage tray accepts pools larger than a structured check");
-/* REWRITTEN (dock-dice-tray, second fitting): a hand with nothing landed is
-   the Roll Builder's, so the free pool renders in the roller's ASSEMBLY
-   frame — the shrink-with-the-crowd rule is unchanged, only the surface
-   asserting it moved (twice, both times with the zone's own ruling). */
-assert.match(t.renderStageZone(),/fh-cd-frame is-assembly/,"a pending hand renders in the roller's assembly frame");
-assert.match(t.renderStageZone(),/width="34"/,"large pools shrink their dice to stay inside the assembly frame");
+/* REWRITTEN (dock-dice-tray, three fittings the same day): a hand with
+   nothing landed is the Roll Builder's, rendered in the permanent judgment
+   window; and past SIX dice a hand is a SWARM — bare mini dice, no source
+   token, no label, wrapping into rows (Eric ruled the threshold at >6).
+   Seven dice therefore render naked at 22px, not wrapped at 34. */
+assert.match(t.renderStageZone(),/fh-cd-frame is-judgment is-assembly/,"a pending hand renders in the judgment window, dressed as assembly");
+assert.match(t.renderStageZone(),/is-naked/,"past six dice the pool is a bare swarm");
+assert.match(t.renderStageZone(),/width="22"/,"swarm dice are minis");
 assert.doesNotMatch(t.renderStageZone(),/width="52"/,"a crowded pool never keeps the full-size die");
 assert.doesNotMatch(t.diceTrayInner(),/is-livehand/,"and the tray shows no live hand while nothing has landed");
 t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);
@@ -281,9 +283,12 @@ assert.equal(t.pendingFate()[0].kind,"chaos");
 t.state.character={destinyBuild:{arcana:{name:"The Hermit"}}};
 // REWRITTEN (dock v6): a decision is a line in the event list above the dice,
 // not a card under them, so it is renderEventList that carries the question.
+/* REWRITTEN (dock-dice-tray, third fitting): the event list is gone — the
+   permanent judgment window carries the question now, with the same
+   buttons; the badge strip and the Stream carry everything else. */
 t.state.trayPrompt={type:"nat1",entryId:fate.id};
-assert.match(t.renderEventList(),/do you accept your fate\?/i,"the natural-1 choice is a decision line above the dice");
-assert.match(t.renderEventList(),/data-tray-accept-fate[\s\S]*data-tray-refuse-fate/,"with both answers on it");
+assert.match(t.renderJudgmentFrame(),/do you accept your fate\?/i,"the natural-1 choice is asked in the judgment window");
+assert.match(t.renderJudgmentFrame(),/data-tray-accept-fate[\s\S]*data-tray-refuse-fate/,"with both answers on it");
 assert.equal(t.renderEventContent(),"","and nothing under the dice, because nothing was opened");
 t.state.trayPrompt={type:"chaos",entryId:fate.id};
 assert.match(t.renderEventContent(),/Chaos has noticed/,"an opened Chaos card still renders under the dice");
@@ -293,7 +298,11 @@ assert.match(t.renderEventContent(),/Arcane Awakening/,"and so does an Awakening
 t.state.trayPrompt=null;
 t.state.events=[];
 assert.equal(t.renderEventContent(),"","with no prompt the roller frame stays clear for the dice");
-assert.equal(t.renderEventList(),"","and an empty list takes no room at all");
+/* REWRITTEN (third fitting): no event list exists to be empty — the
+   permanent judgment window keeps saying the LAST ruling at rest, and only
+   a cleared tray returns it to the invitation. */
+t.state.trayTitle="Dice Tray";t.state.trayResultText="";t.state.trayVerdict="";
+assert.match(t.renderJudgmentFrame(),/Ready — click a skill/,"a cleared window invites the next roll");
 
 t.state.code="FH1";
 t.state.pseudo="Mar";

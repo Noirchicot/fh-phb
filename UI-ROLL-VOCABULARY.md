@@ -262,6 +262,19 @@ at render time, so every surface says the same thing about the same roll.
    die pending, nothing landed — renders in the Roll Builder's own dashed
    assembly frame in the roller, and only enters the tray when ROLL lands it.
    The tray shows rolls; the builder shows intentions.
+   **Third fitting, same day (Eric):** the line reads **verdict-first** — the
+   ruling tiers are superseded by two flanks: LEFT the chip and what Fate
+   said (verdict, badges), RIGHT the roll's name in bold over its total
+   ("Arcana +5 / 24"), account small underneath. Past **six** dice a hand is
+   a **swarm**: bare mini dice (no source token, no label — colour will
+   carry damage type later), wrapping into rows, 22px on the large line,
+   16px below — a 28d6 reads as three rows. And the Roll Builder's frame is
+   now the **permanent judgment window**: decisions (Natural 1, Arcane 1,
+   A/D choice), the assembly, and the Ruling of the roll just landed all
+   speak there, by that priority; the stacked announcement lines above it
+   are gone — only the badge strip remains, and the Stream keeps the
+   record. `state.events` persists (the newest entry still drives the
+   window's mood streaks); it simply no longer renders as lines.
    Sizes are banded, not per-line-negotiated: the newest roll's dice land
    **large (44px ceiling)**, rolls 2–4 are **small (24px) but still able to
    roll** — simultaneous landings must be seen — and the **Static Area

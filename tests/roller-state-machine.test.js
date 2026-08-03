@@ -9,7 +9,7 @@ const sourcePath=path.join(__dirname,"..","docs","javascripts","fh-player-sheet.
 const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
   globalThis.__fhRollMachine={
     state,makeDestinySlots,setDestinyPoints,spendDestinyDie,destinyEventSpecs,naturalDestiny,
-    rollInput,runConfiguredRoll,resolveDieChoice,announceEvents,renderEventContent,renderEventList,renderStageZone,
+    rollInput,runConfiguredRoll,resolveDieChoice,announceEvents,renderEventContent,renderJudgmentFrame,renderStageZone,
     resolveNatOne,resolveArcaneOne,arcaneDecision,rollTransactionActive,entryTotal,outcomeFor,
     rollOpen,stagedList,stageBonusDie,stageDestinyDie,stageDestinyFromPool,rollStagedDice,releaseRoll,clearDiceTray,
     diceTrayInner,
@@ -111,9 +111,12 @@ reset();t.state.rollSequence={phase:"destiny-events"};
 t.announceEvents([{text:"Destiny summary · Lost 3 Destiny Points",kind:"destiny"},{text:"CHAOS RISK · pending",kind:"chaos"}],"");
 assert.equal(t.state.events.length,2,"both announcements land at once — the second does not wait for the first");
 assert.equal(latest().text,"CHAOS RISK · pending","newest first");
-assert.doesNotMatch(t.renderEventList(),/data-event-ok|>Continue<|>Finish</,"an announcement carries no button at all");
-assert.match(t.renderEventList(),/fh-cd-eline is-chaos is-current[^>]*><b>CHAOS RISK<\/b>/,"the newest line is the current one");
-assert.match(t.renderEventList(),/fh-cd-eline is-destiny"[^>]*><b>Destiny summary<\/b>/,"and the one before it stays on screen, unhighlighted");
+/* REWRITTEN (dock-dice-tray, third fitting): the announcement stack is gone
+   from the roller — announcements land in state.events (they persist, and
+   the newest still drives the judgment window's mood) but render no lines
+   and no buttons. Announcing never blocks, and never did. */
+assert.doesNotMatch(t.renderStageZone(),/data-event-ok|>Continue<|>Finish</,"an announcement carries no button at all");
+assert.doesNotMatch(t.renderStageZone(),/fh-cd-eline/,"and no stacked line either — the window and the Stream carry it");
 assert.equal(t.rollTransactionActive(),false,"announcing never holds the dock");
 
 // Destiny still rolls first, but its consequences no longer gate the d20: the
@@ -140,12 +143,11 @@ assert.doesNotMatch(t.renderStageZone(),/data-roll-now/,"and it is not duplicate
 assert.doesNotMatch(t.renderStageZone(),/APPLY/,"APPLY is gone from the dock entirely");
 assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),false,"an open roll no longer holds the dock hostage");
 assert.equal(t.rollTransactionActive(),false,"only a question that must be answered locks the dock now");
-// The event zone sits between the badges and the dice, and menus stay below them.
-assert.ok(t.renderStageZone().indexOf("fh-cd-temps")<t.renderStageZone().indexOf("fh-cd-events"),"events come after the badge strip");
-/* REWRITTEN (dock-dice-tray, 2026-08-03): the frame and the dice left the
-   roller for the Dice Tray zone — the roller keeps no frame at all, and the
-   live hand renders framed inside the tray instead. */
-assert.equal(t.renderStageZone().indexOf("fh-cd-frame"),-1,"the roller no longer carries the frame");
+/* REWRITTEN (dock-dice-tray, third fitting): the badges sit directly above
+   the permanent judgment window — no event zone between them. Landed dice
+   frame themselves in the Dice Tray; the roller's frame only ever judges. */
+assert.equal(t.renderStageZone().indexOf("fh-cd-events"),-1,"no event zone in the roller");
+assert.ok(t.renderStageZone().indexOf("fh-cd-temps")<t.renderStageZone().indexOf("fh-cd-frame is-judgment"),"the badges sit above the judgment window");
 assert.ok(t.diceTrayInner().indexOf("fh-cd-frame is-trayhand")>=0,"the live hand's frame lives in the Dice Tray");
 t.clearDiceTray(true);
 assert.equal(t.state.events.length,0,"CLEAR TRAY takes the running commentary with the hand");
@@ -314,7 +316,8 @@ t.runConfiguredRoll();
 assert.equal(t.state.trayPrompt.type,"arcane1","a 1 on a Destiny die now asks before it decides");
 assert.equal(t.rollTransactionActive(),true,"and it holds the roll while it asks");
 assert.equal(t.state.history.length,0,"the d20 waits behind the question");
-assert.match(t.renderEventList(),/data-arcane-fate="accept"[\s\S]*data-arcane-fate="chaos"/,"both answers are on the line");
+/* REWRITTEN (third fitting): the question is asked in the judgment window. */
+assert.match(t.renderJudgmentFrame(),/data-arcane-fate="accept"[\s\S]*data-arcane-fate="chaos"/,"both answers are in the window");
 queueRolls(12);t.resolveArcaneOne(t.state.trayPrompt.entryId,"accept");
 entry=t.state.history[0];
 assert.equal(entry.destiny.criticalFailure,true,"accepting leaves the failure standing");

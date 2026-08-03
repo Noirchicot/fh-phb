@@ -103,12 +103,17 @@ assert.equal(merged.find(line => line.id === "their-mid").kind, "feed", "the par
 /* ── 3. The line: three spaces, nothing twice, time on hover only ──── */
 
 const inner = t.diceTrayInner();
+/* REWRITTEN (third fitting, same day): the line reads verdict-first now —
+   LEFT the chip and what Fate said, CENTRE the dice, RIGHT the roll's name
+   over its total ("Arcana +7 / 21"). */
 const firstLine = inner.slice(inner.indexOf("fh-cd-trayline"));
-const whoAt = firstLine.indexOf("fh-cd-tray-who");
+const leftAt = firstLine.indexOf("fh-cd-tray-left");
 const diceAt = firstLine.indexOf("fh-cd-tray-dice");
-const rulingAt = firstLine.indexOf("fh-cd-tray-ruling");
-assert.ok(whoAt >= 0 && diceAt > whoAt && rulingAt > diceAt,
-  "a line reads left to right: who, then the dice, then the ruling");
+const rightAt = firstLine.indexOf("fh-cd-tray-right");
+assert.ok(leftAt >= 0 && diceAt > leftAt && rightAt > diceAt,
+  "a line reads left to right: the verdict flank, then the dice, then name and total");
+assert.ok(firstLine.indexOf("fh-cd-tray-who") < diceAt, "the chip leads the left flank");
+assert.match(firstLine.slice(rightAt), /fh-cd-tray-title">Arcana \+7</, "the right flank names the roll");
 /* REWRITTEN (same lot, Eric's second fitting 2026-08-03): the who became a
    CHIP — my face or two letters — because the full name cost the line its
    flanks. The whole name and the time still exist, on hover and in the
@@ -117,8 +122,8 @@ assert.match(inner, /fh-cd-tray-initials">Ye</, "the who is a chip — two lette
 assert.match(inner, /fh-cd-tray-name">Yedrivel/, "the full name rides the hover label…");
 assert.match(inner, /title="Yedrivel · /, "…and the title attribute, with the time");
 assert.match(css, /\.fh-cd-tray-who:hover \.fh-cd-tray-name\{opacity:1\}/, "and the stylesheet only surfaces it on hover");
-assert.match(inner, /fh-cd-tray-title/, "tier 1: the roll's name in bold");
-assert.match(inner, /fh-cd-tray-total/, "tier 2: the total");
+assert.match(inner, /fh-cd-tray-title/, "the roll's name in bold, right flank");
+assert.match(inner, /fh-cd-tray-total/, "the total under it");
 assert.match(inner, /Arcana \+7/, "the title carries the bonus, not the arithmetic");
 
 /* ── 4. Sizes per band: large, small, snapshot ─────────────────────── */

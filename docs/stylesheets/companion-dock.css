@@ -1392,3 +1392,37 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   border-width:1px;border-style:dashed;box-shadow:none;padding:2px 6px;overflow:visible}
 .fh-cd-frame.is-assembly::after{content:none}
 .fh-cd-frame.is-assembly .fh-cd-tray-ruling{width:110px;flex:none}
+
+/* ── Dice Tray & judgment window, third fitting (Eric, 2026-08-03) ────
+   The line reads verdict-first: LEFT the chip and what Fate said, CENTRE
+   the dice (a swarm of bare minis past six), RIGHT the roll's name over
+   its total. The Roll Builder's frame is the permanent judgment window —
+   decisions, assembly and the Ruling all speak there; above it, only the
+   badges. APPENDED, never edited above. */
+.fh-cd-tray-left{flex:none;width:112px;min-width:0;display:flex;align-items:center;gap:4px;text-align:left}
+.fh-cd-tray-left .fh-cd-tray-who{flex:none}
+.fh-cd-tray-speak{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+.fh-cd-tray-speak .fh-cd-tray-verdict{white-space:normal;line-height:1.1;max-height:2.3em;overflow:hidden;text-overflow:clip}
+.fh-cd-tray-right{flex:none;width:96px;min-width:0;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:0}
+/* The old single right-hand ruling column is superseded by the flanks. */
+.fh-cd-trayline .fh-cd-tray-ruling{display:none}
+/* The swarm: bare dice, wrapping rows, tighter than wrapped columns. */
+.fh-cd-tray-dice.is-swarm{flex-wrap:wrap;justify-content:center;gap:3px;overflow:visible;padding:2px}
+.fh-cd-diewrap.is-naked{gap:0}
+.fh-cd-trayline.is-l1,.fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{max-height:none}
+/* The judgment window. */
+.fh-cd-frame.is-judgment{height:auto;min-height:64px;margin:4px 10px;display:flex;flex-direction:row;align-items:center;gap:8px;
+  border-width:1.5px;padding:4px 8px;overflow:visible}
+.fh-cd-frame.is-judgment.is-assembly{border-style:dashed;box-shadow:none}
+.fh-cd-frame.is-judgment::after{content:none}
+.fh-cd-judgment{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+.fh-cd-judgment>b{color:var(--cd-ink);font-size:calc(11px * var(--cd-fs));font-weight:800;letter-spacing:.02em;line-height:1.15}
+.fh-cd-judgment>b.fh-cd-verdict{color:var(--cd-oxblood);letter-spacing:.06em;text-transform:uppercase}
+.fh-cd-judgment>em{font-style:normal;color:var(--cd-faint);font-size:calc(7.6px * var(--cd-fs));line-height:1.25}
+.fh-cd-judgment>em.fh-cd-account{color:var(--cd-muted)}
+.fh-cd-frame.is-judgment .fh-cd-tray-dice{flex:0 1 auto;justify-content:flex-end}
+/* A decision inside the window: the question in bold, the terms under it,
+   the two answers on their own row. */
+.fh-cd-judgeask{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.fh-cd-judgeask>b{color:var(--cd-oxblood);font-size:calc(10.5px * var(--cd-fs));font-weight:800;letter-spacing:.03em}
+.fh-cd-judgeask>i{font-style:normal;color:var(--cd-muted);font-size:calc(7.8px * var(--cd-fs));line-height:1.3}
