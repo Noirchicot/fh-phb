@@ -21,22 +21,50 @@
     "label": "Release 5/6/7 (Traits · Actions · Spells), déployée et vérifiée live le 2026-08-01"
   },
   "main": [
-    {"repo": "fh-phb", "path": "~/tools/fh-phb", "state": "fini",
-     "note": "Vocabulaire de jet fusionné (2e356d2) + fix moteur refus arcanique (aaec8ff) + guide v1.4 — non déployés, porte fermée (voulu)."},
-    {"repo": "fh-table", "path": "~/tools/fh-table", "state": "fini",
-     "note": "Pont AboveVTT fusionné (b36c94a). Distribution de l'extension = décision produit en attente."},
-    {"repo": "fh-worker", "path": "~/tools/fh-worker", "state": "fini",
-     "note": "Déployé version 4bc33715 ; schemaVersion 2 ; rien en attente."},
-    {"repo": "fh-srd", "path": "~/tools/fh-srd", "state": "fini",
-     "note": "Lot 2 EN fusionné (977852f) : 948 records — 339 sorts EN avec texte, 253 objets magiques, 17 feats. Déshyphénation FR fusionnée (9db7bf2, 35→0) + couture de page FR corrigée (635f124, 11 durées nettoyées). 13/13 suites, rejoué en clone indépendant."}
+    {
+      "repo": "fh-phb",
+      "path": "~/tools/fh-phb",
+      "state": "fini",
+      "note": "Vocabulaire de jet fusionné (2e356d2) + fix moteur refus arcanique (aaec8ff) + guide v1.4 — non déployés, porte fermée (voulu)."
+    },
+    {
+      "repo": "fh-table",
+      "path": "~/tools/fh-table",
+      "state": "fini",
+      "note": "Pont AboveVTT fusionné (b36c94a). Distribution de l'extension = décision produit en attente."
+    },
+    {
+      "repo": "fh-worker",
+      "path": "~/tools/fh-worker",
+      "state": "fini",
+      "note": "Déployé version 4bc33715 ; schemaVersion 2 ; rien en attente."
+    },
+    {
+      "repo": "fh-srd",
+      "path": "~/tools/fh-srd",
+      "state": "fini",
+      "note": "Lot 3 EN fusionné (adf9af0) : 973 records — + backgrounds (4), espèces (9), classes (12, sous-classe imbriquée). 16/16 suites, rejoué en clone indépendant."
+    }
   ],
   "wip": [
-    {"name": "Dice Tray (surface partagée)", "repo": "fh-phb", "state": "en-cours",
-     "note": "Session lancée 2026-08-03 (branche dock-dice-tray). Consomme le vocabulaire ; hérite LIVE/RECENT/OFF. Hauteur de ligne avec dés : arbitrage d'Eric attendu avant codage."},
-    {"name": "SRD lot 3 anglais (espèces, backgrounds, classes)", "repo": "fh-srd", "state": "en-attente",
-     "note": "Pastille posée après la fusion du lot 2. L'équipement mondain (tables multi-colonnes) reporté au lot 4."},
-    {"name": "Widget Übersicht chantier", "repo": "hooks/widget", "state": "en-cours",
-     "note": "Section LOGBOOK livrée ; vue pipeline (déployé / site/ / main / WIP) en construction dans le fil Übersicht."}
+    {
+      "name": "Dice Tray (surface partagée)",
+      "repo": "fh-phb",
+      "state": "en-cours",
+      "note": "Session lancée 2026-08-03 (branche dock-dice-tray). Consomme le vocabulaire ; hérite LIVE/RECENT/OFF. Hauteur de ligne avec dés : arbitrage d'Eric attendu avant codage."
+    },
+    {
+      "name": "SRD lot 4 anglais (glossaire, monstres, équipement)",
+      "repo": "fh-srd",
+      "state": "en-attente",
+      "note": "Pastille posée après la fusion du lot 3. Dernier lot de contenu EN ; ensuite la passe française."
+    },
+    {
+      "name": "Widget Übersicht chantier",
+      "repo": "hooks/widget",
+      "state": "en-cours",
+      "note": "Section LOGBOOK livrée ; vue pipeline (déployé / site/ / main / WIP) en construction dans le fil Übersicht."
+    }
   ],
   "attente_eric": [
     "Attribution SRD (bloc B5 vs restriction « aucune autre attribution ») — avant toute publication/vente.",
