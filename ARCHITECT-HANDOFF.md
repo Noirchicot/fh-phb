@@ -102,6 +102,30 @@ Read both. Read nothing else to start.
 
 ---
 
+## 3b. The chantier board and the logbook single-source rule — Eric, 2026-08-03
+
+**`CHANTIER-STATUS.json` (this repo) is the editorial dashboard of the whole FH
+chantier, and the architect maintains it.** The Übersicht widget paints it; it
+never guesses a colour. Git facts (SHAs, gaps, dirty trees) are the widget's to
+compute — this file carries what no script can know: *fini / en-cours /
+en-attente / probleme*, and why. **Update it at every merge, verification,
+incident, or lot launch** — an out-of-date board is worse than none, because
+Eric reads it as truth. The deploy-gate entry must always say the main↔site gap
+is deliberate while the gate is closed (§ DEPLOY GATE below): the widget shows
+it neutral, never orange.
+
+**Logbook single source: every chantier entry lives in the vault folder
+`7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/` — never at the logbook root,
+never in another theme folder.** Check for an existing file before creating one;
+package sessions write their own entries there too, so the architect's additions
+go INTO the existing file (a dated section), not beside it. This rule exists
+because it was paid for: on 2026-08-03 the architect wrote two entries at the
+root while the sessions had already written their own in a theme subfolder —
+two files, two truths, and the subfolder copy still said an engine defect was
+open after the architect had fixed it. One subject, one file.
+
+---
+
 ## 4. Running the package chats
 
 **Worktrees**, one per package, each with its own port and a pre-built harness so

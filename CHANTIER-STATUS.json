@@ -1,0 +1,49 @@
+{
+  "_readme": [
+    "Tableau de bord éditorial du chantier FH & FHPC — TENU PAR L'ARCHITECTE, À LA MAIN.",
+    "Le widget Übersicht le lit et le peint ; il ne devine aucune couleur lui-même.",
+    "Les faits git (SHA, écarts, arbres sales) sont calculés par le widget ; ce fichier",
+    "porte ce qu'un script ne peut pas savoir : fini / en cours / problème, et pourquoi.",
+    "Mise à jour OBLIGATOIRE à chaque fusion, vérification, incident ou lancement de lot",
+    "(règle gravée dans ARCHITECT-HANDOFF.md). states: fini | en-cours | en-attente | probleme.",
+    "Couleurs côté widget : fini=vert, en-cours=orange, en-attente=blanc, probleme=rouge."
+  ],
+  "as_of": "2026-08-03",
+  "gate": {
+    "open": false,
+    "display": "🚦 Porte de déploiement FERMÉE — écart main↔site VOULU, pas une alerte",
+    "reason": "Rien ne se déploie tant que Info Panel, Dice Pool, Console, Dice Tray et Roll Builder ne sont pas tous reconstruits (décision Eric 2026-08-03).",
+    "reopens_when": "Les cinq surfaces du bas du dock sont fusionnées et vérifiées."
+  },
+  "deployed": {
+    "site": "https://noirchicot.github.io/fh-phb/",
+    "gh_pages": "d947dd7",
+    "label": "Release 5/6/7 (Traits · Actions · Spells), déployée et vérifiée live le 2026-08-01"
+  },
+  "main": [
+    {"repo": "fh-phb", "path": "~/tools/fh-phb", "state": "fini",
+     "note": "Vocabulaire de jet fusionné (2e356d2) + fix moteur refus arcanique (aaec8ff) + guide v1.4 — non déployés, porte fermée (voulu)."},
+    {"repo": "fh-table", "path": "~/tools/fh-table", "state": "fini",
+     "note": "Pont AboveVTT fusionné (b36c94a). Distribution de l'extension = décision produit en attente."},
+    {"repo": "fh-worker", "path": "~/tools/fh-worker", "state": "fini",
+     "note": "Déployé version 4bc33715 ; schemaVersion 2 ; rien en attente."},
+    {"repo": "fh-srd", "path": "~/tools/fh-srd", "state": "fini",
+     "note": "v1 fusionnée (2fe355f) : 339 sorts FR, stats seulement. Décision : tout finir en anglais d'abord."}
+  ],
+  "wip": [
+    {"name": "Dice Tray (surface partagée)", "repo": "fh-phb", "state": "en-cours",
+     "note": "Session lancée 2026-08-03 (Fable). Consomme le vocabulaire ; hérite LIVE/RECENT/OFF. Hauteur de ligne avec dés : arbitrage d'Eric attendu avant codage."},
+    {"name": "SRD lot 2 anglais", "repo": "fh-srd", "branch": "srd/en-content-v2", "state": "en-cours",
+     "note": "339 sorts EN avec texte livrés (16d2e82, 3 défauts trouvés en mesurant) ; équipement en cours ; feats à suivre."},
+    {"name": "Déshyphénation FR (35 artefacts)", "repo": "fh-srd", "state": "en-attente",
+     "note": "Défaut confirmé par l'architecte dans l'export FR v1. Pastille validée — à lancer APRÈS la fusion du lot 2 (mêmes fichiers)."},
+    {"name": "Widget Übersicht chantier", "repo": "hooks/widget", "state": "en-cours",
+     "note": "Section LOGBOOK livrée ; vue pipeline (déployé / site/ / main / WIP) en construction dans le fil Übersicht."}
+  ],
+  "attente_eric": [
+    "Attribution SRD (bloc B5 vs restriction « aucune autre attribution ») — avant toute publication/vente.",
+    "Hauteur d'une ligne du Dice Tray avec dés montrés (mockup à venir de la session Dice Tray).",
+    "Distribution de l'extension AboveVTT (packaging, installation MJ)."
+  ],
+  "problems": []
+}
