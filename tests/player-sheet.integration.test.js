@@ -170,7 +170,12 @@ assert.equal(root.querySelectorAll(".fh-cd-dicerow .fh-cd-diewrap").length,1,"a 
 // comes from the white picker, and a seal is something you give a die afterwards.
 assert.equal(root.querySelectorAll("[data-bonus-preset]").length,0,"the Guidance and Bardic chips are gone from the console");
 assert.equal(root.querySelector("#fhPsDestinyDie"),null,"and so is the Destiny selector — the gold pool is the only way in");
-assert.equal(root.querySelectorAll(".fh-cd-whiterow .fh-cd-wdie").length,7,"the white picker offers d4 through d100");
+/* REWRITTEN 2026-08-03 (roll-vocabulary lot): the die classes are named by
+   FUNCTION now (UI-ROLL-VOCABULARY.md §2) -- .fh-cd-wdie -> .fh-cd-calling-die,
+   .fh-cd-ddie -> .fh-cd-picker-die, .fh-cd-static3d -> .fh-cd-static-die. The
+   old names are false about the current markup; every behaviour asserted here
+   is unchanged, and each selector still names the same element. */
+assert.equal(root.querySelectorAll(".fh-cd-whiterow .fh-cd-calling-die").length,7,"the white picker offers d4 through d100");
 assert.equal(root.querySelector("#fhPsRunRoll"),null,"the console no longer carries a second roll button");
 /* REWRITTEN (round 7): ROLL is the d20 artwork now, which carries the word on
    its face; the button names itself through the image's alt so it still has an
@@ -178,7 +183,7 @@ assert.equal(root.querySelector("#fhPsRunRoll"),null,"the console no longer carr
 assert.equal(root.querySelector("[data-roll-now] .fh-cd-rolldie").getAttribute("alt"),"ROLL","one permanent ROLL, named by its die");
 
 root.querySelector('.fh-cd-whiterow [data-add-tray-die="4"]').click();
-assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="4"][data-pending="1"]').length,1,"the d4 already uses its opaque 3D ready pose before rolling");
+assert.equal(root.querySelectorAll('.fh-cd-static-die[data-sides="4"][data-pending="1"]').length,1,"the d4 already uses its opaque 3D ready pose before rolling");
 root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
 assert.equal(t.state.rollConfig.bonusDice.length,1,"a white die joins the prepared roll");
 assert.equal(t.state.rollConfig.bonusDice[0].sides,4,"and keeps the size that was clicked");
@@ -216,9 +221,9 @@ assert.equal(entry.bonusDice[0].sides,4,"the picked d4 rolls beside the d20s");
 // REWRITTEN (round 8): +2 was turned back off (by re-clicking advantage,
 // above) before this roll, so the frame carries no +2 token here.
 assert.equal(t.state.trayResults.length,3,"the frame displays both d20s and the bonus die");
-assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="20"]').length,2,"resolved d20s use the static 3D renderer");
-assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="4"]').length,1,"the resolved bonus d4 uses the same static 3D renderer");
-assert.equal(root.querySelector('.fh-cd-static3d').dataset.result,String(entry.d20s[0]),"the renderer receives the face already chosen by FHPC");
+assert.equal(root.querySelectorAll('.fh-cd-static-die[data-sides="20"]').length,2,"resolved d20s use the static 3D renderer");
+assert.equal(root.querySelectorAll('.fh-cd-static-die[data-sides="4"]').length,1,"the resolved bonus d4 uses the same static 3D renderer");
+assert.equal(root.querySelector('.fh-cd-static-die').dataset.result,String(entry.d20s[0]),"the renderer receives the face already chosen by FHPC");
 const originalD20=Array.from(entry.d20s);
 
 /* ── Stream ──────────────────────────────────────────────────── */
@@ -270,7 +275,7 @@ assert.equal(t.state.rollConfig.destinyDieId,"","cancelling takes the die back")
 assert.equal(root.querySelector(".fh-cd-events"),null,"and takes its line with it");
 
 root.querySelector("[data-destiny-die]").click();
-assert.ok(root.querySelector(".fh-cd-ddie.is-selected"),"the staged Destiny die is flagged in the pool");
+assert.ok(root.querySelector(".fh-cd-picker-die.is-selected"),"the staged Destiny die is flagged in the pool");
 assert.equal(t.state.trayResults[0].label,"Destiny","the staged Destiny die appears first in the frame");
 const beforeDestinyHistory=t.state.history.length;
 root.querySelector("[data-roll-now]").click();
@@ -298,7 +303,7 @@ assert.equal(root.querySelector("[data-clear-tray]").disabled,false,"and an open
 const whiteD6=root.querySelector('.fh-cd-whiterow [data-add-tray-die="6"]');
 assert.equal(whiteD6.disabled,false,"the white picker stays live to add another die");
 assert.ok(whiteD6.classList.contains("is-calling"),"it calls for one, briefly");
-assert.ok(root.querySelector(".fh-cd-ddie.is-calling"),"the Destiny pool calls too");
+assert.ok(root.querySelector(".fh-cd-picker-die.is-calling"),"the Destiny pool calls too");
 whiteD6.click();
 assert.equal(t.state.rollSequence.staged.length,1,"the picked die is staged, not rolled on the spot");
 /* REWRITTEN (round 7c): the composition line came off the button -- it is the
@@ -343,11 +348,11 @@ assert.equal(t.state.trayResults.length,0,"Clear empties every die and result");
 assert.equal(t.state.rollConfig,null,"Clear also releases the active roll setup");
 
 root.querySelector('[data-add-tray-die="100"]').click();
-assert.equal(root.querySelectorAll('.fh-cd-static3d[data-sides="100"] .fh-cd-static3d-part').length,2,"a ready d100 is already represented by two physical d10s");
+assert.equal(root.querySelectorAll('.fh-cd-static-die[data-sides="100"] .fh-cd-static-die-part').length,2,"a ready d100 is already represented by two physical d10s");
 root.querySelector("[data-roll-now]").click();
 const percentileEntry=t.state.history[0],percentileResult=percentileEntry.dice[0].result;
 const percentileText=percentileResult===100?"00":String(percentileResult).padStart(2,"0");
-assert.equal(Array.from(root.querySelectorAll('.fh-cd-static3d[data-sides="100"] .fh-cd-static3d-result')).map(item=>item.textContent).join(""),percentileText,"the two d10 overlays compose the resolved percentile value");
+assert.equal(Array.from(root.querySelectorAll('.fh-cd-static-die[data-sides="100"] .fh-cd-static-die-result')).map(item=>item.textContent).join(""),percentileText,"the two d10 overlays compose the resolved percentile value");
 settleRoll();
 root.querySelector("[data-clear-tray]").click();
 

@@ -48,7 +48,7 @@
   var MAX_FREE_DICE = 40;
   var LIGHTWEIGHT_DICE_THRESHOLD = 6;
   /* Both picker rows (Destiny, white dice) render at this size. Kept in step
-     with the .fh-cd-ddie / .fh-cd-wdie widths in companion-dock.css. */
+     with the .fh-cd-picker-die / .fh-cd-calling-die widths in companion-dock.css. */
   var PICKER_DIE_PX = 31;
   var MAX_HISTORY = 20;
   var MAX_EXHAUSTION = 6;
@@ -84,7 +84,7 @@
     // Stream is `optional`, off by default (UI-TERMINOLOGY.md zone 10) -- the
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
-    trayQuietTitle:"", trayRevealAt:0, trayRevealTimer:null,
+    trayQuietTitle:"", trayVerdict:"", trayRevealAt:0, trayRevealTimer:null,
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, zoom:ZOOM_DEFAULT, zoomAuto:true,
     panel:"skills", panelData:{},
@@ -696,7 +696,7 @@
     state.trayLabel = String(local.trayLabel||"Damage roll").slice(0,48);
     var pending=profile.pendingRoll||local.pendingRoll||{};
     state.rollSequence=pending.rollSequence||null;state.trayPrompt=pending.trayPrompt||null;state.queueDone=pending.queueDone||"";
-    state.trayResults=Array.isArray(pending.trayResults)?pending.trayResults:[];state.trayTitle=pending.trayTitle||"Dice Tray";state.trayResultText=pending.trayResultText||"";state.pendingArmed=pending.pendingArmed||null;
+    state.trayResults=Array.isArray(pending.trayResults)?pending.trayResults:[];state.trayTitle=pending.trayTitle||"Dice Tray";state.trayResultText=pending.trayResultText||"";state.trayVerdict=pending.trayVerdict||"";state.pendingArmed=pending.pendingArmed||null;
     state.destinyStaged=pending.destinyStaged||null;
     state.diePrompt=null;
     // rollConfig is derived, never stored: a refresh mid-roll rebuilds the console
@@ -709,7 +709,7 @@
   function persistPlayState() {
     if (!state.code || !state.pseudo || !state.destiny) return;
     var safePrompt=state.trayPrompt&&["nat1","arcane1","chaos","awakening","die-choice","arcana-draw"].indexOf(state.trayPrompt.type)>=0?state.trayPrompt:null;
-    var pendingRoll={rollSequence:state.rollSequence,trayPrompt:safePrompt,queueDone:state.queueDone,trayResults:state.trayResults,trayTitle:state.trayTitle,trayResultText:state.trayResultText,pendingArmed:state.pendingArmed,destinyStaged:state.destinyStaged};
+    var pendingRoll={rollSequence:state.rollSequence,trayPrompt:safePrompt,queueDone:state.queueDone,trayResults:state.trayResults,trayTitle:state.trayTitle,trayResultText:state.trayResultText,trayVerdict:state.trayVerdict,pendingArmed:state.pendingArmed,destinyStaged:state.destinyStaged};
     var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll,panelData:state.panelData};
     try { localStorage.setItem(storageKey(), JSON.stringify(payload)); } catch (error) {}
     clearTimeout(persistTimer);
@@ -860,6 +860,91 @@
   // from stored state (a corrupted profile, a hand-edited localStorage entry)
   // must land on a real face, not ride into the total as a decimal.
   function forcedDieResult(value,sides){if(value==null||value==="")return null;return clamp(Math.round(Number(value)),1,Number(sides)||20);}
+  /* ══ THE ROLL VOCABULARY ═══════════════════════════════════════════
+     UI-ROLL-VOCABULARY.md, ratified 2026-08-02. The shared language of a roll:
+     where a die came from, what happened to it, and how the whole thing reads
+     as one line.
+
+     Everything below is DECLARED ONCE and read by every surface. The Dice
+     Tray, the Roll Builder, the Stream and every Console render the same
+     objects; built surface by surface they would each invent their own way to
+     draw a badge, and then there would be four truths about the same roll.
+     Since the Dice Tray became the shared surface (2026-08-02) a divergence
+     is no longer a private mistake — the whole table sees it. */
+
+  /* ── §1 Source tokens ──────────────────────────────────────────────
+     Every die carries its provenance. One token per source, here, once.
+
+     THE GLYPH CARRIES THE IDENTITY; THE COLOUR ONLY REINFORCES IT. Never
+     colour alone: at 12px blue and violet are not reliably distinguishable —
+     not for a colour-blind player, not for anyone in a badly lit room on a
+     Wednesday night. `tone` therefore never travels without `glyph`/`letter`.
+
+     ∞ won Destiny partly because it is the only HORIZONTAL mark in the set: a
+     star and a musical note are both "small spiky thing" at 12px, and ∞ is
+     mistakable for neither. The shield won Tactical for the mirror reason —
+     it is the only silhouette that NARROWS TOWARDS THE BOTTOM, so it survives
+     being reduced to a smudge. Both sword candidates were rejected because
+     glyphs are judged against their NEIGHBOURS: a single sword is a vertical
+     stroke with a bar, which is the I · II · III numerals sitting beside it,
+     and crossed swords are a radial spiky mass, which is the Guidance star on
+     the other side. Both collisions are a few pixels apart in the same row. */
+  var ROLL_SOURCES={
+    destiny :{key:"destiny" ,label:"Destiny"  ,tone:"destiny" ,glyph:"destiny" },
+    guidance:{key:"guidance",label:"Guidance" ,tone:"guidance",glyph:"guidance"},
+    bardic  :{key:"bardic"  ,label:"Bardic"   ,tone:"bardic"  ,glyph:"bardic"  },
+    tactical:{key:"tactical",label:"Tactical" ,tone:"tactical",glyph:"tactical"},
+    "other-1":{key:"other-1",label:"Bonus I"  ,tone:"bonus"   ,letter:"I"  },
+    "other-2":{key:"other-2",label:"Bonus II" ,tone:"bonus"   ,letter:"II" },
+    "other-3":{key:"other-3",label:"Bonus III",tone:"bonus"   ,letter:"III"}
+  };
+  var UNKNOWN_SOURCE={key:"",label:"Other",tone:"bonus",glyph:"other"};
+  /* What a player can seal a BONUS die with. Destiny is absent on purpose: a
+     Destiny die is taken from the pool, it is not a sticker you put on an
+     ordinary die, and the seal card has its own button for that. */
+  var SEALABLE_SOURCES=["guidance","bardic","tactical","other-1","other-2","other-3"];
+  function rollSource(key){return ROLL_SOURCES[String(key||"")]||UNKNOWN_SOURCE;}
+  /* Drawn FOR 12px, not shrunk from 24px. iconSvg's 1.65 stroke on a 24 grid
+     renders at 0.8 device px in the tray, which is a hairline; these are
+     filled, or stroked heavy, and each is ONE CONTINUOUS PATH. The first ∞
+     shipped in a mockup was three separate arcs whose ends did not meet — at
+     48px it looked sloppy and at 12px it was a smudge. These glyphs are never
+     seen large. They are seen at 12px, at an angle, mid-session. */
+  var SOURCE_GLYPHS={
+    /* One unbroken lemniscate: centre → left loop → centre → right loop →
+       centre. Two semicircle arcs (endpoints a diameter apart), opposite
+       sweeps, joined by cubics through the crossing. */
+    destiny:'<path d="M12 12C10.8 9.2 9.4 6.4 7.6 6.4a5.6 5.6 0 1 0 0 11.2c1.8 0 3.2-2.8 4.4-5.6 1.2-2.8 2.6-5.6 4.4-5.6a5.6 5.6 0 1 1 0 11.2c-1.8 0-3.2-2.8-4.4-5.6Z" fill="none" stroke="currentColor" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>',
+    /* A real five-pointed star, filled — an outline star at this size is a
+       thin cross. Outer r 9.6, inner r 4.6, centre nudged down so the optical
+       centre lands on the geometric one. */
+    guidance:'<path d="M12 3 14.7 8.88 21.13 9.63 16.38 14.02 17.64 20.37 12 17.2 6.36 20.37 7.62 14.02 2.87 9.63 9.3 8.88Z"/>',
+    /* Eighth note: solid stem and flag, solid head. The head overlaps the
+       stem foot rather than meeting it edge to edge, so no join can open up. */
+    bardic:'<path d="M13.2 3.8c4 1.5 6.6 3.9 6.6 6.9 0 1.7-.8 3.2-2.3 4.5.7-3.4-1.2-5.4-4.9-7v9.9h-2.7V3.8Z"/>'+
+      '<ellipse cx="8.7" cy="18.2" rx="4.5" ry="3.4" transform="rotate(-20 8.7 18.2)"/>',
+    /* Filled shield: square shoulders on top, then STRAIGHT sides converging
+       to a point. The taper is the entire reason it beat the swords, so it has
+       to be legible at 12px and not merely present in the path — the first
+       version here was a heater shield with curved flanks, and rasterised at
+       12px its corners rounded off and it read as a solid blob with no taper
+       at all. Straight edges and a flat top survive the raster; curves at this
+       size do not. Half block, half wedge, measured in the harness. */
+    tactical:'<path d="M4.6 3H19.4V11L12 21.8 4.6 11Z"/>'
+  };
+  function sourceGlyphSvg(name){
+    var body=SOURCE_GLYPHS[String(name||"")];
+    if(!body)return "";
+    return '<svg class="fh-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">'+body+'</svg>';
+  }
+  /* The mark a token shows in a 12px slot: a glyph, or the bold Georgia
+     numeral .fh-cd-src b was built for. Nothing to add for the numerals. */
+  function bonusSourceMark(source){
+    var token=rollSource(source);
+    if(token.letter)return "<b>"+token.letter+"</b>";
+    return sourceGlyphSvg(token.glyph)||iconSvg("other");
+  }
+  function sourceToneClass(source){return "is-src-"+rollSource(source).tone;}
   function bonusSourceFor(label,index,source){
     if(source)return String(source);
     var key=String(label||"").trim().toLowerCase();
@@ -920,15 +1005,44 @@
     if(entry.destiny)total+=Number(entry.destiny.result)||0;
     return total;
   }
-  function outcomeFor(entry) {
-    if (entry.destiny && entry.destiny.criticalFailure) return "Critical failure";
-    if (entry.destiny && entry.destiny.criticalSuccess) return "Critical success";
-    if (entry.natChoice === "chaos") return "Critical success · Chaos";
-    if (entry.natural === 20) return "Natural 20";
-    if (entry.natural === 1) return entry.natChoice === "accept" ? "Critical failure · Fate accepted" : "Natural 1 · choose fate";
-    if (entry.dc !== "" && isFinite(Number(entry.dc))) return entry.total >= Number(entry.dc) ? "Success" : "Failure";
-    return "";
+  /* ── §5 The verdict half of the Ruling ─────────────────────────────
+     One table, two readings, and that is the point of it. `outcome` is the
+     machine-facing string the feed and the tones already consume — outcomeTone
+     and feedTone match on these exact words, so they are not free to change.
+     `verdict` is what the Ruling says out loud, and it is allowed to be
+     louder and more precise ("ARCANE CRITICAL SUCCESS", where the outcome
+     only says "Critical success"). Declaring them SIDE BY SIDE is what stops
+     the two drifting apart the way thirteen scattered pushes let badges drift.
+
+     Order is the ruling order and it is load-bearing: an Arcane critical
+     outranks a natural 20, and a DC is only consulted when nothing louder
+     happened. */
+  function rollHasDc(entry){return entry.dc !== "" && isFinite(Number(entry.dc));}
+  var ROLL_VERDICTS=[
+    {id:"arcane-critical-failure",when:function(e){return !!(e.destiny&&e.destiny.criticalFailure);},
+      outcome:"Critical failure",verdict:"ARCANE CRITICAL FAILURE"},
+    {id:"arcane-critical-success",when:function(e){return !!(e.destiny&&e.destiny.criticalSuccess);},
+      outcome:"Critical success",verdict:"ARCANE CRITICAL SUCCESS"},
+    {id:"fate-refused",when:function(e){return e.natChoice==="chaos";},
+      outcome:"Critical success · Chaos",verdict:"FATE REFUSED"},
+    {id:"natural-20",when:function(e){return e.natural===20;},
+      outcome:"Natural 20",verdict:"NATURAL 20"},
+    {id:"natural-1-accepted",when:function(e){return e.natural===1&&e.natChoice==="accept";},
+      outcome:"Critical failure · Fate accepted",verdict:"CRITICAL FAILURE"},
+    /* A 1 nobody has answered yet is undecided, and the Ruling says so rather
+       than picking for the player. */
+    {id:"natural-1-open",when:function(e){return e.natural===1;},
+      outcome:"Natural 1 · choose fate",verdict:"NATURAL 1 · CHOOSE"},
+    {id:"success",when:function(e){return rollHasDc(e)&&e.total>=Number(e.dc);},
+      outcome:"Success",verdict:"SUCCESS"},
+    {id:"failure",when:rollHasDc,outcome:"Failure",verdict:"FAILURE"}
+  ];
+  function rollVerdict(entry){
+    if(!entry)return null;
+    for(var i=0;i<ROLL_VERDICTS.length;i++)if(ROLL_VERDICTS[i].when(entry))return ROLL_VERDICTS[i];
+    return null;
   }
+  function outcomeFor(entry){var found=rollVerdict(entry);return found?found.outcome:"";}
   function spendDestinyDie(dieId, silent, rolled) {
     var die = state.destiny.dice.find(function (item) { return item.id === dieId && item.available; });
     if (!die) return null;
@@ -1061,7 +1175,15 @@
           .forEach(function(item){item.natural=die.sides===20?item.result:null;results.push(item);});
       });
     }
-    state.trayResults=results;state.trayTitle=rollVerdictText(entry);state.trayResultText=rollDetailText(entry);
+    /* The Ruling is derived here, once, from the entry — the frame only reads
+       it. state.trayVerdict is what lets the frame tell an engine verdict from
+       a prompt someone typed into the same slot ("Roll 2d6 and read the Chaos
+       table"): the oxblood verdict styling lands only when the heading IS the
+       Ruling's verdict, so an imperative overwrite silently loses the class
+       instead of borrowing its authority. */
+    var ruling=rollVocabulary(entry).ruling;
+    state.trayResults=results;state.trayTitle=ruling.verdict||ruling.title;
+    state.trayResultText=ruling.account.join(" · ");state.trayVerdict=ruling.verdict;
     // The name alone, for the moment the dice are still in the air.
     state.trayQuietTitle=entry.name||"Roll";
   }
@@ -1087,7 +1209,7 @@
   /* CLEAR TRAY empties the hand and, with it, the running commentary above the
      dice — the Stream keeps the permanent record. Badges are debts, not
      commentary, so they stay. */
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.diceSignatures={};state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.diceSignatures={};state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
@@ -1146,15 +1268,11 @@
     var staged=stagedList().length;
     return rollDetailText(entry)+(staged?" · "+staged+" new die"+(staged===1?"":"s")+" ready":"");
   }
-  /* The verdict is the headline; the arithmetic that produced it stays legible
-     but discreet underneath. */
-  function rollVerdictText(entry){return (entry.name||"Roll")+" "+(entry.total==null?"":entry.total);}
-  function rollDetailText(entry){
-    var parts=rollParts(entry).map(function(part){return part.k+" "+part.v;});
-    if(entry.outcome)parts.push(entry.outcome);
-    if(entry.dc!==""&&entry.dc!=null&&isFinite(Number(entry.dc)))parts.push("DC "+entry.dc);
-    return parts.join(" · ");
-  }
+  /* The verdict is the headline; the account that produced it stays legible
+     but discreet underneath. Both are read off the Ruling (§5) rather than
+     assembled here — this pair is now just the tray's view of it. */
+  function rollVerdictText(entry){var ruling=rollRuling(entry);return ruling.verdict||ruling.title;}
+  function rollDetailText(entry){return rollRuling(entry).account.join(" · ");}
   function refreshOpenTray(entry){
     setTrayFromEntry(entry);
     stagedList().forEach(function(item){
@@ -1748,14 +1866,6 @@
     if(events.length){state.rollSequence={phase:"free-tray",entryId:entry.id};announceEvents(events,"finish-sequence");return;}
     persistPlayState();render();
   }
-  function bonusSourceMark(source){
-    source=String(source||"");
-    if(source==="guidance")return iconSvg("guidance");
-    if(source==="tactical")return iconSvg("tactical");
-    if(source==="bardic")return iconSvg("bardic");
-    var other=source.match(/^other-([123])$/);if(other)return "<b>"+["","I","II","III"][Number(other[1])]+"</b>";
-    return iconSvg("other");
-  }
   /* ── Faceted SVG dice ─────────────────────────────────────────── */
   var DIE_GEO = {
     20:{outer:"50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5",inner:["50,20 82,72 18,72"],
@@ -1861,7 +1971,14 @@
       classes.push("is-modifier");
       return "<span class=\""+classes.join(" ")+"\"><span class=\"fh-cd-src\"></span><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span><em>"+esc(die.label||"Bonus")+"</em></span>";
     }
-    var source=die.dieRole==="bonus"?"<span class=\"fh-cd-src\" title=\""+esc(die.label||"Bonus die")+"\">"+bonusSourceMark(die.sourceIcon)+"</span>":"<span class=\"fh-cd-src\"></span>";
+    /* The source token (§1). A Destiny die reads its provenance off the table
+       like everything else — it used to leave the 12px slot empty, which was
+       the one die in the tray whose origin the player had to infer. */
+    var source=die.dieRole==="bonus"
+      ? "<span class=\"fh-cd-src "+sourceToneClass(die.sourceIcon)+"\" title=\""+esc(die.label||rollSource(die.sourceIcon).label)+"\">"+bonusSourceMark(die.sourceIcon)+"</span>"
+      : die.dieRole==="destiny"
+      ? "<span class=\"fh-cd-src "+sourceToneClass("destiny")+"\" title=\""+esc(ROLL_SOURCES.destiny.label)+"\">"+sourceGlyphSvg("destiny")+"</span>"
+      : "<span class=\"fh-cd-src\"></span>";
     var dieClasses="fh-cd-die"+(die.result!=null?" is-landed":"")+(animate&&die.result!=null?" is-spinning":"");
     // A die still in the hand carries its identity so a right click can reach it.
     var handle="";
@@ -1891,16 +2008,16 @@
       var staticBody="";
       if(Number(die.sides)===100){
         var percentile=staticResult===100?"00":String(staticResult).padStart(2,"0");
-        staticBody="<span class=\"fh-cd-static3d-part\"><canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?percentile.charAt(0):"")+"</b></span>"+
-          "<span class=\"fh-cd-static3d-part\"><canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?percentile.charAt(1):"")+"</b></span>";
+        staticBody="<span class=\"fh-cd-static-die-part\"><canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static-die-result\" aria-hidden=\"true\">"+(resolved?percentile.charAt(0):"")+"</b></span>"+
+          "<span class=\"fh-cd-static-die-part\"><canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static-die-result\" aria-hidden=\"true\">"+(resolved?percentile.charAt(1):"")+"</b></span>";
         dieClasses+=" is-percentile";
       }else{
         var staticText=Number(die.sides)===10&&staticResult===10?"0":staticResult;
-        staticBody="<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static3d-result\" aria-hidden=\"true\">"+(resolved?staticText:"")+"</b>";
+        staticBody="<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static-die-result\" aria-hidden=\"true\">"+(resolved?staticText:"")+"</b>";
       }
-      face="<span class=\"fh-cd-static3d"+(Number(die.sides)===100?" is-percentile":"")+"\" data-sides=\""+Number(die.sides)+"\" data-result=\""+staticResult+"\" data-pending=\""+(resolved?"0":"1")+"\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(index||0)+"\" data-animate=\""+(resolved&&animate?"1":"0")+"\" style=\"--fh-static-die-size:"+size+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" "+staticLabel+"\">"+
-        staticBody+"<span class=\"fh-cd-static3d-fallback\">"+face+"</span></span>";
-      dieClasses+=" is-static3d";
+      face="<span class=\"fh-cd-static-die"+(Number(die.sides)===100?" is-percentile":"")+"\" data-sides=\""+Number(die.sides)+"\" data-result=\""+staticResult+"\" data-pending=\""+(resolved?"0":"1")+"\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(index||0)+"\" data-animate=\""+(resolved&&animate?"1":"0")+"\" style=\"--fh-static-die-size:"+size+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" "+staticLabel+"\">"+
+        staticBody+"<span class=\"fh-cd-static-die-fallback\">"+face+"</span></span>";
+      dieClasses+=" is-static-die";
     }
     return "<span class=\""+classes.join(" ")+"\""+handle+">"+source+
       "<span class=\""+dieClasses+"\">"+face+"</span>"+
@@ -2033,7 +2150,10 @@
     if(state.diePrompt){
       var target=findStagedDie(state.diePrompt);
       if(target){
-        var seals=[["","None"],["guidance","Guidance"],["bardic","Bardic"],["other-1","I"],["other-2","II"],["other-3","III"]];
+        /* The seal row is the source table (§1) read out loud, not a second
+           hand-kept list — which is how Tactical came to be drawable by the
+           engine and unreachable from this card. */
+        var seals=[["","None"]].concat(SEALABLE_SOURCES.map(function(key){return [key,ROLL_SOURCES[key].label];}));
         var poolReady=state.destiny.dice.some(function(die){return die.available&&die.sides===target.sides;});
         var landed=target.scope==="landed";
         var isDestiny=target.scope==="destiny"||target.scope==="staged-destiny"||target.scope==="pool-destiny";
@@ -2046,9 +2166,9 @@
           :["flat","advantage","disadvantage","choice"];
         // A free damage die has neither a source nor an advantage: only a colour.
         var sealRow=!canSeal?"":"<div class=\"fh-cd-dmrow\"><span>Seal</span>"+seals.map(function(pair){
-            return "<button type=\"button\" class=\"fh-cd-dmseal"+((target.sourceIcon||"")===pair[0]?" is-on":"")+"\" data-die-seal=\""+pair[0]+"\" title=\""+pair[1]+"\">"+(pair[0]?bonusSourceMark(pair[0]):"—")+"</button>";
+            return "<button type=\"button\" class=\"fh-cd-dmseal"+(pair[0]?" "+sourceToneClass(pair[0]):"")+((target.sourceIcon||"")===pair[0]?" is-on":"")+"\" data-die-seal=\""+pair[0]+"\" title=\""+esc(pair[1])+"\">"+(pair[0]?bonusSourceMark(pair[0]):"—")+"</button>";
           }).join("")+
-          "<button type=\"button\" class=\"fh-cd-dmseal is-destiny\" data-die-seal=\"destiny\""+(poolReady?"":" disabled")+" title=\""+(poolReady?"Take a Destiny d"+target.sides+" from the pool instead — ROLL is what spends it":"No Destiny d"+target.sides+" available")+"\">★</button></div>";
+          "<button type=\"button\" class=\"fh-cd-dmseal is-destiny\" data-die-seal=\"destiny\""+(poolReady?"":" disabled")+" title=\""+(poolReady?"Take a Destiny d"+target.sides+" from the pool instead — ROLL is what spends it":"No Destiny d"+target.sides+" available")+"\">"+sourceGlyphSvg("destiny")+"</button></div>";
         // Gold is a Destiny die's identity, not a preference, so it is not offered a palette.
         var colourRow=isDestiny?"":"<div class=\"fh-cd-dmrow\"><span>Colour</span>"+DIE_COLOURS.map(function(pair){
             return "<button type=\"button\" class=\"fh-cd-dmcol"+((target.colour||"ivory")===pair[0]?" is-on":"")+"\" data-die-colour=\""+pair[0]+"\" title=\""+pair[1]+"\">"+dieSvg(6,15,pair[0],"")+"</button>";
@@ -2133,8 +2253,15 @@
     var quiet=trayRevealPending();
     var title=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
     var detail=quiet?"Rolling…":state.trayResultText;
+    /* The Ruling (§5), when this heading IS one: a verdict, then the account.
+       The class is the surface's only claim about the line, and it is granted
+       by equality rather than by a flag someone might forget to clear — a
+       Chaos or Overreach prompt that overwrote trayTitle is not a verdict and
+       must not be dressed as one. */
+    var isRuling=!quiet&&!!state.trayVerdict&&title===state.trayVerdict;
     var status=detail||title
-      ? "<b>"+esc(title||"")+"</b>"+(detail?"<em>"+esc(detail)+"</em>":"")
+      ? "<b"+(isRuling?" class=\"fh-cd-verdict\"":"")+">"+esc(title||"")+"</b>"+
+        (detail?"<em"+(isRuling?" class=\"fh-cd-account\"":"")+">"+esc(detail)+"</em>":"")
       : "<em>Ready — click a skill, a save or an ability.</em>";
     // The verdict docks to the bottom of the frame; popups now live outside it.
     return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,flags[index]);}).join("")+"</div>"+
@@ -2200,7 +2327,7 @@
       var selected=!!die&&((state.rollConfig&&state.rollConfig.destinyDieId===die.id)||
         (state.destinyStaged&&state.destinyStaged.dieId===die.id)||
         stagedList().some(function(item){return item.kind==="destiny"&&item.destinyDieId===die.id;}));
-      return "<span class=\"fh-cd-poolwrap\"><button type=\"button\" class=\"fh-cd-ddie"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" title=\""+(die?"Left click waits it in the tray · right click takes it back":"")+"\" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
+      return "<span class=\"fh-cd-poolwrap\"><button type=\"button\" class=\"fh-cd-picker-die"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" title=\""+(die?"Left click waits it in the tray · right click takes it back":"")+"\" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
         pickerFace(sides,PICKER_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
     }).join("");
     // One ⋮ pilots every size's pool from a single popup -- not five separate
@@ -2274,28 +2401,118 @@
      ones a still-rolling line has to keep quiet about. "MANUAL" and "adjusted"
      say something about the roll's construction and give nothing away. */
   var SPOILER_BADGE_KINDS={n20:true,chaos:true,destiny:true};
+  /* ── §3 Badges: derived, not emitted ───────────────────────────────
+     These thirteen used to be thirteen badges.push(...) calls scattered
+     through the render path. That meant every surface RECOMPUTED them, and
+     nothing whatsoever guaranteed that the Tray and the Stream said the same
+     thing about the same roll.
+
+     A BADGE IS A PROPERTY OF THE ROLL, NOT OF ITS RENDERING. So: a
+     declarative condition → badge table, evaluated once on the entry by
+     rollBadges, and every surface renders the same list because it reads the
+     same list. Same principle as one Console with three field specs — what
+     comes from the engine is computed once, what is specific is declared.
+
+     `k` is the visual family (five of them: n20 · chaos · manual · adjusted ·
+     destiny) and it also decides `spoiler`, which is carried ON the badge so a
+     surface never has to know the families table to hide a result that has not
+     been revealed yet. A rule returning "" emits nothing. Order is the reading
+     order and is part of the declaration. */
+  var ROLL_BADGE_RULES=[
+    {id:"natural-20",k:"n20",when:function(e){return e.natural===20;},
+      text:function(){return "NATURAL 20";}},
+    {id:"natural-1-accepted",k:"chaos",when:function(e){return e.natural===1&&e.natChoice==="accept";},
+      text:function(){return "NATURAL 1 accepted";}},
+    {id:"fate-refused",k:"chaos",when:function(e){return e.natChoice==="chaos";},
+      text:function(){return "Fate refused";}},
+    {id:"chaos-roll",k:"chaos",when:function(e){return !!e.chaosRoll;},
+      text:function(e){return "Chaos 2d6 = "+(e.chaosRoll[0]+e.chaosRoll[1]);}},
+    /* The row the dice landed on, quoted rather than linked — the stream is
+       what the player scrolls back through after the session. */
+    {id:"chaos-row",k:"chaos",when:function(e){return !!e.chaosRow;},
+      text:function(e){return e.chaosRow;}},
+    {id:"exhaustion",k:"manual",when:function(e){return !!e.exhaustion;},
+      text:function(e){return "Exhaustion "+e.exhaustion+" · −"+e.exhaustion;}},
+    {id:"destiny-spend",k:"destiny",when:function(e){return !!e.destiny;},
+      text:function(e){
+        var spent=e.destiny,change=Number(spent.pointsAfter)-Number(spent.pointsBefore);
+        var head=spent.criticalSuccess?"Arcane Critical Success":spent.criticalFailure?"Arcane Critical Failure":"Destiny d"+spent.sides+"="+spent.result;
+        return head+(isFinite(change)&&change?" · "+(change>0?"+":"")+change+" pt → "+spent.pointsAfter:"");
+      }},
+    {id:"arcane-fate-refused",k:"chaos",when:function(e){return !!(e.destiny&&e.destiny.arcaneChoice==="chaos");},
+      text:function(e){return "Arcane fate refused · 1 → "+e.destiny.sides;}},
+    {id:"overreach",k:"chaos",when:function(e){return !!(e.destiny&&e.destiny.chaos);},
+      text:function(e){return "Overreach "+e.destiny.chaos.overreach+" · save DC "+e.destiny.chaos.dc;}},
+    {id:"destiny-points",k:"destiny",when:function(e){return !!e.destinyPointChange;},
+      text:function(e){return e.destinyPointChange.reason+" · Destiny "+e.destinyPointChange.after;}},
+    {id:"awakening",k:"n20",when:function(e){return !!e.awakening;},
+      text:function(){return "ARCANE AWAKENING";}},
+    {id:"manual",k:"manual",when:function(e){
+        return !!e.d20Forced||!!(e.destiny&&e.destiny.forced)||
+          entryBonusDice(e).some(function(die){return die.forced;})||
+          (e.dice||[]).some(function(die){return die.forced;});
+      },text:function(){return "MANUAL";}},
+    {id:"adjusted",k:"adjusted",when:function(e){return !!e.adjusted;},
+      text:function(){return "adjusted";}}
+  ];
   function rollBadges(entry){
+    if(!entry)return [];
     var badges=[];
-    if(entry.natural===20)badges.push({t:"NATURAL 20",k:"n20"});
-    if(entry.natural===1&&entry.natChoice==="accept")badges.push({t:"NATURAL 1 accepted",k:"chaos"});
-    if(entry.natChoice==="chaos")badges.push({t:"Fate refused",k:"chaos"});
-    if(entry.chaosRoll)badges.push({t:"Chaos 2d6 = "+(entry.chaosRoll[0]+entry.chaosRoll[1]),k:"chaos"});
-    // The row the dice landed on, quoted rather than linked — the stream is what
-    // the player scrolls back through after the session.
-    if(entry.chaosRow)badges.push({t:entry.chaosRow,k:"chaos"});
-    if(entry.exhaustion)badges.push({t:"Exhaustion "+entry.exhaustion+" · −"+entry.exhaustion,k:"manual"});
-    if(entry.destiny){
-      var spent=entry.destiny,change=Number(spent.pointsAfter)-Number(spent.pointsBefore);
-      var head=spent.criticalSuccess?"Arcane Critical Success":spent.criticalFailure?"Arcane Critical Failure":"Destiny d"+spent.sides+"="+spent.result;
-      badges.push({t:head+(isFinite(change)&&change?" · "+(change>0?"+":"")+change+" pt → "+spent.pointsAfter:""),k:"destiny"});
-      if(spent.arcaneChoice==="chaos")badges.push({t:"Arcane fate refused · 1 → "+spent.sides,k:"chaos"});
-      if(spent.chaos)badges.push({t:"Overreach "+spent.chaos.overreach+" · save DC "+spent.chaos.dc,k:"chaos"});
-    }
-    if(entry.destinyPointChange)badges.push({t:entry.destinyPointChange.reason+" · Destiny "+entry.destinyPointChange.after,k:"destiny"});
-    if(entry.awakening)badges.push({t:"ARCANE AWAKENING",k:"n20"});
-    if(!!entry.d20Forced||!!(entry.destiny&&entry.destiny.forced)||entryBonusDice(entry).some(function(die){return die.forced;})||(entry.dice||[]).some(function(die){return die.forced;}))badges.push({t:"MANUAL",k:"manual"});
-    if(entry.adjusted)badges.push({t:"adjusted",k:"adjusted"});
+    ROLL_BADGE_RULES.forEach(function(rule){
+      if(!rule.when(entry))return;
+      var text=rule.text(entry);
+      if(text==null||text==="")return;
+      badges.push({t:String(text),k:rule.k,id:rule.id,spoiler:!!SPOILER_BADGE_KINDS[rule.k]});
+    });
     return badges;
+  }
+  /* ── §5 Ruling text ────────────────────────────────────────────────
+     The line above a resolved roll:
+
+       ARCANE CRITICAL SUCCESS   Destiny d8 rolled 8 · Lost 1 Destiny Point · Current 5
+
+     A verdict, then the ACCOUNT — what was rolled, what it cost, where it
+     leaves you. IT IS NEVER FLAVOUR. The name was chosen against "narrative
+     text" for exactly that reason: call a field narrative and within months
+     someone writes "the blade hisses in the dark" into it, and the day you
+     need to check why you lost four Destiny Points the fact is drowned in
+     prose. Ruling is the right word because at the table a ruling is what the
+     DM decides — here it is what the ENGINE decided, said out loud. It is the
+     concrete form of the dock's founding rule, never fall back silently.
+
+     Same discipline as the badges: derived from the entry, never written at
+     render time, so every surface says the same thing about the same roll.
+
+     `title` (name + total) is what the heading falls back to when the engine
+     decided nothing yet, and it moves into the account when there IS a
+     verdict — so the identity of the roll is never lost and never doubled. */
+  function rollRuling(entry){
+    if(!entry)return {verdict:"",title:"Roll",account:[]};
+    var found=rollVerdict(entry),verdict=found?found.verdict:"";
+    var title=(entry.name||"Roll")+(entry.total==null?"":" "+entry.total);
+    var account=verdict?[title]:[];
+    rollParts(entry).forEach(function(part){account.push(part.k+" "+part.v);});
+    /* What it cost, stated in points rather than left for the player to
+       subtract two badges from each other. */
+    var spent=entry.destiny;
+    if(spent){
+      var change=Number(spent.pointsAfter)-Number(spent.pointsBefore);
+      if(isFinite(change)&&change){
+        var moved=Math.abs(change);
+        account.push((change<0?"Lost ":"Gained ")+moved+" Destiny Point"+(moved===1?"":"s"));
+        account.push("Current "+spent.pointsAfter);
+      }
+    }
+    if(entry.destinyPointChange)account.push(entry.destinyPointChange.reason+" · Destiny "+entry.destinyPointChange.after);
+    if(rollHasDc(entry)&&entry.dc!=null)account.push("DC "+entry.dc);
+    return {verdict:verdict,title:title,account:account};
+  }
+  /* The one derivation every surface calls. Badges and Ruling come off the
+     same entry in the same pass, so a surface cannot read one without the
+     other and cannot compute either for itself. */
+  function rollVocabulary(entry){
+    var ruling=rollRuling(entry);
+    return {badges:rollBadges(entry),ruling:ruling,verdict:ruling.verdict};
   }
   function rollExport(entry){
     return {schema:"fh-roll/1",id:entry.id,ts:entry.createdAt,campaign:state.code,
@@ -2604,7 +2821,10 @@
     var quiet=index===0&&trayRevealPending();
     var parts=quiet?"":rollParts(entry).map(function(part){return "<span class=\"fh-cd-part\">"+esc(part.k)+" <b>"+esc(part.v)+"</b></span>";}).join("<span>·</span>");
     var dc=entry.dc!==""&&entry.dc!=null?"<span class=\"fh-cd-vs\">vs DC "+esc(entry.dc)+"</span>":"";
-    var badges=rollBadges(entry).filter(function(badge){return !(quiet&&SPOILER_BADGE_KINDS[badge.k]);})
+    /* The badge carries its own `spoiler` (§3), so this surface hides a result
+       the dice have not revealed yet without holding a second copy of which
+       families are spoilers. */
+    var badges=rollVocabulary(entry).badges.filter(function(badge){return !(quiet&&badge.spoiler);})
       .map(function(badge){return "<span class=\"fh-cd-badge is-"+badge.k+"\">"+esc(badge.t)+"</span>";}).join("");
     var reopen=entry.kind==="d20";
     return "<li class=\"fh-cd-sentry\"><button type=\"button\""+(reopen?" data-history-id=\""+esc(entry.id)+"\"":" disabled")+" data-roll='"+attrJson(rollExport(entry))+"'>"+
@@ -2745,7 +2965,7 @@
     return "<div class=\"fh-cd-whiterow\">"+rollBtn+ROLL_DIE_SIZES.map(function(sides){
       var count=counts[sides]||0;
       var disabled=!!state.pendingArmed||(checkLoaded&&(sides===20||sides===100))||(full&&!count)||(!checkLoaded&&state.traySelection.length>=MAX_FREE_DICE&&!count);
-      return "<button type=\"button\" class=\"fh-cd-wdie"+(calling&&!disabled?" is-calling":"")+"\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+
+      return "<button type=\"button\" class=\"fh-cd-calling-die"+(calling&&!disabled?" is-calling":"")+"\" data-add-tray-die=\""+sides+"\""+(disabled?" disabled":"")+
         " title=\"Left click adds a d"+sides+" · right click or long press takes one back\" aria-label=\"Add a d"+sides+"; right-click to remove one\">"+
         pickerFace(sides,PICKER_DIE_PX,"white","d"+(sides===100?"%":sides))+(count?"<span class=\"fh-cd-mult\">×"+count+"</span>":"")+"</button>";
     }).join("")+"</div>";
@@ -2885,12 +3105,9 @@
   }
   /* A seal renames the die it is put on, every time. Reading the old label back
      was the bug: pick Bardic, then Bonus I, and the die stayed "Bardic". */
-  function sealLabel(seal){
-    if(seal==="guidance")return "Guidance";
-    if(seal==="bardic")return "Bardic";
-    var other=String(seal||"").match(/^other-([123])$/);
-    return other?"Bonus "+["","I","II","III"][Number(other[1])]:"Bonus";
-  }
+  // The label a sealed die takes, read off the source table (§1) — one name
+  // per source, here as everywhere else.
+  function sealLabel(seal){return ROLL_SOURCES[String(seal||"")]?ROLL_SOURCES[String(seal)].label:"Bonus";}
   /* Sealing a die "Destiny" is not decoration: it takes a die out of the pool.
      Nothing is spent by the seal either — the pool die simply moves into the
      hand, and ROLL is still what spends it. */

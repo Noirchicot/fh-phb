@@ -46,7 +46,8 @@ function dieHost(sides,index,material,result=sides,pending=false) {
     dataset:{sides:String(sides),result:String(result),material,index:String(index),animate:"0",pending:pending?"1":"0"},
     classList:classes,
     querySelector:selector=>sides===100?null:parts[0].querySelector(selector),
-    querySelectorAll:selector=>selector===".fh-cd-static3d-part"&&sides===100?parts:[],
+    // REWRITTEN 2026-08-03: .fh-cd-static3d-part -> .fh-cd-static-die-part, same rename.
+    querySelectorAll:selector=>selector===".fh-cd-static-die-part"&&sides===100?parts:[],
     setAttribute:(name,value)=>{if(name==="data-mounted")host.dataset.mounted=value;}
   };
   return {host,parts,classes};
@@ -93,7 +94,7 @@ dice.forEach(({host,parts,classes},index)=>{
   assert.ok(classes.contains("is-webgl"),`d${host.dataset.sides} builds a WebGL mesh`);
   assert.ok(classes.contains("is-settled"),`d${host.dataset.sides} reaches the supplied final face`);
   // A d100 half is deliberately smaller than a single die -- 78% of the slot's
-  // width, matching the .fh-cd-static3d-part CSS ratio -- because two of them
+  // width, matching the .fh-cd-static-die-part CSS ratio -- because two of them
   // sit side by side in the same footprint. This mock's host carries no
   // .style, so hostSizePx falls back to the same 52px every die case uses;
   // Math.round(52*.78)=41 is the real, intended sizing, not a regression.
@@ -124,9 +125,15 @@ assert.match(source,/Number\(renderSides\)===6\?\[0,\.28,1\]:\[0,-\.12,1\]/,"d6 
 const css=fs.readFileSync(path.join(__dirname,"..","docs","stylesheets","companion-dock.css"),"utf8");
 const lab=fs.readFileSync(path.join(__dirname,"..","docs","static-dice-lab.html"),"utf8");
 assert.match(lab,/id="fhLabSound"[^>]*aria-pressed="true"/,"the lab exposes a persistent sound toggle");
-assert.match(css,/\.fh-cd-static3d\[data-sides="6"\]\{transform:scale\(\.8\)\}/,"d6 keeps the approved 80% display scale");
-assert.match(lab,/\.fh-cd-static3d\[data-sides="6"\]\{transform:scale\(\.8\)\}/,"the lab mirrors the approved d6 display scale");
-assert.match(css,/\.fh-cd-static3d-result\{[^}]*top:49%[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"d8 keeps the visually approved result placement and scale");
+/* REWRITTEN 2026-08-03 (roll-vocabulary lot): every selector below said
+   .fh-cd-static3d. The class was renamed by FUNCTION to .fh-cd-static-die
+   (UI-ROLL-VOCABULARY.md §2 — "static3d" named an implementation, not a role),
+   so the old name is a false assertion about the current stylesheet. The
+   MEASUREMENTS these guard -- the approved d6 display scale and every
+   face-calibrated result placement -- are unchanged and still enforced. */
+assert.match(css,/\.fh-cd-static-die\[data-sides="6"\]\{transform:scale\(\.8\)\}/,"d6 keeps the approved 80% display scale");
+assert.match(lab,/\.fh-cd-static-die\[data-sides="6"\]\{transform:scale\(\.8\)\}/,"the lab mirrors the approved d6 display scale");
+assert.match(css,/\.fh-cd-static-die-result\{[^}]*top:49%[^}]*font-size:calc\(var\(--fh-static-die-size\) \* \.28\)/,"d8 keeps the visually approved result placement and scale");
 assert.match(css,/data-sides="4"[^}]*top:51%/,"d4 keeps the visually approved result placement");
 [
   [6,"41","324"],[10,"62","24"],[12,"53","24"],[20,"53","20"],[100,"62","19"]
