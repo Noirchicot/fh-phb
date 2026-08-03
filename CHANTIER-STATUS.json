@@ -43,7 +43,7 @@
       "repo": "fh-srd",
       "path": "~/tools/fh-srd",
       "state": "fini",
-      "note": "CONTENU ANGLAIS COMPLET (d954ee7) : 1613 records — sorts, objets, feats, backgrounds, espèces, classes, glossaire, équipement, 330 monstres. 22/22 suites, chaque lot rejoué en clone indépendant."
+      "note": "✅ CONTENU COMPLET, DEUX LANGUES (a02d75a) : 2553 records (1274 EN + 1279 FR, 12 types). Écart documenté : 258 objets FR vs 253 EN — 5 armes réelles de la réédition FR de déc. 2025. 34/34 suites. Reste : appariement translation_of (proposé) et branchement site (après les lots dock)."
     }
   ],
   "wip": [
@@ -52,12 +52,6 @@
       "repo": "fh-phb",
       "state": "en-cours",
       "note": "Session lancée 2026-08-03 (branche dock-dice-tray). Consomme le vocabulaire ; hérite LIVE/RECENT/OFF. Hauteur de ligne avec dés : arbitrage d'Eric attendu avant codage."
-    },
-    {
-      "name": "SRD passe française (tout le contenu FR)",
-      "repo": "fh-srd",
-      "state": "en-attente",
-      "note": "Pastille posée après le lot 4. Dernière étape de contenu ; ensuite le branchement site (après les lots dock)."
     },
     {
       "name": "Widget Übersicht chantier",
