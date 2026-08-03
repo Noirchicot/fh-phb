@@ -94,6 +94,9 @@
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
     trayQuietTitle:"", trayVerdict:"", trayRevealAt:0, trayRevealTimer:null,
+    // The lower-line dice loupe (Eric, 2026-08-04): right click / long press
+    // magnifies ONE line's dice zone ×1.5; left click, a tap, or D cancels.
+    trayDiceZoom:"",
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, zoom:ZOOM_DEFAULT, zoomAuto:true,
     panel:"skills", panelData:{},
@@ -1232,7 +1235,7 @@
   /* diceSignatures is deliberately NOT wiped here any more: the registre
      lines under the hand keep their entry-scoped keys, and wiping the map
      made every one of them re-roll visually the moment the hand was cleared. */
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayDiceZoom="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
@@ -3125,7 +3128,8 @@
       var mood=frameMood();
       row="<div class=\"fh-cd-frame is-trayhand"+(mood?" mood-"+mood:"")+"\">"+row+"</div>";
     }
-    return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\">"+row+"</li>";
+    var zoomed=!big&&state.trayDiceZoom&&state.trayDiceZoom===String(slot.id);
+    return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(zoomed?" is-zoomed":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
   function diceTrayInner(){
     var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
@@ -3990,7 +3994,18 @@
     if(state.rollConfig&&state.rollConfig.destinyDieId===dieId){state.diePrompt={destinyDieId:dieId};dropStagedDie();return;}
     if(state.destinyStaged&&state.destinyStaged.dieId===dieId){state.diePrompt={poolId:dieId};dropStagedDie();return;}
   }
+  function trayLoupeTarget(event){
+    var flank=event.target&&event.target.closest&&event.target.closest(".fh-cd-trayline.is-mid .fh-cd-tray-dice,.fh-cd-trayline.is-static .fh-cd-tray-dice");
+    return flank?flank.closest(".fh-cd-trayline"):null;
+  }
+  function toggleTrayLoupe(line){
+    var id=line&&line.getAttribute("data-tray-line")||"";
+    state.trayDiceZoom=state.trayDiceZoom===id?"":id;
+    render();
+  }
   function onTrayContext(event){
+    var loupe=trayLoupeTarget(event);
+    if(loupe){event.preventDefault();toggleTrayLoupe(loupe);return;}
     var target=trayDieTarget(event);if(!target)return;
     event.preventDefault();
     if(target.kind==="badge")openBadgeMenu(target.node);
@@ -4001,6 +4016,13 @@
   }
   function openBadgeMenu(node){state.trayPrompt={type:"pending-menu",id:node.dataset.pendingId};state.diePrompt=null;render();}
   function onTrayTouchStart(event){
+    var loupe=trayLoupeTarget(event);
+    if(loupe){
+      clearTimeout(state.trayHoldTimer);
+      state.trayHeld=false;
+      state.trayHoldTimer=window.setTimeout(function(){state.trayHeld=true;toggleTrayLoupe(loupe);},500);
+      return;
+    }
     var target=trayDieTarget(event);if(!target)return;
     clearTimeout(state.trayHoldTimer);
     state.trayHeld=false;
@@ -4021,7 +4043,13 @@
      handleClick -- which bails on anything that is not a <button>, so a panel's
      clickable row or tracker pip would otherwise never reach it. Core still
      handles everything outside a panel body, and anything the panel declines. */
-  function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
+  function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}
+    if(state.trayDiceZoom){
+      var insideLoupe=event.target&&event.target.closest&&event.target.closest(".fh-cd-trayline.is-zoomed");
+      state.trayDiceZoom="";render();
+      if(insideLoupe)return;
+    }
+    if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   /* ── General rule: a click outside an open dropdown closes it ─────
      Applies to every small anchored popup (the header's ⋮, the Destiny pool
      menu, and whatever the same pattern grows next) -- not to the belt's
@@ -4058,7 +4086,7 @@
     if((event.metaKey||event.ctrlKey)&&/^[=+_-]$/.test(event.key)){
       event.preventDefault();stepZoom(event.key==="-"||event.key==="_"?-1:1);return;
     }
-    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
+    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(state.trayDiceZoom&&(key==="d"||key==="escape")){event.preventDefault();state.trayDiceZoom="";render();return;}if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
 
   function setDockOpen(open){
     state.dockOpen=!!open;state.menuOpen=false;

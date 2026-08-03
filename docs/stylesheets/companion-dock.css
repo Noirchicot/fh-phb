@@ -1520,3 +1520,14 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 /* The judgment account stays an account, not a novel: a 29-die list clamps
    to four lines — the full text lives in the entry and the Stream. */
 .fh-cd-frame.is-judgment .fh-cd-judgment>em{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ── The dice loupe (Eric, 2026-08-04) ───────────────────────────────
+   Right click (or long press) on a LOWER line's dice zone magnifies it
+   ×1.5 — a reading glass over the carpet, not a layout change. Left
+   click, a short tap, D or Escape puts it down. Line 1 keeps its die
+   menus; down here the loupe wins the right click. */
+.fh-cd-trayline.is-zoomed{overflow:visible;z-index:6;position:relative}
+.fh-cd-trayline.is-zoomed .fh-cd-tray-dice{transform:scale(1.5);transform-origin:50% 50%;z-index:6;
+  background:linear-gradient(180deg,#453827 0%,#3a2f22 100%);border:1px solid rgba(201,164,90,.45);border-radius:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,.55);padding:3px 6px;cursor:zoom-out}
+.fh-cd-trayline.is-mid .fh-cd-tray-dice,.fh-cd-trayline.is-static .fh-cd-tray-dice{cursor:zoom-in}

@@ -176,6 +176,25 @@ const coin = t.visualDie({kind:"modifier", result:2, label:"FH bonus"}, 9, 10, f
 assert.match(coin, /is-naked/, "the +2 coin rides naked in a swarm");
 assert.doesNotMatch(coin, /<em>/, "no label — the value is printed on the coin");
 
+/* ── 4c. The dice loupe (Eric, 2026-08-04) ─────────────────────────────
+   Right click / long press magnifies a lower line's dice zone ×1.5; left
+   click, a tap, D or Escape cancels. Line 1 keeps its die menus. */
+
+t.state.history = [];
+for (let i = 0; i < 6; i++) t.state.history.push(d20Entry("s" + i, "Arcana", 12, 19, i));
+t.state.trayDiceZoom = "";
+const unzoomed = t.diceTrayInner();
+assert.match(unzoomed, /data-tray-line="s1"/, "every line carries its id so the loupe can find it");
+assert.doesNotMatch(unzoomed, /is-zoomed/, "no loupe until asked");
+t.state.trayDiceZoom = "s1";
+const zoomedPass = t.diceTrayInner();
+assert.match(zoomedPass, /is-zoomed[^"]*" data-tray-line="s1"/, "the asked line wears the loupe");
+assert.equal((zoomedPass.match(/is-zoomed/g) || []).length, 1, "one line only");
+t.state.trayDiceZoom = "s0"; // s0 is line 1 (the large band)
+assert.doesNotMatch(t.diceTrayInner(), /is-zoomed/, "the large line never wears it — its dice are already large and keep their menus");
+t.state.trayDiceZoom = "";
+assert.match(css, /\.fh-cd-trayline\.is-zoomed \.fh-cd-tray-dice\{transform:scale\(1\.5\)/, "the loupe is a ×1.5 magnification of the dice zone only");
+
 /* ── 5. The wire: fh-roll/1 carries the dice ───────────────────────── */
 
 const exported = t.rollExport(d20Entry("wire", "Arcana", 14, 21, 0, {
