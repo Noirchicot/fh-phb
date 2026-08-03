@@ -88,7 +88,14 @@ Never write "dice pool" for the dice stacked onto a roll in progress. Those are
 reason this zone was hard to name.
 
 **Dice Tray** has a **Static Area**: everything below the first four rolls. Dice
-never animate there. Rolls scroll into it and stop moving; the tray holds twenty.
+never animate there. Rolls scroll into it and stop moving; ~~the tray holds
+twenty~~ — **amended 2026-08-03 (Eric): the tray holds TEN.** Beyond ten the
+record lives in the Stream, or on AboveVTT's own log. The first roll's dice are
+large, rolls 2–4 small but still able to roll (simultaneous landings must be
+seen); the Static Area's dice are bitmap snapshots of the same render — a
+browser caps live WebGL contexts at ~16, so a zone holding six lines of dice
+cannot hold six lines of contexts. Full line anatomy: end of
+`UI-ROLL-VOCABULARY.md`.
 
 **The Dice Tray is the shared surface** (Eric, 2026-08-02). Your roll, the party's
 and the DM's land in the same place — you never navigate to see what someone else

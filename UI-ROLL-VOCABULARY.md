@@ -243,5 +243,30 @@ at render time, so every surface says the same thing about the same roll.
 
 ## Open questions
 
-1. **How tall is a tray line with dice shown**, as opposed to the compact
-   Stream-style line. Needs a drawing before it can be budgeted.
+1. ~~**How tall is a tray line with dice shown**, as opposed to the compact
+   Stream-style line. Needs a drawing before it can be budgeted.~~
+   **ANSWERED — Eric, 2026-08-03, and it reshaped the line itself** (built on
+   branch `dock-dice-tray`). A tray line is **three spaces left to right,
+   nothing said twice**: the **name in full** (no portrait — this supersedes
+   §4's "who: the portrait" — and no printed time; the time surfaces on
+   hover), then **the dice, each with its full §2 wrapper**, then **the
+   ruling on three tiers** — the roll's name in bold ("Arcana +7"), the
+   total with NATURAL 20/1 beside it, and the ruling text, abridged when
+   long (Chaos, a Destiny-point change…) with the full account on hover.
+   Sizes are banded, not per-line-negotiated: the newest roll's dice land
+   **large (44px ceiling)**, rolls 2–4 are **small (24px) but still able to
+   roll** — simultaneous landings must be seen — and the **Static Area
+   (rolls 5–10)** freezes everything as bitmap snapshots. **The tray holds
+   TEN rolls** (supersedes the twenty in `UI-TERMINOLOGY.md`); beyond ten,
+   the Stream keeps the record, or AboveVTT's own log does.
+   Measured heights at the reference: large line 84px, small/static lines
+   56px, zone `--cd-tray-h:284px` — deterministic, which is what lets the
+   summoned group anchor to the tray's top edge.
+   The §5 position question is settled the same day: **the Ruling moved off
+   the frame's bottom edge and into the line of the roll it judges.**
+   And the answer to "does the small version roll as nicely?" is yes,
+   measured: the renderer's 32px internal floor means a 24px die is
+   supersampled, and the tumble is resolution-independent. What does NOT
+   survive small is a live WebGL context per die — the ~16-context browser
+   cap — which is why the Static Area is snapshots
+   (`FHStaticDice.resultImage`, the picker's own shared-generator pattern).
