@@ -8,6 +8,25 @@ Read both. Read nothing else to start.
 
 ---
 
+## 0. Map of this file — for the successor in a hurry
+
+| § | What it holds | When to read it |
+|---|---|---|
+| **1** | What the seat does (owns core, verifies, merges, writes prompts) | First session, always |
+| **2** | Standing rules: layout · rules content · behaviour · **ecosystem & posture (AboveVTT)** · **what FHPC is aiming at** (foundation, sequence) | First session, always — and §2's naming rules before writing ANY package prompt |
+| **3** | Traps already paid for (one table) | First session; re-scan before touching CSS, KV, tunnels, or a generated file |
+| **3b** | **The single-source-of-truth map** · `CHANTIER-STATUS.json` (architect-maintained) · logbook single-source rule · vault-plugin-dead exception | First session; §3b's board rule at EVERY merge |
+| **4** | Running the package chats: worktrees table · **verify-don't-trust recipe** · tests · deploy · the living guide rule | Before reviewing any delivery, every time |
+| **5** | How Eric works (relay protocol, vault, logbook, obsidian:// links) | First session |
+| **6** | State at handoff — dated blocks, NEWEST NEAR THE TOP · 🚦 **DEPLOY GATE** · the dock lots order | Top blocks + the gate: every session. Older blocks: only when a subject resurfaces |
+
+The fast path for a cold start: §1 → §2 → §3+3b → §5, then §6's top block and
+the DEPLOY GATE, then §4 when the first delivery lands. Do not read §6's older
+blocks linearly — they are history, superseded blocks say so explicitly, and
+the top of §6 always carries the current truth.
+
+---
+
 ## 1. What the architect thread actually does
 
 - **Owns `docs/javascripts/fh-player-sheet.js`** — core. Panel chats must never
