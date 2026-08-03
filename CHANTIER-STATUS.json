@@ -31,7 +31,7 @@
       "repo": "fh-table",
       "path": "~/tools/fh-table",
       "state": "fini",
-      "note": "Pont AboveVTT fusionné (b36c94a). Distribution de l'extension = décision produit en attente. Persistance chat AboveVTT : close définitivement (Azmoria + Cyruzzo, 2026-08-03) — le chat restera éphémère, le Dice Tray est la mémoire de référence."
+      "note": "Pont AboveVTT fusionné (b36c94a) + lot bridge inject_chat fusionné (fc7f287) : whisper/sendTo explicites, rollType/result depuis intent, avatar par personnage, garde anti-routage initiative. Persistance chat close — Dice Tray = mémoire de référence."
     },
     {
       "repo": "fh-worker",
@@ -70,7 +70,7 @@
     "Attribution SRD (bloc B5 vs restriction « aucune autre attribution ») — avant toute publication/vente.",
     "Hauteur d'une ligne du Dice Tray avec dés montrés (mockup à venir de la session Dice Tray).",
     "Distribution de l'extension AboveVTT (packaging, installation MJ).",
-    "Lancement du petit lot bridge inject_chat (fh-table) : whisper/sendTo/rollType/result + avatar par personnage."
+    "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — avant la livraison du Dice Tray."
   ],
   "problems": []
 }
