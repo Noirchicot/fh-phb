@@ -94,6 +94,8 @@
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
     trayQuietTitle:"", trayVerdict:"", trayRevealAt:0, trayRevealTimer:null,
+    // A roll called back up by right-clicking its reading glass (display order only).
+    traySurfaceId:"", traySurfaceAt:"",
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, zoom:ZOOM_DEFAULT, zoomAuto:true,
     panel:"skills", panelData:{},
@@ -3039,8 +3041,19 @@
       if(mineIds[key])return;
       lines.push({kind:"feed",id:key,ts:event.ts||"",event:event});
     });
+    /* A resurfaced roll (right click on its reading glass — Eric, D3
+       2026-08-04) rides the moment it was called back up, not the moment
+       it was rolled: it climbs to line 1 NOW, and the next real roll
+       lands above it naturally. Display order only — createdAt, the wire
+       and the Stream keep the true time. */
+    lines.forEach(function(line){if(line.id===state.traySurfaceId&&state.traySurfaceAt)line.ts=state.traySurfaceAt;});
     lines.sort(function(a,b){return String(b.ts).localeCompare(String(a.ts));});
     return lines.slice(0,TRAY_MAX);
+  }
+  function surfaceTrayLine(id){
+    if(!id)return;
+    state.traySurfaceId=id;state.traySurfaceAt=new Date().toISOString();
+    render();
   }
   function trayBadgeChip(kindClass,text){
     return "<span class=\"fh-cd-badge is-"+esc(kindClass)+"\">"+esc(text)+"</span>";
@@ -3184,7 +3197,7 @@
       var mood=frameMood();
       row="<div class=\"fh-cd-frame is-trayhand"+(mood?" mood-"+mood:"")+"\">"+row+"</div>";
     }
-    return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\">"+row+"</li>";
+    return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
   /* The three feed states, one derivation (T24): the tray cap's chip title
      and the Stream's cap read the SAME phrases instead of each keeping a
@@ -3280,7 +3293,25 @@
     var list=slots.length
       ? slots.map(function(slot,si){return trayLineHtml(slot,si,flags[si],quiet&&si===0&&slot.kind==="live");}).join("")
       : "<li class=\"fh-cd-trayline is-empty\"><em>Ready — click a skill, a save or an ability.</em></li>";
-    return cap+"<ul class=\"fh-cd-traylist\">"+list+"</ul>";
+    /* The scroll arrows (Eric's héritage n°4, and the bug behind it: ~350px
+       of rolls hide below the fold with NO affordance — "les dés dépassent
+       sous les bords"). Two thin chevrons on the list's edges, each only
+       shown when there is something on its side (syncTrayArrows toggles
+       is-can-up/down on the zone), one click = one band of scroll. */
+    var chevron=function(up){return "<svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\""+(up?"M3 10l5-5 5 5":"M3 6l5 5 5-5")+"\"/></svg>";};
+    var arrows="<button type=\"button\" class=\"fh-cd-trayarrow is-up\" data-tray-scroll=\"up\" aria-label=\"Scroll to newer rolls\">"+chevron(true)+"</button>"+
+      "<button type=\"button\" class=\"fh-cd-trayarrow is-down\" data-tray-scroll=\"down\" aria-label=\"Scroll to older rolls\">"+chevron(false)+"</button>";
+    return cap+"<ul class=\"fh-cd-traylist\">"+list+"</ul>"+arrows;
+  }
+  /* Shown only where useful: up when something is newer above, down when
+     rolls hide below the fold. Rides the zone so the arrows survive the
+     list's own re-scrolls without re-rendering anything. */
+  function syncTrayArrows(){
+    if(!root)return;
+    var zone=root.querySelector(".fh-cd-dicetray"),list=root.querySelector(".fh-cd-traylist");
+    if(!zone||!list)return;
+    zone.classList.toggle("is-can-up",list.scrollTop>2);
+    zone.classList.toggle("is-can-down",list.scrollTop<list.scrollHeight-list.clientHeight-2);
   }
   function renderDiceTray(){
     return "<section class=\"fh-cd-zone fh-cd-dicetray\" data-zone=\"dice-tray\">"+diceTrayInner()+"</section>";
@@ -3841,9 +3872,22 @@
         (roller?"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
         (state.streamOpen?renderStream():"")+renderPops(ch);
     }
+    /* The registre must survive the render: every rebuild used to snap its
+       scroll back to the top — a feed poll lands every few seconds, so
+       reading an older roll was physically impossible (Eric: the dice
+       "dépassent sous les bords" and you can never reach them). */
+    var keepTrayScroll=(function(){var node=root.querySelector(".fh-cd-traylist");return node?node.scrollTop:0;})();
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
     if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
+    /* The traylist node is reborn on every render — restore where the
+       reader was, rebind its scroll, re-derive which arrows have work. */
+    var trayScroller=root.querySelector(".fh-cd-traylist");
+    if(trayScroller){
+      if(keepTrayScroll)trayScroller.scrollTop=keepTrayScroll;
+      trayScroller.addEventListener("scroll",syncTrayArrows,{passive:true});
+    }
+    syncTrayArrows();
     /* Picker buttons (Destiny row, white-dice row) are cached static images,
        not live dice -- their generator canvas exists only long enough to
        fill that cache. releasePickerContext is a no-op once the cache is
@@ -3957,6 +4001,7 @@
       return;
     }
     if(button.dataset.clearTray!==undefined){if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}
+    if(button.dataset.trayScroll!==undefined){var scrollList=root.querySelector(".fh-cd-traylist");if(scrollList){scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-76:76,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
     if(button.dataset.addTrayDie!==undefined){if(rollOpen())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
     if(button.dataset.removeTrayDie!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDie(button.dataset.removeTrayDie);return;}
     if(button.dataset.removeTraySize!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDieSize(button.dataset.removeTraySize);return;}
@@ -4106,6 +4151,20 @@
     zone.style.setProperty("--fh-cd-loupe-dy",Math.round(shift)+"px");
   }
   function onTrayContext(event){
+    /* Right click on a lifted reading glass RESURFACES its roll (Eric, D3
+       2026-08-04: « clic droit sur le zoom fait remonter le jet ») — the
+       whole glass answers, dice included: a glass is a reading surface,
+       and the big-hand colour menus step aside for it. Everything outside
+       a glass keeps its die menus. */
+    var glassZone=event.target&&event.target.closest&&event.target.closest(".fh-cd-tray-dice.is-rows");
+    if(glassZone){
+      var glassLine=glassZone.closest(".fh-cd-trayline");
+      if(glassLine&&glassLine.getAttribute("data-tray-line")){
+        event.preventDefault();
+        surfaceTrayLine(glassLine.getAttribute("data-tray-line"));
+        return;
+      }
+    }
     var target=trayDieTarget(event);if(!target)return;
     event.preventDefault();
     if(target.kind==="badge")openBadgeMenu(target.node);

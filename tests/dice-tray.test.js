@@ -30,7 +30,8 @@ const css = fs.readFileSync(cssPath, "utf8");
 const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhDiceTray = {
     state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
-    renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray
+    renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
+    surfaceTrayLine
   };
 })();
 `);
@@ -331,5 +332,35 @@ assert.match(t.diceTrayInner(), /Arcana/, "and the tray still shows it as a line
 assert.match(css, /\.fh-cd-floatbottom\{bottom:var\(--cd-tray-h,0px\);max-height:calc\(100% - var\(--cd-tray-h,0px\)\)\}/,
   "Console and Roll Builder float ABOVE the tray — the dice stay visible while a roll is configured");
 assert.match(css, /\.fh-cd-dicetray\{height:var\(--cd-tray-h\)/, "the zone's height is deterministic, so the anchor cannot drift");
+
+/* ── 9. The fold gets an affordance ; the glass resurfaces (Eric, D3) ──
+   ~350px of rolls hid below the fold with nothing to say so — two thin
+   chevrons now ride the list's edges, shown only when their side has
+   content, and lines snap so a stop never cuts a roll through its dice.
+   Right-clicking a lifted glass calls its roll back up to line 1 —
+   display order only, the wire and the Stream keep the true time. */
+
+t.state.history = [d20Entry("mine-new", "Arcana", 14, 21, 1), d20Entry("mine-old", "Stealth", 9, 16, 30)];
+t.state.feed.events = [];
+t.state.trayResults = []; t.state.rollSequence = null;
+const trayShell = t.renderDiceTray();
+assert.match(trayShell, /fh-cd-trayarrow is-up[^>]*data-tray-scroll="up"/, "an up chevron rides the list's top edge");
+assert.match(trayShell, /fh-cd-trayarrow is-down[^>]*data-tray-scroll="down"/, "a down chevron rides its bottom edge");
+assert.match(css, /\.fh-cd-dicetray\.is-can-down \.fh-cd-trayarrow\.is-down\{display:flex\}/,
+  "each is shown only when there IS something on its side (syncTrayArrows toggles the zone)");
+assert.match(source, /function syncTrayArrows/, "…derived from the scroller, not guessed");
+assert.match(css, /\.fh-cd-traylist\{scroll-snap-type:y proximity\}/, "the list snaps by line…");
+assert.match(css, /\.fh-cd-trayline\{scroll-snap-align:start\}/, "…so a stop never leaves a roll cut through its dice");
+
+assert.match(t.diceTrayInner(), /data-tray-line="mine-new"/, "every line carries its id again — the glass needs it to resurface");
+assert.equal(plain(t.trayLines())[0].id, "mine-new", "newest first, before any resurfacing");
+t.surfaceTrayLine("mine-old");
+assert.equal(plain(t.trayLines())[0].id, "mine-old", "right-clicked back up: the old roll climbs to line 1");
+assert.equal(t.state.history[1].id, "mine-old", "…without touching the history itself (display order only)");
+t.state.history.unshift(d20Entry("mine-newest", "History", 12, 19, 0));
+assert.equal(plain(t.trayLines())[0].id, "mine-newest", "and the next real roll lands above it naturally");
+t.state.traySurfaceId = ""; t.state.traySurfaceAt = "";
+assert.match(source, /closest&&event\.target\.closest\("\.fh-cd-tray-dice\.is-rows"\)/,
+  "the whole glass answers the right click — resurface beats the die menus there, and only there");
 
 console.log("dice-tray: all assertions passed");
