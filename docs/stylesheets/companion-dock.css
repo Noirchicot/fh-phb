@@ -1663,3 +1663,16 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    them. */
 .fh-cd-traylist{scroll-snap-type:none}
 .fh-cd-trayline{scroll-snap-align:none}
+
+/* ── Lot BACKLOG-A (Eric, 2026-08-05) — the reading glass is OFF ──────
+   The hover rules of 2026-08-04 stay untouched above; this gate keys
+   them to the dock's is-loupe-on class, which render() only grants
+   while TRAY_LOUPE_ENABLED is true in fh-player-sheet.js. Flip that
+   ONE JS constant to relight the glass — no CSS to revisit. The three
+   overrides below beat the @media block on specificity and order, and
+   restore each property to its resting value (dicetray's base z-index
+   is 22, set at its absolute anchor). APPENDED only. */
+.fh-cd-dock:not(.is-loupe-on) .fh-cd-trayline:hover .fh-cd-tray-dice.is-rows{transform:none;z-index:auto}
+.fh-cd-dock:not(.is-loupe-on) .fh-cd-trayline:hover .fh-cd-tray-dice.is-rows::after{opacity:0}
+.fh-cd-dock:not(.is-loupe-on) .fh-cd-trayline:hover{z-index:auto}
+.fh-cd-dock:not(.is-loupe-on) .fh-cd-dicetray:has(.fh-cd-trayline:hover .fh-cd-tray-dice.is-rows){z-index:22}

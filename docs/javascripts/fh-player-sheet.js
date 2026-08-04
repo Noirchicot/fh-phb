@@ -3877,7 +3877,7 @@
        reading an older roll was physically impossible (Eric: the dice
        "dépassent sous les bords" and you can never reach them). */
     var keepTrayScroll=(function(){var node=root.querySelector(".fh-cd-traylist");return node?node.scrollTop:0;})();
-    root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
+    root.innerHTML=seal+"<div class=\"fh-cd-dock"+(TRAY_LOUPE_ENABLED?" is-loupe-on":"")+"\">"+inner+"</div>";
     renderMessage();
     if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
     /* The traylist node is reborn on every render — restore where the
@@ -4123,6 +4123,13 @@
     if(state.rollConfig&&state.rollConfig.destinyDieId===dieId){state.diePrompt={destinyDieId:dieId};dropStagedDie();return;}
     if(state.destinyStaged&&state.destinyStaged.dieId===dieId){state.diePrompt={poolId:dieId};dropStagedDie();return;}
   }
+  /* The reading glass is OFF (décision Eric, 2026-08-05) — a kill switch,
+     not a deletion. Everything below (the hover clamp, the CSS lift keyed
+     to is-loupe-on, the right-click resurface that lived ON the glass)
+     stays in place for a future rallumage: flip this ONE constant to true
+     and the whole ride comes back. The right-click "remonter le jet" goes
+     dark with it, unreplaced — it was the glass's gesture, not a line's. */
+  var TRAY_LOUPE_ENABLED=false;
   /* The reading glass rides on HOVER now (Eric, 2026-08-04 third pass):
      right click collided with the die menus — a die under the cursor
      answered twice — so the menus keep the right click EVERYWHERE (which
@@ -4137,7 +4144,7 @@
      zoom). The hover anchor is the LINE, which never transforms, so the
      glass sliding away cannot unhover itself and flicker. */
   function onTrayHover(event){
-    if(!root)return;
+    if(!TRAY_LOUPE_ENABLED||!root)return;
     var line=event.target&&event.target.closest&&event.target.closest(".fh-cd-trayline");
     if(!line)return;
     var zone=line.querySelector(".fh-cd-tray-dice.is-rows");if(!zone)return;
@@ -4156,7 +4163,7 @@
        whole glass answers, dice included: a glass is a reading surface,
        and the big-hand colour menus step aside for it. Everything outside
        a glass keeps its die menus. */
-    var glassZone=event.target&&event.target.closest&&event.target.closest(".fh-cd-tray-dice.is-rows");
+    var glassZone=TRAY_LOUPE_ENABLED&&event.target&&event.target.closest&&event.target.closest(".fh-cd-tray-dice.is-rows");
     if(glassZone){
       var glassLine=glassZone.closest(".fh-cd-trayline");
       if(glassLine&&glassLine.getAttribute("data-tray-line")){
