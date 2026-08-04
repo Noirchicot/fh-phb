@@ -1930,10 +1930,18 @@
     crimson:{fill:"#93303a",light:"#c05a63",dark:"#5b1620",rim:"#4a1018",facet:"#7a2530",num:"#ffeceb"},
     azure:{fill:"#2f5f86",light:"#5d8cb0",dark:"#173b57",rim:"#12293c",facet:"#23496a",num:"#eef6fd"},
     violet:{fill:"#5c3d7e",light:"#8563a6",dark:"#372049",rim:"#241432",facet:"#452c5e",num:"#f5edff"},
-    slate:{fill:"#4a4f55",light:"#727880",dark:"#2b2f34",rim:"#1c1f22",facet:"#3a3e44",num:"#f0f2f4"}
+    slate:{fill:"#4a4f55",light:"#727880",dark:"#2b2f34",rim:"#1c1f22",facet:"#3a3e44",num:"#f0f2f4"},
+    // The plain-bonus tint (Eric, ratified 2026-08-03: "bonus lambda gris clair").
+    ash:{fill:"#c9cdd2",light:"#eceef1",dark:"#9aa0a8",rim:"#6b7178",facet:"#aeb3ba",num:"#3a3f45"}
   };
   // Offered in the right-click menu, in this order. "ivory" is the default.
   var DIE_COLOURS = [["ivory","Ivory"],["green","Green"],["gold","Gold"],["crimson","Crimson"],["azure","Azure"],["violet","Violet"],["slate","Slate"]];
+  /* The SEAL IS THE DIE (Eric, ratified 2026-08-03, wired 2026-08-04):
+     "color and dice = all in one" — a bonus die's provenance is its tint,
+     not a separate 12px token. Destiny gold, Tactical (the warrior's die)
+     crimson, Bardic violet, Guidance azure, plain bonuses light-grey ash.
+     A colour the player chose by hand still wins over everything. */
+  var SOURCE_TINT={guidance:"azure",bardic:"violet",tactical:"crimson"};
   function dieMaterialName(die){
     if(die.special==="chaos")return "chaos";
     if(die.colour&&DIE_MATERIAL[die.colour])return die.colour;
@@ -1942,7 +1950,7 @@
     if(die.sides===20&&die.result===20)return "crit";
     if(die.sides===20&&die.result===1)return "fumble";
     if(die.dieRole==="destiny")return "gold";
-    if(die.dieRole==="bonus")return "green";
+    if(die.dieRole==="bonus")return SOURCE_TINT[String(die.sourceIcon||"")]||"ash";
     return "ivory";
   }
   function dieSvg(sides,size,materialName,text){
@@ -2023,14 +2031,14 @@
       }
       return "<span class=\""+classes.join(" ")+"\"><span class=\"fh-cd-src\"></span><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span><em>"+esc(die.label||"Bonus")+"</em></span>";
     }
-    /* The source token (§1). A Destiny die reads its provenance off the table
-       like everything else — it used to leave the 12px slot empty, which was
-       the one die in the tray whose origin the player had to infer. */
-    var source=die.dieRole==="bonus"
-      ? "<span class=\"fh-cd-src "+sourceToneClass(die.sourceIcon)+"\" title=\""+esc(die.label||rollSource(die.sourceIcon).label)+"\">"+bonusSourceMark(die.sourceIcon)+"</span>"
-      : die.dieRole==="destiny"
-      ? "<span class=\"fh-cd-src "+sourceToneClass("destiny")+"\" title=\""+esc(ROLL_SOURCES.destiny.label)+"\">"+sourceGlyphSvg("destiny")+"</span>"
-      : "<span class=\"fh-cd-src\"></span>";
+    /* The source token is RETIRED (Eric: "color and dice = all in one") —
+       the die's tint says destiny/tactical/bardic/guidance/plain, and the
+       label plus the title attribute still spell the name out. The empty
+       12px slot stays for now so every wrap keeps the same skeleton;
+       reclaiming it is the measures lot's call. */
+    var source="<span class=\"fh-cd-src\" title=\""+esc(
+      die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
+      :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"")+"\"></span>";
     var dieClasses="fh-cd-die"+(die.result!=null?" is-landed":"")+(animate&&die.result!=null?" is-spinning":"");
     // A die still in the hand carries its identity so a right click can reach it.
     var handle="";
@@ -2077,18 +2085,12 @@
           "<span class=\"fh-cd-static-die-fallback\">"+dieSvg(die.sides,hostSize,materialName,nakedValue)+"</span></span>";
         dieClasses+=" is-static-die";
       }
-      /* The wrap's provenance survives the swarm (Eric, 2026-08-04): a
-         bonus or Destiny die keeps its source as a tiny corner mark —
-         the full token had no room at swarm scale, but an unmarked green
-         die read as "why is this one green?". Colour already rides
-         data-material on the host. */
-      var mini=die.dieRole==="bonus"
-        ? "<span class=\"fh-cd-src-mini "+sourceToneClass(die.sourceIcon)+"\" title=\""+esc(die.label||rollSource(die.sourceIcon).label)+"\">"+bonusSourceMark(die.sourceIcon)+"</span>"
-        : die.dieRole==="destiny"
-        ? "<span class=\"fh-cd-src-mini "+sourceToneClass("destiny")+"\" title=\""+esc(ROLL_SOURCES.destiny.label)+"\">"+sourceGlyphSvg("destiny")+"</span>"
-        : "";
-      return "<span class=\""+classes.join(" ")+" is-naked\""+handle+">"+
-        "<span class=\""+dieClasses+"\">"+face+"</span>"+mini+"</span>";
+      /* No corner mark in the swarm: the tint IS the provenance now
+         ("all in one"), and the title still names it on hover. */
+      var nakedTitle=die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
+        :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"";
+      return "<span class=\""+classes.join(" ")+" is-naked\""+(handle||(nakedTitle?" title=\""+esc(nakedTitle)+"\"":""))+">"+
+        "<span class=\""+dieClasses+"\">"+face+"</span></span>";
     }
     /* Static Area (tray rolls 5+): the settled pose as a cached bitmap. One
        host, one numeral slot — even for d100, whose snapshot pair is drawn

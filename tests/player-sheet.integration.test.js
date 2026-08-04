@@ -444,7 +444,9 @@ assert.equal(entry.kept,17,"Portent replaces the d20 roll");
 assert.equal(entry.d20Forced,true,"a forced d20 is stored as manual");
 assert.equal(entry.bonusDice[0].forced,true,"a forced tray bonus die is stored as manual");
 assert.equal(entry.bonusDice[0].sourceIcon,"other-1","the first custom die keeps its Other I identity after its label is edited");
-assert.equal(root.querySelector(".fh-cd-src b").textContent.trim(),"I","the die carries the Other I seal in the frame");
+/* REWRITTEN (chantier sceaux, 2026-08-04): the seal IS the die — a plain
+   bonus reads as the ash tint (plus its titled slot), not a numeral token. */
+assert.ok(root.querySelector(".fh-cd-frame.is-trayhand [data-material=\"ash\"]"),"the Other die rolls ash — the tint is its seal in the frame");
 // REWRITTEN (tranche 2): there is no result popup left to carry the mark, so the
 // dice themselves carry it while the roll stays open on APPLY.
 /* REWRITTEN (dock-dice-tray, second fitting): die labels went minimal — the

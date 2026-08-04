@@ -216,13 +216,22 @@ assert.equal(t.MAX_FREE_DICE, 50, "nothing goes beyond fifty dice");
    size, so a die tumbling small cannot change the pitch mid-roll. */
 assert.match(css, /\.fh-cd-tray-dice\.is-rows \.fh-cd-diewrap\{width:var\(--fh-cd-tray-die-size/,
   "the cell is the settled size — rows of ten hold from first wave to rest");
-/* The wrap's provenance survives the swarm: a bonus or Destiny die keeps
-   its source as a tiny corner mark, and its colour rides data-material. */
-assert.match(source, /fh-cd-src-mini/, "a naked source die keeps a corner provenance mark");
-const nakedBonus = t.visualDie({sides:6, result:4, dieRole:"bonus", sourceIcon:"guidance", label:"Guidance"}, 0, 14, false, {naked:true, sizePx:16, plainLabel:true});
-assert.match(nakedBonus, /fh-cd-src-mini/, "…rendered on the die itself");
-const nakedFree = t.visualDie({sides:6, result:4}, 0, 14, false, {naked:true, sizePx:16, plainLabel:true});
-assert.doesNotMatch(nakedFree, /fh-cd-src-mini/, "a free die carries no mark — nothing to say");
+/* THE SEAL IS THE DIE (Eric, ratified 2026-08-03, wired 2026-08-04):
+   "color and dice = all in one" — provenance is the die's tint, the
+   separate 12px token is retired everywhere. Destiny gold, Tactical
+   (the warrior) crimson, Bardic violet, Guidance azure, plain bonus ash
+   (light grey). A hand-picked colour still wins. */
+const tintOf = html => (html.match(/data-material="([^"]+)"/) || [])[1];
+const mkBonus = (icon, extra) => Object.assign({sides:6, result:4, dieRole:"bonus", sourceIcon:icon, label:icon}, extra || {});
+assert.equal(tintOf(t.visualDie(mkBonus("guidance"), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "azure", "Guidance rolls azure");
+assert.equal(tintOf(t.visualDie(mkBonus("bardic"), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "violet", "Bardic rolls violet");
+assert.equal(tintOf(t.visualDie(mkBonus("tactical"), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "crimson", "Tactical — the warrior's die — rolls crimson");
+assert.equal(tintOf(t.visualDie(mkBonus("other-2"), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "ash", "a plain bonus rolls light-grey ash");
+assert.equal(tintOf(t.visualDie(mkBonus("guidance", {colour:"slate"}), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "slate", "a hand-picked colour outranks the source tint");
+const wrappedBonus = t.visualDie(mkBonus("guidance"), 0, 3, false, {sizePx:44});
+assert.equal(tintOf(wrappedBonus), "azure", "the wrapped die is tinted the same");
+assert.doesNotMatch(wrappedBonus, /fh-cd-src is-|fh-cd-src-mini/, "and carries NO separate source token — the seal is the die");
+assert.match(wrappedBonus, /fh-cd-src" title=/, "the empty slot still names the source on hover (reclaiming it = the measures lot)");
 
 /* ── 4c. The reading glass, on HOVER (Eric, 2026-08-04, third pass) ────
    REWRITTEN same day: right click collided with the die menus (a die

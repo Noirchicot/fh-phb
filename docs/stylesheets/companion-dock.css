@@ -1566,12 +1566,8 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-tray-inf{font-size:calc(30px * var(--cd-fs));font-weight:600;line-height:1;color:#c9a45a;
   text-shadow:0 1px 3px rgba(0,0,0,.4);cursor:default}
 .fh-cd-tray-dice.is-infinite{align-items:center;justify-content:center}
-/* The naked die's provenance mark: a bonus or Destiny die in a swarm
-   keeps its source as a tiny corner glyph — the full token has no room. */
-.fh-cd-diewrap.is-naked{position:relative}
-.fh-cd-src-mini{position:absolute;right:-3px;top:-4px;width:10px;height:10px;z-index:2;pointer-events:none;
-  display:flex;align-items:center;justify-content:center;font-size:8px;line-height:1}
-.fh-cd-src-mini svg{width:10px;height:10px;display:block}
+/* (The naked corner provenance mark lived here for a day — retired the
+   same day: the seal IS the die now, its tint says the source.) */
 /* The live hand's frame must never crop its own rows — the base frame is
    overflow:hidden for the classic roller, but down here the hand GROWS
    (three rows of ten) and the glass must ride out of it. */
