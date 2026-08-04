@@ -29,7 +29,7 @@ const css = fs.readFileSync(cssPath, "utf8");
 
 const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhDiceTray = {
-    state, TRAY_MAX, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
+    state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
     renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray
   };
 })();
@@ -175,6 +175,45 @@ assert.match(settledPass, /--fh-static-die-size:20px/, "at the settled, zoomed s
 const coin = t.visualDie({kind:"modifier", result:2, label:"FH bonus"}, 9, 10, false, {naked:true, sizePx:20, plainLabel:true});
 assert.match(coin, /is-naked/, "the +2 coin rides naked in a swarm");
 assert.doesNotMatch(coin, /<em>/, "no label — the value is printed on the coin");
+
+/* ── 4b². Rows of ten, and the ∞ line (Eric, 2026-08-04) ───────────────
+   Up to 12 dice: one line, one wave. 13-30: rows of EXACTLY ten, the row
+   sized from the line's own die size, tumbling row after row. Past 30 the
+   dice stay home — a big ∞ holds the zone, the total speaks on the right,
+   and the full account lives in the Stream. Free rolls stop at fifty. */
+
+function trayHand(id, count, total) {
+  const dice = [];
+  for (let i = 0; i < count; i++) dice.push({sides:6, result:(i % 6) + 1});
+  return {id, kind:"tray", name:"Damage roll", dice, total, createdAt:isoAt(0)};
+}
+t.state.feed.events = [];
+t.state.trayResults = []; t.state.rollSequence = null;
+t.state.history = [trayHand("twelve", 12, 42)];
+t.state.diceSignatures = {};
+const twelvePass = t.diceTrayInner();
+assert.doesNotMatch(twelvePass, /data-wave="1"/, "twelve dice roll at once — never a second wave");
+assert.doesNotMatch(twelvePass, /is-rows/, "and sit on one line");
+t.state.history = [trayHand("twentyfive", 25, 88)];
+t.state.diceSignatures = {};
+const rowsPass = t.diceTrayInner();
+assert.match(rowsPass, /is-rows/, "thirteen to thirty wrap into rows of ten");
+assert.match(rowsPass, /data-wave="2"/, "…and tumble row after row: 10, 10, 5");
+assert.match(rowsPass, /--fh-cd-tray-die-size:20px/, "the row rides the line's own settled die size");
+assert.match(css, /\.fh-cd-tray-dice\.is-rows\{max-width:calc\(10 \* var\(--fh-cd-tray-die-size/,
+  "and the stylesheet caps a row at ten of THAT size — never eleven, never nine");
+t.state.history = [trayHand("legion", 31, 108)];
+t.state.diceSignatures = {};
+const infinitePass = t.diceTrayInner();
+assert.match(infinitePass, /is-infinite/, "past thirty the zone goes infinite");
+assert.match(infinitePass, /fh-cd-tray-inf[^>]*>∞</, "a big ∞ where the dice would be");
+assert.doesNotMatch(infinitePass, /data-sides=/, "no dice are drawn at all");
+assert.match(infinitePass, /fh-cd-tray-total is-\w+">108</, "the total still speaks on the right");
+assert.match(source, /if\(count>30\)\{state\.trayRevealAt=0;return;\}/,
+  "and nothing holds the reveal — with no dice rolling, the total just appears");
+assert.equal(t.MAX_FREE_DICE, 50, "nothing goes beyond fifty dice");
+assert.match(source, /is-mid \.fh-cd-tray-dice:not\(\.is-infinite\)/,
+  "the loupe declines an ∞ zone — there are no dice to magnify");
 
 /* ── 4c. The dice loupe (Eric, 2026-08-04) ─────────────────────────────
    Right click / long press magnifies a lower line's dice zone ×1.5; left

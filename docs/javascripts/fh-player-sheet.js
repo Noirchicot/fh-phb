@@ -45,7 +45,7 @@
   var DIE_SEQUENCE = [4,6,8,10,12];
   var ROLL_DIE_SIZES = [4,6,8,10,12,20,100];
   var MAX_BONUS_DICE = 3;
-  var MAX_FREE_DICE = 40;
+  var MAX_FREE_DICE = 50;
   var LIGHTWEIGHT_DICE_THRESHOLD = 6;
   /* Both picker rows (Destiny, white dice) render at this size. Kept in step
      with the .fh-cd-picker-die / .fh-cd-calling-die widths in companion-dock.css. */
@@ -1271,6 +1271,10 @@
     // Nothing is rolling when motion is suppressed, so nothing needs hiding.
     if(prefersReducedMotion()){state.trayRevealAt=0;return;}
     var count=Number(dieCount)||1;
+    /* Past THIRTY dice the line renders an ∞ instead of dice (Eric,
+       2026-08-04) — nothing rolls, so there is nothing to wait for and
+       the total just appears. */
+    if(count>30){state.trayRevealAt=0;return;}
     /* A 13+ hand rolls in WAVES of ten (fh-static-dice, WAVE_GAP 140ms —
        these two numbers are that scheduler's, mirrored). The reveal must
        outlive the LAST wave: the render it fires replaces the tray's DOM,
@@ -2385,7 +2389,10 @@
       var realDice=dice.filter(function(die){return die.kind!=="modifier";}).length;
       var swarm=realDice>5;
       var sizePx=swarm?(realDice>12?16:18):Math.min(dieSize(dice.length||1),34);
-      assembly="<span class=\"fh-cd-tray-dice is-build"+(swarm?" is-swarm":"")+"\">"+dice.map(function(die,index){
+      /* While STAGING every die stays visible (you need to see what you are
+         adding) — but 13+ align in the same rows of ten as the tray. */
+      assembly="<span class=\"fh-cd-tray-dice is-build"+(swarm?" is-swarm":"")+(realDice>12?" is-rows":"")+"\""+
+        (swarm?" style=\"--fh-cd-tray-die-size:"+sizePx+"px\"":"")+">"+dice.map(function(die,index){
         return visualDie(die,index,dice.length,false,{sizePx:sizePx,plainLabel:true,naked:swarm});
       }).join("")+"</span>";
     }
@@ -3081,9 +3088,15 @@
        24px die plus its token used to sit. The large line keeps the full
        wrapper up to five dice. */
     var swarm=big?realDice>5:true;
-    var waved=big&&realDice>12;
-    var rollPx=big?(waved?16:18):(realDice>12?16:realDice>5?20:30);
-    var settlePx=big?(waved?20:22):(realDice>12?16:realDice>5?20:30);
+    /* The three tiers (Eric, 2026-08-04): up to 12 dice roll at once on ONE
+       line; 13-30 wrap and tumble in rows of exactly ten; past 30 the dice
+       stay home — a big ∞ holds the zone, the total speaks on the right,
+       and the full account lives in the Stream. */
+    var infinite=realDice>30;
+    var rows=realDice>12&&!infinite;
+    var waved=big&&rows;
+    var rollPx=big?(waved?16:18):(rows?16:realDice>5?20:30);
+    var settlePx=big?(waved?20:22):(rows?16:realDice>5?20:30);
     var sizePx=swarm?rollPx:Math.min(dieSize(slot.dice.length||1),TRAY_DIE_BIG);
     var snapshot=index>=4;
     var readOnly=slot.kind==="feed";
@@ -3092,7 +3105,9 @@
       : (state.character&&state.character.name||state.pseudo||"Character");
     var ts=slot.kind==="feed"?slot.ts:(slot.entry&&slot.entry.createdAt||"");
     var time=ts?nowLabel(ts):"";
-    var diceHtml=slot.dice.map(function(die,di){
+    var diceHtml=infinite
+      ? "<b class=\"fh-cd-tray-inf\" title=\""+realDice+" dice — the full account is in the Stream\">∞</b>"
+      : slot.dice.map(function(die,di){
       return visualDie(die,di,slot.dice.length,!!(flags&&flags[di]),
         {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true,naked:swarm,
          rollSizePx:rollPx,settleSizePx:settlePx,
@@ -3119,7 +3134,8 @@
       "<i class=\"fh-cd-tray-name\">"+esc(hoverText)+"</i></span>";
     var sides=trayLineSides(slot,quiet);
     var row="<span class=\"fh-cd-tray-left\">"+whoHtml+"<span class=\"fh-cd-tray-speak\">"+sides.left+"</span></span>"+
-      "<span class=\"fh-cd-tray-dice"+(swarm?" is-swarm":"")+"\">"+diceHtml+"</span>"+
+      "<span class=\"fh-cd-tray-dice"+(swarm&&!infinite?" is-swarm":"")+(rows?" is-rows":"")+(infinite?" is-infinite":"")+"\""+
+        (swarm&&!infinite?" style=\"--fh-cd-tray-die-size:"+settlePx+"px\"":"")+">"+diceHtml+"</span>"+
       "<span class=\"fh-cd-tray-right\">"+sides.right+"</span>";
     /* The live hand keeps the frame — and with it the mood streaks that say
        what the table still owes. History and feed lines carry no frame: a
@@ -3178,11 +3194,15 @@
       });
     });
     var flags=slots.map(function(slot,si){
+      /* The reveal is timed on the dice that will actually animate — the
+         coins never roll, and past 30 real dice nothing renders at all
+         (armTrayReveal's own ∞ gate reads this same count). */
+      var real=slot.dice.filter(function(die){return die.kind!=="modifier";}).length;
       return slot.dice.map(function(die,di){
         if(si>=4)return false;
         var key=slot.id+"§"+dieAnimationKey(die,di);
         var moved=die.result!=null&&previous[key]!==signatures[key];
-        if(moved&&slot.kind==="live")liveAnimated=slot.dice.length;
+        if(moved&&slot.kind==="live")liveAnimated=real;
         return moved;
       });
     });
@@ -3998,9 +4018,9 @@
     /* Lower lines: the loupe always wins the right click. Line 1 joins in
        only when its hand is a SWARM (Eric, 2026-08-04: with many dice you
        cannot see well) — at five large dice or fewer, its die menus keep
-       the right click. */
+       the right click. An ∞ zone (31+ dice) carries no dice to magnify. */
     var flank=event.target&&event.target.closest&&event.target.closest(
-      ".fh-cd-trayline.is-mid .fh-cd-tray-dice,.fh-cd-trayline.is-static .fh-cd-tray-dice,.fh-cd-trayline.is-l1 .fh-cd-tray-dice.is-swarm");
+      ".fh-cd-trayline.is-mid .fh-cd-tray-dice:not(.is-infinite),.fh-cd-trayline.is-static .fh-cd-tray-dice:not(.is-infinite),.fh-cd-trayline.is-l1 .fh-cd-tray-dice.is-swarm");
     return flank?flank.closest(".fh-cd-trayline"):null;
   }
   function toggleTrayLoupe(line){

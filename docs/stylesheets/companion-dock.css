@@ -1543,3 +1543,23 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-dicetray:has(.fh-cd-trayline.is-zoomed){z-index:28}
 .fh-cd-trayline.is-zoomed{z-index:30}
 .fh-cd-dicetray:has(.fh-cd-trayline.is-l1.is-zoomed) .fh-cd-traylist{overflow:visible}
+
+/* ── Rows of ten & the ∞ line (Eric, 2026-08-04) ─────────────────────
+   Up to 12 dice sit on ONE line; 13-30 wrap into rows of EXACTLY ten —
+   the row is sized from the line's own die size (trayLineHtml rides it
+   in as --fh-cd-tray-die-size), not from the carpet's width, so a wrap
+   never lands eleven or nine. Past 30 the dice stay home: a big ∞ holds
+   the zone, the total speaks on the right, and the full account lives in
+   the Stream. Free rolls stop at fifty dice.
+   (Row arithmetic: ten dice + nine 3px gaps + padding needs 10s+31; an
+   eleventh would need 11s+34 — the +40 slack sits between the two for
+   any die size in play.) */
+.fh-cd-tray-dice.is-rows{max-width:calc(10 * var(--fh-cd-tray-die-size,20px) + 40px);margin:0 auto}
+.fh-cd-tray-inf{font-size:calc(30px * var(--cd-fs));font-weight:600;line-height:1;color:#c9a45a;
+  text-shadow:0 1px 3px rgba(0,0,0,.4);cursor:default}
+.fh-cd-tray-dice.is-infinite{align-items:center;justify-content:center}
+/* The loupe covers EVERYTHING else (Eric): whichever line wears it, the
+   glass grows equally in all directions from its centre (the transform
+   origin above) and the list must not clip any side of the spill — the
+   l1-only rule generalises to every zoomed line. */
+.fh-cd-dicetray:has(.fh-cd-trayline.is-zoomed) .fh-cd-traylist{overflow:visible}
