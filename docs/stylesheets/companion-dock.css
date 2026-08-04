@@ -1566,12 +1566,8 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-tray-inf{font-size:calc(30px * var(--cd-fs));font-weight:600;line-height:1;color:#c9a45a;
   text-shadow:0 1px 3px rgba(0,0,0,.4);cursor:default}
 .fh-cd-tray-dice.is-infinite{align-items:center;justify-content:center}
-/* The naked die's provenance mark: a bonus or Destiny die in a swarm
-   keeps its source as a tiny corner glyph — the full token has no room. */
-.fh-cd-diewrap.is-naked{position:relative}
-.fh-cd-src-mini{position:absolute;right:-3px;top:-4px;width:10px;height:10px;z-index:2;pointer-events:none;
-  display:flex;align-items:center;justify-content:center;font-size:8px;line-height:1}
-.fh-cd-src-mini svg{width:10px;height:10px;display:block}
+/* (The naked corner provenance mark lived here for a day — retired the
+   same day: the seal IS the die now, its tint says the source.) */
 /* The live hand's frame must never crop its own rows — the base frame is
    overflow:hidden for the classic roller, but down here the hand GROWS
    (three rows of ten) and the glass must ride out of it. */
@@ -1582,3 +1578,46 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    scroll container, so the box keeps growing and nothing is cut. */
 .fh-cd-floatbottom{overflow-x:clip}
 .fh-cd-consolerow{overflow-x:clip}
+
+/* ── Lot texte (2026-08-04, D4 tranchée) — the tray cap slims down ──
+   APPENDED only. T14: the DICE TRAY word is gone, the LIVE/RECENT/OFF
+   chip leads the cap and carries the status phrase in its hover title
+   (T15). The right edge holds the cap's ⋮ (URL…/Refresh, T17) and the
+   CLEAR TRAY × (T19) — the console lost its cap row with them (T18). */
+.fh-cd-dicetray>.fh-cd-cap{align-items:center}
+.fh-cd-dicetray>.fh-cd-cap .fh-cd-traystate{margin-left:0;cursor:default}
+.fh-cd-dicetray>.fh-cd-cap small{margin-left:6px;margin-right:auto}
+.fh-cd-capacts{margin-left:auto;display:flex;align-items:center;gap:2px}
+.fh-cd-capacts .fh-cd-dmenu{height:18px;width:16px}
+/* The cap's ⋮ opens under the cap, right-aligned, over the carpet. */
+.fh-cd-cmenu.is-traycap{left:auto;right:0;min-width:0;align-items:stretch}
+.fh-cd-cmenurow.is-traycap{height:auto;padding:1px 2px}
+.fh-cd-cmenurow.is-traycap .fh-cd-tableurl,.fh-cd-cmenurow.is-traycap .fh-cd-refresh{width:100%}
+/* The × — same behaviour CLEAR TRAY always had, console dress shed. */
+.fh-cd-trayclear{flex:none;width:18px;height:18px;padding:0;border:0;background:none;
+  color:#8d7b57;cursor:pointer;display:grid;place-items:center;border-radius:3px}
+.fh-cd-trayclear svg{width:10px;height:10px;display:block}
+.fh-cd-trayclear:hover{color:#f1c96f;background:rgba(244,236,216,.08)}
+.fh-cd-trayclear:disabled{opacity:.35;cursor:not-allowed}
+/* The console without its cap row keeps a breath above row 1. */
+.fh-cd-console{padding-top:4px}
+
+/* ── Scroll arrows & line snap (Eric, 2026-08-04 — héritage n°4, and the
+   bug behind it: « les dés dépassent sous les bords ») ────────────────
+   The registre hides most of itself below the fold with no affordance
+   at all (measured: ~350px of rolls out of sight). The scrollbars stay
+   dead — the carpet is the surface — so two thin chevrons ride the
+   list's edges instead, each shown only when there IS something on its
+   side; one click steps one band. Lines snap on stop so a roll is never
+   left cut through its dice. APPENDED only. */
+.fh-cd-traylist{scroll-snap-type:y proximity}
+.fh-cd-trayline{scroll-snap-align:start}
+.fh-cd-trayarrow{position:absolute;left:50%;transform:translateX(-50%);z-index:26;width:36px;height:14px;
+  display:none;align-items:center;justify-content:center;border:0;padding:0;cursor:pointer;
+  background:rgba(58,47,34,.88);border-radius:7px;color:#c9a45a;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.fh-cd-trayarrow svg{width:12px;height:12px;display:block}
+.fh-cd-trayarrow.is-up{top:24px}
+.fh-cd-trayarrow.is-down{bottom:3px}
+.fh-cd-dicetray.is-can-up .fh-cd-trayarrow.is-up{display:flex}
+.fh-cd-dicetray.is-can-down .fh-cd-trayarrow.is-down{display:flex}
+.fh-cd-trayarrow:hover{color:#f1c96f;background:rgba(69,56,39,.96)}

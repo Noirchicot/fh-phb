@@ -30,7 +30,8 @@ const css = fs.readFileSync(cssPath, "utf8");
 const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhDiceTray = {
     state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
-    renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray
+    renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
+    surfaceTrayLine
   };
 })();
 `);
@@ -77,7 +78,12 @@ t.state.character = {name:"Yedrivel"};
 
 assert.equal(t.TRAY_MAX, 10, "the tray holds ten rolls — beyond that, the Stream or AboveVTT");
 assert.match(t.renderDiceTray(), /data-zone="dice-tray"/, "the Dice Tray is its own zone");
-assert.match(t.renderDiceTray(), /DICE TRAY/, "and the cap names it");
+/* REWRITTEN (lot texte T14, 2026-08-04): the DICE TRAY word is gone — the
+   dice say it — and the cap is led by the state chip, with CLEAR TRAY's ×
+   on its right edge (D4). */
+assert.doesNotMatch(t.renderDiceTray(), /DICE TRAY/, "the cap no longer spells the zone's name");
+assert.match(t.renderDiceTray(), /fh-cd-traystate/, "the state chip leads the cap instead");
+assert.match(t.renderDiceTray(), /fh-cd-trayclear[^>]*data-clear-tray/, "and the × on the cap is CLEAR TRAY's final seat");
 assert.doesNotMatch(t.renderStageZone(), /data-zone="dice-tray"/, "the roller does not carry the tray any more");
 
 t.state.history = [];
@@ -208,7 +214,7 @@ const infinitePass = t.diceTrayInner();
 assert.match(infinitePass, /is-infinite/, "past thirty the zone goes infinite");
 assert.match(infinitePass, /fh-cd-tray-inf[^>]*>∞</, "a big ∞ where the dice would be");
 assert.doesNotMatch(infinitePass, /data-sides=/, "no dice are drawn at all");
-assert.match(infinitePass, /fh-cd-tray-total is-\w+">108</, "the total still speaks on the right");
+assert.match(infinitePass, /fh-cd-tray-total is-\w+"[^>]*>108</, "the total still speaks on the right");
 assert.match(source, /if\(count>30\)\{state\.trayRevealAt=0;return;\}/,
   "and nothing holds the reveal — with no dice rolling, the total just appears");
 assert.equal(t.MAX_FREE_DICE, 50, "nothing goes beyond fifty dice");
@@ -216,13 +222,22 @@ assert.equal(t.MAX_FREE_DICE, 50, "nothing goes beyond fifty dice");
    size, so a die tumbling small cannot change the pitch mid-roll. */
 assert.match(css, /\.fh-cd-tray-dice\.is-rows \.fh-cd-diewrap\{width:var\(--fh-cd-tray-die-size/,
   "the cell is the settled size — rows of ten hold from first wave to rest");
-/* The wrap's provenance survives the swarm: a bonus or Destiny die keeps
-   its source as a tiny corner mark, and its colour rides data-material. */
-assert.match(source, /fh-cd-src-mini/, "a naked source die keeps a corner provenance mark");
-const nakedBonus = t.visualDie({sides:6, result:4, dieRole:"bonus", sourceIcon:"guidance", label:"Guidance"}, 0, 14, false, {naked:true, sizePx:16, plainLabel:true});
-assert.match(nakedBonus, /fh-cd-src-mini/, "…rendered on the die itself");
-const nakedFree = t.visualDie({sides:6, result:4}, 0, 14, false, {naked:true, sizePx:16, plainLabel:true});
-assert.doesNotMatch(nakedFree, /fh-cd-src-mini/, "a free die carries no mark — nothing to say");
+/* THE SEAL IS THE DIE (Eric, ratified 2026-08-03, wired 2026-08-04):
+   "color and dice = all in one" — provenance is the die's tint, the
+   separate 12px token is retired everywhere. Destiny gold, Tactical
+   (the warrior) crimson, Bardic violet, Guidance azure, plain bonus ash
+   (light grey). A hand-picked colour still wins. */
+const tintOf = html => (html.match(/data-material="([^"]+)"/) || [])[1];
+const mkBonus = (icon, extra) => Object.assign({sides:6, result:4, dieRole:"bonus", sourceIcon:icon, label:icon}, extra || {});
+assert.equal(tintOf(t.visualDie(mkBonus("guidance"), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "azure", "Guidance rolls azure");
+assert.equal(tintOf(t.visualDie(mkBonus("bardic"), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "violet", "Bardic rolls violet");
+assert.equal(tintOf(t.visualDie(mkBonus("tactical"), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "crimson", "Tactical — the warrior's die — rolls crimson");
+assert.equal(tintOf(t.visualDie(mkBonus("other-2"), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "ash", "a plain bonus rolls light-grey ash");
+assert.equal(tintOf(t.visualDie(mkBonus("guidance", {colour:"slate"}), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "slate", "a hand-picked colour outranks the source tint");
+const wrappedBonus = t.visualDie(mkBonus("guidance"), 0, 3, false, {sizePx:44});
+assert.equal(tintOf(wrappedBonus), "azure", "the wrapped die is tinted the same");
+assert.doesNotMatch(wrappedBonus, /fh-cd-src is-|fh-cd-src-mini/, "and carries NO separate source token — the seal is the die");
+assert.match(wrappedBonus, /fh-cd-src" title=/, "the empty slot still names the source on hover (reclaiming it = the measures lot)");
 
 /* ── 4c. The reading glass, on HOVER (Eric, 2026-08-04, third pass) ────
    REWRITTEN same day: right click collided with the die menus (a die
@@ -285,15 +300,21 @@ assert.match(feedLineHtml, /fh-cd-tray-name">Ilyra/, "with the full name on hove
 
 /* ── 6. LIVE / RECENT / OFF on the cap — never a silent fallback ───── */
 
+/* REWRITTEN (lot texte T15/T17, 2026-08-04): the status phrase rides the
+   chip's hover title now, and URL…/Refresh live behind the cap's ⋮ — the
+   state itself is still always shown, by the chip. */
 t.state.feed.tableState = "recent";
-assert.match(t.diceTrayInner(), /cloud log, about 30s behind/, "RECENT says what it is");
-assert.match(t.diceTrayInner(), /data-feed-refresh/, "and offers the one manual refresh (RECENT is never polled)");
+assert.match(t.diceTrayInner(), /cloud log, about 30s behind/, "RECENT still says what it is — on the chip's title");
+assert.match(t.diceTrayInner(), /data-tray-capmenu/, "and the cap offers its ⋮ (RECENT has a refresh to hold)");
+t.state.trayCapMenu = true;
+assert.match(t.diceTrayInner(), /data-feed-refresh/, "the ⋮ holds the one manual refresh (RECENT is never polled)");
 t.state.feed.tableState = "live";
 assert.match(t.diceTrayInner(), /every roll at the table, live/, "LIVE says what it is");
 assert.doesNotMatch(t.diceTrayInner(), /data-feed-refresh/, "no refresh needed when the table streams");
+t.state.trayCapMenu = false;
 t.state.feed.tableState = "off";
 const offCap = t.diceTrayInner();
-assert.match(offCap, /not reaching the table/, "OFF is written in plain words on the cap");
+assert.match(offCap, /not reaching the table/, "OFF is written in plain words on the chip's title");
 assert.match(offCap, /is-off/, "and wears the loud state chip — never folded into a quieter caption");
 t.state.feed.tableState = "recent";
 
@@ -311,5 +332,35 @@ assert.match(t.diceTrayInner(), /Arcana/, "and the tray still shows it as a line
 assert.match(css, /\.fh-cd-floatbottom\{bottom:var\(--cd-tray-h,0px\);max-height:calc\(100% - var\(--cd-tray-h,0px\)\)\}/,
   "Console and Roll Builder float ABOVE the tray — the dice stay visible while a roll is configured");
 assert.match(css, /\.fh-cd-dicetray\{height:var\(--cd-tray-h\)/, "the zone's height is deterministic, so the anchor cannot drift");
+
+/* ── 9. The fold gets an affordance ; the glass resurfaces (Eric, D3) ──
+   ~350px of rolls hid below the fold with nothing to say so — two thin
+   chevrons now ride the list's edges, shown only when their side has
+   content, and lines snap so a stop never cuts a roll through its dice.
+   Right-clicking a lifted glass calls its roll back up to line 1 —
+   display order only, the wire and the Stream keep the true time. */
+
+t.state.history = [d20Entry("mine-new", "Arcana", 14, 21, 1), d20Entry("mine-old", "Stealth", 9, 16, 30)];
+t.state.feed.events = [];
+t.state.trayResults = []; t.state.rollSequence = null;
+const trayShell = t.renderDiceTray();
+assert.match(trayShell, /fh-cd-trayarrow is-up[^>]*data-tray-scroll="up"/, "an up chevron rides the list's top edge");
+assert.match(trayShell, /fh-cd-trayarrow is-down[^>]*data-tray-scroll="down"/, "a down chevron rides its bottom edge");
+assert.match(css, /\.fh-cd-dicetray\.is-can-down \.fh-cd-trayarrow\.is-down\{display:flex\}/,
+  "each is shown only when there IS something on its side (syncTrayArrows toggles the zone)");
+assert.match(source, /function syncTrayArrows/, "…derived from the scroller, not guessed");
+assert.match(css, /\.fh-cd-traylist\{scroll-snap-type:y proximity\}/, "the list snaps by line…");
+assert.match(css, /\.fh-cd-trayline\{scroll-snap-align:start\}/, "…so a stop never leaves a roll cut through its dice");
+
+assert.match(t.diceTrayInner(), /data-tray-line="mine-new"/, "every line carries its id again — the glass needs it to resurface");
+assert.equal(plain(t.trayLines())[0].id, "mine-new", "newest first, before any resurfacing");
+t.surfaceTrayLine("mine-old");
+assert.equal(plain(t.trayLines())[0].id, "mine-old", "right-clicked back up: the old roll climbs to line 1");
+assert.equal(t.state.history[1].id, "mine-old", "…without touching the history itself (display order only)");
+t.state.history.unshift(d20Entry("mine-newest", "History", 12, 19, 0));
+assert.equal(plain(t.trayLines())[0].id, "mine-newest", "and the next real roll lands above it naturally");
+t.state.traySurfaceId = ""; t.state.traySurfaceAt = "";
+assert.match(source, /closest&&event\.target\.closest\("\.fh-cd-tray-dice\.is-rows"\)/,
+  "the whole glass answers the right click — resurface beats the die menus there, and only there");
 
 console.log("dice-tray: all assertions passed");

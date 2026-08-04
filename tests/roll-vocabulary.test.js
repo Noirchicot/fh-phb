@@ -126,13 +126,17 @@ t.SEALABLE_SOURCES.forEach(key => assert.ok(t.ROLL_SOURCES[key], key + " is a de
 assert.equal(t.sealLabel("tactical"), "Tactical", "a sealed die takes its name from the table");
 assert.equal(t.sealLabel("other-3"), "Bonus III", "a bonus die takes its name from the table");
 
-// A Destiny die used to leave its 12px slot empty: the one die in the tray
-// whose provenance the player had to infer.
+// REWRITTEN (Eric, ratified 2026-08-03, wired 2026-08-04): the seal IS the
+// die — provenance rides the tint (data-material), the 12px slot is empty
+// and merely names the source on hover. The glyph table above still serves
+// the seal card and the console pickers.
 const destinyDie = t.visualDie({sides:8, result:6, dieRole:"destiny", label:"Destiny"}, 0, 1, false);
-assert.match(destinyDie, /class="fh-cd-src is-src-destiny"/, "a Destiny die wears the Destiny token");
-assert.match(destinyDie, /<svg/, "and the token is drawn, not blank");
+assert.match(destinyDie, /data-material="gold"/, "a Destiny die is gold — the tint is the token");
+assert.doesNotMatch(destinyDie, /fh-cd-src is-src-/, "no separate token rides the die any more");
+assert.match(destinyDie, /fh-cd-src" title="Destiny"/, "the empty slot still names the source on hover");
 const bardicDie = t.visualDie({sides:6, result:3, dieRole:"bonus", sourceIcon:"bardic", label:"Bardic"}, 0, 1, false);
-assert.match(bardicDie, /class="fh-cd-src is-src-bardic"/, "a bonus die wears its own source tone, not gold");
+assert.match(bardicDie, /data-material="violet"/, "Bardic rolls violet — its ratified tint, not gold, not green");
+assert.doesNotMatch(bardicDie, /is-src-bardic/, "and wears no token either");
 
 /* ── §3 Badges are derived, not emitted ─────────────────────────────── */
 
@@ -241,7 +245,16 @@ assert.ok(t.rollRuling({kind:"d20", name:"Arcana", baseBonus:3, natural:11, kept
 
 // Derived, never written at render time.
 assert.deepEqual(plain(t.rollRuling(spent)), plain(t.rollRuling(spent)), "the same entry always derives the same Ruling");
-assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", title:"Roll", account:[]}, "no entry, no ruling — and no crash");
+assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", title:"Roll", account:[], display:[]}, "no entry, no ruling — and no crash");
+
+/* Lot texte T1 (Eric, 2026-08-04): the on-screen `display` account drops the
+   per-die enumeration — the dice speak for themselves — and keeps the
+   title-fallback, the Destiny cost and the DC. `account` stays the full
+   record, for the Stream and the hover title. */
+const shown = t.rollRuling({kind:"d20", name:"Arcana", baseBonus:3, natural:11, kept:11, total:14, dc:15, bonusDice:[]});
+assert.ok(shown.display.indexOf("DC 15") >= 0, "display keeps the DC");
+assert.ok(!shown.display.some(line => /^d20/.test(line)), "and drops the dice enumeration");
+assert.ok(shown.account.some(line => /^d20/.test(line)), "which the full account still records");
 
 /* The Ruling's classes are granted by equality with the derived verdict, so a
    Chaos prompt written into the same slot cannot borrow the oxblood authority

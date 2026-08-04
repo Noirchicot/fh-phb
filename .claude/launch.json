@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8125", "--directory", "site"],
       "port": 8125
+    },
+    {
+      "name": "dice-tray-harness",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8127", "--directory", "site"],
+      "port": 8127
     }
   ]
 }

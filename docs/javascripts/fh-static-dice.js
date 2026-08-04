@@ -16,7 +16,9 @@
     azure:{fill:"#2f5f86",light:"#6596bb",dark:"#12334d",rim:"#0d2334",num:"#eef6fd"},
     violet:{fill:"#5c3d7e",light:"#906db0",dark:"#301a42",rim:"#1d1029",num:"#f5edff"},
     slate:{fill:"#4a4f55",light:"#7b828a",dark:"#25292e",rim:"#171a1d",num:"#f0f2f4"},
-    white:{fill:"#fbf8f1",light:"#ffffff",dark:"#d9cfb9",rim:"#8b7546",num:"#5a4a2a"}
+    white:{fill:"#fbf8f1",light:"#ffffff",dark:"#d9cfb9",rim:"#8b7546",num:"#5a4a2a"},
+    // The plain-bonus tint (Eric, ratified 2026-08-03: "bonus lambda gris clair").
+    ash:{fill:"#c9cdd2",light:"#eceef1",dark:"#9aa0a8",rim:"#6b7178",num:"#3a3f45"}
   };
   var geometryCache = {};
   var soundMuted = readStoredMute();
