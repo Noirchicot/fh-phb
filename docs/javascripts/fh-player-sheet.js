@@ -89,7 +89,7 @@
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayLabel:"Damage roll",trayResultText:"",queueDone:"",rollSequence:null,chromeOpen:false,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
-    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false,
+    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false, trayCapMenu:false,
     // Stream is `optional`, off by default (UI-TERMINOLOGY.md zone 10) -- the
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
@@ -1203,7 +1203,9 @@
        instead of borrowing its authority. */
     var ruling=rollVocabulary(entry).ruling;
     state.trayResults=results;state.trayTitle=ruling.verdict||ruling.title;
-    state.trayResultText=ruling.account.join(" · ");state.trayVerdict=ruling.verdict;
+    /* display, not account (T1): the dice enumeration stays off the wood —
+       the Stream and the hover title keep the full record. */
+    state.trayResultText=ruling.display.join(" · ");state.trayVerdict=ruling.verdict;
     // The name alone, for the moment the dice are still in the air.
     state.trayQuietTitle=entry.name||"Roll";
   }
@@ -1301,14 +1303,15 @@
   function openEntry(){var sequence=state.rollSequence;if(!sequence)return null;return state.history.find(function(item){return item.id===sequence.entryId;})||null;}
   function stagedBonusCount(){return stagedList().filter(function(item){return item.kind!=="destiny";}).length;}
   function openStatusText(entry){
-    var staged=stagedList().length;
-    return rollDetailText(entry)+(staged?" · "+staged+" new die"+(staged===1?"":"s")+" ready":"");
+    var staged=stagedList().length,base=rollDetailText(entry);
+    return base+(staged?(base?" · ":"")+staged+" new die"+(staged===1?"":"s")+" ready":"");
   }
   /* The verdict is the headline; the account that produced it stays legible
      but discreet underneath. Both are read off the Ruling (§5) rather than
      assembled here — this pair is now just the tray's view of it. */
   function rollVerdictText(entry){var ruling=rollRuling(entry);return ruling.verdict||ruling.title;}
-  function rollDetailText(entry){return rollRuling(entry).account.join(" · ");}
+  /* display, not account (T1): what this feeds is the judgment box. */
+  function rollDetailText(entry){return rollRuling(entry).display.join(" · ");}
   function refreshOpenTray(entry){
     setTrayFromEntry(entry);
     stagedList().forEach(function(item){
@@ -2029,7 +2032,7 @@
       if(opts.naked){
         return "<span class=\""+classes.join(" ")+" is-naked\"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.max(14,Math.round(size*.9)),text,tone)+"</span></span>";
       }
-      return "<span class=\""+classes.join(" ")+"\"><span class=\"fh-cd-src\"></span><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span><em>"+esc(die.label||"Bonus")+"</em></span>";
+      return "<span class=\""+classes.join(" ")+"\""+(opts.noLabel?" title=\""+esc(die.label||"Bonus")+"\"":"")+"><span class=\"fh-cd-src\"></span><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span>"+(opts.noLabel?"":"<em>"+esc(die.label||"Bonus")+"</em>")+"</span>";
     }
     /* The source token is RETIRED (Eric: "color and dice = all in one") —
        the die's tint says destiny/tactical/bardic/guidance/plain, and the
@@ -2104,7 +2107,7 @@
       dieClasses+=" is-static-die";
       return "<span class=\""+classes.join(" ")+"\">"+source+
         "<span class=\""+dieClasses+"\">"+face+"</span>"+
-        "<em>"+esc((die.label||("d"+die.sides))+status)+"</em></span>";
+        (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
     }
     /* The WebGL renderer is deliberately only a renderer: the face was chosen
        before this markup exists. Larger pools retain the lightweight SVG tray
@@ -2125,9 +2128,13 @@
         staticBody+"<span class=\"fh-cd-static-die-fallback\">"+face+"</span></span>";
       dieClasses+=" is-static-die";
     }
+    /* noLabel (T9, Eric): on the tray's large line the tint already says the
+       provenance and the src slot's title still names it — the visible label
+       under the die was the last redundant text. The judgment box's assembly
+       keeps its labels (you need to read what you are adding). */
     return "<span class=\""+classes.join(" ")+"\""+handle+">"+source+
       "<span class=\""+dieClasses+"\">"+face+"</span>"+
-      "<em>"+esc((die.label||("d"+die.sides))+status)+"</em></span>";
+      (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
   }
   /* The event list and its decision line are gone (third fitting): the
      judgment window says the ruling and asks the decisions, the badge strip
@@ -2430,10 +2437,12 @@
        the left keeps the informative part alone. A real verdict, or a
        prompt like "Chaos", never starts with the roll's name and stays. */
     if(heading&&rightName&&heading.indexOf(rightName)===0)heading="";
+    /* At rest the wood stays bare (T3): the invitation lives once, in the
+       tray's empty state — saying it twice was the doublon. */
     var judgment=(heading&&heading!=="Dice Tray")||detail
       ? (heading&&heading!=="Dice Tray"?"<b"+(isRuling?" class=\"fh-cd-verdict\"":"")+">"+esc(heading)+"</b>":"")+
         (detail?"<em"+(isRuling?" class=\"fh-cd-account\"":"")+">"+esc(detail)+"</em>":"")
-      : "<em>Ready — click a skill, a save or an ability.</em>";
+      : "";
     var right=rightName?"<span class=\"fh-cd-judgeright\"><b>"+esc(rightName)+"</b>"+(rightBonus?"<i>"+esc(rightBonus)+"</i>":"")+"</span>":"";
     return "<div class=\"fh-cd-frame is-judgment"+(assembling?" is-assembly":"")+(mood?" mood-"+mood:"")+"\">"+
       "<span class=\"fh-cd-judgment\">"+judgment+"</span>"+assembly+right+"</div>";
@@ -2610,25 +2619,33 @@
      decided nothing yet, and it moves into the account when there IS a
      verdict — so the identity of the roll is never lost and never doubled. */
   function rollRuling(entry){
-    if(!entry)return {verdict:"",title:"Roll",account:[]};
+    if(!entry)return {verdict:"",title:"Roll",account:[],display:[]};
     var found=rollVerdict(entry),verdict=found?found.verdict:"";
     var title=(entry.name||"Roll")+(entry.total==null?"":" "+entry.total);
-    var account=verdict?[title]:[];
-    rollParts(entry).forEach(function(part){account.push(part.k+" "+part.v);});
+    var head=verdict?[title]:[];
+    /* The per-die enumeration ("d6 5 · d6 2 · …") lives in `account` — the
+       FULL record, for the Stream and the hover title. It is condemned on
+       screen (Eric, lot texte T1: the dice speak for themselves), so
+       `display` is the same account WITHOUT it: title-fallback, what it
+       cost, where it leaves you, the DC. On-screen surfaces read display;
+       the record keeps account. */
+    var parts=[];
+    rollParts(entry).forEach(function(part){parts.push(part.k+" "+part.v);});
     /* What it cost, stated in points rather than left for the player to
        subtract two badges from each other. */
+    var tail=[];
     var spent=entry.destiny;
     if(spent){
       var change=Number(spent.pointsAfter)-Number(spent.pointsBefore);
       if(isFinite(change)&&change){
         var moved=Math.abs(change);
-        account.push((change<0?"Lost ":"Gained ")+moved+" Destiny Point"+(moved===1?"":"s"));
-        account.push("Current "+spent.pointsAfter);
+        tail.push((change<0?"Lost ":"Gained ")+moved+" Destiny Point"+(moved===1?"":"s"));
+        tail.push("Current "+spent.pointsAfter);
       }
     }
-    if(entry.destinyPointChange)account.push(entry.destinyPointChange.reason+" · Destiny "+entry.destinyPointChange.after);
-    if(rollHasDc(entry)&&entry.dc!=null)account.push("DC "+entry.dc);
-    return {verdict:verdict,title:title,account:account};
+    if(entry.destinyPointChange)tail.push(entry.destinyPointChange.reason+" · Destiny "+entry.destinyPointChange.after);
+    if(rollHasDc(entry)&&entry.dc!=null)tail.push("DC "+entry.dc);
+    return {verdict:verdict,title:title,account:head.concat(parts,tail),display:head.concat(tail)};
   }
   /* The one derivation every surface calls. Badges and Ruling come off the
      same entry in the same pass, so a surface cannot read one without the
@@ -3042,21 +3059,31 @@
     var left="",right="";
     if(slot.kind==="feed"){
       var display=slot.event.display||{},tone=feedTone(display);
-      var badges=(display.badges||[]).map(String);
+      /* T8 (Eric): a badge that restates the outcome word for word is the
+         doublon — one line says it. Case-insensitive equality only; the
+         wire and the Stream keep the full badge list. */
+      var badges=(display.badges||[]).map(String).filter(function(text){
+        return !display.outcome||text.toLowerCase()!==String(display.outcome).toLowerCase();});
       var natTexts=badges.filter(function(text){return /^NATURAL (20|1)\b|^ARCANE AWAKENING/i.test(text);});
       var rest=badges.filter(function(text){return natTexts.indexOf(text)<0;});
       left=(display.outcome?"<b class=\"fh-cd-tray-outcome is-"+(tone||"none")+"\">"+esc(display.outcome)+"</b>":"")+
         natTexts.map(function(text){return trayBadgeChip("n20",text);}).join("")+
         rest.map(function(text){return trayBadgeChip("adjusted",text);}).join("");
+      /* T11: the CSS was already hiding the right flank's account — stop
+         generating it. The hover keeps it: the total carries the title. */
       right="<b class=\"fh-cd-tray-title\">"+esc(String(display.title||"Roll")+(display.bonus!=null?" "+signed(display.bonus):""))+"</b>"+
-        "<span class=\"fh-cd-tray-total is-"+(tone||"none")+"\">"+esc(display.total!=null?display.total:"—")+"</span>"+
-        (display.dc!=null?"<em class=\"fh-cd-tray-account\">vs DC "+esc(display.dc)+"</em>":"");
+        "<span class=\"fh-cd-tray-total is-"+(tone||"none")+"\""+(display.dc!=null?" title=\"vs DC "+esc(display.dc)+"\"":"")+">"+esc(display.total!=null?display.total:"—")+"</span>";
     }else if(slot.entry&&(slot.kind==="mine"||slot.structured)){
       var entry=slot.entry,vocab=rollVocabulary(entry),ruling=vocab.ruling,tone2=outcomeTone(entry);
       /* Quiet hides what the dice have not revealed — never what the player
          already knew: MANUAL and adjusted describe the roll's construction
          and stay visible while it rolls, exactly as the Stream always did. */
-      var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler);});
+      /* T7 (Eric): the NATURAL 20 chip under the NATURAL 20 verdict was two
+         lines for one fact. A badge whose text IS the verdict (case-
+         insensitive) yields to it; ROLL_BADGE_RULES and the export are
+         untouched — this is a surface filter, the Stream still says both. */
+      var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler)&&
+        !(ruling.verdict&&badge.t.toLowerCase()===ruling.verdict.toLowerCase());});
       left=(quiet?"<em class=\"fh-cd-tray-account\">Rolling…</em>"
           :ruling.verdict?"<b class=\"fh-cd-tray-verdict\">"+esc(ruling.verdict)+"</b>":"")+
         kept.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
@@ -3064,10 +3091,12 @@
          staged-dice count included); a settled history line re-derives the
          account so it can never go stale. */
       var account=quiet?"":(slot.kind==="live"?state.trayResultText:ruling.account.join(" · "));
+      /* T11: those two <em> were display:none on the carpet — dead text in
+         every line's DOM. The account (full record, T1) and the DC now ride
+         the total's hover title instead of being generated then hidden. */
+      var hover=[account,(!quiet&&entry.dc!==""&&entry.dc!=null)?"vs DC "+entry.dc:""].filter(Boolean).join(" · ");
       right="<b class=\"fh-cd-tray-title\">"+esc(String(entry.name||"Roll")+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):""))+"</b>"+
-        "<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\">"+(quiet?"…":esc(entry.total))+"</span>"+
-        (account?"<em class=\"fh-cd-tray-account\" title=\""+esc(account)+"\">"+esc(account)+"</em>":"")+
-        (!quiet&&entry.dc!==""&&entry.dc!=null?"<em class=\"fh-cd-tray-account\">vs DC "+esc(entry.dc)+"</em>":"");
+        "<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\""+(hover?" title=\""+esc(hover)+"\"":"")+">"+(quiet?"…":esc(entry.total))+"</span>";
     }else{
       /* A prompt that overwrote the tray fields while dice are engaged
          ("Chaos" · "Roll 2d6 and read the Chaos table"). Raw fields, verdict
@@ -3075,8 +3104,10 @@
       var heading=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
       var detail=quiet?"Rolling…":state.trayResultText;
       var isRuling=!quiet&&!!state.trayVerdict&&heading===state.trayVerdict;
-      left="<b"+(isRuling?" class=\"fh-cd-tray-verdict\"":" class=\"fh-cd-tray-heading\"")+">"+esc(heading||"Dice Tray")+"</b>";
-      right=detail?"<em class=\"fh-cd-tray-account\">"+esc(detail)+"</em>":"";
+      /* T11: the detail's <em> was hidden on the carpet too — it rides the
+         heading's hover title now, nothing dead in the DOM. */
+      left="<b"+(isRuling?" class=\"fh-cd-tray-verdict\"":" class=\"fh-cd-tray-heading\"")+(detail?" title=\""+esc(detail)+"\"":"")+">"+esc(heading||"Dice Tray")+"</b>";
+      right="";
     }
     return {left:left,right:right};
   }
@@ -3118,7 +3149,7 @@
       ? "<b class=\"fh-cd-tray-inf\" title=\""+realDice+" dice — the full account is in the Stream\">∞</b>"
       : slot.dice.map(function(die,di){
       return visualDie(die,di,slot.dice.length,!!(flags&&flags[di]),
-        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true,naked:swarm,
+        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true,noLabel:true,naked:swarm,
          rollSizePx:rollPx,settleSizePx:settlePx,
          wave:swarm&&waved?Math.floor(di/10):null,waveIndex:swarm?di%10:null});
     }).join("");
@@ -3155,17 +3186,43 @@
     }
     return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\">"+row+"</li>";
   }
-  function diceTrayInner(){
-    var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
-    var caption=offline?"not reaching the table"
+  /* The three feed states, one derivation (T24): the tray cap's chip title
+     and the Stream's cap read the SAME phrases instead of each keeping a
+     copy. Never fall back silently: the state is always shown — by the chip;
+     what moved to hover is only the paraphrase (T15). */
+  function feedStatusCaption(ts,offline){
+    return offline?"not reaching the table"
       :ts==="live"?"every roll at the table, live"
       :"no live table — cloud log, about 30s behind";
+  }
+  function diceTrayInner(){
+    var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
+    var caption=feedStatusCaption(ts,offline);
     var manual=feedActive()&&ts!=="live"
       ? "<button type=\"button\" class=\"fh-cd-tableurl\" data-table-url-set title=\"Paste the DM's table URL\">"+(state.feed.manualUrl?"URL set":"URL…")+"</button>":"";
     var refresh=feedActive()&&ts==="recent"&&!offline
       ? "<button type=\"button\" class=\"fh-cd-refresh\" data-feed-refresh title=\"Check the cloud log now\">Refresh</button>":"";
-    var cap="<div class=\"fh-cd-cap\">DICE TRAY<small>"+esc(feedActive()?caption:"your rolls — load a character to join the table")+"</small>"+manual+refresh+
-      "<span class=\"fh-cd-traystate is-"+(offline?"off":ts)+"\">"+(offline?"OFF":ts==="live"?"LIVE":"RECENT")+"</span></div>";
+    /* The cap slimmed down (lot texte, D4 tranchée) : the DICE TRAY word is
+       gone (T14 — the dice say it), the verbose status rides the chip's
+       hover title (T15 — OFF stays loud through the chip itself), URL… and
+       Refresh live behind the cap's ⋮ (T17), and CLEAR TRAY is the small ×
+       at the cap's right edge (T19/D4) — same behaviour, same
+       rollTransactionActive guard it had in the console. */
+    var capMenu="";
+    if(manual||refresh){
+      var capMenuOpen=!!state.trayCapMenu;
+      capMenu="<span class=\"fh-cd-cmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu is-capmenu"+(capMenuOpen?" is-active":"")+"\" data-tray-capmenu aria-haspopup=\"true\" aria-expanded=\""+(capMenuOpen?"true":"false")+"\" aria-label=\"Table feed options\">"+glyph("dots")+"</button>"+
+        (capMenuOpen?"<div class=\"fh-cd-cmenu is-traycap\">"+
+          (manual?"<div class=\"fh-cd-cmenurow is-traycap\">"+manual+"</div>":"")+
+          (refresh?"<div class=\"fh-cd-cmenurow is-traycap\">"+refresh+"</div>":"")+"</div>":"")+"</span>";
+    }
+    var busy=rollTransactionActive();
+    var clear="<button type=\"button\" class=\"fh-cd-trayclear\" data-clear-tray"+(busy?" disabled":"")+
+      " title=\""+(busy?"Answer the question above the dice first":"Clear tray")+"\" aria-label=\"Clear tray\">"+iconSvg("close")+"</button>";
+    var cap="<div class=\"fh-cd-cap\">"+
+      "<span class=\"fh-cd-traystate is-"+(offline?"off":ts)+"\" title=\""+esc(caption)+"\">"+(offline?"OFF":ts==="live"?"LIVE":"RECENT")+"</span>"+
+      (feedActive()?"":"<small>your rolls — load a character to join the table</small>")+
+      "<span class=\"fh-cd-capacts\">"+capMenu+clear+"</span></div>";
     /* The live hand is the top line — but only once it has LANDED something.
        A hand still being assembled (every die pending, no entry) belongs to
        the Roll Builder, and renders in the roller's assembly frame instead:
@@ -3240,11 +3297,10 @@
   function streamZoneInner(){
     var table=state.streamView==="table";
     var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
-    var caption=table
-      ? (offline?"not reaching the table"
-        :ts==="live"?"every roll at the table, live"
-        :"no live table — cloud log, about 30s behind")
-      : "every roll, fully resolved";
+    /* One derivation with the tray cap (T24) — no second copy of the three
+       phrases — and the same T15 treatment: the caption rides the tabs'
+       hover titles, the tab's own colour (is-live / is-off) stays the loud
+       part. */
     var tableClass=(table?"is-on":"")+(offline?" is-off":ts==="live"?" is-live":"");
     // The manual override (plan §12.4's escape hatch): only offered when
     // there is a reason to reach for it — a table is not already live.
@@ -3256,10 +3312,10 @@
     var refresh=table&&ts==="recent"
       ? "<button type=\"button\" class=\"fh-cd-refresh\" data-feed-refresh title=\"Check the cloud log now\">Refresh</button>"
       : "";
-    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small>"+esc(caption)+"</small>"+manual+refresh+
+    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small></small>"+manual+refresh+
       "<span class=\"fh-cd-streamtabs\">"+
-      "<button type=\"button\" data-stream-view=\"mine\" class=\""+(table?"":"is-on")+"\">Mine</button>"+
-      "<button type=\"button\" data-stream-view=\"table\" class=\""+tableClass+"\">Table</button></span>"+
+      "<button type=\"button\" data-stream-view=\"mine\" class=\""+(table?"":"is-on")+"\" title=\"every roll, fully resolved\">Mine</button>"+
+      "<button type=\"button\" data-stream-view=\"table\" class=\""+tableClass+"\" title=\""+esc(feedStatusCaption(ts,offline))+"\">Table</button></span>"+
       "<button type=\"button\" class=\"fh-cd-streamclose\" data-stream-toggle aria-label=\"Close the stream\" title=\"Close\">"+iconSvg("close")+"</button></div>";
     var list;
     if(table){
@@ -3339,12 +3395,11 @@
     }
     // The FINE TUNE drawer is gone: a Portent belongs to one die, so it lives in
     // that die's own right-click menu rather than in a console-wide panel.
-    /* CLEAR TRAY sits here provisionally (Eric, 2026-08-04) — the roller's
-       acts-bar is gone so the judgment box can glue to the dock's edges.
-       Its final seat is an open discussion. */
-    var busy=rollTransactionActive();
-    var clear="<button class=\"fh-cd-mainclear is-inconsole\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button>";
-    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE"+clear+"</div>"+
+    /* The cap row is gone (T18, D4 tranchée) : "ROLL CONSOLE" said nothing
+       the tray below was not already saying (UI-TERMINOLOGY had condemned
+       it), and CLEAR TRAY found its final seat — the × on the Dice Tray's
+       own cap, the zone it acts on. An empty cap row was 17px of chrome. */
+    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\">"+
       head+row1+"</section>";
   }
   /* The console's ⋮: what a roll is tuned WITH rather than rolled with. MOD and
@@ -3944,6 +3999,7 @@
     // Opening the console's ⋮ syncs first: its own inputs are what render()
     // is about to rebuild, so an unsynced value would be thrown away.
     if(button.dataset.consoleMenu!==undefined){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=!state.consoleMenu;render();return;}
+    if(button.dataset.trayCapmenu!==undefined){state.trayCapMenu=!state.trayCapMenu;render();return;}
     if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
     if(button.dataset.exhStep!==undefined){setExhaustion(exhaustionLevel()+Number(button.dataset.exhStep),"Adjusted by hand");render();return;}
@@ -4094,7 +4150,8 @@
     {isOpen:function(){return !!state.destinyPoolMenu;},close:function(){state.destinyPoolMenu=false;},box:".fh-cd-dpoolmenu",toggle:"[data-destiny-poolmenu]"},
     /* Closing this one commits first: it holds live MOD/DC inputs, and a
        value typed and then dismissed by clicking away must not be lost. */
-    {isOpen:function(){return !!state.consoleMenu;},close:function(){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=false;},box:".fh-cd-cmenu",toggle:"[data-console-menu]"}
+    {isOpen:function(){return !!state.consoleMenu;},close:function(){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=false;},box:".fh-cd-cmenu",toggle:"[data-console-menu]"},
+    {isOpen:function(){return !!state.trayCapMenu;},close:function(){state.trayCapMenu=false;},box:".fh-cd-cmenu.is-traycap",toggle:"[data-tray-capmenu]"}
   ];
   function onOutsideClick(event){
     if(!root)return;

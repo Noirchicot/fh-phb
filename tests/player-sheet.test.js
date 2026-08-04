@@ -132,11 +132,14 @@ assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted
 assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray[" ]/, "the roller no longer carries a bar of die buttons");
 assert.doesNotMatch(t.renderStageZone(), /data-roll-now/, "ROLL no longer lives in the roller");
 assert.match(t.renderConsole(), /data-roll-now/, "it carries the one permanent ROLL, in the white dice row instead");
-/* REWRITTEN (fourth fitting, 2026-08-04): CLEAR TRAY moved to the console
-   (provisional seat) so the wooden judgment box can glue to the dock's
-   edges with nothing but badges above it. */
+/* REWRITTEN (lot texte, D4 tranchée 2026-08-04): CLEAR TRAY's final seat is
+   the × on the Dice Tray's own cap — the zone it acts on. The console lost
+   its whole cap row with it (T18: "ROLL CONSOLE" said nothing the tray was
+   not already saying). */
 assert.doesNotMatch(t.renderStageZone(), /data-clear-tray/, "CLEAR TRAY left the roller");
-assert.match(t.renderConsole(), /data-clear-tray/, "and sits in the console for now");
+assert.doesNotMatch(t.renderConsole(), /data-clear-tray/, "and left the console too");
+assert.doesNotMatch(t.renderConsole(), /ROLL CONSOLE/, "whose cap row is gone with its caption");
+assert.match(t.diceTrayInner(), /data-clear-tray/, "the × on the tray cap is its final seat");
 assert.match(t.renderConsole(), /data-add-tray-die="100"/, "the white picker in the console exposes d4 through d100");
 
 t.state.record = {build:{
@@ -302,11 +305,10 @@ assert.match(t.renderEventContent(),/Arcane Awakening/,"and so does an Awakening
 t.state.trayPrompt=null;
 t.state.events=[];
 assert.equal(t.renderEventContent(),"","with no prompt the roller frame stays clear for the dice");
-/* REWRITTEN (third fitting): no event list exists to be empty — the
-   permanent judgment window keeps saying the LAST ruling at rest, and only
-   a cleared tray returns it to the invitation. */
+/* REWRITTEN (lot texte T3, 2026-08-04): the invitation lives ONCE, in the
+   tray's empty state — a cleared judgment window is bare wood. */
 t.state.trayTitle="Dice Tray";t.state.trayResultText="";t.state.trayVerdict="";
-assert.match(t.renderJudgmentFrame(),/Ready — click a skill/,"a cleared window invites the next roll");
+assert.doesNotMatch(t.renderJudgmentFrame(),/Ready — click a skill/,"a cleared window is bare wood — the tray says the invitation");
 
 t.state.code="FH1";
 t.state.pseudo="Mar";

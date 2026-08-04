@@ -77,7 +77,12 @@ t.state.character = {name:"Yedrivel"};
 
 assert.equal(t.TRAY_MAX, 10, "the tray holds ten rolls — beyond that, the Stream or AboveVTT");
 assert.match(t.renderDiceTray(), /data-zone="dice-tray"/, "the Dice Tray is its own zone");
-assert.match(t.renderDiceTray(), /DICE TRAY/, "and the cap names it");
+/* REWRITTEN (lot texte T14, 2026-08-04): the DICE TRAY word is gone — the
+   dice say it — and the cap is led by the state chip, with CLEAR TRAY's ×
+   on its right edge (D4). */
+assert.doesNotMatch(t.renderDiceTray(), /DICE TRAY/, "the cap no longer spells the zone's name");
+assert.match(t.renderDiceTray(), /fh-cd-traystate/, "the state chip leads the cap instead");
+assert.match(t.renderDiceTray(), /fh-cd-trayclear[^>]*data-clear-tray/, "and the × on the cap is CLEAR TRAY's final seat");
 assert.doesNotMatch(t.renderStageZone(), /data-zone="dice-tray"/, "the roller does not carry the tray any more");
 
 t.state.history = [];
@@ -208,7 +213,7 @@ const infinitePass = t.diceTrayInner();
 assert.match(infinitePass, /is-infinite/, "past thirty the zone goes infinite");
 assert.match(infinitePass, /fh-cd-tray-inf[^>]*>∞</, "a big ∞ where the dice would be");
 assert.doesNotMatch(infinitePass, /data-sides=/, "no dice are drawn at all");
-assert.match(infinitePass, /fh-cd-tray-total is-\w+">108</, "the total still speaks on the right");
+assert.match(infinitePass, /fh-cd-tray-total is-\w+"[^>]*>108</, "the total still speaks on the right");
 assert.match(source, /if\(count>30\)\{state\.trayRevealAt=0;return;\}/,
   "and nothing holds the reveal — with no dice rolling, the total just appears");
 assert.equal(t.MAX_FREE_DICE, 50, "nothing goes beyond fifty dice");
@@ -294,15 +299,21 @@ assert.match(feedLineHtml, /fh-cd-tray-name">Ilyra/, "with the full name on hove
 
 /* ── 6. LIVE / RECENT / OFF on the cap — never a silent fallback ───── */
 
+/* REWRITTEN (lot texte T15/T17, 2026-08-04): the status phrase rides the
+   chip's hover title now, and URL…/Refresh live behind the cap's ⋮ — the
+   state itself is still always shown, by the chip. */
 t.state.feed.tableState = "recent";
-assert.match(t.diceTrayInner(), /cloud log, about 30s behind/, "RECENT says what it is");
-assert.match(t.diceTrayInner(), /data-feed-refresh/, "and offers the one manual refresh (RECENT is never polled)");
+assert.match(t.diceTrayInner(), /cloud log, about 30s behind/, "RECENT still says what it is — on the chip's title");
+assert.match(t.diceTrayInner(), /data-tray-capmenu/, "and the cap offers its ⋮ (RECENT has a refresh to hold)");
+t.state.trayCapMenu = true;
+assert.match(t.diceTrayInner(), /data-feed-refresh/, "the ⋮ holds the one manual refresh (RECENT is never polled)");
 t.state.feed.tableState = "live";
 assert.match(t.diceTrayInner(), /every roll at the table, live/, "LIVE says what it is");
 assert.doesNotMatch(t.diceTrayInner(), /data-feed-refresh/, "no refresh needed when the table streams");
+t.state.trayCapMenu = false;
 t.state.feed.tableState = "off";
 const offCap = t.diceTrayInner();
-assert.match(offCap, /not reaching the table/, "OFF is written in plain words on the cap");
+assert.match(offCap, /not reaching the table/, "OFF is written in plain words on the chip's title");
 assert.match(offCap, /is-off/, "and wears the loud state chip — never folded into a quieter caption");
 t.state.feed.tableState = "recent";
 

@@ -245,7 +245,16 @@ assert.ok(t.rollRuling({kind:"d20", name:"Arcana", baseBonus:3, natural:11, kept
 
 // Derived, never written at render time.
 assert.deepEqual(plain(t.rollRuling(spent)), plain(t.rollRuling(spent)), "the same entry always derives the same Ruling");
-assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", title:"Roll", account:[]}, "no entry, no ruling — and no crash");
+assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", title:"Roll", account:[], display:[]}, "no entry, no ruling — and no crash");
+
+/* Lot texte T1 (Eric, 2026-08-04): the on-screen `display` account drops the
+   per-die enumeration — the dice speak for themselves — and keeps the
+   title-fallback, the Destiny cost and the DC. `account` stays the full
+   record, for the Stream and the hover title. */
+const shown = t.rollRuling({kind:"d20", name:"Arcana", baseBonus:3, natural:11, kept:11, total:14, dc:15, bonusDice:[]});
+assert.ok(shown.display.indexOf("DC 15") >= 0, "display keeps the DC");
+assert.ok(!shown.display.some(line => /^d20/.test(line)), "and drops the dice enumeration");
+assert.ok(shown.account.some(line => /^d20/.test(line)), "which the full account still records");
 
 /* The Ruling's classes are granted by equality with the derived verdict, so a
    Chaos prompt written into the same slot cannot borrow the oxblood authority

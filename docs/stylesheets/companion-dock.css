@@ -1578,3 +1578,26 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    scroll container, so the box keeps growing and nothing is cut. */
 .fh-cd-floatbottom{overflow-x:clip}
 .fh-cd-consolerow{overflow-x:clip}
+
+/* ── Lot texte (2026-08-04, D4 tranchée) — the tray cap slims down ──
+   APPENDED only. T14: the DICE TRAY word is gone, the LIVE/RECENT/OFF
+   chip leads the cap and carries the status phrase in its hover title
+   (T15). The right edge holds the cap's ⋮ (URL…/Refresh, T17) and the
+   CLEAR TRAY × (T19) — the console lost its cap row with them (T18). */
+.fh-cd-dicetray>.fh-cd-cap{align-items:center}
+.fh-cd-dicetray>.fh-cd-cap .fh-cd-traystate{margin-left:0;cursor:default}
+.fh-cd-dicetray>.fh-cd-cap small{margin-left:6px;margin-right:auto}
+.fh-cd-capacts{margin-left:auto;display:flex;align-items:center;gap:2px}
+.fh-cd-capacts .fh-cd-dmenu{height:18px;width:16px}
+/* The cap's ⋮ opens under the cap, right-aligned, over the carpet. */
+.fh-cd-cmenu.is-traycap{left:auto;right:0;min-width:0;align-items:stretch}
+.fh-cd-cmenurow.is-traycap{height:auto;padding:1px 2px}
+.fh-cd-cmenurow.is-traycap .fh-cd-tableurl,.fh-cd-cmenurow.is-traycap .fh-cd-refresh{width:100%}
+/* The × — same behaviour CLEAR TRAY always had, console dress shed. */
+.fh-cd-trayclear{flex:none;width:18px;height:18px;padding:0;border:0;background:none;
+  color:#8d7b57;cursor:pointer;display:grid;place-items:center;border-radius:3px}
+.fh-cd-trayclear svg{width:10px;height:10px;display:block}
+.fh-cd-trayclear:hover{color:#f1c96f;background:rgba(244,236,216,.08)}
+.fh-cd-trayclear:disabled{opacity:.35;cursor:not-allowed}
+/* The console without its cap row keeps a breath above row 1. */
+.fh-cd-console{padding-top:4px}
