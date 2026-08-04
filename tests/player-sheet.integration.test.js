@@ -480,6 +480,32 @@ assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"acting inside the menu (Add) k
 root.click();
 assert.equal(root.querySelector(".fh-cd-dpoolmenu"),null,"a click outside the pool menu closes it, same general rule as the header menu");
 
+/* ── The general rule reaches EVERY floating card (lot BACKLOG-A) ────
+   The die menu (right click on a die — Eric's "seal card") and the
+   badge cards joined OUTSIDE_CLICK_POPUPS: outside closes, inside
+   never does. The roll's decision prompts (nat1, die-choice, chaos,
+   arcana-draw, awakening) stay OUT — they are the roll's state
+   machine, not menus. */
+t.state.traySelection=[{id:"free-click",sides:6}];
+t.state.diePrompt={freeId:"free-click"};
+t.render();
+assert.ok(root.querySelector(".fh-cd-card.is-diemenu"),"a free die's menu (the seal card) is open");
+root.querySelector(".fh-cd-card.is-diemenu [data-die-colour=\"crimson\"]").click();
+assert.ok(root.querySelector(".fh-cd-card.is-diemenu"),"acting inside the card (a colour) keeps it open");
+root.click();
+assert.equal(root.querySelector(".fh-cd-card.is-diemenu"),null,"a click outside the die menu closes it, same general rule");
+t.state.trayPrompt={type:"pending-new"};
+t.render();
+assert.ok(root.querySelector(".fh-cd-card.is-badgemenu"),"the PIN A BADGE card is open");
+root.querySelector("#fhPsBadgeLabel").click();
+assert.ok(root.querySelector(".fh-cd-card.is-badgemenu"),"clicking its input keeps it open — typing must survive");
+root.click();
+assert.equal(root.querySelector(".fh-cd-card.is-badgemenu"),null,"a click outside the badge card closes it too");
+t.state.trayPrompt={type:"nat1",entryId:"none"};
+root.click();
+assert.equal(t.state.trayPrompt&&t.state.trayPrompt.type,"nat1","a roll DECISION never vanishes on a stray click");
+t.state.trayPrompt=null;t.state.traySelection=[];t.render();
+
 /* ── Vitals: full words, five passives, tracked hit points ───── */
 assert.match(root.querySelector(".fh-cd-vsave").textContent,/^Save /,"saves are spelled out instead of SV");
 const passiveNames=Array.from(root.querySelectorAll(".fh-cd-pcell small"),node=>node.textContent);

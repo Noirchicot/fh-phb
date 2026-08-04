@@ -4198,19 +4198,41 @@
   function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}
     if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   /* ── General rule: a click outside an open dropdown closes it ─────
-     Applies to every small anchored popup (the header's ⋮, the Destiny pool
-     menu, and whatever the same pattern grows next) -- not to the belt's
-     full panels or a roll's decision prompts, which already carry their own
-     explicit close/cancel and shouldn't vanish on a stray click. New popups
-     of the same kind register themselves here rather than each wiring up
-     their own outside-click listener. */
+     Applies to every small anchored popup and floating menu card (the
+     header's ⋮, the Destiny pool menu, the console ⋮ with its MOD/DC,
+     the tray cap's ⋮, a die's own menu — the seal card — and the badge
+     cards) -- not to the belt's full panels, the inline disclosures
+     with their own × (HP/EXH tracker, Access zone, Stream), or a
+     ROLL'S DECISION PROMPTS (nat1, die-choice, arcana-draw, chaos,
+     awakening): those are the roll's state machine, they must never
+     vanish on a stray click. A click INSIDE a popup never closes it.
+     New popups of the same kind register themselves here rather than
+     each wiring up their own outside-click listener. */
   var OUTSIDE_CLICK_POPUPS=[
     {isOpen:function(){return !!state.menuOpen;},close:function(){state.menuOpen=false;},box:".fh-cd-menu",toggle:"[data-menu-toggle]"},
     {isOpen:function(){return !!state.destinyPoolMenu;},close:function(){state.destinyPoolMenu=false;},box:".fh-cd-dpoolmenu",toggle:"[data-destiny-poolmenu]"},
     /* Closing this one commits first: it holds live MOD/DC inputs, and a
        value typed and then dismissed by clicking away must not be lost. */
     {isOpen:function(){return !!state.consoleMenu;},close:function(){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=false;},box:".fh-cd-cmenu",toggle:"[data-console-menu]"},
-    {isOpen:function(){return !!state.trayCapMenu;},close:function(){state.trayCapMenu=false;},box:".fh-cd-cmenu.is-traycap",toggle:"[data-tray-capmenu]"}
+    {isOpen:function(){return !!state.trayCapMenu;},close:function(){state.trayCapMenu=false;},box:".fh-cd-cmenu.is-traycap",toggle:"[data-tray-capmenu]"},
+    /* The die menu (right click / long press on a die: seal, colour, roll
+       mode, Portent). Its toggles are the dice themselves: a click landing
+       on a die is dice-work, not "elsewhere" — and the synthetic click a
+       long press leaves behind targets the OLD, detached die node, so
+       matching the die selectors also keeps a fresh menu from closing
+       itself. The Portent <select> sits inside the card and is safe. */
+    {isOpen:function(){return !!state.diePrompt;},close:function(){state.diePrompt=null;},
+     box:".fh-cd-card.is-diemenu",
+     toggle:"[data-die-staged],[data-die-bonus],[data-die-destiny],[data-die-pool],[data-die-free],[data-die-base],[data-die-landed]"},
+    /* The badge cards — pin (pending-new), rename (pending-menu), and the
+       waiting overreach/chaos notice (pending) — are menus, not decisions:
+       none of them is persisted with a roll sequence, and their own Close/
+       OK buttons don't save either, so closing loses nothing a button
+       wouldn't. The blocking prompts are filtered out by type here. */
+    {isOpen:function(){return !!(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")));},
+     close:function(){state.trayPrompt=null;},
+     box:".fh-cd-card",
+     toggle:"[data-pending-id],[data-pending-open],[data-pending-add]"}
   ];
   function onOutsideClick(event){
     if(!root)return;
