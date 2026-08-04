@@ -238,6 +238,13 @@ assert.match(t.diceTrayInner(), /is-zoomed/, "line 1 can wear the loupe too");
 assert.match(source, /is-l1 \.fh-cd-tray-dice\.is-swarm/, "but its right-click trigger only exists on a swarm hand");
 t.state.trayDiceZoom = "";
 assert.match(css, /\.fh-cd-trayline\.is-zoomed \.fh-cd-tray-dice\{transform:scale\(1\.5\)/, "the loupe is a ×1.5 magnification of the dice zone only");
+/* The glass comes out WHOLE (Eric, after the clipped screenshot): the
+   registre keeps its scroll — never unclipped wholesale — and a post-render
+   pass slides the plaque inside the visible window instead. */
+assert.match(source, /function alignTrayLoupe/, "a post-render pass measures the glass against the visible window");
+assert.match(css, /translateY\(calc\(var\(--fh-cd-loupe-dy,0px\) \/ 1\.5\)\)/, "and slides it by the measured px, divided back by the zoom");
+assert.equal((css.match(/\.fh-cd-traylist\{overflow:visible\}/g) || []).length, 1,
+  "only line 1's zoom unclips the list — everywhere else the scroll survives and the glass slides instead");
 
 /* ── 5. The wire: fh-roll/1 carries the dice ───────────────────────── */
 

@@ -3781,6 +3781,7 @@
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
     if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
+    alignTrayLoupe();
     /* Picker buttons (Destiny row, white-dice row) are cached static images,
        not live dice -- their generator canvas exists only long enough to
        fill that cache. releasePickerContext is a no-op once the cache is
@@ -4027,6 +4028,28 @@
     var id=line&&line.getAttribute("data-tray-line")||"";
     state.trayDiceZoom=state.trayDiceZoom===id?"":id;
     render();
+  }
+  /* The glass must come out WHOLE. It grows equally in all directions from
+     its centre, but the registre is a scroller with a clipped window — a
+     top line's upward spill dies under the cap, a bottom line's past the
+     dock's edge (Eric's clipped screenshot). Measure the scaled plaque
+     against the visible window and slide it just enough to fit; the CSS
+     transform divides the px back by the zoom. Runs after every render
+     while a loupe is up, so feed lines landing mid-read cannot desync it. */
+  function alignTrayLoupe(){
+    if(!root)return;
+    var zone=root.querySelector(".fh-cd-trayline.is-zoomed .fh-cd-tray-dice");if(!zone)return;
+    var list=root.querySelector(".fh-cd-traylist"),dock=root.querySelector(".fh-cd-dock");
+    if(!list||!dock)return;
+    zone.style.setProperty("--fh-cd-loupe-dy","0px");
+    var rect=zone.getBoundingClientRect(),listRect=list.getBoundingClientRect(),dockRect=dock.getBoundingClientRect();
+    /* Line 1's list is unclipped while zoomed (the d18330b rule), so its
+       glass may legitimately ride up over the cap — only the dock bounds it. */
+    var l1=!!zone.closest(".fh-cd-trayline.is-l1");
+    var top=l1?dockRect.top:Math.max(listRect.top,dockRect.top);
+    var bottom=Math.min(listRect.bottom,dockRect.bottom);
+    var shift=rect.top<top?top-rect.top:rect.bottom>bottom?bottom-rect.bottom:0;
+    if(shift)zone.style.setProperty("--fh-cd-loupe-dy",Math.round(shift)+"px");
   }
   function onTrayContext(event){
     var loupe=trayLoupeTarget(event);

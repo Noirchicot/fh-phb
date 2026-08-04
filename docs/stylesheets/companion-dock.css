@@ -1553,13 +1553,23 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    the Stream. Free rolls stop at fifty dice.
    (Row arithmetic: ten dice + nine 3px gaps + padding needs 10s+31; an
    eleventh would need 11s+34 — the +40 slack sits between the two for
-   any die size in play.) */
+   any die size in play. The row PINS its own 3px gap: the mid/static
+   bands' 5px rule is more specific than the swarm's 3px and was silently
+   winning, which made the arithmetic land at NINE a row.) */
+.fh-cd-trayline .fh-cd-tray-dice.is-rows{gap:3px}
 .fh-cd-tray-dice.is-rows{max-width:calc(10 * var(--fh-cd-tray-die-size,20px) + 40px);margin:0 auto}
+/* The zoomed dress (6px side padding + 1px border, border-box) eats 14px
+   of that cap and silently rewrapped the glass at nine — give them back. */
+.fh-cd-trayline.is-zoomed .fh-cd-tray-dice.is-rows{max-width:calc(10 * var(--fh-cd-tray-die-size,20px) + 54px)}
 .fh-cd-tray-inf{font-size:calc(30px * var(--cd-fs));font-weight:600;line-height:1;color:#c9a45a;
   text-shadow:0 1px 3px rgba(0,0,0,.4);cursor:default}
 .fh-cd-tray-dice.is-infinite{align-items:center;justify-content:center}
-/* The loupe covers EVERYTHING else (Eric): whichever line wears it, the
-   glass grows equally in all directions from its centre (the transform
-   origin above) and the list must not clip any side of the spill — the
-   l1-only rule generalises to every zoomed line. */
-.fh-cd-dicetray:has(.fh-cd-trayline.is-zoomed) .fh-cd-traylist{overflow:visible}
+/* The loupe stays WHOLE (Eric, after the clipped screenshot): the glass
+   grows equally in all directions from its centre, and when a side of the
+   spill would cross the registre's visible window — under the cap for a
+   top line, past the dock's edge for a bottom one — alignTrayLoupe slides
+   the plaque just enough to fit, riding in --fh-cd-loupe-dy. The list
+   KEEPS its scroll: unclipping it wholesale (the first attempt) unrolled
+   the registre and sent the zoomed line under the fold. The translate
+   rides after scale, so the measured px are divided back by the zoom. */
+.fh-cd-trayline.is-zoomed .fh-cd-tray-dice{transform:scale(1.5) translateY(calc(var(--fh-cd-loupe-dy,0px) / 1.5))}
