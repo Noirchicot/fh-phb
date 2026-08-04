@@ -1621,3 +1621,30 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-dicetray.is-can-up .fh-cd-trayarrow.is-up{display:flex}
 .fh-cd-dicetray.is-can-down .fh-cd-trayarrow.is-down{display:flex}
 .fh-cd-trayarrow:hover{color:#f1c96f;background:rgba(69,56,39,.96)}
+
+/* ── Lot BACKLOG-A (Eric, revue 2026-08-04) — the cap takes a band's
+   height ─────────────────────────────────────────────────────────────
+   The tray cap (state chip + ⋮ + ×) sat on ~20px while every standard
+   line below it holds 56 (.is-mid/.is-static min-height). It now IS a
+   band: same 56px, contents scaled to live in it — chip readable at
+   arm's length, ⋮ and × with real click targets, everything centred on
+   the band's axis, chip flush left / actions flush right like a line's
+   own flanks. The zone keeps its deterministic arithmetic: the cap
+   grows by ~36px, so --cd-tray-h moves 284 → 320 and the four bands
+   (84 + 3×56 + list padding) stay exactly visible. Redeclaring the
+   variables here wins over the original block (same specificity,
+   later in the sheet) — APPENDED, nothing rewritten. */
+.fh-cd-root{--cd-traycap-h:56px;--cd-tray-h:320px}
+.fh-cd-dicetray>.fh-cd-cap{height:var(--cd-traycap-h);flex:none;align-items:center;
+  margin:0 2px;padding:0 2px;border-bottom:1px solid rgba(244,236,216,.10)}
+.fh-cd-dicetray>.fh-cd-cap .fh-cd-traystate{font-size:calc(8.4px * var(--cd-fs));padding:4px 9px;border-radius:4px}
+.fh-cd-dicetray>.fh-cd-cap small{font-size:calc(8px * var(--cd-fs))}
+.fh-cd-capacts{gap:6px}
+.fh-cd-capacts .fh-cd-dmenu{height:34px;width:30px;border-radius:4px}
+.fh-cd-capacts .fh-cd-dmenu svg{width:11px;height:11px}
+.fh-cd-capacts .fh-cd-dmenu:hover{background:rgba(244,236,216,.08)}
+.fh-cd-trayclear{width:34px;height:34px}
+.fh-cd-trayclear svg{width:12px;height:12px}
+/* The up chevron rides just under the cap's lower edge, wherever that
+   edge is (carpet padding 2px + the cap's own height). */
+.fh-cd-trayarrow.is-up{top:calc(var(--cd-traycap-h) + 4px)}

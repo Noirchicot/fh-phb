@@ -84,6 +84,18 @@ assert.match(t.renderDiceTray(), /data-zone="dice-tray"/, "the Dice Tray is its 
 assert.doesNotMatch(t.renderDiceTray(), /DICE TRAY/, "the cap no longer spells the zone's name");
 assert.match(t.renderDiceTray(), /fh-cd-traystate/, "the state chip leads the cap instead");
 assert.match(t.renderDiceTray(), /fh-cd-trayclear[^>]*data-clear-tray/, "and the × on the cap is CLEAR TRAY's final seat");
+/* Lot BACKLOG-A (Eric, revue 2026-08-04): the cap is a BAND now — same
+   56px as the standard mid/static lines, contents scaled to fill it,
+   and the zone's deterministic height follows (284 → 320) so the four
+   bands stay exactly visible. */
+assert.match(css, /\.fh-cd-root\{--cd-traycap-h:56px;--cd-tray-h:320px\}/,
+  "the cap takes a band's height (56px, like .is-mid/.is-static) and the zone grows by the same 36px");
+assert.match(css, /\.fh-cd-dicetray>\.fh-cd-cap\{height:var\(--cd-traycap-h\)/,
+  "the cap's height is the band variable, not a fossil pixel value");
+assert.match(css, /\.fh-cd-trayline\.is-mid,\.fh-cd-trayline\.is-static\{min-height:56px\}/,
+  "…and 56 is still what a standard band measures (change one, change both)");
+assert.match(css, /\.fh-cd-trayarrow\.is-up\{top:calc\(var\(--cd-traycap-h\) \+ 4px\)\}/,
+  "the up chevron follows the cap's lower edge instead of assuming ~20px");
 assert.doesNotMatch(t.renderStageZone(), /data-zone="dice-tray"/, "the roller does not carry the tray any more");
 
 t.state.history = [];
