@@ -212,39 +212,45 @@ assert.match(infinitePass, /fh-cd-tray-total is-\w+">108</, "the total still spe
 assert.match(source, /if\(count>30\)\{state\.trayRevealAt=0;return;\}/,
   "and nothing holds the reveal — with no dice rolling, the total just appears");
 assert.equal(t.MAX_FREE_DICE, 50, "nothing goes beyond fifty dice");
-assert.match(source, /is-mid \.fh-cd-tray-dice:not\(\.is-infinite\)/,
-  "the loupe declines an ∞ zone — there are no dice to magnify");
+/* STABLE columns while the wave rolls: every cell is fixed at the settled
+   size, so a die tumbling small cannot change the pitch mid-roll. */
+assert.match(css, /\.fh-cd-tray-dice\.is-rows \.fh-cd-diewrap\{width:var\(--fh-cd-tray-die-size/,
+  "the cell is the settled size — rows of ten hold from first wave to rest");
+/* The wrap's provenance survives the swarm: a bonus or Destiny die keeps
+   its source as a tiny corner mark, and its colour rides data-material. */
+assert.match(source, /fh-cd-src-mini/, "a naked source die keeps a corner provenance mark");
+const nakedBonus = t.visualDie({sides:6, result:4, dieRole:"bonus", sourceIcon:"guidance", label:"Guidance"}, 0, 14, false, {naked:true, sizePx:16, plainLabel:true});
+assert.match(nakedBonus, /fh-cd-src-mini/, "…rendered on the die itself");
+const nakedFree = t.visualDie({sides:6, result:4}, 0, 14, false, {naked:true, sizePx:16, plainLabel:true});
+assert.doesNotMatch(nakedFree, /fh-cd-src-mini/, "a free die carries no mark — nothing to say");
 
-/* ── 4c. The dice loupe (Eric, 2026-08-04) ─────────────────────────────
-   Right click / long press magnifies a lower line's dice zone ×1.5; left
-   click, a tap, D or Escape cancels. Line 1 keeps its die menus. */
+/* ── 4c. The reading glass, on HOVER (Eric, 2026-08-04, third pass) ────
+   REWRITTEN same day: right click collided with the die menus (a die
+   under the cursor answered twice), so the menus keep the right click
+   everywhere — which is also what makes a swarm die's colour and source
+   reachable — and the glass lifts on hover, on the is-rows tier only,
+   desktop only (phones pinch-zoom the dock). */
 
-t.state.history = [];
-for (let i = 0; i < 6; i++) t.state.history.push(d20Entry("s" + i, "Arcana", 12, 19, i));
-t.state.trayDiceZoom = "";
-const unzoomed = t.diceTrayInner();
-assert.match(unzoomed, /data-tray-line="s1"/, "every line carries its id so the loupe can find it");
-assert.doesNotMatch(unzoomed, /is-zoomed/, "no loupe until asked");
-t.state.trayDiceZoom = "s1";
-const zoomedPass = t.diceTrayInner();
-assert.match(zoomedPass, /is-zoomed[^"]*" data-tray-line="s1"/, "the asked line wears the loupe");
-assert.equal((zoomedPass.match(/is-zoomed/g) || []).length, 1, "one line only");
-/* REWRITTEN (same day): Eric extended the loupe to line 1 for the one case
-   its zone is hard to read — a swarm. The markup accepts it anywhere; the
-   TRIGGER stays selective (trayLoupeTarget only matches line 1's flank when
-   it wears is-swarm, so a five-die hand keeps its die menus). */
-t.state.trayDiceZoom = "s0"; // s0 is line 1 (the large band)
-assert.match(t.diceTrayInner(), /is-zoomed/, "line 1 can wear the loupe too");
-assert.match(source, /is-l1 \.fh-cd-tray-dice\.is-swarm/, "but its right-click trigger only exists on a swarm hand");
-t.state.trayDiceZoom = "";
-assert.match(css, /\.fh-cd-trayline\.is-zoomed \.fh-cd-tray-dice\{transform:scale\(1\.5\)/, "the loupe is a ×1.5 magnification of the dice zone only");
-/* The glass comes out WHOLE (Eric, after the clipped screenshot): the
-   registre keeps its scroll — never unclipped wholesale — and a post-render
-   pass slides the plaque inside the visible window instead. */
-assert.match(source, /function alignTrayLoupe/, "a post-render pass measures the glass against the visible window");
-assert.match(css, /translateY\(calc\(var\(--fh-cd-loupe-dy,0px\) \/ 1\.5\)\)/, "and slides it by the measured px, divided back by the zoom");
-assert.equal((css.match(/\.fh-cd-traylist\{overflow:visible\}/g) || []).length, 1,
-  "only line 1's zoom unclips the list — everywhere else the scroll survives and the glass slides instead");
+assert.match(css, /@media\(hover:hover\)/, "the glass exists only where hover does — phones pinch-zoom instead");
+assert.match(css, /\.fh-cd-trayline:hover \.fh-cd-tray-dice\.is-rows\{\s*transform:scale\(1\.5\)/,
+  "hovering a line lifts its 13+ hand ×1.5 — the is-rows tier only, so an ∞ zone or a small hand never zooms");
+assert.match(css, /transition-delay:\.28s/, "after a dwell — mousing across the registre stays quiet");
+assert.match(css, /translateY\(calc\(var\(--fh-cd-loupe-dy,0px\) \/ 1\.5\)\)/,
+  "onTrayHover slides the glass inside the registre's window, divided back by the zoom");
+assert.match(source, /function onTrayHover/, "the clamp is computed at hover time from the resting rect");
+assert.match(source, /addEventListener\("mouseover",onTrayHover\)/, "and wired as plain delegation");
+assert.doesNotMatch(source, /trayDiceZoom|toggleTrayLoupe|trayLoupeTarget/,
+  "the click-toggled loupe is fully retired — no state, no right-click theft");
+assert.equal((css.match(/\.fh-cd-traylist\{overflow:visible\}/g) || []).length, 0,
+  "the registre is NEVER unclipped — its scroll survives; the glass slides instead");
+/* The dress is a ::after plate outside layout, so the rows-of-ten
+   arithmetic cannot rewrap under the glass; the live hand's frame stops
+   cropping what grew inside it. */
+assert.match(css, /\.fh-cd-tray-dice\.is-rows::after\{content:""/, "the plaque is paint, not layout");
+assert.match(css, /\.fh-cd-dicetray \.fh-cd-frame\.is-trayhand\{overflow:visible\}/,
+  "line 1's frame lets its rows and its glass out");
+assert.match(css, /\.fh-cd-floatbottom\{overflow-x:clip\}/,
+  "the summoned group clips sideways without conjuring a vertical scroll (overflow-x:hidden did)");
 
 /* ── 5. The wire: fh-roll/1 carries the dice ───────────────────────── */
 

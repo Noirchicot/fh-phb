@@ -94,9 +94,6 @@
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
     trayQuietTitle:"", trayVerdict:"", trayRevealAt:0, trayRevealTimer:null,
-    // The lower-line dice loupe (Eric, 2026-08-04): right click / long press
-    // magnifies ONE line's dice zone ×1.5; left click, a tap, or D cancels.
-    trayDiceZoom:"",
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, zoom:ZOOM_DEFAULT, zoomAuto:true,
     panel:"skills", panelData:{},
@@ -1235,7 +1232,7 @@
   /* diceSignatures is deliberately NOT wiped here any more: the registre
      lines under the hand keep their entry-scoped keys, and wiping the map
      made every one of them re-roll visually the moment the hand was cleared. */
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayDiceZoom="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
@@ -2080,8 +2077,18 @@
           "<span class=\"fh-cd-static-die-fallback\">"+dieSvg(die.sides,hostSize,materialName,nakedValue)+"</span></span>";
         dieClasses+=" is-static-die";
       }
+      /* The wrap's provenance survives the swarm (Eric, 2026-08-04): a
+         bonus or Destiny die keeps its source as a tiny corner mark —
+         the full token had no room at swarm scale, but an unmarked green
+         die read as "why is this one green?". Colour already rides
+         data-material on the host. */
+      var mini=die.dieRole==="bonus"
+        ? "<span class=\"fh-cd-src-mini "+sourceToneClass(die.sourceIcon)+"\" title=\""+esc(die.label||rollSource(die.sourceIcon).label)+"\">"+bonusSourceMark(die.sourceIcon)+"</span>"
+        : die.dieRole==="destiny"
+        ? "<span class=\"fh-cd-src-mini "+sourceToneClass("destiny")+"\" title=\""+esc(ROLL_SOURCES.destiny.label)+"\">"+sourceGlyphSvg("destiny")+"</span>"
+        : "";
       return "<span class=\""+classes.join(" ")+" is-naked\""+handle+">"+
-        "<span class=\""+dieClasses+"\">"+face+"</span></span>";
+        "<span class=\""+dieClasses+"\">"+face+"</span>"+mini+"</span>";
     }
     /* Static Area (tray rolls 5+): the settled pose as a cached bitmap. One
        host, one numeral slot — even for d100, whose snapshot pair is drawn
@@ -3144,8 +3151,7 @@
       var mood=frameMood();
       row="<div class=\"fh-cd-frame is-trayhand"+(mood?" mood-"+mood:"")+"\">"+row+"</div>";
     }
-    var zoomed=state.trayDiceZoom&&state.trayDiceZoom===String(slot.id);
-    return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(zoomed?" is-zoomed":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
+    return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\">"+row+"</li>";
   }
   function diceTrayInner(){
     var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
@@ -3781,7 +3787,6 @@
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
     if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
-    alignTrayLoupe();
     /* Picker buttons (Destiny row, white-dice row) are cached static images,
        not live dice -- their generator canvas exists only long enough to
        fill that cache. releasePickerContext is a no-op once the cache is
@@ -4015,45 +4020,34 @@
     if(state.rollConfig&&state.rollConfig.destinyDieId===dieId){state.diePrompt={destinyDieId:dieId};dropStagedDie();return;}
     if(state.destinyStaged&&state.destinyStaged.dieId===dieId){state.diePrompt={poolId:dieId};dropStagedDie();return;}
   }
-  function trayLoupeTarget(event){
-    /* Lower lines: the loupe always wins the right click. Line 1 joins in
-       only when its hand is a SWARM (Eric, 2026-08-04: with many dice you
-       cannot see well) — at five large dice or fewer, its die menus keep
-       the right click. An ∞ zone (31+ dice) carries no dice to magnify. */
-    var flank=event.target&&event.target.closest&&event.target.closest(
-      ".fh-cd-trayline.is-mid .fh-cd-tray-dice:not(.is-infinite),.fh-cd-trayline.is-static .fh-cd-tray-dice:not(.is-infinite),.fh-cd-trayline.is-l1 .fh-cd-tray-dice.is-swarm");
-    return flank?flank.closest(".fh-cd-trayline"):null;
-  }
-  function toggleTrayLoupe(line){
-    var id=line&&line.getAttribute("data-tray-line")||"";
-    state.trayDiceZoom=state.trayDiceZoom===id?"":id;
-    render();
-  }
-  /* The glass must come out WHOLE. It grows equally in all directions from
-     its centre, but the registre is a scroller with a clipped window — a
-     top line's upward spill dies under the cap, a bottom line's past the
-     dock's edge (Eric's clipped screenshot). Measure the scaled plaque
-     against the visible window and slide it just enough to fit; the CSS
-     transform divides the px back by the zoom. Runs after every render
-     while a loupe is up, so feed lines landing mid-read cannot desync it. */
-  function alignTrayLoupe(){
+  /* The reading glass rides on HOVER now (Eric, 2026-08-04 third pass):
+     right click collided with the die menus — a die under the cursor
+     answered twice — so the menus keep the right click EVERYWHERE (which
+     is also what makes a swarm die's colour and source reachable again),
+     and the glass lifts by itself on a big hand (13+, the is-rows tier),
+     after a short dwell so mousing across the registre stays quiet.
+     Phones pinch-zoom the dock natively; no touch path.
+     The handler's one job is the CLAMP: predict the ×1.5 rect from the
+     resting one and slide the glass fully inside the registre's visible
+     window — under the cap for a top line, above the dock's edge for a
+     bottom one — via --fh-cd-loupe-dy (the CSS divides it back by the
+     zoom). The hover anchor is the LINE, which never transforms, so the
+     glass sliding away cannot unhover itself and flicker. */
+  function onTrayHover(event){
     if(!root)return;
-    var zone=root.querySelector(".fh-cd-trayline.is-zoomed .fh-cd-tray-dice");if(!zone)return;
+    var line=event.target&&event.target.closest&&event.target.closest(".fh-cd-trayline");
+    if(!line)return;
+    var zone=line.querySelector(".fh-cd-tray-dice.is-rows");if(!zone)return;
     var list=root.querySelector(".fh-cd-traylist"),dock=root.querySelector(".fh-cd-dock");
     if(!list||!dock)return;
-    zone.style.setProperty("--fh-cd-loupe-dy","0px");
-    var rect=zone.getBoundingClientRect(),listRect=list.getBoundingClientRect(),dockRect=dock.getBoundingClientRect();
-    /* Line 1's list is unclipped while zoomed (the d18330b rule), so its
-       glass may legitimately ride up over the cap — only the dock bounds it. */
-    var l1=!!zone.closest(".fh-cd-trayline.is-l1");
-    var top=l1?dockRect.top:Math.max(listRect.top,dockRect.top);
-    var bottom=Math.min(listRect.bottom,dockRect.bottom);
-    var shift=rect.top<top?top-rect.top:rect.bottom>bottom?bottom-rect.bottom:0;
-    if(shift)zone.style.setProperty("--fh-cd-loupe-dy",Math.round(shift)+"px");
+    var r=zone.getBoundingClientRect(),listRect=list.getBoundingClientRect(),dockRect=dock.getBoundingClientRect();
+    var cy=(r.top+r.bottom)/2,dress=8; // the ::after plaque reaches past the zone
+    var top=cy-(cy-r.top)*1.5-dress,bottom=cy+(r.bottom-cy)*1.5+dress;
+    var winTop=Math.max(listRect.top,dockRect.top),winBottom=Math.min(listRect.bottom,dockRect.bottom);
+    var shift=top<winTop?winTop-top:bottom>winBottom?winBottom-bottom:0;
+    zone.style.setProperty("--fh-cd-loupe-dy",Math.round(shift)+"px");
   }
   function onTrayContext(event){
-    var loupe=trayLoupeTarget(event);
-    if(loupe){event.preventDefault();toggleTrayLoupe(loupe);return;}
     var target=trayDieTarget(event);if(!target)return;
     event.preventDefault();
     if(target.kind==="badge")openBadgeMenu(target.node);
@@ -4064,13 +4058,6 @@
   }
   function openBadgeMenu(node){state.trayPrompt={type:"pending-menu",id:node.dataset.pendingId};state.diePrompt=null;render();}
   function onTrayTouchStart(event){
-    var loupe=trayLoupeTarget(event);
-    if(loupe){
-      clearTimeout(state.trayHoldTimer);
-      state.trayHeld=false;
-      state.trayHoldTimer=window.setTimeout(function(){state.trayHeld=true;toggleTrayLoupe(loupe);},500);
-      return;
-    }
     var target=trayDieTarget(event);if(!target)return;
     clearTimeout(state.trayHoldTimer);
     state.trayHeld=false;
@@ -4092,11 +4079,6 @@
      clickable row or tracker pip would otherwise never reach it. Core still
      handles everything outside a panel body, and anything the panel declines. */
   function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}
-    if(state.trayDiceZoom){
-      var insideLoupe=event.target&&event.target.closest&&event.target.closest(".fh-cd-trayline.is-zoomed");
-      state.trayDiceZoom="";render();
-      if(insideLoupe)return;
-    }
     if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   /* ── General rule: a click outside an open dropdown closes it ─────
      Applies to every small anchored popup (the header's ⋮, the Destiny pool
@@ -4134,7 +4116,7 @@
     if((event.metaKey||event.ctrlKey)&&/^[=+_-]$/.test(event.key)){
       event.preventDefault();stepZoom(event.key==="-"||event.key==="_"?-1:1);return;
     }
-    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(state.trayDiceZoom&&(key==="d"||key==="escape")){event.preventDefault();state.trayDiceZoom="";render();return;}if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
+    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
 
   function setDockOpen(open){
     state.dockOpen=!!open;state.menuOpen=false;
@@ -4216,6 +4198,7 @@
     // timer). No-op unless the TABLE tab is actually the one showing.
     document.addEventListener("visibilitychange",function(){if(!document.hidden&&state.streamView==="table")refreshFeed();});
     root.addEventListener("contextmenu",onTrayContext);
+    root.addEventListener("mouseover",onTrayHover);
     root.addEventListener("touchstart",onTrayTouchStart,{passive:true});
     root.addEventListener("touchend",onTrayTouchEnd);root.addEventListener("touchcancel",onTrayTouchEnd);
     var linkedCampaign=routeValue("campaign"),linkedCharacter=routeValue("character");
