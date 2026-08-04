@@ -361,8 +361,16 @@ assert.match(trayShell, /fh-cd-trayarrow is-down[^>]*data-tray-scroll="down"/, "
 assert.match(css, /\.fh-cd-dicetray\.is-can-down \.fh-cd-trayarrow\.is-down\{display:flex\}/,
   "each is shown only when there IS something on its side (syncTrayArrows toggles the zone)");
 assert.match(source, /function syncTrayArrows/, "…derived from the scroller, not guessed");
-assert.match(css, /\.fh-cd-traylist\{scroll-snap-type:y proximity\}/, "the list snaps by line…");
-assert.match(css, /\.fh-cd-trayline\{scroll-snap-align:start\}/, "…so a stop never leaves a roll cut through its dice");
+/* REWRITTEN (lot BACKLOG-A, 2026-08-05): the line snap of fbe871e is
+   withdrawn — it re-snapped the restored scrollTop on every render
+   (feed poll every few seconds) and fought the chevrons' fixed 76px
+   step against 56/84px lines. The two assertions below pin the
+   APPENDED override that turns it off, so a stylesheet regression
+   cannot quietly bring the snap back. */
+const lastSnapType = [...css.matchAll(/\.fh-cd-traylist\{scroll-snap-type:([^}]+)\}/g)].pop();
+assert.equal(lastSnapType && lastSnapType[1], "none", "the line snap is withdrawn — the last word on scroll-snap-type is none");
+const lastSnapAlign = [...css.matchAll(/\.fh-cd-trayline\{scroll-snap-align:([^}]+)\}/g)].pop();
+assert.equal(lastSnapAlign && lastSnapAlign[1], "none", "…and the lines no longer declare a snap alignment");
 
 assert.match(t.diceTrayInner(), /data-tray-line="mine-new"/, "every line carries its id again — the glass needs it to resurface");
 assert.equal(plain(t.trayLines())[0].id, "mine-new", "newest first, before any resurfacing");

@@ -1648,3 +1648,18 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 /* The up chevron rides just under the cap's lower edge, wherever that
    edge is (carpet padding 2px + the cap's own height). */
 .fh-cd-trayarrow.is-up{top:calc(var(--cd-traycap-h) + 4px)}
+
+/* ── Lot BACKLOG-A (Eric, 2026-08-05) — the line snap is withdrawn ────
+   The snap of fbe871e fought the registre's own life. The dock rebuilds
+   its DOM on every render (a feed poll lands every few seconds) and
+   restores scrollTop by hand; per the scroll-snap spec every such
+   programmatic scroll and relayout RE-SNAPS, so the kept reading place
+   was corrected to the nearest line over and over — and a render landing
+   mid-gesture killed the gesture. The chevrons step a fixed 76px while
+   lines hold 56 or 84: each step landed ~20px off a boundary for
+   proximity to yank somewhere. Scroll preservation and the chevrons stay
+   — they are the affordance; the snap was only cosmetics. APPENDED only:
+   this block overrides fbe871e's two declarations rather than editing
+   them. */
+.fh-cd-traylist{scroll-snap-type:none}
+.fh-cd-trayline{scroll-snap-align:none}
