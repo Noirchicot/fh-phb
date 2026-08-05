@@ -1726,3 +1726,67 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    variable, so the summoned group's anchor (--cd-tray-h) and the
    dock's padding-bottom follow by themselves. */
 .fh-cd-root{--cd-tray-h:284px}
+
+/* ── Lot R8 (Eric, 2026-08-05) — la rampe A : la profondeur raconte
+   l'âge du jet ────────────────────────────────────────────────────────
+   The « trois strates » concept: the Roll Builder lives in the WHITE of
+   the sheet, the vivid roll in the LIGHT top of the tray, and history
+   sinks into the DARK — one continuous ramp, no hard border. Ramp A
+   replaces the « C » ramp; same selector, later in the sheet, so it
+   wins by order without rewriting BACKLOG-B.
+   MEASURED GEOMETRY (tray 284px, cap 56, lines 56): the cap occupies
+   the ramp's top 20% (#8a8172→#6d6557); line 1 sits UNDER it, on
+   #6d6557→#595246 — a MID felt, not a light one. Dark ink was tried
+   first (the brief's hunch) and measured off: #2c2416 reads 2.66:1 at
+   line 1's very top and 1.98 at its bottom — illegible — and even on
+   the cap it peaks at 3.93. So the boundary chosen is: NO ink line —
+   light lettering everywhere, lifted one step where the ramp is light:
+   cap glyphs near-white #fffdf6 (4.65 at their centred seat, 3.83 at
+   the band's extreme top edge), the state chip on a dark PLATE like a
+   token on the felt (8.6–13.6:1 on the plate), and line 1's tints
+   raised a family step (each ≥4.85 at the text's centred seat, ≥4.2 at
+   the band's top edge). Lines 2+ keep BACKLOG-B's tints: their zone
+   starts at #595246, within a hair of the #5c5344 they were measured
+   on (all ≥4.62 at their lightest edge). */
+.fh-cd-dicetray{background:linear-gradient(180deg,#8a8172 0%,#6d6557 20%,#4a443a 55%,#2a261f 85%,#211e18 100%)}
+/* The cap on the light felt: near-white glyphs, dark hairline under. */
+.fh-cd-dicetray>.fh-cd-cap{color:#fffdf6;border-bottom-color:rgba(33,30,24,.28)}
+.fh-cd-dicetray>.fh-cd-cap small{color:#fffdf6}
+/* The state chip becomes a dark token lying on the felt: its tinted
+   letters kept, guaranteed against the plate, not the ramp. is-off
+   already owns a red plate and is untouched. */
+.fh-cd-dicetray .fh-cd-traystate{background:rgba(30,26,19,.8)}
+.fh-cd-dicetray .fh-cd-traystate.is-off{background:var(--cd-bad)}
+/* The cap's ⋮ and × ride the light: near-white, dark hover wash (the
+   old rgba(244,236,216,.08) wash is invisible on a light top). */
+.fh-cd-trayclear{color:#fffdf6}
+.fh-cd-trayclear:hover{color:#fff;background:rgba(33,30,24,.16)}
+.fh-cd-capacts .fh-cd-dmenu{color:#fffdf6}
+.fh-cd-capacts .fh-cd-dmenu:hover{background:rgba(33,30,24,.16)}
+/* Line 1 — the vivid roll in the light: every tint lifted one step.
+   (worst-edge / centred-seat ratios in the lot report) */
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-heading{color:#fff8e2}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-right .fh-cd-tray-title{color:#fff8e2}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-verdict{color:#ffd98a}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-total.is-n20{color:#ffd98a}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-total.is-ok{color:#c2ecab}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-outcome.is-ok{color:#c2ecab}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-total.is-bad{color:#ffd2c9}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-outcome.is-bad{color:#ffd2c9}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-total.is-quiet{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-account,
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-vs{color:#ece0c2}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-diewrap em{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-inf{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-trayline.is-l1.is-empty{color:#fffdf6}
+/* L1's gold liseré separates the light band from the mid felt below:
+   the .35 gold of BACKLOG-B sank into #595246 — half a step brighter. */
+.fh-cd-trayline.is-l1{border-bottom-color:rgba(233,209,150,.5)}
+/* The mood streaks were drawn for the old dark carpet; on line 1's mid
+   felt the red reads muddier and louder than on #26231c. Softened, not
+   silenced — the debt still nags (armed keeps its faster pulse). */
+.fh-cd-dicetray .fh-cd-frame.mood-chaos-owed::before,
+.fh-cd-dicetray .fh-cd-frame.mood-overreach-owed::before,
+.fh-cd-dicetray .fh-cd-frame.mood-chaos-armed::before,
+.fh-cd-dicetray .fh-cd-frame.mood-overreach-armed::before{opacity:.30}
+

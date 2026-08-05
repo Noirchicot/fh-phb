@@ -317,18 +317,27 @@ assert.match(css, /\.fh-cd-dicetray \.fh-cd-frame\.is-trayhand\{overflow:visible
 assert.match(css, /\.fh-cd-floatbottom\{overflow-x:clip\}/,
   "the summoned group clips sideways without conjuring a vertical scroll (overflow-x:hidden did)");
 
-/* ── 4d. The carpet is a clean taupe ramp (maquette C, Eric 2026-08-05) ─
-   The woven dark carpet gave way to a continuous textureless gradient —
-   parchment-to-ink taupe, light at line 1. The LAST background declared
-   for the tray must be the ramp alone (no radial glow, no weave), and
-   the cap gold was re-tinted for the lighter top (#c9a45a read 3.2:1 on
-   #5c5344; #eac878 reads 4.7:1). */
+/* ── 4d. The carpet is the RAMP A of the three strata (lot R8, Eric
+   2026-08-05) ─────────────────────────────────────────────────────────
+   REWRITTEN (lot R8): the « C » ramp gave way to the validated ramp A —
+   depth tells the roll's age: light at the top where the vivid roll
+   lives, sinking to near-ink for history. The LAST background declared
+   for the tray must be ramp A alone (no texture layers). The cap sits
+   on the ramp's light top 20% (#8a8172→#6d6557): its gold (#eac878,
+   4.7:1 on the old #5c5344) fell to 2.4–3.6:1 there, so the cap glyphs
+   go near-white #fffdf6 and the state chip lies on a dark plate. Line
+   1's tints are lifted a step (is-l1 scope) — dark ink was measured
+   and rejected (2.66:1 at line 1's top, see the CSS lot comment). */
 const lastTrayBg = [...css.matchAll(/\.fh-cd-dicetray\{background:([^}]+)\}/g)].pop();
 assert.equal(lastTrayBg && lastTrayBg[1],
-  "linear-gradient(180deg,#5c5344 0%,#4a4436 34%,#38332a 68%,#26231c 100%)",
-  "the tray's last word on background is the plain « C » ramp — no texture layers");
-assert.match(css, /\.fh-cd-dicetray>\.fh-cd-cap\{color:#eac878\}/,
-  "the cap's gold was lifted to hold 4.5:1 on the ramp's light top");
+  "linear-gradient(180deg,#8a8172 0%,#6d6557 20%,#4a443a 55%,#2a261f 85%,#211e18 100%)",
+  "the tray's last word on background is ramp A — light top, ink bottom, no texture layers");
+assert.match(css, /\.fh-cd-dicetray>\.fh-cd-cap\{color:#fffdf6;/,
+  "the cap's glyphs are near-white on the ramp's light top");
+assert.match(css, /\.fh-cd-dicetray \.fh-cd-traystate\{background:rgba\(30,26,19,\.8\)\}/,
+  "the state chip is a dark token on the felt — its tinted letters measured on the plate");
+assert.match(css, /\.fh-cd-dicetray \.fh-cd-trayline\.is-l1 \.fh-cd-tray-verdict\{color:#ffd98a\}/,
+  "line 1's verdict gold is lifted for the light band it lives on");
 
 /* ── 5. The wire: fh-roll/1 carries the dice ───────────────────────── */
 
