@@ -1790,3 +1790,44 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-dicetray .fh-cd-frame.mood-chaos-armed::before,
 .fh-cd-dicetray .fh-cd-frame.mood-overreach-armed::before{opacity:.30}
 
+/* ── Lot R9 (Eric, 2026-08-05) — la boîte en bois du builder meurt ────
+   The « trois strates » concept again: the Roll Builder lives in the
+   WHITE — it is POSED ON the sheet, not boxed in a wooden tray. The
+   fourth fitting's wood (grain, #3f2c14 border, sunk box-shadow) is
+   overridden here by append: background goes TRANSPARENT so the stage's
+   own parchment radial runs continuous under the builder — no border,
+   no inset shadow, in assembly as at rest. The dice alone carry a light
+   drop shadow to say « posés dessus ». Every lettering that was light
+   on dark wood returns to ink on parchment (ratios on the stage's
+   darkest edge #dccc9f): body #2c2416 9.6:1, accounts/terms --cd-muted
+   5.4:1, verdicts in a deepened gold #6f4a0a 4.96:1 (--cd-gold-bright
+   #9c6b16 measured 2.91 — too pale for 11px bold), the takeover
+   question in oxblood 8.5:1 — dramatic and legible on parchment. The
+   badges above the builder are untouched. */
+.fh-cd-frame.is-judgment{border:0;background:none;box-shadow:none;border-radius:0}
+.fh-cd-frame.is-judgment.is-assembly{border:0}
+/* Ink on parchment — the wooden block's light lettering, reversed. */
+.fh-cd-frame.is-judgment .fh-cd-judgment>b{color:var(--cd-ink)}
+.fh-cd-frame.is-judgment .fh-cd-judgment>b.fh-cd-verdict{color:#6f4a0a}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em{color:var(--cd-muted)}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em.fh-cd-account{color:var(--cd-muted)}
+.fh-cd-frame.is-judgment .fh-cd-diewrap em{color:var(--cd-muted)}
+.fh-cd-judgeright b{color:var(--cd-ink)}
+.fh-cd-judgeright i{color:#6f4a0a}
+/* The grande occasion (NATURAL 1 takeover) keeps its drama in dark
+   blood on the light sheet instead of gold on wood. */
+.fh-cd-frame.is-judgment .fh-cd-judgeask>b{color:var(--cd-oxblood)}
+.fh-cd-frame.is-judgment .fh-cd-judgeask>i{color:var(--cd-muted)}
+/* The dice sit ON the sheet: a light drop shadow, nothing else. */
+.fh-cd-frame.is-judgment .fh-cd-static-die{filter:drop-shadow(0 2px 3px rgba(60,40,10,.35))}
+.fh-cd-frame.is-judgment .fh-cd-die svg,
+.fh-cd-frame.is-judgment .fh-cd-judgeask .fh-cd-die{filter:drop-shadow(0 2px 3px rgba(60,40,10,.35))}
+/* The builder's moods were pitched for dark wood; on parchment the gold
+   glows (arcane/crit success, awakening) vanish into the sheet — they
+   deepen to bronze. The red of a debt or a critical failure already
+   reads on light and keeps its tints. */
+.fh-cd-frame.is-judgment.mood-arcane-success::before,
+.fh-cd-frame.is-judgment.mood-crit-success::before{
+  background:radial-gradient(120% 90% at 50% 50%,rgba(156,107,22,.42) 0%,rgba(156,107,22,.10) 55%,transparent 78%)}
+.fh-cd-frame.is-judgment.mood-awakening::before{
+  background-image:conic-gradient(from 0deg at 50% 50%,rgba(156,107,22,.4),transparent 22%,rgba(122,82,12,.36) 46%,transparent 70%,rgba(156,107,22,.4))}

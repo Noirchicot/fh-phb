@@ -339,6 +339,25 @@ assert.match(css, /\.fh-cd-dicetray \.fh-cd-traystate\{background:rgba\(30,26,19
 assert.match(css, /\.fh-cd-dicetray \.fh-cd-trayline\.is-l1 \.fh-cd-tray-verdict\{color:#ffd98a\}/,
   "line 1's verdict gold is lifted for the light band it lives on");
 
+/* ── 4e. The builder is POSED ON the sheet (lot R9, Eric 2026-08-05) ──
+   The wooden judgment box dies: the builder's background is transparent
+   so the stage's parchment runs continuous under it — no box border, no
+   sunk shadow — and every lettering that was light-on-wood is ink on
+   parchment again. The dice alone carry a drop shadow to say « posés
+   dessus ». The LAST word each time must be the parchment dress. */
+const lastJudgmentDress = [...css.matchAll(/\.fh-cd-frame\.is-judgment\{([^}]+)\}/g)].pop();
+assert.equal(lastJudgmentDress && lastJudgmentDress[1],
+  "border:0;background:none;box-shadow:none;border-radius:0",
+  "the builder's last dress is bare parchment — no wood, no box, no inset shadow");
+const lastJudgmentB = [...css.matchAll(/\.fh-cd-frame\.is-judgment \.fh-cd-judgment>b\{color:([^}]+)\}/g)].pop();
+assert.equal(lastJudgmentB && lastJudgmentB[1], "var(--cd-ink)",
+  "the builder's headings are ink on parchment again");
+const lastJudgeAskB = [...css.matchAll(/\.fh-cd-frame\.is-judgment \.fh-cd-judgeask>b\{color:([^}]+)\}/g)].pop();
+assert.equal(lastJudgeAskB && lastJudgeAskB[1], "var(--cd-oxblood)",
+  "the grande occasion asks its question in oxblood — dramatic on the light sheet");
+assert.match(css, /\.fh-cd-frame\.is-judgment \.fh-cd-static-die\{filter:drop-shadow/,
+  "the dice are what casts a shadow on the sheet");
+
 /* ── 5. The wire: fh-roll/1 carries the dice ───────────────────────── */
 
 const exported = t.rollExport(d20Entry("wire", "Arcana", 14, 21, 0, {
