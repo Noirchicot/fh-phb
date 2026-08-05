@@ -278,6 +278,19 @@ assert.match(css, /\.fh-cd-dicetray \.fh-cd-frame\.is-trayhand\{overflow:visible
 assert.match(css, /\.fh-cd-floatbottom\{overflow-x:clip\}/,
   "the summoned group clips sideways without conjuring a vertical scroll (overflow-x:hidden did)");
 
+/* ── 4d. The carpet is a clean taupe ramp (maquette C, Eric 2026-08-05) ─
+   The woven dark carpet gave way to a continuous textureless gradient —
+   parchment-to-ink taupe, light at line 1. The LAST background declared
+   for the tray must be the ramp alone (no radial glow, no weave), and
+   the cap gold was re-tinted for the lighter top (#c9a45a read 3.2:1 on
+   #5c5344; #eac878 reads 4.7:1). */
+const lastTrayBg = [...css.matchAll(/\.fh-cd-dicetray\{background:([^}]+)\}/g)].pop();
+assert.equal(lastTrayBg && lastTrayBg[1],
+  "linear-gradient(180deg,#5c5344 0%,#4a4436 34%,#38332a 68%,#26231c 100%)",
+  "the tray's last word on background is the plain « C » ramp — no texture layers");
+assert.match(css, /\.fh-cd-dicetray>\.fh-cd-cap\{color:#eac878\}/,
+  "the cap's gold was lifted to hold 4.5:1 on the ramp's light top");
+
 /* ── 5. The wire: fh-roll/1 carries the dice ───────────────────────── */
 
 const exported = t.rollExport(d20Entry("wire", "Arcana", 14, 21, 0, {

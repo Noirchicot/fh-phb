@@ -1649,3 +1649,39 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    them. */
 .fh-cd-traylist{scroll-snap-type:none}
 .fh-cd-trayline{scroll-snap-align:none}
+
+/* ── Lot BACKLOG-B (Eric, 2026-08-05) — dégradé « C » sur le tapis ────
+   Maquette C retenue parmi trois: the woven carpet becomes a continuous
+   TAUPE gradient, textureless, pitched between the sheet's parchment and
+   its ink — the warm radial glow and both 45° weaves go with it, the
+   validated mock is a clean graded flat. The newest roll now reads as
+   line 1 by sitting at the LIGHT end of the ramp (its 84px privilege
+   falls in this same lot). The judgment box's wood is NOT touched here.
+   APPENDED: same selector+specificity as the fourth fitting's carpet,
+   later in the sheet, so this background wins without editing it. */
+.fh-cd-dicetray{background:linear-gradient(180deg,#5c5344 0%,#4a4436 34%,#38332a 68%,#26231c 100%)}
+/* Contrast repairs for the LIGHTER top (#3a2f22 → #5c5344): every carpet
+   text was re-measured against the ramp's TOP — the worst case, since
+   the cap and line 1 live there — and any tint under WCAG 4.5:1 for its
+   (small) size was lightened within its own family. Measured on #5c5344:
+   kept — headings #f4ecd8 (6.4), verdict/N20 #f1c96f (4.8), plain totals
+   #e8dcc0 (5.6), the 30px ∞ #c9a45a (3.2 ≥ 3:1 large-text);
+   moved — cap gold #c9a45a 3.2→#eac878 4.7, quiet #8d7b57 1.8→#d8c79b
+   4.5, ok-green #8fc97a 3.9→#a3dd8b 4.8, bad-red #e07a70 2.6→#f6beb5
+   4.7, account #a89877 2.7 and die labels #cdb68c 3.8→#d9c89d 4.6, the
+   RECENT chip's parchment gold #9c6b16 1.6→#eac878 4.7, LIVE green
+   #3d7d56 1.5→#a3dd8b 4.8. is-off keeps white-on-red: its own plate. */
+.fh-cd-dicetray>.fh-cd-cap{color:#eac878}
+.fh-cd-dicetray>.fh-cd-cap small{color:#d8c79b}
+.fh-cd-dicetray .fh-cd-traystate{color:#eac878;border-color:#eac878}
+.fh-cd-dicetray .fh-cd-traystate.is-live{color:#a3dd8b;border-color:#a3dd8b}
+.fh-cd-dicetray .fh-cd-traystate.is-off{color:#fff;border-color:var(--cd-bad)}
+.fh-cd-dicetray .fh-cd-tray-total.is-ok{color:#a3dd8b}
+.fh-cd-dicetray .fh-cd-tray-total.is-bad{color:#f6beb5}
+.fh-cd-dicetray .fh-cd-tray-total.is-quiet{color:#d8c79b}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-ok{color:#a3dd8b}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-bad{color:#f6beb5}
+.fh-cd-dicetray .fh-cd-tray-account,.fh-cd-dicetray .fh-cd-vs{color:#d9c89d}
+.fh-cd-dicetray .fh-cd-diewrap em{color:#d9c89d}
+.fh-cd-dicetray .fh-cd-trayline.is-empty{color:#d8c79b}
+.fh-cd-trayclear{color:#d8c79b}
