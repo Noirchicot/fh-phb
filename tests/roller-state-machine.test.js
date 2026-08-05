@@ -470,5 +470,30 @@ assert.equal(redToken.result,8);
 assert.match(latest().text,/CHAOS · d6 5 \+ Overreach 8 = 13/);
 settle();
 
+/* M1 (décision Eric 2026-08-06): a seal robe is spent on ONE jet only. ROLL on
+   an open roll with nothing staged repeats the CHECK — it does not re-inherit
+   the last jet's bonus dice, or the three slots would fill one selection at a
+   time and never come back (the white picker ended permanently greyed). */
+reset();queueRolls(12,4);
+t.state.rollConfig=t.rollInput("Performance","CHA",2,{mode:"flat"});
+t.state.rollConfig.bonusDice=[{id:"m1-bardic",label:"Bardic",sides:6,sourceIcon:"bardic",advantageMode:"flat",forcedResult:null}];
+t.runConfiguredRoll();
+entry=t.state.history[0];
+assert.equal(entry.bardic.result,4,"jet 1 carries its Bardic die");
+assert.equal(t.rollOpen(),true,"and stays open behind ROLL");
+queueRolls(9);t.rollStagedDice(); // nothing staged → repeat the check
+const repeated=t.state.history[0];
+assert.notEqual(repeated.id,entry.id,"ROLL with nothing staged rolls a fresh entry");
+assert.equal(repeated.bonusDice.length,0,"the next jet starts with the bare d20 — last jet's boons are not carried");
+assert.equal(repeated.bardic,null,"no Bardic ghost re-added from the entry's flags");
+assert.equal(t.state.rollConfig.bardic,false,"the config's bardic flag is cleared with the die");
+// The robe really is available again: seal a new die Bardic on the next jet.
+t.stageBonusDie(6,"","");
+t.state.diePrompt={stagedId:t.stagedList()[0].id};
+t.sealStagedDie("bardic");
+assert.equal(t.stagedList()[0].sourceIcon,"bardic","the Bardic robe is back and takes the new die");
+assert.equal(t.stagedList()[0].label,"Bardic","and renames it, as a seal always does");
+settle();
+
 assert.equal(randomBuckets.length,0,"every deterministic die result was consumed exactly once");
 console.log("Roller state-machine tests passed.");

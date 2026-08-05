@@ -1436,11 +1436,20 @@
     if(settled){releaseRoll();setTrayFromEntry(entry);persistPlayState();render();return;}
     openRollState(entry);
   }
-  /* ROLL again on the same check: the setup is kept, the dice are not. */
+  /* ROLL again on the same check: the setup is kept, the dice are not — and
+     the BONUS dice are dice, not setup (M1, décision Eric 2026-08-06). They
+     used to be carried into every repeat: with the roll staying open, each
+     jet re-inherited the last jet's Guidance/Bardic/Bonus dice, the three
+     slots filled one selection at a time and never came back — the white
+     picker ended fully greyed and a robe used once was unusable for good.
+     A seal robe is a boon granted for ONE roll: the next jet starts with the
+     bare d20, every robe available again. The guidance/bardic flags must be
+     cleared with the dice, or ensureConfigBonusDice would quietly re-add
+     them from the flags configFromEntry copied off the landed entry. */
   function repeatOpenRoll(entry){
     var cfg=configFromEntry(entry);
     cfg.editingId=null;cfg.d20ForcedResult=null;cfg.destinyForcedResult=null;cfg.destinyDieId="";cfg.destinyConfirmed=false;
-    cfg.bonusDice=(cfg.bonusDice||[]).map(function(die){return newBonusDie(die.label,die.sides,die.sourceIcon,die.colour);});
+    cfg.bonusDice=[];cfg.guidance=false;cfg.bardic=false;
     releaseRoll();state.rollConfig=cfg;prepareTrayForConfig(cfg);persistPlayState();runConfiguredRoll();
   }
   function finishRolledEntry(entry,events){
