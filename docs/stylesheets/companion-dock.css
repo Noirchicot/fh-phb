@@ -1704,6 +1704,18 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayline.is-l1{min-height:56px}
 .fh-cd-trayline.is-deep{min-height:72px}
 .fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:22px}
+/* The ratified arithmetic of the 1-5 hand — « 38 + label ≈ 48, inside
+   the 56 » — presumes the retired token's EMPTY 12px slot gone: measured
+   in the harness, slot 12 + gap 2 + die 38 + gap 2 + label 9 = 63, and
+   the band swelled to 72. Collapsed HERE, in the tray only (the hover
+   title naming the source lives on the slot and stays in the DOM): the
+   column reads 38+2+9 = 49 and the band holds its 56. Reclaiming the
+   slot EVERYWHERE stays the measures lot's call. */
+.fh-cd-dicetray .fh-cd-tray-dice .fh-cd-diewrap>.fh-cd-src{display:none}
+/* Same hunt, last 2px: the dice zone's own 1px vertical padding sat on
+   top of the line's 3px — the line's padding is the breathing room.
+   38+2+9 = 49 content + 3+3+1 = 56 exactly (measured 56 after this). */
+.fh-cd-trayline .fh-cd-tray-dice{padding-top:0;padding-bottom:0}
 
 /* ── Lot BACKLOG-B (Eric, 2026-08-05) — the zone returns to its acted
    284 ────────────────────────────────────────────────────────────────
