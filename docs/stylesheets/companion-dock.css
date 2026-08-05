@@ -1521,28 +1521,14 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    to four lines — the full text lives in the entry and the Stream. */
 .fh-cd-frame.is-judgment .fh-cd-judgment>em{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 
-/* ── The reading glass, on HOVER (Eric, 2026-08-04, third pass) ──────
-   Hovering a line whose hand is 13+ dice (the is-rows tier) lifts its
-   dice zone ×1.5 after a short dwell — mousing across the registre stays
-   quiet, and the RIGHT CLICK belongs to the die menus everywhere again
-   (it answered twice when a die sat under the cursor; the menus are also
-   how a swarm die's colour and source get set). Desktop only: phones
-   pinch-zoom the dock natively. The dress is a ::after plate — it never
-   enters layout, so the rows-of-ten arithmetic cannot rewrap under the
-   glass. onTrayHover slides the glass fully inside the registre's window
-   via --fh-cd-loupe-dy (divided back by the zoom); the list KEEPS its
-   scroll — unclipping it unrolled the registre (learned the hard way). */
-@media(hover:hover){
-  .fh-cd-tray-dice.is-rows{position:relative;transition:transform .18s ease;transform-origin:50% 50%}
-  .fh-cd-tray-dice.is-rows::after{content:"";position:absolute;inset:-4px -8px;z-index:-1;border-radius:8px;
-    background:linear-gradient(180deg,#453827 0%,#3a2f22 100%);border:1px solid rgba(201,164,90,.45);
-    box-shadow:0 6px 18px rgba(0,0,0,.55);opacity:0;transition:opacity .18s ease;pointer-events:none}
-  .fh-cd-trayline:hover .fh-cd-tray-dice.is-rows{
-    transform:scale(1.5) translateY(calc(var(--fh-cd-loupe-dy,0px) / 1.5));transition-delay:.28s;z-index:6}
-  .fh-cd-trayline:hover .fh-cd-tray-dice.is-rows::after{opacity:1;transition-delay:.28s}
-  .fh-cd-trayline:hover{position:relative;z-index:30}
-  .fh-cd-dicetray:has(.fh-cd-trayline:hover .fh-cd-tray-dice.is-rows){z-index:28}
-}
+/* ── The reading glass lived here (2026-08-04 → 2026-08-05) ──────────
+   REWRITTEN-away, exceptionally, rather than appended-over: Eric ruled
+   the glass OUT for good (lot BACKLOG-B, 2026-08-05), so its hover-lift
+   block AND the appended gate that had switched it off are both deleted —
+   dead paint kept alive behind a class is exactly the code this lot
+   retires. Two lessons of the glass outlive it, further down and kept:
+   .is-trayhand{overflow:visible} (three rows of ten must grow out of the
+   frame) and the registre never being unclipped (its scroll survives). */
 
 /* ── Rows of ten & the ∞ line (Eric, 2026-08-04) ─────────────────────
    Up to 12 dice sit on ONE line; 13-30 wrap into rows of EXACTLY ten —
@@ -1663,16 +1649,3 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    them. */
 .fh-cd-traylist{scroll-snap-type:none}
 .fh-cd-trayline{scroll-snap-align:none}
-
-/* ── Lot BACKLOG-A (Eric, 2026-08-05) — the reading glass is OFF ──────
-   The hover rules of 2026-08-04 stay untouched above; this gate keys
-   them to the dock's is-loupe-on class, which render() only grants
-   while TRAY_LOUPE_ENABLED is true in fh-player-sheet.js. Flip that
-   ONE JS constant to relight the glass — no CSS to revisit. The three
-   overrides below beat the @media block on specificity and order, and
-   restore each property to its resting value (dicetray's base z-index
-   is 22, set at its absolute anchor). APPENDED only. */
-.fh-cd-dock:not(.is-loupe-on) .fh-cd-trayline:hover .fh-cd-tray-dice.is-rows{transform:none;z-index:auto}
-.fh-cd-dock:not(.is-loupe-on) .fh-cd-trayline:hover .fh-cd-tray-dice.is-rows::after{opacity:0}
-.fh-cd-dock:not(.is-loupe-on) .fh-cd-trayline:hover{z-index:auto}
-.fh-cd-dock:not(.is-loupe-on) .fh-cd-dicetray:has(.fh-cd-trayline:hover .fh-cd-tray-dice.is-rows){z-index:22}

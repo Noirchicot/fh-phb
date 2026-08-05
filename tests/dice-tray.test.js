@@ -251,36 +251,30 @@ assert.equal(tintOf(wrappedBonus), "azure", "the wrapped die is tinted the same"
 assert.doesNotMatch(wrappedBonus, /fh-cd-src is-|fh-cd-src-mini/, "and carries NO separate source token — the seal is the die");
 assert.match(wrappedBonus, /fh-cd-src" title=/, "the empty slot still names the source on hover (reclaiming it = the measures lot)");
 
-/* ── 4c. The reading glass — OFF behind its switch ────────────────────
-   REWRITTEN (désactivée sur décision Eric 2026-08-05) : the glass no
-   longer lifts, but its code is a kill switch away, not deleted. The
-   section now pins BOTH halves of that contract: the machinery is still
-   there (hover rules, clamp, wiring), and the ONE constant plus its CSS
-   gate keep it dark — render() only grants is-loupe-on when
-   TRAY_LOUPE_ENABLED is true, and it is false. */
+/* ── 4c. The reading glass — REMOVED for good ─────────────────────────
+   REWRITTEN (lot BACKLOG-B, décision Eric 2026-08-05) : the glass had
+   only been switched off (TRAY_LOUPE_ENABLED, fccf1d0); Eric then ruled
+   it out permanently. This section flips from pinning the dormant
+   machinery to pinning its ABSENCE — the constant, the hover clamp, the
+   is-loupe-on class, the ×1.5 lift and its CSS gate are all gone. The
+   loupe-dress assertions (the ::after plaque, the gated lift, the wired
+   mouseover) are deleted with the code they tested; what stays below are
+   the glass's two survivors: the unclipped-registre rule of thumb and
+   the live hand's overflow, which the rows of ten still need. */
 
-assert.match(source, /var TRAY_LOUPE_ENABLED=false/, "the glass is off behind ONE named constant — flip it to relight");
-assert.match(source, /if\(!TRAY_LOUPE_ENABLED\|\|!root\)return;/, "the hover clamp checks the switch first");
-assert.match(source, /fh-cd-dock"\+\(TRAY_LOUPE_ENABLED\?" is-loupe-on":""\)/,
-  "render only grants the dock is-loupe-on when the switch is on…");
-assert.match(css, /\.fh-cd-dock:not\(\.is-loupe-on\) \.fh-cd-trayline:hover \.fh-cd-tray-dice\.is-rows\{transform:none/,
-  "…and without it the appended CSS gate holds the lift at rest — the hover rules above it stay untouched");
-/* The machinery survives for the rallumage: */
-assert.match(css, /@media\(hover:hover\)/, "the glass's hover rules still exist — gated, not deleted");
-assert.match(css, /\.fh-cd-trayline:hover \.fh-cd-tray-dice\.is-rows\{\s*transform:scale\(1\.5\)/,
-  "the ×1.5 lift is still written, waiting on is-loupe-on");
-assert.match(source, /function onTrayHover/, "the clamp function is kept");
-assert.match(source, /addEventListener\("mouseover",onTrayHover\)/, "and stays wired — the switch inside it answers");
+assert.doesNotMatch(source, /TRAY_LOUPE_ENABLED|onTrayHover|is-loupe-on|--fh-cd-loupe-dy/,
+  "no constant, no clamp, no class, no CSS hook — the glass left no machinery behind");
+assert.doesNotMatch(css, /is-loupe-on|--fh-cd-loupe-dy|scale\(1\.5\)/,
+  "the stylesheet carries neither the lift nor its gate any more");
+assert.doesNotMatch(source, /addEventListener\("mouseover"/, "the tray listens to no hover at all");
 assert.doesNotMatch(source, /trayDiceZoom|toggleTrayLoupe|trayLoupeTarget/,
-  "the old click-toggled loupe stays fully retired — no state, no right-click theft");
+  "and the older click-toggled loupe stays just as gone");
 assert.equal((css.match(/\.fh-cd-traylist\{overflow:visible\}/g) || []).length, 0,
-  "the registre is NEVER unclipped — its scroll survives");
-/* The dress is a ::after plate outside layout, so the rows-of-ten
-   arithmetic cannot rewrap under the glass; the live hand's frame stops
-   cropping what grew inside it. */
-assert.match(css, /\.fh-cd-tray-dice\.is-rows::after\{content:""/, "the plaque is paint, not layout");
+  "the registre is NEVER unclipped — its scroll survives (the glass's hard-won lesson outlives it)");
+/* The live hand's frame keeps letting its content grow out — three rows
+   of ten need it even with no glass to ride out. */
 assert.match(css, /\.fh-cd-dicetray \.fh-cd-frame\.is-trayhand\{overflow:visible\}/,
-  "line 1's frame lets its rows and its glass out");
+  "line 1's frame lets its rows out");
 assert.match(css, /\.fh-cd-floatbottom\{overflow-x:clip\}/,
   "the summoned group clips sideways without conjuring a vertical scroll (overflow-x:hidden did)");
 
@@ -350,12 +344,12 @@ assert.match(css, /\.fh-cd-floatbottom\{bottom:var\(--cd-tray-h,0px\);max-height
   "Console and Roll Builder float ABOVE the tray — the dice stay visible while a roll is configured");
 assert.match(css, /\.fh-cd-dicetray\{height:var\(--cd-tray-h\)/, "the zone's height is deterministic, so the anchor cannot drift");
 
-/* ── 9. The fold gets an affordance ; the glass resurfaces (Eric, D3) ──
+/* ── 9. The fold gets an affordance ; a roll can resurface (Eric, D3) ──
    ~350px of rolls hid below the fold with nothing to say so — two thin
    chevrons now ride the list's edges, shown only when their side has
-   content, and lines snap so a stop never cuts a roll through its dice.
-   Right-clicking a lifted glass calls its roll back up to line 1 —
-   display order only, the wire and the Stream keep the true time. */
+   content. surfaceTrayLine calls a roll back up to line 1 — display
+   order only, the wire and the Stream keep the true time. Its original
+   trigger (the reading glass) is gone; an eye icon will rewire it. */
 
 t.state.history = [d20Entry("mine-new", "Arcana", 14, 21, 1), d20Entry("mine-old", "Stealth", 9, 16, 30)];
 t.state.feed.events = [];
@@ -377,10 +371,10 @@ assert.equal(lastSnapType && lastSnapType[1], "none", "the line snap is withdraw
 const lastSnapAlign = [...css.matchAll(/\.fh-cd-trayline\{scroll-snap-align:([^}]+)\}/g)].pop();
 assert.equal(lastSnapAlign && lastSnapAlign[1], "none", "…and the lines no longer declare a snap alignment");
 
-/* REWRITTEN (désactivée sur décision Eric 2026-08-05) : the right-click
-   resurface was the GLASS's gesture and goes dark with it, unreplaced —
-   but surfaceTrayLine itself is kept machinery, so its behaviour stays
-   pinned for the rallumage. */
+/* REWRITTEN (lot BACKLOG-B, 2026-08-05) : the right-click resurface was
+   the GLASS's gesture and is deleted with it — but surfaceTrayLine
+   itself is KEPT machinery (a future eye icon will call it), so its
+   behaviour stays pinned. */
 assert.match(t.diceTrayInner(), /data-tray-line="mine-new"/, "every line still carries its id — the kept resurface machinery needs it");
 assert.equal(plain(t.trayLines())[0].id, "mine-new", "newest first, before any resurfacing");
 t.surfaceTrayLine("mine-old");
@@ -389,7 +383,9 @@ assert.equal(t.state.history[1].id, "mine-old", "…without touching the history
 t.state.history.unshift(d20Entry("mine-newest", "History", 12, 19, 0));
 assert.equal(plain(t.trayLines())[0].id, "mine-newest", "and the next real roll lands above it naturally");
 t.state.traySurfaceId = ""; t.state.traySurfaceAt = "";
-assert.match(source, /TRAY_LOUPE_ENABLED&&event\.target&&event\.target\.closest&&event\.target\.closest\("\.fh-cd-tray-dice\.is-rows"\)/,
-  "the glass's right-click trigger sits behind the SAME switch as the glass — off together, back together");
+/* REWRITTEN (lot BACKLOG-B, 2026-08-05): the trigger no longer exists to
+   sit behind a switch — onTrayContext belongs entirely to the die menus. */
+assert.doesNotMatch(source, /glassZone|glassLine/,
+  "onTrayContext keeps no glass branch — the right click is the die menus', everywhere");
 
 console.log("dice-tray: all assertions passed");

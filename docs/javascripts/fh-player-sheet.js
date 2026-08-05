@@ -3041,11 +3041,12 @@
       if(mineIds[key])return;
       lines.push({kind:"feed",id:key,ts:event.ts||"",event:event});
     });
-    /* A resurfaced roll (right click on its reading glass — Eric, D3
-       2026-08-04) rides the moment it was called back up, not the moment
-       it was rolled: it climbs to line 1 NOW, and the next real roll
-       lands above it naturally. Display order only — createdAt, the wire
-       and the Stream keep the true time. */
+    /* A resurfaced roll (surfaceTrayLine — kept machinery, awaiting its
+       eye icon; the reading glass that first carried the gesture is gone,
+       Eric 2026-08-05) rides the moment it was called back up, not the
+       moment it was rolled: it climbs to line 1 NOW, and the next real
+       roll lands above it naturally. Display order only — createdAt, the
+       wire and the Stream keep the true time. */
     lines.forEach(function(line){if(line.id===state.traySurfaceId&&state.traySurfaceAt)line.ts=state.traySurfaceAt;});
     lines.sort(function(a,b){return String(b.ts).localeCompare(String(a.ts));});
     return lines.slice(0,TRAY_MAX);
@@ -3877,7 +3878,7 @@
        reading an older roll was physically impossible (Eric: the dice
        "dépassent sous les bords" and you can never reach them). */
     var keepTrayScroll=(function(){var node=root.querySelector(".fh-cd-traylist");return node?node.scrollTop:0;})();
-    root.innerHTML=seal+"<div class=\"fh-cd-dock"+(TRAY_LOUPE_ENABLED?" is-loupe-on":"")+"\">"+inner+"</div>";
+    root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
     if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
     /* The traylist node is reborn on every render — restore where the
@@ -4123,55 +4124,13 @@
     if(state.rollConfig&&state.rollConfig.destinyDieId===dieId){state.diePrompt={destinyDieId:dieId};dropStagedDie();return;}
     if(state.destinyStaged&&state.destinyStaged.dieId===dieId){state.diePrompt={poolId:dieId};dropStagedDie();return;}
   }
-  /* The reading glass is OFF (décision Eric, 2026-08-05) — a kill switch,
-     not a deletion. Everything below (the hover clamp, the CSS lift keyed
-     to is-loupe-on, the right-click resurface that lived ON the glass)
-     stays in place for a future rallumage: flip this ONE constant to true
-     and the whole ride comes back. The right-click "remonter le jet" goes
-     dark with it, unreplaced — it was the glass's gesture, not a line's. */
-  var TRAY_LOUPE_ENABLED=false;
-  /* The reading glass rides on HOVER now (Eric, 2026-08-04 third pass):
-     right click collided with the die menus — a die under the cursor
-     answered twice — so the menus keep the right click EVERYWHERE (which
-     is also what makes a swarm die's colour and source reachable again),
-     and the glass lifts by itself on a big hand (13+, the is-rows tier),
-     after a short dwell so mousing across the registre stays quiet.
-     Phones pinch-zoom the dock natively; no touch path.
-     The handler's one job is the CLAMP: predict the ×1.5 rect from the
-     resting one and slide the glass fully inside the registre's visible
-     window — under the cap for a top line, above the dock's edge for a
-     bottom one — via --fh-cd-loupe-dy (the CSS divides it back by the
-     zoom). The hover anchor is the LINE, which never transforms, so the
-     glass sliding away cannot unhover itself and flicker. */
-  function onTrayHover(event){
-    if(!TRAY_LOUPE_ENABLED||!root)return;
-    var line=event.target&&event.target.closest&&event.target.closest(".fh-cd-trayline");
-    if(!line)return;
-    var zone=line.querySelector(".fh-cd-tray-dice.is-rows");if(!zone)return;
-    var list=root.querySelector(".fh-cd-traylist"),dock=root.querySelector(".fh-cd-dock");
-    if(!list||!dock)return;
-    var r=zone.getBoundingClientRect(),listRect=list.getBoundingClientRect(),dockRect=dock.getBoundingClientRect();
-    var cy=(r.top+r.bottom)/2,dress=8; // the ::after plaque reaches past the zone
-    var top=cy-(cy-r.top)*1.5-dress,bottom=cy+(r.bottom-cy)*1.5+dress;
-    var winTop=Math.max(listRect.top,dockRect.top),winBottom=Math.min(listRect.bottom,dockRect.bottom);
-    var shift=top<winTop?winTop-top:bottom>winBottom?winBottom-bottom:0;
-    zone.style.setProperty("--fh-cd-loupe-dy",Math.round(shift)+"px");
-  }
+  /* The reading glass is REMOVED (décision Eric, lot BACKLOG-B 2026-08-05).
+     It went dark behind a kill switch first (fccf1d0); Eric then ruled it
+     out for good — the switch, the hover clamp and the right-click
+     "remonter le jet" gesture that lived ON the glass are gone with it.
+     surfaceTrayLine SURVIVES as kept machinery: a future eye icon will
+     call it to climb a roll back to line 1. */
   function onTrayContext(event){
-    /* Right click on a lifted reading glass RESURFACES its roll (Eric, D3
-       2026-08-04: « clic droit sur le zoom fait remonter le jet ») — the
-       whole glass answers, dice included: a glass is a reading surface,
-       and the big-hand colour menus step aside for it. Everything outside
-       a glass keeps its die menus. */
-    var glassZone=TRAY_LOUPE_ENABLED&&event.target&&event.target.closest&&event.target.closest(".fh-cd-tray-dice.is-rows");
-    if(glassZone){
-      var glassLine=glassZone.closest(".fh-cd-trayline");
-      if(glassLine&&glassLine.getAttribute("data-tray-line")){
-        event.preventDefault();
-        surfaceTrayLine(glassLine.getAttribute("data-tray-line"));
-        return;
-      }
-    }
     var target=trayDieTarget(event);if(!target)return;
     event.preventDefault();
     if(target.kind==="badge")openBadgeMenu(target.node);
@@ -4345,7 +4304,6 @@
     // timer). No-op unless the TABLE tab is actually the one showing.
     document.addEventListener("visibilitychange",function(){if(!document.hidden&&state.streamView==="table")refreshFeed();});
     root.addEventListener("contextmenu",onTrayContext);
-    root.addEventListener("mouseover",onTrayHover);
     root.addEventListener("touchstart",onTrayTouchStart,{passive:true});
     root.addEventListener("touchend",onTrayTouchEnd);root.addEventListener("touchcancel",onTrayTouchEnd);
     var linkedCampaign=routeValue("campaign"),linkedCharacter=routeValue("character");
