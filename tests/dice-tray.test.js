@@ -492,4 +492,46 @@ assert.match(plusTwoBuild, /fh-cd-judgeright"><b>Dexterity Check<\/b><i>\+2<\/i>
 assert.doesNotMatch(t.diceTrayInner(), /is-livehand/, "and the tray shows no live hand — the coin does not engage it either");
 t.state.rollConfig = null; t.state.trayResults = [];
 
+/* ── 11. R2 — the manual +X mints a coin too (lot BUGS, 2026-08-05)
+   `trayDiceFromEntry` only minted coins for plusTwo and Exhaustion — the
+   typed modifier (`entry.custom`) had none, anywhere. Now it is a coin
+   like the others: pending in the assembly the moment it is typed, on the
+   settled line after the roll, signed (« +3 » / « −2 »), label Manual,
+   copper tone. A zero mints nothing. And because rollExportDice flattens
+   trayDiceFromEntry's own list, the coin reaches the wire and the party's
+   feed lines rebuild it for free. */
+
+const manualEntry = d20Entry("manual-roll", "Arcana", 14, 24, 0, {custom:3});
+const manualDice = plain(t.trayDiceFromEntry(manualEntry));
+const manualCoin = manualDice.find(die => die.kind === "modifier" && die.label === "Manual");
+assert.ok(manualCoin, "a settled roll with a manual modifier carries its coin");
+assert.equal(manualCoin.result, 3, "with the typed value");
+assert.equal(manualCoin.tone, "mod", "in copper — the tone of anything typed by hand");
+assert.ok(!plain(t.trayDiceFromEntry(d20Entry("no-coin", "Arcana", 14, 21, 0)))
+  .some(die => die.label === "Manual"), "a custom of zero mints nothing");
+assert.match(t.visualDie({kind:"modifier", result:3, label:"Manual", tone:"mod"}, 0, 2, false, {sizePx:38, plainLabel:true}),
+  /\+3/, "the coin prints its value signed");
+assert.match(t.visualDie({kind:"modifier", result:-2, label:"Manual", tone:"mod"}, 0, 2, false, {sizePx:38, plainLabel:true}),
+  /−2/, "…a negative one with the true minus sign");
+
+/* The wire: the coin rides fh-roll/1 and a feed line rebuilds it. */
+const manualWire = t.rollExportDice(manualEntry);
+const wireCoin = plain(manualWire).find(die => die.role === "modifier" && die.label === "Manual");
+assert.ok(wireCoin, "the Manual coin reaches the wire as a modifier");
+assert.equal(wireCoin.result, 3, "with its value");
+const rebuiltCoin = plain(t.feedLineDice({display:{dice:plain(manualWire)}}))
+  .find(die => die.kind === "modifier" && die.label === "Manual");
+assert.ok(rebuiltCoin, "and a feed line rebuilds it — the table sees the coin too");
+
+/* The assembly: the coin is pending from the moment it is typed. */
+t.state.history = []; t.state.feed.events = [];
+t.state.trayResults = []; t.state.traySelection = []; t.state.rollSequence = null;
+t.state.rollConfig = {name:"Arcana", ability:"INT", baseBonus:5, d20Mode:"flat",
+  plusTwo:false, custom:3, bonusDice:[], destinyDieId:"", dc:"", note:""};
+t.prepareTrayForConfig(t.state.rollConfig);
+const manualBuild = plain(t.state.trayResults).find(die => die.kind === "modifier" && die.label === "Manual");
+assert.ok(manualBuild && manualBuild.pending, "MOD +3 posé → a pending Manual coin waits in the assembly");
+assert.match(t.renderJudgmentFrame(), /fh-cd-token/, "…and the judgment window draws it");
+t.state.rollConfig = null; t.state.trayResults = [];
+
 console.log("dice-tray: all assertions passed");
