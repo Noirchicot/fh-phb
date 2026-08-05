@@ -96,6 +96,13 @@
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
     dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false,
+    /* Phase 4 (architecture lot): the COUNTED resources of the Dice Pool —
+       "Dice Pool ≠ Dice Selector". poolResources is the per-character list
+       ({id,label,kind,sides,count,tint,origin}), persisted with the rest of
+       the local play state. poolPrompt is whichever pool card is open
+       (add / edit / the +N overflow list); poolFit is how many pastilles
+       the band measured room for on the last render. */
+    poolResources:[], poolPrompt:null, poolFit:4,
     /* Phase 3 (architecture lot): the console+judgment group is an INVOKED
        overlay now, not furniture. builderOpen is the player-facing half of
        its existence (a takeover, an armed fate or rolling dice can hold it
@@ -727,6 +734,9 @@
     state.trayResults=Array.isArray(pending.trayResults)?pending.trayResults:[];state.trayTitle=pending.trayTitle||"Dice Tray";state.trayResultText=pending.trayResultText||"";state.trayVerdict=pending.trayVerdict||"";state.pendingArmed=pending.pendingArmed||null;
     state.destinyStaged=pending.destinyStaged||null;
     state.diePrompt=null;
+    // Phase 4: the counted pool. Local-only, like traySelection and prefs.
+    state.poolResources=normalizePoolResources(local.poolResources);
+    state.poolPrompt=null;
     // rollConfig is derived, never stored: a refresh mid-roll rebuilds the console
     // from the entry so the head keeps naming the check instead of saying FREE ROLL.
     if(rollOpen()){var resumed=openEntry();state.rollConfig=resumed?configFromEntry(resumed):null;}
@@ -736,9 +746,11 @@
   }
   function persistPlayState() {
     if (!state.code || !state.pseudo || !state.destiny) return;
+    // Phase 4: a spent-out resource with no die still waiting on it is gone.
+    prunePoolResources();
     var safePrompt=state.trayPrompt&&["nat1","arcane1","chaos","awakening","die-choice","arcana-draw"].indexOf(state.trayPrompt.type)>=0?state.trayPrompt:null;
     var pendingRoll={rollSequence:state.rollSequence,trayPrompt:safePrompt,queueDone:state.queueDone,trayResults:state.trayResults,trayTitle:state.trayTitle,trayResultText:state.trayResultText,trayVerdict:state.trayVerdict,pendingArmed:state.pendingArmed,destinyStaged:state.destinyStaged};
-    var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll,panelData:state.panelData};
+    var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll,panelData:state.panelData,poolResources:poolList()};
     try { localStorage.setItem(storageKey(), JSON.stringify(payload)); } catch (error) {}
     clearTimeout(persistTimer);
     persistTimer = window.setTimeout(function () {
@@ -991,10 +1003,14 @@
     var sides=Number(raw&&raw.sides!=null?raw.sides:raw);
     if(ROLL_DIE_SIZES.indexOf(sides)<0)return null;
     raw=raw&&typeof raw==="object"?raw:{};
-    return {id:raw.id||uuid(),sides:sides,colour:dieColour(raw.colour),advantageMode:rollMode(raw.advantageMode),forcedResult:forcedDieResult(raw.forcedResult,sides)};
+    /* label and poolResourceId (phase 4): a free die spent out of the counted
+       pool keeps its name and the id that re-credits its resource if it is
+       taken back before ROLL. Plain free dice carry neither. */
+    return {id:raw.id||uuid(),sides:sides,colour:dieColour(raw.colour),advantageMode:rollMode(raw.advantageMode),forcedResult:forcedDieResult(raw.forcedResult,sides),
+      label:raw.label?String(raw.label).slice(0,32):undefined,poolResourceId:raw.poolResourceId||undefined};
   }
   function newBonusDie(label,sides,sourceIcon,colour){return {id:uuid(),label:String(label||"Other I").slice(0,32),sides:ROLL_DIE_SIZES.indexOf(Number(sides))>=0?Number(sides):6,advantageMode:"flat",forcedResult:null,sourceIcon:bonusSourceFor(label,0,sourceIcon),colour:dieColour(colour)};}
-  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,origin:die.origin||undefined,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour)};}
+  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,origin:die.origin||undefined,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour),poolResourceId:die.poolResourceId||undefined};}
   function entryBonusDice(entry){
     if(Array.isArray(entry&&entry.bonusDice))return entry.bonusDice.map(normalizeBonusDie).slice(0,MAX_BONUS_DICE);
     var dice=[];
@@ -1264,7 +1280,7 @@
   /* diceSignatures is deliberately NOT wiped here any more: the registre
      lines under the hand keep their entry-scoped keys, and wiping the map
      made every one of them re-roll visually the moment the hand was cleared. */
-  function clearDiceTray(closeConsole){state.builderOpen=false;state.builderRetireAt=0;state.traySurfaceDie=null;state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  function clearDiceTray(closeConsole){recreditPendingPoolDice();state.builderOpen=false;state.poolPrompt=null;state.builderRetireAt=0;state.traySurfaceDie=null;state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
@@ -1433,7 +1449,7 @@
   function unstageDie(sides){
     var entry=openEntry();if(!rollOpen()||!entry)return false;
     var staged=stagedList();
-    for(var i=staged.length-1;i>=0;i--){if(staged[i].kind!=="destiny"&&Number(staged[i].sides)===Number(sides)){staged.splice(i,1);refreshOpenTray(entry);persistPlayState();render();return true;}}
+    for(var i=staged.length-1;i>=0;i--){if(staged[i].kind!=="destiny"&&Number(staged[i].sides)===Number(sides)){recreditPoolDie(staged[i]);staged.splice(i,1);refreshOpenTray(entry);persistPlayState();render();return true;}}
     return false;
   }
   function stageDestinyDie(dieId){
@@ -1978,7 +1994,7 @@
     if(state.traySelection.length>=MAX_FREE_DICE){pushEvent("The free-roll tray holds at most "+MAX_FREE_DICE+" dice","warn");refreshEventPanel();return;}
     state.traySelection.push(newFreeDie(sides));state.trayResults=[];persistPlayState();render();
   }
-  function removeTrayDie(index){state.traySelection.splice(Number(index),1);state.trayResults=[];persistPlayState();render();}
+  function removeTrayDie(index){recreditPoolDie(state.traySelection[Number(index)]);state.traySelection.splice(Number(index),1);state.trayResults=[];persistPlayState();render();}
   function removeTrayDieSize(sides){sides=Number(sides);for(var i=state.traySelection.length-1;i>=0;i--){if(state.traySelection[i].sides===sides){removeTrayDie(i);return;}}}
   // The mirror of addTrayDie: right-click (or long press) takes one back off,
   // so a mis-clicked bonus die no longer forces cancelling the whole roll.
@@ -1988,7 +2004,7 @@
     if(cfg&&!cfg.editingId){
       syncConsoleInputs();
       var dice=cfg.bonusDice||[];
-      for(var i=dice.length-1;i>=0;i--){if(Number(dice[i].sides)===sides&&!dice[i].locked){dice.splice(i,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();return;}}
+      for(var i=dice.length-1;i>=0;i--){if(Number(dice[i].sides)===sides&&!dice[i].locked){recreditPoolDie(dice[i]);dice.splice(i,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();return;}}
       return;
     }
     removeTrayDieSize(sides);
@@ -1999,7 +2015,11 @@
     if(state.destinyStaged){var waiting=state.destinyStaged;state.destinyStaged=null;dropEventsTagged("staged-destiny");standaloneDestiny(waiting.dieId,destinyPlanFor(waiting));return;}
     if(!state.traySelection.length)state.traySelection=[newFreeDie(20)];
     var labelInput=root&&root.querySelector("#fhPsTrayLabel");if(labelInput)state.trayLabel=String(labelInput.value||"Damage roll").slice(0,48);
-    var dice=state.traySelection.map(function(die){var plan=makeDiePlan(die.sides,die.advantageMode,die.forcedResult);return {sides:die.sides,result:plan.result,rolls:(plan.rolls||[plan.result]).slice(),chosenIndex:plan.chosenIndex==null?0:plan.chosenIndex,advantageMode:rollMode(plan.mode),forced:!!plan.forced,colour:die.colour||""};}),entry={id:uuid(),kind:"tray",name:state.trayLabel||"Damage roll",dice:dice,total:dice.reduce(function(sum,die){return sum+(Number(die.result)||0);},0),createdAt:new Date().toISOString(),outcome:"Free roll"};
+    var dice=state.traySelection.map(function(die){var plan=makeDiePlan(die.sides,die.advantageMode,die.forcedResult);return {sides:die.sides,result:plan.result,rolls:(plan.rolls||[plan.result]).slice(),chosenIndex:plan.chosenIndex==null?0:plan.chosenIndex,advantageMode:rollMode(plan.mode),forced:!!plan.forced,colour:die.colour||"",label:die.label||undefined};}),entry={id:uuid(),kind:"tray",name:state.trayLabel||"Damage roll",dice:dice,total:dice.reduce(function(sum,die){return sum+(Number(die.result)||0);},0),createdAt:new Date().toISOString(),outcome:"Free roll"};
+    /* Phase 4: ROLL is what spends a pool resource for good. The kept hand
+       may be re-rolled, but a die that came from the counted pool is one
+       use — it leaves the selection, and its decrement becomes final. */
+    state.traySelection=state.traySelection.filter(function(die){return !die.poolResourceId;});
     addHistory(entry);setTrayFromEntry(entry);
     // No trailing result popup here either: the tray shows the verdict and the
     // stream keeps it. Only a natural 20 or 1 is worth stopping for.
@@ -2420,7 +2440,7 @@
   function trayDiceForDisplay(){
     if(state.trayResults.length)return state.trayResults;
     if(state.rollConfig)return [];
-    var dice=state.traySelection.map(function(die){return {sides:die.sides,result:forcedDieResult(die.forcedResult,die.sides),label:"d"+die.sides,dieRole:"base",pending:true,freeId:die.id,colour:die.colour||"",forced:die.forcedResult!=null};});
+    var dice=state.traySelection.map(function(die){return {sides:die.sides,result:forcedDieResult(die.forcedResult,die.sides),label:die.label||("d"+die.sides),dieRole:"base",pending:true,freeId:die.id,colour:die.colour||"",forced:die.forcedResult!=null};});
     // A Destiny die picked up with nothing else prepared waits here, pulsing,
     // until ROLL decides to spend it — at its construction-order place, like
     // every die since Eric's left-to-right ruling (2026-08-04).
@@ -2610,6 +2630,236 @@
     return "<div class=\"fh-cd-frame is-judgment"+(assembling?" is-assembly":"")+(mood?" mood-"+mood:"")+"\">"+
       "<span class=\"fh-cd-judgment\">"+judgment+"</span>"+assembly+right+"</div>";
   }
+  /* ── Phase 4: the COUNTED pool ("Dice Pool ≠ Dice Selector") ───────
+     The band's free middle carries a reserve of counted play resources,
+     noted like inspiration, at the Destiny ledger's level. Two natures:
+       - a SINGLE DIE ("d8 Bardic"): kind "die", count 0/1 — the pastille
+         is a tinted die; spending it stages a sealed/tinted bonus die and
+         the pastille disappears until the die is taken back or rolled;
+       - a COUNTER ("Tactical ×2"): kind "count", count N — the pastille
+         is a ×N chip; spending stages one die of the resource's nature
+         and decrements, exactly the way a Tactical seal stages today.
+     ROLL is what spends for good (same law as Destiny): a staged pool die
+     taken back before ROLL RE-CREDITS its resource, wherever the take-back
+     happens (die menu, right-click on the picker, CLEAR TRAY). The engine
+     and the table never learn any of this — a pool die is an ordinary
+     bonus/free die once staged. `origin` is carried for later phases
+     (sheet detection, player-to-player gifts) and never read here. */
+  var POOL_DIE_SIDES=[4,6,8,10,12];
+  var MAX_POOL_RESOURCES=12,MAX_POOL_COUNT=9;
+  /* The seal IS the die (R6): a pool tint that belongs to a seal stages
+     that seal, so "crimson Tactical" reproduces today's Tactical die. */
+  var POOL_TINT_SEAL={azure:"guidance",violet:"bardic",crimson:"tactical"};
+  // Offered in the pool cards, seal tints first — gold stays Destiny's own.
+  var POOL_TINTS=[["violet","Violet — Bardic's robe"],["crimson","Crimson — Tactical's robe"],["azure","Azure — Guidance's robe"],["green","Green"],["slate","Slate"],["ash","Ash"],["ivory","Ivory"]];
+  function poolList(){return Array.isArray(state.poolResources)?state.poolResources:(state.poolResources=[]);}
+  function poolResourceById(id){return poolList().find(function(res){return res.id===id;})||null;}
+  function visiblePoolResources(){return poolList().filter(function(res){return Number(res.count)>0;});}
+  function normalizePoolResource(raw){
+    if(!raw||typeof raw!=="object")return null;
+    var sides=POOL_DIE_SIDES.indexOf(Number(raw.sides))>=0?Number(raw.sides):8;
+    var kind=raw.kind==="count"?"count":"die";
+    var count=clamp(raw.count==null?1:raw.count,0,kind==="die"?1:MAX_POOL_COUNT);
+    return {id:raw.id||uuid(),label:String(raw.label||"Resource").slice(0,14),kind:kind,sides:sides,count:count,
+      tint:DIE_MATERIAL[raw.tint]&&raw.tint!=="white"&&raw.tint!=="chaos"&&raw.tint!=="gold"?raw.tint:"ash",
+      origin:raw.origin||undefined};
+  }
+  function normalizePoolResources(raw){
+    return (Array.isArray(raw)?raw:[]).map(normalizePoolResource).filter(Boolean).slice(0,MAX_POOL_RESOURCES);
+  }
+  function poolSourceIconFor(res){return POOL_TINT_SEAL[String(res.tint||"")]||"";}
+  function poolTitle(res){
+    var nature=res.kind==="die"?"d"+res.sides:"×"+res.count+" · spends a d"+res.sides;
+    return res.label+" — "+nature+" · click stages it (ROLL spends it) · right click to edit";
+  }
+  /* A pool die still WAITING (no result) that leaves the hand hands its
+     use back. A rolled die never comes back — it was spent, like Destiny. */
+  function recreditPoolResource(id){
+    var res=poolResourceById(id);
+    if(!res)return;
+    res.count=clamp(Number(res.count)+1,0,res.kind==="die"?1:MAX_POOL_COUNT);
+  }
+  function recreditPoolDie(die){
+    if(die&&die.poolResourceId&&die.result==null&&!die.locked)recreditPoolResource(die.poolResourceId);
+  }
+  function recreditPendingPoolDice(){
+    stagedList().forEach(recreditPoolDie);
+    state.traySelection.forEach(recreditPoolDie);
+    var cfg=state.rollConfig;
+    if(cfg)(cfg.bonusDice||[]).forEach(recreditPoolDie);
+  }
+  function poolResourceReferenced(id){
+    if(stagedList().some(function(die){return die.poolResourceId===id;}))return true;
+    if(state.traySelection.some(function(die){return die.poolResourceId===id;}))return true;
+    var cfg=state.rollConfig;
+    if(cfg&&(cfg.bonusDice||[]).some(function(die){return die.poolResourceId===id&&die.result==null;}))return true;
+    return false;
+  }
+  /* An emptied resource lingers invisibly only while a die of its still
+     waits in a hand (so cancelling can re-credit it); once nothing points
+     at it any more, it is truly consumed and leaves the list. */
+  function prunePoolResources(){
+    state.poolResources=poolList().filter(function(res){return Number(res.count)>0||poolResourceReferenced(res.id);});
+  }
+  /* Spending: click a pastille and the die is STAGED, wherever the hand
+     lives — an open roll, a prepared console, or nothing at all (the free
+     tray, with the builder invoked so the gesture works from rest). The
+     decrement happens now; ROLL makes it final, take-back undoes it. */
+  function spendPoolResource(id){
+    var res=poolResourceById(id);
+    if(!res||Number(res.count)<1){state.message="That pool resource is spent.";state.messageKind="warn";renderMessage();return;}
+    var icon=poolSourceIconFor(res),colour=icon?"":(res.tint||"");
+    state.poolPrompt=null;state.destinyPoolMenu=false;
+    invokeBuilder();
+    if(rollOpen()){
+      var entry=openEntry();
+      if(!entry)return;
+      if(entryBonusDice(entry).length+stagedBonusCount()>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
+      res.count=Number(res.count)-1;
+      state.rollSequence.staged=stagedList().concat([{id:uuid(),kind:"bonus",label:res.label,sides:res.sides,sourceIcon:icon,colour:colour,poolResourceId:res.id}]);
+      refreshOpenTray(entry);persistPlayState();render();return;
+    }
+    var cfg=state.rollConfig;
+    if(cfg&&!cfg.editingId){
+      syncConsoleInputs();
+      if((cfg.bonusDice||[]).length>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
+      res.count=Number(res.count)-1;
+      var bonus=newBonusDie(res.label,res.sides,icon||undefined,colour);
+      bonus.poolResourceId=res.id;
+      cfg.bonusDice.push(bonus);
+      syncPresetFlags(cfg);prepareTrayForConfig(cfg);persistPlayState();render();return;
+    }
+    if(state.traySelection.length>=MAX_FREE_DICE){pushEvent("The free-roll tray holds at most "+MAX_FREE_DICE+" dice","warn");refreshEventPanel();return;}
+    res.count=Number(res.count)-1;
+    var free=newFreeDie(res.sides,colour||SOURCE_TINT[icon]||"");
+    free.label=res.label;free.poolResourceId=res.id;
+    state.traySelection.push(free);state.trayResults=[];
+    persistPlayState();render();
+  }
+  /* ── The pool cards (add / edit / overflow list) ────────────────── */
+  function newPoolDraft(){return {label:"",kind:"die",sides:8,count:2,tint:"violet"};}
+  function openPoolEdit(id){
+    var res=poolResourceById(id);
+    if(!res)return;
+    state.poolPrompt={type:"edit",id:id,draft:{label:res.label,kind:res.kind,sides:res.sides,count:res.count,tint:res.tint}};
+    state.destinyPoolMenu=false;state.diePrompt=null;render();
+  }
+  // Like syncConsoleInputs: the card's free-text fields are read before any
+  // re-render, so a tint click never throws a half-typed label away.
+  function syncPoolCardInputs(){
+    var prompt=state.poolPrompt;
+    if(!prompt||!prompt.draft||!root)return;
+    var label=root.querySelector("#fhPsPoolLabel"),count=root.querySelector("#fhPsPoolCount");
+    if(label)prompt.draft.label=String(label.value||"").slice(0,14);
+    if(count)prompt.draft.count=clamp(count.value,1,MAX_POOL_COUNT);
+  }
+  function savePoolCard(){
+    var prompt=state.poolPrompt;
+    if(!prompt||!prompt.draft)return;
+    syncPoolCardInputs();
+    var draft=prompt.draft;
+    var next={id:prompt.id||uuid(),label:draft.label||"Resource",kind:draft.kind,sides:draft.sides,
+      count:draft.kind==="die"?1:clamp(draft.count,1,MAX_POOL_COUNT),tint:draft.tint};
+    if(prompt.type==="edit"){
+      var res=poolResourceById(prompt.id);
+      if(res){
+        // Editing never re-arms a single die that is currently out in a hand.
+        if(res.kind==="die"&&next.kind==="die")next.count=res.count;
+        Object.assign(res,normalizePoolResource(Object.assign({origin:res.origin},next)));
+      }
+    }else{
+      if(poolList().length>=MAX_POOL_RESOURCES){state.message="The pool holds at most "+MAX_POOL_RESOURCES+" resources.";state.messageKind="warn";renderMessage();return;}
+      poolList().push(normalizePoolResource(next));
+    }
+    state.poolPrompt=null;persistPlayState();render();
+  }
+  function deletePoolResource(id){
+    state.poolResources=poolList().filter(function(res){return res.id!==id;});
+    state.poolPrompt=null;persistPlayState();render();
+  }
+  /* One pastille: a tinted die for kind "die", a ×N chip for a counter,
+     the tiny label underneath either way (the ratified maquette). */
+  function poolChipFace(res,size){
+    if(res.kind==="die")return dieSvg(res.sides,size,res.tint||"ash","d"+res.sides);
+    var m=DIE_MATERIAL[res.tint]||DIE_MATERIAL.ash;
+    return "<span class=\"fh-cd-poolx\" style=\"width:"+size+"px;height:"+size+"px;background:"+m.fill+";border-color:"+m.rim+";color:"+m.num+"\">×"+Number(res.count)+"</span>";
+  }
+  function poolChipHtml(res){
+    return "<button type=\"button\" class=\"fh-cd-poolchip\" data-pool-spend=\""+esc(res.id)+"\" data-pool-id=\""+esc(res.id)+"\""+
+      " title=\""+esc(poolTitle(res))+"\" aria-label=\"Spend "+esc(res.label)+"\">"+
+      poolChipFace(res,20)+"<b class=\"fh-cd-poollab\">"+esc(res.label)+"</b></button>";
+  }
+  /* The strip between the gold dice and the arcana. Past what the band
+     measured room for (state.poolFit, syncPoolFit), the excess folds into
+     a +N chip that opens the list card — Destiny itself is NEVER folded. */
+  function renderPoolStrip(){
+    var visible=visiblePoolResources();
+    if(!visible.length)return "";
+    var fit=Math.max(1,Number(state.poolFit)||1),chips;
+    if(visible.length<=fit)chips=visible.map(poolChipHtml).join("");
+    else{
+      var shown=visible.slice(0,Math.max(0,fit-1)),hidden=visible.length-shown.length;
+      chips=shown.map(poolChipHtml).join("")+
+        "<button type=\"button\" class=\"fh-cd-poolmore"+(state.poolPrompt&&state.poolPrompt.type==="list"?" is-active":"")+"\" data-pool-list"+
+        " title=\""+hidden+" more pool resource"+(hidden===1?"":"s")+" — open the list\" aria-label=\"Show "+hidden+" more pool resources\">+"+hidden+"</button>";
+    }
+    return chips;
+  }
+  /* Measured, not guessed: how many pastilles the strip really has room
+     for at the current zoom and arcane. The strip is flex:1 overflow:hidden,
+     so its width never depends on its own content — one settle, no loop. */
+  var POOL_CHIP_W=27; // 24px chip + 3px gap, in step with .fh-cd-poolchip
+  function syncPoolFit(){
+    if(!root)return;
+    var box=root.querySelector(".fh-cd-poolres");
+    if(!box||!box.clientWidth)return;
+    var fit=Math.max(1,Math.floor((box.clientWidth+3)/POOL_CHIP_W));
+    if(fit!==state.poolFit){
+      state.poolFit=fit;
+      if(!syncPoolFit.busy){syncPoolFit.busy=true;try{render();}finally{syncPoolFit.busy=false;}}
+    }
+  }
+  function renderPoolCard(){
+    var prompt=state.poolPrompt;
+    if(!prompt)return "";
+    if(prompt.type==="list"){
+      var rows=visiblePoolResources().map(function(res){
+        return "<div class=\"fh-cd-poolrow\">"+
+          "<button type=\"button\" class=\"fh-cd-poolrowspend\" data-pool-spend=\""+esc(res.id)+"\" title=\""+esc(poolTitle(res))+"\">"+
+          poolChipFace(res,18)+"<span>"+esc(res.label)+"</span><i>"+(res.kind==="die"?"d"+res.sides:"×"+res.count+" · d"+res.sides)+"</i></button>"+
+          "<button type=\"button\" class=\"fh-cd-pooledit\" data-pool-edit=\""+esc(res.id)+"\" aria-label=\"Edit "+esc(res.label)+"\">✎</button></div>";
+      }).join("");
+      return "<div class=\"fh-cd-card is-poolcard\"><small>DICE POOL</small>"+
+        (rows||"<p>Nothing counted yet.</p>")+
+        "<div class=\"fh-cd-acts\"><button class=\"is-ghost\" data-pool-add>Add</button><button data-pool-close>Close</button></div></div>";
+    }
+    var draft=prompt.draft||newPoolDraft();
+    var editing=prompt.type==="edit";
+    var kindRow="<div class=\"fh-cd-dmrow\"><span>Nature</span>"+
+      "<button type=\"button\" class=\"fh-cd-dmmode"+(draft.kind==="die"?" is-on":"")+"\" data-pool-kind=\"die\" title=\"One die, waiting to be spent\">One die</button>"+
+      "<button type=\"button\" class=\"fh-cd-dmmode"+(draft.kind==="count"?" is-on":"")+"\" data-pool-kind=\"count\" title=\"A counted use — each spend stages one die\">Counter</button></div>";
+    var sidesRow="<div class=\"fh-cd-dmrow\"><span>"+(draft.kind==="die"?"Die":"Spends")+"</span>"+POOL_DIE_SIDES.map(function(sides){
+      return "<button type=\"button\" class=\"fh-cd-dmmode"+(draft.sides===sides?" is-on":"")+"\" data-pool-sides=\""+sides+"\">d"+sides+"</button>";
+    }).join("")+"</div>";
+    var countRow=draft.kind==="count"
+      ? "<div class=\"fh-cd-dmrow\"><span>Count</span>"+
+        "<button type=\"button\" class=\"fh-cd-dmmode\" data-pool-count-step=\"-1\">−</button>"+
+        "<input id=\"fhPsPoolCount\" type=\"number\" min=\"1\" max=\""+MAX_POOL_COUNT+"\" value=\""+Number(draft.count)+"\" aria-label=\"Uses left\">"+
+        "<button type=\"button\" class=\"fh-cd-dmmode\" data-pool-count-step=\"1\">+</button></div>"
+      : "";
+    // The robe row, re-used where it is natural (Q1): seal tints wear their
+    // marks, plain tints go naked — same pastilles as the die menu's rail.
+    var tintRow="<div class=\"fh-cd-dmrow fh-cd-dmrobes\"><span>Robe</span>"+POOL_TINTS.map(function(pair){
+      var seal=POOL_TINT_SEAL[pair[0]],m=DIE_MATERIAL[pair[0]]||DIE_MATERIAL.ivory;
+      return "<button type=\"button\" class=\"fh-cd-dmrobe"+(draft.tint===pair[0]?" is-on":"")+"\" data-pool-tint=\""+pair[0]+"\" title=\""+esc(pair[1])+"\">"+
+        dieSvg(6,15,pair[0],"")+(seal?"<span class=\"fh-cd-dmmark\" style=\"color:"+m.num+"\">"+bonusSourceMark(seal)+"</span>":"")+"</button>";
+    }).join("")+"</div>";
+    return "<div class=\"fh-cd-card is-poolcard\"><small>"+(editing?"POOL RESOURCE · "+esc(draft.label||"—"):"ADD A POOL RESOURCE")+"</small>"+
+      "<div class=\"fh-cd-dmrow\"><span>Label</span><input id=\"fhPsPoolLabel\" maxlength=\"14\" value=\""+esc(draft.label)+"\" placeholder=\"Bardic, Tactical…\" aria-label=\"Resource label\"></div>"+
+      kindRow+sidesRow+countRow+tintRow+
+      "<div class=\"fh-cd-acts\">"+(editing?"<button class=\"is-danger\" data-pool-delete=\""+esc(prompt.id)+"\">Remove</button>":"")+
+      "<button class=\"is-ghost\" data-pool-close>Cancel</button><button data-pool-save>"+(editing?"Save":"Add it")+"</button></div></div>";
+  }
   /* ── The Destiny & Dice Pool band (phase 1, dock-dice-tray) ─────────
      The old in-flow Destiny zone was rendered under the panel and covered
      permanently by the summoned group (constat C1: never actually visible).
@@ -2657,7 +2907,11 @@
         return "<div class=\"fh-cd-dpoolrow\"><b>d"+sides+"</b><span class=\"fh-cd-dpoolcount\">"+count+"</span>"+
           "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(count?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button>"+
           "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(count>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button></div>";
-      }).join("")+"</div>":"";
+      }).join("")+
+      /* Phase 4 (Q1): the sober seat for adding a counted resource — one row
+         in the menu the ledger already opens, no new chrome on the band. */
+      "<button type=\"button\" class=\"fh-cd-dpooladd\" data-pool-add>＋ Add a pool resource</button>"+
+      "</div>":"";
     return "<section class=\"fh-cd-zone fh-cd-band\" data-zone=\"dice-pool\">"+
       "<span class=\"fh-cd-bandledger\">"+
       "<button type=\"button\" class=\"fh-cd-bandpts"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\""+
@@ -2667,6 +2921,10 @@
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
       "</button>"+poolMenu+"</span>"+
       "<span class=\"fh-cd-pool\">"+dice+"</span>"+
+      /* Phase 4: the counted resources ride the free middle; their cards
+         (add / edit / +N list) pose above the whole band, full width. */
+      "<span class=\"fh-cd-poolres\">"+renderPoolStrip()+"</span>"+
+      renderPoolCard()+
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
       esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
@@ -3856,11 +4114,13 @@
     if(target.scope==="pool-destiny"){state.destinyStaged=null;dropEventsTagged("staged-destiny");}
     else if(target.scope==="destiny"){var cfg=state.rollConfig;cfg.destinyDieId="";cfg.destinyConfirmed=false;cfg.destinyForcedResult=null;dropEventsTagged("staged-destiny");}
     else if(target.scope==="staged"||target.scope==="staged-destiny"){
+      // Phase 4: a staged die taken back before ROLL re-credits its resource.
+      recreditPoolDie(stagedList().find(function(die){return die.id===prompt.stagedId;}));
       state.rollSequence.staged=stagedList().filter(function(die){return die.id!==prompt.stagedId;});
       if(target.scope==="staged-destiny")dropEventsTagged("staged-destiny");
     }
-    else if(target.scope==="bonus"){var config=state.rollConfig;config.bonusDice=(config.bonusDice||[]).filter(function(die){return die.id!==prompt.bonusId;});syncPresetFlags(config);}
-    else if(target.scope==="free")state.traySelection=state.traySelection.filter(function(die){return die.id!==prompt.freeId;});
+    else if(target.scope==="bonus"){var config=state.rollConfig;recreditPoolDie((config.bonusDice||[]).find(function(die){return die.id===prompt.bonusId;}));config.bonusDice=(config.bonusDice||[]).filter(function(die){return die.id!==prompt.bonusId;});syncPresetFlags(config);}
+    else if(target.scope==="free"){recreditPoolDie(state.traySelection.find(function(die){return die.id===prompt.freeId;}));state.traySelection=state.traySelection.filter(function(die){return die.id!==prompt.freeId;});}
     state.diePrompt=null;refreshTrayForState();persistPlayState();render();
   }
   /* A seal renames the die it is put on, every time. Reading the old label back
@@ -4191,6 +4451,8 @@
       trayScroller.addEventListener("scroll",syncTrayArrows,{passive:true});
     }
     syncTrayArrows();
+    // Phase 4: measure the pool strip's real room and refold if it moved.
+    syncPoolFit();
     /* Picker buttons (Destiny row, white-dice row) are cached static images,
        not live dice -- their generator canvas exists only long enough to
        fill that cache. releasePickerContext is a no-op once the cache is
@@ -4210,7 +4472,7 @@
     if(custom)cfg.custom=Number(custom.value)||0;
     if(dc)cfg.dc=dc.value;
   }
-  function removeGenericBonusDie(index){var cfg=state.rollConfig;if(!cfg)return;syncConsoleInputs();index=Number(index);if(!cfg.bonusDice[index]||cfg.bonusDice[index].locked)return;cfg.bonusDice.splice(index,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
+  function removeGenericBonusDie(index){var cfg=state.rollConfig;if(!cfg)return;syncConsoleInputs();index=Number(index);if(!cfg.bonusDice[index]||cfg.bonusDice[index].locked)return;recreditPoolDie(cfg.bonusDice[index]);cfg.bonusDice.splice(index,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
   function openConfig(name,ability,bonus,note,dc){clearDiceTray(false);state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});prepareTrayForConfig(state.rollConfig);state.message="";state.messageKind="";invokeBuilder();render();window.setTimeout(function(){var roll=root&&root.querySelector("[data-roll-now]");if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
   function loadInventory(){if(!state.code)return;state.inventory={loading:true};api("/inv/"+encodeURIComponent(state.code)).then(function(data){state.inventory=data;render();}).catch(function(error){state.inventory={error:"Could not load inventory: "+error.message};render();});}
   function loadParty(){var input=root.querySelector("#fhPsCode"),code=(input?input.value:state.code).trim().toUpperCase();state.code=code;state.party=[];state.record=null;state.character=null;state.pseudo="";state.inventory=null;state.loading=!!code;stopFeed();render();if(!code)return;try{localStorage.setItem("fh-my-campcode",code);}catch(e){}api("/party/"+encodeURIComponent(code)).then(function(data){state.party=(data.builds||[]).map(function(entry){return entry.pseudo;}).sort();var last=state.requestedPseudo||"";if(!last)try{last=localStorage.getItem("fh-my-pseudo")||"";}catch(e){}state.requestedPseudo="";state.loading=false;if(state.party.indexOf(last)>=0){state.pseudo=last;loadBuild();}else render();}).catch(function(error){state.requestedPseudo="";state.loading=false;state.message=error.message||"Could not reach the campaign server.";state.messageKind="danger";render();});}
@@ -4372,6 +4634,19 @@
     /* A gold die is picked up exactly like a white one: the click stages it,
        ROLL spends it, and a right click on it in the tray puts it back. */
     if(button.dataset.destinyDie!==undefined){state.destinyPoolMenu=false;stageDestinyFromPool(button.dataset.destinyDie);return;}
+    /* Phase 4 — the counted pool. Spending respects the same lock the white
+       picker does; the cards themselves are chrome and stay reachable. */
+    if(button.dataset.poolSpend!==undefined){if(rollTransactionActive()){warnRollLocked();return;}spendPoolResource(button.dataset.poolSpend);return;}
+    if(button.dataset.poolList!==undefined){state.poolPrompt=state.poolPrompt&&state.poolPrompt.type==="list"?null:{type:"list"};state.destinyPoolMenu=false;render();return;}
+    if(button.dataset.poolAdd!==undefined){state.poolPrompt={type:"add",draft:newPoolDraft()};state.destinyPoolMenu=false;render();return;}
+    if(button.dataset.poolEdit!==undefined){openPoolEdit(button.dataset.poolEdit);return;}
+    if(button.dataset.poolClose!==undefined){state.poolPrompt=null;render();return;}
+    if(button.dataset.poolSave!==undefined){savePoolCard();return;}
+    if(button.dataset.poolDelete!==undefined){deletePoolResource(button.dataset.poolDelete);return;}
+    if(button.dataset.poolKind!==undefined){syncPoolCardInputs();if(state.poolPrompt&&state.poolPrompt.draft)state.poolPrompt.draft.kind=button.dataset.poolKind==="count"?"count":"die";render();return;}
+    if(button.dataset.poolSides!==undefined){syncPoolCardInputs();if(state.poolPrompt&&state.poolPrompt.draft)state.poolPrompt.draft.sides=Number(button.dataset.poolSides);render();return;}
+    if(button.dataset.poolTint!==undefined){syncPoolCardInputs();if(state.poolPrompt&&state.poolPrompt.draft)state.poolPrompt.draft.tint=button.dataset.poolTint;render();return;}
+    if(button.dataset.poolCountStep!==undefined){syncPoolCardInputs();if(state.poolPrompt&&state.poolPrompt.draft)state.poolPrompt.draft.count=clamp(Number(state.poolPrompt.draft.count)+Number(button.dataset.poolCountStep),1,MAX_POOL_COUNT);render();return;}
     if(rollTransactionActive()){warnRollLocked();return;}
     if(button.id==="fhPsChromeToggle"){state.chromeOpen=!state.chromeOpen;render();return;}
     if(button.id==="fhPsSync"||button.id==="fhPsRelink"||button.id==="fhPsLevel"||button.id==="fhPsCorrect")state.menuOpen=false;
@@ -4425,6 +4700,10 @@
     if(picker)return picker.disabled?null:{kind:"picker",node:picker};
     var destinyPicker=event.target.closest("[data-destiny-die]");
     if(destinyPicker)return destinyPicker.disabled?null:{kind:"destinyPicker",node:destinyPicker};
+    /* Phase 4: right click (or long press) on a pool pastille is its
+       identity card — rename, robe, faces/count, remove. */
+    var poolChip=event.target.closest("[data-pool-id]");
+    if(poolChip)return {kind:"poolChip",node:poolChip};
     var rollToggle=event.target.closest("#fhPsPlusTwo,[data-die-mode][data-die-scope=\"d20\"]");
     if(rollToggle)return rollToggle.disabled?null:{kind:"rollToggle",node:rollToggle};
     var badge=event.target.closest("[data-pending-id]");
@@ -4482,6 +4761,7 @@
     if(target.kind==="badge")openBadgeMenu(target.node);
     else if(target.kind==="die")openDieMenu(target.node);
     else if(target.kind==="destinyPicker")takeBackDestinyDie(target.node);
+    else if(target.kind==="poolChip")openPoolEdit(target.node.dataset.poolId);
     else if(target.kind==="rollToggle")toggleRollMode(target.node);
     else takeBackDie(target.node);
   }
@@ -4495,6 +4775,7 @@
       if(target.kind==="badge")openBadgeMenu(target.node);
       else if(target.kind==="die")openDieMenu(target.node);
       else if(target.kind==="destinyPicker")takeBackDestinyDie(target.node);
+      else if(target.kind==="poolChip")openPoolEdit(target.node.dataset.poolId);
       else if(target.kind==="rollToggle")toggleRollMode(target.node);
       else takeBackDie(target.node);
     },500);
@@ -4545,6 +4826,14 @@
      close:function(){state.trayPrompt=null;},
      box:".fh-cd-card",
      toggle:"[data-pending-id],[data-pending-open],[data-pending-add]"},
+    /* Phase 4 — the pool cards (add / edit / +N list). Menus the player
+       opened, never decisions: a stray click dismisses them and only Save
+       writes. The pastilles are the toggles — a click on one is pool-work,
+       not "elsewhere". */
+    {isOpen:function(){return !!state.poolPrompt;},
+     close:function(){state.poolPrompt=null;},
+     box:".fh-cd-card.is-poolcard",
+     toggle:"[data-pool-id],[data-pool-list],[data-pool-add],[data-pool-edit]"},
     /* Phase 3 — the ⊕ popover. Clicks in the overlay or on the band are
        dice-work (staging a bonus mid-check, spending a gold die), not
        "elsewhere": the popover stays for them. */
@@ -4595,6 +4884,7 @@
     if(key==="escape"){
       event.preventDefault();
       if(state.freePop){state.freePop=false;render();return;}
+      if(state.poolPrompt){state.poolPrompt=null;render();return;}
       if(rollTransactionActive()){warnRollLocked();return;}
       if(state.builderOpen||state.diePrompt||(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")))){
         if(state.rollConfig)syncConsoleInputs();

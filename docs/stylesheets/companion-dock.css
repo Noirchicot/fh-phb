@@ -2036,3 +2036,71 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-clearmini:disabled{opacity:.45;cursor:not-allowed}
 /* ROLL keeps the row's right flank, where the whiterow used to sit. */
 .fh-cd-consoleroll{margin-left:auto;flex:none;display:flex;align-items:center}
+
+/* ── Phase 4 (architecture lot) — the COUNTED Dice Pool on the band ───
+   "Dice Pool ≠ Dice Selector": between the gold dice and the arcana the
+   band carries a reserve of counted resources — a 20px pastille (tinted
+   die, or ×N chip) with a minuscule label under each. The strip is
+   flex:1 + overflow:hidden so its width never depends on its own content:
+   syncPoolFit reads that width, and past it the excess folds into a +N
+   chip (the Destiny ledger itself is NEVER folded). APPENDED only. */
+.fh-cd-poolres{flex:1 1 0;min-width:0;align-self:stretch;display:flex;align-items:center;
+  gap:3px;overflow:hidden}
+.fh-cd-poolchip{flex:none;width:24px;padding:0;border:0;background:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;font-family:inherit}
+.fh-cd-poolchip svg{display:block}
+.fh-cd-poolchip:hover .fh-cd-poollab{color:#ffd98a}
+/* The label: minuscule, ellipsized — the maquette's one word under the die.
+   Same quiet gold as the band's die labels (contrast measured there). */
+.fh-cd-poollab{display:block;max-width:24px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;font-size:calc(6px * var(--cd-fs));font-weight:700;
+  letter-spacing:.02em;color:#d8c79b;line-height:1.2}
+/* The counter chip: ×N printed on the resource's own material — the die
+   colours are inline (DIE_MATERIAL), only the shape lives here. */
+.fh-cd-poolx{display:inline-grid;place-items:center;box-sizing:border-box;
+  border:1.5px solid;border-radius:6px;font-size:calc(8px * var(--cd-fs));
+  font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+/* The +N fold: dashed gold like the ⊕ — a door, not a resource. */
+.fh-cd-poolmore{flex:none;min-width:20px;height:20px;padding:0 3px;
+  border:1px dashed rgba(201,164,90,.55);border-radius:6px;background:none;
+  color:#eac878;font-family:inherit;font-size:calc(7.5px * var(--cd-fs));
+  font-weight:800;cursor:pointer}
+.fh-cd-poolmore:hover,.fh-cd-poolmore.is-active{border-color:#ffd98a;color:#ffd98a;border-style:solid}
+/* The pool cards (add / edit / +N list) pose above the WHOLE band, full
+   width — the band is their positioning context, so left/right clear the
+   8px padding at 425 and at the 360 floor alike. z 26, over the group. */
+.fh-cd-band .fh-cd-card.is-poolcard{position:absolute;bottom:calc(100% + 6px);
+  left:8px;right:8px;z-index:26;display:block;text-align:left;
+  /* The base card's max-height:100% reads the BAND (44px) here and clamped
+     the card to two rows, the rest scrolled out of sight — measured on the
+     bench. The card grows upward over the panel instead. */
+  max-height:none;overflow:visible}
+.fh-cd-card.is-poolcard input{height:19px;border:1px solid var(--cd-line);
+  background:#fffdf6;border-radius:4px;font-family:inherit;
+  font-size:calc(8.5px * var(--cd-fs));color:var(--cd-ink);padding:0 5px}
+.fh-cd-card.is-poolcard #fhPsPoolLabel{flex:1;min-width:0}
+.fh-cd-card.is-poolcard #fhPsPoolCount{width:36px;text-align:center}
+.fh-cd-card.is-poolcard .fh-cd-acts{margin-top:5px}
+/* The +N list's rows: the pastille, the name, the nature — one row is one
+   spend; the ✎ beside it opens the identity card. Quiet dress, not CTA. */
+.fh-cd-poolrow{display:flex;align-items:center;gap:4px;margin-top:3px}
+.fh-cd-card .fh-cd-poolrowspend{flex:1;min-width:0;display:flex;align-items:center;gap:6px;
+  height:24px;padding:0 6px;border:1px solid var(--cd-line);border-radius:4px;
+  background:var(--cd-parch-2);color:var(--cd-ink);font-family:inherit;cursor:pointer;text-align:left}
+.fh-cd-card .fh-cd-poolrowspend:hover{border-color:var(--cd-gold-hi)}
+.fh-cd-card .fh-cd-poolrowspend>span:not(.fh-cd-poolx){flex:1;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;font-size:calc(8.5px * var(--cd-fs));font-weight:700}
+/* The ×N chip keeps its square in the list row — it is a span too, and the
+   name's flex:1 must not stretch it (measured: 18px became 153px). */
+.fh-cd-card .fh-cd-poolrowspend>.fh-cd-poolx{flex:none}
+.fh-cd-card .fh-cd-poolrowspend>i{flex:none;font-style:normal;color:var(--cd-muted);
+  font-size:calc(7.5px * var(--cd-fs));font-variant-numeric:tabular-nums}
+.fh-cd-card .fh-cd-pooledit{flex:none;width:24px;height:24px;padding:0;
+  border:1px solid var(--cd-line);border-radius:4px;background:var(--cd-parch-2);
+  color:var(--cd-muted);cursor:pointer;font-size:calc(9px * var(--cd-fs))}
+.fh-cd-card .fh-cd-pooledit:hover{border-color:var(--cd-gold-hi);color:var(--cd-ink)}
+/* The sober seat for ADD (Q1): one row at the foot of the Destiny menu. */
+.fh-cd-dpooladd{margin-top:2px;height:20px;padding:0 3px;border:0;border-top:1px solid var(--cd-line-soft);
+  background:none;color:var(--cd-gold);font-family:inherit;font-size:calc(7.5px * var(--cd-fs));
+  font-weight:700;letter-spacing:.04em;cursor:pointer;text-align:left;white-space:nowrap}
+.fh-cd-dpooladd:hover{color:var(--cd-gold-bright)}
