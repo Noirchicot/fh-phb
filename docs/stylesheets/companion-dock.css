@@ -1704,3 +1704,23 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayline.is-l1{min-height:56px}
 .fh-cd-trayline.is-deep{min-height:72px}
 .fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:22px}
+
+/* ── Lot BACKLOG-B (Eric, 2026-08-05) — the zone returns to its acted
+   284 ────────────────────────────────────────────────────────────────
+   Eric's ruling is « le tray reste à 284 px », and with L1 down to 56
+   the arithmetic AGREES — measured on the sheet, box-sizing:border-box
+   throughout (.fh-cd-root *), so a line's 3px paddings and its 1px
+   separator live INSIDE its 56, never on top of it:
+     tray top padding 2 (the fourth fitting's 2px 4px 0)
+   + cap 56 (BACKLOG-A band, border-bottom inside, margin-bottom 0)
+   + 4 × 56 nominal bands                       = 282 ≤ 284.
+   Four whole bands are exactly visible with 2px to spare; the list's
+   4px tail padding only shows at scroll-end, where it crops the top
+   band's 3px pad by ≤2px — invisible. A 292 (cap + 4×56 + paddings +
+   borders counted AGAIN) double-counts what border-box already folds
+   in, and would take 8px from the dock's flow for nothing whole. So
+   BACKLOG-A's 320 (which funded the old 84 + list margins: 2+56+2+84+
+   3×56 = 312 needed) gives back its 36px to the sheet above. Same
+   variable, so the summoned group's anchor (--cd-tray-h) and the
+   dock's padding-bottom follow by themselves. */
+.fh-cd-root{--cd-tray-h:284px}

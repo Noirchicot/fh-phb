@@ -109,6 +109,13 @@ assert.equal(lastDeep && lastDeep[1], "72", "only a 21-30-dice hand deepens its 
 const lastL1T3 = [...css.matchAll(/\.fh-cd-trayline\.is-l1 \.fh-cd-tray-t3\{max-height:(\d+)px\}/g)].pop();
 assert.equal(lastL1T3 && lastL1T3[1], "22", "L1's tier-3 headroom was 84-era slack — back to the common 22");
 assert.match(source, /trayScroll==="up"\?-56:56/, "one chevron click steps exactly one 56px band");
+/* And the zone returns to Eric's acted 284: with border-box folding each
+   line's paddings and separator inside its 56, four bands need only
+   2 (tray pad) + 56 (cap) + 4×56 = 282. BACKLOG-A's 320 funded the old
+   84 band; that block above stays untouched (appended-only) — the LAST
+   word is what the browser reads. */
+const lastTrayH = [...css.matchAll(/--cd-tray-h:(\d+)px/g)].pop();
+assert.equal(lastTrayH && lastTrayH[1], "284", "the tray's last word on its height is the acted 284 — 282 needed, 2px spare");
 assert.doesNotMatch(t.renderStageZone(), /data-zone="dice-tray"/, "the roller does not carry the tray any more");
 
 t.state.history = [];
