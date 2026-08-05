@@ -951,8 +951,8 @@
     return '<svg class="fh-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">'+body+'</svg>';
   }
   /* The mark a source token shows: a glyph, or a bold numeral. Since the
-     wrappers lost their src slot this only dresses the seal buttons in the
-     die menu (.fh-cd-dmseal). */
+     wrappers lost their src slot this only dresses the robe pastilles in the
+     die menu (.fh-cd-dmrobe — painted ON the tinted die face since R6). */
   function bonusSourceMark(source){
     var token=rollSource(source);
     if(token.letter)return "<b>"+token.letter+"</b>";
@@ -2236,10 +2236,9 @@
     if(state.diePrompt){
       var target=findStagedDie(state.diePrompt);
       if(target){
-        /* The seal row is the source table (§1) read out loud, not a second
+        /* The robe row reads the source table (§1) out loud, not a second
            hand-kept list — which is how Tactical came to be drawable by the
            engine and unreachable from this card. */
-        var seals=[["","None"]].concat(SEALABLE_SOURCES.map(function(key){return [key,ROLL_SOURCES[key].label];}));
         var poolReady=state.destiny.dice.some(function(die){return die.available&&die.sides===target.sides;});
         var landed=target.scope==="landed";
         var isDestiny=target.scope==="destiny"||target.scope==="staged-destiny"||target.scope==="pool-destiny";
@@ -2250,15 +2249,49 @@
         var modes=landed?[]
           :target.scope==="free"||target.scope==="staged-destiny"||target.scope==="pool-destiny"?["flat","advantage","disadvantage"]
           :["flat","advantage","disadvantage","choice"];
-        // A free damage die has neither a source nor an advantage: only a colour.
-        var sealRow=!canSeal?"":"<div class=\"fh-cd-dmrow\"><span>Seal</span>"+seals.map(function(pair){
-            return "<button type=\"button\" class=\"fh-cd-dmseal"+(pair[0]?" "+sourceToneClass(pair[0]):"")+((target.sourceIcon||"")===pair[0]?" is-on":"")+"\" data-die-seal=\""+pair[0]+"\" title=\""+esc(pair[1])+"\">"+(pair[0]?bonusSourceMark(pair[0]):"—")+"</button>";
-          }).join("")+
-          "<button type=\"button\" class=\"fh-cd-dmseal is-destiny\" data-die-seal=\"destiny\""+(poolReady?"":" disabled")+" title=\""+(poolReady?"Take a Destiny d"+target.sides+" from the pool instead — ROLL is what spends it":"No Destiny d"+target.sides+" available")+"\">"+sourceGlyphSvg("destiny")+"</button></div>";
+        /* SEAL and COLOUR were two rows for two facets of the SAME thing — the
+           robe of the die (« le sceau EST le dé », R6, 2026-08-05). One row of
+           robes now: the seal-bearing robes first, each a pastille in its
+           SOURCE_TINT wearing its mark (★ on azure, ♪ on violet…), then the
+           plain colour pastilles, naked. The DATA does not move — sourceIcon
+           and colour stay two fields and a hand-picked colour still wins
+           visually — only the wardrobe is presented on one rail. Exactly ONE
+           pastille carries is-on: the robe the die actually wears. A sealed
+           die recoloured by hand ("Bardic + crimson") lights the crimson
+           pastille and paints the Bardic mark ON it — the seal follows the
+           robe. Choosing a seal robe dresses the whole die (tint included);
+           choosing a naked pastille recolours it and keeps its seal. */
+        function robePastille(tint,mark,on,attrs,title,disabled){
+          var m=DIE_MATERIAL[tint]||DIE_MATERIAL.ivory;
+          return "<button type=\"button\" class=\"fh-cd-dmrobe"+(on?" is-on":"")+"\" "+attrs+(disabled?" disabled":"")+" title=\""+esc(title)+"\">"+
+            dieSvg(6,15,tint,"")+(mark?"<span class=\"fh-cd-dmmark\" style=\"color:"+m.num+"\">"+mark+"</span>":"")+"</button>";
+        }
+        var robes="";
+        if(canSeal){
+          // "—" undresses the die completely: no seal, no manual colour.
+          robes+="<button type=\"button\" class=\"fh-cd-dmrobe is-none"+(!target.sourceIcon&&!target.colour?" is-on":"")+"\" data-die-seal=\"\" title=\"None — the die&#39;s own robe\">—</button>";
+          robes+=SEALABLE_SOURCES.map(function(key){
+            var tint=SOURCE_TINT[key]||"ash";
+            return robePastille(tint,bonusSourceMark(key),!target.colour&&(target.sourceIcon||"")===key,
+              "data-die-seal=\""+key+"\"",ROLL_SOURCES[key].label+" · "+tint,false);
+          }).join("");
+          robes+=robePastille("gold",sourceGlyphSvg("destiny"),false,"data-die-seal=\"destiny\"",
+            poolReady?"Destiny · gold — take a Destiny d"+target.sides+" from the pool instead; ROLL is what spends it":"No Destiny d"+target.sides+" available",!poolReady);
+        }
         // Gold is a Destiny die's identity, not a preference, so it is not offered a palette.
-        var colourRow=isDestiny?"":"<div class=\"fh-cd-dmrow\"><span>Colour</span>"+DIE_COLOURS.map(function(pair){
-            return "<button type=\"button\" class=\"fh-cd-dmcol"+((target.colour||"ivory")===pair[0]?" is-on":"")+"\" data-die-colour=\""+pair[0]+"\" title=\""+pair[1]+"\">"+dieSvg(6,15,pair[0],"")+"</button>";
-          }).join("")+"</div>";
+        if(!isDestiny)robes+=DIE_COLOURS.filter(function(pair){
+            /* On a sealable die the Ivory swatch was a lie twice over: colour
+               "ivory" is stored as "" so it could never light up, and clicking
+               it returned the die to its TINT, never to ivory. The seal robes
+               are that reset now, so Ivory is only offered where it is true. */
+            return !canSeal||pair[0]!=="ivory";
+          }).map(function(pair){
+            var on=target.colour?target.colour===pair[0]:!canSeal&&pair[0]==="ivory";
+            var mark=on&&canSeal&&target.sourceIcon?bonusSourceMark(target.sourceIcon):"";
+            return robePastille(pair[0],mark,on,"data-die-colour=\""+pair[0]+"\"",
+              pair[1]+(mark?" · sealed "+sealLabel(target.sourceIcon):""),false);
+          }).join("");
+        var robeRow=robes?"<div class=\"fh-cd-dmrow fh-cd-dmrobes\">"+robes+"</div>":"";
         var modeRow=!modes.length?"":"<div class=\"fh-cd-dmrow\"><span>Roll</span>"+modes.map(function(mode){
             var short=mode==="flat"?"—":mode==="advantage"?"A":mode==="disadvantage"?"D":"A/D";
             return "<button type=\"button\" class=\"fh-cd-dmmode"+((target.advantageMode||"flat")===mode?" is-on":"")+"\" data-die-mode-set=\""+mode+"\">"+short+"</button>";
@@ -2274,7 +2307,7 @@
         var head="d"+target.sides+(target.label&&target.label!=="d"+target.sides?" · "+esc(target.label):"")+(landed?" · FALLEN":"");
         // Removes THIS die only — emptying the whole tray is the permanent CLEAR TRAY.
         var removable=target.scope!=="base"&&!landed;
-        return "<div class=\"fh-cd-card is-diemenu\"><small>"+head+"</small>"+sealRow+colourRow+modeRow+portentRow+
+        return "<div class=\"fh-cd-card is-diemenu\"><small>"+head+"</small>"+robeRow+modeRow+portentRow+
           "<div class=\"fh-cd-acts\">"+(removable?"<button class=\"is-ghost\" data-die-drop>Remove this die</button>":"")+"<button data-tray-close>Done</button></div></div>";
       }
       state.diePrompt=null;
@@ -3651,7 +3684,10 @@
      hand, and ROLL is still what spends it. */
   function sealStagedDie(seal){
     var target=findStagedDie(state.diePrompt);if(!target)return;
-    if(seal!=="destiny"){mutateStagedDie({sourceIcon:seal,label:sealLabel(seal)});return;}
+    /* Choosing a seal robe dresses the WHOLE die (R6): the seal's tint comes
+       back, so the manual colour is cleared — recolour afterwards from the
+       same row if you want "Bardic + crimson". "—" undresses both fields. */
+    if(seal!=="destiny"){mutateStagedDie({sourceIcon:seal,label:sealLabel(seal),colour:""});return;}
     var poolDie=state.destiny.dice.find(function(die){return die.available&&die.sides===target.sides;});
     if(!poolDie){state.message="No Destiny d"+target.sides+" is available in the pool.";state.messageKind="warn";renderMessage();return;}
     dropStagedDie();

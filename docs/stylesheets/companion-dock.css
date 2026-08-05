@@ -1831,3 +1831,26 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   background:radial-gradient(120% 90% at 50% 50%,rgba(156,107,22,.42) 0%,rgba(156,107,22,.10) 55%,transparent 78%)}
 .fh-cd-frame.is-judgment.mood-awakening::before{
   background-image:conic-gradient(from 0deg at 50% 50%,rgba(156,107,22,.4),transparent 22%,rgba(122,82,12,.36) 46%,transparent 70%,rgba(156,107,22,.4))}
+
+/* ── R6: the robe row — SEAL and COLOUR fused (2026-08-05) ──────────
+   One rail of pastilles in the die menu instead of two labelled rows:
+   seal-bearing robes (tinted die faces wearing their mark) then naked
+   colour pastilles. No 36px label — the pastilles ARE the caption, and
+   every one is named by its hover title. The old .fh-cd-dmseal/.fh-cd-dmcol
+   rules above stay for the sheet's history but no longer dress this menu. */
+.fh-cd-card .fh-cd-dmrobe{position:relative;width:19px;height:19px;padding:0;border:1px solid transparent;
+  border-radius:4px;background:none;cursor:pointer;display:inline-grid;place-items:center}
+.fh-cd-card .fh-cd-dmrobe>svg{width:15px;height:15px}
+.fh-cd-card .fh-cd-dmrobe.is-on{border-color:var(--cd-gold-hi);box-shadow:0 0 0 1px var(--cd-gold-hi)}
+.fh-cd-card .fh-cd-dmrobe:disabled{opacity:.3;cursor:not-allowed}
+/* The mark rides ON the die face, inked in that material's own num colour
+   (inline), so ♪ stays legible on violet and on crimson alike. */
+.fh-cd-card .fh-cd-dmmark{position:absolute;inset:0;display:grid;place-items:center;
+  font-size:calc(7.4px * var(--cd-fs));font-weight:700;line-height:1;pointer-events:none}
+.fh-cd-card .fh-cd-dmmark svg{width:9px;height:9px;display:block}
+/* "—": the undressed die. A bordered chip like the old seal buttons, so it
+   still reads as a button even with no die face inside. */
+.fh-cd-card .fh-cd-dmrobe.is-none{border-color:var(--cd-line);background:var(--cd-parch-2);
+  color:var(--cd-muted);font-family:inherit;font-size:calc(7.6px * var(--cd-fs));font-weight:700}
+.fh-cd-card .fh-cd-dmrobe.is-none.is-on{border-color:#6d4a10;
+  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;box-shadow:none}

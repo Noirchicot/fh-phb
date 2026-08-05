@@ -290,6 +290,29 @@ t.state.history=[{id:"x",kind:"d20",name:"Arcana",baseBonus:0,d20s:[10],kept:10,
 t.state.diePrompt={stagedId:"s1"};
 t.sealStagedDie("bardic");assert.equal(t.stagedList()[0].label,"Bardic");
 t.sealStagedDie("other-1");assert.equal(t.stagedList()[0].label,"Bonus I","the label follows the seal back, instead of staying Bardic");
+
+/* R6 (2026-08-05): SEAL and COLOUR are ONE row of robes — the seal-bearing
+   robes wear their mark on their tint, the naked pastilles recolour without
+   unsealing, and exactly one pastille is lit: the robe the die wears. */
+t.sealStagedDie("bardic");
+let robeMenu=t.renderEventContent();
+const robeButton=(html,attr)=>html.split("<button").find(part=>part.includes(attr))||"";
+assert.equal((robeMenu.match(/fh-cd-dmrobes/g)||[]).length,1,"one fused robe row, not a Seal row plus a Colour row");
+assert.doesNotMatch(robeMenu,/<span>Seal<\/span>/,"the labelled Seal row is gone");
+assert.doesNotMatch(robeMenu,/<span>Colour<\/span>/,"and the labelled Colour row with it");
+assert.match(robeButton(robeMenu,'data-die-seal="guidance"'),/fh-cd-dmmark/,"a seal robe wears its mark on its pastille");
+assert.match(robeButton(robeMenu,'data-die-seal="bardic"'),/is-on/,"the sealed, uncoloured die lights its seal robe");
+assert.doesNotMatch(robeMenu,/data-die-colour="ivory"/,"no Ivory pastille on a sealable die — the seal robes are that reset");
+assert.match(robeButton(robeMenu,'data-die-seal="bardic"'),/title="Bardic · violet"/,"the hover title names robe and tint");
+t.mutateStagedDie({colour:"crimson"});
+robeMenu=t.renderEventContent();
+assert.equal(t.stagedList()[0].sourceIcon,"bardic","recolouring by hand keeps the seal — Bardic + crimson is a legal robe");
+assert.match(robeButton(robeMenu,'data-die-colour="crimson"'),/is-on/,"the crimson pastille is the one lit");
+assert.match(robeButton(robeMenu,'data-die-colour="crimson"'),/fh-cd-dmmark/,"and it carries the Bardic mark — the seal follows the robe");
+assert.doesNotMatch(robeButton(robeMenu,'data-die-seal="bardic"'),/is-on/,"one lit pastille, not two");
+assert.equal((robeMenu.match(/fh-cd-dmrobe is-on/g)||[]).length,1,"exactly one robe is worn at a time");
+t.sealStagedDie("bardic");
+assert.equal(t.stagedList()[0].colour,"","choosing a seal robe dresses the whole die: the manual colour is cleared");
 t.clearDiceTray(true);
 
 // A Destiny die is picked up like a white one, in all three contexts, and put
