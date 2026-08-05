@@ -243,7 +243,10 @@ assert.equal(t.state.traySelection.length,7,"the free/damage tray accepts pools 
    Seven dice therefore render naked at 22px, not wrapped at 34. */
 assert.match(t.renderStageZone(),/fh-cd-frame is-judgment is-assembly/,"a pending hand renders in the judgment window, dressed as assembly");
 assert.match(t.renderStageZone(),/is-naked/,"past six dice the pool is a bare swarm");
-assert.match(t.renderStageZone(),/width="18"/,"swarm dice are minis (roll size of the 6-12 band)");
+/* REWRITTEN (grille ratifiée Eric, lot BACKLOG-B 2026-08-05): the 6-10
+   band reads 30 down to 20 by the crowd — seven dice sit at 28, not at
+   the old 18-px mini whose numeral was texture. */
+assert.match(t.renderStageZone(),/width="28"/,"seven swarm dice read at 28px (30→20 across the 6-10 band)");
 assert.doesNotMatch(t.renderStageZone(),/width="52"/,"a crowded pool never keeps the full-size die");
 assert.doesNotMatch(t.diceTrayInner(),/is-livehand/,"and the tray shows no live hand while nothing has landed");
 t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);

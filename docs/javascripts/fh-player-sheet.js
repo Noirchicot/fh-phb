@@ -55,11 +55,13 @@
      dice, three more in small ones, the rest as static snapshots. Beyond ten
      the record lives in the Stream, or on AboveVTT's own log. */
   var TRAY_MAX = 10;
-  /* Die sizes per tray band: the newest roll lands large; the three under it
-     stay small but still able to roll (simultaneous landings must be seen);
-     the Static Area renders at the same small size, frozen. */
-  var TRAY_DIE_BIG = 44;
-  var TRAY_DIE_SMALL = 24;
+  /* Die sizes per tray CROWD, not per band (grille ratifiée Eric, lot
+     BACKLOG-B 2026-08-05): a skill hand of 1-5 keeps the wrapper and its
+     label at 38px; 6-10 go naked on one row, 30 down to 20; 11-30 hold
+     rows of exactly ten at 20px — 20 is the FLOOR, because the floor is
+     the numeral: ~11px of digit at 20, ~8px (texture) at the old 16. */
+  var TRAY_DIE_SKILL = 38;
+  var TRAY_DIE_ROW = 20;
   var MAX_EXHAUSTION = 6;
 
   var root;
@@ -2406,10 +2408,14 @@
     if(assembling&&!decision){
       var realDice=dice.filter(function(die){return die.kind!=="modifier";}).length;
       var swarm=realDice>5;
-      var sizePx=swarm?(realDice>12?16:18):Math.min(dieSize(dice.length||1),34);
-      /* While STAGING every die stays visible (you need to see what you are
-         adding) — but 13+ align in the same rows of ten as the tray. */
-      assembly="<span class=\"fh-cd-tray-dice is-build"+(swarm?" is-swarm":"")+(realDice>12?" is-rows":"")+"\""+
+      var rows=realDice>10;
+      /* While STAGING every die stays visible (you need to see what you
+         are adding) — and the crowd reads on the SAME ratified grid as
+         the tray (Eric, 2026-08-05): 1-5 wrapped at 38 with labels, 6-10
+         naked 30→20, 11+ in rows of ten at 20 — never under 20 in a row
+         of ten; the judgment frame is height:auto and simply grows. */
+      var sizePx=rows?TRAY_DIE_ROW:swarm?Math.round(30-2.5*(realDice-6)):TRAY_DIE_SKILL;
+      assembly="<span class=\"fh-cd-tray-dice is-build"+(swarm?" is-swarm":"")+(rows?" is-rows":"")+"\""+
         (swarm?" style=\"--fh-cd-tray-die-size:"+sizePx+"px\"":"")+">"+dice.map(function(die,index){
         return visualDie(die,index,dice.length,false,{sizePx:sizePx,plainLabel:true,naked:swarm});
       }).join("")+"</span>";
@@ -3127,31 +3133,31 @@
   }
   function trayLineHtml(slot,index,flags,quiet){
     var sizeClass=index===0?"is-l1":index<4?"is-mid":"is-static";
-    /* The band pins the CEILING, the crowd still shrinks below it: an 8d6
-       Fireball must fit its line the same way it had to fit the old frame. */
-    /* Past FIVE real dice a hand is a SWARM (Eric, final threshold
-       2026-08-04): bare mini 3D dice, no wrapper, wrapping into rows. The
-       choreography is roll-small-stop-zoom — 6-12 tumble together at 18px
-       and settle to 22; 13+ tumble in WAVES of ten at 16px, row after row,
-       and settle to 20. Up to five, the wrapper stays and the band pins the
-       CEILING while the crowd still shrinks under it. */
     var realDice=slot.dice.filter(function(die){return die.kind!=="modifier";}).length;
-    var big=index===0;
-    /* Lower lines are ALWAYS naked (Eric, 2026-08-04: larger dice beat the
-       seal down there) — a small hand reads at 30px bare where the wrapped
-       24px die plus its token used to sit. The large line keeps the full
-       wrapper up to five dice. */
-    var swarm=big?realDice>5:true;
-    /* The three tiers (Eric, 2026-08-04): up to 12 dice roll at once on ONE
-       line; 13-30 wrap and tumble in rows of exactly ten; past 30 the dice
-       stay home — a big ∞ holds the zone, the total speaks on the right,
-       and the full account lives in the Stream. */
+    /* The ratified grid (Eric, lot BACKLOG-B 2026-08-05) — ONE law for
+       every line, L1 included, because every band is the same 56 now:
+         1-5   a skill hand: the wrapper stays, 38px WITH its label
+               (Bardic, Guidance…) — 38 + one label line ≈ 48, inside
+               the band's content;
+         6-10  one row of naked dice, 30 down to 20 as the crowd grows;
+         11-20 two rows of exactly ten at 20px (2×20 + gap ≈ 49);
+         21-30 three rows of ten at 20px — the one case that deepens
+               the line (is-deep, 72);
+         31+   the ∞ holds the zone, unchanged.
+       20px is the FLOOR of the rows because the floor is the numeral:
+       ~11px of digit at 20 reads, ~8px at the old 16 was texture. Roll
+       size EQUALS settle size for the same reason — a row may never dip
+       under 20 and a single row already sits at its legible size — so
+       roll-small-stop-zoom collapses to a straight tumble; the wave and
+       settle machinery stays (rows still land ten by ten under the
+       ~16-context cap, and the settled die is still reborn a snapshot). */
+    var swarm=realDice>5;
     var infinite=realDice>30;
-    var rows=realDice>12&&!infinite;
-    var waved=big&&rows;
-    var rollPx=big?(waved?16:18):(rows?16:realDice>5?20:30);
-    var settlePx=big?(waved?20:22):(rows?16:realDice>5?20:30);
-    var sizePx=swarm?rollPx:Math.min(dieSize(slot.dice.length||1),TRAY_DIE_BIG);
+    var rows=realDice>10&&!infinite;
+    var waved=rows;
+    var settlePx=rows?TRAY_DIE_ROW:swarm?Math.round(30-2.5*(realDice-6)):TRAY_DIE_SKILL;
+    var rollPx=settlePx;
+    var sizePx=swarm?rollPx:TRAY_DIE_SKILL;
     var snapshot=index>=4;
     var readOnly=slot.kind==="feed";
     var who=slot.kind==="feed"
@@ -3162,8 +3168,17 @@
     var diceHtml=infinite
       ? "<b class=\"fh-cd-tray-inf\" title=\""+realDice+" dice — the full account is in the Stream\">∞</b>"
       : slot.dice.map(function(die,di){
-      return visualDie(die,di,slot.dice.length,!!(flags&&flags[di]),
-        {sizePx:sizePx,snapshot:snapshot&&!die.pending,readOnly:readOnly,plainLabel:true,noLabel:true,naked:swarm,
+      /* noLabel follows the grid, not T9 any more: a 1-5 skill hand keeps
+         its labels (Bardic, Guidance… — ratifié 2026-08-05); a swarm die
+         never had one to lose. And now that lines 2-4 can carry WRAPPED
+         dice (they were always naked before), they take the same
+         zero-context law the naked path already lives by: a die merely
+         re-rendered down there is born a snapshot; only a die landing
+         THIS pass animates as a live host — otherwise four lines of five
+         wrapped dice could claim 20 of the ~16 WebGL contexts. */
+      var landingNow=!!(flags&&flags[di]);
+      return visualDie(die,di,slot.dice.length,landingNow,
+        {sizePx:sizePx,snapshot:(snapshot||(index>0&&!swarm&&!landingNow))&&!die.pending,readOnly:readOnly,plainLabel:true,noLabel:swarm,naked:swarm,
          rollSizePx:rollPx,settleSizePx:settlePx,
          wave:swarm&&waved?Math.floor(di/10):null,waveIndex:swarm?di%10:null});
     }).join("");

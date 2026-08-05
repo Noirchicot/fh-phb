@@ -174,13 +174,19 @@ t.diceTrayInner(); // first pass: these six rolls land (and animate); the bands 
 const banded = t.diceTrayInner();
 const lines = banded.split("fh-cd-trayline").slice(1);
 assert.match(lines[0], /is-l1/, "the newest roll is the large band");
-assert.match(lines[0], /--fh-static-die-size:44px/, "its dice land at 44px");
+/* REWRITTEN (grille ratifiée Eric, lot BACKLOG-B 2026-08-05): the crowd
+   sets the size now, not the band — every line is the same 56. A 1-5
+   skill hand keeps the wrapper at 38px WITH its label (the 44 was the
+   84-era L1 privilege; T9's label ban falls with it), on EVERY line —
+   the old always-naked-30px mid lines went with the band distinction.
+   The zero-context law survives the change of dress: wrapped dice on
+   lines 2-4 are reborn as snapshots at rest, exactly as the naked ones
+   were; only a die landing this pass animates as a live host. */
+assert.match(lines[0], /--fh-static-die-size:38px/, "a skill hand lands at 38px — one grid for every line");
+assert.match(lines[0], /<em>d20<\/em>/, "and keeps its label under the die");
 assert.match(lines[1], /is-mid/, "rolls 2-4 are the small band");
-/* REWRITTEN (Eric, 2026-08-04): lower lines sacrifice the seal for SIZE —
-   always naked, 30px for a small hand. At rest they are snapshots (zero
-   live contexts); a die landing there still animates, as a live host. */
-assert.match(lines[1], /is-naked/, "lower-line dice are bare — the seal is sacrificed for size");
-assert.match(lines[1], /--fh-static-die-size:30px/, "and larger: 30px for a small hand");
+assert.doesNotMatch(lines[1], /is-naked/, "a 1-5 hand keeps its wrapper on the lower lines too");
+assert.match(lines[1], /--fh-static-die-size:38px/, "at the same 38px — the crowd, not the band, sets the size");
 assert.match(lines[1], /data-snapshot="1"/, "at rest they are snapshots — zero live contexts");
 assert.match(lines[4], /is-static/, "roll 5 opens the Static Area");
 assert.match(lines[4], /data-snapshot="1"/, "where dice are frozen snapshots — no live WebGL context");
@@ -203,8 +209,12 @@ t.state.diceSignatures = {};
 const rollingPass = t.diceTrayInner();
 assert.match(rollingPass, /data-wave="0"/, "the first ten dice roll as wave zero");
 assert.match(rollingPass, /data-wave="1"/, "the next ten as wave one — row after row");
-assert.match(rollingPass, /data-settle-size="20"/, "each die knows the size it will zoom to at settle");
-assert.match(rollingPass, /--fh-static-die-size:16px/, "and rolls small");
+assert.match(rollingPass, /data-settle-size="20"/, "each die knows the size it will land at");
+/* REWRITTEN (grille ratifiée Eric, 2026-08-05): a row of ten never dips
+   under 20px — the floor is the NUMERAL (~11px of digit at 20; ~8px of
+   texture at the old 16) — so roll size equals settle size and the
+   roll-small-stop-zoom collapses to a straight tumble. */
+assert.match(rollingPass, /--fh-static-die-size:20px/, "and tumbles at that same 20 — never under 20 in a row of ten");
 const settledPass = t.diceTrayInner();
 assert.doesNotMatch(settledPass, /data-wave=/, "a re-rendered swarm die does not roll again");
 assert.match(settledPass, /data-snapshot="1"/, "it is born as a snapshot — zero live contexts");
@@ -230,14 +240,19 @@ t.state.trayResults = []; t.state.rollSequence = null;
 t.state.history = [trayHand("twelve", 12, 42)];
 t.state.diceSignatures = {};
 const twelvePass = t.diceTrayInner();
-assert.doesNotMatch(twelvePass, /data-wave="1"/, "twelve dice roll at once — never a second wave");
-assert.doesNotMatch(twelvePass, /is-rows/, "and sit on one line");
+/* REWRITTEN (grille ratifiée Eric, 2026-08-05): the one-line ceiling moves
+   from 12 to TEN — 11-20 dice are two rows of exactly ten at 20px (2×20 +
+   gap ≈ 49, inside the 56 band), so twelve dice now wrap and wave. */
+assert.match(twelvePass, /is-rows/, "eleven to twenty wrap into two rows of ten");
+assert.match(twelvePass, /data-wave="1"/, "…and tumble row after row: 10, 2");
+assert.doesNotMatch(twelvePass, /is-deep/, "two rows still live inside the nominal 56");
 t.state.history = [trayHand("twentyfive", 25, 88)];
 t.state.diceSignatures = {};
 const rowsPass = t.diceTrayInner();
-assert.match(rowsPass, /is-rows/, "thirteen to thirty wrap into rows of ten");
+assert.match(rowsPass, /is-rows/, "twenty-five dice wrap into rows of ten");
 assert.match(rowsPass, /data-wave="2"/, "…and tumble row after row: 10, 10, 5");
 assert.match(rowsPass, /--fh-cd-tray-die-size:20px/, "the row rides the line's own settled die size");
+assert.match(rowsPass, /is-deep/, "three rows of ten deepen the line to 72 — the one growth case");
 assert.match(css, /\.fh-cd-tray-dice\.is-rows\{max-width:calc\(10 \* var\(--fh-cd-tray-die-size/,
   "and the stylesheet caps a row at ten of THAT size — never eleven, never nine");
 t.state.history = [trayHand("legion", 31, 108)];

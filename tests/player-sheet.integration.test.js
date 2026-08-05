@@ -373,7 +373,9 @@ assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fi
 /* REWRITTEN (dock-dice-tray, third fitting): past six dice a pending pool
    is a bare SWARM in the judgment window — mini dice, no wrapper, rows. */
 assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/is-naked/,"a crowded pool goes bare");
-assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/width="18"/,"as mini dice (the 6-12 band rolls at 18)");
+/* REWRITTEN (grille ratifiée Eric, lot BACKLOG-B 2026-08-05): the 6-10
+   band scales 30→20 by the crowd — an 8d6 pool stages at 25px. */
+assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/width="25"/,"as legible minis (8 dice → 25px on the 6-10 scale)");
 assert.ok(root.querySelector(".fh-cd-frame.is-assembly .fh-cd-tray-dice.is-swarm"),"in a wrapping swarm row");
 /* REWRITTEN (round 7c): the console no longer carries the naming field -- it
    is headed for the tray's legend. The label itself still names the roll and
