@@ -413,7 +413,10 @@ let identityMenu = t.renderDockHeader(headerCh);
 assert.match(identityMenu, /data-feed-refresh/, "the Identity ⋮ holds the one manual refresh (RECENT is never polled)");
 assert.match(identityMenu, /data-table-url-set/, "and the DM's URL… escape hatch");
 assert.match(identityMenu, /data-stream-toggle/, "beside the Stream toggle it always carried");
-assert.match(identityMenu, /data-clear-tray/, "and Clear tray's provisional seat (phase 3 re-seats it)");
+/* REWRITTEN (phase 3, D1, 2026-08-05): the provisional Clear tray entry is
+   RETIRED — its real seats landed (CLEAR TRAY in the ⊕ popover, a discreet
+   ✕ clear in the builder overlay), so the Identity ⋮ carries it no more. */
+assert.doesNotMatch(identityMenu, /data-clear-tray/, "Clear tray left the Identity ⋮ for its real seats (⊕ popover + builder corner)");
 t.state.feed.tableState = "live";
 identityMenu = t.renderDockHeader(headerCh);
 assert.match(t.feedChipHtml(), /every roll at the table, live/, "LIVE says what it is");

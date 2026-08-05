@@ -1997,3 +1997,42 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-subwho{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fh-cd-subcode{flex:none;white-space:pre}
 .fh-cd-id .fh-cd-traystate{flex:none}
+
+/* ── Phase 3 (architecture lot, 2026-08-05) — the group is INVOKED, the ⊕
+   is born on the band ─────────────────────────────────────────────────
+   The console+judgment group only renders while a jet is being made,
+   questioned or read (fh-player-sheet.js: overlayVisible) — no CSS change
+   to its anchor: absence is a JS fact, the .fh-cd-floatbottom dress and
+   its band-clearing anchor are untouched. What CSS gains here: the ⊕ on
+   the band's right edge, its parchment popover posed on the tray's top,
+   the popover's CLEAR TRAY (principal seat), the builder's discreet ✕
+   clear, and ROLL riding the right of the console's command row now that
+   the white picker has left it. APPENDED only. */
+.fh-cd-freewrap{position:relative;flex:none;display:flex;align-items:center}
+/* The ⊕: discreet, dashed gold — the maquette's quiet door on the band. */
+.fh-cd-freebtn{flex:none;width:26px;height:26px;padding:0;border:1px dashed rgba(201,164,90,.55);
+  border-radius:6px;background:none;color:#eac878;font-size:15px;line-height:1;cursor:pointer}
+.fh-cd-freebtn:hover,.fh-cd-freebtn.is-active{border-color:#ffd98a;color:#ffd98a;border-style:solid}
+/* The popover: die-menu parchment (not .fh-cd-card — its generic button
+   dress would restyle the picker dice), anchored under the band's right
+   edge, over the tray's first line. z 26: above the band's 25 and the
+   group's 24 — it is the topmost transient. */
+.fh-cd-freepop{position:absolute;right:-4px;top:calc(100% + 10px);z-index:26;
+  display:flex;flex-direction:column;gap:6px;padding:7px 8px;width:max-content;
+  background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:7px;
+  box-shadow:0 10px 24px rgba(20,12,4,.45)}
+.fh-cd-freepop .fh-cd-whiterow{margin-left:0}
+/* CLEAR TRAY's principal seat: a quiet text button under the picker. */
+.fh-cd-freeclear{align-self:flex-end;height:18px;padding:0 8px;border:1px solid var(--cd-line);
+  border-radius:4px;background:var(--cd-parch-2);color:var(--cd-muted);cursor:pointer;
+  font-family:inherit;font-size:calc(7px * var(--cd-fs));letter-spacing:.1em;text-transform:uppercase}
+.fh-cd-freeclear:hover:not(:disabled){color:var(--cd-ink);border-color:var(--cd-gold-hi)}
+.fh-cd-freeclear:disabled{opacity:.5;cursor:not-allowed}
+/* The builder's discreet clear: end of the badge strip, small print. */
+.fh-cd-clearmini{margin-left:auto;flex:none;height:16px;padding:0 6px;border:0;border-radius:4px;
+  background:none;color:var(--cd-faint);cursor:pointer;font-family:inherit;
+  font-size:calc(6.8px * var(--cd-fs));letter-spacing:.08em;text-transform:uppercase}
+.fh-cd-clearmini:hover:not(:disabled){color:var(--cd-ink);background:var(--cd-parch-2)}
+.fh-cd-clearmini:disabled{opacity:.45;cursor:not-allowed}
+/* ROLL keeps the row's right flank, where the whiterow used to sit. */
+.fh-cd-consoleroll{margin-left:auto;flex:none;display:flex;align-items:center}

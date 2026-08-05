@@ -96,6 +96,14 @@
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
     dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false,
+    /* Phase 3 (architecture lot): the console+judgment group is an INVOKED
+       overlay now, not furniture. builderOpen is the player-facing half of
+       its existence (a takeover, an armed fate or rolling dice can hold it
+       up on their own — see overlayHeld). freePop is the ⊕ popover on the
+       band, where the white picker lives since it left the console. None
+       of this is persisted: a reload re-summons the overlay from the roll
+       state itself. */
+    freePop:false, builderOpen:false, builderInvokedAt:0, builderRetireAt:0, builderRetireTimer:null,
     // Stream is `optional`, off by default (UI-TERMINOLOGY.md zone 10) -- the
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
@@ -1256,13 +1264,64 @@
   /* diceSignatures is deliberately NOT wiped here any more: the registre
      lines under the hand keep their entry-scoped keys, and wiping the map
      made every one of them re-roll visually the moment the hand was cleared. */
-  function clearDiceTray(closeConsole){state.traySurfaceDie=null;state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  function clearDiceTray(closeConsole){state.builderOpen=false;state.builderRetireAt=0;state.traySurfaceDie=null;state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
      the four that genuinely ask the player a question. */
   var BLOCKING_PHASES={nat1:1,arcane1:1,"roll-choice":1,"destiny-choice":1,"adjustment-choice":1};
   function rollTransactionActive(){var sequence=state.rollSequence;return !!(sequence&&BLOCKING_PHASES[sequence.phase]);}
+  /* ── Phase 3: the summoned group really is SUMMONED now ──────────
+     At rest the console+judgment overlay is ABSENT and the panel runs all
+     the way down to the band (constat C2: its permanence was the defect,
+     never its function). It exists while a jet is being made or read:
+       - INVOKED (invokeBuilder) by every gesture that starts one — a
+         skill line, a gear, a die added from the ⊕ popover, a gold die,
+         ROLL itself, a reopened stream line, an armed pending fate;
+       - HELD (overlayHeld) by anything that must never vanish under a
+         stray click: a blocking question (nat1/arcane1/choices), an
+         armed Chaos/Overreach, dice still rolling, or any open card
+         (die menu, badge card, arcana draw) — the cards render inside
+         the group, so a question always summons its own stage;
+       - RETIRED by the rule documented on VERDICT_MS below, by an
+         outside click or Escape when nothing holds it, and by CLEAR. */
+  /* The retreat rule (phase 3, chosen and documented): once the dice have
+     settled and every question is answered, the verdict stays readable for
+     six seconds, then the overlay retires on its own; a click anywhere
+     outside the dice surfaces (overlay, ⊕ popover, band, tray) or Escape
+     retires it sooner. Nothing retires it mid-assembly, mid-question, or
+     while dice are in the air. */
+  var VERDICT_MS=6000;
+  function overlayHeld(){
+    return rollTransactionActive()||trayRevealPending()||!!state.pendingArmed||!!state.trayPrompt||!!state.diePrompt;
+  }
+  /* A hand still being built (pending dice, staged additions, a waiting
+     Destiny die) must never time out from under the player. */
+  function overlayAssembling(){
+    if(state.traySelection.length||state.destinyStaged||stagedList().length)return true;
+    var dice=state.trayResults||[];
+    return !!(dice.length&&!dice.some(function(die){return die.kind!=="modifier"&&die.result!=null;}));
+  }
+  function overlayVisible(){return !!state.builderOpen||overlayHeld();}
+  /* The timestamp lets the invoking click survive the document-level
+     outside-click pass that runs right after it (render replaces the DOM,
+     so the old target can no longer be matched against the new overlay). */
+  function invokeBuilder(){state.builderOpen=true;state.builderRetireAt=0;state.builderInvokedAt=Date.now();}
+  function retireBuilder(){state.builderOpen=false;state.builderRetireAt=0;clearTimeout(state.builderRetireTimer);}
+  /* Re-armed by every render, but the DEADLINE is set once per settle —
+     a feed poll's re-render two seconds in must not push it back. */
+  function scheduleOverlayRetreat(){
+    clearTimeout(state.builderRetireTimer);
+    if(!state.builderOpen)return;
+    if(overlayHeld()||overlayAssembling()){state.builderRetireAt=0;return;}
+    if(!state.builderRetireAt)state.builderRetireAt=Date.now()+VERDICT_MS;
+    state.builderRetireTimer=window.setTimeout(function(){
+      state.builderRetireAt=0;
+      if(state.builderOpen&&!overlayHeld()&&!overlayAssembling()){state.builderOpen=false;if(root)render();}
+    },Math.max(0,state.builderRetireAt-Date.now()));
+    // In the node test harness the timer must not keep the process alive.
+    if(state.builderRetireTimer&&state.builderRetireTimer.unref)state.builderRetireTimer.unref();
+  }
   /* Everything that can still change an open roll calls for three seconds,
      then goes quiet — a nudge, not a permanent flicker. */
   var CALL_MS=3000;
@@ -1357,6 +1416,7 @@
   }
   function stageBonusDie(sides,label,sourceIcon){
     var entry=openEntry();if(!rollOpen()||!entry)return;
+    invokeBuilder();
     sides=Number(sides);if(ROLL_DIE_SIZES.indexOf(sides)<0||sides===20||sides===100){state.message="The d20 is the base die; d% stays a free roll.";state.messageKind="warn";renderMessage();return;}
     if(entryBonusDice(entry).length+stagedBonusCount()>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
     var used=entryBonusDice(entry).concat(stagedList()).map(function(die){var match=String(die.sourceIcon||"").match(/^other-([123])$/);return match?Number(match[1]):0;});
@@ -1390,6 +1450,8 @@
   function stageDestinyFromPool(dieId){
     var die=state.destiny.dice.find(function(item){return item.id===dieId&&item.available;});
     if(!die){state.message="That Destiny die is no longer available.";state.messageKind="warn";renderMessage();return;}
+    // A gold die picked up is a jet starting too — the builder is summoned.
+    invokeBuilder();
     if(rollOpen()){
       var entry=openEntry();
       if(!entry||entry.destiny||stagedList().some(function(item){return item.kind==="destiny";})){
@@ -1471,7 +1533,7 @@
     openRollState(entry);
   }
   function quickRoll(name, ability, bonus, note) {
-    clearDiceTray(false);state.rollConfig=null;
+    clearDiceTray(false);state.rollConfig=null;invokeBuilder();
     var natural = rollDie(20);
     var entry = {id:uuid(),kind:"d20",name:name,ability:ability,baseBonus:Number(bonus)||0,exhaustion:exhaustionLevel(),d20Mode:"flat",d20s:[natural],d20Roll:{sides:20,mode:"flat",rolls:[natural],result:natural,chosenIndex:0,forced:false},d20Choice:0,d20Forced:false,kept:natural,natural:natural,plusTwo:false,custom:0,bonusDice:[],guidance:null,bardic:null,destiny:null,dc:"",note:note||"",createdAt:new Date().toISOString(),adjusted:false};
     state.rollSequence={phase:"remaining",entryId:entry.id};finishRolledEntry(entry,[]);
@@ -1675,6 +1737,8 @@
   function armPendingFate(id){
     var item=pendingFate().find(function(entry){return entry.id===id;});if(!item||!pendingResolvable(item))return;
     if(rollTransactionActive()){warnRollLocked();return;}
+    // An armed fate is a question of the jet: it always summons the builder.
+    invokeBuilder();
     state.trayPrompt=null;state.rollConfig=null;state.traySelection=[];
     if(item.kind==="chaos"){
       state.pendingArmed={id:item.id,kind:"chaos",sides:[6,6],ability:item.ability||""};
@@ -1892,6 +1956,8 @@
   function removeEditBonus(name,id){var d=captureEditDraft();d.specialBonuses[name]=(d.specialBonuses[name]||[]).filter(function(item){return item.id!==id;});if(!d.specialBonuses[name].length)delete d.specialBonuses[name];render();}
   function addTrayDie(sides){
     sides=Number(sides);if(ROLL_DIE_SIZES.indexOf(sides)<0)return;
+    // A die added is a jet starting: it summons the builder (phase 3).
+    invokeBuilder();
     /* With a console open the tray feeds the prepared roll instead of a free pool. */
     var cfg=state.rollConfig;
     if(cfg&&!cfg.editingId){
@@ -2425,10 +2491,14 @@
        keeps the record. A menu the player opened still stays under the
        window so it never pushes anything off screen. */
     return "<section class=\"fh-cd-stage\" data-zone=\"roller\">"+
-      /* CLEAR TRAY moved to the console (Eric, 2026-08-04, provisional seat
-         — its final place is an open discussion). Above the judgment box
-         there is only the badge strip: zero text. */
-      "<div class=\"fh-cd-temps\">"+badges+"</div>"+
+      /* Above the judgment box there is only the badge strip — plus, since
+         phase 3, the DISCREET clear in the corner (décision Eric: « un
+         clear tray plus discret peut aussi être présent dans le roll
+         builder ») — small, at the end of the strip, never a big button.
+         CLEAR TRAY's principal seat is the ⊕ popover. */
+      "<div class=\"fh-cd-temps\">"+badges+
+      "<button type=\"button\" class=\"fh-cd-clearmini\" data-clear-tray"+(busy?" disabled":"")+
+      " title=\""+(busy?"Answer the question above the dice first":"Clear tray — empty the hand")+"\" aria-label=\"Clear tray\">✕ clear</button></div>"+
       renderJudgmentFrame()+
       (menu?"<div class=\"fh-cd-popups\">"+menu+"</div>":"")+
       "</section>";
@@ -2594,6 +2664,13 @@
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
       esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
+      /* Phase 3: the ⊕ — the free roll's door, far right where the maquette
+         puts it. A discreet dashed-gold button; its popover carries the
+         white picker that left the console, plus ROLL and CLEAR TRAY. */
+      "<span class=\"fh-cd-freewrap\"><button type=\"button\" class=\"fh-cd-freebtn"+(state.freePop?" is-active":"")+"\" data-free-pop"+
+      " aria-haspopup=\"true\" aria-expanded=\""+(state.freePop?"true":"false")+"\""+
+      " title=\"Free roll — open the dice picker\" aria-label=\"Open the free-roll dice picker\">⊕</button>"+
+      (state.freePop?renderFreePop():"")+"</span>"+
       "</section>";
   }
   /* ── Stream: one finished roll per line, shaped for a later AboveVTT export ── */
@@ -3566,6 +3643,9 @@
        selection segment -- left OR right click lights one on, which turns any
        other of the three off (all off = flat). See toggleRollMode(). The ⋮
        used to lead the white dice row; it sits here now, right after +2. */
+    /* Phase 3: the white picker LEFT the console for the ⊕ popover on the
+       band. What remains is the jet's command row — D/A/+2, the ⋮ (MOD/DC)
+       and the one big ROLL, spread in the space the picker vacated. */
     var row1="";
     if(cfg){
       row1="<div class=\"fh-cd-crow fh-cd-consolerow\">"+
@@ -3575,9 +3655,10 @@
         "<button type=\"button\" id=\"fhPsPlusTwo\" class=\"fh-cd-toggle is-plus2"+(cfg.plusTwo?" is-on":"")+"\""+(locked?" disabled":"")+" title=\"Fixed Fate's Hand +2 · left or right click to toggle\" aria-label=\"Fate's Hand plus two\" aria-pressed=\""+(cfg.plusTwo?"true":"false")+"\">+2</button>"+
         "</span>"+
         renderConsoleMenu(cfg)+
-        renderWhiteDice(cfg)+"</div>";
+        "<span class=\"fh-cd-consoleroll\">"+rollButtonHtml()+"</span></div>";
     }else{
-      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\"><span class=\"fh-cd-leadcol\"></span>"+renderConsoleMenu(null)+renderWhiteDice(null)+"</div>";
+      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\"><span class=\"fh-cd-leadcol\"></span>"+renderConsoleMenu(null)+
+        "<span class=\"fh-cd-consoleroll\">"+rollButtonHtml()+"</span></div>";
     }
     // The FINE TUNE drawer is gone: a Portent belongs to one die, so it lives in
     // that die's own right-click menu rather than in a console-wide panel.
@@ -3612,12 +3693,17 @@
      die IS the button, same artwork-carries-the-word design it always had,
      just no longer needing to break out of .fh-cd-acts-bar to reach here since
      it now lives in the row it used to only visually overlap. */
+  /* The one ROLL, extracted (phase 3) so the console's command row and the
+     ⊕ popover can both carry it without either owning the markup. */
+  function rollButtonHtml(){
+    var busy=rollTransactionActive(),armed=state.pendingArmed;
+    return "<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">"+
+      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\"></button>";
+  }
   function renderWhiteDice(cfg){
     var checkLoaded=!!cfg,counts=trayDieCounts(),calling=callingNow();
     var full=checkLoaded&&trayBonusCount()>=MAX_BONUS_DICE;
-    var busy=rollTransactionActive(),armed=state.pendingArmed;
-    var rollBtn="<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">"+
-      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\"></button>";
+    var rollBtn=rollButtonHtml();
     return "<div class=\"fh-cd-whiterow\">"+rollBtn+ROLL_DIE_SIZES.map(function(sides){
       var count=counts[sides]||0;
       var disabled=!!state.pendingArmed||(checkLoaded&&(sides===20||sides===100))||(full&&!count)||(!checkLoaded&&state.traySelection.length>=MAX_FREE_DICE&&!count);
@@ -3625,6 +3711,18 @@
         " title=\"Left click adds a d"+sides+" · right click or long press takes one back\" aria-label=\"Add a d"+sides+"; right-click to remove one\">"+
         pickerFace(sides,PICKER_DIE_PX,"white","d"+(sides===100?"%":sides))+(count?"<span class=\"fh-cd-mult\">×"+count+"</span>":"")+"</button>";
     }).join("")+"</div>";
+  }
+  /* ── The ⊕ popover (phase 3) ─────────────────────────────────────
+     The free-roll card the band's ⊕ opens, posed on the tray's top edge in
+     the die-menu's parchment dress: the white picker row (behaviours moved
+     verbatim — add a free die, or stage a bonus while a check is open),
+     ROLL, and CLEAR TRAY's principal seat. Closed by ROLL, an outside
+     click (OUTSIDE_CLICK_POPUPS) or re-clicking the ⊕. */
+  function renderFreePop(){
+    var busy=rollTransactionActive();
+    return "<div class=\"fh-cd-freepop\">"+renderWhiteDice(state.rollConfig)+
+      "<button type=\"button\" class=\"fh-cd-freeclear\" data-clear-tray"+(busy?" disabled":"")+
+      " title=\""+(busy?"Answer the question above the dice first":"Empty the hand — the registre keeps the rolls")+"\">CLEAR TRAY</button></div>";
   }
   /* Every die still in the hand answers to a right click, wherever it lives:
      the prepared d20, a reserved Destiny die, a bonus die, a staged die, or a
@@ -3896,17 +3994,13 @@
       ? "<button type=\"button\" data-table-url-set title=\"Paste the DM's table URL\">"+(state.feed.manualUrl?"Table URL set":"Table URL…")+"<small>from the DM</small></button>":"";
     var feedRefresh=feedActive()&&ts==="recent"&&!offline
       ? "<button type=\"button\" data-feed-refresh title=\"Check the cloud log now\">Refresh table<small>cloud log</small></button>":"";
-    /* PROVISOIRE (phase 2 → 3): Clear tray sits here only until its real
-       seats land — the invoked console and a discreet clear at the builder
-       (phase 3 retires this entry if redundant). Same rollTransactionActive
-       guard the cap's × carried. */
-    var trayBusy=rollTransactionActive();
-    var clearEntry="<button type=\"button\" data-clear-tray"+(trayBusy?" disabled":"")+
-      " title=\""+(trayBusy?"Answer the question above the dice first":"Clear tray")+"\">Clear tray<small>the rolls</small></button>";
+    /* Phase 2's provisional Clear tray entry is RETIRED (phase 3): its real
+       seats landed — CLEAR TRAY in the ⊕ popover, a discreet ✕ clear in the
+       builder overlay. The Identity ⋮ goes back to being the table's menu. */
     var menu=state.menuOpen?"<div class=\"fh-cd-menu\">"+
       "<div class=\"fh-cd-menurow\"><span>Zoom</span>"+renderZoomControl()+"</div>"+
       "<button type=\"button\" data-stream-toggle>"+(state.streamOpen?"Close Stream":"Open Stream")+"<small>consultable history</small></button>"+
-      feedManual+feedRefresh+clearEntry+
+      feedManual+feedRefresh+
       "<div class=\"fh-cd-msep\"></div>"+
       "<button type=\"button\" id=\"fhPsSync\">"+(linked?"Sync D&amp;D Beyond":"Link D&amp;D Beyond")+"<small>pull</small></button>"+
       (linked?"<button type=\"button\" id=\"fhPsRelink\">Replace the DDB link</button>":"")+
@@ -4041,23 +4135,23 @@
          not normally carry it -- otherwise switching tabs mid-transaction
          strands the dice where nobody can finish them. */
       var roller=!!(panel&&panel.showsRoller)||rollTransactionActive()||rollOpen();
-      /* Console and the roller (now just the Roll Builder's remnant) are
-         `summoned` (UI-TERMINOLOGY.md zones 7-8): floated in .fh-cd-floatbottom,
-         anchored just ABOVE the band -- never in the document flow that
-         pushes the persistent stack down, and never covering the band or the
-         tray where the dice land. Dice Pool (renderDestiny) is the 44px BAND
-         since phase 1 of the architecture lot: anchored between the panel's
-         flow and the tray (bottom:var(--cd-tray-h)), so the counted things
-         stay visible and clickable even while the summoned group is up. It
-         still shares the `roller` gate (a pre-existing gap, not this pass's
-         job to close). The Dice Tray is `persistent` (zone 9): it renders on
-         every panel, whatever the belt shows -- the table's rolls land here
-         even while you are reading your Notes. */
+      /* Phase 3: the summoned group (console + judgment, zones 7-8) is a
+         real overlay now — ABSENT at rest, so the panel runs down to the
+         band; it exists only while overlayVisible() says a jet is being
+         made, questioned or read (invoked/held/retired — see the block by
+         rollTransactionActive). It still floats in .fh-cd-floatbottom,
+         anchored just ABOVE the band, never covering the band or the tray.
+         Dice Pool (renderDestiny) is the persistent 44px BAND from phase 1
+         — it now also renders whenever the overlay is up, so the group's
+         anchor calc never runs without a band under it, on any panel. The
+         Dice Tray is `persistent` (zone 9): it renders on every panel --
+         the table's rolls land here even while you are reading Notes. */
+      var overlay=overlayVisible();
       inner=renderDockHeader(ch)+(state.chromeOpen?renderAccessZone():"")+
         renderStats(ch)+renderBelt()+renderPanelBody()+
-        (roller?renderDestiny(ch):"")+
+        (roller||overlay?renderDestiny(ch):"")+
         renderDiceTray()+
-        (roller?"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
+        (overlay?"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
         (state.streamOpen?renderStream():"")+renderPops(ch);
     }
     /* The registre must survive the render: every rebuild used to snap its
@@ -4098,6 +4192,8 @@
     if(window.FHStaticDice&&window.FHStaticDice.releasePickerContext)window.FHStaticDice.releasePickerContext();
     if(state.scoreEditing){var scoreInput=root.querySelector(".fh-cd-scorein");if(scoreInput&&scoreInput.focus){scoreInput.focus();if(scoreInput.select)scoreInput.select();}}
     if((state.popOpen==="inventory"||state.popOpen==="forge")&&state.inventory===null)loadInventory();
+    // Phase 3: every render re-arms (or cancels) the overlay's own retreat.
+    scheduleOverlayRetreat();
   }
   function syncPresetFlags(cfg){var guidance=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="guidance";}),bardic=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="bardic";});cfg.guidance=!!guidance;cfg.bardic=!!bardic;if(bardic){cfg.bardicSides=bardic.sides;state.prefs.bardicSides=bardic.sides;}}
   /* Only two free-text fields are left in the console; everything else is a
@@ -4109,7 +4205,7 @@
     if(dc)cfg.dc=dc.value;
   }
   function removeGenericBonusDie(index){var cfg=state.rollConfig;if(!cfg)return;syncConsoleInputs();index=Number(index);if(!cfg.bonusDice[index]||cfg.bonusDice[index].locked)return;cfg.bonusDice.splice(index,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
-  function openConfig(name,ability,bonus,note,dc){clearDiceTray(false);state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});prepareTrayForConfig(state.rollConfig);state.message="";state.messageKind="";render();window.setTimeout(function(){var roll=root&&root.querySelector("[data-roll-now]");if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
+  function openConfig(name,ability,bonus,note,dc){clearDiceTray(false);state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});prepareTrayForConfig(state.rollConfig);state.message="";state.messageKind="";invokeBuilder();render();window.setTimeout(function(){var roll=root&&root.querySelector("[data-roll-now]");if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
   function loadInventory(){if(!state.code)return;state.inventory={loading:true};api("/inv/"+encodeURIComponent(state.code)).then(function(data){state.inventory=data;render();}).catch(function(error){state.inventory={error:"Could not load inventory: "+error.message};render();});}
   function loadParty(){var input=root.querySelector("#fhPsCode"),code=(input?input.value:state.code).trim().toUpperCase();state.code=code;state.party=[];state.record=null;state.character=null;state.pseudo="";state.inventory=null;state.loading=!!code;stopFeed();render();if(!code)return;try{localStorage.setItem("fh-my-campcode",code);}catch(e){}api("/party/"+encodeURIComponent(code)).then(function(data){state.party=(data.builds||[]).map(function(entry){return entry.pseudo;}).sort();var last=state.requestedPseudo||"";if(!last)try{last=localStorage.getItem("fh-my-pseudo")||"";}catch(e){}state.requestedPseudo="";state.loading=false;if(state.party.indexOf(last)>=0){state.pseudo=last;loadBuild();}else render();}).catch(function(error){state.requestedPseudo="";state.loading=false;state.message=error.message||"Could not reach the campaign server.";state.messageKind="danger";render();});}
   function loadBuild(){var who=state.pseudo;if(!state.code||!who)return;state.loading=true;render();try{localStorage.setItem("fh-my-pseudo",who);}catch(e){}Promise.all([api("/party/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)),api("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)).catch(function(){return {profile:emptyProfile()};})]).then(function(results){state.record=results[0];state.profile=results[1].profile||emptyProfile();state.profileRevision=revisionOf(results[1]);state.character=effectiveCharacter();loadPlayState(state.character);state.loading=false;state.inventory=null;state.message="";rememberRoute();render();startFeed();}).catch(function(error){state.loading=false;state.record=null;state.character=null;stopFeed();state.message=error.message||"Could not load this character.";state.messageKind="danger";render();});}
@@ -4180,9 +4276,12 @@
     /* The one ROLL: it arms nothing and asks nothing, it rolls whatever the
        tray is currently holding. */
     if(button.dataset.rollNow!==undefined){
-      if(state.pendingArmed){rollPendingFate();return;}
-      if(rollOpen()){rollStagedDice();return;}
+      /* ROLL closes the ⊕ popover (its job is done) and summons the builder
+         so the flight and the verdict have their stage. */
+      if(state.pendingArmed){state.freePop=false;invokeBuilder();rollPendingFate();return;}
+      if(rollOpen()){state.freePop=false;invokeBuilder();rollStagedDice();return;}
       if(rollTransactionActive()){warnRollLocked();return;}
+      state.freePop=false;invokeBuilder();
       if(state.rollConfig)runConfiguredRoll();else rollTrayDice();
       return;
     }
@@ -4249,6 +4348,10 @@
     if(button.dataset.dockOpen!==undefined){setDockOpen(true);return;}
     if(button.dataset.dockClose!==undefined){setDockOpen(false);return;}
     if(button.dataset.menuToggle!==undefined){state.menuOpen=!state.menuOpen;render();return;}
+    /* The ⊕ on the band: opens/closes the free-roll popover. Reachable in
+       every phase like the rest of the dock chrome — the picker inside it
+       carries its own guards. */
+    if(button.dataset.freePop!==undefined){state.freePop=!state.freePop;render();return;}
     if(button.dataset.openPop!==undefined){state.popOpen=button.dataset.openPop;state.activeContext=button.dataset.openPop;state.menuOpen=false;render();return;}
     if(button.dataset.closePop!==undefined){if(state.editDraft)state.editDraft=null;state.popOpen="";render();return;}
     if(button.dataset.chromeToggle!==undefined){state.chromeOpen=!state.chromeOpen;state.menuOpen=false;render();return;}
@@ -4276,7 +4379,7 @@
     if(button.dataset.dieMode){var cfg=state.rollConfig,scope=button.dataset.dieScope,index=Number(button.dataset.dieIndex),next=button.dataset.dieMode;if(!cfg)return;if(scope==="destiny")cfg.destinyMode=cfg.destinyMode===next?"flat":next;else if(scope==="bonus"&&cfg.bonusDice[index]&&!cfg.bonusDice[index].locked)cfg.bonusDice[index].advantageMode=cfg.bonusDice[index].advantageMode===next?"flat":next;prepareTrayForConfig(cfg);render();return;}
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;prepareTrayForConfig(state.rollConfig);render();return;}
     if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}
-    if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
+    if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);invokeBuilder();render();}return;}
     if(button.dataset.destinyPoolmenu!==undefined){state.destinyPoolMenu=!state.destinyPoolMenu;render();return;}
     // Opening the console's ⋮ syncs first: its own inputs are what render()
     // is about to rebuild, so an unsynced value would be thrown away.
@@ -4435,7 +4538,26 @@
     {isOpen:function(){return !!(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")));},
      close:function(){state.trayPrompt=null;},
      box:".fh-cd-card",
-     toggle:"[data-pending-id],[data-pending-open],[data-pending-add]"}
+     toggle:"[data-pending-id],[data-pending-open],[data-pending-add]"},
+    /* Phase 3 — the ⊕ popover. Clicks in the overlay or on the band are
+       dice-work (staging a bonus mid-check, spending a gold die), not
+       "elsewhere": the popover stays for them. */
+    {isOpen:function(){return !!state.freePop;},close:function(){state.freePop=false;},
+     box:".fh-cd-freepop",
+     toggle:"[data-free-pop],.fh-cd-floatbottom,.fh-cd-band"},
+    /* Phase 3 — the builder overlay itself, LAST so a click that closes a
+       card above (dropping the hold) can retire it in the same pass. Only
+       the player-invoked half closes this way; a blocking question, an
+       armed fate or dice in the air are overlayHeld and never yield to a
+       stray click. The invokedAt window lets the very click that summoned
+       the overlay survive this handler (render has already replaced the
+       DOM, so the old target cannot be matched against the new overlay).
+       The dice surfaces — popover, band, tray, its chevrons — are
+       dice-work, not "elsewhere". */
+    {isOpen:function(){return !!state.builderOpen&&!overlayHeld()&&Date.now()-(state.builderInvokedAt||0)>300;},
+     close:function(){if(state.rollConfig)syncConsoleInputs();retireBuilder();},
+     box:".fh-cd-floatbottom",
+     toggle:".fh-cd-freepop,.fh-cd-band,.fh-cd-dicetray,[data-tray-scroll],[data-free-pop]"}
   ];
   function onOutsideClick(event){
     if(!root)return;
@@ -4459,7 +4581,26 @@
     if((event.metaKey||event.ctrlKey)&&/^[=+_-]$/.test(event.key)){
       event.preventDefault();stepZoom(event.key==="-"||event.key==="_"?-1:1);return;
     }
-    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
+    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();
+    /* Phase 3 — Escape RETIRES, it no longer clears: first the ⊕ popover,
+       then the overlay (with any open menu card) — but never a blocking
+       question, and never mid-transaction. With nothing left to retire it
+       keeps its old habit and clears the tray. C stays the clear key. */
+    if(key==="escape"){
+      event.preventDefault();
+      if(state.freePop){state.freePop=false;render();return;}
+      if(rollTransactionActive()){warnRollLocked();return;}
+      if(state.builderOpen||state.diePrompt||(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")))){
+        if(state.rollConfig)syncConsoleInputs();
+        state.diePrompt=null;
+        if(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")))state.trayPrompt=null;
+        retireBuilder();render();return;
+      }
+      // A roll's own card (arcana draw, chaos notice…) never yields to Escape.
+      if(state.trayPrompt)return;
+      clearDiceTray(true);return;
+    }
+    if(key==="c"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
 
   function setDockOpen(open){
     state.dockOpen=!!open;state.menuOpen=false;

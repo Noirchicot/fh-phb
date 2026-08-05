@@ -12,7 +12,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
-    renderDestiny, renderStageZone, renderConsole, renderEventContent, renderJudgmentFrame, resolveNatOne, renderStream, renderStreamEntry, rollExport,
+    renderDestiny, renderStageZone, renderConsole, renderFreePop, renderEventContent, renderJudgmentFrame, resolveNatOne, renderStream, renderStreamEntry, rollExport,
     outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate,
     diceTrayInner, renderDiceTray, trayLines, trayDiceFromEntry, rollExportDice, feedLineDice,
     renderDockHeader, feedChipHtml
@@ -147,19 +147,30 @@ assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted
 assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray[" ]/, "the roller no longer carries a bar of die buttons");
 assert.doesNotMatch(t.renderStageZone(), /data-roll-now/, "ROLL no longer lives in the roller");
 assert.match(t.renderConsole(), /data-roll-now/, "it carries the one permanent ROLL, in the white dice row instead");
-/* REWRITTEN (phase 2, mort du cap, Eric R5 2026-08-05): the tray cap died,
-   and with it the ×. CLEAR TRAY's provisional seat is an entry in the
-   Identity ⋮ until phase 3 lands its real homes (invoked console + a
-   discreet clear at the builder). The tray itself carries no chrome. */
-assert.doesNotMatch(t.renderStageZone(), /data-clear-tray/, "CLEAR TRAY left the roller");
-assert.doesNotMatch(t.renderConsole(), /data-clear-tray/, "and left the console too");
+/* REWRITTEN (phase 3, D1, 2026-08-05): CLEAR TRAY's real seats landed —
+   its principal home is the ⊕ popover on the band, and a DISCREET ✕ clear
+   rides the builder's badge strip (décision Eric: « un clear tray plus
+   discret peut aussi être présent dans le roll builder »). The provisional
+   Identity-⋮ entry of phase 2 is retired, and the console still carries no
+   clear of its own. */
+assert.match(t.renderStageZone(), /fh-cd-clearmini[^>]*data-clear-tray/, "the builder carries the discreet corner clear");
+assert.doesNotMatch(t.renderStageZone(), /fh-cd-freeclear/, "…never the big CLEAR TRAY — that seat is the ⊕ popover's");
+assert.doesNotMatch(t.renderConsole(), /data-clear-tray/, "the console row stays clear-free");
 assert.doesNotMatch(t.renderConsole(), /ROLL CONSOLE/, "whose cap row is gone with its caption");
 assert.doesNotMatch(t.diceTrayInner(), /data-clear-tray/, "the dead cap took the × with it");
 t.state.menuOpen=true;
-assert.match(t.renderDockHeader({name:"Awki",species:"Elf",classes:[{name:"Wizard",level:5}]}),
-  /data-clear-tray/, "Clear tray waits in the Identity ⋮ (provisoire, phase 3 will seat it)");
+assert.doesNotMatch(t.renderDockHeader({name:"Awki",species:"Elf",classes:[{name:"Wizard",level:5}]}),
+  /data-clear-tray/, "phase 2's provisional Identity-⋮ seat is retired — redundant now");
 t.state.menuOpen=false;
-assert.match(t.renderConsole(), /data-add-tray-die="100"/, "the white picker in the console exposes d4 through d100");
+/* REWRITTEN (phase 3, D1): the white picker LEFT the console for the ⊕
+   popover on the band — the console keeps only the jet's command row
+   (D/A/+2, ⋮, ROLL). The popover carries the full d4→d% row, ROLL and
+   CLEAR TRAY's principal seat. */
+assert.doesNotMatch(t.renderConsole(), /data-add-tray-die/, "the white picker no longer lives in the console");
+assert.match(t.renderFreePop(), /data-add-tray-die="100"/, "the ⊕ popover exposes d4 through d100");
+assert.match(t.renderFreePop(), /data-roll-now/, "with the big ROLL");
+assert.match(t.renderFreePop(), /fh-cd-freeclear[^>]*data-clear-tray/, "and CLEAR TRAY's principal seat");
+assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}), /data-free-pop/, "the ⊕ is born on the band");
 
 t.state.record = {build:{
   character:{name:"Imported",abilityScores:{STR:9,DEX:9,CON:9,INT:9,WIS:9,CHA:9}},
