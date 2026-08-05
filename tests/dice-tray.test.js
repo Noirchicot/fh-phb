@@ -31,7 +31,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhDiceTray = {
     state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
     renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
-    surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie
+    surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie, dieSvg
   };
 })();
 `);
@@ -651,5 +651,27 @@ assert.match(source, /function openDieMenu\(node\)\{[\s\S]{0,180}traySurfaceDie=
 t.clearDiceTray(false);
 assert.equal(t.state.traySurfaceDie, null, "CLEAR TRAY retires it as well");
 t.state.traySurfaceId = ""; t.state.traySurfaceAt = ""; t.state.traySurfaceFlash = false; t.state.trayScrollToTop = false;
+
+/* ---- M4: gradient ids are unique PER SVG INSTANCE. url(#id) resolves
+   against the whole document to the FIRST def found; when that first def
+   sits in a display:none container (the closed Stream, measured on the
+   public bench: gviolet6/gash6), the browser paints nothing and the die
+   goes white. Each svg must therefore reference only its OWN defs. */
+const defIds = s => [...s.matchAll(/<linearGradient id="([^"]+)"/g)].map(m => m[1]);
+const refIds = s => [...s.matchAll(/url\(#([^)]+)\)/g)].map(m => m[1]);
+const svgA = t.dieSvg(6, 30, "violet", "4");
+const svgB = t.dieSvg(6, 30, "violet", "4");
+assert.ok(defIds(svgA).length >= 2, "a dieSvg defines its body and glint gradients");
+assert.notDeepEqual(defIds(svgA), defIds(svgB),
+  "two successive dieSvg of the SAME material/sides carry DIFFERENT gradient ids — no document-wide sharing");
+assert.equal(defIds(svgA).filter(id => defIds(svgB).includes(id)).length, 0,
+  "…and no id overlaps between the two instances");
+for (const s of [svgA, svgB, t.dieSvg(20, 52, "ivory", "17"), t.dieSvg(8, 26, "ash", "?")]) {
+  const defs = defIds(s);
+  for (const ref of refIds(s)) {
+    assert.ok(defs.includes(ref), "every url(#" + ref + ") in an svg points to a def in THAT SAME svg");
+  }
+}
+assert.doesNotMatch(css, /url\(#g/, "the CSS pins no gradient id — ids are free to be per-instance");
 
 console.log("dice-tray: all assertions passed");

@@ -1987,8 +1987,18 @@
     if(die.dieRole==="bonus")return SOURCE_TINT[String(die.sourceIcon||"")]||"ash";
     return "ivory";
   }
+  /* M4: gradient ids must be UNIQUE PER SVG INSTANCE. url(#id) resolves
+     against the WHOLE document, to the FIRST matching def — and when that
+     first def lives inside a display:none container (e.g. the closed
+     Stream), browsers refuse to paint the gradient and the die goes white.
+     Measured on the public bench: gviolet6/gash6 defined only inside the
+     hidden Stream turned every visible violet/ash pastille blank. A plain
+     incrementing counter keeps each svg pointing at its own defs; renders
+     are frequent but a Number counter never collides and never overflows
+     in practice. */
+  var dieSvgUid=0;
   function dieSvg(sides,size,materialName,text){
-    var geo=DIE_GEO[sides]||DIE_GEO[20],m=DIE_MATERIAL[materialName]||DIE_MATERIAL.ivory,id="g"+materialName+sides;
+    var geo=DIE_GEO[sides]||DIE_GEO[20],m=DIE_MATERIAL[materialName]||DIE_MATERIAL.ivory,id="g-"+materialName+sides+"-"+(++dieSvgUid);
     var out='<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" focusable="false">';
     out+='<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="1">'+
       '<stop offset="0" stop-color="'+m.light+'"/><stop offset=".55" stop-color="'+m.fill+'"/><stop offset="1" stop-color="'+m.dark+'"/></linearGradient>'+
