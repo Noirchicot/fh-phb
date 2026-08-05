@@ -1296,10 +1296,16 @@
     return rollTransactionActive()||trayRevealPending()||!!state.pendingArmed||!!state.trayPrompt||!!state.diePrompt;
   }
   /* A hand still being built (pending dice, staged additions, a waiting
-     Destiny die) must never time out from under the player. */
+     Destiny die) must never time out from under the player. A free hand
+     counts only while it has NO settled results: rollTrayDice keeps the
+     selection so ROLL can re-roll the same hand, and a rolled hand whose
+     verdict is on the wood is a jet being READ, not built — the 6s rule.
+     Adding a free die empties trayResults again (addTrayDie), so resuming
+     the assembly re-arms the guard on its own. */
   function overlayAssembling(){
-    if(state.traySelection.length||state.destinyStaged||stagedList().length)return true;
+    if(state.destinyStaged||stagedList().length)return true;
     var dice=state.trayResults||[];
+    if(state.traySelection.length&&!dice.length)return true;
     return !!(dice.length&&!dice.some(function(die){return die.kind!=="modifier"&&die.result!=null;}));
   }
   function overlayVisible(){return !!state.builderOpen||overlayHeld();}

@@ -417,6 +417,16 @@ root.querySelector("[data-roll-now]").click();
 const percentileEntry=t.state.history[0],percentileResult=percentileEntry.dice[0].result;
 const percentileText=percentileResult===100?"00":String(percentileResult).padStart(2,"0");
 assert.equal(Array.from(root.querySelectorAll('.fh-cd-static-die[data-sides="100"] .fh-cd-static-die-result')).map(item=>item.textContent).join(""),percentileText,"the two d10 overlays compose the resolved percentile value");
+/* Phase 3 — the retreat ARMS once the free hand settles. rollTrayDice keeps
+   the selection (ROLL re-rolls the same hand), and counting that kept hand
+   as "assembling" left the overlay up forever (bug seen in the browser,
+   fixed in overlayAssembling). Let the reveal lapse the way time would,
+   re-render, and the 6-second deadline must be set. */
+t.state.trayRevealAt=0;
+t.render();
+assert.ok(t.state.traySelection.length,"the free hand keeps its selection after ROLL — re-rollable by design");
+assert.ok(t.state.builderOpen,"the overlay is still up, the verdict being read");
+assert.ok(t.state.builderRetireAt>0,"and its retreat is armed — a settled free roll is read, not built");
 settleRoll();
 settleRoll(); // REWRITTEN (phase 2): Clear rides the Identity ⋮ — settleRoll opens it and clicks.
 
