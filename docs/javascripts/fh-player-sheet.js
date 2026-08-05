@@ -1339,7 +1339,12 @@
   /* The timestamp lets the invoking click survive the document-level
      outside-click pass that runs right after it (render replaces the DOM,
      so the old target can no longer be matched against the new overlay). */
-  function invokeBuilder(){state.builderOpen=true;state.builderRetireAt=0;state.builderInvokedAt=Date.now();}
+  function invokeBuilder(){state.builderOpen=true;state.builderRetireAt=0;state.builderInvokedAt=Date.now();
+    /* Phase 6: a jet being born claims the stage — the deployed history
+       retires HERE, on the gesture itself, not one render later when the
+       reveal arms (render's overlayHeld guard would catch the hold, but
+       the roll's first frame must already be unobstructed). */
+    state.trayExpanded=false;}
   function retireBuilder(){state.builderOpen=false;state.builderRetireAt=0;clearTimeout(state.builderRetireTimer);}
   /* Re-armed by every render, but the DEADLINE is set once per settle —
      a feed poll's re-render two seconds in must not push it back. */

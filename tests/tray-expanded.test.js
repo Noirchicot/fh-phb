@@ -184,5 +184,12 @@ assert.equal(t.state.trayExpanded, false, "…and render() retires the deployed 
 t.state.trayPrompt = null;
 assert.match(source, /if\(state\.trayExpanded&&overlayHeld\(\)\)state\.trayExpanded=false/,
   "the takeover rule is render()'s first word, ahead of every early return");
+/* Belt and braces, measured at the bench: a jet's FIRST render arms its
+   reveal DURING diceTrayInner — after render's overlayHeld guard has run —
+   so a roll born while deployed would keep its first frame covered. The
+   birth gesture itself (invokeBuilder, every path a jet starts by) retires
+   the deployed instead. */
+assert.match(source, /function invokeBuilder\(\)\{[\s\S]{0,600}state\.trayExpanded=false;\}/,
+  "a jet being born retires the deployed on the gesture, not one render later");
 
 console.log("Deployed tray (phase 6): all tests passed");
