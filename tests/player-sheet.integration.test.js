@@ -522,7 +522,12 @@ assert.ok(root.querySelector(".fh-cd-frame.is-trayhand [data-material=\"ash\"]")
    MANUAL mark moved off the label and reads as the line's badge (tier 3),
    while the die itself keeps its is-forced dress. Same disclosure, said
    once instead of twice. */
-assert.match(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-speak").textContent,/MANUAL/,"a forced roll is marked MANUAL on its tray line");
+/* REWRITTEN (phase 5, R7 ratifié Eric 2026-08-05): ONE proposition per
+   line — the badges left the visible flank for the speak's hover title,
+   MANUAL among them. Same disclosure, one storey further out; the Stream
+   still says it in plain sight (asserted just below, unchanged). */
+assert.match(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-speak").getAttribute("title")||"",/MANUAL/,"a forced roll is marked MANUAL on its line's hover title");
+assert.doesNotMatch(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-speak").textContent,/MANUAL/,"…and no longer as a visible chip — one proposition per line");
 assert.ok(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-diewrap.is-forced"),"and the forced die itself wears the mark");
 assert.match(root.querySelector(".fh-cd-sentry").textContent,/MANUAL/,"the stream line marks forced results too");
 settleRoll();

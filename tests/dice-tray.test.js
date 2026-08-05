@@ -156,16 +156,25 @@ const diceAt = firstLine.indexOf("fh-cd-tray-dice");
 const rightAt = firstLine.indexOf("fh-cd-tray-right");
 assert.ok(leftAt >= 0 && diceAt > leftAt && rightAt > diceAt,
   "a line reads left to right: the verdict flank, then the dice, then name and total");
-assert.ok(firstLine.indexOf("fh-cd-tray-who") < diceAt, "the chip leads the left flank");
+assert.ok(firstLine.indexOf("fh-cd-tray-owner") < diceAt, "the name leads the left flank");
 assert.match(firstLine.slice(rightAt), /fh-cd-tray-title">Arcana \+7</, "the right flank names the roll");
-/* REWRITTEN (same lot, Eric's second fitting 2026-08-03): the who became a
-   CHIP — my face or two letters — because the full name cost the line its
-   flanks. The whole name and the time still exist, on hover and in the
-   title attribute. */
-assert.match(inner, /fh-cd-tray-initials">Ye</, "the who is a chip — two letters when there is no portrait");
-assert.match(inner, /fh-cd-tray-name">Yedrivel/, "the full name rides the hover label…");
-assert.match(inner, /title="Yedrivel · /, "…and the title attribute, with the time");
-assert.match(css, /\.fh-cd-tray-who:hover \.fh-cd-tray-name\{opacity:1\}/, "and the stylesheet only surfaces it on hover");
+/* REWRITTEN (phase 5, R4 ratifié Eric 2026-08-05): the chip is DEAD — the
+   portrait « posait problème ». The NAME itself, small discreet uppercase
+   (CSS text-transform, ~6px), sits at the top-left of the line, the
+   validated maquette (« HARNESS » / « BRUNIR »). Full name + time keep the
+   hover title; the reopen gesture the chip's button carried moved onto the
+   name. The flank keeps its 80px (Q4 — no slimming). */
+assert.match(inner, /fh-cd-tray-owner"[^>]*>[\s\S]{0,200}?>Yedrivel</, "the who IS the name now — written out on the line");
+assert.doesNotMatch(inner, /fh-cd-tray-who|fh-cd-tray-initials|fh-cd-tray-name"/, "no chip, no initials, no floating label — the markup left them behind");
+assert.match(inner, /title="Yedrivel · /, "the full name and the time still ride the title attribute");
+assert.match(inner, /fh-cd-tray-owner[^>]*>\s*<button[^>]*data-history-id/, "the name carries the reopen button a d20 line always had");
+assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*text-transform:uppercase/, "the stylesheet sets it in discreet uppercase…");
+assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*font-size:calc\(6\.5px \* var\(--cd-fs\)\)/, "…at the maquette's tiny size");
+assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*color:#f4ecd8/,
+  "…in the parchment tint measured on the ramp (4.89:1 at line 1's light top edge, 14.1:1 at the dark bottom)");
+const lastLeftFlank = [...css.matchAll(/\.fh-cd-tray-left\{([^}]+)\}/g)].pop();
+assert.match(lastLeftFlank && lastLeftFlank[1], /flex-direction:column/, "the flank is a two-storey column now — name above, the one proposition under");
+assert.match(css, /\.fh-cd-tray-left\{width:80px\}/, "and it keeps its ratified 80px (Q4)");
 assert.match(inner, /fh-cd-tray-title/, "the roll's name in bold, right flank");
 assert.match(inner, /fh-cd-tray-total/, "the total under it");
 assert.match(inner, /Arcana \+7/, "the title carries the bonus, not the arithmetic");
@@ -390,10 +399,12 @@ t.state.history = [];
 const feedLineHtml = t.diceTrayInner();
 assert.match(feedLineHtml, /is-feed/, "the party's roll renders as a feed line");
 assert.doesNotMatch(feedLineHtml, /data-die-landed/, "another player's dice carry no handles");
-/* REWRITTEN (second fitting): the feed who is a chip too — the wire has no
-   avatar, so it is always the two letters, full name on hover. */
-assert.match(feedLineHtml, /fh-cd-tray-initials">Il</, "the who is the character's chip, two letters");
-assert.match(feedLineHtml, /fh-cd-tray-name">Ilyra/, "with the full name on hover");
+/* REWRITTEN (phase 5, R4): the feed line loses its chip with mine — the
+   character's NAME sits at the top-left of the line, the wire's actor
+   written out, full name + time still on the hover title. */
+assert.match(feedLineHtml, /fh-cd-tray-owner"[^>]*>[\s\S]{0,80}?>Ilyra</, "the who is the character's name, written out");
+assert.match(feedLineHtml, /title="Ilyra · /, "with name and time on the hover title");
+assert.doesNotMatch(feedLineHtml, /fh-cd-tray-initials/, "no initials chip on the feed either");
 
 /* ── 6. LIVE / RECENT / OFF on the Identity line — never a silent
        fallback ─────────────────────────────────────────────────────── */
@@ -724,5 +735,63 @@ const growRule = css.indexOf(".fh-cd-card .fh-cd-dmrow>span{width:auto;min-width
 assert.ok(fixedRule >= 0 && growRule >= 0, "both the base rule and the M5 override exist");
 assert.ok(growRule > fixedRule,
   "the override comes AFTER the fixed-width rule, so at equal specificity the label box grows to its content");
+
+/* ── Phase 5 — le flanc gauche : R4 le nom, R7 une proposition par ligne
+   (ratifiés Eric, 2026-08-05) ─────────────────────────────────────────
+   Eric's bench finding: a nat 1 accepted stacked THREE blocks on the
+   flank (« CRITICAL FAILURE » + « NATURAL 1 accepted » + « Natural 1
+   accepted · Destiny 1 »), each broken over 3-4 lines — the band grew
+   to 104px. Now: the name on top, ONE proposition under it (verdict,
+   else outcome, else nothing), everything else on the speak's hover
+   title. The one visible exception is the « adjusted » chip (a single
+   short word — the total changed). The Stream keeps the full
+   enumeration (T22), the wire does not change. */
+
+// A nat 1 accepted: the worst case reads as name + ONE verdict.
+t.state.feed.events = []; t.state.trayResults = []; t.state.rollSequence = null; t.state.diceSignatures = {};
+t.state.history = [d20Entry("nat1-acc", "Persuasion", 1, 8, 0, {
+  natural:1, natChoice:"accept",
+  destinyPointChange:{before:0, after:1, reason:"Natural 1 accepted"}
+})];
+const nat1Pass = t.diceTrayInner();
+const nat1Line = nat1Pass.match(/<li[^>]*data-tray-line="nat1-acc"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.match(nat1Line, /fh-cd-tray-verdict">FUMBLE 1</, "the accepted 1 speaks as FUMBLE 1 — the ratified rename");
+assert.doesNotMatch(nat1Line, /fh-cd-badge/, "and carries NO badge chip — one proposition per line");
+const nat1Title = nat1Line.match(/fh-cd-tray-speak" title="([^"]*)"/);
+assert.ok(nat1Title, "the speak span carries the hover title that says the rest");
+assert.match(nat1Title[1], /NATURAL 1 accepted/, "…the badge vocabulary moved there");
+assert.match(nat1Title[1], /Natural 1 accepted · Destiny 1/, "…the Destiny count too — concaténé lisiblement");
+
+// A natural 20 line says CRITICAL 20, and its badge joins the title.
+t.state.history = [d20Entry("nat20", "Arcana", 20, 27, 0, {natural:20})];
+t.state.diceSignatures = {};
+const nat20Line = t.diceTrayInner().match(/<li[^>]*data-tray-line="nat20"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.match(nat20Line, /fh-cd-tray-verdict">CRITICAL 20</, "a natural 20 speaks as CRITICAL 20");
+assert.doesNotMatch(nat20Line, /fh-cd-badge/, "no chip beside it");
+assert.match(nat20Line, /fh-cd-tray-speak" title="[^"]*NATURAL 20/, "the Stream's badge word survives on the hover");
+
+// The « adjusted » exception: one short word, it stays visible as a chip.
+t.state.history = [d20Entry("adj", "Stealth", 11, 19, 0, {adjusted:true, d20s:[11], kept:11})];
+t.state.diceSignatures = {};
+const adjLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="adj"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.match(adjLine, /fh-cd-badge is-adjusted">adjusted</, "adjusted keeps its chip — it says the total changed, and it holds inside the 56");
+
+// The feed obeys the same law: outcome only, badges on the title.
+t.state.history = [];
+t.state.feed.events = [feedRoll("feed-loud", "Wen", "Ilyra", "Perception", 27, 0,
+  {display:{outcome:"Natural 20", badges:["NATURAL 20", "Chaos 2d6 = 7", "adjusted"]}})];
+const loudFeedLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="feed-loud"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.match(loudFeedLine, /fh-cd-tray-outcome[^>]*>Natural 20</, "a feed line shows its one proposition — the wire's outcome");
+assert.match(loudFeedLine, /fh-cd-badge is-adjusted">adjusted</, "…plus the adjusted exception");
+assert.equal((loudFeedLine.match(/fh-cd-badge/g) || []).length, 1, "and no other chip");
+const feedTitle = loudFeedLine.match(/fh-cd-tray-speak" title="([^"]*)"/);
+assert.ok(feedTitle && /Chaos 2d6 = 7/.test(feedTitle[1]), "the other badges ride the speak's hover title");
+assert.ok(!/NATURAL 20/.test(feedTitle[1]) || !/^NATURAL 20$/i.test(feedTitle[1]),
+  "(T8 still filters a badge that only restates the outcome)");
+
+// The machine-facing outcomes did NOT move — the tones regex-match them.
+assert.match(loudFeedLine, /fh-cd-tray-outcome is-n20/, "feedTone still recognises « Natural 20 » — the outcome side is untouched");
+t.state.feed.events = [];
+t.state.history = [];
 
 console.log("dice-tray: all assertions passed");

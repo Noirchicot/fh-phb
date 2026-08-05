@@ -2104,3 +2104,26 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   background:none;color:var(--cd-gold);font-family:inherit;font-size:calc(7.5px * var(--cd-fs));
   font-weight:700;letter-spacing:.04em;cursor:pointer;text-align:left;white-space:nowrap}
 .fh-cd-dpooladd:hover{color:var(--cd-gold-bright)}
+
+/* ── Phase 5 (architecture lot, 2026-08-05) — le flanc gauche : le nom
+   remplace le chip, une proposition par ligne ─────────────────────────
+   R4: the portrait/chip dies; the NAME itself sits at the top-left of
+   the line in small discreet uppercase (« HARNESS » / « BRUNIR », the
+   validated maquette) — mine and the feed's alike. The flank keeps its
+   80px (Q4). The old .fh-cd-tray-who / initials / floating-name dress
+   stays above for the sheet's history; the markup no longer emits it.
+   R7: one proposition under the name — verdict, else outcome, else
+   nothing; badges left for the speak's hover title, so the flank is a
+   two-storey column now and a nat 1 accepted holds the 56 again.
+   Name colour #f4ecd8 measured on the ramp: 4.89:1 at its lightest
+   seat (line 1's top edge #6d6557), 14.1:1 at the dark bottom — the
+   parchment family, a step quieter than the cap's near-white.
+   APPENDED only. */
+.fh-cd-tray-left{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px}
+.fh-cd-tray-owner{display:block;max-width:100%;min-width:0}
+.fh-cd-tray-owner b,.fh-cd-tray-owner button{display:block;max-width:100%;padding:0;border:0;background:none;
+  font-family:inherit;font-style:normal;font-size:calc(6.5px * var(--cd-fs));font-weight:700;
+  letter-spacing:.09em;text-transform:uppercase;line-height:1.2;color:#f4ecd8;text-align:left;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
+.fh-cd-tray-owner button{cursor:pointer}
+.fh-cd-tray-owner button:hover{color:#ffd98a}

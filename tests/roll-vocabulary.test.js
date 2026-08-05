@@ -219,13 +219,30 @@ assert.equal(t.outcomeFor({natural:11, total:13, dc:15, bonusDice:[]}), "Failure
 assert.equal(t.outcomeFor({natural:11, total:18, dc:15, bonusDice:[]}), "Success");
 assert.equal(t.outcomeFor({natural:11, total:18, dc:"", bonusDice:[]}), "", "nothing decided, nothing claimed");
 
+/* Phase 5 (lexique ratifié Eric, 2026-08-05): four verdicts renamed on the
+   SPOKEN side only. The outcomes above stay byte-identical — outcomeTone and
+   feedTone regex-match them — and the undecided nat 1 keeps its old words:
+   « FUMBLE 1 · CHOOSE » (L6) was proposed, never ratified. */
+const verdictById = {};
+t.ROLL_VERDICTS.forEach(rule => { verdictById[rule.id] = rule.verdict; });
+assert.equal(verdictById["natural-20"], "CRITICAL 20", "Natural 20 speaks as CRITICAL 20");
+assert.equal(verdictById["natural-1-accepted"], "FUMBLE 1", "an accepted natural 1 speaks as FUMBLE 1");
+assert.equal(verdictById["arcane-critical-success"], "∞ CRITICAL", "the Arcane critical success speaks as ∞ CRITICAL");
+assert.equal(verdictById["arcane-critical-failure"], "∞ FUMBLE", "the Arcane critical failure speaks as ∞ FUMBLE");
+assert.equal(verdictById["natural-1-open"], "NATURAL 1 · CHOOSE", "the undecided 1 keeps its unratified words — mode conservateur");
+assert.match(source, /is-nat1\\"><b>NATURAL 1 · do you accept your fate\?<\/b>/,
+  "the takeover prompt (T4) is intouchable — its rename was never ratified");
+
 // The example from the spec: a verdict, then the account of what it cost.
 const spent = {
   kind:"destiny", name:"Destiny d8", total:8, dc:"",
   destiny:{sides:8, result:8, criticalSuccess:true, pointsBefore:6, pointsAfter:5}
 };
 const ruling = t.rollRuling(spent);
-assert.equal(ruling.verdict, "ARCANE CRITICAL SUCCESS", "the verdict is the engine's decision, said out loud");
+/* REWRITTEN (phase 5, lexique ratifié Eric 2026-08-05): the SPOKEN verdict
+   is « ∞ CRITICAL » now — four renames on the parlé side only, pinned in
+   the rename block below. The account contract is unchanged. */
+assert.equal(ruling.verdict, "∞ CRITICAL", "the verdict is the engine's decision, said out loud");
 assert.ok(plain(ruling.account).includes("Lost 1 Destiny Point"), "the account states what it cost, in points");
 assert.ok(plain(ruling.account).includes("Current 5"), "and where it leaves you");
 assert.ok(plain(ruling.account).includes("Destiny d8 8"), "and what was rolled");
@@ -234,7 +251,7 @@ plain(ruling.account).forEach(line => assert.match(line, /\d/, "an account line 
 
 // A verdict moves the roll's identity into the account, so nothing is lost and
 // nothing is said twice.
-assert.equal(t.rollVerdictText(spent), "ARCANE CRITICAL SUCCESS", "the heading is the verdict when there is one");
+assert.equal(t.rollVerdictText(spent), "∞ CRITICAL", "the heading is the verdict when there is one"); // REWRITTEN (phase 5): same rename
 assert.equal(ruling.account[0], "Destiny d8 8", "and the identity leads the account");
 const undecided = {kind:"d20", name:"Stealth", baseBonus:2, natural:11, kept:11, total:13, dc:"", bonusDice:[]};
 const quietRuling = t.rollRuling(undecided);

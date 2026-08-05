@@ -1063,17 +1063,23 @@
      outranks a natural 20, and a DC is only consulted when nothing louder
      happened. */
   function rollHasDc(entry){return entry.dc !== "" && isFinite(Number(entry.dc));}
+  /* Lexique ratifié (Eric, 2026-08-05, phase 5) — the SPOKEN side only.
+     Four verdicts renamed: CRITICAL 20, FUMBLE 1, ∞ CRITICAL, ∞ FUMBLE.
+     The machine-facing `outcome` strings DO NOT MOVE — outcomeTone and
+     feedTone regex-match them, and the wire carries them. The undecided
+     "NATURAL 1 · CHOOSE" and the takeover prompt keep their old words:
+     their renames (L6) are proposed, not ratified. */
   var ROLL_VERDICTS=[
     {id:"arcane-critical-failure",when:function(e){return !!(e.destiny&&e.destiny.criticalFailure);},
-      outcome:"Critical failure",verdict:"ARCANE CRITICAL FAILURE"},
+      outcome:"Critical failure",verdict:"∞ FUMBLE"},
     {id:"arcane-critical-success",when:function(e){return !!(e.destiny&&e.destiny.criticalSuccess);},
-      outcome:"Critical success",verdict:"ARCANE CRITICAL SUCCESS"},
+      outcome:"Critical success",verdict:"∞ CRITICAL"},
     {id:"fate-refused",when:function(e){return e.natChoice==="chaos";},
       outcome:"Critical success · Chaos",verdict:"FATE REFUSED"},
     {id:"natural-20",when:function(e){return e.natural===20;},
-      outcome:"Natural 20",verdict:"NATURAL 20"},
+      outcome:"Natural 20",verdict:"CRITICAL 20"},
     {id:"natural-1-accepted",when:function(e){return e.natural===1&&e.natChoice==="accept";},
-      outcome:"Critical failure · Fate accepted",verdict:"CRITICAL FAILURE"},
+      outcome:"Critical failure · Fate accepted",verdict:"FUMBLE 1"},
     /* A 1 nobody has answered yet is undecided, and the Ruling says so rather
        than picking for the player. */
     {id:"natural-1-open",when:function(e){return e.natural===1;},
@@ -3519,8 +3525,17 @@
      identifies: the roll's name in bold over its total ("Arcana +5 / 24"),
      the account small under both. Nothing said twice; the dice keep the
      middle. */
+  /* R7 (Eric, ratifié, phase 5): ONE proposition per line. Under the name,
+     the verdict if there is one, else the outcome, else nothing — and every
+     badge, count and second state leaves the line for the speak's hover
+     title (concaténé " · "). The Stream keeps the full enumeration (T22),
+     which is exactly what allows the line to cut. The ONE visible
+     exception: the "adjusted" badge — a single short word saying the
+     total changed — stays as a chip; measured, it holds inside the 56.
+     `speakTitle` rides back to trayLineHtml, which stamps it on the
+     speak span so the badges have a hover home even with no verdict. */
   function trayLineSides(slot,quiet){
-    var left="",right="";
+    var left="",right="",speakTitle="";
     if(slot.kind==="feed"){
       var display=slot.event.display||{},tone=feedTone(display);
       /* T8 (Eric): a badge that restates the outcome word for word is the
@@ -3528,11 +3543,10 @@
          wire and the Stream keep the full badge list. */
       var badges=(display.badges||[]).map(String).filter(function(text){
         return !display.outcome||text.toLowerCase()!==String(display.outcome).toLowerCase();});
-      var natTexts=badges.filter(function(text){return /^NATURAL (20|1)\b|^ARCANE AWAKENING/i.test(text);});
-      var rest=badges.filter(function(text){return natTexts.indexOf(text)<0;});
+      var adjustedTexts=badges.filter(function(text){return /^adjusted$/i.test(text);});
+      speakTitle=badges.filter(function(text){return adjustedTexts.indexOf(text)<0;}).join(" · ");
       left=(display.outcome?"<b class=\"fh-cd-tray-outcome is-"+(tone||"none")+"\">"+esc(display.outcome)+"</b>":"")+
-        natTexts.map(function(text){return trayBadgeChip("n20",text);}).join("")+
-        rest.map(function(text){return trayBadgeChip("adjusted",text);}).join("");
+        adjustedTexts.map(function(text){return trayBadgeChip("adjusted",text);}).join("");
       /* T11: the CSS was already hiding the right flank's account — stop
          generating it. The hover keeps it: the total carries the title. */
       right="<b class=\"fh-cd-tray-title\">"+esc(String(display.title||"Roll")+(display.bonus!=null?" "+signed(display.bonus):""))+"</b>"+
@@ -3542,15 +3556,21 @@
       /* Quiet hides what the dice have not revealed — never what the player
          already knew: MANUAL and adjusted describe the roll's construction
          and stay visible while it rolls, exactly as the Stream always did. */
-      /* T7 (Eric): the NATURAL 20 chip under the NATURAL 20 verdict was two
-         lines for one fact. A badge whose text IS the verdict (case-
-         insensitive) yields to it; ROLL_BADGE_RULES and the export are
-         untouched — this is a surface filter, the Stream still says both. */
+      /* T7's on-line dedup died with the on-line badges (R7): everything but
+         "adjusted" leaves for the title, so a badge can no longer double the
+         verdict visually. The equality filter survives FOR THE TITLE — a
+         hover list that restates the visible verdict word for word would be
+         the same doublon one surface further out. */
       var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler)&&
         !(ruling.verdict&&badge.t.toLowerCase()===ruling.verdict.toLowerCase());});
+      var chips=kept.filter(function(badge){return badge.k==="adjusted";});
+      /* `kept` already hid the spoilers while the dice are in the air, so the
+         quiet title says only what the player knew before rolling (MANUAL…). */
+      speakTitle=kept.filter(function(badge){return badge.k!=="adjusted";})
+        .map(function(badge){return badge.t;}).join(" · ");
       left=(quiet?"<em class=\"fh-cd-tray-account\">Rolling…</em>"
           :ruling.verdict?"<b class=\"fh-cd-tray-verdict\">"+esc(ruling.verdict)+"</b>":"")+
-        kept.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
+        chips.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
       /* The live hand keeps trayResultText (it carries the open-roll status,
          staged-dice count included); a settled history line re-derives the
          account so it can never go stale. */
@@ -3573,7 +3593,7 @@
       left="<b"+(isRuling?" class=\"fh-cd-tray-verdict\"":" class=\"fh-cd-tray-heading\"")+(detail?" title=\""+esc(detail)+"\"":"")+">"+esc(heading||"Dice Tray")+"</b>";
       right="";
     }
-    return {left:left,right:right};
+    return {left:left,right:right,speakTitle:speakTitle};
   }
   function trayLineHtml(slot,index,flags,quiet){
     var sizeClass=index===0?"is-l1":index<4?"is-mid":"is-static";
@@ -3630,26 +3650,19 @@
          wave:swarm&&waved?Math.floor(di/10):null,waveIndex:swarm?di%10:null});
     }).join("");
     var reopen=slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
-    /* The who is a CHIP, not a column (Eric, 2026-08-03: "faut gagner de la
-       place à gauche"): my own face, zoomed — or two letters when there is
-       no portrait, and always two letters for the table (the wire carries no
-       avatar). The full name and the time surface on hover, and ride the
-       title attribute for touch. */
-    /* "Ha" for Harness, "BI" for Brakka Ironmaw: one word lends two letters,
-       two words lend their initials. */
-    var whoWords=String(who).trim().split(/\s+/).filter(Boolean);
-    var initials=whoWords.length>1
-      ? whoWords.slice(0,2).map(function(word){return word.charAt(0);}).join("").toUpperCase()
-      : (whoWords[0]||"?").slice(0,2);
-    var portrait=slot.kind==="feed"?"":portraitFor(state.character||{});
-    var chip=(portrait?"<img src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.parentNode.classList.add('is-noimg')\">":"")+
-      "<i class=\"fh-cd-tray-initials\">"+esc(initials)+"</i>";
+    /* R4 (Eric, ratifié, phase 5): the portrait/chip dies. The NAME itself,
+       small and in discreet uppercase, sits at the top-left of the line —
+       « HARNESS » / « BRUNIR », the validated maquette — for MY lines and
+       the feed's alike; the flank keeps its 80px (Q4). The full name and
+       the time still ride the hover title, and the reopen gesture the chip's
+       button carried now lives on the name. */
     var hoverText=who+(time?" · "+time:"");
-    var whoHtml="<span class=\"fh-cd-tray-who"+(portrait?"":" is-noimg")+"\" title=\""+esc(hoverText)+"\">"+
-      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+chip+"</button>":"<b aria-label=\""+esc(who)+"\">"+chip+"</b>")+
-      "<i class=\"fh-cd-tray-name\">"+esc(hoverText)+"</i></span>";
+    var whoHtml="<span class=\"fh-cd-tray-owner\" title=\""+esc(hoverText)+"\">"+
+      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+esc(who)+"</button>"
+        :"<b aria-label=\""+esc(who)+"\">"+esc(who)+"</b>")+"</span>";
     var sides=trayLineSides(slot,quiet);
-    var row="<span class=\"fh-cd-tray-left\">"+whoHtml+"<span class=\"fh-cd-tray-speak\">"+sides.left+"</span></span>"+
+    var row="<span class=\"fh-cd-tray-left\">"+whoHtml+"<span class=\"fh-cd-tray-speak\""+
+        (sides.speakTitle?" title=\""+esc(sides.speakTitle)+"\"":"")+">"+sides.left+"</span></span>"+
       "<span class=\"fh-cd-tray-dice"+(swarm&&!infinite?" is-swarm":"")+(rows?" is-rows":"")+(infinite?" is-infinite":"")+"\""+
         (swarm&&!infinite?" style=\"--fh-cd-tray-die-size:"+settlePx+"px\"":"")+">"+diceHtml+"</span>"+
       "<span class=\"fh-cd-tray-right\">"+sides.right+"</span>";
