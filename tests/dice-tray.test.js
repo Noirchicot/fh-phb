@@ -96,6 +96,19 @@ assert.match(css, /\.fh-cd-trayline\.is-mid,\.fh-cd-trayline\.is-static\{min-hei
   "…and 56 is still what a standard band measures (change one, change both)");
 assert.match(css, /\.fh-cd-trayarrow\.is-up\{top:calc\(var\(--cd-traycap-h\) \+ 4px\)\}/,
   "the up chevron follows the cap's lower edge instead of assuming ~20px");
+/* Lot BACKLOG-B (Eric, 2026-08-05): L1 loses its 84px privilege — the
+   « C » ramp says which roll is newest by POSITION, not by a taller
+   band. 56 nominal everywhere; 72 only for a 21-30-dice hand (three
+   rows of ten, is-deep); and the chevron steps exactly one band. The
+   last word on each height is pinned so an appended regression cannot
+   quietly re-grow a line. */
+const lastL1 = [...css.matchAll(/\.fh-cd-trayline\.is-l1\{min-height:(\d+)px\}/g)].pop();
+assert.equal(lastL1 && lastL1[1], "56", "line 1 is a 56px band like every other — a min-height, never a frozen 84");
+const lastDeep = [...css.matchAll(/\.fh-cd-trayline\.is-deep\{min-height:(\d+)px\}/g)].pop();
+assert.equal(lastDeep && lastDeep[1], "72", "only a 21-30-dice hand deepens its line, to 72");
+const lastL1T3 = [...css.matchAll(/\.fh-cd-trayline\.is-l1 \.fh-cd-tray-t3\{max-height:(\d+)px\}/g)].pop();
+assert.equal(lastL1T3 && lastL1T3[1], "22", "L1's tier-3 headroom was 84-era slack — back to the common 22");
+assert.match(source, /trayScroll==="up"\?-56:56/, "one chevron click steps exactly one 56px band");
 assert.doesNotMatch(t.renderStageZone(), /data-zone="dice-tray"/, "the roller does not carry the tray any more");
 
 t.state.history = [];

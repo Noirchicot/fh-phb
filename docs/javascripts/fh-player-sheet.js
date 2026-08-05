@@ -3198,7 +3198,11 @@
       var mood=frameMood();
       row="<div class=\"fh-cd-frame is-trayhand"+(mood?" mood-"+mood:"")+"\">"+row+"</div>";
     }
-    return "<li class=\"fh-cd-trayline "+sizeClass+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
+    /* 21-30 dice need three rows of ten at 20px — the ONE case that grows
+       a line past the 56px nominal (to 72; règle Eric, lot BACKLOG-B
+       2026-08-05). Past 30 the ∞ takes over and the line stays nominal. */
+    var deep=realDice>20&&!infinite;
+    return "<li class=\"fh-cd-trayline "+sizeClass+(deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
   /* The three feed states, one derivation (T24): the tray cap's chip title
      and the Stream's cap read the SAME phrases instead of each keeping a
@@ -4002,7 +4006,9 @@
       return;
     }
     if(button.dataset.clearTray!==undefined){if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}
-    if(button.dataset.trayScroll!==undefined){var scrollList=root.querySelector(".fh-cd-traylist");if(scrollList){scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-76:76,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
+    if(button.dataset.trayScroll!==undefined){var scrollList=root.querySelector(".fh-cd-traylist");if(scrollList){/* One click = one band: every line is the same 56px now (border-box,
+       paddings and separator inside), so the chevron steps exactly one. */
+      scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-56:56,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
     if(button.dataset.addTrayDie!==undefined){if(rollOpen())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
     if(button.dataset.removeTrayDie!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDie(button.dataset.removeTrayDie);return;}
     if(button.dataset.removeTraySize!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDieSize(button.dataset.removeTraySize);return;}

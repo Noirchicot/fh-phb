@@ -1685,3 +1685,22 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-dicetray .fh-cd-diewrap em{color:#d9c89d}
 .fh-cd-dicetray .fh-cd-trayline.is-empty{color:#d8c79b}
 .fh-cd-trayclear{color:#d8c79b}
+
+/* ── Lot BACKLOG-B (Eric, 2026-08-05) — 56 nominal, 72 pour les gros
+   essaims ────────────────────────────────────────────────────────────
+   Line 1 loses its 84px privilege: with the « C » ramp above, the live
+   roll is distinguished by its POSITION at the light top of the
+   gradient, not by a taller band. Every line now holds the same 56px
+   nominal (min-height, never a fixed height); the ONE growth case is a
+   hand of 21-30 dice — three rows of ten at 20px (3×20 + 2 swarm gaps
+   + the line's own 3px paddings + separator = 73) — which trayLineHtml
+   marks is-deep. L1's gold liseré (border colour) never depended on
+   the 84 and stays; its tier-3 headroom DID — the 30px max-height was
+   84-era slack, so tier 3 returns to the 22px every other line reads
+   at, or the left flank would push past the band. The zone's height
+   (--cd-tray-h) is settled in its own block below: the two questions
+   revert independently. APPENDED: same specificity as the earlier
+   declarations, later in the sheet. */
+.fh-cd-trayline.is-l1{min-height:56px}
+.fh-cd-trayline.is-deep{min-height:72px}
+.fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:22px}
