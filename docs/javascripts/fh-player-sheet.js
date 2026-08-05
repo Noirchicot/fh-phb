@@ -47,9 +47,13 @@
   var MAX_BONUS_DICE = 3;
   var MAX_FREE_DICE = 50;
   var LIGHTWEIGHT_DICE_THRESHOLD = 6;
-  /* Both picker rows (Destiny, white dice) render at this size. Kept in step
-     with the .fh-cd-picker-die / .fh-cd-calling-die widths in companion-dock.css. */
+  /* The white picker row renders at this size. Kept in step with the
+     .fh-cd-picker-die / .fh-cd-calling-die widths in companion-dock.css. */
   var PICKER_DIE_PX = 31;
+  /* The Destiny dice live in the 44px band now (phase 1, dock-dice-tray):
+     22px keeps five dice + the ledger + the arcana inside one 425px-wide
+     strip. Kept in step with .fh-cd-band .fh-cd-picker-die. */
+  var BAND_DIE_PX = 22;
   var MAX_HISTORY = 20;
   /* The Dice Tray holds ten rolls (Eric, 2026-08-03) — the first in large
      dice, three more in small ones, the rest as static snapshots. Beyond ten
@@ -2520,6 +2524,17 @@
     return "<div class=\"fh-cd-frame is-judgment"+(assembling?" is-assembly":"")+(mood?" mood-"+mood:"")+"\">"+
       "<span class=\"fh-cd-judgment\">"+judgment+"</span>"+assembly+right+"</div>";
   }
+  /* ── The Destiny & Dice Pool band (phase 1, dock-dice-tray) ─────────
+     The old in-flow Destiny zone was rendered under the panel and covered
+     permanently by the summoned group (constat C1: never actually visible).
+     It is replaced by a persistent 44px strip anchored just ABOVE the Dice
+     Tray — UI-TERMINOLOGY zone 6, so the section is data-zone="dice-pool"
+     (the migration table retires data-zone="destiny": Destiny is the dice
+     family's name now, not the zone's). Everything COUNTED lives here: the
+     Points/Score ledger (one compact block; its −/+, Score edit and the
+     pool ⋮ rows all moved into the menu the block itself opens), the gold
+     dice at 22px with their staging behaviour intact, and the Major Arcana
+     in compact form on the right. */
   function renderDestiny(ch) {
     var arcana=ch.destinyBuild&&ch.destinyBuild.arcana||{};
     var overflow=Math.max(0,Number(state.destiny.points)-Number(state.destiny.score));
@@ -2533,44 +2548,43 @@
         (state.destinyStaged&&state.destinyStaged.dieId===die.id)||
         stagedList().some(function(item){return item.kind==="destiny"&&item.destinyDieId===die.id;}));
       return "<span class=\"fh-cd-poolwrap\"><button type=\"button\" class=\"fh-cd-picker-die"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" title=\""+(die?"Left click waits it in the tray · right click takes it back":"")+"\" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
-        pickerFace(sides,PICKER_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
+        pickerFace(sides,BAND_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
     }).join("");
-    // One ⋮ pilots every size's pool from a single popup -- not five separate
-    // menus scattered across the row. It never touches Points or Score, only
-    // how many dice of each size are in the pool.
+    /* One menu pilots the whole ledger from the block itself: the Points −/+
+       and input, the Score click-to-edit, then the five pool rows the old ⋮
+       carried. Same data hooks as before (data-destiny-step, -field,
+       -score-edit, -destiny-pool), so every behaviour is conserved. */
     var poolMenuOpen=!!state.destinyPoolMenu;
-    var poolMenu=poolMenuOpen?"<div class=\"fh-cd-dpoolmenu\">"+DIE_SEQUENCE.map(function(sides){
-      var count=state.destiny.dice.filter(function(die){return die.sides===sides&&die.available;}).length;
-      return "<div class=\"fh-cd-dpoolrow\"><b>d"+sides+"</b><span class=\"fh-cd-dpoolcount\">"+count+"</span>"+
-        "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(count?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button>"+
-        "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(count>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button></div>";
-    }).join("")+"</div>":"";
     // The Score changes once in a campaign, so it is plain text with a
     // click-to-edit affordance instead of a permanently locked input.
     var score=state.scoreEditing
       ? "<input class=\"fh-cd-scorein\" data-destiny-field=\"score\" type=\"number\" value=\""+state.destiny.score+"\" aria-label=\"Destiny Score\">"
       : "<button class=\"fh-cd-score\" type=\"button\" data-score-edit title=\"Click to change the Destiny Score\">"+state.destiny.score+"</button>";
-    return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-cap\">DESTINY</div>"+
-      "<div class=\"fh-cd-destiny-row\">"+
-      /* Round 8: Points/Score share a .fh-cd-leadcol with the console's D/A/+2
-         (see renderConsole) -- a shared min-width, not a magic offset, is
-         what lines this ⋮ up with the console's ⋮ below it. */
-      "<span class=\"fh-cd-leadcol\">"+
-      "<span class=\"fh-cd-dgroup is-pts\"><span class=\"fh-cd-pts\">"+
+    var poolMenu=poolMenuOpen?"<div class=\"fh-cd-dpoolmenu is-band\">"+
+      "<div class=\"fh-cd-dledrow\"><span class=\"fh-cd-dlab\">POINTS</span><span class=\"fh-cd-pts\">"+
       "<button type=\"button\" data-destiny-step=\"points:-1\" aria-label=\"One Destiny Point less\">−</button>"+
       "<input data-destiny-field=\"points\" type=\"number\" value=\""+state.destiny.points+"\" aria-label=\"Current Destiny Points\">"+
-      "<button type=\"button\" data-destiny-step=\"points:1\" aria-label=\"One Destiny Point more\">+</button></span>"+
-      "<span class=\"fh-cd-dlab\">POINTS</span></span>"+
-      "<span class=\"fh-cd-dslash\">/</span>"+
-      "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
+      "<button type=\"button\" data-destiny-step=\"points:1\" aria-label=\"One Destiny Point more\">+</button></span></div>"+
+      "<div class=\"fh-cd-dledrow\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</div>"+
+      DIE_SEQUENCE.map(function(sides){
+        var count=state.destiny.dice.filter(function(die){return die.sides===sides&&die.available;}).length;
+        return "<div class=\"fh-cd-dpoolrow\"><b>d"+sides+"</b><span class=\"fh-cd-dpoolcount\">"+count+"</span>"+
+          "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(count?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button>"+
+          "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(count>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button></div>";
+      }).join("")+"</div>":"";
+    return "<section class=\"fh-cd-zone fh-cd-band\" data-zone=\"dice-pool\">"+
+      "<span class=\"fh-cd-bandledger\">"+
+      "<button type=\"button\" class=\"fh-cd-bandpts"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\""+
+      " title=\"Destiny — "+state.destiny.points+" Points on a Score of "+state.destiny.score+" · click to adjust Points, Score and the dice pool\""+
+      " aria-label=\"Destiny: "+state.destiny.points+" Points, Score "+state.destiny.score+" — open the Destiny menu\">"+
+      sourceGlyphSvg("destiny")+"<b>"+state.destiny.points+"</b><i>/</i><span>"+state.destiny.score+"</span>"+
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
-      "</span>"+
-      "<span class=\"fh-cd-poolmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny dice pool\">"+glyph("dots")+"</button>"+poolMenu+"</span>"+
+      "</button>"+poolMenu+"</span>"+
       "<span class=\"fh-cd-pool\">"+dice+"</span>"+
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
       esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
-      "</div></section>";
+      "</section>";
   }
   /* ── Stream: one finished roll per line, shaped for a later AboveVTT export ── */
   function outcomeTone(entry){
@@ -3990,14 +4004,16 @@
       var roller=!!(panel&&panel.showsRoller)||rollTransactionActive()||rollOpen();
       /* Console and the roller (now just the Roll Builder's remnant) are
          `summoned` (UI-TERMINOLOGY.md zones 7-8): floated in .fh-cd-floatbottom,
-         anchored just ABOVE the Dice Tray -- never in the document flow that
-         pushes the persistent stack down, and never covering the tray where
-         the dice land. Dice Pool itself (renderDestiny) stays in flow: it is
-         `persistent`, not summoned, even though today it shares the same
-         `roller` gate (a pre-existing gap, not this pass's job to close).
-         The Dice Tray is `persistent` (zone 9): it renders on every panel,
-         whatever the belt shows -- the table's rolls land here even while
-         you are reading your Notes. */
+         anchored just ABOVE the band -- never in the document flow that
+         pushes the persistent stack down, and never covering the band or the
+         tray where the dice land. Dice Pool (renderDestiny) is the 44px BAND
+         since phase 1 of the architecture lot: anchored between the panel's
+         flow and the tray (bottom:var(--cd-tray-h)), so the counted things
+         stay visible and clickable even while the summoned group is up. It
+         still shares the `roller` gate (a pre-existing gap, not this pass's
+         job to close). The Dice Tray is `persistent` (zone 9): it renders on
+         every panel, whatever the belt shows -- the table's rolls land here
+         even while you are reading your Notes. */
       inner=renderDockHeader(ch)+(state.chromeOpen?renderAccessZone():"")+
         renderStats(ch)+renderBelt()+renderPanelBody()+
         (roller?renderDestiny(ch):"")+

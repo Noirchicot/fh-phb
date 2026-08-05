@@ -96,23 +96,37 @@ const destiny = t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}});
 assert.equal((destiny.match(/class="fh-cd-poolwrap/g) || []).length, 5, "Destiny dice render as five compact size groups");
 assert.match(destiny, /×2/, "duplicate Destiny dice use a compact multiplier");
 assert.match(destiny, /data-destiny-die/, "an available Destiny die is clickable in the pool");
-assert.match(destiny, /data-score-edit/, "the rarely changed Score is plain text you click to edit, with no lock");
 assert.doesNotMatch(destiny, /data-destiny-lock/, "the padlock is gone with the Score input box");
-assert.match(destiny, /fh-cd-dlab">POINTS</, "POINTS labels the left number");
-assert.match(destiny, /fh-cd-dlab">SCORE</, "SCORE labels the right number");
 assert.doesNotMatch(destiny, /fhPsLongRest/, "Rest moved out of Destiny into the vitals line");
 assert.match(destiny, /fh-cd-arcana[^>]*>The Hermit</, "the Arcana name still sits at the end of the row");
-// REWRITTEN (round 6): Eric asked for the caption back, matching SKILLS & TOOLS --
-// the Arcana name alone did not read as a section title.
-assert.match(destiny, /fh-cd-cap">DESTINY/, "the Destiny zone carries the same caption style as Skills & Tools");
-// REWRITTEN: Eric asked for one ⋮ piloting every size, not five scattered menus.
-assert.equal((destiny.match(/class="fh-cd-dmenu/g) || []).length,1,"a single ⋮ pilots every size's pool, not one per die");
+/* REWRITTEN (phase 1, band): the in-flow Destiny zone is dead — the band
+   replaces it. Its caption is gone (a 44px strip carries no section title),
+   the zone name follows UI-TERMINOLOGY's migration table (destiny →
+   dice-pool), and the strip anchors above the tray via .fh-cd-band. */
+assert.match(destiny, /data-zone="dice-pool"/, "the band is UI-TERMINOLOGY zone 6, dice-pool — data-zone=destiny is retired");
+assert.doesNotMatch(destiny, /data-zone="destiny"/, "the old destiny zone name is gone");
+assert.match(destiny, /class="fh-cd-zone fh-cd-band"/, "the strip wears the band class its CSS anchors on");
+assert.doesNotMatch(destiny, /fh-cd-cap/, "no caption on a 44px strip");
+/* REWRITTEN (phase 1, band): the ⋮ died with the old row — the ledger block
+   (points/score) is itself the button that opens the one menu, which now
+   carries the Points −/+, the Score edit AND the five pool rows. */
+assert.doesNotMatch(destiny, /fh-cd-dmenu/, "the standalone ⋮ is gone; the ledger block opens the menu");
+assert.equal((destiny.match(/data-destiny-poolmenu/g)||[]).length,1,"the ledger block is the single menu toggle");
+assert.match(destiny, /fh-cd-bandpts/, "the compact points/score block renders");
+assert.doesNotMatch(destiny, /data-score-edit/, "Score editing moved into the ledger menu — closed, the band shows only the numbers");
 assert.doesNotMatch(destiny, /fh-cd-poolstack/, "the old two-button stepper is gone");
 t.state.destinyPoolMenu=true;
 const destinyMenuOpen=t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}});
 assert.equal((destinyMenuOpen.match(/fh-cd-dpoolrow/g)||[]).length,5,"the single popup lists all five sizes at once");
 assert.match(destinyMenuOpen,/data-destiny-pool="4:1"/,"and each row can still add");
 assert.match(destinyMenuOpen,/data-destiny-pool="4:-1"/,"and remove that size specifically");
+/* Phase 1 additions: the menu inherited the old row's editors, hooks intact. */
+assert.match(destinyMenuOpen,/data-destiny-step="points:-1"/,"the Points − step lives in the menu");
+assert.match(destinyMenuOpen,/data-destiny-step="points:1"/,"the Points + step lives in the menu");
+assert.match(destinyMenuOpen,/data-destiny-field="points"/,"the Points input lives in the menu");
+assert.match(destinyMenuOpen,/data-score-edit/,"the Score click-to-edit lives in the menu");
+assert.match(destinyMenuOpen,/fh-cd-dlab">POINTS</,"POINTS labels its menu row");
+assert.match(destinyMenuOpen,/fh-cd-dlab">SCORE</,"SCORE labels its menu row");
 t.state.destinyPoolMenu=false;
 t.state.destiny.points=10;
 assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}),/fh-cd-overflow"[^>]*>\+2</,"points above the Score use a label-free visual overflow cue");

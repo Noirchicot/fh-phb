@@ -266,6 +266,11 @@ settleRoll();
 // exactly like a white one — the click stages it, ROLL spends it, and a right
 // click on the die in the tray puts it back.
 root.querySelector('[data-config-name="Arcana"]').click();
+/* Phase 1 (band): the gold dice live on the persistent band now, and the
+   band must be up and clickable WHILE the console assembles — spending
+   Destiny mid-roll is the whole reason it exists. */
+assert.ok(root.querySelector(".fh-cd-band [data-destiny-die]"),"the gold dice are reachable on the band during assembly");
+assert.ok(root.querySelector(".fh-cd-floatbottom"),"while the summoned group is up above it");
 root.querySelector("[data-destiny-die]").click();
 assert.equal(root.querySelector(".fh-cd-popups"),null,"no popup stands between the pool and the tray");
 assert.ok(t.state.rollConfig.destinyDieId,"the die is staged in console state by the click alone");
@@ -463,8 +468,14 @@ assert.match(root.querySelector(".fh-cd-sentry").textContent,/MANUAL/,"the strea
 settleRoll();
 root.querySelector("[data-clear-tray]").click();
 
-/* ── Destiny Score is click-to-edit, no padlock ──────────────── */
+/* ── Destiny Score is click-to-edit, no padlock ────────────────
+   REWRITTEN (phase 1, band): the Score's editor moved off the strip and
+   into the ledger menu — the band shows only the counted numbers, so the
+   click-to-edit is reached by opening the ledger block's menu first. The
+   editing behaviour itself (click → input → change commits → editor
+   closes) is unchanged. */
 assert.equal(root.querySelector('[data-destiny-field="score"]'),null,"the Score is not an input until it is clicked");
+root.querySelector("[data-destiny-poolmenu]").click();
 const scoreBefore=root.querySelector("[data-score-edit]").textContent.trim();
 root.querySelector("[data-score-edit]").click();
 const scoreInput=root.querySelector('[data-destiny-field="score"]');
@@ -474,11 +485,15 @@ scoreInput.value=String(Number(scoreBefore)+1);
 scoreInput.dispatchEvent(new window.Event("change",{bubbles:true}));
 assert.equal(t.state.destiny.score,Number(scoreBefore)+1,"the typed Score is committed");
 assert.equal(root.querySelector('[data-destiny-field="score"]'),null,"committing closes the inline editor");
+assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"committing the Score keeps the ledger menu open (only an outside click closes it)");
+root.click();
 t.state.destiny.score=Number(scoreBefore);t.render();
 
-/* ── One ⋮ pilots every Destiny size's pool; outside-click closes it ── */
+/* ── The ledger block pilots every Destiny size's pool; outside-click
+   closes it. REWRITTEN label only (phase 1, band): the toggle is the
+   points/score block now, not a standalone ⋮ — same data hook. ── */
 root.querySelector("[data-destiny-poolmenu]").click();
-assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"the ⋮ opens the pool menu");
+assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"the ledger block opens the pool menu");
 root.querySelector('.fh-cd-dpoolmenu [data-destiny-pool="4:1"]').click();
 assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"acting inside the menu (Add) keeps it open for the next size");
 root.click();

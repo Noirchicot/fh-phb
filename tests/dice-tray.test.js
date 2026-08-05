@@ -424,6 +424,22 @@ assert.match(css, /\.fh-cd-floatbottom\{bottom:var\(--cd-tray-h,0px\);max-height
   "Console and Roll Builder float ABOVE the tray — the dice stay visible while a roll is configured");
 assert.match(css, /\.fh-cd-dicetray\{height:var\(--cd-tray-h\)/, "the zone's height is deterministic, so the anchor cannot drift");
 
+/* ── 8b. Phase 1: the Destiny & Dice Pool band ──────────────────────
+   A persistent 44px strip between the panel's flow and the tray. The
+   tray keeps bottom:0 and its 284; the band anchors at bottom:
+   var(--cd-tray-h); the summoned group re-anchors ABOVE the band so it
+   can never cover it again (constat C1 — the old in-flow Destiny zone
+   was permanently hidden under the group). */
+assert.match(css, /\.fh-cd-root\{--cd-band-h:44px\}/, "the band's height is a variable everything above it can anchor on");
+assert.match(css, /\.fh-cd-band\{position:absolute;left:0;right:0;bottom:var\(--cd-tray-h\);height:var\(--cd-band-h\)/,
+  "the band sits exactly on the tray's top edge, at its fixed 44px");
+const lastFloatBottomAnchor=[...css.matchAll(/\.fh-cd-floatbottom\{bottom:([^;]*);/g)].pop();
+assert.equal(lastFloatBottomAnchor[1],"calc(var(--cd-tray-h,0px) + var(--cd-band-h,0px))",
+  "the summoned group's LAST anchor override clears the band — it must never cover it");
+assert.match(css, /\.fh-cd-dock:has\(\.fh-cd-band\)\{padding-bottom:calc\(var\(--cd-tray-h\) \+ var\(--cd-band-h\)\)\}/,
+  "the flow reserves band + tray, so the panel ends cleanly above the band — no dead 45px");
+assert.match(css, /\.fh-cd-band \.fh-cd-picker-die\{width:22px\}/, "the gold dice compact to 22px in the band");
+
 /* ── 9. The fold gets an affordance ; a roll can resurface (Eric, D3) ──
    ~350px of rolls hid below the fold with nothing to say so — two thin
    chevrons now ride the list's edges, shown only when their side has

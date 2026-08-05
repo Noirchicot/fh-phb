@@ -1877,3 +1877,81 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    surfaceClickedTrayDie). Outline, not border: it costs no layout, so the
    marked die neither grows nor shifts its row. */
 .fh-cd-diewrap.is-picked{outline:2px solid var(--cd-gold-hi);outline-offset:1px;border-radius:5px}
+
+/* ── Phase 1 (architecture lot, 2026-08-05) — the Destiny & Dice Pool
+   band is born ───────────────────────────────────────────────────────
+   The in-flow Destiny zone was covered permanently by the summoned
+   group (constat C1: never visible in play). Its replacement is a thin
+   PERSISTENT 44px strip anchored just above the Dice Tray, on the
+   panels that show the roller — it carries everything that is COUNTED:
+   the Points/Score ledger, the gold dice (22px, interactions intact),
+   the Major Arcana compact on the right. Ratified on the maquette:
+   dark felt, gold liseré on top, dark seam below. The tray itself is
+   untouched (bottom:0, --cd-tray-h 284). APPENDED only. */
+.fh-cd-root{--cd-band-h:44px}
+/* z-index 25, above the summoned group's 24: the two never overlap
+   spatially, but the band's own popover (the ledger menu) opens UPWARD
+   into the group's footprint and must ride over it — measured: at 23
+   the open menu sat under the console, unusable mid-assembly. */
+.fh-cd-band{position:absolute;left:0;right:0;bottom:var(--cd-tray-h);height:var(--cd-band-h);z-index:25;
+  display:flex;align-items:center;gap:8px;padding:0 8px;margin:0;
+  background:linear-gradient(180deg,#2e2920,#242019);
+  border-top:1px solid rgba(201,164,90,.35);border-bottom:1px solid #14110c}
+/* The flow must stop ABOVE the band, not under it: the dock's bottom
+   reservation grows by the band's height when the band is up, so the
+   panel recovers the old zone's space and ends cleanly — no dead flux
+   (the « 45px morts » anomaly must not reproduce). Later than the
+   :has(.fh-cd-dicetray) rule, same specificity trick, so it wins when
+   both match. */
+.fh-cd-dock:has(.fh-cd-band){padding-bottom:calc(var(--cd-tray-h) + var(--cd-band-h))}
+/* The summoned group re-anchors above the band. It only renders on the
+   same `roller` gate as the band, so the calc never runs without a band
+   under it — the group must never cover the band again: spending a
+   Destiny die MID-ASSEMBLY happens on the band, under the group. */
+.fh-cd-floatbottom{bottom:calc(var(--cd-tray-h,0px) + var(--cd-band-h,0px));
+  max-height:calc(100% - var(--cd-tray-h,0px) - var(--cd-band-h,0px))}
+/* The ledger block: « points/score » with the ∞ mark, ~30px tall. The
+   whole block is the button that opens the Destiny menu (Points −/+,
+   Score edit, pool rows — the old ⋮'s cargo). Contrast, measured on the
+   band's LIGHT top #2e2920 (worst case): points #ffd98a 10.7:1, slash
+   #bfae8a 6.6:1, score #e8dcc0 10.6:1, ∞ #eac878 9.0:1 — all ≥4.5. */
+.fh-cd-bandledger{position:relative;flex:none;display:flex;align-items:center}
+.fh-cd-bandpts{display:flex;align-items:center;gap:4px;height:30px;padding:0 7px;
+  border:1px solid rgba(201,164,90,.28);border-radius:5px;background:rgba(20,17,12,.45);
+  cursor:pointer;font-family:inherit}
+.fh-cd-bandpts:hover,.fh-cd-bandpts.is-active{border-color:#eac878}
+.fh-cd-bandpts .fh-icon{width:13px;height:13px;color:#eac878;flex:none}
+.fh-cd-bandpts>b{font-size:calc(13px * var(--cd-fs));font-weight:800;color:#ffd98a;line-height:1;font-variant-numeric:tabular-nums}
+.fh-cd-bandpts>i{font-style:normal;color:#bfae8a;font-size:calc(10px * var(--cd-fs));line-height:1}
+.fh-cd-bandpts>span{font-size:calc(10px * var(--cd-fs));font-weight:700;color:#e8dcc0;line-height:1;font-variant-numeric:tabular-nums}
+.fh-cd-bandpts .fh-cd-overflow{margin-left:2px}
+/* The Destiny menu opens UPWARD out of the band (the band sits at the
+   dock's bottom; downward would dive under the tray). Parchment dress
+   inherited from .fh-cd-dpoolmenu above; only the anchor flips. */
+.fh-cd-band .fh-cd-dpoolmenu{top:auto;bottom:calc(100% + 6px);left:0}
+/* The ledger rows the menu gained from the old in-flow strip: POINTS
+   with its −/+ and input, SCORE with its click-to-edit — same widgets,
+   same data hooks, new seat. The .fh-cd-dlab loses its absolute perch
+   (it was a below-the-value caption in the old row). */
+.fh-cd-dledrow{display:flex;align-items:center;gap:5px;height:22px;padding:0 3px;
+  border-bottom:1px solid var(--cd-line-soft);margin-bottom:2px}
+.fh-cd-dledrow .fh-cd-dlab{position:static;transform:none;margin:0;flex:1;
+  font-size:calc(6.8px * var(--cd-fs));letter-spacing:.12em;color:var(--cd-muted)}
+/* The gold dice at 22px (31 in the old zone): five sizes + ledger +
+   arcana share 425px. Same button, same classes, same data-destiny-die
+   — only the width var changes, so staging/is-calling/is-selected all
+   carry over untouched. The compact media override (≤900px: 28px) is
+   beaten by this later, more specific selector on purpose. */
+.fh-cd-band .fh-cd-pool{margin-left:0;width:auto;gap:5px;justify-content:flex-start}
+.fh-cd-band .fh-cd-picker-die{width:22px}
+/* Die labels sat in --cd-muted ink for parchment; on the band's felt
+   that reads 2.4:1 — lifted to the tray's own quiet gold (8.6:1). */
+.fh-cd-band .fh-cd-pickerlabel{color:#d8c79b}
+/* The Arcana keeps its own click (draw/awakening) as a compact right-
+   edge label — it fits at the 425 reference (~90px free), ellipsized
+   beyond. It sheds the old absolute perch and rides the flex row. */
+.fh-cd-band .fh-cd-arcana{position:static;margin-left:auto;bottom:auto;
+  max-width:96px;color:#eac878}
+.fh-cd-band .fh-cd-arcana:hover{color:#ffd98a}
+.fh-cd-band .fh-cd-arcana.is-empty{color:#bfae8a}
+.fh-cd-band .fh-cd-arcana.is-owed{color:#ff9d90}
