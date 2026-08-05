@@ -111,6 +111,11 @@
        of this is persisted: a reload re-summons the overlay from the roll
        state itself. */
     freePop:false, builderOpen:false, builderInvokedAt:0, builderRetireAt:0, builderRetireTimer:null,
+    /* Phase 6 (architecture lot): the DEPLOYED tray — the session's whole
+       dice history in the tray's own visual language, covering everything
+       but Identity. Transient like the rest of this block: never persisted,
+       and render() retires it the instant a takeover claims the stage. */
+    trayExpanded:false,
     // Stream is `optional`, off by default (UI-TERMINOLOGY.md zone 10) -- the
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
@@ -2934,6 +2939,13 @@
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
       esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
+      /* Phase 6: the deployed history's door — beside the ⊕, same dashed-gold
+         family, an expansion glyph. Its seat on the band was the chantier's
+         proposed one; toggling it is toggleTrayExpanded (same data hook as
+         the deployed's own ×). */
+      "<button type=\"button\" class=\"fh-cd-expbtn"+(state.trayExpanded?" is-active":"")+"\" data-tray-expand"+
+      " aria-expanded=\""+(state.trayExpanded?"true":"false")+"\" title=\"Expand the dice history\" aria-label=\"Expand the dice history\">"+
+      "<svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9.5 2.5h4v4M13.2 2.8 9.3 6.7M6.5 13.5h-4v-4M2.8 13.2l3.9-3.9\"/></svg></button>"+
       /* Phase 3: the ⊕ — the free roll's door, far right where the maquette
          puts it. A discreet dashed-gold button; its popover carries the
          white picker that left the console, plus ROLL and CLEAR TRAY. */
@@ -3595,7 +3607,13 @@
     }
     return {left:left,right:right,speakTitle:speakTitle};
   }
-  function trayLineHtml(slot,index,flags,quiet){
+  /* Phase 6: `opts.readOnly` freezes a line for the DEPLOYED history — every
+     die loses its handles (visualDie's readOnly path: the menu delegation
+     never matches), the owner's reopen button renders as plain text, and the
+     climb's mark/flash stay the tray's affair. The gabarit itself is SHARED:
+     the deployed renders the same lines the tray does, one factored template. */
+  function trayLineHtml(slot,index,flags,quiet,opts){
+    var frozen=!!(opts&&opts.readOnly);
     var sizeClass=index===0?"is-l1":index<4?"is-mid":"is-static";
     var realDice=slot.dice.filter(function(die){return die.kind!=="modifier";}).length;
     /* The ratified grid (Eric, lot BACKLOG-B 2026-08-05) — ONE law for
@@ -3622,8 +3640,8 @@
     var settlePx=rows?TRAY_DIE_ROW:swarm?Math.round(30-2.5*(realDice-6)):TRAY_DIE_SKILL;
     var rollPx=settlePx;
     var sizePx=swarm?rollPx:TRAY_DIE_SKILL;
-    var snapshot=index>=4;
-    var readOnly=slot.kind==="feed";
+    var snapshot=index>=4||frozen;
+    var readOnly=slot.kind==="feed"||frozen;
     var who=slot.kind==="feed"
       ? (slot.event.actor&&(slot.event.actor.character||slot.event.actor.pseudo)||"—")
       : (state.character&&state.character.name||state.pseudo||"Character");
@@ -3643,13 +3661,13 @@
       var landingNow=!!(flags&&flags[di]);
       /* M3c: the one die the climb was FOR keeps a small persistent mark, so
          it can be found again in a crowd once the line sits on top. */
-      var picked=!!(state.traySurfaceDie&&state.traySurfaceDie.lineId===slot.id&&Number(state.traySurfaceDie.di)===di);
+      var picked=!frozen&&!!(state.traySurfaceDie&&state.traySurfaceDie.lineId===slot.id&&Number(state.traySurfaceDie.di)===di);
       return visualDie(die,di,slot.dice.length,landingNow,
         {sizePx:sizePx,snapshot:(snapshot||(index>0&&!swarm&&!landingNow))&&!die.pending,readOnly:readOnly,plainLabel:true,noLabel:swarm,naked:swarm,
          rollSizePx:rollPx,settleSizePx:settlePx,picked:picked,
          wave:swarm&&waved?Math.floor(di/10):null,waveIndex:swarm?di%10:null});
     }).join("");
-    var reopen=slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
+    var reopen=!frozen&&slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
     /* R4 (Eric, ratifié, phase 5): the portrait/chip dies. The NAME itself,
        small and in discreet uppercase, sits at the top-left of the line —
        « HARNESS » / « BRUNIR », the validated maquette — for MY lines and
@@ -3680,7 +3698,7 @@
     /* M3b: the line that just climbed announces itself — once. The flag is
        consumed by diceTrayInner after this pass, so later renders (feed
        polls land every few seconds) never restart the liseré. */
-    var surfaced=!!(state.traySurfaceFlash&&slot.id===state.traySurfaceId&&slot.kind!=="live");
+    var surfaced=!frozen&&!!(state.traySurfaceFlash&&slot.id===state.traySurfaceId&&slot.kind!=="live");
     return "<li class=\"fh-cd-trayline "+sizeClass+(deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(surfaced?" is-surfaced":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
   /* The three feed states, one derivation (T24): the Identity chip's title
@@ -3813,6 +3831,79 @@
   }
   function renderDiceTray(){
     return "<section class=\"fh-cd-zone fh-cd-dicetray\" data-zone=\"dice-tray\">"+diceTrayInner()+"</section>";
+  }
+  /* ── Phase 6 (architecture lot) — le tray déployé ────────────────────
+     Eric's ask, ratified: « voir un max de l'historique du stream de DÉS,
+     avec un bouton — ça recouvrirait tout sauf la fiche id du perso ».
+     This is the TRAY writ large, not the textual Stream (T22 — the Stream
+     keeps its enumeration and its ⋮ Identity seat, untouched): the same
+     visual lines trayLineHtml already draws, on the same ramp-A felt,
+     covering vitals+belt+panel+band+tray while Identity stays above.
+
+     DEPTH (documented): everything this session knows locally — my own
+     settled rolls from state.history (MAX_HISTORY = 20) merged with the
+     table's roll events from state.feed.events (FEED_MAX = 60, my echoes
+     deduped), true chronology newest-first, NO ten-line cap. Up to ~80
+     lines; every die is a zero-context bitmap snapshot (trayLineHtml is
+     called with index ≥ 4 and readOnly, so the WebGL budget stays 0).
+
+     INTERACTIONS (documented): the climb has no meaning here (everything
+     is already visible) — a click on a line only pings it briefly; the
+     die menus are disabled cleanly (their card renders inside the
+     summoned group at z 24, UNDER this surface at z 26, so readOnly is
+     the honest choice, same as feed lines); no re-roll — the live hand
+     stays the tray's affair. Closed by the × on its cap, by re-clicking
+     the band's button, and by Escape.
+
+     TAKEOVER RULE (chosen: the SAFE one): the deployed never coexists
+     with a claimed stage. Opening is refused while a roll transaction,
+     a pending reveal, an armed fate or a blocking prompt holds the
+     overlay (warnRollLocked says why), and render() retires the deployed
+     the instant overlayHeld() turns true — a nat-1 takeover arriving
+     from a Portent or a feed-triggered prompt is never hidden. */
+  function expandedTrayLines(){
+    var lines=[];
+    state.history.forEach(function(entry){lines.push({kind:"mine",id:entry.id,ts:entry.createdAt||"",entry:entry});});
+    var mineIds={};state.history.forEach(function(entry){mineIds[entry.id]=1;});
+    state.feed.events.forEach(function(event){
+      if(!event||event.type&&event.type!=="roll")return;
+      if(event.actor&&event.actor.pseudo===state.pseudo)return;
+      var key=String(event.rollId||event.id);
+      if(mineIds[key])return;
+      lines.push({kind:"feed",id:key,ts:event.ts||"",event:event});
+    });
+    /* True chronology — the tray's surface override (a climbed line) is a
+       display gesture of the ten-line registre, not of the full record. */
+    lines.sort(function(a,b){return String(b.ts).localeCompare(String(a.ts));});
+    lines.forEach(function(line){line.dice=line.kind==="mine"?trayDiceFromEntry(line.entry):feedLineDice(line.event);});
+    return lines;
+  }
+  function toggleTrayExpanded(){
+    if(state.trayExpanded){state.trayExpanded=false;render();return;}
+    if(rollTransactionActive()||trayRevealPending()||state.pendingArmed||
+       (state.trayPrompt&&!/^pending/.test(String(state.trayPrompt.type||"")))){warnRollLocked();return;}
+    state.trayExpanded=true;
+    // The deployed covers every transient beneath it — close them rather than strand them.
+    state.freePop=false;state.destinyPoolMenu=false;state.consoleMenu=false;state.menuOpen=false;
+    state.poolPrompt=null;state.diePrompt=null;
+    if(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")))state.trayPrompt=null;
+    if(state.builderOpen){if(state.rollConfig)syncConsoleInputs();retireBuilder();}
+    render();
+  }
+  function renderTrayExpanded(){
+    var lines=expandedTrayLines();
+    /* index si+4: every line is is-static and every settled die a snapshot —
+       the deployed is a registre, not a stage. flags null: nothing lands here. */
+    var body=lines.length
+      ? lines.map(function(slot,si){return trayLineHtml(slot,si+4,null,false,{readOnly:true});}).join("")
+      : "<li class=\"fh-cd-trayline is-empty\"><em>No rolls yet — this session's history lands here.</em></li>";
+    /* The section carries .fh-cd-dicetray ON PURPOSE: ramp A and every line
+       tint scoped to the tray apply by inheritance, and the gradient
+       stretches over the full height — depth still tells age, one language. */
+    return "<section class=\"fh-cd-zone fh-cd-dicetray fh-cd-trayexp\" data-zone=\"tray-expanded\" role=\"dialog\" aria-label=\"Dice history — every roll this session\">"+
+      "<div class=\"fh-cd-cap\">DICE HISTORY<small>"+lines.length+" roll"+(lines.length===1?"":"s")+" this session · newest first</small>"+
+      "<button type=\"button\" class=\"fh-cd-trayexp-x\" data-tray-expand aria-label=\"Close the dice history\">×</button></div>"+
+      "<ul class=\"fh-cd-traylist is-expanded\">"+body+"</ul></section>";
   }
   /* One zone, two readings. The table log is NOT a belt tab: the belt is
      everything inside the character, and the party is not inside the character
@@ -4391,6 +4482,12 @@
     return "<div class=\"fh-cd-panelbody\" data-panel-body=\""+esc(panel.id)+"\">"+body+"</div>";
   }
   function render() {
+    /* Phase 6, the takeover rule's teeth: whatever holds the stage (a
+       blocking question, an armed fate, dice in the air, any prompt card)
+       retires the deployed history the moment it arrives — a takeover is
+       never hidden under it. State hygiene, so it runs ahead of every
+       early return. */
+    if(state.trayExpanded&&overlayHeld())state.trayExpanded=false;
     if(!root)return;
     var floating=inPip();
     root.className="fh-cd-root"+(state.dockOpen?" is-open":"")+(floating?" is-floating":"");
@@ -4430,6 +4527,7 @@
         renderStats(ch)+renderBelt()+renderPanelBody()+
         (roller||overlay?renderDestiny(ch):"")+
         renderDiceTray()+
+        (state.trayExpanded?renderTrayExpanded():"")+
         (overlay?"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
         (state.streamOpen?renderStream():"")+renderPops(ch);
     }
@@ -4438,6 +4536,9 @@
        reading an older roll was physically impossible (Eric: the dice
        "dépassent sous les bords" and you can never reach them). */
     var keepTrayScroll=(function(){var node=root.querySelector(".fh-cd-traylist");return node?node.scrollTop:0;})();
+    // Phase 6: the deployed list is reborn on every render too (feed polls
+    // land every few seconds) — keep the reader's place the same way.
+    var keepExpScroll=(function(){var node=root.querySelector(".fh-cd-trayexp .fh-cd-traylist");return node?node.scrollTop:0;})();
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
     if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
@@ -4464,6 +4565,17 @@
       trayScroller.addEventListener("scroll",syncTrayArrows,{passive:true});
     }
     syncTrayArrows();
+    /* Phase 6: the deployed covers everything BUT Identity — measure the
+       real header (zoom moves it) and pin the overlay's top to its edge;
+       the stylesheet's 53px stays as the no-JS fallback. Scroll restored
+       for the same reason as the tray's. */
+    var expNode=root.querySelector(".fh-cd-trayexp");
+    if(expNode){
+      var headNode=root.querySelector(".fh-cd-head");
+      if(headNode&&headNode.offsetHeight)expNode.style.top=headNode.offsetHeight+"px";
+      var expList=expNode.querySelector(".fh-cd-traylist");
+      if(expList&&keepExpScroll)expList.scrollTop=keepExpScroll;
+    }
     // Phase 4: measure the pool strip's real room and refold if it moved.
     syncPoolFit();
     /* Picker buttons (Destiny row, white-dice row) are cached static images,
@@ -4529,6 +4641,21 @@
      every other button keep their own actions), never the LIVE hand (its dice
      already answer to menus and choices — the only line whose dice carry
      interactions today), and the right click keeps the die menus untouched. */
+  /* Phase 6: inside the deployed history everything is already visible, so
+     the climb has no meaning — a click on a line only pings it, a brief
+     highlight to hold one's place in a long registre. Buttons (the cap's ×)
+     pass through untouched. No render: one class, one timer. */
+  function pingExpandedTrayLine(event){
+    if(!state.trayExpanded||!event.target||!event.target.closest)return false;
+    var line=event.target.closest(".fh-cd-trayexp li[data-tray-line]");
+    if(!line)return false;
+    if(event.target.closest("button"))return false;
+    line.classList.remove("is-ping");
+    void line.offsetWidth; // restart the animation if the same line is pinged twice
+    line.classList.add("is-ping");
+    window.setTimeout(function(){if(line.classList)line.classList.remove("is-ping");},700);
+    return true;
+  }
   function surfaceClickedTrayDie(event){
     if(!event.target||!event.target.closest)return false;
     if(event.target.closest("button"))return false;
@@ -4536,6 +4663,8 @@
     if(!die)return false;
     var line=die.closest("li[data-tray-line]");
     if(!line||line.classList.contains("is-livehand"))return false;
+    // Phase 6 belt-and-braces: a deployed line never climbs (ping handled it).
+    if(line.closest&&line.closest(".fh-cd-trayexp"))return false;
     /* M3c (Eric: "si j'ai 30 d6, c'est pratique"): remember WHICH die was
        clicked — its position among the line's diewraps, which is the same
        index the re-render walks (visualDie emits exactly one .fh-cd-diewrap
@@ -4550,8 +4679,9 @@
     surfaceTrayLine(line.getAttribute("data-tray-line"));
     return true;
   }
-  function handleClick(event){if(surfaceClickedTrayDie(event))return;
+  function handleClick(event){if(surfaceClickedTrayDie(event))return;if(pingExpandedTrayLine(event))return;
     var button=event.target.closest("button");if(!button||!root.contains(button))return;
+    if(button.dataset.trayExpand!==undefined){toggleTrayExpanded();return;}
     if(state.rollConfig)syncConsoleInputs();
     if(button.dataset.dieChoice!==undefined){resolveDieChoice(button.dataset.dieChoice);return;}
     /* The one ROLL: it arms nothing and asks nothing, it rolls whatever the
@@ -4896,6 +5026,9 @@
        keeps its old habit and clears the tray. C stays the clear key. */
     if(key==="escape"){
       event.preventDefault();
+      // Phase 6: the deployed history is the topmost player-invoked surface —
+      // Escape retires it first, before anything it covers.
+      if(state.trayExpanded){state.trayExpanded=false;render();return;}
       if(state.freePop){state.freePop=false;render();return;}
       if(state.poolPrompt){state.poolPrompt=null;render();return;}
       if(rollTransactionActive()){warnRollLocked();return;}

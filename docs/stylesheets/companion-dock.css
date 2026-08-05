@@ -2127,3 +2127,36 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
 .fh-cd-tray-owner button{cursor:pointer}
 .fh-cd-tray-owner button:hover{color:#ffd98a}
+
+/* ── Phase 6 (architecture lot, 2026-08-05) — le tray déployé ─────────
+   Eric's ratified ask: the dice history in GRAND — the tray's own lines,
+   covering everything but the Identity zone. The section carries
+   .fh-cd-dicetray on purpose: ramp A and every tray-scoped line tint
+   apply by inheritance, and the gradient stretches over the deployed's
+   full height — the depth-tells-age language, unbroken. Only the
+   deltas live here. z 26: over the band (25) and the summoned group
+   (24, where a takeover renders — which is exactly why render() closes
+   the deployed when a takeover arrives instead of ever coexisting);
+   under the Stream (27) and the pops (30). `top` is pinned inline by
+   render() to the measured header; 53px is the no-JS fallback.
+   APPENDED only. */
+.fh-cd-trayexp{top:53px;height:auto;z-index:26;box-shadow:0 -10px 26px rgba(20,12,4,.45)}
+/* The deployed's list scrolls visibly — a long registre earns a thin
+   scrollbar where the tray hid its (chevrons carry the tray's affordance;
+   here the whole surface IS the scroll). */
+.fh-cd-trayexp .fh-cd-traylist{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin}
+.fh-cd-trayexp .fh-cd-traylist::-webkit-scrollbar{display:block;width:5px}
+.fh-cd-trayexp .fh-cd-traylist::-webkit-scrollbar-thumb{background:rgba(244,236,216,.28);border-radius:3px}
+/* The cap's × — same near-white as the dead cap's controls once wore on
+   the light top of the ramp. */
+.fh-cd-trayexp-x{margin-left:auto;flex:none;width:26px;height:26px;padding:0;border:0;border-radius:5px;
+  background:none;color:#fffdf6;font-size:16px;line-height:1;cursor:pointer;font-family:inherit}
+.fh-cd-trayexp-x:hover{color:#fff;background:rgba(33,30,24,.2)}
+/* The band's door: the ⊕'s dashed-gold family, an expansion glyph. */
+.fh-cd-expbtn{flex:none;width:26px;height:26px;padding:0;margin-right:4px;border:1px dashed rgba(201,164,90,.55);
+  border-radius:6px;background:none;color:#eac878;cursor:pointer;display:grid;place-items:center}
+.fh-cd-expbtn svg{display:block;width:13px;height:13px}
+.fh-cd-expbtn:hover,.fh-cd-expbtn.is-active{border-color:#ffd98a;color:#ffd98a;border-style:solid}
+/* The ping: a click's brief highlight — the deployed's only line gesture. */
+.fh-cd-trayexp .fh-cd-trayline.is-ping{animation:fh-cd-exp-ping .7s ease-out}
+@keyframes fh-cd-exp-ping{0%{background:rgba(255,217,138,.24)}100%{background:transparent}}
