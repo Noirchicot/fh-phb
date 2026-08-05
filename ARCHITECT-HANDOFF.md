@@ -351,6 +351,28 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 
 ## 6. State at handoff
 
+> 🚀 **LOT LAUNCHED 2026-08-05 — the SRD reference site (`fh-srd`, branch
+> `srd/web-v1`).** Eric wants the SRD browsable on the web with deep links from
+> the Companion. Two decisions ratified the same day:
+> 1. **It is fh-srd's own GitHub Pages site, never pages inside `fh-phb`** —
+>    the licence boundary stays the repo boundary (README's founding argument),
+>    it deploys independently of the closed deploy gate, and it avoids the
+>    generated-copy trap of §3 entirely.
+> 2. **Attribution is the strict SRD wording** — each record's own
+>    `attribution` paragraph, per page, in the page's language, and **no**
+>    "neither approved nor endorsed" line (the SRD legal page asks that it be
+>    omitted). This resolves the B5 wording question for the published site;
+>    the vault audit's B5 block is NOT what goes on public pages.
+>
+> **The URL contract is frozen**: `…/fh-srd/{lang}/{kind}/#{slug}` — the
+> Companion will link these; slugs must never be renamed. Build shape: a
+> deterministic `src/build_web.py` writing committed output to `web/`, a
+> `deploy_pages.sh` publishing `web/` to a `gh-pages` branch. **Deployment
+> (enabling Pages, running the script) is Eric's, as always.** This lot runs
+> in parallel with the Dice Tray session — sanctioned by the two-track rule
+> (one on the core, one outside it; this one is in another repo entirely).
+> Architect reviews and merges on delivery, §4 discipline.
+
 > ✅ **CLOSED 2026-08-03 — AboveVTT chat persistence will not happen. Stop
 > treating it as pending.** Azmoria, asked directly: `inject_chat` rides DDB's
 > gamelog message broker with `persist:false`; AboveVTT has **no server-side
