@@ -674,4 +674,16 @@ for (const s of [svgA, svgB, t.dieSvg(20, 52, "ivory", "17"), t.dieSvg(8, 26, "a
 }
 assert.doesNotMatch(css, /url\(#g/, "the CSS pins no gradient id — ids are free to be per-instance");
 
+/* ---- M5: the PORTENT label must not slide under its select. The label
+   column was a fixed 36px box while the text scales with --cd-fs; the
+   spilled letters were painted over by the select 3px later. The fix is
+   a cascade override: 36px becomes a MINIMUM and the box grows to fit. */
+assert.match(source, /<div class=\\"fh-cd-dmrow\\"><span>Portent<\/span>"\+\s*"<select class=\\"fh-cd-dmportent/,
+  "the Portent row is label THEN select, siblings in one flex row");
+const fixedRule = css.indexOf(".fh-cd-card .fh-cd-dmrow>span{flex:none;width:36px");
+const growRule = css.indexOf(".fh-cd-card .fh-cd-dmrow>span{width:auto;min-width:36px;white-space:nowrap}");
+assert.ok(fixedRule >= 0 && growRule >= 0, "both the base rule and the M5 override exist");
+assert.ok(growRule > fixedRule,
+  "the override comes AFTER the fixed-width rule, so at equal specificity the label box grows to its content");
+
 console.log("dice-tray: all assertions passed");

@@ -1955,3 +1955,12 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-band .fh-cd-arcana:hover{color:#ffd98a}
 .fh-cd-band .fh-cd-arcana.is-empty{color:#bfae8a}
 .fh-cd-band .fh-cd-arcana.is-owed{color:#ff9d90}
+
+/* ── M5: the PORTENT label must not slide under its select ────────
+   The die-menu label column was a FIXED 36px (flex:none;width:36px)
+   while its text scales with --cd-fs and carries .09em tracking —
+   "PORTENT" renders wider than 36px, spills out of its box, and the
+   select placed 3px after the box paints OVER the spilled letters.
+   The column keeps 36px as a MINIMUM so Roll/Or stay aligned, but a
+   long label now widens its box and pushes the select clear. */
+.fh-cd-card .fh-cd-dmrow>span{width:auto;min-width:36px;white-space:nowrap}
