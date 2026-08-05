@@ -12,7 +12,8 @@
       no live WebGL context — the ~16-context browser cap);
    4. it is the table's SHARED surface: feed rolls merge in, my own feed
       echoes do not, and the three states LIVE / RECENT / OFF are written
-      on the cap in plain words — never a silent fallback;
+      in plain words — on the Identity line's chip since phase 2 (mort du
+      cap) — never a silent fallback;
    5. the fh-roll/1 display layer now carries the dice, so another dock
       can draw a roll instead of guessing it from display strings. */
 
@@ -31,7 +32,8 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhDiceTray = {
     state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
     renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
-    surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie, dieSvg
+    surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie, dieSvg,
+    renderDockHeader, feedChipHtml, feedStatusCaption
   };
 })();
 `);
@@ -78,24 +80,28 @@ t.state.character = {name:"Yedrivel"};
 
 assert.equal(t.TRAY_MAX, 10, "the tray holds ten rolls — beyond that, the Stream or AboveVTT");
 assert.match(t.renderDiceTray(), /data-zone="dice-tray"/, "the Dice Tray is its own zone");
-/* REWRITTEN (lot texte T14, 2026-08-04): the DICE TRAY word is gone — the
-   dice say it — and the cap is led by the state chip, with CLEAR TRAY's ×
-   on its right edge (D4). */
-assert.doesNotMatch(t.renderDiceTray(), /DICE TRAY/, "the cap no longer spells the zone's name");
-assert.match(t.renderDiceTray(), /fh-cd-traystate/, "the state chip leads the cap instead");
-assert.match(t.renderDiceTray(), /fh-cd-trayclear[^>]*data-clear-tray/, "and the × on the cap is CLEAR TRAY's final seat");
-/* Lot BACKLOG-A (Eric, revue 2026-08-04): the cap is a BAND now — same
-   56px as the standard mid/static lines, contents scaled to fill it,
-   and the zone's deterministic height follows (284 → 320) so the four
-   bands stay exactly visible. */
-assert.match(css, /\.fh-cd-root\{--cd-traycap-h:56px;--cd-tray-h:320px\}/,
-  "the cap takes a band's height (56px, like .is-mid/.is-static) and the zone grows by the same 36px");
-assert.match(css, /\.fh-cd-dicetray>\.fh-cd-cap\{height:var\(--cd-traycap-h\)/,
-  "the cap's height is the band variable, not a fossil pixel value");
+/* REWRITTEN (phase 2, mort du cap, Eric R5 2026-08-05): the cap row is DEAD
+   — the tray renders nothing but its list of lines and the two floating
+   chevrons. Its cargo moved: the state chip to the Identity line
+   (asserted in section 6), CLEAR TRAY and the ⋮'s URL…/Refresh into the
+   Identity ⋮ (provisional seat for Clear until phase 3). */
+assert.doesNotMatch(t.renderDiceTray(), /DICE TRAY/, "the zone still never spells its own name");
+assert.doesNotMatch(t.renderDiceTray(), /fh-cd-cap/, "the cap row is gone — the tray is lines of rolls, nothing else");
+assert.doesNotMatch(t.renderDiceTray(), /fh-cd-traystate/, "the state chip left the tray for the Identity line");
+assert.doesNotMatch(t.renderDiceTray(), /data-clear-tray/, "the × died with the cap");
+assert.match(t.renderDiceTray(), /fh-cd-traylist/, "the list survives");
+assert.match(t.renderDiceTray(), /data-tray-scroll="up"[\s\S]*data-tray-scroll="down"/, "and both chevrons float on");
 assert.match(css, /\.fh-cd-trayline\.is-mid,\.fh-cd-trayline\.is-static\{min-height:56px\}/,
   "…and 56 is still what a standard band measures (change one, change both)");
-assert.match(css, /\.fh-cd-trayarrow\.is-up\{top:calc\(var\(--cd-traycap-h\) \+ 4px\)\}/,
-  "the up chevron follows the cap's lower edge instead of assuming ~20px");
+/* REWRITTEN (phase 2): the chevron's perch was calc(--cd-traycap-h + 4px)
+   under a cap that no longer exists — its LAST word must be the top of the
+   list. And the zone's LAST height word stays 284: with no cap that is
+   2px top padding + 5×56 = 282 ≤ 284 — FIVE whole bands visible now
+   (BACKLOG-B's 284 already priced the cap's announced death). */
+const lastUpArrow = [...css.matchAll(/\.fh-cd-trayarrow\.is-up\{top:([^}]+)\}/g)].pop();
+assert.equal(lastUpArrow && lastUpArrow[1], "4px", "the up chevron floats over line 1 — no dead cap offset");
+/* (The 284 last-word assertion lives just below, in the BACKLOG-B block —
+   rewritten there for the five-band arithmetic.) */
 /* Lot BACKLOG-B (Eric, 2026-08-05): L1 loses its 84px privilege — the
    « C » ramp says which roll is newest by POSITION, not by a taller
    band. 56 nominal everywhere; 72 only for a 21-30-dice hand (three
@@ -109,13 +115,13 @@ assert.equal(lastDeep && lastDeep[1], "72", "only a 21-30-dice hand deepens its 
 const lastL1T3 = [...css.matchAll(/\.fh-cd-trayline\.is-l1 \.fh-cd-tray-t3\{max-height:(\d+)px\}/g)].pop();
 assert.equal(lastL1T3 && lastL1T3[1], "22", "L1's tier-3 headroom was 84-era slack — back to the common 22");
 assert.match(source, /trayScroll==="up"\?-56:56/, "one chevron click steps exactly one 56px band");
-/* And the zone returns to Eric's acted 284: with border-box folding each
-   line's paddings and separator inside its 56, four bands need only
-   2 (tray pad) + 56 (cap) + 4×56 = 282. BACKLOG-A's 320 funded the old
-   84 band; that block above stays untouched (appended-only) — the LAST
+/* REWRITTEN (phase 2, mort du cap): the acted 284 now buys FIVE bands.
+   With border-box folding each line's paddings and separator inside its
+   56, and no cap row at all, the zone needs 2 (tray pad) + 5×56 = 282.
+   BACKLOG-B's 284 already priced the cap's announced death — the LAST
    word is what the browser reads. */
 const lastTrayH = [...css.matchAll(/--cd-tray-h:(\d+)px/g)].pop();
-assert.equal(lastTrayH && lastTrayH[1], "284", "the tray's last word on its height is the acted 284 — 282 needed, 2px spare");
+assert.equal(lastTrayH && lastTrayH[1], "284", "the tray's last word on its height is the acted 284 — 2 + 5×56 = 282 needed, 2px spare");
 assert.doesNotMatch(t.renderStageZone(), /data-zone="dice-tray"/, "the roller does not carry the tray any more");
 
 t.state.history = [];
@@ -389,24 +395,54 @@ assert.doesNotMatch(feedLineHtml, /data-die-landed/, "another player's dice carr
 assert.match(feedLineHtml, /fh-cd-tray-initials">Il</, "the who is the character's chip, two letters");
 assert.match(feedLineHtml, /fh-cd-tray-name">Ilyra/, "with the full name on hover");
 
-/* ── 6. LIVE / RECENT / OFF on the cap — never a silent fallback ───── */
+/* ── 6. LIVE / RECENT / OFF on the Identity line — never a silent
+       fallback ─────────────────────────────────────────────────────── */
 
-/* REWRITTEN (lot texte T15/T17, 2026-08-04): the status phrase rides the
-   chip's hover title now, and URL…/Refresh live behind the cap's ⋮ — the
-   state itself is still always shown, by the chip. */
+/* REWRITTEN (phase 2, mort du cap, Eric R5 2026-08-05): the chip left the
+   dead cap for the Identity line, beside the campaign code it qualifies —
+   same three states, same T24 phrases on its hover title, same loud OFF.
+   URL… and Refresh moved from the cap's ⋮ into the Identity's EXISTING ⋮.
+   The tray itself no longer says any of it (asserted in section 1). */
+const headerCh = {name:"Yedrivel", species:"Elf", classes:[{name:"Wizard",level:5}]};
 t.state.feed.tableState = "recent";
-assert.match(t.diceTrayInner(), /cloud log, about 30s behind/, "RECENT still says what it is — on the chip's title");
-assert.match(t.diceTrayInner(), /data-tray-capmenu/, "and the cap offers its ⋮ (RECENT has a refresh to hold)");
-t.state.trayCapMenu = true;
-assert.match(t.diceTrayInner(), /data-feed-refresh/, "the ⋮ holds the one manual refresh (RECENT is never polled)");
+assert.match(t.feedChipHtml(), /cloud log, about 30s behind/, "RECENT still says what it is — on the chip's title");
+assert.match(t.renderDockHeader(headerCh), /FH1[\s\S]*data-feed-chip/, "and the chip sits on the Identity line, after the campaign code");
+assert.match(t.renderDockHeader(headerCh), /is-recent"[^>]*>RECENT</, "wearing the state in plain words");
+t.state.menuOpen = true;
+let identityMenu = t.renderDockHeader(headerCh);
+assert.match(identityMenu, /data-feed-refresh/, "the Identity ⋮ holds the one manual refresh (RECENT is never polled)");
+assert.match(identityMenu, /data-table-url-set/, "and the DM's URL… escape hatch");
+assert.match(identityMenu, /data-stream-toggle/, "beside the Stream toggle it always carried");
+assert.match(identityMenu, /data-clear-tray/, "and Clear tray's provisional seat (phase 3 re-seats it)");
 t.state.feed.tableState = "live";
-assert.match(t.diceTrayInner(), /every roll at the table, live/, "LIVE says what it is");
-assert.doesNotMatch(t.diceTrayInner(), /data-feed-refresh/, "no refresh needed when the table streams");
-t.state.trayCapMenu = false;
+identityMenu = t.renderDockHeader(headerCh);
+assert.match(t.feedChipHtml(), /every roll at the table, live/, "LIVE says what it is");
+assert.doesNotMatch(identityMenu, /data-feed-refresh/, "no refresh needed when the table streams");
+assert.doesNotMatch(identityMenu, /data-table-url-set/, "and no URL… either — the table is already found");
+t.state.menuOpen = false;
 t.state.feed.tableState = "off";
-const offCap = t.diceTrayInner();
-assert.match(offCap, /not reaching the table/, "OFF is written in plain words on the chip's title");
-assert.match(offCap, /is-off/, "and wears the loud state chip — never folded into a quieter caption");
+const offChip = t.feedChipHtml();
+assert.match(offChip, /not reaching the table/, "OFF is written in plain words on the chip's title");
+assert.match(offChip, /is-off/, "and wears the loud state chip — never folded into a quieter caption");
+assert.match(css, /\.fh-cd-traystate\.is-off\{color:#fff;border-color:var\(--cd-bad\);background:var\(--cd-bad\)\}/,
+  "OFF's red plate is unscoped, so it stays CRIANT on the Identity line too");
+/* The 360-floor sacrifice hierarchy (measured: prose + code + RECENT
+   overflows the Identity line by ~15px there): the species/class prose
+   ellipsizes, the code and the chip are flex:none — the STATE is never
+   the clipped thing. */
+assert.match(t.renderDockHeader(headerCh), /fh-cd-subwho[\s\S]*fh-cd-subcode[\s\S]*data-feed-chip/,
+  "the subtitle splits into shrinkable prose, then the incompressible code and chip");
+assert.match(css, /\.fh-cd-subwho\{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\}/,
+  "the prose is what ellipsizes at the floor");
+assert.match(css, /\.fh-cd-id \.fh-cd-traystate\{flex:none\}/,
+  "the chip refuses to shrink");
+/* No campaign → no chip, and the invitation must still be SAID: it moved
+   from the dead cap's small print to the Identity subtitle itself. */
+const savedCode = t.state.code;
+t.state.code = "";
+assert.equal(t.feedChipHtml(), "", "without a campaign there is no connection to state");
+assert.match(t.renderDockHeader(null), /load one to join the table/, "the « load a character » invitation survives, on the Identity line");
+t.state.code = savedCode;
 t.state.feed.tableState = "recent";
 
 /* ── 7. CLEAR TRAY empties the hand, not the registre ──────────────── */

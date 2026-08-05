@@ -14,7 +14,8 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
     renderDestiny, renderStageZone, renderConsole, renderEventContent, renderJudgmentFrame, resolveNatOne, renderStream, renderStreamEntry, rollExport,
     outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate,
-    diceTrayInner, renderDiceTray, trayLines, trayDiceFromEntry, rollExportDice, feedLineDice
+    diceTrayInner, renderDiceTray, trayLines, trayDiceFromEntry, rollExportDice, feedLineDice,
+    renderDockHeader, feedChipHtml
   };
 })();
 `);
@@ -146,14 +147,18 @@ assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted
 assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray[" ]/, "the roller no longer carries a bar of die buttons");
 assert.doesNotMatch(t.renderStageZone(), /data-roll-now/, "ROLL no longer lives in the roller");
 assert.match(t.renderConsole(), /data-roll-now/, "it carries the one permanent ROLL, in the white dice row instead");
-/* REWRITTEN (lot texte, D4 tranchée 2026-08-04): CLEAR TRAY's final seat is
-   the × on the Dice Tray's own cap — the zone it acts on. The console lost
-   its whole cap row with it (T18: "ROLL CONSOLE" said nothing the tray was
-   not already saying). */
+/* REWRITTEN (phase 2, mort du cap, Eric R5 2026-08-05): the tray cap died,
+   and with it the ×. CLEAR TRAY's provisional seat is an entry in the
+   Identity ⋮ until phase 3 lands its real homes (invoked console + a
+   discreet clear at the builder). The tray itself carries no chrome. */
 assert.doesNotMatch(t.renderStageZone(), /data-clear-tray/, "CLEAR TRAY left the roller");
 assert.doesNotMatch(t.renderConsole(), /data-clear-tray/, "and left the console too");
 assert.doesNotMatch(t.renderConsole(), /ROLL CONSOLE/, "whose cap row is gone with its caption");
-assert.match(t.diceTrayInner(), /data-clear-tray/, "the × on the tray cap is its final seat");
+assert.doesNotMatch(t.diceTrayInner(), /data-clear-tray/, "the dead cap took the × with it");
+t.state.menuOpen=true;
+assert.match(t.renderDockHeader({name:"Awki",species:"Elf",classes:[{name:"Wizard",level:5}]}),
+  /data-clear-tray/, "Clear tray waits in the Identity ⋮ (provisoire, phase 3 will seat it)");
+t.state.menuOpen=false;
 assert.match(t.renderConsole(), /data-add-tray-die="100"/, "the white picker in the console exposes d4 through d100");
 
 t.state.record = {build:{

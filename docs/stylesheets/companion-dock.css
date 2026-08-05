@@ -1964,3 +1964,36 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    The column keeps 36px as a MINIMUM so Roll/Or stay aligned, but a
    long label now widens its box and pushes the select clear. */
 .fh-cd-card .fh-cd-dmrow>span{width:auto;min-width:36px;white-space:nowrap}
+
+/* ── Phase 2 (Eric R5, 2026-08-05) — la mort du cap du tray ──────────
+   The tray's cap row is not rendered any more (diceTrayInner emits only
+   the traylist and the chevrons); its cargo moved to the Identity zone.
+   The zone keeps --cd-tray-h:284 and the arithmetic now reads, border-box
+   throughout (.fh-cd-root *):
+     tray top padding 2 (the fourth fitting's 2px 4px 0)
+   + 5 × 56 nominal bands                        = 282 ≤ 284.
+   FIVE whole bands exactly visible with 2px spare — the cap's 56 became
+   a fifth line, which is what the 284 of BACKLOG-B was already priced
+   for. No variable moves; only the chevron re-anchors: its perch was
+   calc(--cd-traycap-h + 4px) under a cap that no longer exists, so it
+   floats over line 1's top edge instead. APPENDED only. */
+.fh-cd-trayarrow.is-up{top:4px}
+/* The LIVE/RECENT/OFF chip on the Identity line, after the campaign
+   code. Inline in the subtitle <p> (nowrap + ellipsis, so it can never
+   wrap the line); the base .fh-cd-traystate margin-left:auto was a flex
+   habit that means nothing inline but is zeroed for clarity. The chip
+   keeps the PARCHMENT tints of its base rule — gold RECENT, #3d7d56
+   LIVE, white-on-red OFF (the loud plate survives the move untouched:
+   .is-off's background is unscoped). */
+.fh-cd-id .fh-cd-traystate{margin-left:5px;display:inline-block;padding:1px 5px;
+  vertical-align:1px;line-height:1.2}
+/* The Identity subtitle becomes a flex row so the chip can NEVER be the
+   clipped thing (measured at the 360 floor: the old single ellipsis run
+   cut the chip off entirely — a silent fallback, forbidden). Sacrifice
+   order: the species/class prose ellipsizes; the campaign code and the
+   chip are flex:none. The no-character invitation rides .fh-cd-subwho
+   alone and keeps the old single-ellipsis behaviour. */
+.fh-cd-id p{display:flex;align-items:center;min-width:0}
+.fh-cd-subwho{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-subcode{flex:none;white-space:pre}
+.fh-cd-id .fh-cd-traystate{flex:none}

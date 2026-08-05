@@ -95,7 +95,7 @@
     traySelection:[20],trayResults:[],trayTitle:"Dice Tray",trayLabel:"Damage roll",trayResultText:"",queueDone:"",rollSequence:null,chromeOpen:false,
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
-    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false, trayCapMenu:false,
+    dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false,
     // Stream is `optional`, off by default (UI-TERMINOLOGY.md zone 10) -- the
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
@@ -3329,7 +3329,7 @@
     var surfaced=!!(state.traySurfaceFlash&&slot.id===state.traySurfaceId&&slot.kind!=="live");
     return "<li class=\"fh-cd-trayline "+sizeClass+(deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(surfaced?" is-surfaced":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
-  /* The three feed states, one derivation (T24): the tray cap's chip title
+  /* The three feed states, one derivation (T24): the Identity chip's title
      and the Stream's cap read the SAME phrases instead of each keeping a
      copy. Never fall back silently: the state is always shown — by the chip;
      what moved to hover is only the paraphrase (T15). */
@@ -3338,34 +3338,24 @@
       :ts==="live"?"every roll at the table, live"
       :"no live table — cloud log, about 30s behind";
   }
-  function diceTrayInner(){
+  /* Phase 2 (mort du cap, Eric R5 2026-08-05): the LIVE/RECENT/OFF chip is
+     the state of THIS campaign connection, so it sits on the Identity line
+     next to the campaign code that names it. One producer for both the
+     full render (renderDockHeader) and the poll-path patch (renderFeedZone
+     swaps outerHTML on [data-feed-chip]) — the T24 single derivation
+     survives the move. Without a campaign there is no chip: the Identity
+     subtitle itself carries the « load a character » invitation then. */
+  function feedChipHtml(){
+    if(!feedActive())return "";
     var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
-    var caption=feedStatusCaption(ts,offline);
-    var manual=feedActive()&&ts!=="live"
-      ? "<button type=\"button\" class=\"fh-cd-tableurl\" data-table-url-set title=\"Paste the DM's table URL\">"+(state.feed.manualUrl?"URL set":"URL…")+"</button>":"";
-    var refresh=feedActive()&&ts==="recent"&&!offline
-      ? "<button type=\"button\" class=\"fh-cd-refresh\" data-feed-refresh title=\"Check the cloud log now\">Refresh</button>":"";
-    /* The cap slimmed down (lot texte, D4 tranchée) : the DICE TRAY word is
-       gone (T14 — the dice say it), the verbose status rides the chip's
-       hover title (T15 — OFF stays loud through the chip itself), URL… and
-       Refresh live behind the cap's ⋮ (T17), and CLEAR TRAY is the small ×
-       at the cap's right edge (T19/D4) — same behaviour, same
-       rollTransactionActive guard it had in the console. */
-    var capMenu="";
-    if(manual||refresh){
-      var capMenuOpen=!!state.trayCapMenu;
-      capMenu="<span class=\"fh-cd-cmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu is-capmenu"+(capMenuOpen?" is-active":"")+"\" data-tray-capmenu aria-haspopup=\"true\" aria-expanded=\""+(capMenuOpen?"true":"false")+"\" aria-label=\"Table feed options\">"+glyph("dots")+"</button>"+
-        (capMenuOpen?"<div class=\"fh-cd-cmenu is-traycap\">"+
-          (manual?"<div class=\"fh-cd-cmenurow is-traycap\">"+manual+"</div>":"")+
-          (refresh?"<div class=\"fh-cd-cmenurow is-traycap\">"+refresh+"</div>":"")+"</div>":"")+"</span>";
-    }
-    var busy=rollTransactionActive();
-    var clear="<button type=\"button\" class=\"fh-cd-trayclear\" data-clear-tray"+(busy?" disabled":"")+
-      " title=\""+(busy?"Answer the question above the dice first":"Clear tray")+"\" aria-label=\"Clear tray\">"+iconSvg("close")+"</button>";
-    var cap="<div class=\"fh-cd-cap\">"+
-      "<span class=\"fh-cd-traystate is-"+(offline?"off":ts)+"\" title=\""+esc(caption)+"\">"+(offline?"OFF":ts==="live"?"LIVE":"RECENT")+"</span>"+
-      (feedActive()?"":"<small>your rolls — load a character to join the table</small>")+
-      "<span class=\"fh-cd-capacts\">"+capMenu+clear+"</span></div>";
+    return "<span class=\"fh-cd-traystate is-"+(offline?"off":ts)+"\" data-feed-chip title=\""+esc(feedStatusCaption(ts,offline))+"\">"+(offline?"OFF":ts==="live"?"LIVE":"RECENT")+"</span>";
+  }
+  function diceTrayInner(){
+    /* The cap is DEAD (phase 2, Eric R5): the tray is nothing but lines of
+       rolls now. Its cargo found seats elsewhere — the state chip on the
+       Identity line (feedChipHtml), URL…/Refresh/Clear tray in the
+       Identity ⋮ (renderDockHeader), the « load a character » invitation
+       on the Identity subtitle. Only the chevrons remain, floating. */
     /* The live hand is the top line — but only once it has LANDED something.
        A hand still being assembled (every die pending, no entry) belongs to
        the Roll Builder, and renders in the roller's assembly frame instead:
@@ -3435,7 +3425,7 @@
       "<button type=\"button\" class=\"fh-cd-trayarrow is-down\" data-tray-scroll=\"down\" aria-label=\"Scroll to older rolls\">"+chevron(false)+"</button>";
     // M3b: the announcement played this pass — it must not replay on the next.
     state.traySurfaceFlash=false;
-    return cap+"<ul class=\"fh-cd-traylist\">"+list+"</ul>"+arrows;
+    return "<ul class=\"fh-cd-traylist\">"+list+"</ul>"+arrows;
   }
   /* Shown only where useful: up when something is newer above, down when
      rolls hide below the fold. Rides the zone so the arrows survive the
@@ -3517,6 +3507,17 @@
      Only this one zone is repainted, and only when its markup actually moved. */
   function renderFeedZone(){
     if(!root)return;
+    /* The chip lives on the Identity line now (phase 2) and the poll path
+       must keep it truthful without a full render() — same targeted-swap
+       rule as the zones below, and the SAME producer as the full render
+       (feedChipHtml), so T24's single derivation holds. feedActive() can
+       only change on paths that already re-render the whole header, so a
+       missing chip never has to appear here. */
+    var chip=root.querySelector("[data-feed-chip]");
+    if(chip){
+      var nextChip=feedChipHtml();
+      if(nextChip&&chip.outerHTML!==nextChip)chip.outerHTML=nextChip;
+    }
     /* The Dice Tray is the shared surface, so a feed event repaints it first
        — same targeted-swap rule as the stream: never a full render() on a
        poll, and only when the markup actually moved. The remount is what
@@ -3871,13 +3872,41 @@
     var initials=String(ch&&ch.name||"FH").split(/\s+/).map(function(word){return word.charAt(0);}).join("").slice(0,3).toUpperCase();
     var portrait=portraitFor(ch);
     var classes=ch?ch.classes.map(function(entry){return entry.name+" "+entry.level;}).join(" / "):"";
-    var subtitle=ch?esc(ch.species)+" · "+esc(classes)+(state.code?" · "+esc(state.code):""):"No character loaded";
+    /* Phase 2 (mort du cap): the connection chip rides the Identity line,
+       right after the campaign code it qualifies. Without a character the
+       old cap's invitation is said HERE — the one line that already states
+       the absence is the honest seat for what to do about it.
+       The line is a flex row with a hierarchy of sacrifice (measured at the
+       360 floor, where « Human · Wizard 5 · FH1 » + RECENT overflows by
+       ~15px): the species/class prose ellipsizes first; the campaign code
+       and the chip are incompressible — the STATE may never be the thing
+       that silently disappears. */
+    var subtitle=ch?"<span class=\"fh-cd-subwho\">"+esc(ch.species)+" · "+esc(classes)+"</span>"+
+        (state.code?"<span class=\"fh-cd-subcode\"> · "+esc(state.code)+"</span>":"")+feedChipHtml()
+      :"<span class=\"fh-cd-subwho\">No character loaded — load one to join the table</span>";
     var avatar=portrait
       ? "<img class=\"fh-cd-portrait\" src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'fh-cd-portrait',textContent:'"+esc(initials)+"'}))\">"
       : "<span class=\"fh-cd-portrait\">"+esc(initials)+"</span>";
+    /* Phase 2 (mort du cap, Eric R5): the tray cap's ⋮ cargo moves in here,
+       grouped with Open Stream — they are all « the table », which is what
+       the chip beside FH1 announces. URL… and Refresh keep their exact
+       conditions and data hooks from the dead cap. */
+    var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
+    var feedManual=feedActive()&&ts!=="live"
+      ? "<button type=\"button\" data-table-url-set title=\"Paste the DM's table URL\">"+(state.feed.manualUrl?"Table URL set":"Table URL…")+"<small>from the DM</small></button>":"";
+    var feedRefresh=feedActive()&&ts==="recent"&&!offline
+      ? "<button type=\"button\" data-feed-refresh title=\"Check the cloud log now\">Refresh table<small>cloud log</small></button>":"";
+    /* PROVISOIRE (phase 2 → 3): Clear tray sits here only until its real
+       seats land — the invoked console and a discreet clear at the builder
+       (phase 3 retires this entry if redundant). Same rollTransactionActive
+       guard the cap's × carried. */
+    var trayBusy=rollTransactionActive();
+    var clearEntry="<button type=\"button\" data-clear-tray"+(trayBusy?" disabled":"")+
+      " title=\""+(trayBusy?"Answer the question above the dice first":"Clear tray")+"\">Clear tray<small>the rolls</small></button>";
     var menu=state.menuOpen?"<div class=\"fh-cd-menu\">"+
       "<div class=\"fh-cd-menurow\"><span>Zoom</span>"+renderZoomControl()+"</div>"+
       "<button type=\"button\" data-stream-toggle>"+(state.streamOpen?"Close Stream":"Open Stream")+"<small>consultable history</small></button>"+
+      feedManual+feedRefresh+clearEntry+
       "<div class=\"fh-cd-msep\"></div>"+
       "<button type=\"button\" id=\"fhPsSync\">"+(linked?"Sync D&amp;D Beyond":"Link D&amp;D Beyond")+"<small>pull</small></button>"+
       (linked?"<button type=\"button\" id=\"fhPsRelink\">Replace the DDB link</button>":"")+
@@ -4184,15 +4213,17 @@
       if(openingTable)refreshFeed();
       return;
     }
-    if(button.dataset.feedRefresh!==undefined){refreshFeed();return;}
+    /* These three ride the Identity ⋮ now (phase 2) — acting closes it. */
+    if(button.dataset.feedRefresh!==undefined){state.menuOpen=false;refreshFeed();render();return;}
     /* The escape hatch (plan §12.4): the DM reads the table URL out loud, a
        player pastes it here. Bypasses the rendezvous entirely — there is
        nothing to discover once a human has already said where it is. Blank
        clears the override and returns to normal rendezvous discovery. */
     if(button.dataset.tableUrlSet!==undefined){
+      state.menuOpen=false;
       var current=state.feed.manualUrl||"";
       var next=window.prompt("Table server URL from the DM (blank to clear):",current);
-      if(next===null)return;
+      if(next===null){render();return;}
       next=next.trim();
       try{
         if(next)localStorage.setItem(manualTableKey(state.code),next);
@@ -4201,9 +4232,10 @@
       state.feed.manualUrl=next;
       disconnectTableWs();state.feed.tableUrl="";state.feed.wsRetry=0;
       setTableState("recent");checkRendezvous();
+      render();
       return;
     }
-    if(button.dataset.clearTray!==undefined){if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}
+    if(button.dataset.clearTray!==undefined){state.menuOpen=false;if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);render();return;}
     if(button.dataset.trayScroll!==undefined){var scrollList=root.querySelector(".fh-cd-traylist");if(scrollList){/* One click = one band: every line is the same 56px now (border-box,
        paddings and separator inside), so the chevron steps exactly one. */
       scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-56:56,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
@@ -4249,7 +4281,6 @@
     // Opening the console's ⋮ syncs first: its own inputs are what render()
     // is about to rebuild, so an unsynced value would be thrown away.
     if(button.dataset.consoleMenu!==undefined){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=!state.consoleMenu;render();return;}
-    if(button.dataset.trayCapmenu!==undefined){state.trayCapMenu=!state.trayCapMenu;render();return;}
     if(button.dataset.destinyPool){var pool=button.dataset.destinyPool.split(":");adjustDestinyDie(pool[0],pool[1]);return;}
     if(button.dataset.destinyStep){var parts=button.dataset.destinyStep.split(":"),field=parts[0],step=Number(parts[1]);updateDestinyField(field,Number(state.destiny[field])+step,"Manual correction");return;}
     if(button.dataset.exhStep!==undefined){setExhaustion(exhaustionLevel()+Number(button.dataset.exhStep),"Adjusted by hand");render();return;}
@@ -4371,8 +4402,9 @@
     if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   /* ── General rule: a click outside an open dropdown closes it ─────
      Applies to every small anchored popup and floating menu card (the
-     header's ⋮, the Destiny pool menu, the console ⋮ with its MOD/DC,
-     the tray cap's ⋮, a die's own menu — the seal card — and the badge
+     header's ⋮ — which since phase 2 also carries the dead tray cap's
+     cargo: URL…, Refresh, Clear tray — the Destiny pool menu, the
+     console ⋮ with its MOD/DC, a die's own menu — the seal card — and the badge
      cards) -- not to the belt's full panels, the inline disclosures
      with their own × (HP/EXH tracker, Access zone, Stream), or a
      ROLL'S DECISION PROMPTS (nat1, die-choice, arcana-draw, chaos,
@@ -4386,7 +4418,6 @@
     /* Closing this one commits first: it holds live MOD/DC inputs, and a
        value typed and then dismissed by clicking away must not be lost. */
     {isOpen:function(){return !!state.consoleMenu;},close:function(){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=false;},box:".fh-cd-cmenu",toggle:"[data-console-menu]"},
-    {isOpen:function(){return !!state.trayCapMenu;},close:function(){state.trayCapMenu=false;},box:".fh-cd-cmenu.is-traycap",toggle:"[data-tray-capmenu]"},
     /* The die menu (right click / long press on a die: seal, colour, roll
        mode, Portent). Its toggles are the dice themselves: a click landing
        on a die is dice-work, not "elsewhere" — and the synthetic click a

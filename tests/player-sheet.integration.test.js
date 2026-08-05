@@ -63,9 +63,14 @@ function openMenu(){ if(!root.querySelector(".fh-cd-menu")) root.querySelector("
 /* REWRITTEN (dock v6): there is no Continue button to click through — an
    announcement never waited on one. Only a decision does, and each test that
    raises one answers it itself. */
+/* REWRITTEN (phase 2, mort du cap, 2026-08-05): CLEAR TRAY's × died with the
+   tray cap — its provisional seat is an entry in the Identity ⋮, so settling
+   opens that menu first (clicking the entry closes it again). */
 function settleRoll(){
+  openMenu();
   const clear=root.querySelector("[data-clear-tray]");
   if(clear && !clear.disabled) clear.click();
+  else root.querySelector("[data-menu-toggle]").click();
 }
 
 /* ── Dock chrome ─────────────────────────────────────────────── */
@@ -298,7 +303,10 @@ const beforeDestinyHistory=t.state.history.length;
 root.querySelector("[data-roll-now]").click();
 assert.equal(t.state.history.length,beforeDestinyHistory+1,"REWRITTEN (dock v6): no click stands between Destiny and the d20");
 assert.ok(t.state.events.some(event=>/Destiny d\d+ rolled \d+/i.test(event.text)),"the Destiny summary is announced as a line");
+/* REWRITTEN (phase 2): reachable means through the Identity ⋮ now. */
+openMenu();
 assert.equal(root.querySelector("[data-clear-tray]").disabled,false,"and nothing is blocking, so CLEAR TRAY stays reachable");
+root.querySelector("[data-menu-toggle]").click();
 entry=t.state.history[0];
 /* REWRITTEN (fourth fitting): construction order — the spent Destiny result
    keeps its chronological place after the d20s, not the head of the row. */
@@ -318,7 +326,10 @@ const failedD20=Array.from(entry.d20s);
 const linesAfterRoll=t.state.history.length;
 assert.equal(root.querySelector(".fh-cd-popups"),null,"a known failure no longer stops the table with a popup");
 assert.ok(root.querySelector("[data-roll-now]"),"the one ROLL is still the only button");
+/* REWRITTEN (phase 2): the entry lives in the Identity ⋮ now. */
+openMenu();
 assert.equal(root.querySelector("[data-clear-tray]").disabled,false,"and an open roll never locks the dock");
+root.querySelector("[data-menu-toggle]").click();
 const whiteD6=root.querySelector('.fh-cd-whiterow [data-add-tray-die="6"]');
 assert.equal(whiteD6.disabled,false,"the white picker stays live to add another die");
 assert.ok(whiteD6.classList.contains("is-calling"),"it calls for one, briefly");
@@ -362,7 +373,7 @@ assert.ok(t.state.destiny.points<pointsBeforeBoost,"the boost spends Destiny by 
 assert.deepEqual(Array.from(boosted.d20s),Array.from(settled.d20s),"boosting never touches the original d20");
 
 /* ── Free tray ───────────────────────────────────────────────── */
-root.querySelector("[data-clear-tray]").click();
+settleRoll(); // REWRITTEN (phase 2): Clear rides the Identity ⋮ — settleRoll opens it and clicks.
 assert.equal(t.state.trayResults.length,0,"Clear empties every die and result");
 assert.equal(t.state.rollConfig,null,"Clear also releases the active roll setup");
 
@@ -373,7 +384,7 @@ const percentileEntry=t.state.history[0],percentileResult=percentileEntry.dice[0
 const percentileText=percentileResult===100?"00":String(percentileResult).padStart(2,"0");
 assert.equal(Array.from(root.querySelectorAll('.fh-cd-static-die[data-sides="100"] .fh-cd-static-die-result')).map(item=>item.textContent).join(""),percentileText,"the two d10 overlays compose the resolved percentile value");
 settleRoll();
-root.querySelector("[data-clear-tray]").click();
+settleRoll(); // REWRITTEN (phase 2): Clear rides the Identity ⋮ — settleRoll opens it and clicks.
 
 for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
@@ -466,7 +477,7 @@ assert.match(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-speak").te
 assert.ok(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-diewrap.is-forced"),"and the forced die itself wears the mark");
 assert.match(root.querySelector(".fh-cd-sentry").textContent,/MANUAL/,"the stream line marks forced results too");
 settleRoll();
-root.querySelector("[data-clear-tray]").click();
+settleRoll(); // REWRITTEN (phase 2): Clear rides the Identity ⋮ — settleRoll opens it and clicks.
 
 /* ── Destiny Score is click-to-edit, no padlock ────────────────
    REWRITTEN (phase 1, band): the Score's editor moved off the strip and
