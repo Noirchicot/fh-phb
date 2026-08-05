@@ -2404,7 +2404,11 @@
     var mood=frameMood();
     var decision=judgmentDecisionHtml();
     var dice=trayDiceForDisplay();
-    var assembling=dice.length&&!dice.some(function(die){return die.result!=null;});
+    /* A COIN carries its value from birth (result is its face, not a landing)
+       — so "has anything landed?" must only read the real dice, or a +2
+       toggled during assembly convinces the frame the hand already fell and
+       the whole assembly (coin included) vanishes. That was bug R1. */
+    var assembling=dice.length&&!dice.some(function(die){return die.kind!=="modifier"&&die.result!=null;});
     var assembly="";
     if(assembling&&!decision){
       var realDice=dice.filter(function(die){return die.kind!=="modifier";}).length;
@@ -2438,7 +2442,10 @@
        config while one is open, the open entry's identity otherwise. */
     var cfg=state.rollConfig,idEntry=openEntry();
     var rightName=cfg?cfg.name:idEntry?idEntry.name:(assembling?state.trayLabel||"Free roll":"");
-    var rightBonus=cfg&&isFinite(Number(cfg.baseBonus))?signed(Number(cfg.baseBonus)+(cfg.plusTwo?2:0)+(Number(cfg.custom)||0))
+    /* NOTHING SAID TWICE: the +2 and the manual mod are visible as coins in
+       the assembly now (R1/R2), so the right column keeps the BASE bonus
+       alone — folding them back in would state each of them twice. */
+    var rightBonus=cfg&&isFinite(Number(cfg.baseBonus))?signed(Number(cfg.baseBonus))
       :idEntry&&idEntry.kind==="d20"&&isFinite(Number(idEntry.baseBonus))?signed(idEntry.baseBonus):"";
     /* Nothing said twice on the wood either: a heading that only restates
        the right column's identity — "Arcana +10" while preparing, "Arcana
@@ -3265,7 +3272,9 @@
        entry the hand points at is excluded from the merged list below so the
        same roll never appears twice. */
     var live=trayDiceForDisplay();
-    var engaged=live.some(function(die){return die.result!=null;});
+    /* Same law as the judgment frame's `assembling` (R1): a coin's result is
+       its face, not a landing — only a real die decides the hand is engaged. */
+    var engaged=live.some(function(die){return die.kind!=="modifier"&&die.result!=null;});
     var liveEntry=null;
     if(live.length&&engaged){
       liveEntry=openEntry();

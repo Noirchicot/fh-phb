@@ -31,7 +31,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhDiceTray = {
     state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
     renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
-    surfaceTrayLine
+    surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame
   };
 })();
 `);
@@ -467,5 +467,29 @@ t.state.traySurfaceId = ""; t.state.traySurfaceAt = "";
    sit behind a switch — onTrayContext belongs entirely to the die menus. */
 assert.doesNotMatch(source, /glassZone|glassLine/,
   "onTrayContext keeps no glass branch — the right click is the die menus', everywhere");
+
+/* ── 10. R1 — the +2 coin is VISIBLE during assembly (lot BUGS, 2026-08-05)
+   A coin carries its value from birth: its `result` is its face, not a
+   landing. Before the fix, the +2 token's non-null result convinced both
+   the judgment frame (`assembling`) and the tray (`engaged`) that the hand
+   had already fallen — the assembly vanished, coin included, and the +2
+   survived only folded into the right column's number. Now the coin shows
+   as a pending piece in the assembly, and the right column says the BASE
+   bonus alone — nothing said twice. */
+
+t.state.history = []; t.state.feed.events = [];
+t.state.trayResults = []; t.state.traySelection = []; t.state.rollSequence = null;
+t.state.destinyStaged = null; t.state.trayPrompt = null; t.state.diceSignatures = {};
+t.state.rollConfig = {name:"Dexterity Check", ability:"DEX", baseBonus:2, d20Mode:"flat",
+  plusTwo:true, custom:0, bonusDice:[], destinyDieId:"", dc:"", note:""};
+t.prepareTrayForConfig(t.state.rollConfig);
+const plusTwoBuild = t.renderJudgmentFrame();
+assert.match(plusTwoBuild, /is-assembly/, "a pending hand with a +2 coin still reads as assembly — the coin's face is not a landing");
+assert.match(plusTwoBuild, /fh-cd-token/, "the +2 coin is visible in the assembly");
+assert.match(plusTwoBuild, /is-pending[^>]*is-modifier|is-modifier[^>]*is-pending/, "…as a pending piece, same dress as in the tray");
+assert.match(plusTwoBuild, /fh-cd-judgeright"><b>Dexterity Check<\/b><i>\+2<\/i>/,
+  "the right column keeps the BASE bonus alone — the coin already says the +2, nothing said twice");
+assert.doesNotMatch(t.diceTrayInner(), /is-livehand/, "and the tray shows no live hand — the coin does not engage it either");
+t.state.rollConfig = null; t.state.trayResults = [];
 
 console.log("dice-tray: all assertions passed");
