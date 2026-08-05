@@ -283,8 +283,12 @@ assert.equal(tintOf(t.visualDie(mkBonus("other-2"), 0, 14, false, {naked:true, s
 assert.equal(tintOf(t.visualDie(mkBonus("guidance", {colour:"slate"}), 0, 14, false, {naked:true, sizePx:16, plainLabel:true})), "slate", "a hand-picked colour outranks the source tint");
 const wrappedBonus = t.visualDie(mkBonus("guidance"), 0, 3, false, {sizePx:44});
 assert.equal(tintOf(wrappedBonus), "azure", "the wrapped die is tinted the same");
-assert.doesNotMatch(wrappedBonus, /fh-cd-src is-|fh-cd-src-mini/, "and carries NO separate source token — the seal is the die");
-assert.match(wrappedBonus, /fh-cd-src" title=/, "the empty slot still names the source on hover (reclaiming it = the measures lot)");
+// REWRITTEN (lot BACKLOG-C, décision Eric 2026-08-05: « violet + Bardic,
+// rien de plus ») — the empty 12px slot is deleted at the source, not
+// merely hidden in the tray: a wrap is the tinted die plus its label,
+// nothing above, and the wrapper's own title names the source on hover.
+assert.doesNotMatch(wrappedBonus, /fh-cd-src/, "no src slot — sealed OR empty — rides the wrap any more");
+assert.match(wrappedBonus, /title="guidance"/, "the wrapper still names the source on hover");
 
 /* ── 4c. The reading glass — REMOVED for good ─────────────────────────
    REWRITTEN (lot BACKLOG-B, décision Eric 2026-08-05) : the glass had

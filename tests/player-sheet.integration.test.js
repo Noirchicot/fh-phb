@@ -200,7 +200,9 @@ assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]'
 root.querySelector("#fhPsPlusTwo").click();
 assert.equal(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),false,"+2 turns advantage back off");
 assert.ok(root.querySelector(".fh-cd-diewrap.is-modifier"),"the +2 option appears as a visible token beside the dice");
-assert.equal(root.querySelector(".fh-cd-diewrap.is-modifier .fh-cd-src").textContent.trim(),"","the fixed +2 token stays free of a source seal");
+// REWRITTEN (lot BACKLOG-C 2026-08-05): the empty src slot is deleted from
+// every wrapper — the +2 token is now coin + label, with no slot above it.
+assert.equal(root.querySelector(".fh-cd-diewrap.is-modifier .fh-cd-src"),null,"the fixed +2 token carries no source slot at all");
 root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
 assert.equal(root.querySelector("#fhPsPlusTwo").classList.contains("is-on"),false,"advantage turns +2 back off in turn");
 assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),"advantage is back on for the roll below");

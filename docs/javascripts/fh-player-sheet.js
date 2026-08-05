@@ -950,8 +950,9 @@
     if(!body)return "";
     return '<svg class="fh-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">'+body+'</svg>';
   }
-  /* The mark a token shows in a 12px slot: a glyph, or the bold Georgia
-     numeral .fh-cd-src b was built for. Nothing to add for the numerals. */
+  /* The mark a source token shows: a glyph, or a bold numeral. Since the
+     wrappers lost their src slot this only dresses the seal buttons in the
+     die menu (.fh-cd-dmseal). */
   function bonusSourceMark(source){
     var token=rollSource(source);
     if(token.letter)return "<b>"+token.letter+"</b>";
@@ -2036,16 +2037,14 @@
       if(opts.naked){
         return "<span class=\""+classes.join(" ")+" is-naked\"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.max(14,Math.round(size*.9)),text,tone)+"</span></span>";
       }
-      return "<span class=\""+classes.join(" ")+"\""+(opts.noLabel?" title=\""+esc(die.label||"Bonus")+"\"":"")+"><span class=\"fh-cd-src\"></span><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span>"+(opts.noLabel?"":"<em>"+esc(die.label||"Bonus")+"</em>")+"</span>";
+      return "<span class=\""+classes.join(" ")+"\""+(opts.noLabel?" title=\""+esc(die.label||"Bonus")+"\"":"")+"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span>"+(opts.noLabel?"":"<em>"+esc(die.label||"Bonus")+"</em>")+"</span>";
     }
-    /* The source token is RETIRED (Eric: "color and dice = all in one") —
-       the die's tint says destiny/tactical/bardic/guidance/plain, and the
-       label plus the title attribute still spell the name out. The empty
-       12px slot stays for now so every wrap keeps the same skeleton;
-       reclaiming it is the measures lot's call. */
-    var source="<span class=\"fh-cd-src\" title=\""+esc(
-      die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
-      :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"")+"\"></span>";
+    /* The source token AND its empty 12px slot are gone (Eric: "violet +
+       Bardic, rien de plus") — the die's tint says destiny/tactical/bardic/
+       guidance/plain, the label names it, and for a label-less die the
+       wrapper's title keeps the full name on hover (same pattern as naked). */
+    var srcTitle=die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
+      :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"";
     var dieClasses="fh-cd-die"+(die.result!=null?" is-landed":"")+(animate&&die.result!=null?" is-spinning":"");
     // A die still in the hand carries its identity so a right click can reach it.
     var handle="";
@@ -2109,7 +2108,7 @@
         "<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static-die-result\" aria-hidden=\"true\"></b>"+
         "<span class=\"fh-cd-static-die-fallback\">"+face+"</span></span>";
       dieClasses+=" is-static-die";
-      return "<span class=\""+classes.join(" ")+"\">"+source+
+      return "<span class=\""+classes.join(" ")+"\""+(srcTitle?" title=\""+esc(srcTitle)+"\"":"")+">"+
         "<span class=\""+dieClasses+"\">"+face+"</span>"+
         (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
     }
@@ -2133,10 +2132,12 @@
       dieClasses+=" is-static-die";
     }
     /* noLabel (T9, Eric): on the tray's large line the tint already says the
-       provenance and the src slot's title still names it — the visible label
+       provenance and the wrapper's title still names it — the visible label
        under the die was the last redundant text. The judgment box's assembly
-       keeps its labels (you need to read what you are adding). */
-    return "<span class=\""+classes.join(" ")+"\""+handle+">"+source+
+       keeps its labels (you need to read what you are adding). A tunable die
+       keeps its interaction title; the source title only steps in when no
+       handle claimed the hover. */
+    return "<span class=\""+classes.join(" ")+"\""+(handle||(srcTitle?" title=\""+esc(srcTitle)+"\"":""))+">"+
       "<span class=\""+dieClasses+"\">"+face+"</span>"+
       (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
   }

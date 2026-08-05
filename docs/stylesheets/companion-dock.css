@@ -445,10 +445,6 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   font-size:calc(11px * var(--cd-fs));font-weight:700;color:var(--cd-oxblood);font-family:inherit}
 .fh-cd-freelabel::placeholder{color:var(--cd-faint);font-weight:600}
 
-/* Advanced drawer (portents, per-die A/D, bonus rows) */
-.fh-cd-srcmark{width:12px;flex:none;color:var(--cd-gold-bright);display:grid;place-items:center;font-size:calc(7.5px * var(--cd-fs));font-weight:800}
-.fh-cd-srcmark svg{width:10px;height:10px}
-
 /* ── Stage (roller) ─────────────────────────────────────────────── */
 .fh-cd-stage{padding:0;border-bottom:1px solid var(--cd-line);
   background:radial-gradient(120% 90% at 50% 8%,var(--cd-parch-2) 0%,var(--cd-parch-deep) 78%,#dccc9f 100%)}
@@ -464,19 +460,15 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   flex-wrap:wrap;align-content:center;padding:2px 6px;overflow:hidden}
 /* With a verdict on screen the dice give up room rather than being covered. */
 .fh-cd-diewrap{position:relative;display:grid;justify-items:center;gap:2px}
-.fh-cd-src{height:12px;color:var(--cd-gold-bright);display:grid;place-items:center}
-.fh-cd-src svg{width:12px;height:12px;display:block;filter:drop-shadow(0 1px 0 rgba(255,248,226,.8))}
-/* The numeral slot inherits the token's tone instead of pinning gold — it was
-   the reason a Bonus II read as a Destiny die at a glance. */
-.fh-cd-src b{font-size:calc(8.5px * var(--cd-fs));font-weight:800;color:inherit;font-family:Georgia,serif}
-/* One rule per source (UI-ROLL-VOCABULARY.md §1). Anything wearing a source
-   tone -- a die's 12px slot, the advanced drawer's mark, a seal button -- reads
-   its colour here, so there is exactly one place where Bardic is violet. */
-.fh-cd-src.is-src-destiny,.fh-cd-srcmark.is-src-destiny,.fh-cd-card .fh-cd-dmseal.is-src-destiny{color:var(--cd-src-destiny)}
-.fh-cd-src.is-src-guidance,.fh-cd-srcmark.is-src-guidance,.fh-cd-card .fh-cd-dmseal.is-src-guidance{color:var(--cd-src-guidance)}
-.fh-cd-src.is-src-bardic,.fh-cd-srcmark.is-src-bardic,.fh-cd-card .fh-cd-dmseal.is-src-bardic{color:var(--cd-src-bardic)}
-.fh-cd-src.is-src-tactical,.fh-cd-srcmark.is-src-tactical,.fh-cd-card .fh-cd-dmseal.is-src-tactical{color:var(--cd-src-tactical)}
-.fh-cd-src.is-src-bonus,.fh-cd-srcmark.is-src-bonus,.fh-cd-card .fh-cd-dmseal.is-src-bonus{color:var(--cd-src-bonus)}
+/* One rule per source (UI-ROLL-VOCABULARY.md §1). The dice themselves carry
+   their tone in the tint of the die face now ("all in one"); the only thing
+   still WEARING a source tone class is the seal button in the die menu, and
+   this is the one place where Bardic is violet. */
+.fh-cd-card .fh-cd-dmseal.is-src-destiny{color:var(--cd-src-destiny)}
+.fh-cd-card .fh-cd-dmseal.is-src-guidance{color:var(--cd-src-guidance)}
+.fh-cd-card .fh-cd-dmseal.is-src-bardic{color:var(--cd-src-bardic)}
+.fh-cd-card .fh-cd-dmseal.is-src-tactical{color:var(--cd-src-tactical)}
+.fh-cd-card .fh-cd-dmseal.is-src-bonus{color:var(--cd-src-bonus)}
 .fh-cd-die{position:relative;display:block}
 .fh-cd-die svg{display:block;overflow:visible}
 .fh-cd-die .fh-cd-num{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:700}
@@ -1705,13 +1697,11 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayline.is-deep{min-height:72px}
 .fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:22px}
 /* The ratified arithmetic of the 1-5 hand — « 38 + label ≈ 48, inside
-   the 56 » — presumes the retired token's EMPTY 12px slot gone: measured
-   in the harness, slot 12 + gap 2 + die 38 + gap 2 + label 9 = 63, and
-   the band swelled to 72. Collapsed HERE, in the tray only (the hover
-   title naming the source lives on the slot and stays in the DOM): the
-   column reads 38+2+9 = 49 and the band holds its 56. Reclaiming the
-   slot EVERYWHERE stays the measures lot's call. */
-.fh-cd-dicetray .fh-cd-tray-dice .fh-cd-diewrap>.fh-cd-src{display:none}
+   the 56 » — used to need a display:none here on the retired token's
+   EMPTY 12px slot. Eric then ruled the slot out EVERYWHERE (« violet +
+   Bardic, rien de plus ») and dieHtml no longer emits it, so the wrap
+   is die + label in every home and the column reads 38+2+9 = 49 by
+   construction. The hover title naming the source moved to the wrapper. */
 /* Same hunt, last 2px: the dice zone's own 1px vertical padding sat on
    top of the line's 3px — the line's padding is the breathing room.
    38+2+9 = 49 content + 3+3+1 = 56 exactly (measured 56 after this). */

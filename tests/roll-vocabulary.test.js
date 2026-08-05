@@ -102,22 +102,24 @@ assert.match(destinyPath, /a5\.6 5\.6 0 1 0[^a]*a5\.6 5\.6 0 1 1/, "the two loop
 // Reading the table is the only way to get a mark, and an unknown source still
 // gets one rather than rendering an empty slot.
 assert.match(t.bonusSourceMark("guidance"), /<svg/, "Guidance renders its star");
-assert.equal(t.bonusSourceMark("other-2"), "<b>II</b>", "a bonus die renders the numeral .fh-cd-src b was built for");
+assert.equal(t.bonusSourceMark("other-2"), "<b>II</b>", "a bonus source renders its bold numeral (worn by the seal buttons now)");
 assert.match(t.bonusSourceMark("tactical"), /<svg/, "Tactical is now declared and drawable — it was not, before this lot");
 assert.match(t.bonusSourceMark("nonsense"), /<svg/, "an unknown source still shows a mark rather than nothing");
 assert.equal(t.rollSource("nonsense").tone, "bonus", "an unknown source falls back to the grey bonus tone");
 assert.equal(t.sourceToneClass("bardic"), "is-src-bardic", "the tone travels as a class, beside the glyph");
 
-// Every tone has exactly one colour, declared in one place.
+// REWRITTEN (Eric, lot BACKLOG-C 2026-08-05): the empty src slot is deleted
+// from the wrappers — « violet + Bardic, rien de plus » — so the only thing
+// still wearing an is-src-* tone class is the seal button in the die menu.
+// Every tone keeps exactly one colour, declared in one place, and no dead
+// .fh-cd-src / .fh-cd-srcmark rule lingers to resurrect the slot.
 ["destiny","guidance","bardic","tactical","bonus"].forEach(tone => {
   assert.match(css, new RegExp("--cd-src-" + tone + ":#[0-9a-f]{6}"), tone + " has a declared source colour");
-  assert.match(css, new RegExp("\\.fh-cd-src\\.is-src-" + tone + "[^{]*\\{color:var\\(--cd-src-" + tone + "\\)\\}"),
-    tone + " is painted from that one variable");
+  assert.match(css, new RegExp("\\.fh-cd-dmseal\\.is-src-" + tone + "[^{]*\\{color:var\\(--cd-src-" + tone + "\\)\\}"),
+    tone + "'s seal button is painted from that one variable");
 });
-// The numeral slot used to pin --cd-gold-bright, which is why every source icon
-// in the dock was gold whatever it was.
-assert.match(css, /\.fh-cd-src b\{[^}]*color:inherit/, ".fh-cd-src b inherits the token's tone instead of hard-coding gold");
-assert.doesNotMatch(css, /\.fh-cd-src b\{[^}]*--cd-gold-bright/, "the numeral slot no longer forces gold");
+assert.doesNotMatch(css, /\.fh-cd-src[\s{.,:]/, "no .fh-cd-src rule survives — the slot is gone from the DOM and the sheet");
+assert.doesNotMatch(css, /fh-cd-srcmark/, "the advanced drawer's srcmark, produced nowhere, is gone too");
 
 // The seal card is the table read out loud, not a second hand-kept list.
 assert.deepEqual(plain(t.SEALABLE_SOURCES), ["guidance","bardic","tactical","other-1","other-2","other-3"],
@@ -126,14 +128,15 @@ t.SEALABLE_SOURCES.forEach(key => assert.ok(t.ROLL_SOURCES[key], key + " is a de
 assert.equal(t.sealLabel("tactical"), "Tactical", "a sealed die takes its name from the table");
 assert.equal(t.sealLabel("other-3"), "Bonus III", "a bonus die takes its name from the table");
 
-// REWRITTEN (Eric, ratified 2026-08-03, wired 2026-08-04): the seal IS the
-// die — provenance rides the tint (data-material), the 12px slot is empty
-// and merely names the source on hover. The glyph table above still serves
-// the seal card and the console pickers.
+// REWRITTEN twice (ratified 2026-08-03, wired 2026-08-04; slot deleted
+// 2026-08-05, lot BACKLOG-C): the seal IS the die — provenance rides the
+// tint (data-material). The 12px slot that used to carry the hover title is
+// gone from the markup entirely; the title moved to the wrapper. The glyph
+// table above still serves the seal card and the console pickers.
 const destinyDie = t.visualDie({sides:8, result:6, dieRole:"destiny", label:"Destiny"}, 0, 1, false);
 assert.match(destinyDie, /data-material="gold"/, "a Destiny die is gold — the tint is the token");
-assert.doesNotMatch(destinyDie, /fh-cd-src is-src-/, "no separate token rides the die any more");
-assert.match(destinyDie, /fh-cd-src" title="Destiny"/, "the empty slot still names the source on hover");
+assert.doesNotMatch(destinyDie, /fh-cd-src/, "no src slot — empty or sealed — rides the die any more");
+assert.match(destinyDie, /title="Destiny"/, "the wrapper still names the source on hover");
 const bardicDie = t.visualDie({sides:6, result:3, dieRole:"bonus", sourceIcon:"bardic", label:"Bardic"}, 0, 1, false);
 assert.match(bardicDie, /data-material="violet"/, "Bardic rolls violet — its ratified tint, not gold, not green");
 assert.doesNotMatch(bardicDie, /is-src-bardic/, "and wears no token either");
