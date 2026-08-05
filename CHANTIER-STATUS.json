@@ -43,7 +43,7 @@
       "repo": "fh-srd",
       "path": "~/tools/fh-srd",
       "state": "fini",
-      "note": "✅ CONTENU COMPLET, DEUX LANGUES (a02d75a) : 2553 records (1274 EN + 1279 FR, 12 types). Écart documenté : 258 objets FR vs 253 EN — 5 armes réelles de la réédition FR de déc. 2025. 34/34 suites. Reste : appariement translation_of (proposé) et branchement site (après les lots dock)."
+      "note": "✅ SITE SRD WEB FUSIONNÉ (main = 3decd7c, 2026-08-05) : générateur déterministe + web/ committé (26 pages, contrat d'URL {lang}/{kind}/#{slug}), attribution stricte SRD, 36/36 suites + replay clone indépendant byte-identique. Reste : Eric active Pages et lance ./deploy_pages.sh --push ; appariement translation_of ; liens depuis le Companion (avec les lots dock)."
     }
   ],
   "wip": [
@@ -54,12 +54,6 @@
       "note": "Session ACTIVE (2026-08-05) : 21 commits sur dock-dice-tray + modifs en cours (core, CSS, suite dice-tray). Loupe SUPPRIMÉE sur décision Eric (fccf1d0, c4031f9) — plus de vérif loupe à faire. Reste avant livraison : fin de session + vérif live rollType 'skill' (attente Eric) ; puis routine §4."
     },
     {
-      "name": "SRD Web (site de référence)",
-      "repo": "fh-srd",
-      "state": "en-cours",
-      "note": "Lot lancé 2026-08-05 (pastille livrée, branche srd/web-v1). Site Pages propre à fh-srd (décision Eric) ; attribution stricte SRD (B5 tranché) ; contrat d'URL {lang}/{kind}/#{slug} figé pour les liens du Companion. Déploiement Pages = Eric, à la livraison."
-    },
-    {
       "name": "Widget Übersicht chantier",
       "repo": "hooks/widget",
       "state": "en-cours",
@@ -67,7 +61,7 @@
     }
   ],
   "attente_eric": [
-    "Ouvrir la session SRD Web (pastille livrée 2026-08-05) ; à sa livraison : activer GitHub Pages sur fh-srd et lancer deploy_pages.sh.",
+    "Mettre le SRD en ligne : activer GitHub Pages sur fh-srd (branche gh-pages) puis ./deploy_pages.sh --push — lot fusionné 3decd7c, prêt.",
     "Hauteur d'une ligne du Dice Tray avec dés montrés (mockup à venir de la session Dice Tray).",
     "Distribution de l'extension AboveVTT (packaging, installation MJ).",
     "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — avant la livraison du Dice Tray."

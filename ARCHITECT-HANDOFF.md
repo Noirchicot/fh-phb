@@ -372,6 +372,21 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 > in parallel with the Dice Tray session — sanctioned by the two-track rule
 > (one on the core, one outside it; this one is in another repo entirely).
 > Architect reviews and merges on delivery, §4 discipline.
+>
+> **DELIVERED, REVIEWED AND MERGED the same day** — `fh-srd` `main` = **`3decd7c`**
+> (fast-forward from `a02d75a`), pushed. Verified, not trusted: 36/36 suites in
+> the working copy AND in an independent detached clone, where a fresh
+> `build_web.py` run reproduced `web/` **byte-identical** (clean tree after
+> rebuild — the repo's own exports discipline, applied to the site). Content
+> spot-checked: 342 anchors on the FR spell page, full description text in the
+> HTML, the only external `href` is the CC-BY legalcode link, and zero
+> non-affiliation wording (Eric's strict-SRD ruling holds). `deploy_pages.sh`
+> read before merging: builds fresh, ordinary commit on a `gh-pages` worktree,
+> no force-push, `--push` opt-in, and it states in its own header that running
+> it is Eric's act. **Not yet live** — waits on Eric enabling Pages on `fh-srd`
+> and running `./deploy_pages.sh --push`. Companion-side links come with the
+> dock lots, on the frozen URL contract. The living guide's next bump (v1.5,
+> due at the Dice Tray merge) must also cover this site.
 
 > ✅ **CLOSED 2026-08-03 — AboveVTT chat persistence will not happen. Stop
 > treating it as pending.** Azmoria, asked directly: `inject_chat` rides DDB's
