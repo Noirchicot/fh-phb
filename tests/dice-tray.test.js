@@ -545,8 +545,13 @@ t.state.rollConfig = null; t.state.trayResults = [];
 
 assert.match(source, /function handleClick\(event\)\{if\(surfaceClickedTrayDie\(event\)\)return;/,
   "the surface check leads handleClick — before its button-only bail, which would drop a die span");
-const fakeLine = id => ({classList:{contains:cls => false}, getAttribute:() => id});
-const fakeDie = line => ({closest:sel => sel === "li[data-tray-line]" ? line : null});
+/* REWRITTEN (M1+M3 lot, 2026-08-06): the climb now records WHICH die was
+   clicked (its index among the line's diewraps), so the fake line answers
+   querySelectorAll and the fake dice register themselves on it. */
+const fakeLine = id => {const line = {classList:{contains:cls => false}, getAttribute:() => id, dies:[],
+  querySelectorAll:() => line.dies}; return line;};
+const fakeDie = line => {const die = {closest:sel => sel === "li[data-tray-line]" ? line : null};
+  if(line.dies) line.dies.push(die); return die;};
 const clickOn = (die, onButton) => ({target:{closest:sel =>
   sel === "button" ? (onButton ? {} : null) : sel === ".fh-cd-diewrap" ? die : null}});
 t.state.traySurfaceId = ""; t.state.traySurfaceAt = "";
@@ -565,5 +570,70 @@ assert.equal(t.state.traySurfaceId, "mine-old", "none of the refused clicks surf
    .fh-cd-diewrap spans inside a data-tray-line li — the same gesture
    reaches them: local display order, no remote write. */
 t.state.traySurfaceId = ""; t.state.traySurfaceAt = "";
+
+/* ── 13. M3 — the climb is SEEN, and the clicked die can be found again
+   (décision Eric, lot correctif M1+M3, 2026-08-06). Three additions:
+   (a) the registre scrolls back to its top (a one-shot USER gesture that
+   replaces the remembered position instead of fighting fbe871e's
+   preservation), (b) the climbed line flashes once, (c) THE die that was
+   clicked keeps a persistent ring until something else happens — another
+   climb, a new roll, a die menu opening, or CLEAR TRAY. */
+
+// (c) the clicked die's index is carried into the climb's state.
+t.state.traySurfaceId = ""; t.state.traySurfaceDie = null;
+const idxLine = fakeLine("mine-old");
+fakeDie(idxLine); // a first die at index 0
+const secondDie = fakeDie(idxLine);
+assert.equal(t.surfaceClickedTrayDie(clickOn(secondDie)), true, "the click on the line's second die is claimed");
+assert.deepEqual(plain(t.state.traySurfaceDie), {lineId:"mine-old", di:1},
+  "the climb remembers WHICH die was clicked — line id and index among its diewraps");
+// (a)+(b) the one-shot flags are armed by the climb…
+assert.equal(t.state.trayScrollToTop, true, "the climb asks the next render to scroll the registre to its top");
+assert.equal(t.state.traySurfaceFlash, true, "…and the climbed line to announce itself");
+/* REWRITTEN (same lot, bench finding): native scrollTo({behavior:"smooth"})
+   proved inert on the reborn traylist in bench Chromium — the glide is now
+   a hand-driven rAF ease-out (smoothTrayScrollTop), same contract. */
+assert.match(source, /if\(keepTrayScroll&&!reduced\)smoothTrayScrollTop\(trayScroller,keepTrayScroll\)/,
+  "render honours the scroll-to-top request (glide from the restored position)");
+assert.match(source, /function smoothTrayScrollTop\(node,from\)\{[\s\S]{0,600}isConnected/,
+  "…a glide that stops itself when a later render rebuilds the list");
+assert.match(source, /prefers-reduced-motion/, "…and asks the motion preference before animating the glide");
+
+// (b) the flash renders once on the climbed line, then is consumed.
+t.state.history = [d20Entry("mine-new", "Arcana", 14, 21, 1),
+  d20Entry("mine-old", "Stealth", 9, 16, 30,
+    {bonusDice:[{id:"m3-bardic", label:"Bardic", sides:6, result:4, sourceIcon:"bardic", advantageMode:"flat"}]})];
+t.state.feed.events = []; t.state.trayResults = []; t.state.rollSequence = null; t.state.diceSignatures = {};
+const surfacedPass = t.diceTrayInner();
+const surfacedLine = surfacedPass.match(/<li[^>]*data-tray-line="mine-old"[^>]*>/)[0];
+assert.match(surfacedLine, /is-surfaced/, "the climbed line carries is-surfaced on the first render after the climb");
+assert.doesNotMatch(surfacedPass.replace(surfacedLine, ""), /is-surfaced/, "and no other line does");
+const secondPass = t.diceTrayInner();
+assert.doesNotMatch(secondPass, /is-surfaced/, "the announcement plays once — a feed poll's re-render cannot restart it");
+assert.match(css, /\.fh-cd-trayline\.is-surfaced\{animation:fh-cd-surfaced 1\.8s/, "the liseré is a ~1.8s one-shot animation");
+assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{\s*\.fh-cd-trayline\.is-surfaced\{animation:none/,
+  "reduced motion gets a static liseré that the next render clears — no animation");
+
+// (c) the ring lands on exactly the clicked die, and persists across renders.
+const pickedPass = t.diceTrayInner();
+const pickedLine = pickedPass.match(/<li[^>]*data-tray-line="mine-old"[^>]*>[\s\S]*?<\/li>/)[0];
+const wrapsBefore = pickedLine.split("fh-cd-diewrap").length - 1;
+assert.ok(wrapsBefore >= 2, "the fixture line holds at least two diewraps (d20 + coin/bonus)");
+assert.equal((pickedPass.match(/is-picked/g) || []).length, 1, "exactly one die in the whole registre wears the ring");
+const beforePicked = pickedLine.slice(0, pickedLine.indexOf("is-picked"));
+assert.equal(beforePicked.split("fh-cd-diewrap").length - 1, 2,
+  "…and it is the SECOND diewrap of the climbed line — the one that was clicked (di=1)");
+assert.match(t.diceTrayInner(), /is-picked/, "the ring is persistent — it survives a plain re-render");
+assert.match(css, /\.fh-cd-diewrap\.is-picked\{outline:2px solid var\(--cd-gold-hi\)/,
+  "the ring is an outline — no layout cost, the marked die neither grows nor shifts its row");
+
+// Extinction: a new roll landing, any die menu opening, or CLEAR TRAY.
+assert.match(source, /function addHistory\(entry\) \{[\s\S]{0,220}traySurfaceDie=null/,
+  "a new roll landing retires the ring (addHistory)");
+assert.match(source, /function openDieMenu\(node\)\{[\s\S]{0,180}traySurfaceDie=null/,
+  "opening a die menu retires it too");
+t.clearDiceTray(false);
+assert.equal(t.state.traySurfaceDie, null, "CLEAR TRAY retires it as well");
+t.state.traySurfaceId = ""; t.state.traySurfaceAt = ""; t.state.traySurfaceFlash = false; t.state.trayScrollToTop = false;
 
 console.log("dice-tray: all assertions passed");

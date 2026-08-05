@@ -98,6 +98,9 @@
     trayQuietTitle:"", trayVerdict:"", trayRevealAt:0, trayRevealTimer:null,
     // A roll called back up by right-clicking its reading glass (display order only).
     traySurfaceId:"", traySurfaceAt:"",
+    /* M3: the visible half of the climb — a one-shot line flash, a one-shot
+       scroll-to-top, and the clicked die's persistent mark {lineId,di}. */
+    traySurfaceFlash:false, trayScrollToTop:false, traySurfaceDie:null,
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, zoom:ZOOM_DEFAULT, zoomAuto:true,
     panel:"skills", panelData:{},
@@ -1160,6 +1163,9 @@
     return events;
   }
   function addHistory(entry) {
+    // M3c extinction: a new roll landing is "something else happening" —
+    // the persistent mark left by the last climb goes out with it.
+    state.traySurfaceDie=null;
     state.history.unshift(entry); state.history = state.history.slice(0,MAX_HISTORY); persistPlayState();
   }
   function trayDiceForPlan(plan,label,extra){
@@ -1246,7 +1252,7 @@
   /* diceSignatures is deliberately NOT wiped here any more: the registre
      lines under the hand keep their entry-scoped keys, and wiping the map
      made every one of them re-roll visually the moment the hand was cleared. */
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  function clearDiceTray(closeConsole){state.traySurfaceDie=null;state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
@@ -2037,6 +2043,8 @@
     if(die.dropped)classes.push("is-dropped");
     if(die.pending)classes.push("is-pending");
     if(die.flash)classes.push("is-flashing");
+    // M3c: the die a climb was aimed at keeps its small persistent mark.
+    if(opts.picked)classes.push("is-picked");
     if(die.forced)classes.push("is-forced");
     if(die.special==="chaos")classes.push("is-chaosdie");
     /* plainLabel (the tray, the assembly frame): the label is the die's name
@@ -3117,6 +3125,20 @@
   function surfaceTrayLine(id){
     if(!id)return;
     state.traySurfaceId=id;state.traySurfaceAt=new Date().toISOString();
+    /* M3 (Eric, 2026-08-06): the climb must be SEEN. Two one-shot flags,
+       each consumed by the next pass that honours it:
+       — trayScrollToTop: the registre scrolls back to its top so the line
+         that just moved to line 1 is actually in view (clicking from the
+         10th roll used to leave the viewport at the bottom, the climb
+         happening entirely above the fold). Consumed by render()'s scroll
+         restore — it is a USER gesture, so it replaces the remembered
+         position rather than fighting it.
+       — traySurfaceFlash: the line announces itself once — is-surfaced, a
+         brief liseré that plays on the first render after the climb and is
+         not re-applied by later renders (so a feed poll cannot restart it;
+         under prefers-reduced-motion the CSS keeps a static liseré instead,
+         which the next render then clears). Consumed by diceTrayInner. */
+    state.traySurfaceFlash=true;state.trayScrollToTop=true;
     render();
   }
   function trayBadgeChip(kindClass,text){
@@ -3234,9 +3256,12 @@
          THIS pass animates as a live host — otherwise four lines of five
          wrapped dice could claim 20 of the ~16 WebGL contexts. */
       var landingNow=!!(flags&&flags[di]);
+      /* M3c: the one die the climb was FOR keeps a small persistent mark, so
+         it can be found again in a crowd once the line sits on top. */
+      var picked=!!(state.traySurfaceDie&&state.traySurfaceDie.lineId===slot.id&&Number(state.traySurfaceDie.di)===di);
       return visualDie(die,di,slot.dice.length,landingNow,
         {sizePx:sizePx,snapshot:(snapshot||(index>0&&!swarm&&!landingNow))&&!die.pending,readOnly:readOnly,plainLabel:true,noLabel:swarm,naked:swarm,
-         rollSizePx:rollPx,settleSizePx:settlePx,
+         rollSizePx:rollPx,settleSizePx:settlePx,picked:picked,
          wave:swarm&&waved?Math.floor(di/10):null,waveIndex:swarm?di%10:null});
     }).join("");
     var reopen=slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
@@ -3274,7 +3299,11 @@
        a line past the 56px nominal (to 72; règle Eric, lot BACKLOG-B
        2026-08-05). Past 30 the ∞ takes over and the line stays nominal. */
     var deep=realDice>20&&!infinite;
-    return "<li class=\"fh-cd-trayline "+sizeClass+(deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
+    /* M3b: the line that just climbed announces itself — once. The flag is
+       consumed by diceTrayInner after this pass, so later renders (feed
+       polls land every few seconds) never restart the liseré. */
+    var surfaced=!!(state.traySurfaceFlash&&slot.id===state.traySurfaceId&&slot.kind!=="live");
+    return "<li class=\"fh-cd-trayline "+sizeClass+(deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(surfaced?" is-surfaced":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
   /* The three feed states, one derivation (T24): the tray cap's chip title
      and the Stream's cap read the SAME phrases instead of each keeping a
@@ -3380,11 +3409,33 @@
     var chevron=function(up){return "<svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\""+(up?"M3 10l5-5 5 5":"M3 6l5 5 5-5")+"\"/></svg>";};
     var arrows="<button type=\"button\" class=\"fh-cd-trayarrow is-up\" data-tray-scroll=\"up\" aria-label=\"Scroll to newer rolls\">"+chevron(true)+"</button>"+
       "<button type=\"button\" class=\"fh-cd-trayarrow is-down\" data-tray-scroll=\"down\" aria-label=\"Scroll to older rolls\">"+chevron(false)+"</button>";
+    // M3b: the announcement played this pass — it must not replay on the next.
+    state.traySurfaceFlash=false;
     return cap+"<ul class=\"fh-cd-traylist\">"+list+"</ul>"+arrows;
   }
   /* Shown only where useful: up when something is newer above, down when
      rolls hide below the fold. Rides the zone so the arrows survive the
      list's own re-scrolls without re-rendering anything. */
+  /* M3a's glide. Native scrollTo({behavior:"smooth"}) proved INERT on the
+     reborn traylist at the bench (measured: scrollTop pinned across a full
+     second), so the glide is driven by hand — ~240ms ease-out cubic on rAF,
+     from the restored position down to 0. If a later render rebuilds the
+     list mid-glide, the dead node's frame stops itself (isConnected) and
+     that render read the live mid-glide scrollTop as the position to keep —
+     the two mechanisms read/write the same live value, never fight. */
+  function smoothTrayScrollTop(node,from){
+    node.scrollTop=from;
+    if(!window.requestAnimationFrame){node.scrollTop=0;syncTrayArrows();return;}
+    var start=null,DURATION=240;
+    function step(ts){
+      if(!node.isConnected)return;
+      if(start==null)start=ts;
+      var k=Math.min(1,(ts-start)/DURATION);
+      node.scrollTop=from*Math.pow(1-k,3);
+      if(k<1)window.requestAnimationFrame(step);else syncTrayArrows();
+    }
+    window.requestAnimationFrame(step);
+  }
   function syncTrayArrows(){
     if(!root)return;
     var zone=root.querySelector(".fh-cd-dicetray"),list=root.querySelector(".fh-cd-traylist");
@@ -3966,7 +4017,22 @@
        reader was, rebind its scroll, re-derive which arrows have work. */
     var trayScroller=root.querySelector(".fh-cd-traylist");
     if(trayScroller){
-      if(keepTrayScroll)trayScroller.scrollTop=keepTrayScroll;
+      /* M3a: a climb (surfaceTrayLine) asked for the top — that is a USER
+         gesture, so it wins over the kept position exactly once and BECOMES
+         the remembered position (the next render reads the live scrollTop,
+         which is now 0 or gliding there — the fbe871e preservation and this
+         scroll never fight, they read/write the same live value in turn).
+         The reborn list already sits at 0; to make the glide visible we
+         restore the old position first and scroll smoothly from there —
+         except under prefers-reduced-motion, where staying at 0 IS the
+         no-animation path. */
+      if(state.trayScrollToTop){
+        state.trayScrollToTop=false;
+        var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if(keepTrayScroll&&!reduced)smoothTrayScrollTop(trayScroller,keepTrayScroll);
+        // reduced motion, or nothing to glide over: the reborn node already sits at 0.
+      }
+      else if(keepTrayScroll)trayScroller.scrollTop=keepTrayScroll;
       trayScroller.addEventListener("scroll",syncTrayArrows,{passive:true});
     }
     syncTrayArrows();
@@ -4038,6 +4104,17 @@
     if(!die)return false;
     var line=die.closest("li[data-tray-line]");
     if(!line||line.classList.contains("is-livehand"))return false;
+    /* M3c (Eric: "si j'ai 30 d6, c'est pratique"): remember WHICH die was
+       clicked — its position among the line's diewraps, which is the same
+       index the re-render walks (visualDie emits exactly one .fh-cd-diewrap
+       per die, coins included) — so the resurfaced line can keep a small
+       persistent mark on that one die. Extinction rule (documented): the
+       mark survives renders and stays until the next thing happens — another
+       climb replaces it, a new roll landing (addHistory), any die menu
+       opening (openDieMenu), or CLEAR TRAY clears it. */
+    var wraps=line.querySelectorAll?line.querySelectorAll(".fh-cd-diewrap"):[];
+    var di=Array.prototype.indexOf.call(wraps,die);
+    state.traySurfaceDie=di>=0?{lineId:line.getAttribute("data-tray-line"),di:di}:null;
     surfaceTrayLine(line.getAttribute("data-tray-line"));
     return true;
   }
@@ -4190,6 +4267,8 @@
     return tunable?{kind:"die",node:tunable}:null;
   }
   function openDieMenu(node){
+    // M3c extinction: opening any die's menu retires the climb's mark.
+    state.traySurfaceDie=null;
     var data=node.dataset;
     state.diePrompt=data.dieStaged!==undefined?{stagedId:data.dieStaged}
       :data.dieBonus!==undefined?{bonusId:data.dieBonus}

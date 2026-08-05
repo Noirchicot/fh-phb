@@ -1854,3 +1854,26 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   color:var(--cd-muted);font-family:inherit;font-size:calc(7.6px * var(--cd-fs));font-weight:700}
 .fh-cd-card .fh-cd-dmrobe.is-none.is-on{border-color:#6d4a10;
   background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;box-shadow:none}
+
+/* ── M3 (Eric, 2026-08-06) : le clic-remonte se voit ──────────────────
+   (b) The line that just climbed to the registre's top announces itself:
+   a brief gold liseré that appears then fades (~1.8s), played exactly once
+   — the JS only stamps is-surfaced on the first render after the climb, so
+   later renders (feed polls) cannot restart it. Under reduced motion the
+   liseré is simply shown static; the next render removes the class and
+   with it the mark, which is the sanctioned no-animation fade. */
+.fh-cd-trayline.is-surfaced{animation:fh-cd-surfaced 1.8s ease-out 1 both}
+@keyframes fh-cd-surfaced{
+  0%{box-shadow:inset 0 0 0 2px var(--cd-gold-glow)}
+  60%{box-shadow:inset 0 0 0 2px var(--cd-gold-hi)}
+  100%{box-shadow:inset 0 0 0 2px transparent}
+}
+@media(prefers-reduced-motion:reduce){
+  .fh-cd-trayline.is-surfaced{animation:none;box-shadow:inset 0 0 0 2px var(--cd-gold-hi)}
+}
+/* (c) The one die the climb was aimed at keeps a small persistent ring —
+   "si j'ai 30 d6, c'est pratique" — until something else happens (another
+   climb, a new roll, a die menu opening, CLEAR TRAY — see
+   surfaceClickedTrayDie). Outline, not border: it costs no layout, so the
+   marked die neither grows nor shifts its row. */
+.fh-cd-diewrap.is-picked{outline:2px solid var(--cd-gold-hi);outline-offset:1px;border-radius:5px}
