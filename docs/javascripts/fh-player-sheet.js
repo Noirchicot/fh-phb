@@ -3979,7 +3979,25 @@
     else{var next=node.dataset.dieMode;cfg.d20Mode=cfg.d20Mode===next?"flat":next;cfg.plusTwo=false;}
     prepareTrayForConfig(cfg);render();
   }
-  function handleClick(event){var button=event.target.closest("button");if(!button||!root.contains(button))return;
+  /* R3 (décision Eric, 2026-08-05): a LEFT click on a die of a lower tray
+     line calls the roll back up — surfaceTrayLine, the machinery kept exactly
+     for this. Display order only; a feed roll climbs too (local reading, no
+     remote write). Guard rails: never a <button> (the who-chip's reopen and
+     every other button keep their own actions), never the LIVE hand (its dice
+     already answer to menus and choices — the only line whose dice carry
+     interactions today), and the right click keeps the die menus untouched. */
+  function surfaceClickedTrayDie(event){
+    if(!event.target||!event.target.closest)return false;
+    if(event.target.closest("button"))return false;
+    var die=event.target.closest(".fh-cd-diewrap");
+    if(!die)return false;
+    var line=die.closest("li[data-tray-line]");
+    if(!line||line.classList.contains("is-livehand"))return false;
+    surfaceTrayLine(line.getAttribute("data-tray-line"));
+    return true;
+  }
+  function handleClick(event){if(surfaceClickedTrayDie(event))return;
+    var button=event.target.closest("button");if(!button||!root.contains(button))return;
     if(state.rollConfig)syncConsoleInputs();
     if(button.dataset.dieChoice!==undefined){resolveDieChoice(button.dataset.dieChoice);return;}
     /* The one ROLL: it arms nothing and asks nothing, it rolls whatever the

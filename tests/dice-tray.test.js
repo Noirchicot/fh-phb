@@ -31,7 +31,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhDiceTray = {
     state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
     renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
-    surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame
+    surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie
   };
 })();
 `);
@@ -533,5 +533,37 @@ const manualBuild = plain(t.state.trayResults).find(die => die.kind === "modifie
 assert.ok(manualBuild && manualBuild.pending, "MOD +3 posé → a pending Manual coin waits in the assembly");
 assert.match(t.renderJudgmentFrame(), /fh-cd-token/, "…and the judgment window draws it");
 t.state.rollConfig = null; t.state.trayResults = [];
+
+/* ── 12. R3 — clicking a die of a lower line calls the roll back up
+   (décision Eric, lot BUGS 2026-08-05). surfaceTrayLine finally gets its
+   left-click trigger: a die of any line BELOW the live hand — mine or the
+   table's — climbs its roll to line 1, display order only. The guard
+   rails: a <button> keeps its own action (the who-chip's reopen…), the
+   LIVE hand is excluded (its dice already answer to menus and choices),
+   and the right click stays the die menus'. Reopening in the Roll Builder
+   is NOT wired here — that is the future eye icon's lot. */
+
+assert.match(source, /function handleClick\(event\)\{if\(surfaceClickedTrayDie\(event\)\)return;/,
+  "the surface check leads handleClick — before its button-only bail, which would drop a die span");
+const fakeLine = id => ({classList:{contains:cls => false}, getAttribute:() => id});
+const fakeDie = line => ({closest:sel => sel === "li[data-tray-line]" ? line : null});
+const clickOn = (die, onButton) => ({target:{closest:sel =>
+  sel === "button" ? (onButton ? {} : null) : sel === ".fh-cd-diewrap" ? die : null}});
+t.state.traySurfaceId = ""; t.state.traySurfaceAt = "";
+assert.equal(t.surfaceClickedTrayDie(clickOn(fakeDie(fakeLine("mine-old")))), true,
+  "a left click on a lower line's die is claimed by the surface gesture");
+assert.equal(t.state.traySurfaceId, "mine-old", "…and calls that roll back up (surfaceTrayLine)");
+const liveLine = {classList:{contains:cls => cls === "is-livehand"}, getAttribute:() => "live"};
+assert.equal(t.surfaceClickedTrayDie(clickOn(fakeDie(liveLine))), false,
+  "the live hand is excluded — its dice keep their existing interactions");
+assert.equal(t.surfaceClickedTrayDie(clickOn(fakeDie(fakeLine("x")), true)), false,
+  "a click that lands on a button is never claimed — the button keeps its own action");
+assert.equal(t.surfaceClickedTrayDie({target:{closest:() => null}}), false,
+  "a click outside any die is left to the rest of handleClick");
+assert.equal(t.state.traySurfaceId, "mine-old", "none of the refused clicks surfaced anything");
+/* A feed line's dice carry no handles (pinned in section 5) but ARE
+   .fh-cd-diewrap spans inside a data-tray-line li — the same gesture
+   reaches them: local display order, no remote write. */
+t.state.traySurfaceId = ""; t.state.traySurfaceAt = "";
 
 console.log("dice-tray: all assertions passed");
