@@ -383,10 +383,22 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 > non-affiliation wording (Eric's strict-SRD ruling holds). `deploy_pages.sh`
 > read before merging: builds fresh, ordinary commit on a `gh-pages` worktree,
 > no force-push, `--push` opt-in, and it states in its own header that running
-> it is Eric's act. **Not yet live** — waits on Eric enabling Pages on `fh-srd`
-> and running `./deploy_pages.sh --push`. Companion-side links come with the
-> dock lots, on the frozen URL contract. The living guide's next bump (v1.5,
-> due at the Dice Tray merge) must also cover this site.
+> it is Eric's act. Companion-side links come with the dock lots, on the
+> frozen URL contract. The living guide's next bump (v1.5, due at the Dice
+> Tray merge) must also cover this site.
+>
+> **LIVE 2026-08-05 — https://noirchicot.github.io/fh-srd/ — and `fh-srd` is
+> now a PUBLIC repository.** Eric ran `deploy_pages.sh --push` (gh-pages
+> `cf0f7f0`), but Pages could not be enabled: the free plan only serves Pages
+> from public repos, and `fh-srd` was private. Sensitive-content scan first
+> (source PDFs untracked, no secrets, no deleted-file skeletons in history),
+> then Eric ratified the flip; visibility change and Pages activation were run
+> from this seat to complete his deploy. Read-back verification: index `200`,
+> three pages (`fr/spell`, `en/monster`, `fr/glossary`) **byte-identical** to
+> the merged `web/` files, zero non-affiliation wording. Consequence of
+> public: like `fh-phb`, nothing private may ever be committed there — its
+> ATTRIBUTION.md and README already assume publication. Redeploy recipe:
+> `./deploy_pages.sh --push` after any export rebuild.
 
 > ✅ **CLOSED 2026-08-03 — AboveVTT chat persistence will not happen. Stop
 > treating it as pending.** Azmoria, asked directly: `inject_chat` rides DDB's

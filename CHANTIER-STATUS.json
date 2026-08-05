@@ -43,7 +43,7 @@
       "repo": "fh-srd",
       "path": "~/tools/fh-srd",
       "state": "fini",
-      "note": "✅ SITE SRD WEB FUSIONNÉ (main = 3decd7c, 2026-08-05) : générateur déterministe + web/ committé (26 pages, contrat d'URL {lang}/{kind}/#{slug}), attribution stricte SRD, 36/36 suites + replay clone indépendant byte-identique. Reste : Eric active Pages et lance ./deploy_pages.sh --push ; appariement translation_of ; liens depuis le Companion (avec les lots dock)."
+      "note": "✅ SITE SRD EN LIGNE (2026-08-05) : https://noirchicot.github.io/fh-srd/ — main = 3decd7c, dépôt rendu PUBLIC (décision Eric), Pages sur gh-pages (cf0f7f0), 3 pages relues byte-identiques au fusionné. Contrat d'URL {lang}/{kind}/#{slug} figé. Reste : liens depuis le Companion (lots dock) ; translation_of ; redéploiement = ./deploy_pages.sh --push."
     }
   ],
   "wip": [
@@ -61,7 +61,6 @@
     }
   ],
   "attente_eric": [
-    "Mettre le SRD en ligne : activer GitHub Pages sur fh-srd (branche gh-pages) puis ./deploy_pages.sh --push — lot fusionné 3decd7c, prêt.",
     "Hauteur d'une ligne du Dice Tray avec dés montrés (mockup à venir de la session Dice Tray).",
     "Distribution de l'extension AboveVTT (packaging, installation MJ).",
     "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — avant la livraison du Dice Tray."
