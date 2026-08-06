@@ -3838,6 +3838,43 @@
     if(typed)return {name:typed[1],type:typed[2].charAt(0).toUpperCase()+typed[2].slice(1).toLowerCase()};
     return {name:text,type:""};
   }
+  /* ── P19 / P20 : la légende de l'essaim (ratifiées Eric, 2026-08-07) ──
+     Past six columns the hand has no room for a word under each die, so ONE
+     descriptive line under the crowd explains it: the groups of dice, then
+     the coins — « 8d6 · Bardic d8 · +2 FH · −2 EXH ». T1, informative ink,
+     centred; on 275px the heaviest hand measured is 183, so one line always
+     suffices and the width is never the constraint.
+
+     ⚠️ THE GUARD-RAIL, and it is the whole point: the legend says what the
+     dice ARE — how many, of what shape, from what source. It NEVER says what
+     they did. The « d6 5 · d6 5 · … » enumeration Eric killed on 2026-08-04
+     does not come back through this door.
+
+     P20 is the same decision seen from the coin: in the hand it keeps its word
+     under it; in the swarm it is only its value, painted on its face, and the
+     legend carries the word instead. */
+  function trayLegend(dice){
+    if(!Array.isArray(dice)||!dice.length)return "";
+    var groups=[],index={},coins=[];
+    dice.forEach(function(die){
+      if(die.kind==="modifier"){
+        var value=Number(die.result)||0;
+        coins.push((value>=0?"+":"−")+Math.abs(value)+(handLabel(die)?" "+handLabel(die):""));
+        return;
+      }
+      var name=handLabel(die),shape="d"+Number(die.sides);
+      // « Base d20 » names a role, not a source: in a crowd it adds nothing.
+      if(name===HAND_LABELS.d20)name="";
+      var key=name+"|"+shape;
+      if(index[key]==null){index[key]=groups.length;groups.push({name:name,shape:shape,n:0});}
+      groups[index[key]].n++;
+    });
+    var said=groups.map(function(group){
+      // « 8d6 » when they are alike and nameless, « Bardic d8 » when they have a source.
+      return group.name?group.name+" "+group.shape:(group.n>1?group.n:"")+group.shape;
+    });
+    return said.concat(coins).join(" · ");
+  }
   function trayFlankItems(entry,ruling){
     if(!entry)return [];
     var items=[],spent=entry.destiny;
@@ -4092,10 +4129,19 @@
     var deepFlank=pileSize>=5;
     slot.flankCapacity=deepFlank?5:4;
     var sides=trayLineSides(slot,quiet);
+    var legend=swarm&&!infinite?trayLegend(slot.dice):"";
     var row="<span class=\"fh-cd-tray-left\">"+whoHtml+"<span class=\"fh-cd-tray-speak\""+
         (sides.speakTitle?" title=\""+esc(sides.speakTitle)+"\"":"")+">"+sides.left+"</span></span>"+
+      /* P19: the legend belongs to the swarm and to the rows, never to the
+         hand — the hand has its labels and, at 0.4px of remaining height, no
+         room for a second line anyway. Two regimes, two tools: a word under a
+         die designates THAT object, a legend can only count. The wrapper is
+         raised ONLY when there is a legend to stack, so a hand's middle span
+         stays the direct flex child it has always been. */
+      (legend?"<span class=\"fh-cd-tray-mid\">":"")+
       "<span class=\"fh-cd-tray-dice"+(swarm&&!infinite?" is-swarm":"")+(rows?" is-rows":"")+(infinite?" is-infinite":"")+"\""+
         (swarm&&!infinite?" style=\"--fh-cd-tray-die-size:"+settlePx+"px\"":"")+">"+diceHtml+"</span>"+
+      (legend?"<small class=\"fh-cd-tray-legend\">"+esc(legend)+"</small></span>":"")+
       "<span class=\"fh-cd-tray-right\">"+sides.right+"</span>";
     /* The live hand keeps the frame — and with it the mood streaks that say
        what the table still owes. History and feed lines carry no frame: a

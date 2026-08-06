@@ -2388,3 +2388,65 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   display:block;max-width:100%;font-style:normal;font-size:var(--cd-t3);font-weight:600;
   line-height:1.1;color:#b3a68c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fh-cd-dicetray .fh-cd-tray-right .fh-cd-tray-total{font-size:var(--cd-t4)}
+
+/* ── Lot R34-R39 (P19, P20) — la légende de l'essaim ───────────────────
+   One descriptive line under the crowd, where a word under each die no longer
+   fits. T1, informative ink, centred. On 275px the heaviest hand measured is
+   183, so the width is never the constraint — and there are 19px free under a
+   swarm in a band of 56, of which the legend takes 8.6.
+
+   The middle column becomes a stack ONLY when there is a legend to stack, so
+   a hand's dice span stays the direct flex child it has always been.
+   APPENDED only. */
+.fh-cd-tray-mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px}
+.fh-cd-tray-mid .fh-cd-tray-dice{flex:0 1 auto;width:100%}
+.fh-cd-tray-legend{display:block;max-width:100%;font-size:var(--cd-t1);line-height:1.1;
+  color:#b3a68c;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Lot R34-R39 (P16) — l'assise des dés du builder repasse au sombre
+   (rouvre R9, partiellement) ────────────────────────────────────────────
+   Eric, 2026-08-07: « le builder devra être sombre aussi du coup ». It is a
+   consequence of R8 not being reopened, not a change of taste: the tray stays
+   dark, and a die must read the same while it is being assembled and once it
+   has fallen.
+
+   And the measurement says the same thing from the other side. R9 put the
+   builder on the sheet's parchment (#f4ecd8 → #e9dcbc); an ivory die on
+   #f4ecd8 is 1.02:1 — the SAME luminance as its ground. So in the builder,
+   today, in production, an ivory die is not an object: it is an outline held
+   up by its rim (4.27) and its drop shadow. The defect was already there; P16
+   is the same invoice discovered in the other zone.
+
+   WHAT DOES NOT COME BACK: the wooden box. R9 killed it for good and this
+   does not resurrect it — there is no border, no inset shadow, no frame.
+   What returns is the SEAT the dice are laid on, in continuity with the tray
+   beneath it, and with it the light lettering R9 had turned to dark ink.
+   APPENDED only. */
+.fh-cd-frame.is-judgment{
+  background:linear-gradient(180deg,#2f2a22 0%,#26221b 60%,#211e18 100%);
+  border-radius:6px}
+/* The lettering R9 reversed to ink goes back to light — measured on #26221b. */
+.fh-cd-frame.is-judgment .fh-cd-judgment>b{color:#f4ecd8}          /* 13.4 */
+.fh-cd-frame.is-judgment .fh-cd-judgment>b.fh-cd-verdict{color:#ffd98a}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em,
+.fh-cd-frame.is-judgment .fh-cd-judgment>em.fh-cd-account{color:#b3a68c}
+.fh-cd-frame.is-judgment .fh-cd-diewrap em{color:#cdb68c}
+.fh-cd-judgeright b{color:#f4ecd8}
+.fh-cd-judgeright i{color:#ffd98a}
+/* The takeover keeps its drama, in gold on the dark seat rather than oxblood
+   on the sheet — oxblood on #26221b is 1.9:1, which is the same trap P18 just
+   paid for under the dice. */
+.fh-cd-frame.is-judgment .fh-cd-judgeask>b{color:#ffd98a}
+.fh-cd-frame.is-judgment .fh-cd-judgeask>i{color:#e0cda4}
+/* The dice are lifted off the seat again, not pressed into a sheet. */
+.fh-cd-frame.is-judgment .fh-cd-static-die,
+.fh-cd-frame.is-judgment .fh-cd-die svg,
+.fh-cd-frame.is-judgment .fh-cd-judgeask .fh-cd-die{filter:drop-shadow(0 3px 5px rgba(10,7,3,.55))}
+/* The moods were deepened to bronze for the parchment; on the dark seat they
+   glow again, exactly as they were pitched to. */
+.fh-cd-frame.is-judgment.mood-arcane-success::before,
+.fh-cd-frame.is-judgment.mood-crit-success::before{
+  background:radial-gradient(120% 90% at 50% 50%,rgba(255,217,138,.30) 0%,rgba(255,217,138,.08) 55%,transparent 78%)}
+.fh-cd-frame.is-judgment.mood-awakening::before{
+  background-image:conic-gradient(from 0deg at 50% 50%,rgba(255,217,138,.32),transparent 22%,rgba(201,164,90,.28) 46%,transparent 70%,rgba(255,217,138,.32))}

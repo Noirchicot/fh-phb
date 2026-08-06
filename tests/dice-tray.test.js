@@ -35,7 +35,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
     surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie, dieSvg,
     renderDockHeader, feedChipHtml, feedStatusCaption,
     shortDieLabel, handLabel, normalizePoolResource, poolChipFace, LEX, rollRuling,
-    trayOwnerName, trayFlankItems, evictFlankItems, textWidthPx, trayRollName
+    trayOwnerName, trayFlankItems, evictFlankItems, textWidthPx, trayRollName, trayLegend
   };
 })();
 `);
@@ -375,16 +375,36 @@ assert.match(css, /\.fh-cd-dicetray \.fh-cd-trayline\.is-l1 \.fh-cd-tray-verdict
    sunk shadow — and every lettering that was light-on-wood is ink on
    parchment again. The dice alone carry a drop shadow to say « posés
    dessus ». The LAST word each time must be the parchment dress. */
+/* REWRITTEN 2026-08-07 (lot R34-R39, P16 — Eric reopens R9 in part).
+   The assertion held two things at once and only one of them was R9's point.
+   R9 killed the WOODEN BOX, and that stays killed — no border, no inset
+   shadow, no frame. R9 also put the dice on the sheet's parchment, and that
+   is what P16 reverses: an ivory die on #f4ecd8 is 1.02:1, the same luminance
+   as its ground, so in the builder a die is not an object today, it is an
+   outline held up by its rim and its shadow. The seat goes back to dark, in
+   continuity with the tray below it, and a die reads the same while it is
+   being assembled and once it has fallen. So: the box is still dead, the
+   parchment seat is not. */
 const lastJudgmentDress = [...css.matchAll(/\.fh-cd-frame\.is-judgment\{([^}]+)\}/g)].pop();
-assert.equal(lastJudgmentDress && lastJudgmentDress[1],
-  "border:0;background:none;box-shadow:none;border-radius:0",
-  "the builder's last dress is bare parchment — no wood, no box, no inset shadow");
+assert.doesNotMatch(lastJudgmentDress && lastJudgmentDress[1], /border:[^0]|box-shadow:(?!none)/,
+  "the wooden box stays dead — no border, no sunk shadow (R9, not reopened)");
+assert.match(lastJudgmentDress && lastJudgmentDress[1], /background:linear-gradient\(180deg,#2f2a22/,
+  "…but the dice get a dark seat back, so a die reads the same in the builder and in the tray (P16)");
+assert.ok(css.lastIndexOf(".fh-cd-frame.is-judgment .fh-cd-judgment>b{color:#f4ecd8}") >
+  css.indexOf(".fh-cd-frame.is-judgment .fh-cd-judgment>b{color:var(--cd-ink)}"),
+  "…and the lettering R9 had turned to dark ink comes back light, by appending, never by rewriting");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P16): R9 turned this lettering to dark
+   ink because it had put the builder on parchment. The seat is dark again, so
+   the ink follows it back — « ils repassent en clair » is P16's own trailing
+   clause, the one the relevé warns not to forget. */
 const lastJudgmentB = [...css.matchAll(/\.fh-cd-frame\.is-judgment \.fh-cd-judgment>b\{color:([^}]+)\}/g)].pop();
-assert.equal(lastJudgmentB && lastJudgmentB[1], "var(--cd-ink)",
-  "the builder's headings are ink on parchment again");
+assert.equal(lastJudgmentB && lastJudgmentB[1], "#f4ecd8",
+  "the builder's headings are light on the dark seat again — 13.4:1 on #26221b");
+/* And the takeover cannot keep oxblood: on #26221b it is 1.9:1, the very trap
+   P18 has just paid for under the dice. Same drama, in gold. */
 const lastJudgeAskB = [...css.matchAll(/\.fh-cd-frame\.is-judgment \.fh-cd-judgeask>b\{color:([^}]+)\}/g)].pop();
-assert.equal(lastJudgeAskB && lastJudgeAskB[1], "var(--cd-oxblood)",
-  "the grande occasion asks its question in oxblood — dramatic on the light sheet");
+assert.equal(lastJudgeAskB && lastJudgeAskB[1], "#ffd98a",
+  "the grande occasion asks its question in gold — oxblood on a dark seat is 1.9:1");
 assert.match(css, /\.fh-cd-frame\.is-judgment \.fh-cd-static-die\{filter:drop-shadow/,
   "the dice are what casts a shadow on the sheet");
 
@@ -1100,3 +1120,50 @@ assert.match(css, /\.fh-cd-dicetray \.fh-cd-tray-right\{width:calc\(68px \* var\
   "the column follows the scale its text follows — R32's fix, finally repeated here");
 assert.match(css, /\.fh-cd-tray-title\{\s*\n?\s*font-size:var\(--cd-t1\)/,
   "P31: T1 on line 1 is what stops the eighteen skill names folding");
+
+/* ── Lot R34-R39 — la légende de l'essaim (P19, P20) ───────────────────
+   The legend says what the dice ARE — how many, of what shape, from what
+   source. It NEVER says what they did: the « d6 5 · d6 5 · … » enumeration
+   Eric killed on 2026-08-04 must not come back through this door, and that is
+   the one assertion here worth more than the others. */
+const swarm8 = [];
+for (let i = 0; i < 8; i++) swarm8.push({sides:6, result:(i % 6) + 1});
+swarm8.push({sides:8, result:7, label:"Bardic Inspiration", short:"Bardic", dieRole:"bonus"});
+swarm8.push({kind:"modifier", result:2, label:"FH bonus"});
+swarm8.push({kind:"modifier", result:-2, label:"Exhaustion", tone:"exhaustion"});
+assert.equal(t.trayLegend(swarm8), "8d6 · Bardic d8 · +2 FH · −2 EXH",
+  "the groups of dice, then the coins — the ratified format");
+assert.doesNotMatch(t.trayLegend(swarm8), /d\d+\s*[=:]?\s*\d/,
+  "no « d6 5 » pair anywhere in it — the legend counts, it does not report, and that enumeration was killed on 2026-08-04");
+assert.equal(t.trayLegend([{sides:20, result:14, label:"d20", dieRole:"base"}, {sides:20, result:3, label:"d20", dieRole:"base"}]),
+  "2d20", "« Base d20 » names a role, not a source: in a crowd it adds nothing");
+/* P20: the coin keeps its word in the legend even though it lost it under the
+   die — that is the trade, not a loss. */
+assert.match(t.trayLegend(swarm8), /\+2 FH/, "the coin's word survives in the legend…");
+const nakedCoin = t.visualDie({kind:"modifier", result:2, label:"FH bonus"}, 9, 10, false, {naked:true, sizePx:20, plainLabel:true});
+assert.doesNotMatch(nakedCoin, /<em>/, "…precisely because it is not under the coin any more");
+
+t.state.feed.events = []; t.state.trayResults = []; t.state.rollSequence = null; t.state.diceSignatures = {};
+t.state.history = [{id:"legend-line", kind:"tray", name:"Damage roll", dice:swarm8.filter(d => d.kind !== "modifier"), total:40, createdAt:isoAt(0)}];
+const legendLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="legend-line"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.match(legendLine, /class="fh-cd-tray-legend">/, "a swarm line carries its legend");
+assert.match(legendLine, /fh-cd-tray-mid/, "…in a stacked middle column");
+
+// A hand keeps its labels and gets NO legend: it has no room for a second line.
+t.state.history = [{id:"hand-line", kind:"tray", name:"Damage roll", dice:[{sides:6, result:4}, {sides:6, result:2}], total:6, createdAt:isoAt(0)}];
+t.state.diceSignatures = {};
+const handLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="hand-line"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.doesNotMatch(handLine, /fh-cd-tray-legend/, "the hand has its labels — two regimes, two tools");
+assert.doesNotMatch(handLine, /fh-cd-tray-mid/, "…and its middle span stays the direct flex child it has always been");
+
+/* P23, the arithmetic itself: three ordinary hands overflowed in production
+   because the threshold counted DICE and the coins were counted nowhere. */
+t.state.history = [{id:"coins-line", kind:"tray", name:"Dexterity Check",
+  dice:[{sides:20, result:14}, {sides:20, result:9}, {sides:6, result:3}, {sides:6, result:5},
+        {kind:"modifier", result:2, label:"FH bonus"}, {kind:"modifier", result:-1, label:"Exhaustion"},
+        {kind:"modifier", result:3, label:"Manual"}],
+  total:35, createdAt:isoAt(0)}];
+t.state.diceSignatures = {};
+const coinsLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="coins-line"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.match(coinsLine, /is-swarm/,
+  "four dice and three coins is 4×38 + 3×26 + 6×8 = 278 on a zone of 275 — it must break to the swarm, and the old count-of-dice threshold let it overflow in silence");
