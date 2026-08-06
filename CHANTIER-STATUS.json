@@ -13,7 +13,7 @@
     "open": false,
     "display": "🚦 Porte de déploiement FERMÉE — écart main↔site VOULU, pas une alerte",
     "reason": "Rien ne se déploie tant que Info Panel, Dice Pool, Console, Dice Tray et Roll Builder ne sont pas tous reconstruits (décision Eric 2026-08-03).",
-    "reopens_when": "Les cinq surfaces du bas du dock sont fusionnées et vérifiées."
+    "reopens_when": "Les cinq surfaces du bas du dock sont fusionnées et vérifiées, PUIS la passe typographique globale (moitié haute sur les crans T1-T7 + test de conformité) — ajoutée par Eric le 2026-08-06 : elle passe avant le déploiement pour que les joueurs ne voient pas le dock changer deux fois."
   },
   "deployed": {
     "site": "https://noirchicot.github.io/fh-phb/",

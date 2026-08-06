@@ -148,6 +148,43 @@ drain. If they need an authority one day, they get their own.
 
 ---
 
+## The adoption plan — ratified by Eric 2026-08-06
+
+Zone-by-zone adoption is the mechanism; this is the schedule it ends on.
+
+**Entry condition:** the five lower-half surfaces are rebuilt and merged — Dice
+Tray, Roll Builder, Dice Pool, Console, Info Panel. They arrive on the scale
+natively, so the residual is only the upper half: Identity, Character Info,
+Belt, the seven panels.
+
+**Position in the queue: after those five, and BEFORE the deploy gate opens.**
+The reasoning is the gate's own, one step further out: if the pass follows the
+release, players watch the dock change **twice** — once for the lower half,
+once for typography. One coherent dock, once.
+
+**Exit condition — this is the part that matters.** A pass without a guard
+decays: the 44th number returns with the first session in a hurry. The lot is
+done when **a test fails if any dock `font-size` is not a token**. That is what
+turns this file from an intention into an executed rule, and it joins the
+suites that already run at every delivery.
+
+**What the same pass necessarily repairs**, because they are the same defect:
+the four hard-coded sizes that ignore zoom (`15px`, `16px`, `9.3px`, `8.4px`)
+and the whole unsized-inherits-16px class described in the next section.
+
+**Standing exception, on the record:** the six sizes derived from
+`--fh-static-die-size` (`calc(var(--fh-static-die-size) * .19 … .324)`) stay
+off the scale. They track the die, which tracks the zoom — they are
+proportional by design, not unnamed by neglect.
+
+**The reservation, stated so it is not discovered late:** this is not a `sed`.
+The P4 case of 2026-08-06 is the proof — a die label fitting 38px with 0.2px
+to spare is a load-bearing value wearing the clothes of a detail. Each zone
+redoes its width arithmetic as it snaps. **A lot, not a chore**, and one more
+reason to take zones at rebuild time rather than all 2 179 lines in one night.
+
+---
+
 ## Unsized text falls out of the zoom system entirely
 
 **No ancestor in the dock chain declares a `font-size`** — not `.fh-cd-root`,

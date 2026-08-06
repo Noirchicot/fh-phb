@@ -761,8 +761,15 @@ Two consequences to carry:
 1. **Info Panel** — the new zone
 2. **Dice Pool** — Destiny dice and Pool dice, merged with the Roll Builder
 3. **Console**
-4. **Dice Tray** — extracted from `roller`, four visible rolls, Static Area
+4. **Dice Tray** — extracted from `roller`, **five** visible bands, Static Area
 5. **Roll Builder**
+
+**And one more, added by Eric 2026-08-06: the global typography pass** — the
+upper half snapped onto the `T1`–`T7` rungs, ending with the conformance test
+that fails on any unnamed size (`UI-TYPOGRAPHY.md`, adoption plan). It goes
+**last, but still before the deploy**, for the gate's own reason taken one step
+further: a pass shipped after the release would make players watch the dock
+change twice. One coherent dock, once.
 
 Eric's reasoning, and it is right: shipping a half-migrated dock to players is
 worse than shipping nothing. The lower half of the dock changes as one thing.
