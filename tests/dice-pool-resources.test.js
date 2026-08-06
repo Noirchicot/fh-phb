@@ -31,7 +31,9 @@ const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
     persistPlayState,loadPlayState,storageKey,
     clearDiceTray,dropStagedDie,unstageDie,removeTrayDie,
     rollTrayDice,rollStagedDice,stagedList,rollOpen,openEntry,quickRoll,
-    entryBonusDice,trayDiceForDisplay
+    entryBonusDice,trayDiceForDisplay,
+    onPoolCardInput,syncPoolCardInputs,trayDiceFromEntry,
+    _setRoot:function(value){root=value;}
   };
 })();
 `);
@@ -202,5 +204,47 @@ t.state.poolPrompt={type:"list"};
 const list=t.renderPoolCard();
 assert.equal((list.match(/fh-cd-poolrow\b/g)||[]).length,5,"the list card names every resource");
 assert.match(list,/data-pool-edit/);
+
+// ── R31 (racine) : le label tapé survit à N'IMPORTE QUEL re-render ──
+// Au banc d'Eric, un render() asynchrone (timer du reveal, pulse d'appel)
+// reconstruisait la carte d'ajout pendant la frappe : le champ renaissait
+// depuis un draft jamais synchronisé, la saisie était effacée en silence et
+// « Add it » sauvait le défaut « Resource ». Chaque frappe pousse désormais
+// le champ dans le draft (onPoolCardInput), donc la carte reconstruite
+// renaît AVEC le texte tapé et la sauvegarde ne voit jamais un champ vide.
+reset([]);
+t.state.poolPrompt={type:"add",draft:t.newPoolDraft()};
+const labelField={value:"Tact"};
+t._setRoot({querySelector:sel=>sel==="#fhPsPoolLabel"?labelField:null});
+t.onPoolCardInput({target:{id:"fhPsPoolLabel"}});
+assert.equal(t.state.poolPrompt.draft.label,"Tact","chaque frappe atterrit dans le draft…");
+labelField.value="Tactical";
+t.onPoolCardInput({target:{id:"fhPsPoolLabel"}});
+assert.equal(t.state.poolPrompt.draft.label,"Tactical");
+assert.match(t.renderPoolCard(),/value="Tactical"/,
+  "…et une carte reconstruite par un render minuté renaît avec le texte tapé");
+// Un événement input étranger ne touche pas au draft.
+t.onPoolCardInput({target:{id:"fhPsCustom"}});
+assert.equal(t.state.poolPrompt.draft.label,"Tactical");
+t._setRoot(null);
+t.savePoolCard();
+assert.equal(t.poolList()[0].label,"Tactical","Add it sauve le label tapé, jamais le défaut « Resource »");
+
+// ── R31 : un dé du pool lancé en JET LIBRE garde son nom sur la ligne du tray ──
+reset([bardic]);
+t.spendPoolResource("res-Bardic");
+queueRolls(6);
+t.rollTrayDice();
+const freeLine=t.trayDiceFromEntry(t.state.history[0]);
+assert.equal(freeLine.length,1);
+assert.equal(freeLine[0].label,"Bardic","la ligne du tray nomme le dé du pool, pas un « d8 » anonyme");
+assert.equal(freeLine[0].result,6);
+// Un dé libre ordinaire, lui, reste un « d20 » : rien ne change pour lui.
+reset([]);
+t.state.traySelection=[];
+queueRolls(11);
+t.rollTrayDice();
+const plainLine=t.trayDiceFromEntry(t.state.history[0]);
+assert.equal(plainLine[0].label,"d20","un dé libre sans nom garde son d20");
 
 console.log("Dice Pool counted-resources tests passed.");

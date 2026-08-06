@@ -1241,7 +1241,10 @@
       // struck through, exactly as the d20 does.
       results=[];
       (entry.dice||[]).forEach(function(die,index){
-        trayDiceForPlan({sides:die.sides,rolls:die.rolls&&die.rolls.length?die.rolls:[die.result],result:die.result,chosenIndex:die.chosenIndex,mode:die.advantageMode,forced:die.forced,colour:die.colour},"d"+die.sides,{dieRole:"base",landedKey:"free:"+index,entryId:entry.id})
+        /* R31: a free die that carries a NAME (a pool resource spent at rest —
+           "Bardic", "Tactical") keeps it on the landed line, exactly as the
+           pending hand already named it. A plain free die stays "d8". */
+        trayDiceForPlan({sides:die.sides,rolls:die.rolls&&die.rolls.length?die.rolls:[die.result],result:die.result,chosenIndex:die.chosenIndex,mode:die.advantageMode,forced:die.forced,colour:die.colour},die.label||("d"+die.sides),{dieRole:"base",landedKey:"free:"+index,entryId:entry.id})
           .forEach(function(item){item.natural=die.sides===20?item.result:null;results.push(item);});
       });
     }
@@ -2768,6 +2771,17 @@
     var label=root.querySelector("#fhPsPoolLabel"),count=root.querySelector("#fhPsPoolCount");
     if(label)prompt.draft.label=String(label.value||"").slice(0,14);
     if(count)prompt.draft.count=clamp(count.value,1,MAX_POOL_COUNT);
+  }
+  /* R31 (racine, prouvée au banc) : un render() ASYNCHRONE — le timer du
+     reveal, le pulse d'appel de Destiny — reconstruit la carte pendant que le
+     joueur tape ; le champ renaissait depuis un draft jamais synchronisé, la
+     frappe était effacée en silence et « Add it » sauvait le défaut
+     « Resource ». Chaque frappe pousse donc le champ dans le draft : une
+     carte reconstruite renaît AVEC le texte tapé, quel que soit le chemin de
+     re-render (synchrone ou minuté). */
+  function onPoolCardInput(event){
+    var target=event&&event.target;
+    if(target&&(target.id==="fhPsPoolLabel"||target.id==="fhPsPoolCount"))syncPoolCardInputs();
   }
   function savePoolCard(){
     var prompt=state.poolPrompt;
@@ -5122,7 +5136,8 @@
     document.addEventListener("click",onOutsideClick);
     /* Panel-only hooks. focusout rather than blur, because blur does not bubble
        and a delegated listener would never see it. */
-    root.addEventListener("input",function(event){delegateToPanel(event,"onInput");});
+    // R31: the pool card's fields sync on every keystroke (see onPoolCardInput).
+    root.addEventListener("input",function(event){onPoolCardInput(event);delegateToPanel(event,"onInput");});
     root.addEventListener("focusout",function(event){delegateToPanel(event,"onBlur");});
     // Coming back to the tab is treated like reopening the TABLE tab: one
     // refresh, not a resumed poll (plan §13.9 fix 1 — RECENT is never on a
