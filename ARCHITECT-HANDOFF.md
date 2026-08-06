@@ -411,14 +411,23 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 > 3. **T23 — the Stream's who-column in Mine view**: unverified, ⏸ minor.
 >
 > **Worktree survey findings (same audit):** branch `mirror-lot` (3 commits,
-> 2026-08-04) holds a real, documented test-mirror site — `FHTEST` campaign,
-> local KV, port 8130, reachable from the iPad over LAN (`MIRROR.md`). It is
+> 2026-08-04) held a real, documented test-mirror site — `FHTEST` campaign,
+> local KV, port 8130, reachable from the iPad over LAN (`MIRROR.md`). It was
 > NOT on `main` and is exactly the bench Eric's `rollType:"skill"` check
-> wants. Decision owed: merge it (it is tooling outside the dock) or keep it
-> as a branch. Also confirmed stale, do-not-merge: `architect/queue-actions-v1`
-> (the Actions V1 pastille, shipped long since), `codex/fhpc-guide-v1-2`,
-> `codex/pkg567-integrated-gate-v2` — their worktrees under `~/Documents/Codex`
-> can go, branches kept, never `--force`.
+> wants. **MERGED 2026-08-06** (`15bfca3`, trial-merge clean, 19/19 + strict
+> build after; `MIRROR.md`'s launch path updated to the main repo, `dae2b0b`).
+> Run it with `cd ~/tools/fh-phb && tools/mirror.sh`.
+>
+> **Worktree cleanup executed the same day, Eric's "fait ce que tu dois":**
+> eight worktrees removed, none with `--force`, every branch kept —
+> `fh-phb-actions-queue`, `fhpc-guide-worktree`, `pkg567-integrated-gate`
+> (Codex-era, superseded), `elastic-bell-0d62a0` (tray merged; its two
+> untracked LOT docs verified byte-identical against their vault archive
+> before deletion), `mirror-lot` (merged), `relaxed-lumiere-438a93` (its
+> linkedom commit landed long ago), `architect-yedrivel-pass` (superseded,
+> §6). **Kept: `youthful-taussig-bfa14e`** — still dirty with the
+> `sync_from_vault.py` fix, still protected (§4), still waiting to be landed
+> or decided against.
 
 > 🚀 **LOT LAUNCHED 2026-08-05 — the SRD reference site (`fh-srd`, branch
 > `srd/web-v1`).** Eric wants the SRD browsable on the web with deep links from

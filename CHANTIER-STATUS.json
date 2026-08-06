@@ -25,7 +25,7 @@
       "repo": "fh-phb",
       "path": "~/tools/fh-phb",
       "state": "fini",
-      "note": "✅ DICE TRAY FUSIONNÉ (79195ea, 47 commits, 2026-08-06) : cinq bandes nommées, Dice Pool compté, tray déployé ; 19/19 + clone indépendant + fusion à blanc ; guide v1.5 (9cb9c5a). Non déployé, porte fermée (voulu). Restent : Destiny & Dice Pool, Console, Info Panel, passe typo T1-T7."
+      "note": "✅ DICE TRAY FUSIONNÉ (79195ea, 47 commits, 2026-08-06) + MIROIR DE TEST FUSIONNÉ (15bfca3 : tools/mirror.sh, FHTEST, port 8130, iPad LAN — le banc de la vérif rollType 'skill'). Guide v1.5 (9cb9c5a). Audit des docs de travail : tout consommé sauf C3 (px fixes vs zoom, décision due) et T11 (DOM masqué, en passant). Worktrees périmés nettoyés (8 retirés, branches gardées, jamais --force). Non déployé, porte fermée (voulu). Restent : Destiny & Dice Pool, Console, Info Panel, passe typo T1-T7."
     },
     {
       "repo": "fh-table",
@@ -55,6 +55,7 @@
     }
   ],
   "attente_eric": [
+    "C3/D3 — les px fixes (tray 284, bandes 56/72, dés picker, ROLL, portrait) ne suivent pas le zoom : cavalier de la passe typo globale, ou mini-lot à part ? Décision avant le lancement de la passe.",
     "Distribution de l'extension AboveVTT (packaging, installation MJ).",
     "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — le tray est fusionné, cette vérif reste due avant l'OUVERTURE DE LA PORTE."
   ],
