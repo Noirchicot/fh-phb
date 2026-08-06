@@ -393,6 +393,22 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 > gate's sixth item. Gate progress: **4 of 6** (vocabulary, tray done; Destiny
 > & Dice Pool, Console, Info Panel, type pass remain — in that order).
 >
+> ⚠️ **CORRECTION, same evening — merging the code did NOT close the chantier.**
+> The architect wrote "chantier clos" in the logbook on seeing the branch
+> merged, without reading the chantier doc's pending pastilles. **A code lot
+> was, and is, unbuilt: `R34-R39` plus the 33 ratified decisions of the
+> "Pastilles & libellés" thread** — its transition prompt had been written,
+> never executed. Living backlog beside it: the eye icon (reopen a tray roll
+> in the Roll Builder, the official replacement for the deleted reading
+> glass), and "tâche B". The doc's every pastille pointed at the worktree and
+> branch this seat had just deleted. **Fixed:** fresh worktree
+> `~/tools/fh-worktrees/tray-labels`, branch `tray-labels-r34-r39`, harness on
+> 8127, cut from `main`, 19/19 green and clean; the chantier doc's header and
+> the R34-R39 pastille now name it, and the false "closed" entry is struck
+> through in place rather than deleted. **Standing lesson: a merged branch is
+> not a finished chantier — read the chantier doc's open pastilles before
+> declaring anything closed.**
+>
 > **Post-merge audit of the two working docs (2026-08-06, Eric asked).** The
 > session's untracked `LOT-TEXTE-LISTE.md` (24 items) and `LOT-MESURES-PLAN.md`
 > (C1–C3, D1–D5) were checked item by item against merged `main`; both are

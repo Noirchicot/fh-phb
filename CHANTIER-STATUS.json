@@ -48,6 +48,12 @@
   ],
   "wip": [
     {
+      "name": "Dice Tray — lot R34-R39 (pastilles & libellés)",
+      "repo": "fh-phb",
+      "state": "en-attente",
+      "note": "⚠️ Le CODE du tray est fusionné (79195ea) mais le CHANTIER reste ouvert : le lot R34-R39 + 33 décisions ratifiées (fil « Pastilles & libellés ») n'a jamais été construit — sa pastille était écrite, pas exécutée. Cible neuve prête : worktree ~/tools/fh-worktrees/tray-labels, branche tray-labels-r34-r39, harnais 8127, 19/19 vertes. Backlog vivant : icône œil, tâche B."
+    },
+    {
       "name": "Widget Übersicht chantier",
       "repo": "hooks/widget",
       "state": "en-cours",
