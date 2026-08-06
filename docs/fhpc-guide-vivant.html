@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>FHPC — Guide vivant de l’architecture · v1.5</title>
+  <title>FHPC — Guide vivant de l’architecture · v1.6</title>
   <style>
     :root {
       --bg: #f4efe6;
@@ -322,14 +322,14 @@
 <body>
 <main class="page" id="guide" data-level="overview">
   <header class="hero">
-    <p class="kicker">Guide vivant · Version 1.5 · État du 6 août 2026</p>
+    <p class="kicker">Guide vivant · Version 1.6 · État du 7 août 2026</p>
     <h1>FHPC, du clic du joueur à la table de jeu</h1>
     <p class="lede">Une carte évolutive de Fate’s Hand Player Companion&nbsp;: ce qui existe, comment les morceaux coopèrent, pourquoi l’architecture a pris cette forme, et ce qui reste à construire.</p>
     <div class="hero-meta">
       <span class="pill"><code>main</code> FHPC&nbsp;: <code>79195ea</code></span>
       <span class="pill">Code déployé&nbsp;: <code>d947dd7</code> (release 5/6/7)</span>
       <span class="pill">19 suites FHPC au vert</span>
-      <span class="pill">Dice Tray&nbsp;: sur <code>main</code></span>
+      <span class="pill">Dice Tray&nbsp;: sur <code>main</code>, libellés compris</span>
       <span class="pill">SRD en ligne&nbsp;: <code>noirchicot.github.io/fh-srd</code></span>
       <span class="pill">🚦 Porte de déploiement&nbsp;: FERMÉE</span>
     </div>
@@ -538,6 +538,7 @@
       <div class="moment"><time>4 août</time><h3>Le contenu SRD est complet, deux langues</h3><p>La passe française fusionne&nbsp;: 2&nbsp;553 records, 12 types, descriptions comprises. Trouvaille au passage&nbsp;: la réédition FR de décembre 2025 contient cinq armes magiques absentes du PDF anglais — même numéro de version, contenu différent, exactement ce que le pin par hash existait pour attraper.</p></div>
       <div class="moment"><time>5 août</time><h3>Le SRD passe en ligne, le dépôt devient public</h3><p>Décisions d’Eric&nbsp;: site Pages propre à <code>fh-srd</code> (la frontière de licence reste la frontière de dépôt), attribution stricte SRD, dépôt rendu public après scan. Le site sert 26 pages, une ancre par record, relu byte-identique depuis Pages. Le contrat d’URL <code>{lang}/{kind}/#{slug}</code> est figé pour les liens du Companion.</p></div>
       <div class="moment"><time>6 août</time><h3>Les tailles reçoivent des noms, le Dice Tray fusionne</h3><p><code>UI-TYPOGRAPHY.md</code> est ratifié&nbsp;: sept crans T1–T7 (T1 le plus petit), quatre bandes en états nommés, et la leçon payée le jour même — la première échelle avait manqué la taille la plus peuplée du dock en inventoriant par noms de sélecteurs. Le soir, le Dice Tray entre sur <code>main</code> (<code>79195ea</code>, 47 commits)&nbsp;: quatrième des six items de la porte.</p></div>
+      <div class="moment"><time>7 août</time><h3>Les dés reçoivent leurs mots, et la zone récupère son sixième dé</h3><p>Le lot <code>R34-R39</code> entre sur <code>main</code> (<code>90609a4</code>)&nbsp;: trente-trois décisions ratifiées, les libellés de dés tenus à la largeur de leur objet, les deux flancs refaits, et la migration du lexique enfin terminée — l’affichage passe par une table unique (<em>Crit 20 · Fumble 1 · Crit ∞ · Fumble ∞</em>) pendant que les chaînes lues par les machines restent gelées au caractère près. Deux trouvailles de revue&nbsp;: une note de commentaire insérée en milieu de ligne avait <strong>désactivé quatre assertions</strong> — la suite restait verte parce que le garde ne tournait plus&nbsp;; et le budget de largeur du tray était en conflit avec lui-même. Eric a tranché «&nbsp;on reprend ce qu’on peut à gauche et à droite&nbsp;», et chaque côté a été <strong>mesuré au banc, pas calculé</strong>&nbsp;: le flanc droit avait 17&nbsp;px de mou, le gauche n’avait rien (il était trop court pour son propre mot le plus long, qui passait à deux lignes sans le dire). Résultat&nbsp;: une main de six dés, comme annoncé — avec zéro pixel de marge, écrit noir sur blanc dans le code.</p></div>
     </div>
   </section>
 
@@ -625,7 +626,7 @@
       <p>Le guide sépare volontairement test automatique, validation architecte, compte rendu d’exploitation et recommandation.</p>
     </div>
     <div class="source-list">
-      <article class="card"><span class="evidence ev-code">✓ code et tests automatiques</span><ul><li><code>main</code> décrit au merge <code>79195ea</code> (Dice Tray, 47 commits)</li><li>Cinq bandes nommées dans le CSS, Dice Pool compté, tray déployé, <code>tests/dice-tray.test.js</code> (830 lignes) + <code>tray-expanded</code> + <code>dice-pool-resources</code></li><li>19/19 + build strict dans le worktree, un clone indépendant détaché (après <code>npm install</code> — linkedom), et l’état fusionné</li><li>Fusion à blanc sans conflit avant la fusion réelle&nbsp;; <code>launch.json</code> du harnais exclu (discipline skip-worktree)</li><li><code>fh-table</code> <code>main</code> = <code>fc7f287</code> (pont + champs bridge + garde initiative)</li><li><code>fh-srd</code> <code>main</code> = <code>3decd7c</code>, site Pages relu byte-identique</li></ul></article>
+      <article class="card"><span class="evidence ev-code">✓ code et tests automatiques</span><ul><li><code>main</code> décrit au merge <code>90609a4</code> (lot R34-R39&nbsp;; le Dice Tray lui-même est entré par <code>79195ea</code>)</li><li>Zone des dés relue sur la page construite&nbsp;: 268&nbsp;px, six dés pleine taille, régimes 56/56/72/85</li><li>Cinq bandes nommées dans le CSS, Dice Pool compté, tray déployé, <code>tests/dice-tray.test.js</code> (830 lignes) + <code>tray-expanded</code> + <code>dice-pool-resources</code></li><li>19/19 + build strict dans le worktree, un clone indépendant détaché (après <code>npm install</code> — linkedom), et l’état fusionné</li><li>Fusion à blanc sans conflit avant la fusion réelle&nbsp;; <code>launch.json</code> du harnais exclu (discipline skip-worktree)</li><li><code>fh-table</code> <code>main</code> = <code>fc7f287</code> (pont + champs bridge + garde initiative)</li><li><code>fh-srd</code> <code>main</code> = <code>3decd7c</code>, site Pages relu byte-identique</li></ul></article>
       <article class="card"><span class="evidence ev-review">⚑ validation architecte récente</span><ul><li>Traits <code>3ecd981</code>&nbsp;: tactile 44&nbsp;px et manual-first</li><li>Actions <code>575bfde</code>&nbsp;: identités dupliquées/réservées réparées</li><li>Spells <code>fd8e635</code>&nbsp;: stores corrompus, import minimal et borne <code>MAX_SAFE_INTEGER</code></li><li>Intégration <code>4dca675</code>&nbsp;: PASS</li><li>Merge décrit <code>888a6dd</code>&nbsp;: trois panneaux présents sur <code>main</code></li><li>CSS additif Traits → Actions → Spells et vues desktop/mobile vérifiées</li></ul></article>
       <article class="card"><span class="evidence ev-plan">◷ documenté, non rejoué en réel ici</span><ul><li>Soak WebSocket de quatre heures</li><li>Mesures 22–28&nbsp;s et ≈57&nbsp;ms</li><li>Live gate AboveVTT 1.58</li><li>Essai Yedrivel CA 15→16→15</li><li>État des déploiements Worker externes</li></ul></article>
     </div>
@@ -639,17 +640,17 @@
   <section id="provenance" class="provenance" aria-labelledby="provenance-title">
     <p class="kicker">Provenance de cette édition</p>
     <h2 id="provenance-title">La photographie décrite, sans auto-référence</h2>
-    <p>Ce guide décrit l’état de la branche principale immédiatement après le merge du Dice Tray et avant son propre commit documentaire. Il ne prend pas son futur SHA comme preuve de l’état applicatif.</p>
+    <p>Ce guide décrit l’état de la branche principale immédiatement après le merge du lot R34-R39 et avant son propre commit documentaire. Il ne prend pas son futur SHA comme preuve de l’état applicatif.</p>
     <div class="provenance-grid">
-      <div><b>Version du guide</b><span>1.5</span></div>
-      <div><b>Dernière mise à jour</b><span>6 août 2026</span></div>
-      <div><b>Commit décrit</b><span><code>79195eab975bbf4e3bbc54f46d8114b433e8b5a8</code></span></div>
+      <div><b>Version du guide</b><span>1.6</span></div>
+      <div><b>Dernière mise à jour</b><span>7 août 2026</span></div>
+      <div><b>Commit décrit</b><span><code>90609a4</code> — merge du lot R34-R39</span></div>
       <div><b>Branche décrite</b><span><code>main</code></span></div>
     </div>
   </section>
 
   <footer>
-    Guide pédagogique v1.5 · le site sert la release 5/6/7&nbsp;; la porte de déploiement est fermée jusqu’à la reconstruction du bas du dock et la passe typographique.
+    Guide pédagogique v1.6 · le site sert la release 5/6/7&nbsp;; la porte de déploiement est fermée jusqu’à la reconstruction du bas du dock et la passe typographique.
   </footer>
 </main>
 
