@@ -2213,3 +2213,22 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    un état que la fiche connaît déjà, comme la note épinglée (.is-note,
    déjà animation:none) : elle attend en or, immobile. */
 .fh-cd-pending.is-exhaustion{animation:none}
+
+/* ── Flèches de marge (Eric, 2026-08-06, vérif PiP) ──────────────────
+   The scroll chevrons were centred — a perch inherited from the cap that
+   used to sit above them. The cap died; the centre of a band is where the
+   DICE are, and dice are the tallest thing a line holds: 38px inside a 56px
+   band leaves 9px of clearance, and a 14px chevron at top:4px eats it. The
+   affordance was hiding the very rolls it exists to reach.
+
+   They move to the LEFT MARGIN — the flank column, where the tallest thing
+   is a name of small text (~10px) vertically centred, so the top of the band
+   is genuinely free. This is héritage n°4, "les flèches de marge, logées
+   dans les flancs existants, coût 0 en largeur utile": no pixel is taken
+   from the dice, and no vertical budget is touched (the zone is 282 of 284,
+   there was never a spare row to give them).
+
+   Behaviour is unchanged and correct as measured with Eric: up appears only
+   when something newer is above, down only while rolls hide below, both in
+   between. Only the seat moves. APPENDED — nothing above is rewritten. */
+.fh-cd-trayarrow{left:8px;transform:none}
