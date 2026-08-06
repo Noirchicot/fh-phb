@@ -1068,27 +1068,45 @@
      outranks a natural 20, and a DC is only consulted when nothing louder
      happened. */
   function rollHasDc(entry){return entry.dc !== "" && isFinite(Number(entry.dc));}
-  /* Lexique ratifié (Eric, 2026-08-05, phase 5) — the SPOKEN side only.
+  /* ── Le lexique ratifié, en constantes (L88, Eric 2026-08-06) ───────
+     L88 asked for exactly this: the four ratified words written ONCE, so the
+     next rename is one edit instead of an inventory. The grammar is « famille
+     + ce qui l'a produit » — the number is the d20's natural result, the ∞ is
+     the Destiny die. Nothing else may read as a family name.
+
+     THE LINE THAT DIVIDES THIS FILE: these are DISPLAY. The machine-facing
+     `outcome` strings below (and on the wire) do not move — outcomeTone,
+     feedTone and intentOutcome regex-match them, other players' docks read
+     them, and L9-L14 froze them deliberately. Rename what is read by a human;
+     freeze what is read by a program. */
+  var LEX={
+    crit20:"Crit 20", CRIT20:"CRITICAL 20", crit20Short:"CRIT 20",
+    fumble1:"Fumble 1", FUMBLE1:"FUMBLE 1",
+    critInf:"∞ critical", CRITINF:"∞ CRITICAL",
+    fumbleInf:"∞ fumble", FUMBLEINF:"∞ FUMBLE"
+  };
+  /* Lexique ratifié (Eric, 2026-08-05 puis 2026-08-06) — the SPOKEN side only.
      Four verdicts renamed: CRITICAL 20, FUMBLE 1, ∞ CRITICAL, ∞ FUMBLE.
      The machine-facing `outcome` strings DO NOT MOVE — outcomeTone and
-     feedTone regex-match them, and the wire carries them. The undecided
-     "NATURAL 1 · CHOOSE" and the takeover prompt keep their old words:
-     their renames (L6) are proposed, not ratified. */
+     feedTone regex-match them, and the wire carries them.
+     The undecided 1 now says FUMBLE 1 · CHOOSE: L6 rode the automatic
+     cascade of the 2026-08-06 ratification (« ces lignes ne font qu'appliquer
+     les quatre termes »), so it is no longer a proposal. */
   var ROLL_VERDICTS=[
     {id:"arcane-critical-failure",when:function(e){return !!(e.destiny&&e.destiny.criticalFailure);},
-      outcome:"Critical failure",verdict:"∞ FUMBLE"},
+      outcome:"Critical failure",verdict:LEX.FUMBLEINF},
     {id:"arcane-critical-success",when:function(e){return !!(e.destiny&&e.destiny.criticalSuccess);},
-      outcome:"Critical success",verdict:"∞ CRITICAL"},
+      outcome:"Critical success",verdict:LEX.CRITINF},
     {id:"fate-refused",when:function(e){return e.natChoice==="chaos";},
       outcome:"Critical success · Chaos",verdict:"FATE REFUSED"},
     {id:"natural-20",when:function(e){return e.natural===20;},
-      outcome:"Natural 20",verdict:"CRITICAL 20"},
+      outcome:"Natural 20",verdict:LEX.CRIT20},
     {id:"natural-1-accepted",when:function(e){return e.natural===1&&e.natChoice==="accept";},
-      outcome:"Critical failure · Fate accepted",verdict:"FUMBLE 1"},
+      outcome:"Critical failure · Fate accepted",verdict:LEX.FUMBLE1},
     /* A 1 nobody has answered yet is undecided, and the Ruling says so rather
        than picking for the player. */
     {id:"natural-1-open",when:function(e){return e.natural===1;},
-      outcome:"Natural 1 · choose fate",verdict:"NATURAL 1 · CHOOSE"},
+      outcome:"Natural 1 · choose fate",verdict:LEX.FUMBLE1+" · CHOOSE"},
     {id:"success",when:function(e){return rollHasDc(e)&&e.total>=Number(e.dc);},
       outcome:"Success",verdict:"SUCCESS"},
     {id:"failure",when:rollHasDc,outcome:"Failure",verdict:"FAILURE"}
@@ -1112,8 +1130,8 @@
       var over = Number(state.destiny.overreach)||0;
       if (over > 0) chaos = {overreach:over,dc:10+over};
     }
-    if(!silent&&criticalSuccess)pushEvent("ARCANE CRITICAL SUCCESS · Destiny d"+die.sides+" rolled "+result,"arcane-critical-success");
-    else if(!silent&&criticalFailure)pushEvent("ARCANE CRITICAL FAILURE · Destiny d"+die.sides+" rolled 1","arcane-critical-failure");
+    if(!silent&&criticalSuccess)pushEvent(LEX.CRITINF+" · Destiny d"+die.sides+" rolled "+result,"arcane-critical-success");
+    else if(!silent&&criticalFailure)pushEvent(LEX.FUMBLEINF+" · Destiny d"+die.sides+" rolled 1","arcane-critical-failure");
     return {dieId:die.id,sides:die.sides,result:result,rolls:(plan.rolls||[result]).slice(),chosenIndex:plan.chosenIndex==null?0:plan.chosenIndex,advantageMode:rollMode(plan.mode),forced:!!plan.forced,cost:cost,pointsBefore:before,pointsAfter:state.destiny.points,criticalSuccess:criticalSuccess,criticalFailure:criticalFailure,chaos:chaos,recovered:recovered};
   }
   /* A 1 on a Destiny die is no longer a verdict, it is an offer — the mirror of
@@ -1139,8 +1157,8 @@
     if(!spent)return [];
     var change=spent.pointsAfter-spent.pointsBefore,events=[],parts=[],rollEntry=state.rollSequence&&state.rollSequence.entry||state.history.find(function(entry){return entry.id===entryId;});
     var offered=!!arcaneDecision(spent,entryId);
-    if(spent.criticalSuccess)parts.push("ARCANE CRITICAL SUCCESS","Destiny d"+spent.sides+" rolled "+spent.result);
-    else if(spent.criticalFailure)parts.push("ARCANE CRITICAL FAILURE","Destiny d"+spent.sides+" rolled 1");
+    if(spent.criticalSuccess)parts.push(LEX.CRITINF,"Destiny d"+spent.sides+" rolled "+spent.result);
+    else if(spent.criticalFailure)parts.push(LEX.FUMBLEINF,"Destiny d"+spent.sides+" rolled 1");
     else parts.push("Destiny d"+spent.sides+" rolled "+spent.result);
     // A failure still waiting on its answer announces the roll and nothing else:
     // the points it moved may be undone, and a line must not claim what may be undone.
@@ -1162,7 +1180,7 @@
     var events=[];
     if(choice==="accept"){
       spent.arcaneChoice="accept";
-      var accepted=["ARCANE FATE ACCEPTED · Critical failure","Gained 1 Destiny Point","Current "+state.destiny.points];
+      var accepted=["∞ FATE ACCEPTED · "+LEX.fumbleInf,"Gained 1 Destiny Point","Current "+state.destiny.points];
       if(spent.recovered)accepted.push("Gained a Destiny d"+spent.recovered.sides);
       events.push({text:accepted.join(" · "),kind:"arcane-critical-failure",entryId:entry.id});
     }else{
@@ -1177,7 +1195,7 @@
          surface keeps quoting the pre-refusal balance forever. */
       spent.pointsAfter=state.destiny.points;
       addPendingFate({kind:"chaos",entryId:entry.id,ability:entry.ability||"",name:entry.name||"Arcane failure refused"});
-      events.push({text:"ARCANE FATE REFUSED · The 1 becomes "+spent.sides+" · Arcane Critical Success"+(hadPoints?" · Destiny becomes 0":""),kind:"arcane-critical-success",entryId:entry.id},
+      events.push({text:"∞ FATE REFUSED · The 1 becomes "+spent.sides+" · "+LEX.critInf+(hadPoints?" · Destiny becomes 0":""),kind:"arcane-critical-success",entryId:entry.id},
         {text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id});
     }
     recomputeEntry(entry);
@@ -1188,14 +1206,14 @@
   function naturalDestiny(entry) {
     var events=[];
     if (entry.natural === 20) {
-      var before = state.destiny.points,recovered=setDestinyPoints(before-1,"Natural 20",true,true);
-      entry.destinyPointChange={before:before,after:state.destiny.points,reason:"Natural 20"};
+      var before = state.destiny.points,recovered=setDestinyPoints(before-1,LEX.crit20,true,true);
+      entry.destinyPointChange={before:before,after:state.destiny.points,reason:LEX.crit20};
       entry.awakening=state.destiny.points===0;
       // The draw is owed from this moment until the card is actually dealt.
       // A count, not a flag: a second Natural 20 at 0 before the first card is
       // drawn owes a second draw, not the same one twice.
       if(entry.awakening)state.destiny.awakeningOwed=(Number(state.destiny.awakeningOwed)||0)+1;
-      var parts=[entry.awakening?"ARCANE AWAKENING · Natural 20 at Destiny 0":"NATURAL 20 · Fate bends in your favor","Lost 1 Destiny Point","Current "+state.destiny.points];
+      var parts=[entry.awakening?"ARCANE AWAKENING · "+LEX.crit20+" at Destiny 0":LEX.CRIT20+" · Fate bends in your favor","Lost 1 Destiny Point","Current "+state.destiny.points];
       if(recovered)parts.push("Gained a Destiny d"+recovered.sides);
       events.push({text:parts.join(" · "),kind:entry.awakening?"awakening":"nat20",entryId:entry.id});
     } else if (entry.natural === 1) entry.natChoice = null;
@@ -1426,7 +1444,7 @@
   function stagedBonusCount(){return stagedList().filter(function(item){return item.kind!=="destiny";}).length;}
   function openStatusText(entry){
     var staged=stagedList().length,base=rollDetailText(entry);
-    return base+(staged?(base?" · ":"")+staged+" new die"+(staged===1?"":"s")+" ready":"");
+    return base+(staged?(base?" · ":"")+staged+" new "+(staged===1?"die":"dice")+" ready":"");
   }
   /* The verdict is the headline; the account that produced it stays legible
      but discreet underneath. Both are read off the Ruling (§5) rather than
@@ -1663,7 +1681,7 @@
   function resolveNatOne(id, choice) {
     var entry=state.history.find(function (item) { return item.id===id; }); if(!entry||entry.natural!==1||entry.natChoice)return;
     var events=[];
-    if(choice==="accept") { var before=state.destiny.points,recovered=setDestinyPoints(before+1,"Natural 1 accepted",true,true);entry.natChoice="accept";entry.destinyPointChange={before:before,after:state.destiny.points,reason:"Natural 1 accepted"};var accepted=["FATE ACCEPTED · Critical failure","Gained 1 Destiny Point","Current "+state.destiny.points];if(recovered)accepted.push("Gained a Destiny d"+recovered.sides);events.push({text:accepted.join(" · "),kind:"nat1",entryId:entry.id}); }
+    if(choice==="accept") { var before=state.destiny.points,recovered=setDestinyPoints(before+1,LEX.fumble1+" accepted",true,true);entry.natChoice="accept";entry.destinyPointChange={before:before,after:state.destiny.points,reason:LEX.fumble1+" accepted"};var accepted=["FATE ACCEPTED · "+LEX.fumble1,"Gained 1 Destiny Point","Current "+state.destiny.points];if(recovered)accepted.push("Gained a Destiny d"+recovered.sides);events.push({text:accepted.join(" · "),kind:"nat1",entryId:entry.id}); }
     // Defying fate no longer rolls Chaos on the spot: the 2d6 are deferred
     // behind a pending marker so the table is never blocked mid-turn.
     else { var oldPoints=state.destiny.points;entry.natChoice="chaos";entry.originalKept=entry.kept;entry.transformed=true;entry.kept=20;setDestinyPoints(0,"Invoked Chaos",false,true);entry.total=entryTotal(entry);addPendingFate({kind:"chaos",entryId:entry.id,ability:entry.ability||"",name:entry.name||"Defied roll"});events.push({text:"FATE DEFIED · The 1 becomes 20"+(oldPoints?" · Destiny becomes 0":""),kind:"nat1",entryId:entry.id},{text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id}); }
@@ -2043,7 +2061,7 @@
     // No trailing result popup here either: the tray shows the verdict and the
     // stream keeps it. Only a natural 20 or 1 is worth stopping for.
     var special=dice.find(function(die){return die.sides===20&&(die.result===1||die.result===20);}),events=[];
-    if(special)events.push({text:(special.result===20?"NATURAL 20 IN THE TRAY":"NATURAL 1 IN THE TRAY")+" · "+entry.name+" · Total "+entry.total,kind:special.result===20?"nat20":"nat1",entryId:entry.id});
+    if(special)events.push({text:(special.result===20?LEX.CRIT20+" IN THE TRAY":LEX.FUMBLE1+" IN THE TRAY")+" · "+entry.name+" · Total "+entry.total,kind:special.result===20?"nat20":"nat1",entryId:entry.id});
     state.rollSequence=null;state.queueDone="";
     if(events.length){state.rollSequence={phase:"free-tray",entryId:entry.id};announceEvents(events,"finish-sequence");return;}
     persistPlayState();render();
@@ -2369,7 +2387,7 @@
     }
     if(prompt&&prompt.type==="awakening"){
       var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};
-      return "<div class=\"fh-cd-card is-awakening\"><small>DESTINY REACHES ZERO</small><b>Arcane Awakening</b><p>Natural 20 · "+esc(arcana.name||"Major Arcana")+"</p><div class=\"fh-cd-acts\"><button data-tray-close>OK</button></div></div>";
+      return "<div class=\"fh-cd-card is-awakening\"><small>DESTINY REACHES ZERO</small><b>Arcane Awakening</b><p>"+LEX.crit20+" · "+esc(arcana.name||"Major Arcana")+"</p><div class=\"fh-cd-acts\"><button data-tray-close>OK</button></div></div>";
     }
     /* Right click on a die: its colour, its seal and its own advantage, in one
        card instead of three menus. The card offers only what THAT die can do —
@@ -2507,7 +2525,7 @@
   function rollSummaryText(){
     var cfg=state.rollConfig,staged=stagedList().length;
     if(state.pendingArmed)return state.pendingArmed.kind==="chaos"?"2d6 · Chaos table":"d20 save · DC "+(Number(state.pendingArmed.dc)||10);
-    if(rollOpen())return staged?staged+" new die"+(staged===1?"":"s"):"the same check again";
+    if(rollOpen())return staged?staged+" new "+(staged===1?"die":"dice"):"the same check again";
     if(state.destinyStaged&&!cfg)return "★ Destiny d"+state.destinyStaged.sides+" · spends it";
     if(!cfg)return state.traySelection.length?(state.traySelection.length===1?"1 die":state.traySelection.length+" dice"):"pick dice above";
     var summary=[(cfg.d20Mode==="advantage"?"2d20kh ":cfg.d20Mode==="disadvantage"?"2d20kl ":cfg.d20Mode==="choice"?"2d20 A/D ":"d20 ")+signed(Number(cfg.baseBonus)+(cfg.plusTwo?2:0)+(Number(cfg.custom)||0))];
@@ -2572,15 +2590,15 @@
         }).join("")+"</span></div>";
     }
     if(prompt&&prompt.type==="nat1"){
-      return "<div class=\"fh-cd-judgeask is-nat1\"><b>NATURAL 1 · do you accept your fate?</b>"+
+      return "<div class=\"fh-cd-judgeask is-nat1\"><b>"+LEX.FUMBLE1+" · do you accept your fate?</b>"+
         "<i>Accept: critical failure, +1 Destiny Point. Refuse: the 1 becomes 20, Destiny falls to 0, Chaos becomes pending.</i>"+
         "<span class=\"fh-cd-eacts\"><button type=\"button\" data-tray-accept-fate>Accept</button>"+
         "<button type=\"button\" class=\"is-danger\" data-tray-refuse-fate>Refuse</button></span></div>";
     }
     if(prompt&&prompt.type==="arcane1"){
       var sides=Number(prompt.sides)||4;
-      return "<div class=\"fh-cd-judgeask is-arcane-critical-failure\"><b>ARCANE CRITICAL FAILURE · do you accept your fate?</b>"+
-        "<i>Accept: the failure stands, +1 Destiny Point. Refuse: the 1 reads as "+sides+" — Arcane Critical Success — Destiny falls to 0, Chaos becomes pending.</i>"+
+      return "<div class=\"fh-cd-judgeask is-arcane-critical-failure\"><b>"+LEX.FUMBLEINF+" · do you accept your fate?</b>"+
+        "<i>Accept: the failure stands, +1 Destiny Point. Refuse: the 1 reads as "+sides+" — "+LEX.critInf+" — Destiny falls to 0, Chaos becomes pending.</i>"+
         "<span class=\"fh-cd-eacts\"><button type=\"button\" data-arcane-fate=\"accept\">Accept</button>"+
         "<button type=\"button\" class=\"is-danger\" data-arcane-fate=\"chaos\">Refuse</button></span></div>";
     }
@@ -3027,9 +3045,9 @@
      order and is part of the declaration. */
   var ROLL_BADGE_RULES=[
     {id:"natural-20",k:"n20",when:function(e){return e.natural===20;},
-      text:function(){return "NATURAL 20";}},
+      text:function(){return LEX.CRIT20;}},
     {id:"natural-1-accepted",k:"chaos",when:function(e){return e.natural===1&&e.natChoice==="accept";},
-      text:function(){return "NATURAL 1 accepted";}},
+      text:function(){return LEX.fumble1+" accepted";}},
     {id:"fate-refused",k:"chaos",when:function(e){return e.natChoice==="chaos";},
       text:function(){return "Fate refused";}},
     {id:"chaos-roll",k:"chaos",when:function(e){return !!e.chaosRoll;},
@@ -3043,7 +3061,7 @@
     {id:"destiny-spend",k:"destiny",when:function(e){return !!e.destiny;},
       text:function(e){
         var spent=e.destiny,change=Number(spent.pointsAfter)-Number(spent.pointsBefore);
-        var head=spent.criticalSuccess?"Arcane Critical Success":spent.criticalFailure?"Arcane Critical Failure":"Destiny d"+spent.sides+"="+spent.result;
+        var head=spent.criticalSuccess?LEX.critInf:spent.criticalFailure?LEX.fumbleInf:"Destiny d"+spent.sides+"="+spent.result;
         return head+(isFinite(change)&&change?" · "+(change>0?"+":"")+change+" pt → "+spent.pointsAfter:"");
       }},
     {id:"arcane-fate-refused",k:"chaos",when:function(e){return !!(e.destiny&&e.destiny.arcaneChoice==="chaos");},
@@ -3094,7 +3112,7 @@
      decided nothing yet, and it moves into the account when there IS a
      verdict — so the identity of the roll is never lost and never doubled. */
   function rollRuling(entry){
-    if(!entry)return {verdict:"",title:"Roll",account:[],display:[]};
+    if(!entry)return {verdict:"",verdictId:"",title:"Roll",account:[],display:[]};
     var found=rollVerdict(entry),verdict=found?found.verdict:"";
     var title=(entry.name||"Roll")+(entry.total==null?"":" "+entry.total);
     var head=verdict?[title]:[];
@@ -3120,7 +3138,13 @@
     }
     if(entry.destinyPointChange)tail.push(entry.destinyPointChange.reason+" · Destiny "+entry.destinyPointChange.after);
     if(rollHasDc(entry)&&entry.dc!=null)tail.push("DC "+entry.dc);
-    return {verdict:verdict,title:title,account:head.concat(parts,tail),display:head.concat(tail)};
+    /* L87: the dedup used to compare TEXTS, and the moment the verdict was
+       renamed (« NATURAL 20 » → « CRITICAL 20 ») while its badge was not, the
+       comparison stopped matching and the flank restated the same fact under
+       two names. The rule id is the token both sides already share — badge
+       `natural-20` and verdict `natural-20` are the same ruling — so the
+       dedup rides the id and renaming display text is free from here on. */
+    return {verdict:verdict,verdictId:found?found.id:"",title:title,account:head.concat(parts,tail),display:head.concat(tail)};
   }
   /* The one derivation every surface calls. Badges and Ruling come off the
      same entry in the same pass, so a surface cannot read one without the
@@ -3149,6 +3173,12 @@
       outcome:entry.outcome||null,natural:entry.natural==null?null:entry.natural,
       bonus:entry.kind==="d20"?Number(entry.baseBonus)||0:null,
       parts:rollParts(entry),badges:rollBadges(entry).map(function(badge){return badge.t;}),
+      /* Additive on fh-roll/1 (graceful degradation, the bridge's contract):
+         the badge ids and the verdict's id, so ANOTHER dock can dedup a feed
+         line by token instead of by text — the same fix as L87, one surface
+         further out. Old events lack both fields and keep the text path. */
+      badgeIds:rollBadges(entry).map(function(badge){return badge.id;}),
+      verdictId:rollRuling(entry).verdictId||null,
       dice:rollExportDice(entry)};
   }
   function attrJson(value){return esc(JSON.stringify(value)).replace(/'/g,"&#39;");}
@@ -3570,9 +3600,17 @@
     if(slot.kind==="feed"){
       var display=slot.event.display||{},tone=feedTone(display);
       /* T8 (Eric): a badge that restates the outcome word for word is the
-         doublon — one line says it. Case-insensitive equality only; the
-         wire and the Stream keep the full badge list. */
-      var badges=(display.badges||[]).map(String).filter(function(text){
+         doublon — one line says it. The wire and the Stream keep the full
+         badge list.
+         L87, feed side: the comparison rides the TOKEN when the event carries
+         one (`badgeIds` + `verdictId`, both additive on fh-roll/1), and falls
+         back to the case-insensitive text equality for events posted by a dock
+         that predates them. Text equality alone was what broke the moment the
+         verdict was renamed without its outcome — and on this side the outcome
+         is frozen by L9-L14, so the two strings are now DESIGNED to differ. */
+      var badgeIds=Array.isArray(display.badgeIds)?display.badgeIds:null;
+      var badges=(display.badges||[]).map(String).filter(function(text,index){
+        if(badgeIds&&display.verdictId)return badgeIds[index]!==display.verdictId;
         return !display.outcome||text.toLowerCase()!==String(display.outcome).toLowerCase();});
       var adjustedTexts=badges.filter(function(text){return /^adjusted$/i.test(text);});
       speakTitle=badges.filter(function(text){return adjustedTexts.indexOf(text)<0;}).join(" · ");
@@ -3589,11 +3627,17 @@
          and stay visible while it rolls, exactly as the Stream always did. */
       /* T7's on-line dedup died with the on-line badges (R7): everything but
          "adjusted" leaves for the title, so a badge can no longer double the
-         verdict visually. The equality filter survives FOR THE TITLE — a
-         hover list that restates the visible verdict word for word would be
-         the same doublon one surface further out. */
+         verdict visually. The filter survives FOR THE TITLE — a hover list
+         that restates the visible verdict word for word would be the same
+         doublon one surface further out.
+         L87, fixed 2026-08-06: it compared `badge.t` to `ruling.verdict` as
+         TEXT. The verdict was renamed CRITICAL 20 and the badge was not, so
+         the comparison silently stopped firing and every natural 20 said its
+         own name twice — once on the line, once in its hover. Both sides
+         already carry the same rule id; the id is what they are compared on
+         now, and the display text is free to move for good. */
       var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler)&&
-        !(ruling.verdict&&badge.t.toLowerCase()===ruling.verdict.toLowerCase());});
+        !(ruling.verdictId&&badge.id===ruling.verdictId);});
       var chips=kept.filter(function(badge){return badge.k==="adjusted";});
       /* `kept` already hid the spoilers while the dice are in the air, so the
          quiet title says only what the player knew before rolling (MANUAL…). */

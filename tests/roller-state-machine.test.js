@@ -71,7 +71,8 @@ assert.equal(t.state.destiny.dice.find(item=>item.id==="spent").available,false,
 assert.equal(spent.recovered,null,"spending down to an even score cannot recover a die");
 let specs=t.destinyEventSpecs(spent,"entry");
 assert.equal(specs.length,1,"all ordinary implications of one Destiny die share one popup");
-assert.match(specs[0].text,/ARCANE CRITICAL SUCCESS.*Lost 1 Destiny Point.*Current 2/);
+// REWRITTEN 2026-08-06 (lot R34-R39) — L74, cascade of the ratified ∞ family.
+assert.match(specs[0].text,/∞ CRITICAL.*Lost 1 Destiny Point.*Current 2/);
 
 // Gaining points to an even threshold may recover exactly one lowest missing die.
 reset(3,[die("fumble",6,true),die("missing-d4",4,false),die("missing-d8",8,false)]);queueRolls(1);
@@ -83,7 +84,8 @@ assert.equal(specs.length,1);
 // REWRITTEN (dock v6): a 1 on a Destiny die is now an offer, not a verdict, so
 // the line announces the roll only — the point it moved may still be undone by
 // refusing, and a line must not claim what may be undone.
-assert.match(specs[0].text,/^ARCANE CRITICAL FAILURE · Destiny d6 rolled 1$/);
+// REWRITTEN 2026-08-06 (lot R34-R39) — L74, same cascade on the failure side.
+assert.match(specs[0].text,/^∞ FUMBLE · Destiny d6 rolled 1$/);
 const offer=t.arcaneDecision(spent,"entry");
 assert.equal(offer.type,"arcane1","and the failure raises a decision instead");
 assert.equal(offer.sides,6);
@@ -269,7 +271,7 @@ settle();
 // Adding Destiny from history never rerolls the stored d20.
 reset(4,[die("history-d4",4,true)]);entry={id:"history-entry",kind:"d20",name:"Hunting",ability:"WIS",baseBonus:4,d20Mode:"flat",d20s:[10],kept:10,natural:10,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",note:"",createdAt:new Date().toISOString(),total:14,outcome:""};
 t.state.history=[entry];t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",4,{mode:"flat"}),{editingId:entry.id,destinyDieId:"history-d4",destinyConfirmed:true});queueRolls(4);t.runConfiguredRoll();
-assert.match(latest().text,/ARCANE CRITICAL SUCCESS/);assert.deepEqual(Array.from(entry.d20s),[10]);assert.equal(entry.destiny.result,4);assert.equal(t.state.destiny.points,3);assert.equal(t.state.destiny.dice[0].available,false);settle();
+assert.match(latest().text,/∞ CRITICAL/); // REWRITTEN 2026-08-06 — L74assert.deepEqual(Array.from(entry.d20s),[10]);assert.equal(entry.destiny.result,4);assert.equal(t.state.destiny.points,3);assert.equal(t.state.destiny.dice[0].available,false);settle();
 
 // A serialized mid-Destiny transaction resumes exactly once after refresh.
 // REWRITTEN (dock v6): there is no queue to serialize, so what has to survive a

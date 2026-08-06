@@ -751,7 +751,7 @@ assert.ok(growRule > fixedRule,
 t.state.feed.events = []; t.state.trayResults = []; t.state.rollSequence = null; t.state.diceSignatures = {};
 t.state.history = [d20Entry("nat1-acc", "Persuasion", 1, 8, 0, {
   natural:1, natChoice:"accept",
-  destinyPointChange:{before:0, after:1, reason:"Natural 1 accepted"}
+  destinyPointChange:{before:0, after:1, reason:"Fumble 1 accepted"}
 })];
 const nat1Pass = t.diceTrayInner();
 const nat1Line = nat1Pass.match(/<li[^>]*data-tray-line="nat1-acc"[^>]*>[\s\S]*?<\/li>/)[0];
@@ -759,16 +759,32 @@ assert.match(nat1Line, /fh-cd-tray-verdict">FUMBLE 1</, "the accepted 1 speaks a
 assert.doesNotMatch(nat1Line, /fh-cd-badge/, "and carries NO badge chip — one proposition per line");
 const nat1Title = nat1Line.match(/fh-cd-tray-speak" title="([^"]*)"/);
 assert.ok(nat1Title, "the speak span carries the hover title that says the rest");
-assert.match(nat1Title[1], /NATURAL 1 accepted/, "…the badge vocabulary moved there");
-assert.match(nat1Title[1], /Natural 1 accepted · Destiny 1/, "…the Destiny count too — concaténé lisiblement");
+/* REWRITTEN 2026-08-06 (lot R34-R39, L87 — dedup by token).
+   It asserted that « NATURAL 1 accepted » survived on the hover. It survived
+   only because the dedup compared TEXTS: the badge said « NATURAL 1 accepted »,
+   the verdict said « FUMBLE 1 », the strings differed, and the filter let a
+   badge through that names the very ruling already printed on the line. The
+   dedup now compares the rule id, both sides carry `natural-1-accepted`, and
+   the doublon is gone — which is the fix, not a regression. What must still
+   ride the hover is everything the verdict does NOT already say. */
+assert.equal(nat1Title[1], "Fumble 1 accepted · Destiny 1",
+  "the accepted-1 badge is absorbed by its own verdict (dedup by id); what remains is the Destiny count, which the verdict does not say");
 
-// A natural 20 line says CRITICAL 20, and its badge joins the title.
+// A natural 20 line says CRITICAL 20, and its badge is absorbed by it.
 t.state.history = [d20Entry("nat20", "Arcana", 20, 27, 0, {natural:20})];
 t.state.diceSignatures = {};
 const nat20Line = t.diceTrayInner().match(/<li[^>]*data-tray-line="nat20"[^>]*>[\s\S]*?<\/li>/)[0];
 assert.match(nat20Line, /fh-cd-tray-verdict">CRITICAL 20</, "a natural 20 speaks as CRITICAL 20");
 assert.doesNotMatch(nat20Line, /fh-cd-badge/, "no chip beside it");
-assert.match(nat20Line, /fh-cd-tray-speak" title="[^"]*NATURAL 20/, "the Stream's badge word survives on the hover");
+/* REWRITTEN 2026-08-06 (lot R34-R39, L87). The old assertion pinned the
+   BROKEN state: « NATURAL 20 » reached the hover because the renamed verdict
+   no longer matched the un-renamed badge, so the same ruling was stated twice
+   under two names. Both are « CRITICAL 20 » now AND both carry the id
+   `natural-20`, so the line says it once. A nat 20 with nothing else to
+   report therefore has no hover title at all — that is the point of T7/T8. */
+const nat20Title = nat20Line.match(/fh-cd-tray-speak" title="([^"]*)"/);
+assert.ok(!nat20Title || !/CRITICAL 20|NATURAL 20/.test(nat20Title[1]),
+  "the badge that restates the verdict is absorbed by it, whatever either is called");
 
 // The « adjusted » exception: one short word, it stays visible as a chip.
 t.state.history = [d20Entry("adj", "Stealth", 11, 19, 0, {adjusted:true, d20s:[11], kept:11})];
@@ -788,6 +804,31 @@ const feedTitle = loudFeedLine.match(/fh-cd-tray-speak" title="([^"]*)"/);
 assert.ok(feedTitle && /Chaos 2d6 = 7/.test(feedTitle[1]), "the other badges ride the speak's hover title");
 assert.ok(!/NATURAL 20/.test(feedTitle[1]) || !/^NATURAL 20$/i.test(feedTitle[1]),
   "(T8 still filters a badge that only restates the outcome)");
+
+/* ── L87 sur le fil : la dédup du feed passe au JETON ─────────────────
+   The event above is an OLD one — no `badgeIds`, no `verdictId` — and it
+   still dedups by text, which is the graceful-degradation half of the
+   contract. A dock that has this lot posts the tokens, and then the text
+   equality is not merely unnecessary but WRONG: L9-L14 froze the outcome
+   at « Natural 20 » while L17 renamed the badge « CRITICAL 20 », so the two
+   strings are now designed to differ and only the id can tell that they say
+   the same thing. */
+t.state.feed.events = [feedRoll("feed-token", "Wen", "Ilyra", "Arcana", 27, 0,
+  {display:{outcome:"Natural 20", verdictId:"natural-20",
+    badges:["CRITICAL 20", "Chaos 2d6 = 7"], badgeIds:["natural-20", "chaos-roll"]}})];
+const tokenFeedLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="feed-token"[^>]*>[\s\S]*?<\/li>/)[0];
+const tokenFeedTitle = tokenFeedLine.match(/fh-cd-tray-speak" title="([^"]*)"/);
+assert.match(tokenFeedLine, /fh-cd-tray-outcome[^>]*>Natural 20</, "the outcome is the wire's, untouched");
+assert.equal(tokenFeedTitle && tokenFeedTitle[1], "Chaos 2d6 = 7",
+  "the badge carrying the verdict's own id is absorbed even though its TEXT no longer matches the outcome");
+t.state.feed.events = [];
+
+/* The tokens are on the wire, additively: an old dock simply lacks the two
+   fields and keeps the text path it always had. */
+const wire = t.rollExport(d20Entry("wire-n20", "Arcana", 20, 27, 0, {natural:20}));
+assert.deepEqual(Array.from(wire.badges), ["CRITICAL 20"], "the wire carries the renamed badge (L17: Stream · Tray · Wire)");
+assert.deepEqual(Array.from(wire.badgeIds), ["natural-20"], "…and its id beside it, so another dock can dedup by token");
+assert.equal(wire.verdictId, "natural-20", "…with the verdict's own token to compare against");
 
 // The machine-facing outcomes did NOT move — the tones regex-match them.
 assert.match(loudFeedLine, /fh-cd-tray-outcome is-n20/, "feedTone still recognises « Natural 20 » — the outcome side is untouched");

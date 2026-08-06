@@ -178,10 +178,19 @@ assert.deepEqual(plain(loud.badges).map(b => b.id), [
   "natural-20","fate-refused","chaos-roll","chaos-row","exhaustion","destiny-spend",
   "arcane-fate-refused","overreach","destiny-points","awakening","manual","adjusted"
 ], "every rule that applies fires, in the declared reading order");
-assert.equal(loud.badges.find(b => b.id === "natural-20").t, "NATURAL 20");
+/* REWRITTEN 2026-08-06 (lot R34-R39) — the badge followed its verdict.
+   L17 renamed the n20 badge « CRITICAL 20 » in the same ratification that
+   renamed the verdict (L4); leaving the badge behind was exactly the drift
+   that made the T7/T8 dedup stop firing. The outcome is NOT renamed — see
+   the byte-identical assertion below. */
+assert.equal(loud.badges.find(b => b.id === "natural-20").t, "CRITICAL 20");
 assert.equal(loud.badges.find(b => b.id === "chaos-roll").t, "Chaos 2d6 = 9");
 assert.equal(loud.badges.find(b => b.id === "exhaustion").t, "Exhaustion 2 · −2");
-assert.equal(loud.badges.find(b => b.id === "destiny-spend").t, "Arcane Critical Success · -1 pt → 5");
+/* REWRITTEN 2026-08-06 (lot R34-R39) — L23, cascade automatique of the
+   2026-08-06 ratification: the destiny badge's HEAD takes the ∞ family
+   (« Arcane Critical Success » → « ∞ critical »). The tail — the points and
+   where they leave you — is untouched. */
+assert.equal(loud.badges.find(b => b.id === "destiny-spend").t, "∞ critical · -1 pt → 5");
 assert.equal(loud.badges.find(b => b.id === "overreach").t, "Overreach 3 · save DC 14");
 
 /* The spoiler flag rides ON the badge, so a surface hiding an unrevealed
@@ -219,19 +228,23 @@ assert.equal(t.outcomeFor({natural:11, total:13, dc:15, bonusDice:[]}), "Failure
 assert.equal(t.outcomeFor({natural:11, total:18, dc:15, bonusDice:[]}), "Success");
 assert.equal(t.outcomeFor({natural:11, total:18, dc:"", bonusDice:[]}), "", "nothing decided, nothing claimed");
 
-/* Phase 5 (lexique ratifié Eric, 2026-08-05): four verdicts renamed on the
-   SPOKEN side only. The outcomes above stay byte-identical — outcomeTone and
-   feedTone regex-match them — and the undecided nat 1 keeps its old words:
-   « FUMBLE 1 · CHOOSE » (L6) was proposed, never ratified. */
+/* Phase 5 (lexique ratifié Eric, 2026-08-05, complété 2026-08-06): the
+   verdicts renamed on the SPOKEN side only. The outcomes above stay
+   byte-identical — outcomeTone, feedTone and intentOutcome regex-match them.
+   REWRITTEN 2026-08-06 (lot R34-R39) for the undecided 1 and the takeover
+   prompt: L6 and L38 rode the « cascade automatique » of the 2026-08-06
+   ratification (« ces lignes ne font qu'appliquer les quatre termes »), so
+   they are no longer proposals and the assertions that froze them were
+   asserting a state the ratification had already left. */
 const verdictById = {};
 t.ROLL_VERDICTS.forEach(rule => { verdictById[rule.id] = rule.verdict; });
 assert.equal(verdictById["natural-20"], "CRITICAL 20", "Natural 20 speaks as CRITICAL 20");
 assert.equal(verdictById["natural-1-accepted"], "FUMBLE 1", "an accepted natural 1 speaks as FUMBLE 1");
 assert.equal(verdictById["arcane-critical-success"], "∞ CRITICAL", "the Arcane critical success speaks as ∞ CRITICAL");
 assert.equal(verdictById["arcane-critical-failure"], "∞ FUMBLE", "the Arcane critical failure speaks as ∞ FUMBLE");
-assert.equal(verdictById["natural-1-open"], "NATURAL 1 · CHOOSE", "the undecided 1 keeps its unratified words — mode conservateur");
-assert.match(source, /is-nat1\\"><b>NATURAL 1 · do you accept your fate\?<\/b>/,
-  "the takeover prompt (T4) is intouchable — its rename was never ratified");
+assert.equal(verdictById["natural-1-open"], "FUMBLE 1 · CHOOSE", "the undecided 1 says the family and that it is undecided (L6)");
+assert.match(source, /is-nat1\\">\<b>"\+LEX\.FUMBLE1\+" · do you accept your fate\?<\/b>/,
+  "the takeover prompt says FUMBLE 1 too (L38) — and says it through the lexeme constant (L88)");
 
 // The example from the spec: a verdict, then the account of what it cost.
 const spent = {
@@ -265,7 +278,11 @@ assert.ok(t.rollRuling({kind:"d20", name:"Arcana", baseBonus:3, natural:11, kept
 
 // Derived, never written at render time.
 assert.deepEqual(plain(t.rollRuling(spent)), plain(t.rollRuling(spent)), "the same entry always derives the same Ruling");
-assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", title:"Roll", account:[], display:[]}, "no entry, no ruling — and no crash");
+/* REWRITTEN 2026-08-06 (lot R34-R39) — the ruling gained `verdictId`, the
+   token the T7/T8 dedup compares instead of texts (L87). The empty ruling
+   must carry the empty token too, or a surface reading it has to know that
+   the field is sometimes absent. */
+assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", verdictId:"", title:"Roll", account:[], display:[]}, "no entry, no ruling — and no crash");
 
 /* Lot texte T1 (Eric, 2026-08-04): the on-screen `display` account drops the
    per-die enumeration — the dice speak for themselves — and keeps the
