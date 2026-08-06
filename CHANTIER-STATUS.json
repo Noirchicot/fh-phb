@@ -8,7 +8,7 @@
     "(règle gravée dans ARCHITECT-HANDOFF.md). states: fini | en-cours | en-attente | probleme.",
     "Couleurs côté widget : fini=vert, en-cours=orange, en-attente=blanc, probleme=rouge."
   ],
-  "as_of": "2026-08-05",
+  "as_of": "2026-08-06",
   "gate": {
     "open": false,
     "display": "🚦 Porte de déploiement FERMÉE — écart main↔site VOULU, pas une alerte",
@@ -25,7 +25,7 @@
       "repo": "fh-phb",
       "path": "~/tools/fh-phb",
       "state": "fini",
-      "note": "Vocabulaire de jet fusionné (2e356d2) + fix moteur refus arcanique (aaec8ff) + guide v1.4 — non déployés, porte fermée (voulu)."
+      "note": "✅ DICE TRAY FUSIONNÉ (79195ea, 47 commits, 2026-08-06) : cinq bandes nommées, Dice Pool compté, tray déployé ; 19/19 + clone indépendant + fusion à blanc ; guide v1.5 (9cb9c5a). Non déployé, porte fermée (voulu). Restent : Destiny & Dice Pool, Console, Info Panel, passe typo T1-T7."
     },
     {
       "repo": "fh-table",
@@ -48,12 +48,6 @@
   ],
   "wip": [
     {
-      "name": "Dice Tray (surface partagée)",
-      "repo": "fh-phb",
-      "state": "en-cours",
-      "note": "Session ACTIVE (2026-08-05) : 21 commits sur dock-dice-tray + modifs en cours (core, CSS, suite dice-tray). Loupe SUPPRIMÉE sur décision Eric (fccf1d0, c4031f9) — plus de vérif loupe à faire. Reste avant livraison : fin de session + vérif live rollType 'skill' (attente Eric) ; puis routine §4. NOUVEAU 2026-08-06 : UI-TYPOGRAPHY.md ratifié (T1-T6, bandes nommées) — le tray est l'implémentation de référence ; nettoyage dû = déclaration morte is-l1:84px ligne 1271."
-    },
-    {
       "name": "Widget Übersicht chantier",
       "repo": "hooks/widget",
       "state": "en-cours",
@@ -61,9 +55,8 @@
     }
   ],
   "attente_eric": [
-    "Hauteur d'une ligne du Dice Tray avec dés montrés — désormais discutable en termes nommés (bandes vivante/courante/profonde/vide = 56/56/72/40, UI-TYPOGRAPHY.md) ; reste à trancher si 56 suffit une fois les dés montrés (+16px = +64px sur la zone).",
     "Distribution de l'extension AboveVTT (packaging, installation MJ).",
-    "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — avant la livraison du Dice Tray."
+    "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — le tray est fusionné, cette vérif reste due avant l'OUVERTURE DE LA PORTE."
   ],
   "problems": []
 }

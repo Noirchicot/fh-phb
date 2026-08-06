@@ -367,6 +367,32 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 
 ## 6. State at handoff
 
+> ✅ **DICE TRAY MERGED 2026-08-06 — `main` = `79195ea` (guide v1.5 = `9cb9c5a`).**
+> 47 commits from `dock-dice-tray`: the tray extracted as zone 9 with **five**
+> named bands (Live/Current/Deep/Empty — the cap died on 08-05 and its 56px
+> became the fifth line), the counted Dice Pool born on the band, the expanded
+> tray, the left flank, R31–R33 — and a reading glass built, then deliberately
+> deleted by Eric's ruling ("dead code behind a switch rots"). Consumes the
+> roll vocabulary; inherits LIVE/RECENT/OFF.
+>
+> **Verified, not trusted:** 19/19 suites in the worktree AND in an independent
+> detached clone (first run failed 7 suites — missing `npm install`, the known
+> linkedom trap, not a defect), trial merge against `main` clean before the
+> real one, 19/19 + strict build again on the merged state. **`.claude/
+> launch.json` was deliberately excluded from the merge** — the session had
+> committed its harness port (8127), which is per-worktree state under the
+> skip-worktree discipline. Two working docs (`LOT-MESURES-PLAN.md`,
+> `LOT-TEXTE-LISTE.md`) remain untracked in the worktree, by the session's own
+> design. Worktrees rebased, harnesses refreshed.
+>
+> **Still owed against this lot:** Eric's 5-minute live check of what
+> `rollType:"skill"` renders in AboveVTT (now gated on the deploy, not the
+> merge), and the typographic debts recorded in `UI-TYPOGRAPHY.md` (the dead
+> `is-l1:84px` at 1271, the triple `--cd-tray-h`, dead `--cd-traycap-h`, the
+> unsized `.fh-cd-tray-outcome`) — they fold into the global type pass, the
+> gate's sixth item. Gate progress: **4 of 6** (vocabulary, tray done; Destiny
+> & Dice Pool, Console, Info Panel, type pass remain — in that order).
+
 > 🚀 **LOT LAUNCHED 2026-08-05 — the SRD reference site (`fh-srd`, branch
 > `srd/web-v1`).** Eric wants the SRD browsable on the web with deep links from
 > the Companion. Two decisions ratified the same day:
