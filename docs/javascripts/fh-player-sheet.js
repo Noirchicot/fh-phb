@@ -71,16 +71,24 @@
      to 275 — and those 14px buy a sixth die in the hand, nothing else. A coin
      is 26px wide, not 38, which is why the swarm threshold has to be an
      ARITHMETIC on widths and not a count of dice. */
-  /* 249 and not the 275 the relevé predicted — MEASURED on the built page at
-     the reference (dock 425, zoom 100%, --cd-fs 1.15) once the flanks' gutters
-     were removed. The relevé's arithmetic counted neither the tray's own 8px
-     padding nor the right flank's 68 × --cd-fs = 78.2, which is bug 6's fix
-     itself costing 10px of dice. The threshold has to stand on the real zone:
-     an aspirational number here would let hands overflow exactly the way P23
-     exists to stop, and this is the constant that decides it. Consequence
-     worth stating out loud: at 249 the hand holds FIVE dice at full size
-     (5×38 + 4×8 = 222; six would be 268), not the six P15 announced. */
-  var TRAY_DICE_W = 249;   // the zone the dice actually have, measured
+  /* 268 — REWRITTEN 2026-08-07. It was 249, and 249 was honestly measured:
+     the relevé's 275 counted neither the tray's own 8px padding nor the right
+     flank's 68 × --cd-fs = 78.2 (bug 6's fix costing 10px of dice), so at 249
+     the hand held FIVE dice and P15's sixth was arithmetic, not a zone.
+     Eric's ruling on that collision (2026-08-07): « on va reprendre ce qu'on
+     peut à gauche et à droite ». What each side could actually give was then
+     MEASURED at the bench, not calculated — the right flank had 17.3px of
+     slack over its worst name (« Animal Handling » 60.9 in 78.2) and went to
+     56 × --cd-fs; the left flank had NONE and kept its useful 70, because it
+     was never too wide, only too short for its own longest item; the gutters
+     gave 8; and the last pixel came from the left flank's box (80 → 79) with
+     its inner padding shortened to match, so no text moved.
+     Read back on the built page: the zone is 268 and six dice at full size
+     fit exactly (6×38 + 5×8 = 268), with the four regimes still landing on
+     56 / 56 / 72 / 85. STATED PLAINLY: the slack is ZERO. Anything that ever
+     adds a pixel to either flank drops the hand back to five — which is why
+     this constant is read from the bench and never adjusted by arithmetic. */
+  var TRAY_DICE_W = 268;   // the zone the dice actually have, measured
   var TRAY_COIN_W = 26;    // a coin is three quarters of a die
   var TRAY_HAND_GAP = 8;   // the live band's gap between two columns
   var TRAY_ROW_COL = 20;   // P25: twelve columns of 20 — 12×20 + 11×3 = 273
@@ -3900,13 +3908,13 @@
     else if(verdictId==="fate-refused"){
       /* « FATE REFUSED 1→20 » splits in two: the ruling, then what it did to
          the die. One fact per line is the point of the pile. */
-      items.push({t:"FATE REFUSED",fam:"verdict",tone:"ok",caps:true});
+      items.push({t:"Fate Refused",fam:"verdict",tone:"ok",caps:false});
       items.push({t:"1→20",fam:"info",tone:"info",caps:false});
     }
     else if(verdictId==="success")items.push({t:"Success",fam:"verdict",tone:"ok",caps:false});
     else if(verdictId==="failure")items.push({t:"Failure",fam:"verdict",tone:"bad",caps:false});
     // 2. What Destiny did — the consequence, in gold.
-    if(entry.awakening)items.push({t:"AWAKENING",fam:"destiny",tone:"destiny",caps:true});
+    if(entry.awakening)items.push({t:"Awakening",fam:"destiny",tone:"destiny",caps:false});
     if(spent)items.push({t:"Destiny d"+spent.sides,fam:"destiny",tone:"destiny",caps:false});
     var change=entry.destinyPointChange;
     if(change)items.push({t:"Destiny "+(Number(change.after)===0?"→ 0":(Number(change.after)-Number(change.before)>0?"+":"−")+Math.abs(Number(change.after)-Number(change.before))+" → "+change.after),fam:"destiny",tone:"destiny",caps:false});

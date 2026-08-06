@@ -2490,3 +2490,57 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    was fixed for the rows and not for the swarm. Pinned here the same way.
    APPENDED only. */
 .fh-cd-trayline .fh-cd-tray-dice.is-swarm{gap:3px}
+
+/* ── Reprise du budget de zone — Eric, 2026-08-07 : « on va reprendre ce
+   qu'on peut à gauche et à droite » ──────────────────────────────────
+   Décision d'architecture, prise APRÈS mesure au banc et non par calcul.
+   Six dés pleine taille demandent 268 (6×38 + 5×8) ; la zone en valait 249.
+
+   CE QUE CHAQUE CÔTÉ POUVAIT DONNER, mesuré au banc à la référence
+   (dock 425, zoom 100 %, --cd-fs 1.15), pas estimé :
+   • DROITE — 17,3px de mou. Le pire des dix-huit noms de compétence,
+     « Animal Handling », fait 60,9 dans une boîte de 78,2 ; « Sleight of
+     Hand » 57,2. La base passe de 68 à 56 → 64,4 rendus, soit 3,5 de marge
+     au pire cas, et le titre garde son ellipse comme filet.
+   • GAUCHE — RIEN. Le flanc n'était pas trop large, il était trop court
+     pour son propre item : « FATE REFUSED » mesurait 81,8 pour 70 d'utile,
+     et comme la ligne de flux ne connaît pas l'ellipse, il passait à DEUX
+     lignes (13 → 26px vérifiés au banc) en volant un fait à la pile, sans
+     rien dire. Eric a tranché les mots : « Fate Refused » (69,7) et
+     « Awakening » (58,1) — la casse quitte ces deux-là, ce qui est un
+     amendement à P13 (« la casse dit la rareté ») assumé comme tel : leur
+     couleur continue de dire la rareté. Le flanc garde donc ses 80px.
+   • LES GOUTTIÈRES — 8px, rendus par la ligne (2 de chaque côté) et par la
+     zone des dés elle-même (2 de chaque côté). Le fond opaque du flanc
+     gauche fait déjà la séparation que ce padding dessinait ; le padding
+     de 8 de la zone du tray tient la respiration extérieure.
+
+   Total rendu aux dés : 13,8 (droite) + 8 (gouttières) → la zone mesurée
+   après coup pilote TRAY_DICE_W, qui reste la seule source du seuil P23.
+   Le gap de 8 entre colonnes n'est PAS touché : il est ratifié, et le payer
+   aurait laissé six dés à zéro marge.
+   APPENDED only. */
+.fh-cd-dicetray .fh-cd-tray-right{width:calc(56px * var(--cd-fs))}
+.fh-cd-dicetray .fh-cd-trayline{padding-left:0;padding-right:0}
+.fh-cd-dicetray .fh-cd-trayline .fh-cd-tray-dice{padding-left:0;padding-right:0}
+
+/* La ligne de FLUX apprend l'ellipse que la pile connaît déjà.
+   `.fh-cd-tray-item` (mes jets) est nowrap + ellipsis depuis P13 ; la ligne
+   des autres joueurs passe par `.fh-cd-tray-outcome`, restée en
+   white-space:normal — et elle affiche les chaînes MACHINE, gelées par
+   contrat et donc longues (« Critical failure · Fate accepted »). Elle
+   wrappait dans un parent en overflow:hidden : la deuxième ligne était
+   coupée, invisible, silencieuse. Même règle pour les deux surfaces —
+   un fait qui wrappe est deux faits pour l'œil. Le texte entier reste au
+   survol, comme ailleurs. */
+.fh-cd-dicetray .fh-cd-tray-outcome{
+  display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Le dernier pixel, et il ne coûte pas une lettre — mesuré au banc : la zone
+   tombait à 267 pour les 268 que six dés demandent. Le flanc gauche rend 1px
+   de BOÎTE (80 → 79) et le reprend sur sa gouttière intérieure droite
+   (6 → 5), donc son utile reste EXACTEMENT à 70 : « Fate Refused » (69,7)
+   tient comme avant, la cascade du nom et la pile sont mesurées contre le
+   même 70 qu'hier. Un pixel de chrome, zéro pixel de texte.
+   APPENDED only. */
+.fh-cd-dicetray .fh-cd-tray-left{width:79px;padding-right:5px}

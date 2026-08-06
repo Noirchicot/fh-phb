@@ -174,9 +174,19 @@ assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*text-tra
 assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*font-size:calc\(6\.5px \* var\(--cd-fs\)\)/, "…at the maquette's tiny size");
 assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*color:#f4ecd8/,
   "…in the parchment tint measured on the ramp (4.89:1 at line 1's light top edge, 14.1:1 at the dark bottom)");
-const lastLeftFlank = [...css.matchAll(/\.fh-cd-tray-left\{([^}]+)\}/g)].pop();
-assert.match(lastLeftFlank && lastLeftFlank[1], /flex-direction:column/, "the flank is a two-storey column now — name above, the one proposition under");
-assert.match(css, /\.fh-cd-tray-left\{width:80px\}/, "and it keeps its ratified 80px (Q4)");
+/* REWRITTEN 2026-08-07 (reprise du budget de zone). This used to read the LAST
+   `.fh-cd-tray-left` block and expect the two-storey column in it — which only
+   held while nothing was ever appended after it. The reprise appends a width
+   and a padding, so the last block is now those two declarations and the old
+   assertion failed on a change that is correct. Rewritten to the cascade it
+   actually cares about: the column must still be DECLARED somewhere, and the
+   flank's useful width must still be 70 — that 70 is what P12's cascade and
+   P13's items are measured against, and « Fate Refused » (69.7) lives on it. */
+const leftFlankBlocks = [...css.matchAll(/\.fh-cd-tray-left\{([^}]+)\}/g)].map(m => m[1]);
+assert.ok(leftFlankBlocks.some(b => /flex-direction:column/.test(b)),
+  "the flank is a two-storey column — name above, the one proposition under");
+assert.ok(leftFlankBlocks.some(b => /width:79px/.test(b)) && leftFlankBlocks.some(b => /padding-right:5px/.test(b)),
+  "the box gave one pixel to the dice (80 → 79) and took it back from its own inner gutter (6 → 5): useful stays 70, no text moved");
 assert.match(inner, /fh-cd-tray-title/, "the roll's name in bold, right flank");
 assert.match(inner, /fh-cd-tray-total/, "the total under it");
 assert.match(inner, /Arcana \+7/, "the title carries the bonus, not the arithmetic");
@@ -1052,10 +1062,16 @@ const adjusted = t.trayFlankItems({natural:12, dc:"", total:19, adjusted:true, d
   t.rollRuling({natural:12, dc:"", total:19}));
 assert.deepEqual(plain(adjusted).map(i => i.t), [], "neither « adjusted » nor « Manual »: the flank tells what happened, it does not do the sums");
 
-/* « FATE REFUSED 1→20 » splits in two — one fact per line is the point. */
+/* « Fate Refused 1→20 » splits in two — one fact per line is the point.
+   REWRITTEN 2026-08-07 (Eric's ruling on the two long items): FATE REFUSED
+   measured 81.8 against the flank's useful 70 and wrapped, stealing a line
+   from the pile in silence; Eric chose the words « Fate Refused » (69.7) and
+   « Awakening » (58.1). The case leaves those two — an amendment to P13's
+   « the case says the rarity », made deliberately: their colour still says it,
+   and a fact that does not fit says nothing at all. */
 const refused = t.trayFlankItems({natural:1, natChoice:"chaos", transformed:true, dc:"", total:24},
   t.rollRuling({natural:1, natChoice:"chaos", dc:"", total:24}));
-assert.deepEqual(plain(refused).map(i => i.t), ["FATE REFUSED", "1→20", "Chaos pending"],
+assert.deepEqual(plain(refused).map(i => i.t), ["Fate Refused", "1→20", "Chaos pending"],
   "the ruling, then what it did to the die, then the debt it armed");
 assert.equal(plain(refused)[1].tone, "info", "« 1→20 » is written in informative ink…");
 assert.equal(plain(refused)[1].fam, "info", "…and is the first to be evicted, though it belongs to the verdict's story");
@@ -1166,22 +1182,33 @@ t.state.history = [{id:"coins-line", kind:"tray", name:"Dexterity Check",
 t.state.diceSignatures = {};
 const coinsLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="coins-line"[^>]*>[\s\S]*?<\/li>/)[0];
 assert.match(coinsLine, /is-swarm/,
-  "four dice and three coins is 4×38 + 3×26 + 6×8 = 278 on a measured zone of 249 — it must break to the swarm, and the old count-of-dice threshold let it overflow in silence");
+  "four dice and three coins is 4×38 + 3×26 + 6×8 = 278 on a measured zone of 268 — it must break to the swarm, and the old count-of-dice threshold let it overflow in silence");
 
-/* The zone is 249, MEASURED on the built page at the reference — not the 275
-   the relevé predicted, which counted neither the tray's own padding nor the
-   right flank's 68 × --cd-fs. Pinned here because the threshold stands on it:
-   an aspirational constant would let hands overflow exactly the way P23 exists
-   to stop. Consequence: the hand holds FIVE dice at full size, not six. */
+/* REWRITTEN 2026-08-07 (reprise du budget de zone, Eric : « on va reprendre ce
+   qu'on peut à gauche et à droite »). The zone is 268, MEASURED on the built
+   page at the reference — it was 249, and at 249 the hand held five dice while
+   P15 had announced six. The sixth was bought by measuring what each flank
+   could give: the right one had 17.3px of slack over « Animal Handling » and
+   went to 56 × --cd-fs, the left one had none and kept its useful 70, and the
+   gutters gave the rest. The assertion below therefore flips — six dice are a
+   HAND now — and it is rewritten to that truth rather than relaxed: the
+   threshold still stands on a measured constant, which is the whole point of
+   P23. The slack at six is ZERO, so this pair of assertions is also the alarm
+   that fires if a future pixel ever leaves one of the flanks. */
 const fiveDice = {id:"five", kind:"tray", name:"Damage roll", total:20, createdAt:isoAt(0),
   dice:[1,2,3,4,5].map(n => ({sides:6, result:n}))};
 const sixDice = {id:"six", kind:"tray", name:"Damage roll", total:26, createdAt:isoAt(0),
   dice:[1,2,3,4,5,6].map(n => ({sides:6, result:n}))};
 t.state.history = [fiveDice]; t.state.diceSignatures = {};
 assert.doesNotMatch(t.diceTrayInner().match(/<li[^>]*data-tray-line="five"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
-  "five dice at full size are 222 of 249 — a hand");
+  "five dice at full size are 222 of 268 — a hand");
 t.state.history = [sixDice]; t.state.diceSignatures = {};
-assert.match(t.diceTrayInner().match(/<li[^>]*data-tray-line="six"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
-  "six are 268 — over the measured zone, so a swarm; P15 announced six on a zone that does not exist");
+assert.doesNotMatch(t.diceTrayInner().match(/<li[^>]*data-tray-line="six"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
+  "six at full size are 268 of 268 — a hand, exactly: what the reprise bought and what P15 announced");
+const sevenDice = {id:"seven", kind:"tray", name:"Damage roll", total:30, createdAt:isoAt(0),
+  dice:[1,2,3,4,5,6,1].map(n => ({sides:6, result:n}))};
+t.state.history = [sevenDice]; t.state.diceSignatures = {};
+assert.match(t.diceTrayInner().match(/<li[^>]*data-tray-line="seven"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
+  "seven are 314 — the first hand the zone cannot hold, so the swarm takes over");
 assert.match(css, /\.fh-cd-dicetray \.fh-cd-trayline\{gap:0\}/,
   "P15's real mechanism: the flank carries its own padding, so the gutters around it are a second margin");
