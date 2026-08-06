@@ -2364,3 +2364,27 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayline .fh-cd-tray-dice{
   -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 10px),rgba(0,0,0,.15) 100%);
   mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 10px),rgba(0,0,0,.15) 100%)}
+
+/* ── Lot R34-R39 (P31, P32, bug 6 du relevé) — le flanc droit ──────────
+   P31: the name at T1, the type at T3 under it, the total at T4. The gain of
+   T1 on line 1 is the one that decides it — the eighteen skills stop folding
+   (« Animal Handling » 60.9 on 68, « Sleight of Hand » 57.2), where nine names
+   out of ten broke over two lines at the old 8.2px. The clamp stays as a net
+   under the ellipsis, not as the normal case.
+
+   Bug 6 of the relevé: this column was 68px FIXED while its title followed
+   --cd-fs — exactly the defect R32 measured and fixed in the judgment box
+   (« Performance » is 67px at fs 1 and 77 at 1.15, so it truncated to
+   « Performa »), never carried across to the tray's own line. Same fix, same
+   reasoning: the column follows the scale its text follows, identical to the
+   pixel at the reference.
+   APPENDED only. */
+.fh-cd-dicetray .fh-cd-tray-right{width:calc(68px * var(--cd-fs));flex:none}
+.fh-cd-dicetray .fh-cd-tray-right .fh-cd-tray-title{
+  font-size:var(--cd-t1);line-height:1.1;letter-spacing:0;overflow-wrap:anywhere}
+/* The type, and only when the name does not already say it. « Skill » is never
+   written: the name of a skill IS the skill. */
+.fh-cd-dicetray .fh-cd-tray-right .fh-cd-tray-kind{
+  display:block;max-width:100%;font-style:normal;font-size:var(--cd-t3);font-weight:600;
+  line-height:1.1;color:#b3a68c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fh-cd-dicetray .fh-cd-tray-right .fh-cd-tray-total{font-size:var(--cd-t4)}

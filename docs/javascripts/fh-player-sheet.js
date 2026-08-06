@@ -3800,6 +3800,44 @@
      « 1→20 » line is exactly where they part (it belongs to the verdict's
      story, it is written in informative ink, and it is the first to go). */
   var FLANK_EVICTION={verdict:0,urgent:1,destiny:2,bad:3,info:4};
+  /* ── P31 / P32 : le flanc droit — le nom, puis le type SEULEMENT s'il
+     manque (ratifiées Eric, 2026-08-07) ────────────────────────────────
+     Line 1 is the roll's NAME at T1, line 2 its TYPE at T3, and line 2 is
+     written only when the name does not already say it. « Skill » is never
+     written (Eric): the name of a skill IS the skill. The decisive gain of
+     T1 on line 1 is that the names stop folding — all eighteen skills hold
+     inside 68px, the longest being « Animal Handling » at 60.9 — which was
+     the flank's first defect, nine names out of ten on two lines at T3.
+
+     P32, and its amendment: « Tool - » cost 23px of 68 for something the
+     sheet already says. But the prefix was not the weight — the CATEGORY was:
+     « Tool - Musical Instrument (Lute) » is 118px and « T. Musical Instrument
+     (Lute) » still 103. The ratified rule is `T. ` + the category abbreviated
+     to ONE word + the specifier, no parentheses. One abbreviation, never two:
+     « T. Mus. Inst. Bagpipes » is 81.8 and « T. Mus. Inst. Drum » cleared the
+     limit by 0.7px, which is not a margin. With « Mus. » alone everything
+     holds, and the specifier disambiguates by itself — nobody confuses a lute
+     with a vehicle. This is mechanical, so it needs no field to fill in. */
+  function trayRollName(name){
+    var text=String(name==null?"":name).trim();
+    if(!text)return {name:"Roll",type:""};
+    var tool=/^tool\s*[-:–]\s*(.+)$/i.exec(text);
+    if(tool){
+      var rest=tool[1].trim(),spec=/^(.+?)\s*\(([^()]+)\)\s*$/.exec(rest);
+      if(spec){
+        var category=spec[1].trim().split(/\s+/)[0].replace(/[^A-Za-z']/g,"");
+        return {name:"T. "+(category.length>4?category.slice(0,3)+".":category)+" "+spec[2].trim(),type:""};
+      }
+      // No specifier: drop the noun the sheet already carries (Tools, Kit, Supplies).
+      return {name:"T. "+rest.replace(/\s+(tools?|kit|supplies|set)$/i,""),type:""};
+    }
+    /* The type is glued onto the name upstream (« Constitution Save »,
+       « Greatsword Attack »). Splitting it is what gives line 2 something to
+       hold and line 1 its width back. */
+    var typed=/^(.+?)\s+(save|check|attack|damage)$/i.exec(text);
+    if(typed)return {name:typed[1],type:typed[2].charAt(0).toUpperCase()+typed[2].slice(1).toLowerCase()};
+    return {name:text,type:""};
+  }
   function trayFlankItems(entry,ruling){
     if(!entry)return [];
     var items=[],spent=entry.destiny;
@@ -3875,7 +3913,9 @@
         adjustedTexts.map(function(text){return trayBadgeChip("adjusted",text);}).join("");
       /* T11: the CSS was already hiding the right flank's account — stop
          generating it. The hover keeps it: the total carries the title. */
-      right="<b class=\"fh-cd-tray-title\">"+esc(String(display.title||"Roll")+(display.bonus!=null?" "+signed(display.bonus):""))+"</b>"+
+      var feedName=trayRollName(display.title);
+      right="<b class=\"fh-cd-tray-title\">"+esc(feedName.name+(display.bonus!=null?" "+signed(display.bonus):""))+"</b>"+
+        (feedName.type?"<i class=\"fh-cd-tray-kind\">"+esc(feedName.type)+"</i>":"")+
         "<span class=\"fh-cd-tray-total is-"+(tone||"none")+"\""+(display.dc!=null?" title=\"vs DC "+esc(display.dc)+"\"":"")+">"+esc(display.total!=null?display.total:"—")+"</span>";
     }else if(slot.entry&&(slot.kind==="mine"||slot.structured)){
       var entry=slot.entry,vocab=rollVocabulary(entry),ruling=vocab.ruling,tone2=outcomeTone(entry);
@@ -3927,7 +3967,15 @@
          every line's DOM. The account (full record, T1) and the DC now ride
          the total's hover title instead of being generated then hidden. */
       var hover=[account,(!quiet&&entry.dc!==""&&entry.dc!=null)?"vs DC "+entry.dc:""].filter(Boolean).join(" · ");
-      right="<b class=\"fh-cd-tray-title\">"+esc(String(entry.name||"Roll")+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):""))+"</b>"+
+      /* The name is split from its type here rather than upstream: `entry.name`
+         is the record, it reaches the Stream and the wire, and P31 is a
+         decision about a 68px column — not about what a roll is called. */
+      var mineName=trayRollName(entry.name);
+      /* The hover appears only where something was actually shortened — a name
+         that is written whole needs no tooltip repeating it. */
+      var mineFull=(mineName.name+(mineName.type?" "+mineName.type:""))!==String(entry.name||"Roll")?String(entry.name||"Roll"):"";
+      right="<b class=\"fh-cd-tray-title\""+(mineFull?" title=\""+esc(mineFull)+"\"":"")+">"+esc(mineName.name+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):""))+"</b>"+
+        (mineName.type?"<i class=\"fh-cd-tray-kind\">"+esc(mineName.type)+"</i>":"")+
         "<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\""+(hover?" title=\""+esc(hover)+"\"":"")+">"+(quiet?"…":esc(entry.total))+"</span>";
     }else{
       /* A prompt that overwrote the tray fields while dice are engaged

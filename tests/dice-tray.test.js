@@ -35,7 +35,7 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
     surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie, dieSvg,
     renderDockHeader, feedChipHtml, feedStatusCaption,
     shortDieLabel, handLabel, normalizePoolResource, poolChipFace, LEX, rollRuling,
-    trayOwnerName, trayFlankItems, evictFlankItems, textWidthPx
+    trayOwnerName, trayFlankItems, evictFlankItems, textWidthPx, trayRollName
   };
 })();
 `);
@@ -1067,3 +1067,36 @@ assert.match(css, /\.fh-cd-tray-item\.is-bad\{color:#ff7a68\}/, "the red is red 
 assert.match(css, /\.fh-cd-tray-item\{[^}]*font-size:var\(--cd-t1\)/, "the pile sits on the same rung as the die labels — one small size in the whole tray");
 assert.match(css, /\.fh-cd-tray-item\.is-caps\{[^}]*text-transform:uppercase/, "the case is a rule of the surface, not of the strings");
 assert.match(css, /\.fh-cd-trayline\.is-deeper\{min-height:85px\}/, "P22: three rows of ten reach 85, the one assumed overflow");
+
+/* ── Lot R34-R39 — le flanc droit (P31, P32) ───────────────────────────
+   The type is written only when the name does not already say it, and
+   « Skill » is never written: the name of a skill IS the skill. */
+const rn = name => plain(t.trayRollName(name));
+assert.deepEqual(rn("Persuasion"), {name:"Persuasion", type:""}, "a skill is never anything but a check");
+assert.deepEqual(rn("Constitution Save"), {name:"Constitution", type:"Save"}, "an ability alone does not say which of the two it is");
+assert.deepEqual(rn("Dexterity Check"), {name:"Dexterity", type:"Check"}, "…so the type takes line 2");
+assert.deepEqual(rn("Greatsword Attack"), {name:"Greatsword", type:"Attack"}, "one weapon name serves two rolls");
+assert.deepEqual(rn("Chaos"), {name:"Chaos", type:""}, "when the type IS the name, there is no second line to write");
+
+/* P32's amendment: the prefix was never the weight — the CATEGORY was.
+   « Tool - Musical Instrument (Lute) » is 118px on a column of 68. */
+assert.equal(rn("Tool - Musical Instrument (Lute)").name, "T. Mus. Lute", "category to one word, specifier without brackets");
+assert.equal(rn("Tool - Musical Instrument (Bagpipes)").name, "T. Mus. Bagpipes", "…and it still holds on the longest specifier");
+assert.equal(rn("Tool - Vehicles (Land)").name, "T. Veh. Land", "same rule, no second abbreviation");
+assert.equal(rn("Tool - Gaming Set (Dice)").name, "T. Gam. Dice", "…mechanical, so there is no field for Eric to fill in");
+assert.equal(rn("Tool - Thieves' Tools").name, "T. Thieves'", "no specifier: the noun the sheet already carries is what drops");
+assert.equal(rn("Tool - Herbalism Kit").name, "T. Herbalism", "…Kit, Tools, Supplies and Set alike");
+assert.equal(rn("Tool - Soulforging Tools").name, "T. Soulforging", "…including Eric's own");
+/* « Une seule abréviation, jamais deux » — the rule that decides the form.
+   « T. Mus. Inst. Bagpipes » is 81.8px, and « T. Mus. Inst. Drum » cleared the
+   limit by 0.7px, which is not a margin. */
+assert.equal((rn("Tool - Musical Instrument (Bagpipes)").name.match(/\./g) || []).length, 2,
+  "never two abbreviations beyond the T. prefix — « T. Mus. Inst. Drum » cleared the limit by 0.7px, which is not a margin");
+
+/* Bug 6 of the relevé: the column was 68px FIXED while its title followed
+   --cd-fs. R32 measured and fixed exactly this in the judgment box and it was
+   never carried across to the tray's own line. */
+assert.match(css, /\.fh-cd-dicetray \.fh-cd-tray-right\{width:calc\(68px \* var\(--cd-fs\)\)/,
+  "the column follows the scale its text follows — R32's fix, finally repeated here");
+assert.match(css, /\.fh-cd-tray-title\{\s*\n?\s*font-size:var\(--cd-t1\)/,
+  "P31: T1 on line 1 is what stops the eighteen skill names folding");
