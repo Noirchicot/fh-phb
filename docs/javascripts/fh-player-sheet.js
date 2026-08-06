@@ -2156,7 +2156,26 @@
       '<circle cx="50" cy="50" r="32" fill="none" stroke="'+body.facet+'" stroke-width="1.6"/>'+
       '<text class="fh-cd-num" x="50" y="54" font-size="28" text-anchor="middle" dominant-baseline="middle" fill="'+body.num+'">'+esc(label)+'</text></svg>';
   }
-  function dieSize(count){return count>8?26:count>5?34:count>3?44:52;}
+  /* C3, moitié verticale du grief : un dé était en px FIXES pendant que le
+     texte suivait --cd-fs, donc à 150 % les dés paraissaient minuscules face
+     à leurs propres libellés (observé par Eric en mode Table, 2026-08-06).
+     Le multiplicateur est le ZOOM, pas --cd-fs : les tailles ci-dessous ont
+     été calibrées au réglage de texte par défaut, donc à 100 % rien ne bouge.
+     `zoomFactor` lit la même variable que le CSS, sur le documentElement du
+     bon document — `ownerDocument`, sans quoi le mode Table (PiP) lirait le
+     zoom de la fenêtre principale, qui n'est pas la sienne. */
+  function zoomFactor(){
+    try{
+      var doc=(root&&root.ownerDocument)||document;
+      var raw=doc.defaultView.getComputedStyle(doc.documentElement).getPropertyValue("--cd-zoom");
+      var z=parseFloat(raw);
+      return isFinite(z)&&z>0?z:1;
+    }catch(e){return 1;}
+  }
+  function dieSize(count){
+    var base=count>8?26:count>5?34:count>3?44:52;
+    return Math.round(base*zoomFactor());
+  }
   /* opts (all optional): sizePx pins the die size instead of deriving it from
      the count (the tray's bands are fixed sizes, not crowd-relative), and
      snapshot renders the settled pose as a cached bitmap with NO live WebGL
