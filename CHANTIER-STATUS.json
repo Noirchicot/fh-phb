@@ -51,7 +51,7 @@
       "name": "Dice Tray (surface partagée)",
       "repo": "fh-phb",
       "state": "en-cours",
-      "note": "Session ACTIVE (2026-08-05) : 21 commits sur dock-dice-tray + modifs en cours (core, CSS, suite dice-tray). Loupe SUPPRIMÉE sur décision Eric (fccf1d0, c4031f9) — plus de vérif loupe à faire. Reste avant livraison : fin de session + vérif live rollType 'skill' (attente Eric) ; puis routine §4."
+      "note": "Session ACTIVE (2026-08-05) : 21 commits sur dock-dice-tray + modifs en cours (core, CSS, suite dice-tray). Loupe SUPPRIMÉE sur décision Eric (fccf1d0, c4031f9) — plus de vérif loupe à faire. Reste avant livraison : fin de session + vérif live rollType 'skill' (attente Eric) ; puis routine §4. NOUVEAU 2026-08-06 : UI-TYPOGRAPHY.md ratifié (T1-T6, bandes nommées) — le tray est l'implémentation de référence ; nettoyage dû = déclaration morte is-l1:84px ligne 1271."
     },
     {
       "name": "Widget Übersicht chantier",
@@ -61,7 +61,7 @@
     }
   ],
   "attente_eric": [
-    "Hauteur d'une ligne du Dice Tray avec dés montrés (mockup à venir de la session Dice Tray).",
+    "Hauteur d'une ligne du Dice Tray avec dés montrés — désormais discutable en termes nommés (bandes vivante/courante/profonde/vide = 56/56/72/40, UI-TYPOGRAPHY.md) ; reste à trancher si 56 suffit une fois les dés montrés (+16px = +64px sur la zone).",
     "Distribution de l'extension AboveVTT (packaging, installation MJ).",
     "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — avant la livraison du Dice Tray."
   ],
