@@ -203,6 +203,19 @@ default here, it is an escape from the zoom system.
 
 ---
 
+## Cleanup owed — PAID 2026-08-06, on branch `tray-labels-r34-r39` (`0cbcf9a`)
+
+The four debts below were settled by the architect the same day, on the
+R34-R39 lot's own branch rather than on `main` — R40 sits inside that lot's
+scope, so fixing it on `main` would have handed the session a conflict
+instead of clean ground. **The T scale now exists in code**: `--cd-t1` …
+`--cd-t7` on `:root`, each carrying `--cd-fs`, so a size written as a rung
+follows the zoom by construction. `.fh-cd-tray-outcome` reads T2 (T4 on the
+Live band). The dead `is-l1{min-height:84px}`, the orphan cap rules and
+`--cd-traycap-h` are gone, and **`--cd-tray-h` is declared exactly once**.
+19/19 green. The record of what was wrong is kept below, because the
+diagnosis is worth more than the diff.
+
 ## Cleanup owed, found while measuring (2026-08-06)
 
 `companion-dock.css` states the Live band's height **twice, contradicting
