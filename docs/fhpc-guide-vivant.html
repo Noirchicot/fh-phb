@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>FHPC — Guide vivant de l’architecture · v1.4</title>
+  <title>FHPC — Guide vivant de l’architecture · v1.5</title>
   <style>
     :root {
       --bg: #f4efe6;
@@ -322,14 +322,15 @@
 <body>
 <main class="page" id="guide" data-level="overview">
   <header class="hero">
-    <p class="kicker">Guide vivant · Version 1.4 · État du 3 août 2026</p>
+    <p class="kicker">Guide vivant · Version 1.5 · État du 6 août 2026</p>
     <h1>FHPC, du clic du joueur à la table de jeu</h1>
     <p class="lede">Une carte évolutive de Fate’s Hand Player Companion&nbsp;: ce qui existe, comment les morceaux coopèrent, pourquoi l’architecture a pris cette forme, et ce qui reste à construire.</p>
     <div class="hero-meta">
-      <span class="pill"><code>main</code> FHPC&nbsp;: <code>2e356d2</code></span>
+      <span class="pill"><code>main</code> FHPC&nbsp;: <code>79195ea</code></span>
       <span class="pill">Code déployé&nbsp;: <code>d947dd7</code> (release 5/6/7)</span>
-      <span class="pill">16 suites FHPC au vert</span>
-      <span class="pill">Vocabulaire de jet&nbsp;: sur <code>main</code></span>
+      <span class="pill">19 suites FHPC au vert</span>
+      <span class="pill">Dice Tray&nbsp;: sur <code>main</code></span>
+      <span class="pill">SRD en ligne&nbsp;: <code>noirchicot.github.io/fh-srd</code></span>
       <span class="pill">🚦 Porte de déploiement&nbsp;: FERMÉE</span>
     </div>
   </header>
@@ -373,7 +374,7 @@
 
     <div class="callout">
       <div class="mark">!</div>
-      <p><strong>Le verdict le plus récent.</strong> Le <em>vocabulaire de jet</em> est entré sur <code>main</code> par le merge <code>2e356d2</code>&nbsp;: jetons de source, badges dérivés d’une table déclarative et Ruling text, désormais déclarés une fois et lus par toutes les surfaces. Vérifié en clone indépendant (16/16, build strict) puis rejoué sur l’état fusionné. <strong>La porte de déploiement reste fermée</strong>&nbsp;: rien ne part vers les joueurs tant que l’Info Panel, le Dice Pool, la Console, le Dice Tray et le Roll Builder ne sont pas tous reconstruits — décision d’Eric du 3 août. Les joueurs gardent la release 5/6/7, qui fonctionne.</p>
+      <p><strong>Le verdict le plus récent.</strong> Le <em>Dice Tray</em> — la zone 9, la surface partagée de la table — est entré sur <code>main</code> par le merge <code>79195ea</code>&nbsp;: 47 commits, cinq bandes nommées (vivante, courante, profonde, vide), le Dice Pool compté né sur la bande, le tray déployé, et une loupe construite puis délibérément supprimée sur décision d’Eric. Vérifié en clone indépendant (19/19, build strict), fusion à blanc sans conflit, puis rejoué sur l’état fusionné. Il consomme le vocabulaire de jet et hérite des états LIVE/RECENT/OFF. <strong>La porte de déploiement reste fermée</strong>&nbsp;: restent le Roll Builder + Dice Pool, la Console, l’Info Panel, puis la passe typographique globale (échelle T1–T7, <code>UI-TYPOGRAPHY.md</code>) — ajoutée par Eric le 6 août pour que les joueurs ne voient le dock changer qu’une fois. Les joueurs gardent la release 5/6/7, qui fonctionne.</p>
     </div>
 
     <div class="architecture" aria-label="Architecture générale de FHPC">
@@ -421,7 +422,7 @@
         <thead><tr><th>Grande partie</th><th>État réel</th><th>Ce qu’Eric peut en attendre</th><th>Preuve</th></tr></thead>
         <tbody>
           <tr><td><strong>Manuel + dock FHPC</strong><small>MkDocs sur GitHub Pages</small></td><td><span class="status st-live">En production</span></td><td>Le manuel et le Companion sont servis comme des fichiers web statiques.</td><td><span class="evidence ev-code">✓ code + Git</span></td></tr>
-          <tr><td><strong>Cœur du Companion</strong><small>Jets, Destiny, Chaos, Arcana, état</small></td><td><span class="status st-live">Stable sur <code>main</code></span></td><td>Le moteur commun passe dans l’ensemble intégré de 16 suites, durci par la chasse adversariale du paquet 9 et porteur du vocabulaire de jet.</td><td><span class="evidence ev-code">✓ code + tests</span></td></tr>
+          <tr><td><strong>Cœur du Companion</strong><small>Jets, Destiny, Chaos, Arcana, état</small></td><td><span class="status st-live">Stable sur <code>main</code></span></td><td>Le moteur commun passe dans l’ensemble intégré de 19 suites, durci par la chasse adversariale du paquet 9 et porteur du vocabulaire de jet.</td><td><span class="evidence ev-code">✓ code + tests</span></td></tr>
           <tr><td><strong>Ceinture de panneaux</strong><small>Skills · Traits · Actions · Spells · Gear · Craft · Notes</small></td><td><span class="status st-live">En production</span></td><td>Chaque panneau peut évoluer dans son propre fichier sans réécrire tout le moteur.</td><td><span class="evidence ev-code">✓ registre + contrat</span></td></tr>
           <tr><td><strong>Skills</strong></td><td><span class="status st-live">Complet dans le cœur</span></td><td>Tests de compétence, console avancée et roller partagé.</td><td><span class="evidence ev-code">✓ code</span></td></tr>
           <tr><td><strong>Notes</strong></td><td><span class="status st-live">Fonctionnel</span></td><td>Texte sauvegardé dans l’état propre au panneau. Le commentaire d’en-tête dit encore “not built”, mais le code est bien actif.</td><td><span class="evidence ev-code">✓ code lu</span></td></tr>
@@ -434,7 +435,8 @@
           <tr><td><strong>Vocabulaire de jet</strong><small>Sources · badges · Ruling</small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Le langage partagé d’un jet, déclaré une fois&nbsp;: chaque surface lit les mêmes jetons, les mêmes badges et le même verdict au lieu de les recalculer chacune à sa façon.</td><td><span class="evidence ev-review">⚑ merge <code>2e356d2</code> vérifié</span></td></tr>
           <tr><td><strong>Superposition des zones + zoom</strong></td><td><span class="status st-live">Sur <code>main</code></span></td><td>Zoom 80–150&nbsp;% avec auto-ajustement, référence 425×680&nbsp;; tout grandit ensemble, rien ne peut se plier.</td><td><span class="evidence ev-review">⚑ vérifié en clone (3 août)</span></td></tr>
           <tr><td><strong>Moteur de jets — chasse adversariale</strong><small>Paquet 9</small></td><td><span class="status st-live">Corrigé sur <code>main</code></span></td><td>Quatre défauts réels trouvés et tenus par 162 lignes de tests — dont un jet marqué « livré » avant de l’être, perdu définitivement sur une panne réseau passagère.</td><td><span class="evidence ev-code">✓ tests adversariaux</span></td></tr>
-          <tr><td><strong>Base SRD 5.2.1</strong><small>Dépôt séparé <code>fh-srd</code></small></td><td><span class="status st-warn">Catalogue partiel</span></td><td>339 sorts français importés de façon déterministe (stats seulement, pas le texte — trouvé en revue). Décision&nbsp;: tout finir en anglais d’abord. Rien n’est branché sur le site.</td><td><span class="evidence ev-review">⚑ rejoué en clone indépendant</span></td></tr>
+          <tr><td><strong>Dice Tray</strong><small>Zone 9 · la surface partagée</small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Cinq bandes nommées (vivante, courante, profonde, vide), le Dice Pool compté sur la bande, le tray déployé pour l’historique des dés en grand. Consomme le vocabulaire de jet, hérite de LIVE/RECENT/OFF. 47 commits, fusion <code>79195ea</code>.</td><td><span class="evidence ev-review">⚑ clone indépendant 19/19 + fusion à blanc</span></td></tr>
+          <tr><td><strong>Base SRD 5.2.1</strong><small>Dépôt public <code>fh-srd</code></small></td><td><span class="status st-live">Complète · EN LIGNE</span></td><td>2&nbsp;553 records, deux langues (1&nbsp;274 EN + 1&nbsp;279 FR, 12 types), descriptions comprises. Le site de référence est public&nbsp;: <code>noirchicot.github.io/fh-srd</code>, une ancre par record, attribution stricte SRD. Le branchement des panneaux attend la fin des lots dock.</td><td><span class="evidence ev-review">⚑ relu byte-identique depuis Pages</span></td></tr>
           <tr><td><strong>Traits V1</strong><small>head validé <code>3ecd981</code></small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Suivi manual-first des traits, récupération par repos et cibles mobiles d’au moins 44&nbsp;px. Le cœur reste intact.</td><td><span class="evidence ev-code">✓ merge <code>888a6dd</code></span></td></tr>
           <tr><td><strong>Actions V1</strong><small>head validé <code>575bfde</code></small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Économie Action/Bonus/Réaction et identifiants dupliqués ou réservés réparés. Les données d’armes et d’actions restent manuelles.</td><td><span class="evidence ev-code">✓ merge <code>888a6dd</code></span></td></tr>
           <tr><td><strong>Spells V1</strong><small>head corrigé <code>fd8e635</code></small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Stores nuls ou corrompus, niveaux 1–9, dédoublonnage et identifiants proches de <code>MAX_SAFE_INTEGER</code> sont bornés. L’import personnage reste limité à <code>{name, level}</code>.</td><td><span class="evidence ev-code">✓ merge <code>888a6dd</code></span></td></tr>
@@ -533,6 +535,9 @@
       <div class="moment"><time>1er–2 août</time><h3>La refonte du dock est nommée avant d’être codée</h3><p>Les dix zones et cinq attributs sont ratifiés depuis la planche d’Eric (<code>UI-TERMINOLOGY.md</code>), puis les dimensions (référence 425×680, zoom en pourcentages) et le vocabulaire de jet reçoivent chacun leur document d’autorité.</p></div>
       <div class="moment"><time>3 août</time><h3>Deux lots entrent, la porte se ferme</h3><p>Superposition + zoom et la chasse adversariale du paquet 9 fusionnent, vérifiés séparément puis ensemble. Le pont AboveVTT est fusionné dans <code>fh-table</code>. Eric ferme la porte de déploiement&nbsp;: le bas du dock (Info Panel, Dice Pool, Console, Dice Tray, Roll Builder) partira comme un tout.</p></div>
       <div class="moment"><time>3 août</time><h3>Le vocabulaire précède les surfaces, la base SRD ouvre son dépôt</h3><p>Le merge <code>2e356d2</code> installe jetons de source, badges dérivés et Ruling text — le langage que le Dice Tray, le Roll Builder, le Stream et les Consoles consommeront au lieu de le réinventer. En parallèle, <code>fh-srd</code> importe 339 sorts français de façon déterministe&nbsp;; la revue trouve que le texte descriptif manque, et Eric décide de tout finir en anglais d’abord.</p></div>
+      <div class="moment"><time>4 août</time><h3>Le contenu SRD est complet, deux langues</h3><p>La passe française fusionne&nbsp;: 2&nbsp;553 records, 12 types, descriptions comprises. Trouvaille au passage&nbsp;: la réédition FR de décembre 2025 contient cinq armes magiques absentes du PDF anglais — même numéro de version, contenu différent, exactement ce que le pin par hash existait pour attraper.</p></div>
+      <div class="moment"><time>5 août</time><h3>Le SRD passe en ligne, le dépôt devient public</h3><p>Décisions d’Eric&nbsp;: site Pages propre à <code>fh-srd</code> (la frontière de licence reste la frontière de dépôt), attribution stricte SRD, dépôt rendu public après scan. Le site sert 26 pages, une ancre par record, relu byte-identique depuis Pages. Le contrat d’URL <code>{lang}/{kind}/#{slug}</code> est figé pour les liens du Companion.</p></div>
+      <div class="moment"><time>6 août</time><h3>Les tailles reçoivent des noms, le Dice Tray fusionne</h3><p><code>UI-TYPOGRAPHY.md</code> est ratifié&nbsp;: sept crans T1–T7 (T1 le plus petit), quatre bandes en états nommés, et la leçon payée le jour même — la première échelle avait manqué la taille la plus peuplée du dock en inventoriant par noms de sélecteurs. Le soir, le Dice Tray entre sur <code>main</code> (<code>79195ea</code>, 47 commits)&nbsp;: quatrième des six items de la porte.</p></div>
     </div>
   </section>
 
@@ -563,10 +568,10 @@
       <p>Cette séquence part de l’état validé sur <code>main</code> et sépare clairement observation, publication et prochain chantier.</p>
     </div>
     <div class="next">
-      <article><div><h3>Reconstruire le bas du dock, dans l’ordre</h3><p>Dice Tray (devenu la surface partagée&nbsp;: il hérite de LIVE/RECENT/OFF), puis Roll Builder fusionné avec le Dice Pool, puis Info Panel (ajout au cœur, travail d’architecte), puis la famille Console. Chaque lot consomme le vocabulaire au lieu de le réinventer.</p></div><span class="evidence ev-review">⚑ ordre ratifié</span></article>
+      <article><div><h3>Reconstruire le bas du dock, dans l’ordre</h3><p>✅ Dice Tray fusionné (<code>79195ea</code>). Restent&nbsp;: Roll Builder fusionné avec le Dice Pool (Destiny &amp; Dice Pool), puis la Console de skills, puis l’Info Panel (ajout au cœur, travail d’architecte). Chaque lot consomme le vocabulaire et l’échelle T au lieu de les réinventer. En dernier, avant l’ouverture de la porte&nbsp;: la passe typographique globale, close par un test qui échoue sur toute taille non nommée.</p></div><span class="evidence ev-review">⚑ ordre ratifié</span></article>
       <article><div><h3>Rouvrir la porte de déploiement quand les cinq surfaces sont prêtes</h3><p>Rien ne part vers les joueurs avant. <code>main</code> portera des semaines de changements non déployés&nbsp;: c’est voulu.</p></div><span class="evidence ev-review">⚑ décision d’Eric</span></article>
-      <article><div><h3>Rejouer une porte après toute modification</h3><p>Conserver 16/16, le build strict, les stores anciens ou abîmés et les trois tailles de rendu comme filet de non-régression.</p></div><span class="evidence ev-review">⚑ porte architecte</span></article>
-      <article><div><h3>Compléter la base SRD, en anglais d’abord</h3><p>Lot 2&nbsp;: sorts avec texte, équipement, feats. Lot 3&nbsp;: espèces, backgrounds, classes. Lot 4&nbsp;: glossaire et monstres. Puis la passe française. Le branchement sur le site attend la fin des lots dock.</p></div><span class="evidence ev-review">⚑ plan ratifié</span></article>
+      <article><div><h3>Rejouer une porte après toute modification</h3><p>Conserver 19/19, le build strict, les stores anciens ou abîmés et les trois tailles de rendu comme filet de non-régression.</p></div><span class="evidence ev-review">⚑ porte architecte</span></article>
+      <article><div><h3>Base SRD&nbsp;: complète et en ligne — reste le branchement</h3><p>✅ Contenu complet deux langues, ✅ site public en ligne. Restent&nbsp;: l’appariement FR↔EN (<code>translation_of</code>), les tables de progression des classes, et le branchement des panneaux du dock sur la base (<code>sync_srd.py</code>) — après les lots dock, quand le panneau Spells pourra réellement la consommer.</p></div><span class="evidence ev-review">⚑ plan ratifié</span></article>
       <article><div><h3>Observer les panneaux en partie réelle</h3><p>Le PASS couvre le code et le rendu simulé. L’usage prolongé des contrôles Actions compacts et des suivis manuels reste à confirmer autour de la table.</p></div><span class="evidence ev-plan">◷ essai terrain</span></article>
       <article><div><h3>Actualiser le guide juste après chaque merge</h3><p>Le commit documentaire suivant décrit le SHA du merge qui vient d’entrer sur <code>main</code>. Il ne prétend jamais qu’une branche locale est déjà fusionnée.</p></div><span class="evidence ev-code">✓ règle de provenance</span></article>
       <article class="depth-2"><div><h3>Ajouter ensuite le petit crochet sémantique au cœur</h3><p>Permettre aux panneaux validés de publier des intents <code>damage</code> et <code>spell</code> sans leur donner accès au gros moteur.</p></div><span class="evidence ev-prop">◇ proposition</span></article>
@@ -620,7 +625,7 @@
       <p>Le guide sépare volontairement test automatique, validation architecte, compte rendu d’exploitation et recommandation.</p>
     </div>
     <div class="source-list">
-      <article class="card"><span class="evidence ev-code">✓ code et tests automatiques</span><ul><li><code>main</code> décrit au merge <code>2e356d2</code> (vocabulaire de jet)</li><li><code>ROLL_SOURCES</code>, <code>ROLL_BADGE_RULES</code>, <code>ROLL_VERDICTS</code>, <code>rollVocabulary()</code> dans le cœur</li><li>Tables badges/verdicts comparées règle à règle à l’ancien code impératif</li><li>16/16 + build strict dans le worktree, un clone indépendant détaché, et l’état fusionné d’essai</li><li><code>fh-table</code> <code>main</code> = <code>b36c94a</code> (pont fusionné)</li><li><code>fh-srd</code> <code>main</code> = <code>2fe355f</code>, pipeline rejoué depuis le PDF épinglé</li></ul></article>
+      <article class="card"><span class="evidence ev-code">✓ code et tests automatiques</span><ul><li><code>main</code> décrit au merge <code>79195ea</code> (Dice Tray, 47 commits)</li><li>Cinq bandes nommées dans le CSS, Dice Pool compté, tray déployé, <code>tests/dice-tray.test.js</code> (830 lignes) + <code>tray-expanded</code> + <code>dice-pool-resources</code></li><li>19/19 + build strict dans le worktree, un clone indépendant détaché (après <code>npm install</code> — linkedom), et l’état fusionné</li><li>Fusion à blanc sans conflit avant la fusion réelle&nbsp;; <code>launch.json</code> du harnais exclu (discipline skip-worktree)</li><li><code>fh-table</code> <code>main</code> = <code>fc7f287</code> (pont + champs bridge + garde initiative)</li><li><code>fh-srd</code> <code>main</code> = <code>3decd7c</code>, site Pages relu byte-identique</li></ul></article>
       <article class="card"><span class="evidence ev-review">⚑ validation architecte récente</span><ul><li>Traits <code>3ecd981</code>&nbsp;: tactile 44&nbsp;px et manual-first</li><li>Actions <code>575bfde</code>&nbsp;: identités dupliquées/réservées réparées</li><li>Spells <code>fd8e635</code>&nbsp;: stores corrompus, import minimal et borne <code>MAX_SAFE_INTEGER</code></li><li>Intégration <code>4dca675</code>&nbsp;: PASS</li><li>Merge décrit <code>888a6dd</code>&nbsp;: trois panneaux présents sur <code>main</code></li><li>CSS additif Traits → Actions → Spells et vues desktop/mobile vérifiées</li></ul></article>
       <article class="card"><span class="evidence ev-plan">◷ documenté, non rejoué en réel ici</span><ul><li>Soak WebSocket de quatre heures</li><li>Mesures 22–28&nbsp;s et ≈57&nbsp;ms</li><li>Live gate AboveVTT 1.58</li><li>Essai Yedrivel CA 15→16→15</li><li>État des déploiements Worker externes</li></ul></article>
     </div>
@@ -634,17 +639,17 @@
   <section id="provenance" class="provenance" aria-labelledby="provenance-title">
     <p class="kicker">Provenance de cette édition</p>
     <h2 id="provenance-title">La photographie décrite, sans auto-référence</h2>
-    <p>Ce guide décrit l’état de la branche principale immédiatement après le merge du vocabulaire de jet et avant son propre commit documentaire. Il ne prend pas son futur SHA comme preuve de l’état applicatif.</p>
+    <p>Ce guide décrit l’état de la branche principale immédiatement après le merge du Dice Tray et avant son propre commit documentaire. Il ne prend pas son futur SHA comme preuve de l’état applicatif.</p>
     <div class="provenance-grid">
-      <div><b>Version du guide</b><span>1.4</span></div>
-      <div><b>Dernière mise à jour</b><span>3 août 2026</span></div>
-      <div><b>Commit décrit</b><span><code>2e356d2ad84d877e98810b932031b66322df0b4b</code></span></div>
+      <div><b>Version du guide</b><span>1.5</span></div>
+      <div><b>Dernière mise à jour</b><span>6 août 2026</span></div>
+      <div><b>Commit décrit</b><span><code>79195eab975bbf4e3bbc54f46d8114b433e8b5a8</code></span></div>
       <div><b>Branche décrite</b><span><code>main</code></span></div>
     </div>
   </section>
 
   <footer>
-    Guide pédagogique v1.4 · le site sert la release 5/6/7&nbsp;; la porte de déploiement est fermée jusqu’à la reconstruction du bas du dock.
+    Guide pédagogique v1.5 · le site sert la release 5/6/7&nbsp;; la porte de déploiement est fermée jusqu’à la reconstruction du bas du dock et la passe typographique.
   </footer>
 </main>
 
