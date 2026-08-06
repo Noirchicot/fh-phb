@@ -392,6 +392,33 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 > unsized `.fh-cd-tray-outcome`) — they fold into the global type pass, the
 > gate's sixth item. Gate progress: **4 of 6** (vocabulary, tray done; Destiny
 > & Dice Pool, Console, Info Panel, type pass remain — in that order).
+>
+> **Post-merge audit of the two working docs (2026-08-06, Eric asked).** The
+> session's untracked `LOT-TEXTE-LISTE.md` (24 items) and `LOT-MESURES-PLAN.md`
+> (C1–C3, D1–D5) were checked item by item against merged `main`; both are
+> archived in the vault (`Chantier FH & FHPC/FH Dice Tray — Annexe …`).
+> Verdict: **almost everything landed** — T1/T2/T3/T7/T8/T12/T18/T24 verified
+> in code by grep, T14–T17 superseded by the cap's death, T9 superseded by
+> Eric's plainLabel ruling, D1/D2/D4/D5 all implemented (the 44px Dice Pool
+> band exists as `--cd-band-h`). Three residues, none blocking:
+> 1. **C3 — the zoom contract is still broken for fixed px**: `--cd-tray-h`
+>    284, the 56/72 bands, picker dice 31, ROLL 55, portrait 56 do not follow
+>    `--cd-zoom`. D3 was never visibly decided. Candidate rider for the global
+>    type pass, or its own small lot — Eric's call.
+> 2. **T11 — hidden DOM still generated**: the right flank's account/`vs DC`
+>    markup is emitted then `display:none`'d. 0px visual; fold into any core
+>    lot in passing.
+> 3. **T23 — the Stream's who-column in Mine view**: unverified, ⏸ minor.
+>
+> **Worktree survey findings (same audit):** branch `mirror-lot` (3 commits,
+> 2026-08-04) holds a real, documented test-mirror site — `FHTEST` campaign,
+> local KV, port 8130, reachable from the iPad over LAN (`MIRROR.md`). It is
+> NOT on `main` and is exactly the bench Eric's `rollType:"skill"` check
+> wants. Decision owed: merge it (it is tooling outside the dock) or keep it
+> as a branch. Also confirmed stale, do-not-merge: `architect/queue-actions-v1`
+> (the Actions V1 pastille, shipped long since), `codex/fhpc-guide-v1-2`,
+> `codex/pkg567-integrated-gate-v2` — their worktrees under `~/Documents/Codex`
+> can go, branches kept, never `--force`.
 
 > 🚀 **LOT LAUNCHED 2026-08-05 — the SRD reference site (`fh-srd`, branch
 > `srd/web-v1`).** Eric wants the SRD browsable on the web with deep links from
