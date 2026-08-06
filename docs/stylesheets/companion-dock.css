@@ -1444,10 +1444,16 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 /* Dice build LEFT TO RIGHT on the wood: first die at the left of its space. */
 .fh-cd-frame.is-judgment .fh-cd-tray-dice.is-build{flex:1 1 auto;justify-content:flex-start}
 .fh-cd-frame.is-judgment .fh-cd-diewrap em{color:#e0cda4}
-/* The right column: the roll's identity, centred — "History / +1". */
-.fh-cd-judgeright{flex:none;width:68px;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}
+/* The right column: the roll's identity, centred — "History / +1".
+   R32 (mesuré au banc) : la colonne était 68px FIXES pendant que le corps
+   suit --cd-fs — à fs 1 « Performance » fait 67px et tient, dès fs 1.15 il
+   fait 77px et se coupait en « Performa ». La colonne suit donc le même
+   --cd-fs que sa police (identique au pixel à la référence fs 1), et
+   overflow-wrap garde un filet : un nom encore plus long se replie sur la
+   2e ligne du clamp au lieu d'être tronqué. */
+.fh-cd-judgeright{flex:none;width:calc(68px * var(--cd-fs));min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}
 .fh-cd-judgeright b{color:#f4ecd8;font-size:calc(9.4px * var(--cd-fs));font-weight:800;line-height:1.1;max-width:100%;
-  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
 .fh-cd-judgeright i{font-style:normal;color:#f1c96f;font-size:calc(10px * var(--cd-fs));font-weight:800}
 /* A decision covers the whole box. */
 .fh-cd-frame.is-judgment.is-takeover{justify-content:center}

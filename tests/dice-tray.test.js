@@ -794,4 +794,18 @@ assert.match(loudFeedLine, /fh-cd-tray-outcome is-n20/, "feedTone still recognis
 t.state.feed.events = [];
 t.state.history = [];
 
+// ── R32 : « Performance » ne se coupe plus dans la colonne droite du jugement ──
+// Mesuré au banc : à fs 1 le mot fait 67px et tenait dans les 68px ; dès que la
+// police suit --cd-fs (1.15 → 77px, 1.25 → 84px) le mot unique dépassait la
+// colonne FIXE et se tronquait en « Performa ». Épinglé : la colonne suit le
+// MÊME --cd-fs que sa police (au pixel près à la référence fs 1), et
+// overflow-wrap:anywhere garde le filet — un nom encore plus long se replie
+// sur la 2e ligne du clamp au lieu d'être coupé.
+assert.match(css, /\.fh-cd-judgeright\{[^}]*width:calc\(68px \* var\(--cd-fs\)\)/,
+  "R32: the judgment right column scales with the type it carries");
+assert.match(css, /\.fh-cd-judgeright b\{[^}]*font-size:calc\(9\.4px \* var\(--cd-fs\)\)/,
+  "…the ratified 9.4px body is untouched");
+assert.match(css, /\.fh-cd-judgeright b\{[^}]*overflow-wrap:anywhere/,
+  "…and an over-long single word wraps into the clamp's second line instead of clipping");
+
 console.log("dice-tray: all assertions passed");
