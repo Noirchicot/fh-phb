@@ -271,7 +271,8 @@ settle();
 // Adding Destiny from history never rerolls the stored d20.
 reset(4,[die("history-d4",4,true)]);entry={id:"history-entry",kind:"d20",name:"Hunting",ability:"WIS",baseBonus:4,d20Mode:"flat",d20s:[10],kept:10,natural:10,plusTwo:false,custom:0,guidance:null,bardic:null,destiny:null,dc:"",note:"",createdAt:new Date().toISOString(),total:14,outcome:""};
 t.state.history=[entry];t.state.rollConfig=Object.assign(t.rollInput("Hunting","WIS",4,{mode:"flat"}),{editingId:entry.id,destinyDieId:"history-d4",destinyConfirmed:true});queueRolls(4);t.runConfiguredRoll();
-assert.match(latest().text,/∞ CRITICAL/); // REWRITTEN 2026-08-06 — L74assert.deepEqual(Array.from(entry.d20s),[10]);assert.equal(entry.destiny.result,4);assert.equal(t.state.destiny.points,3);assert.equal(t.state.destiny.dice[0].available,false);settle();
+assert.match(latest().text,/∞ CRITICAL/); // REWRITTEN 2026-08-06 — L74
+assert.deepEqual(Array.from(entry.d20s),[10]);assert.equal(entry.destiny.result,4);assert.equal(t.state.destiny.points,3);assert.equal(t.state.destiny.dice[0].available,false);settle();
 
 // A serialized mid-Destiny transaction resumes exactly once after refresh.
 // REWRITTEN (dock v6): there is no queue to serialize, so what has to survive a
