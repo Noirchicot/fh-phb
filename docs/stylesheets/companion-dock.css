@@ -2250,3 +2250,19 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    elles appartiennent au budget vertical du dock (UI-DIMENSIONS) et leur
    sort est la décision D3, qui revient à Eric. Ici on ne répare que ce qui
    a été vu. APPENDED. */
+
+/* ── Le panneau prend la place que le zoom lui rend (Eric, 2026-08-06) ──
+   Observé en mode Table juste après C3 : à 100 % dans une fenêtre haute, un
+   grand vide s'installait entre la dernière compétence et la bande. Toutes
+   les zones du dock sont `flex:none` et celle du panneau était `flex:0 1
+   auto` — elle savait rétrécir, jamais grandir. Le surplus vertical ne
+   revenait donc à personne : il devenait un trou.
+   C'est l'anomalie des « 45 px de flux morts » du plan mesures, que le zoom
+   vient de rendre spectaculaire — moins on zoome, plus le trou est grand.
+
+   Le panneau l'absorbe désormais, quel que soit l'onglet (`.fh-cd-panelbody`
+   est en display:contents, donc sa zone EST l'item flex du dock). Le
+   scroller à l'intérieur garde min-height:0 : il montre simplement plus de
+   lignes au lieu de laisser du vide. Le plancher et l'overflow:hidden de la
+   zone Skills, eux, ne bougent pas — seul le flex est repris. APPENDED. */
+.fh-cd-panelbody>.fh-cd-zone{flex:1 1 auto}
