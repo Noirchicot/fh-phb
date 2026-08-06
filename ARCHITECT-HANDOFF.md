@@ -45,15 +45,21 @@ the top of §6 always carries the current truth.
 
 **Layout**
 - **`UI-TYPOGRAPHY.md` is the authority for text size and band height** —
-  ratified 2026-08-06, and it governs **the Dice Tray only, today**. Six body
-  rungs `T1`–`T6` (**T1 is the smallest**, stated because `H1` is the largest
+  ratified 2026-08-06, and it governs **the Dice Tray only, today**. Seven body
+  rungs `T1`–`T7` (**T1 is the smallest**, stated because `H1` is the largest
   and that inversion misleads), four band **states** rather than numbers
-  (*Live · Current · Deep · Empty* = 56/56/72/40). The design is deliberate:
-  **names are shared dock-wide, values are local to a zone, and each zone
-  adopts the vocabulary when it is next rebuilt** — so refining the Belt later
-  renames nothing. Read it before writing any prompt that specifies a size, and
-  never let a session invent a number: 37 sizes dock-wide in 0.1px steps is
-  what inventing produced.
+  (*Live · Current · Deep · Empty* = 56/56/72/40), and the tray shows **five**
+  bands, not four. The design is deliberate: **names are shared dock-wide,
+  values are local to a zone, and each zone adopts the vocabulary when it is
+  next rebuilt** — so refining the Belt later renames nothing. Read it before
+  writing any prompt that specifies a size, and never let a session invent a
+  number: 43 sizes dock-wide in 0.1px steps is what inventing produced.
+  **Two lessons in it are worth more than the scale**: an element with no
+  `font-size` and no sized parent inherits the page's 16px and drops out of the
+  zoom system entirely (no dock ancestor sets a size); and a zone cannot be
+  inventoried by matching selector *names* — the first draft of that scale
+  missed the dock's most populated size band that way, and had to be renumbered
+  the same day.
 - **`UI-TERMINOLOGY.md` is the naming authority for the dock** — ten zones, five
   attributes, and the three collisions they resolve (ratified 2026-08-01/02 from
   Eric's structure drawing). Read it before naming anything in the interface, and

@@ -20,11 +20,10 @@ Console be built next, without renaming a single conversation.
 ## Why this exists
 
 Because a size could not be named, it could not be discussed, and so it was
-re-decided every time. The Dice Tray alone carries **eleven distinct font
-sizes** — `6.4 · 6.8 · 6.9 · 8.2 · 8.4 · 8.6 · 9 · 9.2 · 9.6 · 13 · 30` — for
-what is, on inspection, **five intentions**. Six of those values sit inside a
-1.4px span: nobody can see the difference, and everybody has to maintain it.
-Dock-wide the count is **37**, in 0.1px steps.
+re-decided every time. The dock carries **43 distinct font sizes** in 0.1px
+steps, for what is, on inspection, **seven intentions**. Nine of them sit
+between 8 and 8.8 — nobody can see those differences, and everybody has to
+maintain them.
 
 None of that was carelessness. Each surface was built by its own session, each
 appending to the end of one stylesheet; no one ever held the whole picture at
@@ -47,37 +46,54 @@ are named below. Nothing else is.
 
 ## Body sizes — the T scale
 
-**Six rungs. `T1` is the smallest.** Stated explicitly because HTML's `H1` is
+**Seven rungs. `T1` is the smallest.** Stated explicitly because HTML's `H1` is
 the largest, and that inversion misleads everyone who carries it in mind.
 
 | Rung | Size | Spoken | What it sets |
 |---|---|---|---|
 | **T1** | **6.8px** | *micro* | Meta, mentions, the smallest legible mark |
-| **T2** | **8.4px** | *libellé* | Labels |
-| **T3** | **9.6px** | *corps* | Body — the roll's name, the readable line |
-| **T4** | **11px** | *accent* | A step between body and title. **No current user** — it exists because the gap 9.6 → 13 was the widest on the low scale. Its first use is a deliberate choice, never a migration |
-| **T5** | **13px** | *titre* | Line title, total |
-| **T6** | **30px** | *grand nombre* | The result that carries the line |
+| **T2** | **7.4px** | *mention* | The die label, the history verdict — the dock's most populated size |
+| **T3** | **8.4px** | *libellé* | Labels |
+| **T4** | **9.6px** | *corps* | Body — the roll's name, the readable line |
+| **T5** | **11px** | *accent* | A step between body and title. **No current user** — it exists because 9.6 → 13 is the widest gap on the low scale. Its first use is a deliberate choice, never a migration |
+| **T6** | **13px** | *titre* | Line title, total |
+| **T7** | **30px** | *grand nombre* | The result that carries the line |
 
-All six are multiplied by `--cd-fs` like everything else in the dock, so zoom
-keeps working untouched. In code: `--cd-t1` … `--cd-t6`, the dock's existing
+All seven are multiplied by `--cd-fs` like everything else in the dock, so zoom
+keeps working untouched. In code: `--cd-t1` … `--cd-t7`, the dock's existing
 `--cd-` namespace.
 
-**Where the eleven existing values land:**
+**Where the dock's existing values land** (declaration counts, whole dock):
 
-| Existing | Becomes |
-|---|---|
-| 6.4 · 6.8 · 6.9 | **T1** |
-| 8.2 · 8.4 · 8.6 | **T2** |
-| 9 · 9.2 · 9.6 | **T3** |
-| — | T4 |
-| 13 | **T5** |
-| 30 | **T6** |
+| Existing | Count | Becomes |
+|---|---|---|
+| 6 · 6.3 · 6.4 · 6.5 · 6.6 · 6.8 · 6.9 | 30 | **T1** |
+| 7 · 7.1 · 7.2 · 7.3 · 7.4 · 7.5 · 7.6 · 7.8 | **80** | **T2** |
+| 8 · 8.1 · 8.2 · 8.3 · 8.4 · 8.5 · 8.6 · 8.7 · 8.8 | 64 | **T3** |
+| 9 · 9.2 · 9.3 · 9.4 · 9.5 · 9.6 | 32 | **T4** |
+| 10 · 10.5 · 11 · 11.5 | 21 | **T5** |
+| 12 · 13 · 14 · 14.5 | 17 | **T6** |
+| 16 · 17 · 26 · 30 | 4 | **T7** |
 
-Snapping to a rung is a visual change of at most 0.6px. If a specific spot
+Snapping to a rung is a visual change of at most 0.8px. If a specific spot
 genuinely needs to sit off-scale, that is allowed **once it is written here with
 its reason** — an exception on the record is a decision; an exception in the
-stylesheet is the 38th number.
+stylesheet is the 44th number.
+
+> **Renumbered 2026-08-06, hours after ratification, and deliberately.** The
+> first draft had six rungs and no 7.x at all: its inventory had been drawn by
+> matching selector *names*, so it never saw `.fh-cd-diewrap em` — the die
+> label — nor the seventeen other declarations at 7.3/7.4. The 7–7.8 band is
+> **the most populated in the whole dock (80 declarations)**; a scale that
+> jumps it is not a scale. Inserting the rung at position 2 keeps every rung
+> Eric ratified, in the same order, and keeps the die label at its size — so
+> the tray's "38px fits 7 mixed-case characters" survives, where snapping it to
+> 8.4 would have cost a character on every die.
+>
+> **This renumbering was free precisely because it happened before the first
+> line of code consumed a token.** That window closes at the tray's next
+> commit. The rule it leaves behind: **a scale is derived once, from a complete
+> inventory, before anything is built on it.**
 
 ---
 
