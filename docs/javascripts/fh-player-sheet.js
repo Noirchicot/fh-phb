@@ -71,7 +71,16 @@
      to 275 — and those 14px buy a sixth die in the hand, nothing else. A coin
      is 26px wide, not 38, which is why the swarm threshold has to be an
      ARITHMETIC on widths and not a count of dice. */
-  var TRAY_DICE_W = 275;   // the zone the dice actually have, after P15
+  /* 249 and not the 275 the relevé predicted — MEASURED on the built page at
+     the reference (dock 425, zoom 100%, --cd-fs 1.15) once the flanks' gutters
+     were removed. The relevé's arithmetic counted neither the tray's own 8px
+     padding nor the right flank's 68 × --cd-fs = 78.2, which is bug 6's fix
+     itself costing 10px of dice. The threshold has to stand on the real zone:
+     an aspirational number here would let hands overflow exactly the way P23
+     exists to stop, and this is the constant that decides it. Consequence
+     worth stating out loud: at 249 the hand holds FIVE dice at full size
+     (5×38 + 4×8 = 222; six would be 268), not the six P15 announced. */
+  var TRAY_DICE_W = 249;   // the zone the dice actually have, measured
   var TRAY_COIN_W = 26;    // a coin is three quarters of a die
   var TRAY_HAND_GAP = 8;   // the live band's gap between two columns
   var TRAY_ROW_COL = 20;   // P25: twelve columns of 20 — 12×20 + 11×3 = 273

@@ -2450,3 +2450,37 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   background:radial-gradient(120% 90% at 50% 50%,rgba(255,217,138,.30) 0%,rgba(255,217,138,.08) 55%,transparent 78%)}
 .fh-cd-frame.is-judgment.mood-awakening::before{
   background-image:conic-gradient(from 0deg at 50% 50%,rgba(255,217,138,.32),transparent 22%,rgba(201,164,90,.28) 46%,transparent 70%,rgba(255,217,138,.32))}
+
+/* ── Lot R34-R39 (P15, suite) — les gouttières autour des flancs meurent
+   MEASURED ON THE BUILT PAGE, and the number is not the one the relevé
+   predicted. P15's « +14 » comes from the flank absorbing the 6px gutters it
+   used to sit between: now that it carries its own ground and its own inside
+   padding, a gap around it is a second margin. Removing both gutters is the
+   real mechanism of the decision, and it gives the dice 12px back.
+
+   What it does NOT give is 275. Measured at the reference (dock 425, zoom
+   100%, --cd-fs 1.15) the dice zone lands at 249, and the arithmetic says why:
+     425 − tray padding 8 − line padding 4 − flank 80 − right flank 78.2
+         − the dice span's own 4 = 250.8, i.e. 249 as laid out.
+   The relevé's « 261 → 275 » counted neither the tray's own 8px padding nor
+   the fact that the right flank is 68 × --cd-fs = 78.2 at the shipped default
+   — and that second one is bug 6's own fix talking: paying bug 6 costs 10px
+   of dice. The two ratified decisions collide, and they collide on the zone
+   budget, which is the architect's. Recorded here rather than arbitrated.
+   APPENDED only. */
+.fh-cd-dicetray .fh-cd-trayline{gap:0}
+
+/* ── Trouvé au banc en vérifiant P19 : l'essaim débordait de 2px ───────
+   The swarm declares `gap:3px` on `.fh-cd-tray-dice.is-swarm` — two classes.
+   `.fh-cd-trayline.is-mid .fh-cd-tray-dice{gap:5px}` is THREE, so it was
+   silently winning on every band but the live one, and the die size the script
+   computes (30 − 2.5 × (n − 6)) is derived against 3. Measured on the built
+   page: eight dice plus a coin came to 251 in a zone of 249 and wrapped to a
+   second row, which grew the band from 56 to 68.
+
+   This is the SAME trap the rows block already documents and already pins —
+   « the mid/static bands' 5px rule is more specific than the swarm's 3px and
+   was silently winning, which made the arithmetic land at NINE a row ». It
+   was fixed for the rows and not for the swarm. Pinned here the same way.
+   APPENDED only. */
+.fh-cd-trayline .fh-cd-tray-dice.is-swarm{gap:3px}

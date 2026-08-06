@@ -1166,4 +1166,22 @@ t.state.history = [{id:"coins-line", kind:"tray", name:"Dexterity Check",
 t.state.diceSignatures = {};
 const coinsLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="coins-line"[^>]*>[\s\S]*?<\/li>/)[0];
 assert.match(coinsLine, /is-swarm/,
-  "four dice and three coins is 4×38 + 3×26 + 6×8 = 278 on a zone of 275 — it must break to the swarm, and the old count-of-dice threshold let it overflow in silence");
+  "four dice and three coins is 4×38 + 3×26 + 6×8 = 278 on a measured zone of 249 — it must break to the swarm, and the old count-of-dice threshold let it overflow in silence");
+
+/* The zone is 249, MEASURED on the built page at the reference — not the 275
+   the relevé predicted, which counted neither the tray's own padding nor the
+   right flank's 68 × --cd-fs. Pinned here because the threshold stands on it:
+   an aspirational constant would let hands overflow exactly the way P23 exists
+   to stop. Consequence: the hand holds FIVE dice at full size, not six. */
+const fiveDice = {id:"five", kind:"tray", name:"Damage roll", total:20, createdAt:isoAt(0),
+  dice:[1,2,3,4,5].map(n => ({sides:6, result:n}))};
+const sixDice = {id:"six", kind:"tray", name:"Damage roll", total:26, createdAt:isoAt(0),
+  dice:[1,2,3,4,5,6].map(n => ({sides:6, result:n}))};
+t.state.history = [fiveDice]; t.state.diceSignatures = {};
+assert.doesNotMatch(t.diceTrayInner().match(/<li[^>]*data-tray-line="five"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
+  "five dice at full size are 222 of 249 — a hand");
+t.state.history = [sixDice]; t.state.diceSignatures = {};
+assert.match(t.diceTrayInner().match(/<li[^>]*data-tray-line="six"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
+  "six are 268 — over the measured zone, so a swarm; P15 announced six on a zone that does not exist");
+assert.match(css, /\.fh-cd-dicetray \.fh-cd-trayline\{gap:0\}/,
+  "P15's real mechanism: the flank carries its own padding, so the gutters around it are a second margin");
