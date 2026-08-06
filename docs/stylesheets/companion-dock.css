@@ -2281,3 +2281,86 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 /* P9's third narrow surface: the band's pastille holds 24px, and at T1 even
    « Bardic » overflows it — which is why the resource carries a Short name. */
 .fh-cd-poollab{font-size:var(--cd-t1)}
+
+/* ── Lot R34-R39 (P13, P13-bis, P13-ter, P15, P22) — le flanc gauche :
+   une pile d'items sur un fond qui ne bouge plus ───────────────────────
+   P13-bis is a MEASUREMENT that constrains P13, not a taste. The live band
+   sits on the top of ramp A (#7b7264 where the items are) and NOTHING reaches
+   4.5:1 there — red 2.19, orange 2.77, green 2.93, gold 3.51. And it is
+   structural: no single colour can satisfy 4.5:1 at both ends of a ramp that
+   runs #7b7264 → #28241d. The two constraints are mathematically
+   incompatible, so one of them has to go, and it is the ramp — under the
+   flank only.
+
+   Not a translucent veil (the ramp would still show through and the seat
+   would still vary band by band) but an OPAQUE, FLAT ground over the whole
+   height, at #24201a — which is the foot of ramp A itself, so the flank reads
+   as the tray's floor rather than as a foreign bar laid on top of it.
+
+   The real gain is not the contrast, it is the SATURATION. Today's red
+   #f09a90 carries 40% saturation: a salmon, bleached to survive the felt. On
+   a flat dark ground #ff7a68 holds 6.35:1 while keeping 59% — the red is red
+   again.
+
+   Eric flagged one risk to check on the bench: a flat dark column against the
+   light top of the ramp draws a visible vertical edge on band 1. It is a
+   deliberate edge (the flank is a different surface), but it is his to accept
+   or refuse.
+   APPENDED only. */
+/* P15: the box keeps the 80px footprint it has today and finds its padding on
+   the INSIDE, so the 14px go to the dice (261 → 275) and not to a gutter. The
+   useful width is therefore 68 — the number P12's cascade and P13's items are
+   both measured against. */
+.fh-cd-dicetray .fh-cd-tray-left{
+  position:relative;flex:none;width:80px;align-self:stretch;box-sizing:border-box;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;
+  padding:2px 6px 2px 4px;background:#24201a;border-radius:3px}
+/* Bug 7 of the relevé, recorded rather than silently overwritten: the comment
+   on .fh-cd-tray-owner above states « 4.89:1 mesuré à son assise la plus
+   claire (#6d6557) ». That measurement predates the cap's death. Band 1 then
+   sat below the ramp's 20%; it has sat at the very top since, and the name was
+   in fact at 3.60:1 — the prose described a geometry that no longer existed.
+   On the flat #24201a it is 13.76, and this line is now true by construction
+   rather than by luck. */
+.fh-cd-tray-owner b,.fh-cd-tray-owner button{color:#f4ecd8}
+/* The pile. One line per fact, T1, no encapsulation: THE CASE SAYS THE RARITY
+   AND THE COLOUR SAYS THE MEANING. Everything here is one line and ellipsed —
+   a fact that wraps is two facts as far as the eye is concerned. */
+.fh-cd-tray-speak{display:flex;flex-direction:column;align-items:flex-start;gap:0;
+  max-width:100%;min-width:0;overflow:hidden}
+.fh-cd-tray-item{display:block;max-width:100%;font-size:var(--cd-t1);font-weight:700;
+  line-height:1.1;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fh-cd-tray-item.is-caps{text-transform:uppercase;font-weight:800;letter-spacing:.04em}
+/* Measured on #24201a — the whole point of the opaque ground. */
+.fh-cd-dicetray .fh-cd-tray-item.is-ok{color:#8fc97a}       /* 8.33 */
+.fh-cd-dicetray .fh-cd-tray-item.is-bad{color:#ff7a68}      /* 6.35, saturation 59% */
+.fh-cd-dicetray .fh-cd-tray-item.is-urgent{color:#f0a24a}   /* 7.69 */
+.fh-cd-dicetray .fh-cd-tray-item.is-destiny{color:#ffd98a}  /* 11.99 */
+.fh-cd-dicetray .fh-cd-tray-item.is-info{color:#b3a68c}     /* 6.75 */
+/* The orange blinks for five seconds at its birth and then holds still — a
+   debt that pulses forever is wallpaper, and R33 already settled that only
+   what DEMANDS attention may move. The class is stamped from the roll's own
+   timestamp, not from the element, so a feed poll cannot restart it. */
+.fh-cd-tray-item.is-fresh{animation:fh-cd-item-fresh 1s ease-in-out 5}
+@keyframes fh-cd-item-fresh{0%,100%{opacity:1}50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.fh-cd-tray-item.is-fresh{animation:none}}
+/* The live band lifts one step, as every other tray ink does up there. */
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-item.is-ok{color:#a9dd93}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-item.is-bad{color:#ff9384}
+
+/* P13-ter / P22 — la bande grandit pour ce qu'elle porte.
+   72 carries a fifth item or two rows of ten; 85 carries three rows, and
+   costs a visible roll (85 + 3×56 = 253 of 284) for the good reason that
+   there are thirty dice to show. */
+.fh-cd-trayline.is-deeper{min-height:85px}
+.fh-cd-trayline.is-deeper .fh-cd-tray-dice.is-rows{max-height:none}
+
+/* Le filet du débordement silencieux (bug 2 du relevé).
+   P23 should stop a hand from ever exceeding the zone — but a net that never
+   speaks is how this defect lived in production: overflow-x:auto with
+   scrollbar-width:none means the dice simply leave the screen, with no arrow,
+   no shadow, no bar. If the arithmetic is ever wrong, the edge says so. */
+.fh-cd-tray-dice{scroll-snap-type:x proximity}
+.fh-cd-trayline .fh-cd-tray-dice{
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 10px),rgba(0,0,0,.15) 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 10px),rgba(0,0,0,.15) 100%)}

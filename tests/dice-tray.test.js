@@ -34,7 +34,8 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
     renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
     surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie, dieSvg,
     renderDockHeader, feedChipHtml, feedStatusCaption,
-    shortDieLabel, handLabel, normalizePoolResource, poolChipFace, LEX, rollRuling
+    shortDieLabel, handLabel, normalizePoolResource, poolChipFace, LEX, rollRuling,
+    trayOwnerName, trayFlankItems, evictFlankItems, textWidthPx
   };
 })();
 `);
@@ -266,7 +267,15 @@ const twelvePass = t.diceTrayInner();
    gap ≈ 49, inside the 56 band), so twelve dice now wrap and wave. */
 assert.match(twelvePass, /is-rows/, "eleven to twenty wrap into two rows of ten");
 assert.match(twelvePass, /data-wave="1"/, "…and tumble row after row: 10, 2");
-assert.doesNotMatch(twelvePass, /is-deep/, "two rows still live inside the nominal 56");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P22's ratified table of regimes). The
+   2026-08-05 grid put 11-20 dice in the nominal 56; the 2026-08-07 table
+   states 72 for that regime, twice — in the relevé's summary and in Sujet 6 —
+   and 85 only for 21-30. Worth recording because the two do not disagree by
+   accident: two rows of 20 plus the legend measure ~53, which WOULD hold
+   inside 56, so the 72 buys margin rather than paying for content. Ratified
+   as written; the slack is Eric's to reclaim if he wants the row back. */
+assert.match(twelvePass, /is-deep(?!er)/, "eleven to twenty sit in the deep band (72)");
+assert.doesNotMatch(twelvePass, /is-deeper/, "…and only 21-30 reach the 85 that costs a visible roll");
 t.state.history = [trayHand("twentyfive", 25, 88)];
 t.state.diceSignatures = {};
 const rowsPass = t.diceTrayInner();
@@ -761,8 +770,15 @@ t.state.history = [d20Entry("nat1-acc", "Persuasion", 1, 8, 0, {
 })];
 const nat1Pass = t.diceTrayInner();
 const nat1Line = nat1Pass.match(/<li[^>]*data-tray-line="nat1-acc"[^>]*>[\s\S]*?<\/li>/)[0];
-assert.match(nat1Line, /fh-cd-tray-verdict">FUMBLE 1</, "the accepted 1 speaks as FUMBLE 1 — the ratified rename");
-assert.doesNotMatch(nat1Line, /fh-cd-badge/, "and carries NO badge chip — one proposition per line");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P13) — the single proposition became a
+   PILE. R7 answered « a nat 1 accepted stacks three blocks and grows the band
+   to 104px » by keeping ONE line and sending the rest to a hover; P13 answers
+   it properly, with one line per FACT at T1, the case saying the rarity and
+   the colour saying the meaning. Four of them fit the 56 that one broken
+   sentence used to overflow. The verdict now reads in its SHORT form, because
+   the flank is one of P7's narrow surfaces. */
+assert.match(nat1Line, /fh-cd-tray-item is-bad is-caps">FUMBLE 1</, "the accepted 1 speaks as FUMBLE 1, in capitals because it is rare and in red because it is not good");
+assert.doesNotMatch(nat1Line, /fh-cd-badge/, "and carries NO badge chip — the pile is items, not chips");
 const nat1Title = nat1Line.match(/fh-cd-tray-speak" title="([^"]*)"/);
 assert.ok(nat1Title, "the speak span carries the hover title that says the rest");
 /* REWRITTEN 2026-08-06 (lot R34-R39, L87 — dedup by token).
@@ -780,7 +796,12 @@ assert.equal(nat1Title[1], "Fumble 1 accepted · Destiny 1",
 t.state.history = [d20Entry("nat20", "Arcana", 20, 27, 0, {natural:20})];
 t.state.diceSignatures = {};
 const nat20Line = t.diceTrayInner().match(/<li[^>]*data-tray-line="nat20"[^>]*>[\s\S]*?<\/li>/)[0];
-assert.match(nat20Line, /fh-cd-tray-verdict">CRITICAL 20</, "a natural 20 speaks as CRITICAL 20");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P13 + P7). « CRITICAL 20 » is 54px and
+   the useful flank is 68 (P15) — it fits, but it FILLS the column, which is
+   what R35 flagged. The flank is a short surface, so it says « CRIT 20 » (32)
+   and the judgment box keeps the long form. Same entry, two forms, and the
+   surface chooses: that is P7, not a second lexicon. */
+assert.match(nat20Line, /fh-cd-tray-item is-ok is-caps">CRIT 20</, "a natural 20 speaks as CRIT 20 on the flank — green, and in capitals");
 assert.doesNotMatch(nat20Line, /fh-cd-badge/, "no chip beside it");
 /* REWRITTEN 2026-08-06 (lot R34-R39, L87). The old assertion pinned the
    BROKEN state: « NATURAL 20 » reached the hover because the renamed verdict
@@ -960,3 +981,89 @@ assert.match(labelRule[0], /-webkit-line-clamp:none/, "…and the latent second 
 assert.match(css, /\.fh-cd-diewrap\.is-modifier em\{max-width:26px\}/, "P24: a coin is 26px, not 38");
 assert.ok(css.lastIndexOf(".fh-cd-diewrap.is-forced em{color:inherit}") > css.indexOf(".fh-cd-diewrap.is-forced em{color:#7a4a9c}"),
   "the white label wins over the invisible violet by coming later — appended, never rewritten");
+
+/* ── Lot R34-R39 — le flanc gauche (P12, P12-bis, P13, P14, P15) ───────
+   The measuring tool first, because the cascade and the pile both stand on
+   it. It is checked against Eric's own measurements of the real table, taken
+   on the rendered dock — if this drifts, every branch below drifts with it. */
+/* Measured at T1 × the default --cd-fs (6.8 × 1.15 = 7.82), which is the size
+   Eric's numbers were taken at — T1 is a rung, not a pixel. */
+const nameW = text => t.textWidthPx(text, 6.8 * 1.15, 0.09);
+[["CARACOLE", 49], ["BRUGAR", 38], ["AWKI PACHA-KAY", 78.3], ["NOIRCHICOT", 57]].forEach(([text, measured]) => {
+  assert.ok(Math.abs(nameW(text) - measured) < measured * 0.04,
+    "the width model tracks the measured « " + text + " » (" + nameW(text).toFixed(1) + " vs " + measured + ")");
+});
+
+/* P12-bis: a trailing parenthesis is a D&D Beyond convention — the player's
+   first name or a build marker — and this column says the CHARACTER. Without
+   it, « Paxxi (Laurent) » fitted whole and « Brann (Laurent) » overflowed by
+   2.5px: two characters of one player, two treatments, for two letters. */
+assert.equal(t.trayOwnerName("Brann (Laurent)"), "Brann", "the player's name in brackets falls before the cascade runs");
+assert.equal(t.trayOwnerName("Paxxi (Laurent)"), "Paxxi", "…for both of them, so they are treated alike");
+assert.equal(t.trayOwnerName("took (fh)"), "took", "…and the build marker goes the same way");
+assert.equal(t.trayOwnerName("(Laurent)"), "(Laurent)", "a name that is ONLY a parenthesis keeps it — stripping it would leave nothing");
+
+/* P12: whole name → first word → the CSS ellipsis. The real table never
+   reaches the third branch; the second one exists for exactly one name. */
+assert.equal(t.trayOwnerName("Caracole"), "Caracole", "a name that fits is written whole");
+assert.equal(t.trayOwnerName("Yedrivel"), "Yedrivel", "…as all but one on Eric's table do");
+assert.equal(t.trayOwnerName("Awki Pacha-Kay"), "Awki", "78.3 on a useful 68: the one name the cascade is for");
+assert.equal(t.trayOwnerName("Brugar Furnace"), "Brugar", "…and the first word is what it falls back to, never a cut");
+assert.equal(t.trayOwnerName("Noirchicot"), "Noirchicot", "the campaign pseudo, the fallback when a character has no name, still fits");
+
+/* P13: the pile. One line per fact; the case says the rarity, the colour says
+   the meaning. The worst case Eric found on the bench — a nat 1 accepted with
+   Chaos armed and exhaustion — is four lines, exactly a band of 56. */
+const worst = t.trayFlankItems({
+  natural:1, natChoice:"accept", exhaustion:2,
+  destinyPointChange:{before:6, after:7, reason:"Fumble 1 accepted"}, dc:"15", total:8
+}, t.rollRuling({natural:1, natChoice:"accept", dc:"15", total:8}));
+assert.deepEqual(plain(worst).map(i => i.t), ["FUMBLE 1", "Destiny +1 → 7", "Exhaustion 2"],
+  "the facts, in the reading order: verdict, consequence, harm");
+assert.deepEqual(plain(worst).map(i => i.tone), ["bad", "destiny", "bad"], "…the colour says the meaning");
+assert.deepEqual(plain(worst).map(i => i.caps), [true, false, false], "…and the case says the rarity");
+
+/* P14b — the informative does NOT enter the pile. « vs DC 15 » is redundant
+   with the verdict (« Success » IS the comparison to the DC) and « Manual » /
+   « adjusted » already live in the total's hover with the arithmetic. This is
+   what makes four lines enough in the ordinary regime. */
+assert.ok(!plain(worst).some(i => /DC/.test(i.t)), "the DC does not enter the pile — the verdict already is the comparison");
+const adjusted = t.trayFlankItems({natural:12, dc:"", total:19, adjusted:true, d20Forced:true},
+  t.rollRuling({natural:12, dc:"", total:19}));
+assert.deepEqual(plain(adjusted).map(i => i.t), [], "neither « adjusted » nor « Manual »: the flank tells what happened, it does not do the sums");
+
+/* « FATE REFUSED 1→20 » splits in two — one fact per line is the point. */
+const refused = t.trayFlankItems({natural:1, natChoice:"chaos", transformed:true, dc:"", total:24},
+  t.rollRuling({natural:1, natChoice:"chaos", dc:"", total:24}));
+assert.deepEqual(plain(refused).map(i => i.t), ["FATE REFUSED", "1→20", "Chaos pending"],
+  "the ruling, then what it did to the die, then the debt it armed");
+assert.equal(plain(refused)[1].tone, "info", "« 1→20 » is written in informative ink…");
+assert.equal(plain(refused)[1].fam, "info", "…and is the first to be evicted, though it belongs to the verdict's story");
+
+/* P14a — eviction is NOT the display order read backwards. A debt is the
+   third thing you read and never the first thing you sacrifice. */
+const overflowing = [
+  {t:"FUMBLE 1", fam:"verdict", tone:"bad", caps:true},
+  {t:"Destiny +1 → 7", fam:"destiny", tone:"destiny", caps:false},
+  {t:"Chaos pending", fam:"urgent", tone:"urgent", caps:false},
+  {t:"Exhaustion 2", fam:"bad", tone:"bad", caps:false},
+  {t:"1→20", fam:"info", tone:"info", caps:false}
+];
+assert.deepEqual(plain(t.evictFlankItems(overflowing, 4)).map(i => i.t),
+  ["FUMBLE 1", "Destiny +1 → 7", "Chaos pending", "Exhaustion 2"],
+  "the informative falls first, and what survives keeps the reading order");
+assert.deepEqual(plain(t.evictFlankItems(overflowing, 2)).map(i => i.t), ["FUMBLE 1", "Chaos pending"],
+  "squeezed to two: the verdict and the debt — never the debt before the harm");
+assert.equal(t.evictFlankItems(overflowing, 9).length, 5, "nothing is evicted when everything fits");
+
+/* P13-bis: the flank stops riding the ramp. No colour can hold 4.5:1 at both
+   ends of #7b7264 → #28241d — the two constraints are incompatible, so the
+   ramp goes, under the flank only, and the red gets its saturation back. */
+const flankRule = css.match(/\.fh-cd-dicetray \.fh-cd-tray-left\{[\s\S]*?\}/);
+assert.ok(flankRule, "the flank's own ground is appended");
+assert.match(flankRule[0], /background:#24201a/, "opaque and flat — the foot of ramp A, so it reads as the tray's floor");
+assert.match(flankRule[0], /align-self:stretch/, "…over the whole height, or the seat would still vary band by band");
+assert.match(css, /\.fh-cd-tray-item\.is-bad\{color:#ff7a68\}/, "the red is red again: 6.35:1 at 59% saturation, where #f09a90 was a 40% salmon");
+assert.match(css, /\.fh-cd-tray-item\{[^}]*font-size:var\(--cd-t1\)/, "the pile sits on the same rung as the die labels — one small size in the whole tray");
+assert.match(css, /\.fh-cd-tray-item\.is-caps\{[^}]*text-transform:uppercase/, "the case is a rule of the surface, not of the strings");
+assert.match(css, /\.fh-cd-trayline\.is-deeper\{min-height:85px\}/, "P22: three rows of ten reach 85, the one assumed overflow");

@@ -66,6 +66,16 @@
      the numeral: ~11px of digit at 20, ~8px (texture) at the old 16. */
   var TRAY_DIE_SKILL = 38;
   var TRAY_DIE_ROW = 20;
+  /* P15 / P23 / P25 (ratifiées Eric, 2026-08-07). The flank gives its padding
+     back from the inside and keeps its 80px footprint, so the dice go from 261
+     to 275 — and those 14px buy a sixth die in the hand, nothing else. A coin
+     is 26px wide, not 38, which is why the swarm threshold has to be an
+     ARITHMETIC on widths and not a count of dice. */
+  var TRAY_DICE_W = 275;   // the zone the dice actually have, after P15
+  var TRAY_COIN_W = 26;    // a coin is three quarters of a die
+  var TRAY_HAND_GAP = 8;   // the live band's gap between two columns
+  var TRAY_ROW_COL = 20;   // P25: twelve columns of 20 — 12×20 + 11×3 = 273
+  var TRAY_ROW_GAP = 3;
   var MAX_EXHAUSTION = 6;
 
   var root;
@@ -3708,6 +3718,140 @@
      total changed — stays as a chip; measured, it holds inside the 56.
      `speakTitle` rides back to trayLineHtml, which stamps it on the
      speak span so the badges have a hover home even with no verdict. */
+  /* ── Mesurer le texte sans le rendre (P12, P13, P31) ────────────────
+     The flank's cascade and the item pile are decided from a WIDTH, and the
+     width has to be known before the markup exists — a name that will not fit
+     must fall back to its first word, not be cut by the CSS after the fact.
+
+     The table below is Helvetica's advance widths in units of 1/1000 em. It is
+     not the shipped face (-apple-system is SF), and it is not a guess either:
+     it was checked against Eric's own measurements of the real table, taken on
+     the rendered dock at T1 with the flank's .09em letter-spacing —
+       CARACOLE       computed 48.7   measured 49
+       BRUGAR         computed 37.7   measured 38
+       AWKI PACHA-KAY computed 77.2   measured 78.3
+     — i.e. within ~1.5% across a short, a medium and the longest name on the
+     table. That is more than the cascade needs, because the cascade's job is
+     to pick a BRANCH, and the CSS ellipsis is still underneath it as the last
+     net (P6). Unknown characters fall back to the average, never to zero. */
+  var GLYPH_W={
+    " ":278,"-":333,"'":191,"’":191,".":278,",":278,"·":333,"—":1000,"–":556,
+    "→":800,"∞":800,"×":584,"−":584,"+":584,"(":333,")":333,"/":278,":":278,"=":584,"#":556,
+    "0":556,"1":556,"2":556,"3":556,"4":556,"5":556,"6":556,"7":556,"8":556,"9":556,
+    A:667,B:667,C:722,D:722,E:667,F:611,G:778,H:722,I:278,J:500,K:667,L:556,M:833,
+    N:722,O:778,P:667,Q:778,R:722,S:667,T:611,U:722,V:667,W:944,X:667,Y:667,Z:611,
+    a:556,b:556,c:500,d:556,e:556,f:278,g:556,h:556,i:222,j:222,k:500,l:222,m:833,
+    n:556,o:556,p:556,q:556,r:333,s:500,t:278,u:556,v:500,w:722,x:500,y:500,z:500
+  };
+  function textWidthPx(text,sizePx,letterSpacingEm){
+    text=String(text==null?"":text);
+    var em=0,i;
+    for(i=0;i<text.length;i++)em+=(GLYPH_W[text.charAt(i)]||556)/1000;
+    return (em+text.length*(Number(letterSpacingEm)||0))*Number(sizePx||0);
+  }
+  /* ── P12 / P12-bis : le nom du personnage, une ligne, trois branches ──
+     T1, uppercase, 68px of useful flank (P15). Whole name → first word →
+     ellipsis, and the ellipsis is a net that the real table never reaches.
+
+     P12-bis first: a trailing parenthesis is a D&D Beyond convention — the
+     player's first name, or a build marker — and this column says the
+     CHARACTER. Without the rule, « Paxxi (Laurent) » would fit whole at 77.2
+     while « Brann (Laurent) » overflowed by 2.5: two characters of the same
+     player treated differently for the sake of two letters. */
+  /* 7.82 and not 6.8: T1 is 6.8px MULTIPLIED by --cd-fs, whose default is
+     1.15 at 100% zoom — and that is the size Eric's measurements were taken
+     at. The flank's 68px, by contrast, is raw CSS px. The two therefore only
+     line up at the reference, which is the zoom defect bug 6 belongs to and
+     which the architect owns; the cascade is computed at the reference, as the
+     relevé was, and the CSS ellipsis stays underneath at every other zoom. */
+  var TRAY_OWNER_W=68, TRAY_T1=6.8*1.15, TRAY_OWNER_LS=0.09;
+  function trayOwnerName(name){
+    var text=String(name==null?"":name).trim();
+    if(!text)return "";
+    text=text.replace(/\s*\([^()]*\)\s*$/,"").trim()||text;
+    /* Measured in uppercase, RETURNED in its own case: the flank has worn
+       text-transform:uppercase since phase 5, so uppercasing here as well
+       would only make the markup shout at a reader who is not looking at the
+       flank (aria, the deployed history, a copy-paste). The width is what
+       needs the capitals — caps are wider, and it is caps that must fit. */
+    if(textWidthPx(text.toUpperCase(),TRAY_T1,TRAY_OWNER_LS)<=TRAY_OWNER_W)return text;
+    return text.split(/\s+/)[0]||text;
+  }
+  /* ── P13 / P14 : le verdict devient une PILE d'items ────────────────
+     One line per fact, no encapsulation, all at T1. THE CASE SAYS THE RARITY
+     AND THE COLOUR SAYS THE MEANING — that is the whole grammar, and it is
+     what lets four facts live where one sentence used to break over four
+     lines and grow the band to 104px (Eric's bench finding).
+
+     P14b is the rule that makes four lines enough: the informative does NOT
+     enter the pile. « vs DC 15 » is redundant with the verdict (« Success »
+     IS the comparison to the DC) and « Manual » / « adjusted » already live
+     in the total's hover with the arithmetic. The flank tells what happened;
+     it does not do the sums. So the pile is a pile of FACTS and the hover
+     keeps the how.
+
+     Display order is the narrative — verdict, consequence, debt, harm. The
+     EVICTION order is not the same list read backwards (P14a): a debt is the
+     third thing you read and never the first thing you sacrifice. */
+  /* P14a — the eviction order, from the most protected to the first to fall.
+     It is NOT the display order read backwards: a debt is the third thing you
+     read and never the first thing you sacrifice. `fam` is what ranks; `tone`
+     is what colours — the two coincide often enough to be confused, and the
+     « 1→20 » line is exactly where they part (it belongs to the verdict's
+     story, it is written in informative ink, and it is the first to go). */
+  var FLANK_EVICTION={verdict:0,urgent:1,destiny:2,bad:3,info:4};
+  function trayFlankItems(entry,ruling){
+    if(!entry)return [];
+    var items=[],spent=entry.destiny;
+    /* 1. The verdict, in its SHORT form — the flank is one of P7's narrow
+       surfaces, so « CRITICAL 20 » reads « CRIT 20 » here and keeps its long
+       form in the judgment box. « CHOOSE » is dropped: the choice is blocking
+       (it covers the builder), so what belongs on the line is its
+       consequence, not a call to action the player cannot miss anyway. */
+    var verdictId=ruling&&ruling.verdictId;
+    if(verdictId==="natural-20")items.push({t:LEX.crit20Short,fam:"verdict",tone:"ok",caps:true});
+    else if(verdictId==="arcane-critical-success")items.push({t:"CRIT ∞",fam:"verdict",tone:"ok",caps:true});
+    else if(verdictId==="natural-1-accepted"||verdictId==="natural-1-open")items.push({t:LEX.FUMBLE1,fam:"verdict",tone:"bad",caps:true});
+    else if(verdictId==="arcane-critical-failure")items.push({t:"FUMBLE ∞",fam:"verdict",tone:"bad",caps:true});
+    else if(verdictId==="fate-refused"){
+      /* « FATE REFUSED 1→20 » splits in two: the ruling, then what it did to
+         the die. One fact per line is the point of the pile. */
+      items.push({t:"FATE REFUSED",fam:"verdict",tone:"ok",caps:true});
+      items.push({t:"1→20",fam:"info",tone:"info",caps:false});
+    }
+    else if(verdictId==="success")items.push({t:"Success",fam:"verdict",tone:"ok",caps:false});
+    else if(verdictId==="failure")items.push({t:"Failure",fam:"verdict",tone:"bad",caps:false});
+    // 2. What Destiny did — the consequence, in gold.
+    if(entry.awakening)items.push({t:"AWAKENING",fam:"destiny",tone:"destiny",caps:true});
+    if(spent)items.push({t:"Destiny d"+spent.sides,fam:"destiny",tone:"destiny",caps:false});
+    var change=entry.destinyPointChange;
+    if(change)items.push({t:"Destiny "+(Number(change.after)===0?"→ 0":(Number(change.after)-Number(change.before)>0?"+":"−")+Math.abs(Number(change.after)-Number(change.before))+" → "+change.after),fam:"destiny",tone:"destiny",caps:false});
+    else if(spent&&isFinite(Number(spent.pointsAfter))&&Number(spent.pointsAfter)!==Number(spent.pointsBefore)){
+      var moved=Number(spent.pointsAfter)-Number(spent.pointsBefore);
+      items.push({t:"Destiny "+(Number(spent.pointsAfter)===0?"→ 0":(moved>0?"+":"−")+Math.abs(moved)+" → "+spent.pointsAfter),fam:"destiny",tone:"destiny",caps:false});
+    }
+    // 3. The debt — orange, and never evicted: it is what the table still owes.
+    if(entry.natChoice==="chaos"||(spent&&spent.arcaneChoice==="chaos"))items.push({t:"Chaos pending",fam:"urgent",tone:"urgent",caps:false});
+    if(spent&&spent.chaos)items.push({t:"Overreach "+spent.chaos.overreach,fam:"urgent",tone:"urgent",caps:false});
+    // 4. The harm.
+    if(entry.exhaustion)items.push({t:"Exhaustion "+entry.exhaustion,fam:"bad",tone:"bad",caps:false});
+    /* P14a — eviction, when the pile is deeper than the band. The order is
+       NOT the display order: verdict and urgent are never evicted, then
+       Destiny, then harm. The informative never entered (P14b), so it cannot
+       be the thing that falls out. */
+    return items;
+  }
+  function evictFlankItems(items,capacity){
+    if(items.length<=capacity)return items;
+    var ordered=items.map(function(item,index){return {item:item,index:index};});
+    ordered.sort(function(a,b){
+      var rank=FLANK_EVICTION[a.item.fam]-FLANK_EVICTION[b.item.fam];
+      return rank||a.index-b.index;
+    });
+    var keep={};
+    ordered.slice(0,capacity).forEach(function(row){keep[row.index]=true;});
+    return items.filter(function(item,index){return keep[index];});
+  }
   function trayLineSides(slot,quiet){
     var left="",right="",speakTitle="";
     if(slot.kind==="feed"){
@@ -3756,8 +3900,24 @@
          quiet title says only what the player knew before rolling (MANUAL…). */
       speakTitle=kept.filter(function(badge){return badge.k!=="adjusted";})
         .map(function(badge){return badge.t;}).join(" · ");
+      /* P13 (ratifiée Eric, 2026-08-07): the single proposition becomes a PILE
+         — one line per fact, no encapsulation, the case saying the rarity and
+         the colour saying the meaning. Four lines fit a band of 56 and five a
+         deep one; the count rides back to trayLineHtml, which is what deepens
+         the band, so the geometry is decided from the same list that is drawn.
+         `Rolling…` still owns the flank alone while the dice are in the air:
+         a pile of facts about a roll nobody has seen yet would be the spoiler
+         the whole quiet path exists to prevent. */
+      var flankItems=quiet?[]:evictFlankItems(trayFlankItems(entry,ruling),slot.flankCapacity||4);
+      /* The orange blinks for five seconds AT ITS BIRTH, and the birth is the
+         roll's own timestamp — not the moment this markup was built. A tray
+         line is re-rendered every few seconds by the feed poll, so keying the
+         animation on the element would have made a debt blink forever. */
+      var fresh=!quiet&&entry.createdAt&&(Date.now()-Date.parse(entry.createdAt))<5000;
       left=(quiet?"<em class=\"fh-cd-tray-account\">Rolling…</em>"
-          :ruling.verdict?"<b class=\"fh-cd-tray-verdict\">"+esc(ruling.verdict)+"</b>":"")+
+          :flankItems.map(function(item){
+              return "<b class=\"fh-cd-tray-item is-"+item.tone+(item.caps?" is-caps":"")+(fresh&&item.tone==="urgent"?" is-fresh":"")+"\">"+esc(item.t)+"</b>";
+            }).join(""))+
         chips.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
       /* The live hand keeps trayResultText (it carries the open-roll status,
          staged-dice count included); a settled history line re-derives the
@@ -3809,7 +3969,21 @@
        roll-small-stop-zoom collapses to a straight tumble; the wave and
        settle machinery stays (rows still land ten by ten under the
        ~16-context cap, and the settled die is still reborn a snapshot). */
-    var swarm=realDice>5;
+    /* ── P23 (ratifiée Eric, 2026-08-07) : le seuil se calcule sur la LARGEUR
+       Three ordinary hands overflowed in production because the threshold
+       counted REAL DICE and the coins were counted nowhere — a coin is 26px
+       plus a gap, and « 2d20 advantage + 2 bonus + 3 coins » is four dice and
+       278px on a zone of 275. And the overflow was silent: the zone is
+       overflow-x:auto with scrollbar-width:none, so the dice simply left the
+       screen. The rule is the arithmetic itself:
+           dice × 38 + coins × 26 + (columns − 1) × 8 ≤ 275
+       Règle de tête, and it is worth carrying: a coin is three quarters of a
+       die, and the hand holds up to six. P15's 14px are what bought the sixth
+       (6 × 38 + 5 × 8 = 268, which did not fit in the old 261). */
+    var coinCount=slot.dice.length-realDice;
+    var columns=slot.dice.length;
+    var handWidth=realDice*TRAY_DIE_SKILL+coinCount*TRAY_COIN_W+Math.max(0,columns-1)*TRAY_HAND_GAP;
+    var swarm=columns>0&&handWidth>TRAY_DICE_W;
     var infinite=realDice>30;
     var rows=realDice>10&&!infinite;
     var waved=rows;
@@ -3851,9 +4025,24 @@
        the time still ride the hover title, and the reopen gesture the chip's
        button carried now lives on the name. */
     var hoverText=who+(time?" · "+time:"");
+    /* P12/P12-bis: the cascade decides a BRANCH before the markup exists —
+       whole name, else first word, else the CSS ellipsis underneath as the
+       last net. The hover keeps the source name in full, parenthesis and all,
+       so nothing is lost by the column that says the character. */
+    var shownWho=trayOwnerName(who)||who;
     var whoHtml="<span class=\"fh-cd-tray-owner\" title=\""+esc(hoverText)+"\">"+
-      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+esc(who)+"</button>"
-        :"<b aria-label=\""+esc(who)+"\">"+esc(who)+"</b>")+"</span>";
+      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+esc(shownWho)+"</button>"
+        :"<b aria-label=\""+esc(who)+"\">"+esc(shownWho)+"</b>")+"</span>";
+    /* P13-ter: FIVE items need a deep band, and the pile has to be counted
+       before it is drawn — the band's height and the capacity handed to the
+       eviction are the same decision. A deep band costs a visible roll
+       (72 + 3×56 = 240, and the 44 left will not hold a fifth), which is
+       exactly why the informative never enters the pile (P14b) and why five
+       items are an exceptional chain rather than a Tuesday. */
+    var pileSize=(!quiet&&slot.entry&&(slot.kind==="mine"||slot.kind==="live"||slot.structured))
+      ? trayFlankItems(slot.entry,rollRuling(slot.entry)).length : 0;
+    var deepFlank=pileSize>=5;
+    slot.flankCapacity=deepFlank?5:4;
     var sides=trayLineSides(slot,quiet);
     var row="<span class=\"fh-cd-tray-left\">"+whoHtml+"<span class=\"fh-cd-tray-speak\""+
         (sides.speakTitle?" title=\""+esc(sides.speakTitle)+"\"":"")+">"+sides.left+"</span></span>"+
@@ -3870,12 +4059,18 @@
     /* 21-30 dice need three rows of ten at 20px — the ONE case that grows
        a line past the 56px nominal (to 72; règle Eric, lot BACKLOG-B
        2026-08-05). Past 30 the ∞ takes over and the line stays nominal. */
-    var deep=realDice>20&&!infinite;
+    /* P22: three rows of ten are 66px of dice, 76.6 with the legend and its
+       gap — a band of 83.6, rounded to 85. It costs a visible roll (85 + 3×56
+       = 253 of 284) and that is assumed: there are thirty dice to show, which
+       is a good reason to overflow. Below it, 11-20 dice sit in the 72 P13-ter
+       also uses; the two constraints landed on the same numbers. */
+    var deeper=realDice>20&&!infinite;
+    var deep=(rows&&!deeper)||deepFlank;
     /* M3b: the line that just climbed announces itself — once. The flag is
        consumed by diceTrayInner after this pass, so later renders (feed
        polls land every few seconds) never restart the liseré. */
     var surfaced=!frozen&&!!(state.traySurfaceFlash&&slot.id===state.traySurfaceId&&slot.kind!=="live");
-    return "<li class=\"fh-cd-trayline "+sizeClass+(deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(surfaced?" is-surfaced":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
+    return "<li class=\"fh-cd-trayline "+sizeClass+(deeper?" is-deeper":deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(surfaced?" is-surfaced":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
   /* The three feed states, one derivation (T24): the Identity chip's title
      and the Stream's cap read the SAME phrases instead of each keeping a
