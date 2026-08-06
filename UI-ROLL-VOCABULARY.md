@@ -243,5 +243,72 @@ at render time, so every surface says the same thing about the same roll.
 
 ## Open questions
 
-1. **How tall is a tray line with dice shown**, as opposed to the compact
-   Stream-style line. Needs a drawing before it can be budgeted.
+1. ~~**How tall is a tray line with dice shown**, as opposed to the compact
+   Stream-style line. Needs a drawing before it can be budgeted.~~
+   **ANSWERED — Eric, 2026-08-03, and it reshaped the line itself** (built on
+   branch `dock-dice-tray`). A tray line is **three spaces left to right,
+   nothing said twice**: the **who as a chip** — your own portrait cropped to
+   the face, or two letters ("Ha" for Harness) when there is none, and always
+   two letters for the table since the wire carries no avatar; the full name
+   and the time surface on hover (second fitting, same day — the first cut
+   wrote the name in full and it cost the line its flanks), then **the dice,
+   each with its full §2 wrapper** but a minimal label (no "· ready" suffix —
+   the line's own heading says that — and allowed a second line instead of
+   colliding sideways), then **the ruling on three tiers** — the roll's name
+   in bold ("Arcana +7"), the total with NATURAL 20/1 beside it, and the
+   ruling text, abridged when long (Chaos, a Destiny-point change…) with the
+   full account on hover.
+   **And the builder is not the tray**: a hand still being assembled — every
+   die pending, nothing landed — renders in the Roll Builder's own dashed
+   assembly frame in the roller, and only enters the tray when ROLL lands it.
+   The tray shows rolls; the builder shows intentions.
+   **Third fitting, same day (Eric):** the line reads **verdict-first** — the
+   ruling tiers are superseded by two flanks: LEFT the chip and what Fate
+   said (verdict, badges), RIGHT the roll's name in bold over its total
+   ("Arcana +5 / 24"), account small underneath. Past **six** dice a hand is
+   a **swarm**: bare mini dice (no source token, no label — colour will
+   carry damage type later), wrapping into rows, 22px on the large line,
+   16px below — a 28d6 reads as three rows. And the Roll Builder's frame is
+   now the **permanent judgment window**: decisions (Natural 1, Arcane 1,
+   A/D choice), the assembly, and the Ruling of the roll just landed all
+   speak there, by that priority; the stacked announcement lines above it
+   are gone — only the badge strip remains, and the Stream keeps the
+   record. `state.events` persists (the newest entry still drives the
+   window's mood streaks); it simply no longer renders as lines.
+   **Fourth fitting (Eric, 2026-08-04), measured then built.** The judgment
+   window is a shallow WOODEN box (CSS grain, no image) glued to the dock's
+   edges — badges above it, zero text; CLEAR TRAY sits provisionally in the
+   console. Inside, three spaces: informative centred on the left, the dice
+   **building left to right** (strict construction order — the Destiny die
+   lost its head-of-row exception and takes its chronological place), and
+   the roll's identity "History / +1" centred on the right; nothing said
+   twice, so a heading that only restates that identity yields to it. The
+   Dice Tray is a dark woven CARPET: no boxes (the live hand's gold frame
+   is gone; a thin separator between lines is the forgiven box), flanks at
+   **80/68** (validated against measurement: dice space 165→~260px), no
+   visible account (hover keeps it), no scrollbars anywhere.
+   **The choreography, ruled by count:** 1–5 dice roll LARGE (44px) and
+   stay; past five they are a swarm — 6–12 tumble together at 18px and
+   settle to 22; 13+ tumble in **3D waves of ten, row after row** (each
+   row's contexts are freed by the settle-swap before the next row starts —
+   Eric chose the wave over the SVG relay, longer animation accepted), at
+   16px settling to 20. The stop is a snapshot swap at the settled size on
+   a CSS transition: roll small, stop, zoom, tighten. The +2/+X coins ride
+   naked at swarm scale, last (construction order), and never roll.
+   Sizes are banded, not per-line-negotiated: the newest roll's dice land
+   **large (44px ceiling)**, rolls 2–4 are **small (24px) but still able to
+   roll** — simultaneous landings must be seen — and the **Static Area
+   (rolls 5–10)** freezes everything as bitmap snapshots. **The tray holds
+   TEN rolls** (supersedes the twenty in `UI-TERMINOLOGY.md`); beyond ten,
+   the Stream keeps the record, or AboveVTT's own log does.
+   Measured heights at the reference: large line 84px, small/static lines
+   56px, zone `--cd-tray-h:284px` — deterministic, which is what lets the
+   summoned group anchor to the tray's top edge.
+   The §5 position question is settled the same day: **the Ruling moved off
+   the frame's bottom edge and into the line of the roll it judges.**
+   And the answer to "does the small version roll as nicely?" is yes,
+   measured: the renderer's 32px internal floor means a 24px die is
+   supersampled, and the tumble is resolution-independent. What does NOT
+   survive small is a live WebGL context per die — the ~16-context browser
+   cap — which is why the Static Area is snapshots
+   (`FHStaticDice.resultImage`, the picker's own shared-generator pattern).

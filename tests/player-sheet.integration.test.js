@@ -63,9 +63,18 @@ function openMenu(){ if(!root.querySelector(".fh-cd-menu")) root.querySelector("
 /* REWRITTEN (dock v6): there is no Continue button to click through — an
    announcement never waited on one. Only a decision does, and each test that
    raises one answers it itself. */
+/* REWRITTEN (phase 3, D1, 2026-08-05): CLEAR TRAY's real seats landed — the
+   ⊕ popover on the band (principal) and the builder's discreet ✕ clear.
+   Settling clicks whichever clear is on screen; with the group retired it
+   opens the ⊕ popover the way a player would, clears, and closes it. */
 function settleRoll(){
-  const clear=root.querySelector("[data-clear-tray]");
+  let clear=root.querySelector("[data-clear-tray]");
+  if(!clear){
+    const plus=root.querySelector("[data-free-pop]");
+    if(plus){plus.click();clear=root.querySelector("[data-clear-tray]");}
+  }
   if(clear && !clear.disabled) clear.click();
+  if(t.state.freePop){const plus=root.querySelector("[data-free-pop]");if(plus)plus.click();}
 }
 
 /* ── Dock chrome ─────────────────────────────────────────────── */
@@ -95,8 +104,18 @@ assert.equal(root.querySelector(".fh-cd-seal").textContent,"FH","the gold FH sea
 assert.equal(root.querySelector('[data-zone="stream"]'),null,"Stream starts closed, off by default");
 openMenu();
 root.querySelector('[data-stream-toggle]').click();
-assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"],[data-zone="stream"]').length,3,"console, roller and stream are distinct zones");
-assert.equal(root.querySelectorAll("[data-zone]").length,7,"the dock shows its seven zones at once, Stream opened");
+/* REWRITTEN (phase 3, D1, 2026-08-05): the summoned group is a real overlay
+   now — ABSENT at rest, so the panel runs down to the band and nothing
+   covers Skills (constat C2). Console and roller only exist while a jet is
+   being made, questioned or read; a gear is one of the gestures that
+   summons them. Six zones at rest with the Stream open, eight once a jet
+   is in the making. */
+assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"]').length,0,"at rest the summoned group is absent — nothing covers the panel");
+assert.equal(root.querySelectorAll("[data-zone]").length,6,"six zones at rest, Stream opened — the summoned two wait to be invoked");
+root.querySelector('[data-config-name="Arcana"]').click();
+assert.equal(root.querySelectorAll('[data-zone="console"],[data-zone="roller"],[data-zone="stream"]').length,3,"a gear summons them: console, roller and stream are distinct zones");
+assert.equal(root.querySelectorAll("[data-zone]").length,8,"the dock shows its eight zones with a jet in the making");
+assert.ok(root.querySelector('[data-zone="dice-tray"]'),"the Dice Tray is a zone of its own");
 openMenu();
 assert.ok(root.querySelector("#fhPsLevel"),"an unlinked character keeps Level Up under the menu");
 /* General rule: a click outside an open dropdown closes it. root itself is
@@ -119,43 +138,57 @@ t.state.profile.ddbLinked=false;
 t.state.menuOpen=false;
 t.render();
 
-/* ── Major events keep their own line ────────────────────────────
+/* ── Major events: the stacked lines are gone ────────────────────
    REWRITTEN (dock v6): each of these used to be a card with a Continue or
-   Finish button under the dice. They are now lines above the dice, stacked,
-   with no button at all — only the newest is marked current. */
+   Finish button under the dice, then a stack of lines above them.
+   REWRITTEN AGAIN (dock-dice-tray, third fitting, Eric 2026-08-03): the
+   stack itself is gone — above the judgment window there are only the
+   badges. What an event still does is set the frame's MOOD; what it said
+   is carried by the Ruling in the window and by the Stream's record. */
+/* Phase 3: the mood reads on the judgment window, which lives in the
+   summoned group — leave a jet's stage up the way play would (a gear). */
+root.querySelector('[data-config-name="Arcana"]').click();
 const specialScenes=[
-  ["nat1","NATURAL 1 · Fate accepted"],
-  ["nat20","NATURAL 20 · Fate bends in your favor"],
-  ["arcane-critical-failure","ARCANE CRITICAL FAILURE · Destiny d8 rolled 1"],
-  ["arcane-critical-success","ARCANE CRITICAL SUCCESS · Destiny d8 rolled 8"]
+  ["nat1","NATURAL 1 · Fate accepted","crit-failure"],
+  ["nat20","NATURAL 20 · Fate bends in your favor","crit-success"],
+  ["arcane-critical-failure","ARCANE CRITICAL FAILURE · Destiny d8 rolled 1","arcane-failure"],
+  ["arcane-critical-success","ARCANE CRITICAL SUCCESS · Destiny d8 rolled 8","arcane-success"]
 ];
 t.state.events=[];
-specialScenes.forEach(([kind,text],index)=>{
+specialScenes.forEach(([kind,text,mood],index)=>{
   t.state.events.unshift({id:"scene-"+index,kind,text,createdAt:new Date().toISOString()});
   t.render();
-  const line=root.querySelector(".fh-cd-eline.is-"+kind);
-  assert.ok(line,"the "+kind+" event renders its own line");
-  assert.equal(line.querySelector("button"),null,"an announcement carries no button");
-  assert.ok(line.classList.contains("is-current"),"and the one that just arrived is the current one");
+  assert.equal(root.querySelector(".fh-cd-eline"),null,"no stacked line for "+kind+" — the window and the Stream carry it");
+  assert.ok(root.querySelector(".fh-cd-frame.is-judgment").classList.contains("mood-"+mood),
+    "the "+kind+" event sets the judgment window's mood");
 });
-assert.equal(root.querySelectorAll(".fh-cd-eline").length,4,"every earlier line is still on screen");
-assert.equal(root.querySelectorAll(".fh-cd-eline.is-current").length,1,"exactly one line is current");
-// The zone sits between the badge strip and the dice.
-// The frame carries a mood class when something is owed, so match on the first
-// class name rather than the whole attribute.
 const stageChildren=Array.from(root.querySelector(".fh-cd-stage").children).map(node=>node.className.split(/\s+/)[0]);
-assert.ok(stageChildren.indexOf("fh-cd-temps")<stageChildren.indexOf("fh-cd-events"),"events come after the badges");
-assert.ok(stageChildren.indexOf("fh-cd-events")<stageChildren.indexOf("fh-cd-frame"),"and before the dice");
-t.state.events=[{id:"awaken",kind:"awakening",text:"ARCANE AWAKENING · Natural 20 at Destiny 0",createdAt:new Date().toISOString()}];
-t.render();
-assert.match(root.querySelector(".fh-cd-eline.is-awakening").textContent,/The Hermit/i,"Arcane Awakening reveals the character's Major Arcana");
-t.state.events=[{id:"chaos",kind:"chaos",text:"Chaos has noticed · 2d6 = 3 + 5",chaosRoll:[3,5],createdAt:new Date().toISOString()}];
-t.render();
-assert.match(root.querySelector(".fh-cd-eline.is-chaos").textContent,/total 8/,"Chaos shows its 2d6 total");
+assert.equal(stageChildren.indexOf("fh-cd-events"),-1,"no event zone in the roller at all");
+assert.ok(stageChildren.indexOf("fh-cd-temps")<stageChildren.indexOf("fh-cd-frame"),"the badges sit above the judgment window");
+/* REWRITTEN (dock-dice-tray, three fittings): landed dice left the roller
+   for the Dice Tray; the roller's frame is the permanent judgment window,
+   dressed as assembly while a prepared (pending) d20 waits on ROLL. */
+assert.ok(root.querySelector('.fh-cd-stage .fh-cd-frame.is-judgment.is-assembly'),"the judgment window is dressed as assembly while a hand waits");
+assert.equal(root.querySelector('.fh-cd-stage .fh-cd-frame.is-trayhand'),null,"never a landed hand");
 t.state.events=[];
 t.state.queueDone="";
 t.render();
-assert.equal(root.querySelector(".fh-cd-events"),null,"an empty list costs the dice no height");
+
+/* ── Phase 3: the retreat rule, by the player's own gestures ─────
+   Escape retires the summoned group when nothing holds it; so does a
+   click far from the dice surfaces. (The invokedAt window only shields
+   the summoning click itself — aged here because a test runs faster
+   than the 300ms a human click pair ever could.) */
+assert.ok(root.querySelector(".fh-cd-floatbottom"),"the group is still up from the gear");
+const escapeKey=new window.Event("keydown",{bubbles:true});
+escapeKey.key="Escape";
+root.dispatchEvent(escapeKey);
+assert.equal(root.querySelector(".fh-cd-floatbottom"),null,"Escape retires the summoned group when no question holds it");
+root.querySelector('[data-config-name="Arcana"]').click();
+assert.ok(root.querySelector(".fh-cd-floatbottom"),"a gear summons it back");
+t.state.builderInvokedAt=0;
+document.body.click();
+assert.equal(root.querySelector(".fh-cd-floatbottom"),null,"a click far from the dice retires it too — the panel is clear again");
 
 /* ── Console ─────────────────────────────────────────────────── */
 root.querySelector('[data-config-name="Arcana"]').click();
@@ -163,9 +196,15 @@ root.querySelector('[data-config-name="Arcana"]').click();
    the dice -- the tray right below it already says what is being rolled, so
    the console header was saying the same thing twice. */
 assert.equal(root.querySelector(".fh-cd-cname"),null,"the console does not repeat what the tray already names");
-assert.match(root.querySelector(".fh-cd-status").textContent,/Arcana \+6/,"opening a console names the prepared check, in the tray");
-assert.match(root.querySelector(".fh-cd-status").textContent,/Arcana \+6/,"the roller frame echoes the prepared check");
-assert.equal(root.querySelectorAll(".fh-cd-dicerow .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
+/* REWRITTEN (dock-dice-tray): the status line became the tray line's ruling
+   space (three tiers, right of the dice) and the dice row became the live
+   hand inside the Dice Tray zone. Same claims, new surface. */
+/* REWRITTEN (fourth fitting): nothing said twice on the wood — the check's
+   identity lives in the RIGHT column ("Arcana / +6"), and the left keeps
+   only the informative part ("Ready"). */
+assert.match(root.querySelector(".fh-cd-frame.is-judgment .fh-cd-judgeright").textContent,/Arcana/,"opening a console names the prepared check in the right column");
+assert.match(root.querySelector(".fh-cd-frame.is-judgment .fh-cd-judgeright").textContent,/\+6/,"with its flat bonus under the name");
+assert.equal(root.querySelectorAll(".fh-cd-frame.is-assembly .fh-cd-diewrap").length,1,"a flat console starts with one prepared d20");
 // REWRITTEN (dock v5): the Guid / Bard / Destiny chips are gone. Every die now
 // comes from the white picker, and a seal is something you give a die afterwards.
 assert.equal(root.querySelectorAll("[data-bonus-preset]").length,0,"the Guidance and Bardic chips are gone from the console");
@@ -175,7 +214,11 @@ assert.equal(root.querySelector("#fhPsDestinyDie"),null,"and so is the Destiny s
    .fh-cd-ddie -> .fh-cd-picker-die, .fh-cd-static3d -> .fh-cd-static-die. The
    old names are false about the current markup; every behaviour asserted here
    is unchanged, and each selector still names the same element. */
-assert.equal(root.querySelectorAll(".fh-cd-whiterow .fh-cd-calling-die").length,7,"the white picker offers d4 through d100");
+/* REWRITTEN (phase 3, D1): the white picker left the console for the ⊕
+   popover on the band — a player opens it with the ⊕, so the test does. */
+assert.equal(root.querySelectorAll(".fh-cd-whiterow").length,0,"the console carries no white picker any more");
+root.querySelector("[data-free-pop]").click();
+assert.equal(root.querySelectorAll(".fh-cd-freepop .fh-cd-whiterow .fh-cd-calling-die").length,7,"the ⊕ popover offers d4 through d100");
 assert.equal(root.querySelector("#fhPsRunRoll"),null,"the console no longer carries a second roll button");
 /* REWRITTEN (round 7): ROLL is the d20 artwork now, which carries the word on
    its face; the button names itself through the image's alt so it still has an
@@ -195,7 +238,9 @@ assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]'
 root.querySelector("#fhPsPlusTwo").click();
 assert.equal(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),false,"+2 turns advantage back off");
 assert.ok(root.querySelector(".fh-cd-diewrap.is-modifier"),"the +2 option appears as a visible token beside the dice");
-assert.equal(root.querySelector(".fh-cd-diewrap.is-modifier .fh-cd-src").textContent.trim(),"","the fixed +2 token stays free of a source seal");
+// REWRITTEN (lot BACKLOG-C 2026-08-05): the empty src slot is deleted from
+// every wrapper — the +2 token is now coin + label, with no slot above it.
+assert.equal(root.querySelector(".fh-cd-diewrap.is-modifier .fh-cd-src"),null,"the fixed +2 token carries no source slot at all");
 root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').click();
 assert.equal(root.querySelector("#fhPsPlusTwo").classList.contains("is-on"),false,"advantage turns +2 back off in turn");
 assert.ok(root.querySelector('[data-die-scope="d20"][data-die-mode="advantage"]').classList.contains("is-on"),"advantage is back on for the roll below");
@@ -259,11 +304,19 @@ settleRoll();
 // exactly like a white one — the click stages it, ROLL spends it, and a right
 // click on the die in the tray puts it back.
 root.querySelector('[data-config-name="Arcana"]').click();
+/* Phase 1 (band): the gold dice live on the persistent band now, and the
+   band must be up and clickable WHILE the console assembles — spending
+   Destiny mid-roll is the whole reason it exists. */
+assert.ok(root.querySelector(".fh-cd-band [data-destiny-die]"),"the gold dice are reachable on the band during assembly");
+assert.ok(root.querySelector(".fh-cd-floatbottom"),"while the summoned group is up above it");
 root.querySelector("[data-destiny-die]").click();
 assert.equal(root.querySelector(".fh-cd-popups"),null,"no popup stands between the pool and the tray");
 assert.ok(t.state.rollConfig.destinyDieId,"the die is staged in console state by the click alone");
 assert.ok(t.state.destiny.dice.some(die=>die.id===t.state.rollConfig.destinyDieId&&die.available),"and it is still in the pool, unspent");
-assert.match(root.querySelector(".fh-cd-events").textContent,/waits in the tray/i,"a line says it is waiting");
+/* REWRITTEN (third fitting): no announcement line — the staged gold die
+   itself says it is waiting, flashing in the judgment window, and the flash
+   never stops until ROLL pays the cost. */
+assert.ok(root.querySelector(".fh-cd-frame.is-judgment .fh-cd-diewrap.is-flashing"),"the staged die waits in the judgment window, flashing");
 // Right click on the staged gold die takes it back, and its line goes with it.
 const stagedGold=root.querySelector("[data-die-destiny]");
 assert.ok(stagedGold,"the staged Destiny die answers to a right click");
@@ -272,19 +325,25 @@ assert.match(root.querySelector(".fh-cd-popups").textContent,/Remove this die/i,
 assert.equal(root.querySelector(".fh-cd-popups").textContent.includes("Colour"),false,"gold is a Destiny die's identity, so no palette is offered");
 root.querySelector("[data-die-drop]").click();
 assert.equal(t.state.rollConfig.destinyDieId,"","cancelling takes the die back");
-assert.equal(root.querySelector(".fh-cd-events"),null,"and takes its line with it");
+assert.equal(root.querySelector(".fh-cd-frame.is-judgment .fh-cd-diewrap.is-flashing"),null,"and stops waiting anywhere");
 
 root.querySelector("[data-destiny-die]").click();
 assert.ok(root.querySelector(".fh-cd-picker-die.is-selected"),"the staged Destiny die is flagged in the pool");
-assert.equal(t.state.trayResults[0].label,"Destiny","the staged Destiny die appears first in the frame");
+/* REWRITTEN (fourth fitting, 2026-08-04): strict left-to-right construction
+   — the staged Destiny die takes its chronological place, last. */
+assert.equal(t.state.trayResults[t.state.trayResults.length-1].label,"Destiny","the staged Destiny die takes its construction-order place");
 const beforeDestinyHistory=t.state.history.length;
 root.querySelector("[data-roll-now]").click();
 assert.equal(t.state.history.length,beforeDestinyHistory+1,"REWRITTEN (dock v6): no click stands between Destiny and the d20");
 assert.ok(t.state.events.some(event=>/Destiny d\d+ rolled \d+/i.test(event.text)),"the Destiny summary is announced as a line");
-assert.equal(root.querySelector("[data-clear-tray]").disabled,false,"and nothing is blocking, so CLEAR TRAY stays reachable");
+/* REWRITTEN (phase 3): reachable means the builder's own discreet ✕ clear
+   now — no menu to open, the clear rides the wood the jet is judged on. */
+assert.equal(root.querySelector(".fh-cd-clearmini").disabled,false,"and nothing is blocking, so the builder's clear stays live");
 entry=t.state.history[0];
-assert.equal(t.state.trayResults[0].label,"Destiny","the spent Destiny result remains before the d20s");
-assert.equal(t.state.trayResults[1].sides,20,"the d20 result follows Destiny in the frame");
+/* REWRITTEN (fourth fitting): construction order — the spent Destiny result
+   keeps its chronological place after the d20s, not the head of the row. */
+assert.equal(t.state.trayResults[t.state.trayResults.length-1].label,"Destiny","the spent Destiny result keeps its construction-order place");
+assert.equal(t.state.trayResults[0].sides,20,"the d20, first posed, leads the hand");
 settleRoll();
 
 /* ── A landed roll stays open behind the one ROLL ─────────────── */
@@ -299,7 +358,10 @@ const failedD20=Array.from(entry.d20s);
 const linesAfterRoll=t.state.history.length;
 assert.equal(root.querySelector(".fh-cd-popups"),null,"a known failure no longer stops the table with a popup");
 assert.ok(root.querySelector("[data-roll-now]"),"the one ROLL is still the only button");
-assert.equal(root.querySelector("[data-clear-tray]").disabled,false,"and an open roll never locks the dock");
+/* REWRITTEN (phase 3): the clear is the builder's own discreet ✕ now. */
+assert.equal(root.querySelector(".fh-cd-clearmini").disabled,false,"and an open roll never locks the dock");
+/* REWRITTEN (phase 3): the picker is in the ⊕ popover — opened as a player would. */
+root.querySelector("[data-free-pop]").click();
 const whiteD6=root.querySelector('.fh-cd-whiterow [data-add-tray-die="6"]');
 assert.equal(whiteD6.disabled,false,"the white picker stays live to add another die");
 assert.ok(whiteD6.classList.contains("is-calling"),"it calls for one, briefly");
@@ -343,22 +405,42 @@ assert.ok(t.state.destiny.points<pointsBeforeBoost,"the boost spends Destiny by 
 assert.deepEqual(Array.from(boosted.d20s),Array.from(settled.d20s),"boosting never touches the original d20");
 
 /* ── Free tray ───────────────────────────────────────────────── */
-root.querySelector("[data-clear-tray]").click();
+settleRoll(); // REWRITTEN (phase 2): Clear rides the Identity ⋮ — settleRoll opens it and clicks.
 assert.equal(t.state.trayResults.length,0,"Clear empties every die and result");
 assert.equal(t.state.rollConfig,null,"Clear also releases the active roll setup");
 
+/* REWRITTEN (phase 3): a free roll begins at the ⊕ — the full gesture. */
+root.querySelector("[data-free-pop]").click();
 root.querySelector('[data-add-tray-die="100"]').click();
 assert.equal(root.querySelectorAll('.fh-cd-static-die[data-sides="100"] .fh-cd-static-die-part').length,2,"a ready d100 is already represented by two physical d10s");
 root.querySelector("[data-roll-now]").click();
 const percentileEntry=t.state.history[0],percentileResult=percentileEntry.dice[0].result;
 const percentileText=percentileResult===100?"00":String(percentileResult).padStart(2,"0");
 assert.equal(Array.from(root.querySelectorAll('.fh-cd-static-die[data-sides="100"] .fh-cd-static-die-result')).map(item=>item.textContent).join(""),percentileText,"the two d10 overlays compose the resolved percentile value");
+/* Phase 3 — the retreat ARMS once the free hand settles. rollTrayDice keeps
+   the selection (ROLL re-rolls the same hand), and counting that kept hand
+   as "assembling" left the overlay up forever (bug seen in the browser,
+   fixed in overlayAssembling). Let the reveal lapse the way time would,
+   re-render, and the 6-second deadline must be set. */
+t.state.trayRevealAt=0;
+t.render();
+assert.ok(t.state.traySelection.length,"the free hand keeps its selection after ROLL — re-rollable by design");
+assert.ok(t.state.builderOpen,"the overlay is still up, the verdict being read");
+assert.ok(t.state.builderRetireAt>0,"and its retreat is armed — a settled free roll is read, not built");
 settleRoll();
-root.querySelector("[data-clear-tray]").click();
+settleRoll(); // REWRITTEN (phase 2): Clear rides the Identity ⋮ — settleRoll opens it and clicks.
 
+/* REWRITTEN (phase 3): the Fireball pool is built in the ⊕ popover too. */
+root.querySelector("[data-free-pop]").click();
 for(let i=0;i<8;i++)root.querySelector('[data-add-tray-die="6"]').click();
 assert.equal(t.state.traySelection.length,8,"the damage roller accepts an 8d6 Fireball pool");
-assert.match(root.querySelector(".fh-cd-dicerow").innerHTML,/width="34"/,"a crowded pool shrinks its dice to stay in the frame");
+/* REWRITTEN (dock-dice-tray, third fitting): past six dice a pending pool
+   is a bare SWARM in the judgment window — mini dice, no wrapper, rows. */
+assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/is-naked/,"a crowded pool goes bare");
+/* REWRITTEN (grille ratifiée Eric, lot BACKLOG-B 2026-08-05): the 6-10
+   band scales 30→20 by the crowd — an 8d6 pool stages at 25px. */
+assert.match(root.querySelector(".fh-cd-frame.is-assembly").innerHTML,/width="25"/,"as legible minis (8 dice → 25px on the 6-10 scale)");
+assert.ok(root.querySelector(".fh-cd-frame.is-assembly .fh-cd-tray-dice.is-swarm"),"in a wrapping swarm row");
 /* REWRITTEN (round 7c): the console no longer carries the naming field -- it
    is headed for the tray's legend. The label itself still names the roll and
    still persists, so that contract is asserted here by setting it directly;
@@ -375,12 +457,19 @@ assert.equal(root.querySelector("[data-event-ok]"),null,"a free roll no longer e
    resolved, while the dice still had most of a second left to roll -- it
    answered the question before the roll could. The verdict now names the roll
    while the dice are in the air and adds the total once they settle. */
-assert.equal(root.querySelector(".fh-cd-status b").textContent,"Fireball","while the dice are rolling the verdict names the roll without spoiling it");
-assert.match(root.querySelector(".fh-cd-status em").textContent,/Rolling/,"and says the dice have not landed yet");
+/* REWRITTEN (dock-dice-tray, third fitting): the quiet-reveal reads off the
+   line's flanks — the RIGHT names the roll and keeps the total quiet as …,
+   the LEFT says Rolling… until the dice stop. */
+assert.equal(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-title").textContent,"Fireball","while the dice are rolling the right flank names the roll without spoiling it");
+assert.equal(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-total").textContent,"…","the total stays quiet while the dice are in the air");
+assert.match(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-speak").textContent,/Rolling/,"and the left flank says the dice have not landed yet");
 assert.equal(root.querySelector(".fh-cd-sentry .fh-cd-total").textContent,"…","the newest stream line withholds its total too -- it sits right under the tray");
 assert.ok(root.querySelectorAll(".fh-cd-die.is-spinning").length>0,"dice that have just landed do roll");
 t.state.trayRevealAt=0;t.render();
-assert.match(root.querySelector(".fh-cd-status b").textContent,/^Fireball /,"once the dice settle its verdict reads straight off the tray");
+/* REWRITTEN (dock-dice-tray, third fitting): same claim on the flanks —
+   the right keeps the name, and gives up the total once the dice settle. */
+assert.equal(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-title").textContent,"Fireball","once the dice settle the right flank still names the roll");
+assert.equal(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-total").textContent,String(t.state.history[0].total),"and gives up the total");
 assert.equal(root.querySelector(".fh-cd-sentry .fh-cd-total").textContent,String(t.state.history[0].total),"and the stream line gives up its total");
 /* Animation is decided per die, not per tray. A tray-wide signature meant any
    later render -- picking up one more die, a Destiny die, anything -- re-rolled
@@ -409,6 +498,9 @@ assert.ok(portent,"the base d20 has its own menu with a Portent dropdown");
 assert.equal(portent.querySelectorAll("option").length,21,"a d20 offers — plus its twenty faces");
 choosePortent(portent,17);
 assert.equal(t.state.rollConfig.d20ForcedResult,17,"choosing a face forces the d20");
+/* REWRITTEN (phase 3): the d6 comes from the ⊕ popover (the ⊕ click also
+   closes the base die's menu — an outside click, the general rule). */
+root.querySelector("[data-free-pop]").click();
 root.querySelector('.fh-cd-whiterow [data-add-tray-die="6"]').click();
 portent=tuneDie('.fh-cd-diewrap[data-die-bonus]');
 assert.equal(portent.querySelectorAll("option").length,7,"a d6 offers — plus its six faces");
@@ -421,16 +513,34 @@ assert.equal(entry.kept,17,"Portent replaces the d20 roll");
 assert.equal(entry.d20Forced,true,"a forced d20 is stored as manual");
 assert.equal(entry.bonusDice[0].forced,true,"a forced tray bonus die is stored as manual");
 assert.equal(entry.bonusDice[0].sourceIcon,"other-1","the first custom die keeps its Other I identity after its label is edited");
-assert.equal(root.querySelector(".fh-cd-src b").textContent.trim(),"I","the die carries the Other I seal in the frame");
+/* REWRITTEN (chantier sceaux, 2026-08-04): the seal IS the die — a plain
+   bonus reads as the ash tint (plus its titled slot), not a numeral token. */
+assert.ok(root.querySelector(".fh-cd-frame.is-trayhand [data-material=\"ash\"]"),"the Other die rolls ash — the tint is its seal in the frame");
 // REWRITTEN (tranche 2): there is no result popup left to carry the mark, so the
 // dice themselves carry it while the roll stays open on APPLY.
-assert.match(root.querySelector(".fh-cd-dicerow").textContent,/MANUAL/,"a forced die is marked MANUAL in the tray itself");
+/* REWRITTEN (dock-dice-tray, second fitting): die labels went minimal — the
+   MANUAL mark moved off the label and reads as the line's badge (tier 3),
+   while the die itself keeps its is-forced dress. Same disclosure, said
+   once instead of twice. */
+/* REWRITTEN (phase 5, R7 ratifié Eric 2026-08-05): ONE proposition per
+   line — the badges left the visible flank for the speak's hover title,
+   MANUAL among them. Same disclosure, one storey further out; the Stream
+   still says it in plain sight (asserted just below, unchanged). */
+assert.match(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-speak").getAttribute("title")||"",/MANUAL/,"a forced roll is marked MANUAL on its line's hover title");
+assert.doesNotMatch(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-tray-speak").textContent,/MANUAL/,"…and no longer as a visible chip — one proposition per line");
+assert.ok(root.querySelector(".fh-cd-frame.is-trayhand .fh-cd-diewrap.is-forced"),"and the forced die itself wears the mark");
 assert.match(root.querySelector(".fh-cd-sentry").textContent,/MANUAL/,"the stream line marks forced results too");
 settleRoll();
-root.querySelector("[data-clear-tray]").click();
+settleRoll(); // REWRITTEN (phase 2): Clear rides the Identity ⋮ — settleRoll opens it and clicks.
 
-/* ── Destiny Score is click-to-edit, no padlock ──────────────── */
+/* ── Destiny Score is click-to-edit, no padlock ────────────────
+   REWRITTEN (phase 1, band): the Score's editor moved off the strip and
+   into the ledger menu — the band shows only the counted numbers, so the
+   click-to-edit is reached by opening the ledger block's menu first. The
+   editing behaviour itself (click → input → change commits → editor
+   closes) is unchanged. */
 assert.equal(root.querySelector('[data-destiny-field="score"]'),null,"the Score is not an input until it is clicked");
+root.querySelector("[data-destiny-poolmenu]").click();
 const scoreBefore=root.querySelector("[data-score-edit]").textContent.trim();
 root.querySelector("[data-score-edit]").click();
 const scoreInput=root.querySelector('[data-destiny-field="score"]');
@@ -440,15 +550,45 @@ scoreInput.value=String(Number(scoreBefore)+1);
 scoreInput.dispatchEvent(new window.Event("change",{bubbles:true}));
 assert.equal(t.state.destiny.score,Number(scoreBefore)+1,"the typed Score is committed");
 assert.equal(root.querySelector('[data-destiny-field="score"]'),null,"committing closes the inline editor");
+assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"committing the Score keeps the ledger menu open (only an outside click closes it)");
+root.click();
 t.state.destiny.score=Number(scoreBefore);t.render();
 
-/* ── One ⋮ pilots every Destiny size's pool; outside-click closes it ── */
+/* ── The ledger block pilots every Destiny size's pool; outside-click
+   closes it. REWRITTEN label only (phase 1, band): the toggle is the
+   points/score block now, not a standalone ⋮ — same data hook. ── */
 root.querySelector("[data-destiny-poolmenu]").click();
-assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"the ⋮ opens the pool menu");
+assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"the ledger block opens the pool menu");
 root.querySelector('.fh-cd-dpoolmenu [data-destiny-pool="4:1"]').click();
 assert.ok(root.querySelector(".fh-cd-dpoolmenu"),"acting inside the menu (Add) keeps it open for the next size");
 root.click();
 assert.equal(root.querySelector(".fh-cd-dpoolmenu"),null,"a click outside the pool menu closes it, same general rule as the header menu");
+
+/* ── The general rule reaches EVERY floating card (lot BACKLOG-A) ────
+   The die menu (right click on a die — Eric's "seal card") and the
+   badge cards joined OUTSIDE_CLICK_POPUPS: outside closes, inside
+   never does. The roll's decision prompts (nat1, die-choice, chaos,
+   arcana-draw, awakening) stay OUT — they are the roll's state
+   machine, not menus. */
+t.state.traySelection=[{id:"free-click",sides:6}];
+t.state.diePrompt={freeId:"free-click"};
+t.render();
+assert.ok(root.querySelector(".fh-cd-card.is-diemenu"),"a free die's menu (the seal card) is open");
+root.querySelector(".fh-cd-card.is-diemenu [data-die-colour=\"crimson\"]").click();
+assert.ok(root.querySelector(".fh-cd-card.is-diemenu"),"acting inside the card (a colour) keeps it open");
+root.click();
+assert.equal(root.querySelector(".fh-cd-card.is-diemenu"),null,"a click outside the die menu closes it, same general rule");
+t.state.trayPrompt={type:"pending-new"};
+t.render();
+assert.ok(root.querySelector(".fh-cd-card.is-badgemenu"),"the PIN A BADGE card is open");
+root.querySelector("#fhPsBadgeLabel").click();
+assert.ok(root.querySelector(".fh-cd-card.is-badgemenu"),"clicking its input keeps it open — typing must survive");
+root.click();
+assert.equal(root.querySelector(".fh-cd-card.is-badgemenu"),null,"a click outside the badge card closes it too");
+t.state.trayPrompt={type:"nat1",entryId:"none"};
+root.click();
+assert.equal(t.state.trayPrompt&&t.state.trayPrompt.type,"nat1","a roll DECISION never vanishes on a stray click");
+t.state.trayPrompt=null;t.state.traySelection=[];t.render();
 
 /* ── Vitals: full words, five passives, tracked hit points ───── */
 assert.match(root.querySelector(".fh-cd-vsave").textContent,/^Save /,"saves are spelled out instead of SV");

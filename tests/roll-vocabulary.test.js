@@ -102,22 +102,24 @@ assert.match(destinyPath, /a5\.6 5\.6 0 1 0[^a]*a5\.6 5\.6 0 1 1/, "the two loop
 // Reading the table is the only way to get a mark, and an unknown source still
 // gets one rather than rendering an empty slot.
 assert.match(t.bonusSourceMark("guidance"), /<svg/, "Guidance renders its star");
-assert.equal(t.bonusSourceMark("other-2"), "<b>II</b>", "a bonus die renders the numeral .fh-cd-src b was built for");
+assert.equal(t.bonusSourceMark("other-2"), "<b>II</b>", "a bonus source renders its bold numeral (worn by the seal buttons now)");
 assert.match(t.bonusSourceMark("tactical"), /<svg/, "Tactical is now declared and drawable — it was not, before this lot");
 assert.match(t.bonusSourceMark("nonsense"), /<svg/, "an unknown source still shows a mark rather than nothing");
 assert.equal(t.rollSource("nonsense").tone, "bonus", "an unknown source falls back to the grey bonus tone");
 assert.equal(t.sourceToneClass("bardic"), "is-src-bardic", "the tone travels as a class, beside the glyph");
 
-// Every tone has exactly one colour, declared in one place.
+// REWRITTEN (Eric, lot BACKLOG-C 2026-08-05): the empty src slot is deleted
+// from the wrappers — « violet + Bardic, rien de plus » — so the only thing
+// still wearing an is-src-* tone class is the seal button in the die menu.
+// Every tone keeps exactly one colour, declared in one place, and no dead
+// .fh-cd-src / .fh-cd-srcmark rule lingers to resurrect the slot.
 ["destiny","guidance","bardic","tactical","bonus"].forEach(tone => {
   assert.match(css, new RegExp("--cd-src-" + tone + ":#[0-9a-f]{6}"), tone + " has a declared source colour");
-  assert.match(css, new RegExp("\\.fh-cd-src\\.is-src-" + tone + "[^{]*\\{color:var\\(--cd-src-" + tone + "\\)\\}"),
-    tone + " is painted from that one variable");
+  assert.match(css, new RegExp("\\.fh-cd-dmseal\\.is-src-" + tone + "[^{]*\\{color:var\\(--cd-src-" + tone + "\\)\\}"),
+    tone + "'s seal button is painted from that one variable");
 });
-// The numeral slot used to pin --cd-gold-bright, which is why every source icon
-// in the dock was gold whatever it was.
-assert.match(css, /\.fh-cd-src b\{[^}]*color:inherit/, ".fh-cd-src b inherits the token's tone instead of hard-coding gold");
-assert.doesNotMatch(css, /\.fh-cd-src b\{[^}]*--cd-gold-bright/, "the numeral slot no longer forces gold");
+assert.doesNotMatch(css, /\.fh-cd-src[\s{.,:]/, "no .fh-cd-src rule survives — the slot is gone from the DOM and the sheet");
+assert.doesNotMatch(css, /fh-cd-srcmark/, "the advanced drawer's srcmark, produced nowhere, is gone too");
 
 // The seal card is the table read out loud, not a second hand-kept list.
 assert.deepEqual(plain(t.SEALABLE_SOURCES), ["guidance","bardic","tactical","other-1","other-2","other-3"],
@@ -126,13 +128,18 @@ t.SEALABLE_SOURCES.forEach(key => assert.ok(t.ROLL_SOURCES[key], key + " is a de
 assert.equal(t.sealLabel("tactical"), "Tactical", "a sealed die takes its name from the table");
 assert.equal(t.sealLabel("other-3"), "Bonus III", "a bonus die takes its name from the table");
 
-// A Destiny die used to leave its 12px slot empty: the one die in the tray
-// whose provenance the player had to infer.
+// REWRITTEN twice (ratified 2026-08-03, wired 2026-08-04; slot deleted
+// 2026-08-05, lot BACKLOG-C): the seal IS the die — provenance rides the
+// tint (data-material). The 12px slot that used to carry the hover title is
+// gone from the markup entirely; the title moved to the wrapper. The glyph
+// table above still serves the seal card and the console pickers.
 const destinyDie = t.visualDie({sides:8, result:6, dieRole:"destiny", label:"Destiny"}, 0, 1, false);
-assert.match(destinyDie, /class="fh-cd-src is-src-destiny"/, "a Destiny die wears the Destiny token");
-assert.match(destinyDie, /<svg/, "and the token is drawn, not blank");
+assert.match(destinyDie, /data-material="gold"/, "a Destiny die is gold — the tint is the token");
+assert.doesNotMatch(destinyDie, /fh-cd-src/, "no src slot — empty or sealed — rides the die any more");
+assert.match(destinyDie, /title="Destiny"/, "the wrapper still names the source on hover");
 const bardicDie = t.visualDie({sides:6, result:3, dieRole:"bonus", sourceIcon:"bardic", label:"Bardic"}, 0, 1, false);
-assert.match(bardicDie, /class="fh-cd-src is-src-bardic"/, "a bonus die wears its own source tone, not gold");
+assert.match(bardicDie, /data-material="violet"/, "Bardic rolls violet — its ratified tint, not gold, not green");
+assert.doesNotMatch(bardicDie, /is-src-bardic/, "and wears no token either");
 
 /* ── §3 Badges are derived, not emitted ─────────────────────────────── */
 
@@ -212,13 +219,30 @@ assert.equal(t.outcomeFor({natural:11, total:13, dc:15, bonusDice:[]}), "Failure
 assert.equal(t.outcomeFor({natural:11, total:18, dc:15, bonusDice:[]}), "Success");
 assert.equal(t.outcomeFor({natural:11, total:18, dc:"", bonusDice:[]}), "", "nothing decided, nothing claimed");
 
+/* Phase 5 (lexique ratifié Eric, 2026-08-05): four verdicts renamed on the
+   SPOKEN side only. The outcomes above stay byte-identical — outcomeTone and
+   feedTone regex-match them — and the undecided nat 1 keeps its old words:
+   « FUMBLE 1 · CHOOSE » (L6) was proposed, never ratified. */
+const verdictById = {};
+t.ROLL_VERDICTS.forEach(rule => { verdictById[rule.id] = rule.verdict; });
+assert.equal(verdictById["natural-20"], "CRITICAL 20", "Natural 20 speaks as CRITICAL 20");
+assert.equal(verdictById["natural-1-accepted"], "FUMBLE 1", "an accepted natural 1 speaks as FUMBLE 1");
+assert.equal(verdictById["arcane-critical-success"], "∞ CRITICAL", "the Arcane critical success speaks as ∞ CRITICAL");
+assert.equal(verdictById["arcane-critical-failure"], "∞ FUMBLE", "the Arcane critical failure speaks as ∞ FUMBLE");
+assert.equal(verdictById["natural-1-open"], "NATURAL 1 · CHOOSE", "the undecided 1 keeps its unratified words — mode conservateur");
+assert.match(source, /is-nat1\\"><b>NATURAL 1 · do you accept your fate\?<\/b>/,
+  "the takeover prompt (T4) is intouchable — its rename was never ratified");
+
 // The example from the spec: a verdict, then the account of what it cost.
 const spent = {
   kind:"destiny", name:"Destiny d8", total:8, dc:"",
   destiny:{sides:8, result:8, criticalSuccess:true, pointsBefore:6, pointsAfter:5}
 };
 const ruling = t.rollRuling(spent);
-assert.equal(ruling.verdict, "ARCANE CRITICAL SUCCESS", "the verdict is the engine's decision, said out loud");
+/* REWRITTEN (phase 5, lexique ratifié Eric 2026-08-05): the SPOKEN verdict
+   is « ∞ CRITICAL » now — four renames on the parlé side only, pinned in
+   the rename block below. The account contract is unchanged. */
+assert.equal(ruling.verdict, "∞ CRITICAL", "the verdict is the engine's decision, said out loud");
 assert.ok(plain(ruling.account).includes("Lost 1 Destiny Point"), "the account states what it cost, in points");
 assert.ok(plain(ruling.account).includes("Current 5"), "and where it leaves you");
 assert.ok(plain(ruling.account).includes("Destiny d8 8"), "and what was rolled");
@@ -227,7 +251,7 @@ plain(ruling.account).forEach(line => assert.match(line, /\d/, "an account line 
 
 // A verdict moves the roll's identity into the account, so nothing is lost and
 // nothing is said twice.
-assert.equal(t.rollVerdictText(spent), "ARCANE CRITICAL SUCCESS", "the heading is the verdict when there is one");
+assert.equal(t.rollVerdictText(spent), "∞ CRITICAL", "the heading is the verdict when there is one"); // REWRITTEN (phase 5): same rename
 assert.equal(ruling.account[0], "Destiny d8 8", "and the identity leads the account");
 const undecided = {kind:"d20", name:"Stealth", baseBonus:2, natural:11, kept:11, total:13, dc:"", bonusDice:[]};
 const quietRuling = t.rollRuling(undecided);
@@ -241,15 +265,29 @@ assert.ok(t.rollRuling({kind:"d20", name:"Arcana", baseBonus:3, natural:11, kept
 
 // Derived, never written at render time.
 assert.deepEqual(plain(t.rollRuling(spent)), plain(t.rollRuling(spent)), "the same entry always derives the same Ruling");
-assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", title:"Roll", account:[]}, "no entry, no ruling — and no crash");
+assert.deepEqual(plain(t.rollRuling(null)), {verdict:"", title:"Roll", account:[], display:[]}, "no entry, no ruling — and no crash");
+
+/* Lot texte T1 (Eric, 2026-08-04): the on-screen `display` account drops the
+   per-die enumeration — the dice speak for themselves — and keeps the
+   title-fallback, the Destiny cost and the DC. `account` stays the full
+   record, for the Stream and the hover title. */
+const shown = t.rollRuling({kind:"d20", name:"Arcana", baseBonus:3, natural:11, kept:11, total:14, dc:15, bonusDice:[]});
+assert.ok(shown.display.indexOf("DC 15") >= 0, "display keeps the DC");
+assert.ok(!shown.display.some(line => /^d20/.test(line)), "and drops the dice enumeration");
+assert.ok(shown.account.some(line => /^d20/.test(line)), "which the full account still records");
 
 /* The Ruling's classes are granted by equality with the derived verdict, so a
    Chaos prompt written into the same slot cannot borrow the oxblood authority
    of an engine ruling. */
-assert.match(source, /var isRuling=!quiet&&!!state\.trayVerdict&&title===state\.trayVerdict;/,
+/* REWRITTEN (dock-dice-tray, 2026-08-03): the frame's status line became the
+   tray line's tier 3 (trayTiersHtml) — the equality rule moved with it,
+   wearing the tray's own class names. The claim is unchanged: the oxblood
+   verdict classes are granted by equality with the derived verdict, never by
+   a flag someone could forget to clear. */
+assert.match(source, /var isRuling=!quiet&&!!state\.trayVerdict&&heading===state\.trayVerdict;/,
   "the verdict styling is earned by equality, not by a flag someone could forget to clear");
-assert.match(css, /\.fh-cd-status b\.fh-cd-verdict\{/, "the verdict has its own class");
-assert.match(css, /\.fh-cd-status em\.fh-cd-account\{/, "the account has its own class");
+assert.match(css, /\.fh-cd-tray-verdict\{/, "the verdict has its own class");
+assert.match(css, /\.fh-cd-tray-account\{/, "the account has its own class");
 
 /* ── The renames, and the trap not to wake ──────────────────────────── */
 

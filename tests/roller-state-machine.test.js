@@ -9,9 +9,10 @@ const sourcePath=path.join(__dirname,"..","docs","javascripts","fh-player-sheet.
 const source=fs.readFileSync(sourcePath,"utf8").replace(/\}\)\(\);\s*$/,`
   globalThis.__fhRollMachine={
     state,makeDestinySlots,setDestinyPoints,spendDestinyDie,destinyEventSpecs,naturalDestiny,
-    rollInput,runConfiguredRoll,resolveDieChoice,announceEvents,renderEventContent,renderEventList,renderStageZone,
+    rollInput,runConfiguredRoll,resolveDieChoice,announceEvents,renderEventContent,renderJudgmentFrame,renderStageZone,
     resolveNatOne,resolveArcaneOne,arcaneDecision,rollTransactionActive,entryTotal,outcomeFor,
     rollOpen,stagedList,stageBonusDie,stageDestinyDie,stageDestinyFromPool,rollStagedDice,releaseRoll,clearDiceTray,
+    diceTrayInner,
     pendingFate,addPendingFate,dropPendingFate,armPendingFate,rollPendingFate,renderDestiny,renderConsole,
     findStagedDie,mutateStagedDie,sealStagedDie,dropStagedDie,addTrayDie,rollTrayDice,standaloneDestiny,
     trayDiceForDisplay,setTrayFromEntry,visualDie,retuneLandedDie,sealLabel,
@@ -110,9 +111,12 @@ reset();t.state.rollSequence={phase:"destiny-events"};
 t.announceEvents([{text:"Destiny summary · Lost 3 Destiny Points",kind:"destiny"},{text:"CHAOS RISK · pending",kind:"chaos"}],"");
 assert.equal(t.state.events.length,2,"both announcements land at once — the second does not wait for the first");
 assert.equal(latest().text,"CHAOS RISK · pending","newest first");
-assert.doesNotMatch(t.renderEventList(),/data-event-ok|>Continue<|>Finish</,"an announcement carries no button at all");
-assert.match(t.renderEventList(),/fh-cd-eline is-chaos is-current[^>]*><b>CHAOS RISK<\/b>/,"the newest line is the current one");
-assert.match(t.renderEventList(),/fh-cd-eline is-destiny"[^>]*><b>Destiny summary<\/b>/,"and the one before it stays on screen, unhighlighted");
+/* REWRITTEN (dock-dice-tray, third fitting): the announcement stack is gone
+   from the roller — announcements land in state.events (they persist, and
+   the newest still drives the judgment window's mood) but render no lines
+   and no buttons. Announcing never blocks, and never did. */
+assert.doesNotMatch(t.renderStageZone(),/data-event-ok|>Continue<|>Finish</,"an announcement carries no button at all");
+assert.doesNotMatch(t.renderStageZone(),/fh-cd-eline/,"and no stacked line either — the window and the Stream carry it");
 assert.equal(t.rollTransactionActive(),false,"announcing never holds the dock");
 
 // Destiny still rolls first, but its consequences no longer gate the d20: the
@@ -125,7 +129,10 @@ assert.ok(t.state.events.some(event=>/Destiny d4 rolled 3.*Lost 3 Destiny Points
 entry=t.state.history[0];
 assert.deepEqual(Array.from(entry.d20s),[15]);
 assert.equal(entry.guidance.result,2);assert.equal(entry.bardic.result,5);
-assert.equal(t.state.trayResults[0].label,"Destiny","Destiny remains first in the visible tray");
+/* REWRITTEN (fourth fitting, 2026-08-04): strict construction order, left
+   to right — the Destiny die takes its chronological place at the END of
+   the hand instead of jumping to the head. */
+assert.equal(t.state.trayResults[t.state.trayResults.length-1].label,"Destiny","Destiny sits at its construction-order place, last staged");
 // REWRITTEN (dock v5): the result popup is gone and so is APPLY. A landed roll
 // stays OPEN behind the one permanent ROLL, and it no longer locks the dock.
 assert.equal(t.rollOpen(),true,"it stays open, with every source of a new die still reachable");
@@ -139,9 +146,12 @@ assert.doesNotMatch(t.renderStageZone(),/data-roll-now/,"and it is not duplicate
 assert.doesNotMatch(t.renderStageZone(),/APPLY/,"APPLY is gone from the dock entirely");
 assert.equal(t.renderStageZone().includes("data-clear-tray disabled"),false,"an open roll no longer holds the dock hostage");
 assert.equal(t.rollTransactionActive(),false,"only a question that must be answered locks the dock now");
-// The event zone sits between the badges and the dice, and menus stay below them.
-assert.ok(t.renderStageZone().indexOf("fh-cd-temps")<t.renderStageZone().indexOf("fh-cd-events"),"events come after the badge strip");
-assert.ok(t.renderStageZone().indexOf("fh-cd-events")<t.renderStageZone().indexOf("fh-cd-frame"),"and before the dice");
+/* REWRITTEN (dock-dice-tray, third fitting): the badges sit directly above
+   the permanent judgment window — no event zone between them. Landed dice
+   frame themselves in the Dice Tray; the roller's frame only ever judges. */
+assert.equal(t.renderStageZone().indexOf("fh-cd-events"),-1,"no event zone in the roller");
+assert.ok(t.renderStageZone().indexOf("fh-cd-temps")<t.renderStageZone().indexOf("fh-cd-frame is-judgment"),"the badges sit above the judgment window");
+assert.ok(t.diceTrayInner().indexOf("fh-cd-frame is-trayhand")>=0,"the live hand's frame lives in the Dice Tray");
 t.clearDiceTray(true);
 assert.equal(t.state.events.length,0,"CLEAR TRAY takes the running commentary with the hand");
 
@@ -280,6 +290,29 @@ t.state.history=[{id:"x",kind:"d20",name:"Arcana",baseBonus:0,d20s:[10],kept:10,
 t.state.diePrompt={stagedId:"s1"};
 t.sealStagedDie("bardic");assert.equal(t.stagedList()[0].label,"Bardic");
 t.sealStagedDie("other-1");assert.equal(t.stagedList()[0].label,"Bonus I","the label follows the seal back, instead of staying Bardic");
+
+/* R6 (2026-08-05): SEAL and COLOUR are ONE row of robes — the seal-bearing
+   robes wear their mark on their tint, the naked pastilles recolour without
+   unsealing, and exactly one pastille is lit: the robe the die wears. */
+t.sealStagedDie("bardic");
+let robeMenu=t.renderEventContent();
+const robeButton=(html,attr)=>html.split("<button").find(part=>part.includes(attr))||"";
+assert.equal((robeMenu.match(/fh-cd-dmrobes/g)||[]).length,1,"one fused robe row, not a Seal row plus a Colour row");
+assert.doesNotMatch(robeMenu,/<span>Seal<\/span>/,"the labelled Seal row is gone");
+assert.doesNotMatch(robeMenu,/<span>Colour<\/span>/,"and the labelled Colour row with it");
+assert.match(robeButton(robeMenu,'data-die-seal="guidance"'),/fh-cd-dmmark/,"a seal robe wears its mark on its pastille");
+assert.match(robeButton(robeMenu,'data-die-seal="bardic"'),/is-on/,"the sealed, uncoloured die lights its seal robe");
+assert.doesNotMatch(robeMenu,/data-die-colour="ivory"/,"no Ivory pastille on a sealable die — the seal robes are that reset");
+assert.match(robeButton(robeMenu,'data-die-seal="bardic"'),/title="Bardic · violet"/,"the hover title names robe and tint");
+t.mutateStagedDie({colour:"crimson"});
+robeMenu=t.renderEventContent();
+assert.equal(t.stagedList()[0].sourceIcon,"bardic","recolouring by hand keeps the seal — Bardic + crimson is a legal robe");
+assert.match(robeButton(robeMenu,'data-die-colour="crimson"'),/is-on/,"the crimson pastille is the one lit");
+assert.match(robeButton(robeMenu,'data-die-colour="crimson"'),/fh-cd-dmmark/,"and it carries the Bardic mark — the seal follows the robe");
+assert.doesNotMatch(robeButton(robeMenu,'data-die-seal="bardic"'),/is-on/,"one lit pastille, not two");
+assert.equal((robeMenu.match(/fh-cd-dmrobe is-on/g)||[]).length,1,"exactly one robe is worn at a time");
+t.sealStagedDie("bardic");
+assert.equal(t.stagedList()[0].colour,"","choosing a seal robe dresses the whole die: the manual colour is cleared");
 t.clearDiceTray(true);
 
 // A Destiny die is picked up like a white one, in all three contexts, and put
@@ -289,7 +322,9 @@ t.stageDestinyFromPool("pool-d6");
 assert.equal(t.state.trayPrompt,null,"no popup stands between the pool and the tray any more");
 assert.equal(t.state.destiny.dice[0].available,true,"the click spends nothing");
 assert.equal(t.state.destinyStaged.dieId,"pool-d6","with nothing prepared it waits in the free tray");
-assert.equal(t.trayDiceForDisplay()[0].flash,true,"and it blinks there until ROLL");
+/* REWRITTEN (fourth fitting): strict construction order — the staged pool
+   die waits at its chronological place (last), still blinking forever. */
+assert.equal(t.trayDiceForDisplay().slice(-1)[0].flash,true,"and it blinks there until ROLL");
 assert.match(latest().text,/Destiny d6 waits in the tray/,"a line says so");
 t.state.diePrompt={poolId:"pool-d6"};
 assert.equal(t.findStagedDie(t.state.diePrompt).scope,"pool-destiny","and a right click reaches it");
@@ -309,7 +344,8 @@ t.runConfiguredRoll();
 assert.equal(t.state.trayPrompt.type,"arcane1","a 1 on a Destiny die now asks before it decides");
 assert.equal(t.rollTransactionActive(),true,"and it holds the roll while it asks");
 assert.equal(t.state.history.length,0,"the d20 waits behind the question");
-assert.match(t.renderEventList(),/data-arcane-fate="accept"[\s\S]*data-arcane-fate="chaos"/,"both answers are on the line");
+/* REWRITTEN (third fitting): the question is asked in the judgment window. */
+assert.match(t.renderJudgmentFrame(),/data-arcane-fate="accept"[\s\S]*data-arcane-fate="chaos"/,"both answers are in the window");
 queueRolls(12);t.resolveArcaneOne(t.state.trayPrompt.entryId,"accept");
 entry=t.state.history[0];
 assert.equal(entry.destiny.criticalFailure,true,"accepting leaves the failure standing");
@@ -432,6 +468,31 @@ var redToken=t.state.trayResults.find(item=>item.kind==="modifier");
 assert.ok(redToken&&redToken.tone==="overreach","the Overreach sits beside the die as a red token");
 assert.equal(redToken.result,8);
 assert.match(latest().text,/CHAOS · d6 5 \+ Overreach 8 = 13/);
+settle();
+
+/* M1 (décision Eric 2026-08-06): a seal robe is spent on ONE jet only. ROLL on
+   an open roll with nothing staged repeats the CHECK — it does not re-inherit
+   the last jet's bonus dice, or the three slots would fill one selection at a
+   time and never come back (the white picker ended permanently greyed). */
+reset();queueRolls(12,4);
+t.state.rollConfig=t.rollInput("Performance","CHA",2,{mode:"flat"});
+t.state.rollConfig.bonusDice=[{id:"m1-bardic",label:"Bardic",sides:6,sourceIcon:"bardic",advantageMode:"flat",forcedResult:null}];
+t.runConfiguredRoll();
+entry=t.state.history[0];
+assert.equal(entry.bardic.result,4,"jet 1 carries its Bardic die");
+assert.equal(t.rollOpen(),true,"and stays open behind ROLL");
+queueRolls(9);t.rollStagedDice(); // nothing staged → repeat the check
+const repeated=t.state.history[0];
+assert.notEqual(repeated.id,entry.id,"ROLL with nothing staged rolls a fresh entry");
+assert.equal(repeated.bonusDice.length,0,"the next jet starts with the bare d20 — last jet's boons are not carried");
+assert.equal(repeated.bardic,null,"no Bardic ghost re-added from the entry's flags");
+assert.equal(t.state.rollConfig.bardic,false,"the config's bardic flag is cleared with the die");
+// The robe really is available again: seal a new die Bardic on the next jet.
+t.stageBonusDie(6,"","");
+t.state.diePrompt={stagedId:t.stagedList()[0].id};
+t.sealStagedDie("bardic");
+assert.equal(t.stagedList()[0].sourceIcon,"bardic","the Bardic robe is back and takes the new die");
+assert.equal(t.stagedList()[0].label,"Bardic","and renames it, as a seal always does");
 settle();
 
 assert.equal(randomBuckets.length,0,"every deterministic die result was consumed exactly once");

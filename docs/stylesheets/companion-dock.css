@@ -445,10 +445,6 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   font-size:calc(11px * var(--cd-fs));font-weight:700;color:var(--cd-oxblood);font-family:inherit}
 .fh-cd-freelabel::placeholder{color:var(--cd-faint);font-weight:600}
 
-/* Advanced drawer (portents, per-die A/D, bonus rows) */
-.fh-cd-srcmark{width:12px;flex:none;color:var(--cd-gold-bright);display:grid;place-items:center;font-size:calc(7.5px * var(--cd-fs));font-weight:800}
-.fh-cd-srcmark svg{width:10px;height:10px}
-
 /* ── Stage (roller) ─────────────────────────────────────────────── */
 .fh-cd-stage{padding:0;border-bottom:1px solid var(--cd-line);
   background:radial-gradient(120% 90% at 50% 8%,var(--cd-parch-2) 0%,var(--cd-parch-deep) 78%,#dccc9f 100%)}
@@ -464,19 +460,15 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   flex-wrap:wrap;align-content:center;padding:2px 6px;overflow:hidden}
 /* With a verdict on screen the dice give up room rather than being covered. */
 .fh-cd-diewrap{position:relative;display:grid;justify-items:center;gap:2px}
-.fh-cd-src{height:12px;color:var(--cd-gold-bright);display:grid;place-items:center}
-.fh-cd-src svg{width:12px;height:12px;display:block;filter:drop-shadow(0 1px 0 rgba(255,248,226,.8))}
-/* The numeral slot inherits the token's tone instead of pinning gold — it was
-   the reason a Bonus II read as a Destiny die at a glance. */
-.fh-cd-src b{font-size:calc(8.5px * var(--cd-fs));font-weight:800;color:inherit;font-family:Georgia,serif}
-/* One rule per source (UI-ROLL-VOCABULARY.md §1). Anything wearing a source
-   tone -- a die's 12px slot, the advanced drawer's mark, a seal button -- reads
-   its colour here, so there is exactly one place where Bardic is violet. */
-.fh-cd-src.is-src-destiny,.fh-cd-srcmark.is-src-destiny,.fh-cd-card .fh-cd-dmseal.is-src-destiny{color:var(--cd-src-destiny)}
-.fh-cd-src.is-src-guidance,.fh-cd-srcmark.is-src-guidance,.fh-cd-card .fh-cd-dmseal.is-src-guidance{color:var(--cd-src-guidance)}
-.fh-cd-src.is-src-bardic,.fh-cd-srcmark.is-src-bardic,.fh-cd-card .fh-cd-dmseal.is-src-bardic{color:var(--cd-src-bardic)}
-.fh-cd-src.is-src-tactical,.fh-cd-srcmark.is-src-tactical,.fh-cd-card .fh-cd-dmseal.is-src-tactical{color:var(--cd-src-tactical)}
-.fh-cd-src.is-src-bonus,.fh-cd-srcmark.is-src-bonus,.fh-cd-card .fh-cd-dmseal.is-src-bonus{color:var(--cd-src-bonus)}
+/* One rule per source (UI-ROLL-VOCABULARY.md §1). The dice themselves carry
+   their tone in the tint of the die face now ("all in one"); the only thing
+   still WEARING a source tone class is the seal button in the die menu, and
+   this is the one place where Bardic is violet. */
+.fh-cd-card .fh-cd-dmseal.is-src-destiny{color:var(--cd-src-destiny)}
+.fh-cd-card .fh-cd-dmseal.is-src-guidance{color:var(--cd-src-guidance)}
+.fh-cd-card .fh-cd-dmseal.is-src-bardic{color:var(--cd-src-bardic)}
+.fh-cd-card .fh-cd-dmseal.is-src-tactical{color:var(--cd-src-tactical)}
+.fh-cd-card .fh-cd-dmseal.is-src-bonus{color:var(--cd-src-bonus)}
 .fh-cd-die{position:relative;display:block}
 .fh-cd-die svg{display:block;overflow:visible}
 .fh-cd-die .fh-cd-num{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:700}
@@ -1249,3 +1241,939 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-spell-form label{display:flex;flex-direction:column;gap:2px;color:var(--cd-faint);font-size:calc(6.8px * var(--cd-fs))}
 .fh-cd-spell-form .is-wide{grid-column:1/-1}.fh-cd-spell-check{flex-direction:row!important;align-items:center}
 .fh-cd-spell-check input{width:calc(20px * var(--cd-fs));height:calc(20px * var(--cd-fs))}.fh-cd-spell-form>button{justify-self:start}
+
+/* ── Dice Tray — zone 9, the table's shared surface (dock-dice-tray) ──
+   APPENDED, never edited above this line. Extracted from the roller
+   2026-08-03; line shape ruled by Eric the same day: three spaces left to
+   right (name in full · dice with their wrapper · ruling on three tiers),
+   the time only on hover, the newest roll large, rolls 2-4 small but able
+   to roll, the Static Area below as frozen snapshots, ten rolls held.
+   Heights are fixed per band so the zone's height is deterministic and the
+   summoned group above can anchor to it -- see --cd-tray-h below. */
+.fh-cd-root{--cd-tray-h:284px}
+.fh-cd-dicetray{height:var(--cd-tray-h);display:flex;flex-direction:column;padding-bottom:0;
+  background:radial-gradient(120% 90% at 50% 8%,var(--cd-parch-2) 0%,var(--cd-parch-deep) 82%,#dccc9f 100%)}
+.fh-cd-dicetray>.fh-cd-cap{flex:none;margin-bottom:2px}
+/* The three feed states, written in plain words on the cap. OFF is loud on
+   purpose: never fall back silently. */
+.fh-cd-traystate{margin-left:auto;flex:none;font-size:calc(6.8px * var(--cd-fs));font-weight:800;letter-spacing:.08em;
+  padding:0 5px;border:1px solid var(--cd-gold-hi);border-radius:3px;color:var(--cd-gold-bright)}
+.fh-cd-traystate.is-live{color:#3d7d56;border-color:#3d7d56}
+.fh-cd-traystate.is-off{color:#fff;border-color:var(--cd-bad);background:var(--cd-bad)}
+.fh-cd-traylist{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;margin:0 -4px;padding:0 4px 6px;list-style:none}
+.fh-cd-trayline{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--cd-line-soft);
+  padding:3px 2px;overflow:hidden;position:relative}
+.fh-cd-trayline:last-child{border-bottom:0}
+.fh-cd-trayline.is-empty{min-height:40px;justify-content:center;color:var(--cd-faint);
+  font-size:calc(8.6px * var(--cd-fs));font-style:italic}
+/* Band heights: fixed, so four lines are always exactly visible.
+   84 + 3x56 + cap ≈ the zone's 284. */
+.fh-cd-trayline.is-l1{min-height:84px}
+.fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{min-height:56px}
+/* The live hand keeps the frame (mood streaks included) but sheds the fixed
+   148px box it had in the roller: the line is the box now. */
+.fh-cd-dicetray .fh-cd-frame.is-trayhand{height:auto;min-height:78px;margin:0;flex:1;flex-direction:row;align-items:center;gap:6px;
+  border-width:1px;box-shadow:inset 0 0 0 2px var(--cd-parch-2),inset 0 0 18px rgba(138,106,42,.14);padding:2px 4px}
+.fh-cd-dicetray .fh-cd-frame.is-trayhand::after{content:none}
+/* Space 1: the name, in full — no portrait, no printed time. The time is
+   there on hover, under the name (and in the title tooltip). */
+.fh-cd-tray-who{flex:none;width:64px;min-width:0;display:flex;flex-direction:column;gap:1px}
+.fh-cd-tray-who b,.fh-cd-tray-who button{font-size:calc(9.2px * var(--cd-fs));font-weight:700;color:var(--cd-oxblood);
+  text-align:left;line-height:1.15;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  border:0;background:none;padding:0;font-family:inherit;cursor:default;word-break:break-word}
+.fh-cd-tray-who button{cursor:pointer}
+.fh-cd-tray-who button:hover{color:var(--cd-gold-bright)}
+.fh-cd-tray-who time{font-size:calc(6.8px * var(--cd-fs));color:var(--cd-faint);font-variant-numeric:tabular-nums;
+  opacity:0;transition:opacity .15s ease}
+.fh-cd-trayline:hover .fh-cd-tray-who time{opacity:1}
+/* Space 2: the dice, each with its full wrapper (source token / die / label). */
+.fh-cd-tray-dice{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:center;gap:8px;
+  flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:1px 2px}
+.fh-cd-trayline.is-mid .fh-cd-tray-dice,.fh-cd-trayline.is-static .fh-cd-tray-dice{gap:5px}
+.fh-cd-trayline.is-mid .fh-cd-diewrap em,.fh-cd-trayline.is-static .fh-cd-diewrap em{font-size:calc(6.4px * var(--cd-fs));max-width:44px}
+/* The snapshot die: a cached bitmap where a live canvas is not allowed.
+   Same box, same numeral overlay, no context. */
+.fh-cd-static-die img.fh-cd-static-snap{display:none;width:100%;height:100%;filter:drop-shadow(0 4px 5px rgba(0,0,0,.45))}
+.fh-cd-static-die.is-webgl img.fh-cd-static-snap{display:block}
+.fh-cd-static-die.is-percentile img.fh-cd-static-snap{width:100%}
+[data-snapshot="1"].fh-cd-static-die.is-percentile{display:block;width:calc(var(--fh-static-die-size) * 1.42)}
+/* Space 3: the ruling, three tiers — title in bold, total (+ NAT beside it),
+   then the ruling text, abridged with the full account on hover. */
+.fh-cd-tray-ruling{flex:none;width:128px;min-width:0;display:flex;flex-direction:column;gap:1px;text-align:right;align-items:flex-end}
+.fh-cd-tray-title{font-size:calc(9px * var(--cd-fs));font-weight:800;color:var(--cd-ink);max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-tray-t2{display:flex;align-items:baseline;gap:4px;justify-content:flex-end;max-width:100%}
+.fh-cd-tray-total{font-size:calc(13px * var(--cd-fs));font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.fh-cd-tray-total.is-ok{color:var(--cd-ok)}
+.fh-cd-tray-total.is-bad{color:var(--cd-bad)}
+.fh-cd-tray-total.is-n20{color:var(--cd-gold-bright)}
+.fh-cd-tray-total.is-quiet{color:var(--cd-faint);letter-spacing:.08em}
+.fh-cd-tray-t3{display:flex;flex-wrap:wrap;gap:2px 4px;justify-content:flex-end;align-items:baseline;max-width:100%;
+  font-size:calc(7.2px * var(--cd-fs));color:var(--cd-muted);max-height:22px;overflow:hidden}
+.fh-cd-tray-verdict{color:var(--cd-oxblood);font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  font-size:calc(7.4px * var(--cd-fs));max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-tray-heading{color:var(--cd-ink);font-weight:700;font-size:calc(8.6px * var(--cd-fs));max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-tray-account{font-style:normal;color:var(--cd-faint);font-size:calc(6.9px * var(--cd-fs));line-height:1.2;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-tray-outcome{font-weight:700}
+.fh-cd-tray-outcome.is-ok{color:var(--cd-ok)}
+.fh-cd-tray-outcome.is-bad{color:var(--cd-bad)}
+.fh-cd-tray-outcome.is-n20{color:var(--cd-gold-bright)}
+/* Static Area: rolls 5-10. Nothing moves down here — including the spin that
+   a remounted SVG die would otherwise replay. */
+.fh-cd-trayline.is-static .fh-cd-die.is-spinning{animation:none}
+.fh-cd-trayline.is-static .fh-cd-diewrap.is-flashing .fh-cd-die{animation:none}
+/* The summoned group (Console + Roll Builder) anchors ABOVE the tray: the
+   dice must stay visible while a roll is being configured. Overrides the
+   bottom:0 in the original .fh-cd-floatbottom block by append, not rewrite. */
+.fh-cd-floatbottom{bottom:var(--cd-tray-h,0px);max-height:calc(100% - var(--cd-tray-h,0px))}
+/* The tray must END where the dock ends, always: the summoned group anchors
+   bottom:var(--cd-tray-h) from the DOCK's bottom edge, so a tray left in
+   normal flow only lines up with it when the flow happens to fill the dock
+   exactly — at 80% zoom it did not, and the Console landed on top of the
+   tray list. Anchor the tray to the same edge the group measures from, and
+   give the flow the tray's height back as padding so nothing hides under it.
+   (:has keeps the welcome screen, which has no tray, free of dead space.) */
+.fh-cd-dock:has(.fh-cd-dicetray){padding-bottom:var(--cd-tray-h)}
+.fh-cd-dicetray{position:absolute;left:0;right:0;bottom:0;z-index:22}
+/* PiP makes the dock position:static, which would send the absolute tray to
+   the window instead — same visual edge, but only by luck. Pin the
+   containing block explicitly; relative changes nothing else about flow. */
+.fh-cd-pip-body .fh-cd-dock{position:relative}
+
+/* ── Dice Tray, second fitting (Eric, 2026-08-03 pm) ─────────────────
+   Reclaim the flanks: the who becomes a chip (face or two letters, full
+   name + time on hover), the ruling narrows, the scrollbar disappears,
+   die labels go minimal and may wrap to two lines. And the Roll Builder
+   gets its own assembly frame back — a hand with nothing landed renders
+   in the roller, not in the tray. APPENDED, never edited above. */
+.fh-cd-tray-who{width:26px;flex:none;position:relative;display:block}
+.fh-cd-tray-who b,.fh-cd-tray-who button{display:block;width:24px;height:24px;padding:0;border:0;background:none;
+  cursor:default;-webkit-line-clamp:unset;overflow:visible}
+.fh-cd-tray-who button{cursor:pointer}
+.fh-cd-tray-who img{display:block;width:24px;height:24px;border-radius:50%;border:1px solid var(--cd-gold-hi);
+  object-fit:cover;object-position:center 18%}
+.fh-cd-tray-initials{display:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--cd-gold-hi);
+  background:var(--cd-parch-2);color:var(--cd-oxblood);font-style:normal;font-weight:800;
+  font-size:calc(8.2px * var(--cd-fs));line-height:22px;text-align:center;letter-spacing:.02em}
+.fh-cd-tray-who.is-noimg img{display:none}
+.fh-cd-tray-who.is-noimg .fh-cd-tray-initials{display:block}
+/* The name, whole, when asked for: a floating label over the line. */
+.fh-cd-tray-name{position:absolute;left:0;bottom:calc(100% + 2px);z-index:3;display:block;white-space:nowrap;
+  font-style:normal;font-size:calc(8.2px * var(--cd-fs));font-weight:700;color:var(--cd-oxblood);
+  background:var(--cd-parch);border:1px solid var(--cd-gold-hi);border-radius:4px;padding:1px 6px;
+  box-shadow:0 2px 6px rgba(40,25,5,.25);opacity:0;pointer-events:none;transition:opacity .15s ease}
+.fh-cd-tray-who:hover .fh-cd-tray-name{opacity:1}
+/* Right flank: a narrower ruling, and no scrollbar gutter at all — the
+   tray scrolls by gesture; the Stream is the consultable surface. */
+.fh-cd-tray-ruling{width:110px}
+.fh-cd-traylist{scrollbar-width:none}
+.fh-cd-traylist::-webkit-scrollbar{display:none}
+/* Minimal die labels, allowed a second line instead of colliding sideways. */
+.fh-cd-tray-dice .fh-cd-diewrap em,.fh-cd-frame.is-assembly .fh-cd-diewrap em{
+  white-space:normal;text-overflow:clip;line-height:1.06;max-height:2.2em;text-align:center;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* The verdict earns its size back on the large line — the old frame said it
+   at 12px and tier 3 had whispered it. */
+.fh-cd-trayline.is-l1 .fh-cd-tray-verdict{font-size:calc(9.6px * var(--cd-fs))}
+.fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:30px}
+/* The Roll Builder's assembly frame: same bones as the tray's live hand,
+   quieter dress — nothing here has happened yet. */
+.fh-cd-frame.is-assembly{height:auto;min-height:64px;margin:4px 10px;display:flex;flex-direction:row;align-items:center;gap:6px;
+  border-width:1px;border-style:dashed;box-shadow:none;padding:2px 6px;overflow:visible}
+.fh-cd-frame.is-assembly::after{content:none}
+.fh-cd-frame.is-assembly .fh-cd-tray-ruling{width:110px;flex:none}
+
+/* ── Dice Tray & judgment window, third fitting (Eric, 2026-08-03) ────
+   The line reads verdict-first: LEFT the chip and what Fate said, CENTRE
+   the dice (a swarm of bare minis past six), RIGHT the roll's name over
+   its total. The Roll Builder's frame is the permanent judgment window —
+   decisions, assembly and the Ruling all speak there; above it, only the
+   badges. APPENDED, never edited above. */
+.fh-cd-tray-left{flex:none;width:112px;min-width:0;display:flex;align-items:center;gap:4px;text-align:left}
+.fh-cd-tray-left .fh-cd-tray-who{flex:none}
+.fh-cd-tray-speak{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+.fh-cd-tray-speak .fh-cd-tray-verdict{white-space:normal;line-height:1.1;max-height:2.3em;overflow:hidden;text-overflow:clip}
+.fh-cd-tray-right{flex:none;width:96px;min-width:0;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:0}
+/* The old single right-hand ruling column is superseded by the flanks. */
+.fh-cd-trayline .fh-cd-tray-ruling{display:none}
+/* The swarm: bare dice, wrapping rows, tighter than wrapped columns. */
+.fh-cd-tray-dice.is-swarm{flex-wrap:wrap;justify-content:center;gap:3px;overflow:visible;padding:2px}
+.fh-cd-diewrap.is-naked{gap:0}
+.fh-cd-trayline.is-l1,.fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{max-height:none}
+/* The judgment window. */
+.fh-cd-frame.is-judgment{height:auto;min-height:64px;margin:4px 10px;display:flex;flex-direction:row;align-items:center;gap:8px;
+  border-width:1.5px;padding:4px 8px;overflow:visible}
+.fh-cd-frame.is-judgment.is-assembly{border-style:dashed;box-shadow:none}
+.fh-cd-frame.is-judgment::after{content:none}
+.fh-cd-judgment{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+.fh-cd-judgment>b{color:var(--cd-ink);font-size:calc(11px * var(--cd-fs));font-weight:800;letter-spacing:.02em;line-height:1.15}
+.fh-cd-judgment>b.fh-cd-verdict{color:var(--cd-oxblood);letter-spacing:.06em;text-transform:uppercase}
+.fh-cd-judgment>em{font-style:normal;color:var(--cd-faint);font-size:calc(7.6px * var(--cd-fs));line-height:1.25}
+.fh-cd-judgment>em.fh-cd-account{color:var(--cd-muted)}
+.fh-cd-frame.is-judgment .fh-cd-tray-dice{flex:0 1 auto;justify-content:flex-end}
+/* A decision inside the window: the question in bold, the terms under it,
+   the two answers on their own row. */
+.fh-cd-judgeask{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.fh-cd-judgeask>b{color:var(--cd-oxblood);font-size:calc(10.5px * var(--cd-fs));font-weight:800;letter-spacing:.03em}
+.fh-cd-judgeask>i{font-style:normal;color:var(--cd-muted);font-size:calc(7.8px * var(--cd-fs));line-height:1.3}
+
+/* ── Fourth fitting (Eric, 2026-08-04): wood, carpet, wave ────────────
+   The judgment box is a shallow WOODEN tray glued to the dock's edges —
+   thin border, no margins, CSS grain, no image. The Dice Tray becomes a
+   dark cosy CARPET: no boxes, thin separators, flanks at 80/68, the dead
+   margins reclaimed. Dice build left to right. Swarm dice roll small and
+   zoom at settle (the size var rides a transition). APPENDED only. */
+
+/* The wooden judgment box. Overrides the earlier is-judgment dress. */
+.fh-cd-frame.is-judgment{margin:0 1px;border:1px solid #3f2c14;border-radius:3px;
+  background:
+    repeating-linear-gradient(92deg,rgba(62,40,16,.12) 0 2px,rgba(0,0,0,0) 2px 11px,rgba(94,66,30,.10) 11px 13px,rgba(0,0,0,0) 13px 26px),
+    repeating-linear-gradient(0deg,rgba(255,236,196,.05) 0 1px,rgba(0,0,0,0) 1px 7px),
+    linear-gradient(180deg,#8a6438 0%,#7a5730 38%,#6b4a26 100%);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.42),inset 0 -1px 0 rgba(255,224,170,.14);
+  padding:5px 8px;min-height:64px;gap:8px}
+.fh-cd-frame.is-judgment.is-assembly{border-style:solid;border-color:#3f2c14}
+/* Light lettering on dark wood. */
+.fh-cd-frame.is-judgment .fh-cd-judgment{flex:0 1 auto;min-width:80px;max-width:118px;align-items:center;text-align:center}
+.fh-cd-frame.is-judgment .fh-cd-judgment>b{color:#f4ecd8}
+.fh-cd-frame.is-judgment .fh-cd-judgment>b.fh-cd-verdict{color:#f1c96f}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em{color:#cdb68c}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em.fh-cd-account{color:#e0cda4}
+/* Dice build LEFT TO RIGHT on the wood: first die at the left of its space. */
+.fh-cd-frame.is-judgment .fh-cd-tray-dice.is-build{flex:1 1 auto;justify-content:flex-start}
+.fh-cd-frame.is-judgment .fh-cd-diewrap em{color:#e0cda4}
+/* The right column: the roll's identity, centred — "History / +1".
+   R32 (mesuré au banc) : la colonne était 68px FIXES pendant que le corps
+   suit --cd-fs — à fs 1 « Performance » fait 67px et tient, dès fs 1.15 il
+   fait 77px et se coupait en « Performa ». La colonne suit donc le même
+   --cd-fs que sa police (identique au pixel à la référence fs 1), et
+   overflow-wrap garde un filet : un nom encore plus long se replie sur la
+   2e ligne du clamp au lieu d'être tronqué. */
+.fh-cd-judgeright{flex:none;width:calc(68px * var(--cd-fs));min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}
+.fh-cd-judgeright b{color:#f4ecd8;font-size:calc(9.4px * var(--cd-fs));font-weight:800;line-height:1.1;max-width:100%;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.fh-cd-judgeright i{font-style:normal;color:#f1c96f;font-size:calc(10px * var(--cd-fs));font-weight:800}
+/* A decision covers the whole box. */
+.fh-cd-frame.is-judgment.is-takeover{justify-content:center}
+.fh-cd-frame.is-judgment .fh-cd-judgeask{align-items:center;text-align:center;width:100%}
+.fh-cd-frame.is-judgment .fh-cd-judgeask>b{color:#f1c96f}
+.fh-cd-frame.is-judgment .fh-cd-judgeask>i{color:#e0cda4}
+
+/* The carpet. Dark, warm, woven — and no boxes on it. */
+.fh-cd-dicetray{padding:2px 4px 0;
+  background:
+    radial-gradient(120% 100% at 50% 0%,rgba(122,90,40,.20) 0%,rgba(0,0,0,0) 55%),
+    repeating-linear-gradient(45deg,rgba(255,232,190,.025) 0 3px,rgba(0,0,0,0) 3px 6px),
+    repeating-linear-gradient(-45deg,rgba(0,0,0,.05) 0 3px,rgba(0,0,0,0) 3px 6px),
+    linear-gradient(180deg,#3a2f22 0%,#332a1e 55%,#2c2419 100%)}
+.fh-cd-dicetray>.fh-cd-cap{margin:0 2px 2px;color:#c9a45a}
+.fh-cd-dicetray>.fh-cd-cap small{color:#8d7b57}
+.fh-cd-traylist{margin:0;padding:0 0 4px}
+.fh-cd-trayline{padding:3px 2px;border-bottom:1px solid rgba(244,236,216,.10)}
+/* The large line earns a slightly firmer separator — the forgiven box. */
+.fh-cd-trayline.is-l1{border-bottom-color:rgba(201,164,90,.35)}
+/* The live hand sheds its gold box entirely: the carpet is the container.
+   The mood streaks keep working on the naked frame. */
+.fh-cd-dicetray .fh-cd-frame.is-trayhand{border:0;background:none;box-shadow:none;padding:0 2px;min-height:0}
+/* Flanks at 80 / 68 (validated) — the dice take what they free. */
+.fh-cd-tray-left{width:80px}
+.fh-cd-tray-right{width:68px;align-items:center;text-align:center}
+.fh-cd-tray-right .fh-cd-tray-title{font-size:calc(8.2px * var(--cd-fs));color:#f4ecd8;white-space:normal;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.1}
+.fh-cd-tray-right .fh-cd-tray-total{font-size:calc(13px * var(--cd-fs))}
+/* No visible account on the carpet: it survives in the hover title. */
+.fh-cd-tray-right .fh-cd-tray-account{display:none}
+/* Light lettering on the carpet. */
+.fh-cd-dicetray .fh-cd-tray-total.is-none{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-tray-total.is-ok{color:#8fc97a}
+.fh-cd-dicetray .fh-cd-tray-total.is-bad{color:#e07a70}
+.fh-cd-dicetray .fh-cd-tray-total.is-n20{color:#f1c96f}
+.fh-cd-dicetray .fh-cd-tray-total.is-quiet{color:#8d7b57}
+.fh-cd-dicetray .fh-cd-tray-verdict{color:#f1c96f}
+.fh-cd-dicetray .fh-cd-tray-heading{color:#f4ecd8}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-ok{color:#8fc97a}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-bad{color:#e07a70}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-n20,.fh-cd-dicetray .fh-cd-tray-outcome.is-none{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-tray-account,.fh-cd-dicetray .fh-cd-vs{color:#a89877}
+.fh-cd-dicetray .fh-cd-diewrap em{color:#cdb68c}
+.fh-cd-dicetray .fh-cd-tray-initials{background:#4a3d2c;border-color:#8d7b57;color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-tray-who img{border-color:#8d7b57}
+.fh-cd-dicetray .fh-cd-tray-name{background:#3a2f22;border-color:#8d7b57;color:#f4ecd8}
+.fh-cd-dicetray .fh-cd-trayline.is-empty{color:#8d7b57}
+.fh-cd-dicetray .fh-cd-badge{filter:brightness(1.35)}
+/* Roll small, stop, ZOOM: the size var rides a transition, so the settle
+   swap from live canvas to bigger snapshot glides instead of popping. */
+.fh-cd-static-die{transition:width .28s ease,height .28s ease}
+.fh-cd-static-die img.fh-cd-static-snap{transition:width .28s ease,height .28s ease}
+@media(prefers-reduced-motion:reduce){.fh-cd-static-die,.fh-cd-static-die img.fh-cd-static-snap{transition:none}}
+/* CLEAR TRAY's provisional console seat. */
+.fh-cd-mainclear.is-inconsole{position:static;transform:none;margin-left:auto;height:18px;padding:0 8px;font-size:calc(7.4px * var(--cd-fs))}
+/* The lateral scroller between the summoned group and the tray: killed
+   (Eric). The console row already fits the reference; anything wider is
+   clipped rather than growing a bar that eats a line of height. */
+.fh-cd-floatbottom{overflow-x:hidden}
+.fh-cd-consolerow{overflow-x:hidden}
+/* The judgment account stays an account, not a novel: a 29-die list clamps
+   to four lines — the full text lives in the entry and the Stream. */
+.fh-cd-frame.is-judgment .fh-cd-judgment>em{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ── The reading glass lived here (2026-08-04 → 2026-08-05) ──────────
+   REWRITTEN-away, exceptionally, rather than appended-over: Eric ruled
+   the glass OUT for good (lot BACKLOG-B, 2026-08-05), so its hover-lift
+   block AND the appended gate that had switched it off are both deleted —
+   dead paint kept alive behind a class is exactly the code this lot
+   retires. Two lessons of the glass outlive it, further down and kept:
+   .is-trayhand{overflow:visible} (three rows of ten must grow out of the
+   frame) and the registre never being unclipped (its scroll survives). */
+
+/* ── Rows of ten & the ∞ line (Eric, 2026-08-04) ─────────────────────
+   Up to 12 dice sit on ONE line; 13-30 wrap into rows of EXACTLY ten —
+   the row is sized from the line's own die size (trayLineHtml rides it
+   in as --fh-cd-tray-die-size), not from the carpet's width, so a wrap
+   never lands eleven or nine. Past 30 the dice stay home: a big ∞ holds
+   the zone, the total speaks on the right, and the full account lives in
+   the Stream. Free rolls stop at fifty dice.
+   (Row arithmetic: ten dice + nine 3px gaps + padding needs 10s+31; an
+   eleventh would need 11s+34 — the +40 slack sits between the two for
+   any die size in play. The row PINS its own 3px gap: the mid/static
+   bands' 5px rule is more specific than the swarm's 3px and was silently
+   winning, which made the arithmetic land at NINE a row.) */
+.fh-cd-trayline .fh-cd-tray-dice.is-rows{gap:3px}
+.fh-cd-tray-dice.is-rows{max-width:calc(10 * var(--fh-cd-tray-die-size,20px) + 40px);margin:0 auto}
+/* STABLE columns while the wave rolls (Eric: "au moment du roll ça casse
+   l'arrangement par 10"): every cell is fixed at the SETTLED size, and a
+   die tumbling small (16px) rolls centred inside its final cell — the
+   pitch never changes, so the rows of ten hold from first wave to rest. */
+.fh-cd-tray-dice.is-rows .fh-cd-diewrap{width:var(--fh-cd-tray-die-size,20px);justify-items:center}
+.fh-cd-tray-inf{font-size:calc(30px * var(--cd-fs));font-weight:600;line-height:1;color:#c9a45a;
+  text-shadow:0 1px 3px rgba(0,0,0,.4);cursor:default}
+.fh-cd-tray-dice.is-infinite{align-items:center;justify-content:center}
+/* (The naked corner provenance mark lived here for a day — retired the
+   same day: the seal IS the die now, its tint says the source.) */
+/* The live hand's frame must never crop its own rows — the base frame is
+   overflow:hidden for the classic roller, but down here the hand GROWS
+   (three rows of ten) and the glass must ride out of it. */
+.fh-cd-dicetray .fh-cd-frame.is-trayhand{overflow:visible}
+/* overflow-x:hidden forces overflow-y to auto (CSS spec) — which is what
+   silently cropped the judgment box's upper rows once a staged hand
+   reached four of them. clip constrains the axis WITHOUT creating a
+   scroll container, so the box keeps growing and nothing is cut. */
+.fh-cd-floatbottom{overflow-x:clip}
+.fh-cd-consolerow{overflow-x:clip}
+
+/* ── Lot texte (2026-08-04, D4 tranchée) — the tray cap slims down ──
+   APPENDED only. T14: the DICE TRAY word is gone, the LIVE/RECENT/OFF
+   chip leads the cap and carries the status phrase in its hover title
+   (T15). The right edge holds the cap's ⋮ (URL…/Refresh, T17) and the
+   CLEAR TRAY × (T19) — the console lost its cap row with them (T18). */
+.fh-cd-dicetray>.fh-cd-cap{align-items:center}
+.fh-cd-dicetray>.fh-cd-cap .fh-cd-traystate{margin-left:0;cursor:default}
+.fh-cd-dicetray>.fh-cd-cap small{margin-left:6px;margin-right:auto}
+.fh-cd-capacts{margin-left:auto;display:flex;align-items:center;gap:2px}
+.fh-cd-capacts .fh-cd-dmenu{height:18px;width:16px}
+/* The cap's ⋮ opens under the cap, right-aligned, over the carpet. */
+.fh-cd-cmenu.is-traycap{left:auto;right:0;min-width:0;align-items:stretch}
+.fh-cd-cmenurow.is-traycap{height:auto;padding:1px 2px}
+.fh-cd-cmenurow.is-traycap .fh-cd-tableurl,.fh-cd-cmenurow.is-traycap .fh-cd-refresh{width:100%}
+/* The × — same behaviour CLEAR TRAY always had, console dress shed. */
+.fh-cd-trayclear{flex:none;width:18px;height:18px;padding:0;border:0;background:none;
+  color:#8d7b57;cursor:pointer;display:grid;place-items:center;border-radius:3px}
+.fh-cd-trayclear svg{width:10px;height:10px;display:block}
+.fh-cd-trayclear:hover{color:#f1c96f;background:rgba(244,236,216,.08)}
+.fh-cd-trayclear:disabled{opacity:.35;cursor:not-allowed}
+/* The console without its cap row keeps a breath above row 1. */
+.fh-cd-console{padding-top:4px}
+
+/* ── Scroll arrows & line snap (Eric, 2026-08-04 — héritage n°4, and the
+   bug behind it: « les dés dépassent sous les bords ») ────────────────
+   The registre hides most of itself below the fold with no affordance
+   at all (measured: ~350px of rolls out of sight). The scrollbars stay
+   dead — the carpet is the surface — so two thin chevrons ride the
+   list's edges instead, each shown only when there IS something on its
+   side; one click steps one band. Lines snap on stop so a roll is never
+   left cut through its dice. APPENDED only. */
+.fh-cd-traylist{scroll-snap-type:y proximity}
+.fh-cd-trayline{scroll-snap-align:start}
+.fh-cd-trayarrow{position:absolute;left:50%;transform:translateX(-50%);z-index:26;width:36px;height:14px;
+  display:none;align-items:center;justify-content:center;border:0;padding:0;cursor:pointer;
+  background:rgba(58,47,34,.88);border-radius:7px;color:#c9a45a;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.fh-cd-trayarrow svg{width:12px;height:12px;display:block}
+.fh-cd-trayarrow.is-up{top:24px}
+.fh-cd-trayarrow.is-down{bottom:3px}
+.fh-cd-dicetray.is-can-up .fh-cd-trayarrow.is-up{display:flex}
+.fh-cd-dicetray.is-can-down .fh-cd-trayarrow.is-down{display:flex}
+.fh-cd-trayarrow:hover{color:#f1c96f;background:rgba(69,56,39,.96)}
+
+/* ── Lot BACKLOG-A (Eric, revue 2026-08-04) — the cap takes a band's
+   height ─────────────────────────────────────────────────────────────
+   The tray cap (state chip + ⋮ + ×) sat on ~20px while every standard
+   line below it holds 56 (.is-mid/.is-static min-height). It now IS a
+   band: same 56px, contents scaled to live in it — chip readable at
+   arm's length, ⋮ and × with real click targets, everything centred on
+   the band's axis, chip flush left / actions flush right like a line's
+   own flanks. The zone keeps its deterministic arithmetic: the cap
+   grows by ~36px, so --cd-tray-h moves 284 → 320 and the four bands
+   (84 + 3×56 + list padding) stay exactly visible. Redeclaring the
+   variables here wins over the original block (same specificity,
+   later in the sheet) — APPENDED, nothing rewritten. */
+.fh-cd-root{--cd-traycap-h:56px;--cd-tray-h:320px}
+.fh-cd-dicetray>.fh-cd-cap{height:var(--cd-traycap-h);flex:none;align-items:center;
+  margin:0 2px;padding:0 2px;border-bottom:1px solid rgba(244,236,216,.10)}
+.fh-cd-dicetray>.fh-cd-cap .fh-cd-traystate{font-size:calc(8.4px * var(--cd-fs));padding:4px 9px;border-radius:4px}
+.fh-cd-dicetray>.fh-cd-cap small{font-size:calc(8px * var(--cd-fs))}
+.fh-cd-capacts{gap:6px}
+.fh-cd-capacts .fh-cd-dmenu{height:34px;width:30px;border-radius:4px}
+.fh-cd-capacts .fh-cd-dmenu svg{width:11px;height:11px}
+.fh-cd-capacts .fh-cd-dmenu:hover{background:rgba(244,236,216,.08)}
+.fh-cd-trayclear{width:34px;height:34px}
+.fh-cd-trayclear svg{width:12px;height:12px}
+/* The up chevron rides just under the cap's lower edge, wherever that
+   edge is (carpet padding 2px + the cap's own height). */
+.fh-cd-trayarrow.is-up{top:calc(var(--cd-traycap-h) + 4px)}
+
+/* ── Lot BACKLOG-A (Eric, 2026-08-05) — the line snap is withdrawn ────
+   The snap of fbe871e fought the registre's own life. The dock rebuilds
+   its DOM on every render (a feed poll lands every few seconds) and
+   restores scrollTop by hand; per the scroll-snap spec every such
+   programmatic scroll and relayout RE-SNAPS, so the kept reading place
+   was corrected to the nearest line over and over — and a render landing
+   mid-gesture killed the gesture. The chevrons step a fixed 76px while
+   lines hold 56 or 84: each step landed ~20px off a boundary for
+   proximity to yank somewhere. Scroll preservation and the chevrons stay
+   — they are the affordance; the snap was only cosmetics. APPENDED only:
+   this block overrides fbe871e's two declarations rather than editing
+   them. */
+.fh-cd-traylist{scroll-snap-type:none}
+.fh-cd-trayline{scroll-snap-align:none}
+
+/* ── Lot BACKLOG-B (Eric, 2026-08-05) — dégradé « C » sur le tapis ────
+   Maquette C retenue parmi trois: the woven carpet becomes a continuous
+   TAUPE gradient, textureless, pitched between the sheet's parchment and
+   its ink — the warm radial glow and both 45° weaves go with it, the
+   validated mock is a clean graded flat. The newest roll now reads as
+   line 1 by sitting at the LIGHT end of the ramp (its 84px privilege
+   falls in this same lot). The judgment box's wood is NOT touched here.
+   APPENDED: same selector+specificity as the fourth fitting's carpet,
+   later in the sheet, so this background wins without editing it. */
+.fh-cd-dicetray{background:linear-gradient(180deg,#5c5344 0%,#4a4436 34%,#38332a 68%,#26231c 100%)}
+/* Contrast repairs for the LIGHTER top (#3a2f22 → #5c5344): every carpet
+   text was re-measured against the ramp's TOP — the worst case, since
+   the cap and line 1 live there — and any tint under WCAG 4.5:1 for its
+   (small) size was lightened within its own family. Measured on #5c5344:
+   kept — headings #f4ecd8 (6.4), verdict/N20 #f1c96f (4.8), plain totals
+   #e8dcc0 (5.6), the 30px ∞ #c9a45a (3.2 ≥ 3:1 large-text);
+   moved — cap gold #c9a45a 3.2→#eac878 4.7, quiet #8d7b57 1.8→#d8c79b
+   4.5, ok-green #8fc97a 3.9→#a3dd8b 4.8, bad-red #e07a70 2.6→#f6beb5
+   4.7, account #a89877 2.7 and die labels #cdb68c 3.8→#d9c89d 4.6, the
+   RECENT chip's parchment gold #9c6b16 1.6→#eac878 4.7, LIVE green
+   #3d7d56 1.5→#a3dd8b 4.8. is-off keeps white-on-red: its own plate. */
+.fh-cd-dicetray>.fh-cd-cap{color:#eac878}
+.fh-cd-dicetray>.fh-cd-cap small{color:#d8c79b}
+.fh-cd-dicetray .fh-cd-traystate{color:#eac878;border-color:#eac878}
+.fh-cd-dicetray .fh-cd-traystate.is-live{color:#a3dd8b;border-color:#a3dd8b}
+.fh-cd-dicetray .fh-cd-traystate.is-off{color:#fff;border-color:var(--cd-bad)}
+.fh-cd-dicetray .fh-cd-tray-total.is-ok{color:#a3dd8b}
+.fh-cd-dicetray .fh-cd-tray-total.is-bad{color:#f6beb5}
+.fh-cd-dicetray .fh-cd-tray-total.is-quiet{color:#d8c79b}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-ok{color:#a3dd8b}
+.fh-cd-dicetray .fh-cd-tray-outcome.is-bad{color:#f6beb5}
+.fh-cd-dicetray .fh-cd-tray-account,.fh-cd-dicetray .fh-cd-vs{color:#d9c89d}
+.fh-cd-dicetray .fh-cd-diewrap em{color:#d9c89d}
+.fh-cd-dicetray .fh-cd-trayline.is-empty{color:#d8c79b}
+.fh-cd-trayclear{color:#d8c79b}
+
+/* ── Lot BACKLOG-B (Eric, 2026-08-05) — 56 nominal, 72 pour les gros
+   essaims ────────────────────────────────────────────────────────────
+   Line 1 loses its 84px privilege: with the « C » ramp above, the live
+   roll is distinguished by its POSITION at the light top of the
+   gradient, not by a taller band. Every line now holds the same 56px
+   nominal (min-height, never a fixed height); the ONE growth case is a
+   hand of 21-30 dice — three rows of ten at 20px (3×20 + 2 swarm gaps
+   + the line's own 3px paddings + separator = 73) — which trayLineHtml
+   marks is-deep. L1's gold liseré (border colour) never depended on
+   the 84 and stays; its tier-3 headroom DID — the 30px max-height was
+   84-era slack, so tier 3 returns to the 22px every other line reads
+   at, or the left flank would push past the band. The zone's height
+   (--cd-tray-h) is settled in its own block below: the two questions
+   revert independently. APPENDED: same specificity as the earlier
+   declarations, later in the sheet. */
+.fh-cd-trayline.is-l1{min-height:56px}
+.fh-cd-trayline.is-deep{min-height:72px}
+.fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:22px}
+/* The ratified arithmetic of the 1-5 hand — « 38 + label ≈ 48, inside
+   the 56 » — used to need a display:none here on the retired token's
+   EMPTY 12px slot. Eric then ruled the slot out EVERYWHERE (« violet +
+   Bardic, rien de plus ») and dieHtml no longer emits it, so the wrap
+   is die + label in every home and the column reads 38+2+9 = 49 by
+   construction. The hover title naming the source moved to the wrapper. */
+/* Same hunt, last 2px: the dice zone's own 1px vertical padding sat on
+   top of the line's 3px — the line's padding is the breathing room.
+   38+2+9 = 49 content + 3+3+1 = 56 exactly (measured 56 after this). */
+.fh-cd-trayline .fh-cd-tray-dice{padding-top:0;padding-bottom:0}
+
+/* ── Lot BACKLOG-B (Eric, 2026-08-05) — the zone returns to its acted
+   284 ────────────────────────────────────────────────────────────────
+   Eric's ruling is « le tray reste à 284 px », and with L1 down to 56
+   the arithmetic AGREES — measured on the sheet, box-sizing:border-box
+   throughout (.fh-cd-root *), so a line's 3px paddings and its 1px
+   separator live INSIDE its 56, never on top of it:
+     tray top padding 2 (the fourth fitting's 2px 4px 0)
+   + cap 56 (BACKLOG-A band, border-bottom inside, margin-bottom 0)
+   + 4 × 56 nominal bands                       = 282 ≤ 284.
+   Four whole bands are exactly visible with 2px to spare; the list's
+   4px tail padding only shows at scroll-end, where it crops the top
+   band's 3px pad by ≤2px — invisible. A 292 (cap + 4×56 + paddings +
+   borders counted AGAIN) double-counts what border-box already folds
+   in, and would take 8px from the dock's flow for nothing whole. So
+   BACKLOG-A's 320 (which funded the old 84 + list margins: 2+56+2+84+
+   3×56 = 312 needed) gives back its 36px to the sheet above. Same
+   variable, so the summoned group's anchor (--cd-tray-h) and the
+   dock's padding-bottom follow by themselves. */
+.fh-cd-root{--cd-tray-h:284px}
+
+/* ── Lot R8 (Eric, 2026-08-05) — la rampe A : la profondeur raconte
+   l'âge du jet ────────────────────────────────────────────────────────
+   The « trois strates » concept: the Roll Builder lives in the WHITE of
+   the sheet, the vivid roll in the LIGHT top of the tray, and history
+   sinks into the DARK — one continuous ramp, no hard border. Ramp A
+   replaces the « C » ramp; same selector, later in the sheet, so it
+   wins by order without rewriting BACKLOG-B.
+   MEASURED GEOMETRY (tray 284px, cap 56, lines 56): the cap occupies
+   the ramp's top 20% (#8a8172→#6d6557); line 1 sits UNDER it, on
+   #6d6557→#595246 — a MID felt, not a light one. Dark ink was tried
+   first (the brief's hunch) and measured off: #2c2416 reads 2.66:1 at
+   line 1's very top and 1.98 at its bottom — illegible — and even on
+   the cap it peaks at 3.93. So the boundary chosen is: NO ink line —
+   light lettering everywhere, lifted one step where the ramp is light:
+   cap glyphs near-white #fffdf6 (4.65 at their centred seat, 3.83 at
+   the band's extreme top edge), the state chip on a dark PLATE like a
+   token on the felt (8.6–13.6:1 on the plate), and line 1's tints
+   raised a family step (each ≥4.85 at the text's centred seat, ≥4.2 at
+   the band's top edge). Lines 2+ keep BACKLOG-B's tints: their zone
+   starts at #595246, within a hair of the #5c5344 they were measured
+   on (all ≥4.62 at their lightest edge). */
+.fh-cd-dicetray{background:linear-gradient(180deg,#8a8172 0%,#6d6557 20%,#4a443a 55%,#2a261f 85%,#211e18 100%)}
+/* The cap on the light felt: near-white glyphs, dark hairline under. */
+.fh-cd-dicetray>.fh-cd-cap{color:#fffdf6;border-bottom-color:rgba(33,30,24,.28)}
+.fh-cd-dicetray>.fh-cd-cap small{color:#fffdf6}
+/* The state chip becomes a dark token lying on the felt: its tinted
+   letters kept, guaranteed against the plate, not the ramp. is-off
+   already owns a red plate and is untouched. */
+.fh-cd-dicetray .fh-cd-traystate{background:rgba(30,26,19,.8)}
+.fh-cd-dicetray .fh-cd-traystate.is-off{background:var(--cd-bad)}
+/* The cap's ⋮ and × ride the light: near-white, dark hover wash (the
+   old rgba(244,236,216,.08) wash is invisible on a light top). */
+.fh-cd-trayclear{color:#fffdf6}
+.fh-cd-trayclear:hover{color:#fff;background:rgba(33,30,24,.16)}
+.fh-cd-capacts .fh-cd-dmenu{color:#fffdf6}
+.fh-cd-capacts .fh-cd-dmenu:hover{background:rgba(33,30,24,.16)}
+/* Line 1 — the vivid roll in the light: every tint lifted one step.
+   (worst-edge / centred-seat ratios in the lot report) */
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-heading{color:#fff8e2}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-right .fh-cd-tray-title{color:#fff8e2}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-verdict{color:#ffd98a}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-total.is-n20{color:#ffd98a}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-total.is-ok{color:#c2ecab}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-outcome.is-ok{color:#c2ecab}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-total.is-bad{color:#ffd2c9}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-outcome.is-bad{color:#ffd2c9}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-total.is-quiet{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-account,
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-vs{color:#ece0c2}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-diewrap em{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-inf{color:#e8dcc0}
+.fh-cd-dicetray .fh-cd-trayline.is-l1.is-empty{color:#fffdf6}
+/* L1's gold liseré separates the light band from the mid felt below:
+   the .35 gold of BACKLOG-B sank into #595246 — half a step brighter. */
+.fh-cd-trayline.is-l1{border-bottom-color:rgba(233,209,150,.5)}
+/* The mood streaks were drawn for the old dark carpet; on line 1's mid
+   felt the red reads muddier and louder than on #26231c. Softened, not
+   silenced — the debt still nags (armed keeps its faster pulse). */
+.fh-cd-dicetray .fh-cd-frame.mood-chaos-owed::before,
+.fh-cd-dicetray .fh-cd-frame.mood-overreach-owed::before,
+.fh-cd-dicetray .fh-cd-frame.mood-chaos-armed::before,
+.fh-cd-dicetray .fh-cd-frame.mood-overreach-armed::before{opacity:.30}
+
+/* ── Lot R9 (Eric, 2026-08-05) — la boîte en bois du builder meurt ────
+   The « trois strates » concept again: the Roll Builder lives in the
+   WHITE — it is POSED ON the sheet, not boxed in a wooden tray. The
+   fourth fitting's wood (grain, #3f2c14 border, sunk box-shadow) is
+   overridden here by append: background goes TRANSPARENT so the stage's
+   own parchment radial runs continuous under the builder — no border,
+   no inset shadow, in assembly as at rest. The dice alone carry a light
+   drop shadow to say « posés dessus ». Every lettering that was light
+   on dark wood returns to ink on parchment (ratios on the stage's
+   darkest edge #dccc9f): body #2c2416 9.6:1, accounts/terms --cd-muted
+   5.4:1, verdicts in a deepened gold #6f4a0a 4.96:1 (--cd-gold-bright
+   #9c6b16 measured 2.91 — too pale for 11px bold), the takeover
+   question in oxblood 8.5:1 — dramatic and legible on parchment. The
+   badges above the builder are untouched. */
+.fh-cd-frame.is-judgment{border:0;background:none;box-shadow:none;border-radius:0}
+.fh-cd-frame.is-judgment.is-assembly{border:0}
+/* Ink on parchment — the wooden block's light lettering, reversed. */
+.fh-cd-frame.is-judgment .fh-cd-judgment>b{color:var(--cd-ink)}
+.fh-cd-frame.is-judgment .fh-cd-judgment>b.fh-cd-verdict{color:#6f4a0a}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em{color:var(--cd-muted)}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em.fh-cd-account{color:var(--cd-muted)}
+.fh-cd-frame.is-judgment .fh-cd-diewrap em{color:var(--cd-muted)}
+.fh-cd-judgeright b{color:var(--cd-ink)}
+.fh-cd-judgeright i{color:#6f4a0a}
+/* The grande occasion (NATURAL 1 takeover) keeps its drama in dark
+   blood on the light sheet instead of gold on wood. */
+.fh-cd-frame.is-judgment .fh-cd-judgeask>b{color:var(--cd-oxblood)}
+.fh-cd-frame.is-judgment .fh-cd-judgeask>i{color:var(--cd-muted)}
+/* The dice sit ON the sheet: a light drop shadow, nothing else. */
+.fh-cd-frame.is-judgment .fh-cd-static-die{filter:drop-shadow(0 2px 3px rgba(60,40,10,.35))}
+.fh-cd-frame.is-judgment .fh-cd-die svg,
+.fh-cd-frame.is-judgment .fh-cd-judgeask .fh-cd-die{filter:drop-shadow(0 2px 3px rgba(60,40,10,.35))}
+/* The builder's moods were pitched for dark wood; on parchment the gold
+   glows (arcane/crit success, awakening) vanish into the sheet — they
+   deepen to bronze. The red of a debt or a critical failure already
+   reads on light and keeps its tints. */
+.fh-cd-frame.is-judgment.mood-arcane-success::before,
+.fh-cd-frame.is-judgment.mood-crit-success::before{
+  background:radial-gradient(120% 90% at 50% 50%,rgba(156,107,22,.42) 0%,rgba(156,107,22,.10) 55%,transparent 78%)}
+.fh-cd-frame.is-judgment.mood-awakening::before{
+  background-image:conic-gradient(from 0deg at 50% 50%,rgba(156,107,22,.4),transparent 22%,rgba(122,82,12,.36) 46%,transparent 70%,rgba(156,107,22,.4))}
+
+/* ── R6: the robe row — SEAL and COLOUR fused (2026-08-05) ──────────
+   One rail of pastilles in the die menu instead of two labelled rows:
+   seal-bearing robes (tinted die faces wearing their mark) then naked
+   colour pastilles. No 36px label — the pastilles ARE the caption, and
+   every one is named by its hover title. The old .fh-cd-dmseal/.fh-cd-dmcol
+   rules above stay for the sheet's history but no longer dress this menu. */
+.fh-cd-card .fh-cd-dmrobe{position:relative;width:19px;height:19px;padding:0;border:1px solid transparent;
+  border-radius:4px;background:none;cursor:pointer;display:inline-grid;place-items:center}
+.fh-cd-card .fh-cd-dmrobe>svg{width:15px;height:15px}
+.fh-cd-card .fh-cd-dmrobe.is-on{border-color:var(--cd-gold-hi);box-shadow:0 0 0 1px var(--cd-gold-hi)}
+.fh-cd-card .fh-cd-dmrobe:disabled{opacity:.3;cursor:not-allowed}
+/* The mark rides ON the die face, inked in that material's own num colour
+   (inline), so ♪ stays legible on violet and on crimson alike. */
+.fh-cd-card .fh-cd-dmmark{position:absolute;inset:0;display:grid;place-items:center;
+  font-size:calc(7.4px * var(--cd-fs));font-weight:700;line-height:1;pointer-events:none}
+.fh-cd-card .fh-cd-dmmark svg{width:9px;height:9px;display:block}
+/* "—": the undressed die. A bordered chip like the old seal buttons, so it
+   still reads as a button even with no die face inside. */
+.fh-cd-card .fh-cd-dmrobe.is-none{border-color:var(--cd-line);background:var(--cd-parch-2);
+  color:var(--cd-muted);font-family:inherit;font-size:calc(7.6px * var(--cd-fs));font-weight:700}
+.fh-cd-card .fh-cd-dmrobe.is-none.is-on{border-color:#6d4a10;
+  background:linear-gradient(180deg,#d3ab55,#9c6b16);color:#fff8e2;box-shadow:none}
+
+/* ── M3 (Eric, 2026-08-06) : le clic-remonte se voit ──────────────────
+   (b) The line that just climbed to the registre's top announces itself:
+   a brief gold liseré that appears then fades (~1.8s), played exactly once
+   — the JS only stamps is-surfaced on the first render after the climb, so
+   later renders (feed polls) cannot restart it. Under reduced motion the
+   liseré is simply shown static; the next render removes the class and
+   with it the mark, which is the sanctioned no-animation fade. */
+.fh-cd-trayline.is-surfaced{animation:fh-cd-surfaced 1.8s ease-out 1 both}
+@keyframes fh-cd-surfaced{
+  0%{box-shadow:inset 0 0 0 2px var(--cd-gold-glow)}
+  60%{box-shadow:inset 0 0 0 2px var(--cd-gold-hi)}
+  100%{box-shadow:inset 0 0 0 2px transparent}
+}
+@media(prefers-reduced-motion:reduce){
+  .fh-cd-trayline.is-surfaced{animation:none;box-shadow:inset 0 0 0 2px var(--cd-gold-hi)}
+}
+/* (c) The one die the climb was aimed at keeps a small persistent ring —
+   "si j'ai 30 d6, c'est pratique" — until something else happens (another
+   climb, a new roll, a die menu opening, CLEAR TRAY — see
+   surfaceClickedTrayDie). Outline, not border: it costs no layout, so the
+   marked die neither grows nor shifts its row. */
+.fh-cd-diewrap.is-picked{outline:2px solid var(--cd-gold-hi);outline-offset:1px;border-radius:5px}
+
+/* ── Phase 1 (architecture lot, 2026-08-05) — the Destiny & Dice Pool
+   band is born ───────────────────────────────────────────────────────
+   The in-flow Destiny zone was covered permanently by the summoned
+   group (constat C1: never visible in play). Its replacement is a thin
+   PERSISTENT 44px strip anchored just above the Dice Tray, on the
+   panels that show the roller — it carries everything that is COUNTED:
+   the Points/Score ledger, the gold dice (22px, interactions intact),
+   the Major Arcana compact on the right. Ratified on the maquette:
+   dark felt, gold liseré on top, dark seam below. The tray itself is
+   untouched (bottom:0, --cd-tray-h 284). APPENDED only. */
+.fh-cd-root{--cd-band-h:44px}
+/* z-index 25, above the summoned group's 24: the two never overlap
+   spatially, but the band's own popover (the ledger menu) opens UPWARD
+   into the group's footprint and must ride over it — measured: at 23
+   the open menu sat under the console, unusable mid-assembly. */
+.fh-cd-band{position:absolute;left:0;right:0;bottom:var(--cd-tray-h);height:var(--cd-band-h);z-index:25;
+  display:flex;align-items:center;gap:8px;padding:0 8px;margin:0;
+  background:linear-gradient(180deg,#2e2920,#242019);
+  border-top:1px solid rgba(201,164,90,.35);border-bottom:1px solid #14110c}
+/* The flow must stop ABOVE the band, not under it: the dock's bottom
+   reservation grows by the band's height when the band is up, so the
+   panel recovers the old zone's space and ends cleanly — no dead flux
+   (the « 45px morts » anomaly must not reproduce). Later than the
+   :has(.fh-cd-dicetray) rule, same specificity trick, so it wins when
+   both match. */
+.fh-cd-dock:has(.fh-cd-band){padding-bottom:calc(var(--cd-tray-h) + var(--cd-band-h))}
+/* The summoned group re-anchors above the band. It only renders on the
+   same `roller` gate as the band, so the calc never runs without a band
+   under it — the group must never cover the band again: spending a
+   Destiny die MID-ASSEMBLY happens on the band, under the group. */
+.fh-cd-floatbottom{bottom:calc(var(--cd-tray-h,0px) + var(--cd-band-h,0px));
+  max-height:calc(100% - var(--cd-tray-h,0px) - var(--cd-band-h,0px))}
+/* The ledger block: « points/score » with the ∞ mark, ~30px tall. The
+   whole block is the button that opens the Destiny menu (Points −/+,
+   Score edit, pool rows — the old ⋮'s cargo). Contrast, measured on the
+   band's LIGHT top #2e2920 (worst case): points #ffd98a 10.7:1, slash
+   #bfae8a 6.6:1, score #e8dcc0 10.6:1, ∞ #eac878 9.0:1 — all ≥4.5. */
+.fh-cd-bandledger{position:relative;flex:none;display:flex;align-items:center}
+.fh-cd-bandpts{display:flex;align-items:center;gap:4px;height:30px;padding:0 7px;
+  border:1px solid rgba(201,164,90,.28);border-radius:5px;background:rgba(20,17,12,.45);
+  cursor:pointer;font-family:inherit}
+.fh-cd-bandpts:hover,.fh-cd-bandpts.is-active{border-color:#eac878}
+.fh-cd-bandpts .fh-icon{width:13px;height:13px;color:#eac878;flex:none}
+.fh-cd-bandpts>b{font-size:calc(13px * var(--cd-fs));font-weight:800;color:#ffd98a;line-height:1;font-variant-numeric:tabular-nums}
+.fh-cd-bandpts>i{font-style:normal;color:#bfae8a;font-size:calc(10px * var(--cd-fs));line-height:1}
+.fh-cd-bandpts>span{font-size:calc(10px * var(--cd-fs));font-weight:700;color:#e8dcc0;line-height:1;font-variant-numeric:tabular-nums}
+.fh-cd-bandpts .fh-cd-overflow{margin-left:2px}
+/* The Destiny menu opens UPWARD out of the band (the band sits at the
+   dock's bottom; downward would dive under the tray). Parchment dress
+   inherited from .fh-cd-dpoolmenu above; only the anchor flips. */
+.fh-cd-band .fh-cd-dpoolmenu{top:auto;bottom:calc(100% + 6px);left:0}
+/* The ledger rows the menu gained from the old in-flow strip: POINTS
+   with its −/+ and input, SCORE with its click-to-edit — same widgets,
+   same data hooks, new seat. The .fh-cd-dlab loses its absolute perch
+   (it was a below-the-value caption in the old row). */
+.fh-cd-dledrow{display:flex;align-items:center;gap:5px;height:22px;padding:0 3px;
+  border-bottom:1px solid var(--cd-line-soft);margin-bottom:2px}
+.fh-cd-dledrow .fh-cd-dlab{position:static;transform:none;margin:0;flex:1;
+  font-size:calc(6.8px * var(--cd-fs));letter-spacing:.12em;color:var(--cd-muted)}
+/* The gold dice at 22px (31 in the old zone): five sizes + ledger +
+   arcana share 425px. Same button, same classes, same data-destiny-die
+   — only the width var changes, so staging/is-calling/is-selected all
+   carry over untouched. The compact media override (≤900px: 28px) is
+   beaten by this later, more specific selector on purpose. */
+.fh-cd-band .fh-cd-pool{margin-left:0;width:auto;gap:5px;justify-content:flex-start}
+.fh-cd-band .fh-cd-picker-die{width:22px}
+/* Die labels sat in --cd-muted ink for parchment; on the band's felt
+   that reads 2.4:1 — lifted to the tray's own quiet gold (8.6:1). */
+.fh-cd-band .fh-cd-pickerlabel{color:#d8c79b}
+/* The Arcana keeps its own click (draw/awakening) as a compact right-
+   edge label — it fits at the 425 reference (~90px free), ellipsized
+   beyond. It sheds the old absolute perch and rides the flex row. */
+.fh-cd-band .fh-cd-arcana{position:static;margin-left:auto;bottom:auto;
+  max-width:96px;color:#eac878}
+.fh-cd-band .fh-cd-arcana:hover{color:#ffd98a}
+.fh-cd-band .fh-cd-arcana.is-empty{color:#bfae8a}
+.fh-cd-band .fh-cd-arcana.is-owed{color:#ff9d90}
+
+/* ── M5: the PORTENT label must not slide under its select ────────
+   The die-menu label column was a FIXED 36px (flex:none;width:36px)
+   while its text scales with --cd-fs and carries .09em tracking —
+   "PORTENT" renders wider than 36px, spills out of its box, and the
+   select placed 3px after the box paints OVER the spilled letters.
+   The column keeps 36px as a MINIMUM so Roll/Or stay aligned, but a
+   long label now widens its box and pushes the select clear. */
+.fh-cd-card .fh-cd-dmrow>span{width:auto;min-width:36px;white-space:nowrap}
+
+/* ── Phase 2 (Eric R5, 2026-08-05) — la mort du cap du tray ──────────
+   The tray's cap row is not rendered any more (diceTrayInner emits only
+   the traylist and the chevrons); its cargo moved to the Identity zone.
+   The zone keeps --cd-tray-h:284 and the arithmetic now reads, border-box
+   throughout (.fh-cd-root *):
+     tray top padding 2 (the fourth fitting's 2px 4px 0)
+   + 5 × 56 nominal bands                        = 282 ≤ 284.
+   FIVE whole bands exactly visible with 2px spare — the cap's 56 became
+   a fifth line, which is what the 284 of BACKLOG-B was already priced
+   for. No variable moves; only the chevron re-anchors: its perch was
+   calc(--cd-traycap-h + 4px) under a cap that no longer exists, so it
+   floats over line 1's top edge instead. APPENDED only. */
+.fh-cd-trayarrow.is-up{top:4px}
+/* The LIVE/RECENT/OFF chip on the Identity line, after the campaign
+   code. Inline in the subtitle <p> (nowrap + ellipsis, so it can never
+   wrap the line); the base .fh-cd-traystate margin-left:auto was a flex
+   habit that means nothing inline but is zeroed for clarity. The chip
+   keeps the PARCHMENT tints of its base rule — gold RECENT, #3d7d56
+   LIVE, white-on-red OFF (the loud plate survives the move untouched:
+   .is-off's background is unscoped). */
+.fh-cd-id .fh-cd-traystate{margin-left:5px;display:inline-block;padding:1px 5px;
+  vertical-align:1px;line-height:1.2}
+/* The Identity subtitle becomes a flex row so the chip can NEVER be the
+   clipped thing (measured at the 360 floor: the old single ellipsis run
+   cut the chip off entirely — a silent fallback, forbidden). Sacrifice
+   order: the species/class prose ellipsizes; the campaign code and the
+   chip are flex:none. The no-character invitation rides .fh-cd-subwho
+   alone and keeps the old single-ellipsis behaviour. */
+.fh-cd-id p{display:flex;align-items:center;min-width:0}
+.fh-cd-subwho{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-cd-subcode{flex:none;white-space:pre}
+.fh-cd-id .fh-cd-traystate{flex:none}
+
+/* ── Phase 3 (architecture lot, 2026-08-05) — the group is INVOKED, the ⊕
+   is born on the band ─────────────────────────────────────────────────
+   The console+judgment group only renders while a jet is being made,
+   questioned or read (fh-player-sheet.js: overlayVisible) — no CSS change
+   to its anchor: absence is a JS fact, the .fh-cd-floatbottom dress and
+   its band-clearing anchor are untouched. What CSS gains here: the ⊕ on
+   the band's right edge, its parchment popover posed on the tray's top,
+   the popover's CLEAR TRAY (principal seat), the builder's discreet ✕
+   clear, and ROLL riding the right of the console's command row now that
+   the white picker has left it. APPENDED only. */
+.fh-cd-freewrap{position:relative;flex:none;display:flex;align-items:center}
+/* The ⊕: discreet, dashed gold — the maquette's quiet door on the band. */
+.fh-cd-freebtn{flex:none;width:26px;height:26px;padding:0;border:1px dashed rgba(201,164,90,.55);
+  border-radius:6px;background:none;color:#eac878;font-size:15px;line-height:1;cursor:pointer}
+.fh-cd-freebtn:hover,.fh-cd-freebtn.is-active{border-color:#ffd98a;color:#ffd98a;border-style:solid}
+/* The popover: die-menu parchment (not .fh-cd-card — its generic button
+   dress would restyle the picker dice), anchored under the band's right
+   edge, over the tray's first line. z 26: above the band's 25 and the
+   group's 24 — it is the topmost transient. */
+.fh-cd-freepop{position:absolute;right:-4px;top:calc(100% + 10px);z-index:26;
+  display:flex;flex-direction:column;gap:6px;padding:7px 8px;width:max-content;
+  background:var(--cd-parch);border:1.5px solid var(--cd-gold-hi);border-radius:7px;
+  box-shadow:0 10px 24px rgba(20,12,4,.45)}
+.fh-cd-freepop .fh-cd-whiterow{margin-left:0}
+/* CLEAR TRAY's principal seat: a quiet text button under the picker. */
+.fh-cd-freeclear{align-self:flex-end;height:18px;padding:0 8px;border:1px solid var(--cd-line);
+  border-radius:4px;background:var(--cd-parch-2);color:var(--cd-muted);cursor:pointer;
+  font-family:inherit;font-size:calc(7px * var(--cd-fs));letter-spacing:.1em;text-transform:uppercase}
+.fh-cd-freeclear:hover:not(:disabled){color:var(--cd-ink);border-color:var(--cd-gold-hi)}
+.fh-cd-freeclear:disabled{opacity:.5;cursor:not-allowed}
+/* The builder's discreet clear: end of the badge strip, small print. */
+.fh-cd-clearmini{margin-left:auto;flex:none;height:16px;padding:0 6px;border:0;border-radius:4px;
+  background:none;color:var(--cd-faint);cursor:pointer;font-family:inherit;
+  font-size:calc(6.8px * var(--cd-fs));letter-spacing:.08em;text-transform:uppercase}
+.fh-cd-clearmini:hover:not(:disabled){color:var(--cd-ink);background:var(--cd-parch-2)}
+.fh-cd-clearmini:disabled{opacity:.45;cursor:not-allowed}
+/* ROLL keeps the row's right flank, where the whiterow used to sit. */
+.fh-cd-consoleroll{margin-left:auto;flex:none;display:flex;align-items:center}
+
+/* ── Phase 4 (architecture lot) — the COUNTED Dice Pool on the band ───
+   "Dice Pool ≠ Dice Selector": between the gold dice and the arcana the
+   band carries a reserve of counted resources — a 20px pastille (tinted
+   die, or ×N chip) with a minuscule label under each. The strip is
+   flex:1 + overflow:hidden so its width never depends on its own content:
+   syncPoolFit reads that width, and past it the excess folds into a +N
+   chip (the Destiny ledger itself is NEVER folded). APPENDED only. */
+.fh-cd-poolres{flex:1 1 0;min-width:0;align-self:stretch;display:flex;align-items:center;
+  gap:3px;overflow:hidden}
+.fh-cd-poolchip{flex:none;width:24px;padding:0;border:0;background:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;font-family:inherit}
+.fh-cd-poolchip svg{display:block}
+.fh-cd-poolchip:hover .fh-cd-poollab{color:#ffd98a}
+/* The label: minuscule, ellipsized — the maquette's one word under the die.
+   Same quiet gold as the band's die labels (contrast measured there). */
+.fh-cd-poollab{display:block;max-width:24px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;font-size:calc(6px * var(--cd-fs));font-weight:700;
+  letter-spacing:.02em;color:#d8c79b;line-height:1.2}
+/* The counter chip: ×N printed on the resource's own material — the die
+   colours are inline (DIE_MATERIAL), only the shape lives here. */
+.fh-cd-poolx{display:inline-grid;place-items:center;box-sizing:border-box;
+  border:1.5px solid;border-radius:6px;font-size:calc(8px * var(--cd-fs));
+  font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+/* The +N fold: dashed gold like the ⊕ — a door, not a resource. */
+.fh-cd-poolmore{flex:none;min-width:20px;height:20px;padding:0 3px;
+  border:1px dashed rgba(201,164,90,.55);border-radius:6px;background:none;
+  color:#eac878;font-family:inherit;font-size:calc(7.5px * var(--cd-fs));
+  font-weight:800;cursor:pointer}
+.fh-cd-poolmore:hover,.fh-cd-poolmore.is-active{border-color:#ffd98a;color:#ffd98a;border-style:solid}
+/* The pool cards (add / edit / +N list) pose above the WHOLE band, full
+   width — the band is their positioning context, so left/right clear the
+   8px padding at 425 and at the 360 floor alike. z 26, over the group. */
+.fh-cd-band .fh-cd-card.is-poolcard{position:absolute;bottom:calc(100% + 6px);
+  left:8px;right:8px;z-index:26;display:block;text-align:left;
+  /* The base card's max-height:100% reads the BAND (44px) here and clamped
+     the card to two rows, the rest scrolled out of sight — measured on the
+     bench. The card grows upward over the panel instead. */
+  max-height:none;overflow:visible}
+.fh-cd-card.is-poolcard input{height:19px;border:1px solid var(--cd-line);
+  background:#fffdf6;border-radius:4px;font-family:inherit;
+  font-size:calc(8.5px * var(--cd-fs));color:var(--cd-ink);padding:0 5px}
+.fh-cd-card.is-poolcard #fhPsPoolLabel{flex:1;min-width:0}
+.fh-cd-card.is-poolcard #fhPsPoolCount{width:36px;text-align:center}
+.fh-cd-card.is-poolcard .fh-cd-acts{margin-top:5px}
+/* The +N list's rows: the pastille, the name, the nature — one row is one
+   spend; the ✎ beside it opens the identity card. Quiet dress, not CTA. */
+.fh-cd-poolrow{display:flex;align-items:center;gap:4px;margin-top:3px}
+.fh-cd-card .fh-cd-poolrowspend{flex:1;min-width:0;display:flex;align-items:center;gap:6px;
+  height:24px;padding:0 6px;border:1px solid var(--cd-line);border-radius:4px;
+  background:var(--cd-parch-2);color:var(--cd-ink);font-family:inherit;cursor:pointer;text-align:left}
+.fh-cd-card .fh-cd-poolrowspend:hover{border-color:var(--cd-gold-hi)}
+.fh-cd-card .fh-cd-poolrowspend>span:not(.fh-cd-poolx){flex:1;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;font-size:calc(8.5px * var(--cd-fs));font-weight:700}
+/* The ×N chip keeps its square in the list row — it is a span too, and the
+   name's flex:1 must not stretch it (measured: 18px became 153px). */
+.fh-cd-card .fh-cd-poolrowspend>.fh-cd-poolx{flex:none}
+.fh-cd-card .fh-cd-poolrowspend>i{flex:none;font-style:normal;color:var(--cd-muted);
+  font-size:calc(7.5px * var(--cd-fs));font-variant-numeric:tabular-nums}
+.fh-cd-card .fh-cd-pooledit{flex:none;width:24px;height:24px;padding:0;
+  border:1px solid var(--cd-line);border-radius:4px;background:var(--cd-parch-2);
+  color:var(--cd-muted);cursor:pointer;font-size:calc(9px * var(--cd-fs))}
+.fh-cd-card .fh-cd-pooledit:hover{border-color:var(--cd-gold-hi);color:var(--cd-ink)}
+/* The sober seat for ADD (Q1): one row at the foot of the Destiny menu. */
+.fh-cd-dpooladd{margin-top:2px;height:20px;padding:0 3px;border:0;border-top:1px solid var(--cd-line-soft);
+  background:none;color:var(--cd-gold);font-family:inherit;font-size:calc(7.5px * var(--cd-fs));
+  font-weight:700;letter-spacing:.04em;cursor:pointer;text-align:left;white-space:nowrap}
+.fh-cd-dpooladd:hover{color:var(--cd-gold-bright)}
+
+/* ── Phase 5 (architecture lot, 2026-08-05) — le flanc gauche : le nom
+   remplace le chip, une proposition par ligne ─────────────────────────
+   R4: the portrait/chip dies; the NAME itself sits at the top-left of
+   the line in small discreet uppercase (« HARNESS » / « BRUNIR », the
+   validated maquette) — mine and the feed's alike. The flank keeps its
+   80px (Q4). The old .fh-cd-tray-who / initials / floating-name dress
+   stays above for the sheet's history; the markup no longer emits it.
+   R7: one proposition under the name — verdict, else outcome, else
+   nothing; badges left for the speak's hover title, so the flank is a
+   two-storey column now and a nat 1 accepted holds the 56 again.
+   Name colour #f4ecd8 measured on the ramp: 4.89:1 at its lightest
+   seat (line 1's top edge #6d6557), 14.1:1 at the dark bottom — the
+   parchment family, a step quieter than the cap's near-white.
+   APPENDED only. */
+.fh-cd-tray-left{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px}
+.fh-cd-tray-owner{display:block;max-width:100%;min-width:0}
+.fh-cd-tray-owner b,.fh-cd-tray-owner button{display:block;max-width:100%;padding:0;border:0;background:none;
+  font-family:inherit;font-style:normal;font-size:calc(6.5px * var(--cd-fs));font-weight:700;
+  letter-spacing:.09em;text-transform:uppercase;line-height:1.2;color:#f4ecd8;text-align:left;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
+.fh-cd-tray-owner button{cursor:pointer}
+.fh-cd-tray-owner button:hover{color:#ffd98a}
+
+/* ── Phase 6 (architecture lot, 2026-08-05) — le tray déployé ─────────
+   Eric's ratified ask: the dice history in GRAND — the tray's own lines,
+   covering everything but the Identity zone. The section carries
+   .fh-cd-dicetray on purpose: ramp A and every tray-scoped line tint
+   apply by inheritance, and the gradient stretches over the deployed's
+   full height — the depth-tells-age language, unbroken. Only the
+   deltas live here. z 26: over the band (25) and the summoned group
+   (24, where a takeover renders — which is exactly why render() closes
+   the deployed when a takeover arrives instead of ever coexisting);
+   under the Stream (27) and the pops (30). `top` is pinned inline by
+   render() to the measured header; 53px is the no-JS fallback.
+   APPENDED only. */
+.fh-cd-trayexp{top:53px;height:auto;z-index:26;box-shadow:0 -10px 26px rgba(20,12,4,.45)}
+/* The deployed's list scrolls visibly — a long registre earns a thin
+   scrollbar where the tray hid its (chevrons carry the tray's affordance;
+   here the whole surface IS the scroll). */
+.fh-cd-trayexp .fh-cd-traylist{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin}
+.fh-cd-trayexp .fh-cd-traylist::-webkit-scrollbar{display:block;width:5px}
+.fh-cd-trayexp .fh-cd-traylist::-webkit-scrollbar-thumb{background:rgba(244,236,216,.28);border-radius:3px}
+/* The cap's × — same near-white as the dead cap's controls once wore on
+   the light top of the ramp. */
+.fh-cd-trayexp-x{margin-left:auto;flex:none;width:26px;height:26px;padding:0;border:0;border-radius:5px;
+  background:none;color:#fffdf6;font-size:16px;line-height:1;cursor:pointer;font-family:inherit}
+.fh-cd-trayexp-x:hover{color:#fff;background:rgba(33,30,24,.2)}
+/* The band's door: the ⊕'s dashed-gold family, an expansion glyph. */
+.fh-cd-expbtn{flex:none;width:26px;height:26px;padding:0;margin-right:4px;border:1px dashed rgba(201,164,90,.55);
+  border-radius:6px;background:none;color:#eac878;cursor:pointer;display:grid;place-items:center}
+.fh-cd-expbtn svg{display:block;width:13px;height:13px}
+.fh-cd-expbtn:hover,.fh-cd-expbtn.is-active{border-color:#ffd98a;color:#ffd98a;border-style:solid}
+/* The ping: a click's brief highlight — the deployed's only line gesture. */
+.fh-cd-trayexp .fh-cd-trayline.is-ping{animation:fh-cd-exp-ping .7s ease-out}
+@keyframes fh-cd-exp-ping{0%{background:rgba(255,217,138,.24)}100%{background:transparent}}
+
+/* ── R33 : le pulse est réservé aux dettes ─────────────────────────
+   Le badge EXHAUSTION clignotait à vide : la base .fh-cd-pending porte le
+   pulse fh-cd-call parce que sa robe de sang EST la dette (Chaos/Overreach
+   en attente d'être affrontés), et la variante or « condition » ne s'en
+   retirait pas — un simple niveau d'exhaustion non nul pulsait donc alors
+   que rien n'attendait le joueur. Règle ratifiée : ne clignote que ce qui
+   EXIGE l'attention (dette armée, décision en attente). L'exhaustion est
+   un état que la fiche connaît déjà, comme la note épinglée (.is-note,
+   déjà animation:none) : elle attend en or, immobile. */
+.fh-cd-pending.is-exhaustion{animation:none}

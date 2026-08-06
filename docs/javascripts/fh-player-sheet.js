@@ -45,12 +45,27 @@
   var DIE_SEQUENCE = [4,6,8,10,12];
   var ROLL_DIE_SIZES = [4,6,8,10,12,20,100];
   var MAX_BONUS_DICE = 3;
-  var MAX_FREE_DICE = 40;
+  var MAX_FREE_DICE = 50;
   var LIGHTWEIGHT_DICE_THRESHOLD = 6;
-  /* Both picker rows (Destiny, white dice) render at this size. Kept in step
-     with the .fh-cd-picker-die / .fh-cd-calling-die widths in companion-dock.css. */
+  /* The white picker row renders at this size. Kept in step with the
+     .fh-cd-picker-die / .fh-cd-calling-die widths in companion-dock.css. */
   var PICKER_DIE_PX = 31;
+  /* The Destiny dice live in the 44px band now (phase 1, dock-dice-tray):
+     22px keeps five dice + the ledger + the arcana inside one 425px-wide
+     strip. Kept in step with .fh-cd-band .fh-cd-picker-die. */
+  var BAND_DIE_PX = 22;
   var MAX_HISTORY = 20;
+  /* The Dice Tray holds ten rolls (Eric, 2026-08-03) — the first in large
+     dice, three more in small ones, the rest as static snapshots. Beyond ten
+     the record lives in the Stream, or on AboveVTT's own log. */
+  var TRAY_MAX = 10;
+  /* Die sizes per tray CROWD, not per band (grille ratifiée Eric, lot
+     BACKLOG-B 2026-08-05): a skill hand of 1-5 keeps the wrapper and its
+     label at 38px; 6-10 go naked on one row, 30 down to 20; 11-30 hold
+     rows of exactly ten at 20px — 20 is the FLOOR, because the floor is
+     the numeral: ~11px of digit at 20, ~8px (texture) at the old 16. */
+  var TRAY_DIE_SKILL = 38;
+  var TRAY_DIE_ROW = 20;
   var MAX_EXHAUSTION = 6;
 
   var root;
@@ -81,10 +96,35 @@
     activeContext:"loop", target:"Aberration", cr:"1", inventory:null,editDraft:null,
     loading:false, message:"", messageKind:"",
     dockOpen:false, menuOpen:false, popOpen:"", diceSignatures:{}, destinyPoolMenu:false, consoleMenu:false,
+    /* Phase 4 (architecture lot): the COUNTED resources of the Dice Pool —
+       "Dice Pool ≠ Dice Selector". poolResources is the per-character list
+       ({id,label,kind,sides,count,tint,origin}), persisted with the rest of
+       the local play state. poolPrompt is whichever pool card is open
+       (add / edit / the +N overflow list); poolFit is how many pastilles
+       the band measured room for on the last render. */
+    poolResources:[], poolPrompt:null, poolFit:4,
+    /* Phase 3 (architecture lot): the console+judgment group is an INVOKED
+       overlay now, not furniture. builderOpen is the player-facing half of
+       its existence (a takeover, an armed fate or rolling dice can hold it
+       up on their own — see overlayHeld). freePop is the ⊕ popover on the
+       band, where the white picker lives since it left the console. None
+       of this is persisted: a reload re-summons the overlay from the roll
+       state itself. */
+    freePop:false, builderOpen:false, builderInvokedAt:0, builderRetireAt:0, builderRetireTimer:null,
+    /* Phase 6 (architecture lot): the DEPLOYED tray — the session's whole
+       dice history in the tray's own visual language, covering everything
+       but Identity. Transient like the rest of this block: never persisted,
+       and render() retires it the instant a takeover claims the stage. */
+    trayExpanded:false,
     // Stream is `optional`, off by default (UI-TERMINOLOGY.md zone 10) -- the
     // only zone the player toggles rather than one that opens on its own.
     streamOpen:false,
     trayQuietTitle:"", trayVerdict:"", trayRevealAt:0, trayRevealTimer:null,
+    // A roll called back up by right-clicking its reading glass (display order only).
+    traySurfaceId:"", traySurfaceAt:"",
+    /* M3: the visible half of the climb — a one-shot line flash, a one-shot
+       scroll-to-top, and the clicked die's persistent mark {lineId,di}. */
+    traySurfaceFlash:false, trayScrollToTop:false, traySurfaceDie:null,
     vitals:{current:null,max:null}, hpOpen:false, scoreEditing:false, windowMode:"margin", pendingArmed:null,
     diePrompt:null, destinyStaged:null, callUntil:0, callTimer:null, zoom:ZOOM_DEFAULT, zoomAuto:true,
     panel:"skills", panelData:{},
@@ -699,6 +739,9 @@
     state.trayResults=Array.isArray(pending.trayResults)?pending.trayResults:[];state.trayTitle=pending.trayTitle||"Dice Tray";state.trayResultText=pending.trayResultText||"";state.trayVerdict=pending.trayVerdict||"";state.pendingArmed=pending.pendingArmed||null;
     state.destinyStaged=pending.destinyStaged||null;
     state.diePrompt=null;
+    // Phase 4: the counted pool. Local-only, like traySelection and prefs.
+    state.poolResources=normalizePoolResources(local.poolResources);
+    state.poolPrompt=null;
     // rollConfig is derived, never stored: a refresh mid-roll rebuilds the console
     // from the entry so the head keeps naming the check instead of saying FREE ROLL.
     if(rollOpen()){var resumed=openEntry();state.rollConfig=resumed?configFromEntry(resumed):null;}
@@ -708,9 +751,11 @@
   }
   function persistPlayState() {
     if (!state.code || !state.pseudo || !state.destiny) return;
+    // Phase 4: a spent-out resource with no die still waiting on it is gone.
+    prunePoolResources();
     var safePrompt=state.trayPrompt&&["nat1","arcane1","chaos","awakening","die-choice","arcana-draw"].indexOf(state.trayPrompt.type)>=0?state.trayPrompt:null;
     var pendingRoll={rollSequence:state.rollSequence,trayPrompt:safePrompt,queueDone:state.queueDone,trayResults:state.trayResults,trayTitle:state.trayTitle,trayResultText:state.trayResultText,trayVerdict:state.trayVerdict,pendingArmed:state.pendingArmed,destinyStaged:state.destinyStaged};
-    var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll,panelData:state.panelData};
+    var payload = {destiny:state.destiny,vitals:state.vitals,history:state.history.slice(0,MAX_HISTORY),events:state.events.slice(0,10),traySelection:state.traySelection,trayLabel:state.trayLabel,prefs:state.prefs,pendingRoll:pendingRoll,panelData:state.panelData,poolResources:poolList()};
     try { localStorage.setItem(storageKey(), JSON.stringify(payload)); } catch (error) {}
     clearTimeout(persistTimer);
     persistTimer = window.setTimeout(function () {
@@ -937,8 +982,9 @@
     if(!body)return "";
     return '<svg class="fh-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">'+body+'</svg>';
   }
-  /* The mark a token shows in a 12px slot: a glyph, or the bold Georgia
-     numeral .fh-cd-src b was built for. Nothing to add for the numerals. */
+  /* The mark a source token shows: a glyph, or a bold numeral. Since the
+     wrappers lost their src slot this only dresses the robe pastilles in the
+     die menu (.fh-cd-dmrobe — painted ON the tinted die face since R6). */
   function bonusSourceMark(source){
     var token=rollSource(source);
     if(token.letter)return "<b>"+token.letter+"</b>";
@@ -962,10 +1008,14 @@
     var sides=Number(raw&&raw.sides!=null?raw.sides:raw);
     if(ROLL_DIE_SIZES.indexOf(sides)<0)return null;
     raw=raw&&typeof raw==="object"?raw:{};
-    return {id:raw.id||uuid(),sides:sides,colour:dieColour(raw.colour),advantageMode:rollMode(raw.advantageMode),forcedResult:forcedDieResult(raw.forcedResult,sides)};
+    /* label and poolResourceId (phase 4): a free die spent out of the counted
+       pool keeps its name and the id that re-credits its resource if it is
+       taken back before ROLL. Plain free dice carry neither. */
+    return {id:raw.id||uuid(),sides:sides,colour:dieColour(raw.colour),advantageMode:rollMode(raw.advantageMode),forcedResult:forcedDieResult(raw.forcedResult,sides),
+      label:raw.label?String(raw.label).slice(0,32):undefined,poolResourceId:raw.poolResourceId||undefined};
   }
   function newBonusDie(label,sides,sourceIcon,colour){return {id:uuid(),label:String(label||"Other I").slice(0,32),sides:ROLL_DIE_SIZES.indexOf(Number(sides))>=0?Number(sides):6,advantageMode:"flat",forcedResult:null,sourceIcon:bonusSourceFor(label,0,sourceIcon),colour:dieColour(colour)};}
-  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,origin:die.origin||undefined,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour)};}
+  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,origin:die.origin||undefined,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour),poolResourceId:die.poolResourceId||undefined};}
   function entryBonusDice(entry){
     if(Array.isArray(entry&&entry.bonusDice))return entry.bonusDice.map(normalizeBonusDie).slice(0,MAX_BONUS_DICE);
     var dice=[];
@@ -1018,17 +1068,23 @@
      outranks a natural 20, and a DC is only consulted when nothing louder
      happened. */
   function rollHasDc(entry){return entry.dc !== "" && isFinite(Number(entry.dc));}
+  /* Lexique ratifié (Eric, 2026-08-05, phase 5) — the SPOKEN side only.
+     Four verdicts renamed: CRITICAL 20, FUMBLE 1, ∞ CRITICAL, ∞ FUMBLE.
+     The machine-facing `outcome` strings DO NOT MOVE — outcomeTone and
+     feedTone regex-match them, and the wire carries them. The undecided
+     "NATURAL 1 · CHOOSE" and the takeover prompt keep their old words:
+     their renames (L6) are proposed, not ratified. */
   var ROLL_VERDICTS=[
     {id:"arcane-critical-failure",when:function(e){return !!(e.destiny&&e.destiny.criticalFailure);},
-      outcome:"Critical failure",verdict:"ARCANE CRITICAL FAILURE"},
+      outcome:"Critical failure",verdict:"∞ FUMBLE"},
     {id:"arcane-critical-success",when:function(e){return !!(e.destiny&&e.destiny.criticalSuccess);},
-      outcome:"Critical success",verdict:"ARCANE CRITICAL SUCCESS"},
+      outcome:"Critical success",verdict:"∞ CRITICAL"},
     {id:"fate-refused",when:function(e){return e.natChoice==="chaos";},
       outcome:"Critical success · Chaos",verdict:"FATE REFUSED"},
     {id:"natural-20",when:function(e){return e.natural===20;},
-      outcome:"Natural 20",verdict:"NATURAL 20"},
+      outcome:"Natural 20",verdict:"CRITICAL 20"},
     {id:"natural-1-accepted",when:function(e){return e.natural===1&&e.natChoice==="accept";},
-      outcome:"Critical failure · Fate accepted",verdict:"CRITICAL FAILURE"},
+      outcome:"Critical failure · Fate accepted",verdict:"FUMBLE 1"},
     /* A 1 nobody has answered yet is undecided, and the Ruling says so rather
        than picking for the player. */
     {id:"natural-1-open",when:function(e){return e.natural===1;},
@@ -1146,6 +1202,9 @@
     return events;
   }
   function addHistory(entry) {
+    // M3c extinction: a new roll landing is "something else happening" —
+    // the persistent mark left by the last climb goes out with it.
+    state.traySurfaceDie=null;
     state.history.unshift(entry); state.history = state.history.slice(0,MAX_HISTORY); persistPlayState();
   }
   function trayDiceForPlan(plan,label,extra){
@@ -1157,7 +1216,10 @@
     for(var i=0;i<count;i++)dice.push(Object.assign({sides:sides,result:manual,label:label+(count>1?" #"+(i+1):""),pending:true,forced:manual!=null},extra||{}));
     return dice;
   }
-  function setTrayFromEntry(entry) {
+  /* The dice a settled entry shows — extracted from setTrayFromEntry so every
+     tray LINE can rebuild its own dice (each history roll is a line now), and
+     so rollExport can put the same list on the wire for the table to draw. */
+  function trayDiceFromEntry(entry){
     var results=[];
     if(entry.kind==="d20"){
       var d20Plan=entry.d20Roll||{sides:20,rolls:entry.d20s||[entry.kept],result:entry.kept,chosenIndex:entry.d20Choice!=null?entry.d20Choice:(entry.d20s||[]).indexOf(entry.kept),mode:entry.d20Mode,forced:!!entry.d20Forced};
@@ -1166,8 +1228,12 @@
       trayDiceForPlan(d20Plan,"d20",{dieRole:"base",colour:entry.d20Colour||"",landedKey:"d20",entryId:entry.id}).forEach(function(die,index){die.natural=die.result;if(entry.transformed&&index===Number(d20Plan.chosenIndex)){die.label="Original d20";die.dropped=true;}results.push(die);});
       if(entry.transformed)results.push({sides:20,result:20,label:"FATE 1→20",natural:20,special:"transformed"});
       entryBonusDice(entry).forEach(function(die){trayDiceForPlan(die,die.label,{dieRole:"bonus",landedKey:"bonus:"+die.id,entryId:entry.id}).forEach(function(item){results.push(item);});});
-      if(entry.destiny)trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){results.unshift(item);});
+      if(entry.destiny)trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""}).forEach(function(item){results.push(item);});
       if(entry.plusTwo)results.push({kind:"modifier",result:2,label:"FH bonus"});
+      /* The manual +X is a coin like the others (R2) — a zero mints nothing.
+         Through here it also reaches the wire: rollExportDice flattens this
+         very list, so the table's feed lines grow the coin for free. */
+      if(Number(entry.custom))results.push({kind:"modifier",result:Number(entry.custom),label:"Manual",tone:"mod"});
       if(entry.exhaustion)results.push({kind:"modifier",result:-Number(entry.exhaustion),label:"Exhaustion",tone:"exhaustion"});
     }else if(entry.kind==="destiny")results=trayDiceForPlan(entry.destiny,"Destiny",{dieRole:"destiny",special:entry.destiny.criticalSuccess?"arcane-critical-success":entry.destiny.criticalFailure?"arcane-critical-failure":""});
     else if(entry.kind==="tray"){
@@ -1175,10 +1241,17 @@
       // struck through, exactly as the d20 does.
       results=[];
       (entry.dice||[]).forEach(function(die,index){
-        trayDiceForPlan({sides:die.sides,rolls:die.rolls&&die.rolls.length?die.rolls:[die.result],result:die.result,chosenIndex:die.chosenIndex,mode:die.advantageMode,forced:die.forced,colour:die.colour},"d"+die.sides,{dieRole:"base",landedKey:"free:"+index,entryId:entry.id})
+        /* R31: a free die that carries a NAME (a pool resource spent at rest —
+           "Bardic", "Tactical") keeps it on the landed line, exactly as the
+           pending hand already named it. A plain free die stays "d8". */
+        trayDiceForPlan({sides:die.sides,rolls:die.rolls&&die.rolls.length?die.rolls:[die.result],result:die.result,chosenIndex:die.chosenIndex,mode:die.advantageMode,forced:die.forced,colour:die.colour},die.label||("d"+die.sides),{dieRole:"base",landedKey:"free:"+index,entryId:entry.id})
           .forEach(function(item){item.natural=die.sides===20?item.result:null;results.push(item);});
       });
     }
+    return results;
+  }
+  function setTrayFromEntry(entry) {
+    var results=trayDiceFromEntry(entry);
     /* The Ruling is derived here, once, from the entry — the frame only reads
        it. state.trayVerdict is what lets the frame tell an engine verdict from
        a prompt someone typed into the same slot ("Roll 2d6 and read the Chaos
@@ -1187,7 +1260,9 @@
        instead of borrowing its authority. */
     var ruling=rollVocabulary(entry).ruling;
     state.trayResults=results;state.trayTitle=ruling.verdict||ruling.title;
-    state.trayResultText=ruling.account.join(" · ");state.trayVerdict=ruling.verdict;
+    /* display, not account (T1): the dice enumeration stays off the wood —
+       the Stream and the hover title keep the full record. */
+    state.trayResultText=ruling.display.join(" · ");state.trayVerdict=ruling.verdict;
     // The name alone, for the moment the dice are still in the air.
     state.trayQuietTitle=entry.name||"Roll";
   }
@@ -1198,28 +1273,96 @@
       var originalD20=original.d20Roll||{sides:20,rolls:original.d20s||[original.kept],result:original.kept,chosenIndex:original.d20Choice!=null?original.d20Choice:(original.d20s||[]).indexOf(original.kept),mode:original.d20Mode,forced:!!original.d20Forced};trayDiceForPlan(originalD20,"d20",{dieRole:"base"}).forEach(function(die){die.natural=die.result;locked.push(die);});
       var existingIds={};entryBonusDice(original).forEach(function(die){existingIds[die.id]=true;trayDiceForPlan(die,die.label,{dieRole:"bonus"}).forEach(function(item){locked.push(item);});});
       (cfg.bonusDice||[]).filter(function(die){return !existingIds[die.id];}).forEach(function(die){pendingTrayDice(die.sides,die.label,die.advantageMode,die.forcedResult,{dieRole:"bonus",sourceIcon:die.sourceIcon,colour:die.colour||"",bonusId:die.id}).forEach(function(item){locked.push(item);});});
-      if(original.destiny)trayDiceForPlan(original.destiny,"Destiny",{dieRole:"destiny",special:original.destiny.criticalSuccess?"arcane-critical-success":original.destiny.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){locked.unshift(item);});
-      else if(cfg.destinyDieId){var pendingDestiny=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(pendingDestiny)pendingTrayDice(pendingDestiny.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:pendingDestiny.id,dieRole:"destiny"}).reverse().forEach(function(item){locked.unshift(item);});}
+      if(original.destiny)trayDiceForPlan(original.destiny,"Destiny",{dieRole:"destiny",special:original.destiny.criticalSuccess?"arcane-critical-success":original.destiny.criticalFailure?"arcane-critical-failure":""}).forEach(function(item){locked.push(item);});
+      else if(cfg.destinyDieId){var pendingDestiny=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(pendingDestiny)pendingTrayDice(pendingDestiny.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:pendingDestiny.id,dieRole:"destiny"}).forEach(function(item){locked.push(item);});}
       if(cfg.plusTwo)locked.push({kind:"modifier",result:2,label:"FH bonus",pending:!original.plusTwo});
+      if(Number(cfg.custom))locked.push({kind:"modifier",result:Number(cfg.custom),label:"Manual",tone:"mod",pending:Number(original.custom)!==Number(cfg.custom)});
       state.traySelection=[];state.trayResults=locked;state.trayTitle=cfg.name+" "+signed(cfg.baseBonus);state.trayResultText="Original d20 locked";return;
     }
     var dice=pendingTrayDice(20,"d20",cfg.d20Mode,cfg.d20ForcedResult,{dieRole:"base"});
     (cfg.bonusDice||[]).forEach(function(bonusDie){pendingTrayDice(bonusDie.sides,bonusDie.label,bonusDie.advantageMode,bonusDie.forcedResult,{dieRole:"bonus",sourceIcon:bonusDie.sourceIcon,colour:bonusDie.colour||"",bonusId:bonusDie.id}).forEach(function(item){dice.push(item);});});
-    if(cfg.destinyDieId){var die=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(die)pendingTrayDice(die.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:die.id,dieRole:"destiny"}).reverse().forEach(function(item){dice.unshift(item);});}
+    if(cfg.destinyDieId){var die=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId;});if(die)pendingTrayDice(die.sides,"Destiny",cfg.destinyMode,cfg.destinyForcedResult,{flash:true,destinyDieId:die.id,dieRole:"destiny"}).forEach(function(item){dice.push(item);});}
     if(cfg.plusTwo)dice.push({kind:"modifier",result:2,label:"FH bonus",pending:true});
+    // The manual +X mints its coin the moment it is typed (R2); zero mints nothing.
+    if(Number(cfg.custom))dice.push({kind:"modifier",result:Number(cfg.custom),label:"Manual",tone:"mod",pending:true});
     if(exhaustionLevel())dice.push({kind:"modifier",result:exhaustionPenalty(),label:"Exhaustion",tone:"exhaustion",pending:true});
     state.traySelection=[];state.trayResults=dice;state.trayTitle=cfg.name+" "+signed(cfg.baseBonus);state.trayResultText="Ready";
   }
   /* CLEAR TRAY empties the hand and, with it, the running commentary above the
      dice — the Stream keeps the permanent record. Badges are debts, not
      commentary, so they stay. */
-  function clearDiceTray(closeConsole){state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.diceSignatures={};state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
+  /* diceSignatures is deliberately NOT wiped here any more: the registre
+     lines under the hand keep their entry-scoped keys, and wiping the map
+     made every one of them re-roll visually the moment the hand was cleared. */
+  function clearDiceTray(closeConsole){recreditPendingPoolDice();state.builderOpen=false;state.poolPrompt=null;state.builderRetireAt=0;state.traySurfaceDie=null;state.traySelection=[];state.trayResults=[];state.trayTitle="Dice Tray";state.trayResultText="";state.trayQuietTitle="";state.trayVerdict="";state.trayPrompt=null;state.queueDone="";state.rollSequence=null;state.pendingArmed=null;state.diePrompt=null;state.destinyStaged=null;state.events=[];stopCalling();stopTrayReveal();if(closeConsole!==false)state.rollConfig=null;persistPlayState();render();}
   /* An OPEN roll no longer locks the dock: it has already reached the stream,
      and CLEAR TRAY or the next roll are its two legitimate exits. Now that an
      announcement costs no click, the only phases left that hold the dock are
      the four that genuinely ask the player a question. */
   var BLOCKING_PHASES={nat1:1,arcane1:1,"roll-choice":1,"destiny-choice":1,"adjustment-choice":1};
   function rollTransactionActive(){var sequence=state.rollSequence;return !!(sequence&&BLOCKING_PHASES[sequence.phase]);}
+  /* ── Phase 3: the summoned group really is SUMMONED now ──────────
+     At rest the console+judgment overlay is ABSENT and the panel runs all
+     the way down to the band (constat C2: its permanence was the defect,
+     never its function). It exists while a jet is being made or read:
+       - INVOKED (invokeBuilder) by every gesture that starts one — a
+         skill line, a gear, a die added from the ⊕ popover, a gold die,
+         ROLL itself, a reopened stream line, an armed pending fate;
+       - HELD (overlayHeld) by anything that must never vanish under a
+         stray click: a blocking question (nat1/arcane1/choices), an
+         armed Chaos/Overreach, dice still rolling, or any open card
+         (die menu, badge card, arcana draw) — the cards render inside
+         the group, so a question always summons its own stage;
+       - RETIRED by the rule documented on VERDICT_MS below, by an
+         outside click or Escape when nothing holds it, and by CLEAR. */
+  /* The retreat rule (phase 3, chosen and documented): once the dice have
+     settled and every question is answered, the verdict stays readable for
+     six seconds, then the overlay retires on its own; a click anywhere
+     outside the dice surfaces (overlay, ⊕ popover, band, tray) or Escape
+     retires it sooner. Nothing retires it mid-assembly, mid-question, or
+     while dice are in the air. */
+  var VERDICT_MS=6000;
+  function overlayHeld(){
+    return rollTransactionActive()||trayRevealPending()||!!state.pendingArmed||!!state.trayPrompt||!!state.diePrompt;
+  }
+  /* A hand still being built (pending dice, staged additions, a waiting
+     Destiny die) must never time out from under the player. A free hand
+     counts only while it has NO settled results: rollTrayDice keeps the
+     selection so ROLL can re-roll the same hand, and a rolled hand whose
+     verdict is on the wood is a jet being READ, not built — the 6s rule.
+     Adding a free die empties trayResults again (addTrayDie), so resuming
+     the assembly re-arms the guard on its own. */
+  function overlayAssembling(){
+    if(state.destinyStaged||stagedList().length)return true;
+    var dice=state.trayResults||[];
+    if(state.traySelection.length&&!dice.length)return true;
+    return !!(dice.length&&!dice.some(function(die){return die.kind!=="modifier"&&die.result!=null;}));
+  }
+  function overlayVisible(){return !!state.builderOpen||overlayHeld();}
+  /* The timestamp lets the invoking click survive the document-level
+     outside-click pass that runs right after it (render replaces the DOM,
+     so the old target can no longer be matched against the new overlay). */
+  function invokeBuilder(){state.builderOpen=true;state.builderRetireAt=0;state.builderInvokedAt=Date.now();
+    /* Phase 6: a jet being born claims the stage — the deployed history
+       retires HERE, on the gesture itself, not one render later when the
+       reveal arms (render's overlayHeld guard would catch the hold, but
+       the roll's first frame must already be unobstructed). */
+    state.trayExpanded=false;}
+  function retireBuilder(){state.builderOpen=false;state.builderRetireAt=0;clearTimeout(state.builderRetireTimer);}
+  /* Re-armed by every render, but the DEADLINE is set once per settle —
+     a feed poll's re-render two seconds in must not push it back. */
+  function scheduleOverlayRetreat(){
+    clearTimeout(state.builderRetireTimer);
+    if(!state.builderOpen)return;
+    if(overlayHeld()||overlayAssembling()){state.builderRetireAt=0;return;}
+    if(!state.builderRetireAt)state.builderRetireAt=Date.now()+VERDICT_MS;
+    state.builderRetireTimer=window.setTimeout(function(){
+      state.builderRetireAt=0;
+      if(state.builderOpen&&!overlayHeld()&&!overlayAssembling()){state.builderOpen=false;if(root)render();}
+    },Math.max(0,state.builderRetireAt-Date.now()));
+    // In the node test harness the timer must not keep the process alive.
+    if(state.builderRetireTimer&&state.builderRetireTimer.unref)state.builderRetireTimer.unref();
+  }
   /* Everything that can still change an open roll calls for three seconds,
      then goes quiet — a nudge, not a permanent flicker. */
   var CALL_MS=3000;
@@ -1248,7 +1391,20 @@
   function armTrayReveal(dieCount){
     // Nothing is rolling when motion is suppressed, so nothing needs hiding.
     if(prefersReducedMotion()){state.trayRevealAt=0;return;}
-    var span=rollAnimationMs()+Math.max(0,(Number(dieCount)||1)-1)*ROLL_STAGGER_MS+90;
+    var count=Number(dieCount)||1;
+    /* Past THIRTY dice the line renders an ∞ instead of dice (Eric,
+       2026-08-04) — nothing rolls, so there is nothing to wait for and
+       the total just appears. */
+    if(count>30){state.trayRevealAt=0;return;}
+    /* A 13+ hand rolls in WAVES of ten (fh-static-dice, WAVE_GAP 140ms —
+       these two numbers are that scheduler's, mirrored). The reveal must
+       outlive the LAST wave: the render it fires replaces the tray's DOM,
+       and a wave still waiting its turn would be reborn already settled —
+       which is exactly the bug Eric saw (first wave rolled, second did not). */
+    var waves=count>12?Math.ceil(count/10):1;
+    var span=waves>1
+      ? waves*(rollAnimationMs()+10*ROLL_STAGGER_MS+140)+200
+      : rollAnimationMs()+Math.max(0,count-1)*ROLL_STAGGER_MS+90;
     state.trayRevealAt=Date.now()+span;
     clearTimeout(state.trayRevealTimer);
     state.trayRevealTimer=window.setTimeout(function(){state.trayRevealAt=0;if(root)render();},span);
@@ -1269,20 +1425,22 @@
   function openEntry(){var sequence=state.rollSequence;if(!sequence)return null;return state.history.find(function(item){return item.id===sequence.entryId;})||null;}
   function stagedBonusCount(){return stagedList().filter(function(item){return item.kind!=="destiny";}).length;}
   function openStatusText(entry){
-    var staged=stagedList().length;
-    return rollDetailText(entry)+(staged?" · "+staged+" new die"+(staged===1?"":"s")+" ready":"");
+    var staged=stagedList().length,base=rollDetailText(entry);
+    return base+(staged?(base?" · ":"")+staged+" new die"+(staged===1?"":"s")+" ready":"");
   }
   /* The verdict is the headline; the account that produced it stays legible
      but discreet underneath. Both are read off the Ruling (§5) rather than
      assembled here — this pair is now just the tray's view of it. */
   function rollVerdictText(entry){var ruling=rollRuling(entry);return ruling.verdict||ruling.title;}
-  function rollDetailText(entry){return rollRuling(entry).account.join(" · ");}
+  /* display, not account (T1): what this feeds is the judgment box. */
+  function rollDetailText(entry){return rollRuling(entry).display.join(" · ");}
   function refreshOpenTray(entry){
     setTrayFromEntry(entry);
     stagedList().forEach(function(item){
       var dice=pendingTrayDice(item.sides,item.label,item.advantageMode||"flat",null,{dieRole:item.kind==="destiny"?"destiny":"bonus",sourceIcon:item.sourceIcon||"",colour:item.colour||"",flash:item.kind==="destiny",stagedId:item.id});
-      if(item.kind==="destiny")dice.reverse().forEach(function(die){state.trayResults.unshift(die);});
-      else dice.forEach(function(die){state.trayResults.push(die);});
+      // Strict construction order (Eric, 2026-08-04): a staged Destiny die takes
+      // its chronological place at the end, like every other die.
+      dice.forEach(function(die){state.trayResults.push(die);});
     });
     state.trayResultText=openStatusText(entry);
   }
@@ -1299,6 +1457,7 @@
   }
   function stageBonusDie(sides,label,sourceIcon){
     var entry=openEntry();if(!rollOpen()||!entry)return;
+    invokeBuilder();
     sides=Number(sides);if(ROLL_DIE_SIZES.indexOf(sides)<0||sides===20||sides===100){state.message="The d20 is the base die; d% stays a free roll.";state.messageKind="warn";renderMessage();return;}
     if(entryBonusDice(entry).length+stagedBonusCount()>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
     var used=entryBonusDice(entry).concat(stagedList()).map(function(die){var match=String(die.sourceIcon||"").match(/^other-([123])$/);return match?Number(match[1]):0;});
@@ -1309,7 +1468,7 @@
   function unstageDie(sides){
     var entry=openEntry();if(!rollOpen()||!entry)return false;
     var staged=stagedList();
-    for(var i=staged.length-1;i>=0;i--){if(staged[i].kind!=="destiny"&&Number(staged[i].sides)===Number(sides)){staged.splice(i,1);refreshOpenTray(entry);persistPlayState();render();return true;}}
+    for(var i=staged.length-1;i>=0;i--){if(staged[i].kind!=="destiny"&&Number(staged[i].sides)===Number(sides)){recreditPoolDie(staged[i]);staged.splice(i,1);refreshOpenTray(entry);persistPlayState();render();return true;}}
     return false;
   }
   function stageDestinyDie(dieId){
@@ -1332,6 +1491,8 @@
   function stageDestinyFromPool(dieId){
     var die=state.destiny.dice.find(function(item){return item.id===dieId&&item.available;});
     if(!die){state.message="That Destiny die is no longer available.";state.messageKind="warn";renderMessage();return;}
+    // A gold die picked up is a jet starting too — the builder is summoned.
+    invokeBuilder();
     if(rollOpen()){
       var entry=openEntry();
       if(!entry||entry.destiny||stagedList().some(function(item){return item.kind==="destiny";})){
@@ -1388,11 +1549,20 @@
     if(settled){releaseRoll();setTrayFromEntry(entry);persistPlayState();render();return;}
     openRollState(entry);
   }
-  /* ROLL again on the same check: the setup is kept, the dice are not. */
+  /* ROLL again on the same check: the setup is kept, the dice are not — and
+     the BONUS dice are dice, not setup (M1, décision Eric 2026-08-06). They
+     used to be carried into every repeat: with the roll staying open, each
+     jet re-inherited the last jet's Guidance/Bardic/Bonus dice, the three
+     slots filled one selection at a time and never came back — the white
+     picker ended fully greyed and a robe used once was unusable for good.
+     A seal robe is a boon granted for ONE roll: the next jet starts with the
+     bare d20, every robe available again. The guidance/bardic flags must be
+     cleared with the dice, or ensureConfigBonusDice would quietly re-add
+     them from the flags configFromEntry copied off the landed entry. */
   function repeatOpenRoll(entry){
     var cfg=configFromEntry(entry);
     cfg.editingId=null;cfg.d20ForcedResult=null;cfg.destinyForcedResult=null;cfg.destinyDieId="";cfg.destinyConfirmed=false;
-    cfg.bonusDice=(cfg.bonusDice||[]).map(function(die){return newBonusDie(die.label,die.sides,die.sourceIcon,die.colour);});
+    cfg.bonusDice=[];cfg.guidance=false;cfg.bardic=false;
     releaseRoll();state.rollConfig=cfg;prepareTrayForConfig(cfg);persistPlayState();runConfiguredRoll();
   }
   function finishRolledEntry(entry,events){
@@ -1404,7 +1574,7 @@
     openRollState(entry);
   }
   function quickRoll(name, ability, bonus, note) {
-    clearDiceTray(false);state.rollConfig=null;
+    clearDiceTray(false);state.rollConfig=null;invokeBuilder();
     var natural = rollDie(20);
     var entry = {id:uuid(),kind:"d20",name:name,ability:ability,baseBonus:Number(bonus)||0,exhaustion:exhaustionLevel(),d20Mode:"flat",d20s:[natural],d20Roll:{sides:20,mode:"flat",rolls:[natural],result:natural,chosenIndex:0,forced:false},d20Choice:0,d20Forced:false,kept:natural,natural:natural,plusTwo:false,custom:0,bonusDice:[],guidance:null,bardic:null,destiny:null,dc:"",note:note||"",createdAt:new Date().toISOString(),adjusted:false};
     state.rollSequence={phase:"remaining",entryId:entry.id};finishRolledEntry(entry,[]);
@@ -1455,10 +1625,10 @@
   function rollSequenceDestiny(){
     var sequence=state.rollSequence;if(!sequence||!sequence.cfg)return;var cfg=sequence.cfg,die=state.destiny.dice.find(function(item){return item.id===cfg.destinyDieId&&item.available;});if(!die){pushEvent("That Destiny die is no longer available.","error");state.rollSequence=null;render();return;}
     if(!sequence.destinyPlan)sequence.destinyPlan=makeDiePlan(die.sides,cfg.destinyMode,cfg.destinyForcedResult);
-    prepareTrayForConfig(cfg);state.trayResults=state.trayResults.filter(function(item){return item.destinyDieId!==die.id;});trayDiceForPlan(sequence.destinyPlan,"Destiny",{flash:true,destinyDieId:die.id,dieRole:"destiny"}).reverse().forEach(function(item){state.trayResults.unshift(item);});state.trayResultText=sequence.destinyPlan.result==null?"Choose the Destiny result":"Destiny result selected";
+    prepareTrayForConfig(cfg);state.trayResults=state.trayResults.filter(function(item){return item.destinyDieId!==die.id;});trayDiceForPlan(sequence.destinyPlan,"Destiny",{flash:true,destinyDieId:die.id,dieRole:"destiny"}).forEach(function(item){state.trayResults.push(item);});state.trayResultText=sequence.destinyPlan.result==null?"Choose the Destiny result":"Destiny result selected";
     if(sequence.destinyPlan.result==null){showDieChoice("destiny",0,sequence.destinyPlan,"Destiny d"+die.sides);return;}
     var spent=spendDestinyDie(cfg.destinyDieId,true,sequence.destinyPlan);if(!spent){pushEvent("That Destiny die is no longer available.","error");state.rollSequence=null;render();return;}
-    sequence.entry.destiny=spent;sequence.phase="destiny-events";prepareTrayForConfig(sequence.cfg);state.trayResults=state.trayResults.filter(function(item){return item.destinyDieId!==spent.dieId;});trayDiceForPlan(spent,"Destiny",{destinyDieId:spent.dieId,dieRole:"destiny",special:spent.criticalSuccess?"arcane-critical-success":spent.criticalFailure?"arcane-critical-failure":""}).reverse().forEach(function(item){state.trayResults.unshift(item);});state.trayResultText="Destiny d"+spent.sides+" = "+spent.result;announceEvents(destinyEventSpecs(spent,sequence.entry.id),sequence.adjustment?"adjustment-remaining":"roll-remaining",arcaneDecision(spent,sequence.entry.id));
+    sequence.entry.destiny=spent;sequence.phase="destiny-events";prepareTrayForConfig(sequence.cfg);state.trayResults=state.trayResults.filter(function(item){return item.destinyDieId!==spent.dieId;});trayDiceForPlan(spent,"Destiny",{destinyDieId:spent.dieId,dieRole:"destiny",special:spent.criticalSuccess?"arcane-critical-success":spent.criticalFailure?"arcane-critical-failure":""}).forEach(function(item){state.trayResults.push(item);});state.trayResultText="Destiny d"+spent.sides+" = "+spent.result;announceEvents(destinyEventSpecs(spent,sequence.entry.id),sequence.adjustment?"adjustment-remaining":"roll-remaining",arcaneDecision(spent,sequence.entry.id));
   }
   function rollSequenceRemaining(){
     var sequence=state.rollSequence;if(!sequence||!sequence.cfg||!sequence.entry)return;var cfg=sequence.cfg,entry=sequence.entry;
@@ -1608,6 +1778,8 @@
   function armPendingFate(id){
     var item=pendingFate().find(function(entry){return entry.id===id;});if(!item||!pendingResolvable(item))return;
     if(rollTransactionActive()){warnRollLocked();return;}
+    // An armed fate is a question of the jet: it always summons the builder.
+    invokeBuilder();
     state.trayPrompt=null;state.rollConfig=null;state.traySelection=[];
     if(item.kind==="chaos"){
       state.pendingArmed={id:item.id,kind:"chaos",sides:[6,6],ability:item.ability||""};
@@ -1825,6 +1997,8 @@
   function removeEditBonus(name,id){var d=captureEditDraft();d.specialBonuses[name]=(d.specialBonuses[name]||[]).filter(function(item){return item.id!==id;});if(!d.specialBonuses[name].length)delete d.specialBonuses[name];render();}
   function addTrayDie(sides){
     sides=Number(sides);if(ROLL_DIE_SIZES.indexOf(sides)<0)return;
+    // A die added is a jet starting: it summons the builder (phase 3).
+    invokeBuilder();
     /* With a console open the tray feeds the prepared roll instead of a free pool. */
     var cfg=state.rollConfig;
     if(cfg&&!cfg.editingId){
@@ -1839,7 +2013,7 @@
     if(state.traySelection.length>=MAX_FREE_DICE){pushEvent("The free-roll tray holds at most "+MAX_FREE_DICE+" dice","warn");refreshEventPanel();return;}
     state.traySelection.push(newFreeDie(sides));state.trayResults=[];persistPlayState();render();
   }
-  function removeTrayDie(index){state.traySelection.splice(Number(index),1);state.trayResults=[];persistPlayState();render();}
+  function removeTrayDie(index){recreditPoolDie(state.traySelection[Number(index)]);state.traySelection.splice(Number(index),1);state.trayResults=[];persistPlayState();render();}
   function removeTrayDieSize(sides){sides=Number(sides);for(var i=state.traySelection.length-1;i>=0;i--){if(state.traySelection[i].sides===sides){removeTrayDie(i);return;}}}
   // The mirror of addTrayDie: right-click (or long press) takes one back off,
   // so a mis-clicked bonus die no longer forces cancelling the whole roll.
@@ -1849,7 +2023,7 @@
     if(cfg&&!cfg.editingId){
       syncConsoleInputs();
       var dice=cfg.bonusDice||[];
-      for(var i=dice.length-1;i>=0;i--){if(Number(dice[i].sides)===sides&&!dice[i].locked){dice.splice(i,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();return;}}
+      for(var i=dice.length-1;i>=0;i--){if(Number(dice[i].sides)===sides&&!dice[i].locked){recreditPoolDie(dice[i]);dice.splice(i,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();return;}}
       return;
     }
     removeTrayDieSize(sides);
@@ -1860,7 +2034,11 @@
     if(state.destinyStaged){var waiting=state.destinyStaged;state.destinyStaged=null;dropEventsTagged("staged-destiny");standaloneDestiny(waiting.dieId,destinyPlanFor(waiting));return;}
     if(!state.traySelection.length)state.traySelection=[newFreeDie(20)];
     var labelInput=root&&root.querySelector("#fhPsTrayLabel");if(labelInput)state.trayLabel=String(labelInput.value||"Damage roll").slice(0,48);
-    var dice=state.traySelection.map(function(die){var plan=makeDiePlan(die.sides,die.advantageMode,die.forcedResult);return {sides:die.sides,result:plan.result,rolls:(plan.rolls||[plan.result]).slice(),chosenIndex:plan.chosenIndex==null?0:plan.chosenIndex,advantageMode:rollMode(plan.mode),forced:!!plan.forced,colour:die.colour||""};}),entry={id:uuid(),kind:"tray",name:state.trayLabel||"Damage roll",dice:dice,total:dice.reduce(function(sum,die){return sum+(Number(die.result)||0);},0),createdAt:new Date().toISOString(),outcome:"Free roll"};
+    var dice=state.traySelection.map(function(die){var plan=makeDiePlan(die.sides,die.advantageMode,die.forcedResult);return {sides:die.sides,result:plan.result,rolls:(plan.rolls||[plan.result]).slice(),chosenIndex:plan.chosenIndex==null?0:plan.chosenIndex,advantageMode:rollMode(plan.mode),forced:!!plan.forced,colour:die.colour||"",label:die.label||undefined};}),entry={id:uuid(),kind:"tray",name:state.trayLabel||"Damage roll",dice:dice,total:dice.reduce(function(sum,die){return sum+(Number(die.result)||0);},0),createdAt:new Date().toISOString(),outcome:"Free roll"};
+    /* Phase 4: ROLL is what spends a pool resource for good. The kept hand
+       may be re-rolled, but a die that came from the counted pool is one
+       use — it leaves the selection, and its decrement becomes final. */
+    state.traySelection=state.traySelection.filter(function(die){return !die.poolResourceId;});
     addHistory(entry);setTrayFromEntry(entry);
     // No trailing result popup here either: the tray shows the verdict and the
     // stream keeps it. Only a natural 20 or 1 is worth stopping for.
@@ -1897,10 +2075,18 @@
     crimson:{fill:"#93303a",light:"#c05a63",dark:"#5b1620",rim:"#4a1018",facet:"#7a2530",num:"#ffeceb"},
     azure:{fill:"#2f5f86",light:"#5d8cb0",dark:"#173b57",rim:"#12293c",facet:"#23496a",num:"#eef6fd"},
     violet:{fill:"#5c3d7e",light:"#8563a6",dark:"#372049",rim:"#241432",facet:"#452c5e",num:"#f5edff"},
-    slate:{fill:"#4a4f55",light:"#727880",dark:"#2b2f34",rim:"#1c1f22",facet:"#3a3e44",num:"#f0f2f4"}
+    slate:{fill:"#4a4f55",light:"#727880",dark:"#2b2f34",rim:"#1c1f22",facet:"#3a3e44",num:"#f0f2f4"},
+    // The plain-bonus tint (Eric, ratified 2026-08-03: "bonus lambda gris clair").
+    ash:{fill:"#c9cdd2",light:"#eceef1",dark:"#9aa0a8",rim:"#6b7178",facet:"#aeb3ba",num:"#3a3f45"}
   };
   // Offered in the right-click menu, in this order. "ivory" is the default.
   var DIE_COLOURS = [["ivory","Ivory"],["green","Green"],["gold","Gold"],["crimson","Crimson"],["azure","Azure"],["violet","Violet"],["slate","Slate"]];
+  /* The SEAL IS THE DIE (Eric, ratified 2026-08-03, wired 2026-08-04):
+     "color and dice = all in one" — a bonus die's provenance is its tint,
+     not a separate 12px token. Destiny gold, Tactical (the warrior's die)
+     crimson, Bardic violet, Guidance azure, plain bonuses light-grey ash.
+     A colour the player chose by hand still wins over everything. */
+  var SOURCE_TINT={guidance:"azure",bardic:"violet",tactical:"crimson"};
   function dieMaterialName(die){
     if(die.special==="chaos")return "chaos";
     if(die.colour&&DIE_MATERIAL[die.colour])return die.colour;
@@ -1909,11 +2095,21 @@
     if(die.sides===20&&die.result===20)return "crit";
     if(die.sides===20&&die.result===1)return "fumble";
     if(die.dieRole==="destiny")return "gold";
-    if(die.dieRole==="bonus")return "green";
+    if(die.dieRole==="bonus")return SOURCE_TINT[String(die.sourceIcon||"")]||"ash";
     return "ivory";
   }
+  /* M4: gradient ids must be UNIQUE PER SVG INSTANCE. url(#id) resolves
+     against the WHOLE document, to the FIRST matching def — and when that
+     first def lives inside a display:none container (e.g. the closed
+     Stream), browsers refuse to paint the gradient and the die goes white.
+     Measured on the public bench: gviolet6/gash6 defined only inside the
+     hidden Stream turned every visible violet/ash pastille blank. A plain
+     incrementing counter keeps each svg pointing at its own defs; renders
+     are frequent but a Number counter never collides and never overflows
+     in practice. */
+  var dieSvgUid=0;
   function dieSvg(sides,size,materialName,text){
-    var geo=DIE_GEO[sides]||DIE_GEO[20],m=DIE_MATERIAL[materialName]||DIE_MATERIAL.ivory,id="g"+materialName+sides;
+    var geo=DIE_GEO[sides]||DIE_GEO[20],m=DIE_MATERIAL[materialName]||DIE_MATERIAL.ivory,id="g-"+materialName+sides+"-"+(++dieSvgUid);
     var out='<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" focusable="false">';
     out+='<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="1">'+
       '<stop offset="0" stop-color="'+m.light+'"/><stop offset=".55" stop-color="'+m.fill+'"/><stop offset="1" stop-color="'+m.dark+'"/></linearGradient>'+
@@ -1961,32 +2157,51 @@
       '<text class="fh-cd-num" x="50" y="54" font-size="28" text-anchor="middle" dominant-baseline="middle" fill="'+body.num+'">'+esc(label)+'</text></svg>';
   }
   function dieSize(count){return count>8?26:count>5?34:count>3?44:52;}
-  function visualDie(die,index,count,animate){
+  /* opts (all optional): sizePx pins the die size instead of deriving it from
+     the count (the tray's bands are fixed sizes, not crowd-relative), and
+     snapshot renders the settled pose as a cached bitmap with NO live WebGL
+     context — the Static Area's whole requirement (see fh-static-dice.js on
+     the ~16-context browser cap). */
+  function visualDie(die,index,count,animate,opts){
+    opts=opts||{};
     var classes=["fh-cd-diewrap"];
     if(die.dropped)classes.push("is-dropped");
     if(die.pending)classes.push("is-pending");
     if(die.flash)classes.push("is-flashing");
+    // M3c: the die a climb was aimed at keeps its small persistent mark.
+    if(opts.picked)classes.push("is-picked");
     if(die.forced)classes.push("is-forced");
     if(die.special==="chaos")classes.push("is-chaosdie");
-    var status=die.forced?" · MANUAL":die.pending?" · ready":die.dieRole==="destiny"&&die.result!=null?" · spent":"";
-    var size=dieSize(count||1);
+    /* plainLabel (the tray, the assembly frame): the label is the die's name
+       and nothing else — the line's own heading already says ready/spent, and
+       the suffixes were what made neighbouring labels collide (Eric,
+       2026-08-03: "le texte sous les dés plus minimaliste"). */
+    var status=opts.plainLabel?"":die.forced?" · MANUAL":die.pending?" · ready":die.dieRole==="destiny"&&die.result!=null?" · spent":"";
+    var size=Number(opts.sizePx)||dieSize(count||1);
     if(die.kind==="modifier"){
       var tone=die.tone||(die.label==="FH bonus"?"fh":"mod"),text=(Number(die.result)||0)>=0?"+"+Math.abs(Number(die.result)||0):"−"+Math.abs(Number(die.result)||0);
       classes.push("is-modifier");
-      return "<span class=\""+classes.join(" ")+"\"><span class=\"fh-cd-src\"></span><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span><em>"+esc(die.label||"Bonus")+"</em></span>";
+      /* In a swarm the coin sheds its label and rides at swarm scale — the
+         value is printed on the coin, which is its nature. It never rolls. */
+      if(opts.naked){
+        return "<span class=\""+classes.join(" ")+" is-naked\"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.max(14,Math.round(size*.9)),text,tone)+"</span></span>";
+      }
+      return "<span class=\""+classes.join(" ")+"\""+(opts.noLabel?" title=\""+esc(die.label||"Bonus")+"\"":"")+"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span>"+(opts.noLabel?"":"<em>"+esc(die.label||"Bonus")+"</em>")+"</span>";
     }
-    /* The source token (§1). A Destiny die reads its provenance off the table
-       like everything else — it used to leave the 12px slot empty, which was
-       the one die in the tray whose origin the player had to infer. */
-    var source=die.dieRole==="bonus"
-      ? "<span class=\"fh-cd-src "+sourceToneClass(die.sourceIcon)+"\" title=\""+esc(die.label||rollSource(die.sourceIcon).label)+"\">"+bonusSourceMark(die.sourceIcon)+"</span>"
-      : die.dieRole==="destiny"
-      ? "<span class=\"fh-cd-src "+sourceToneClass("destiny")+"\" title=\""+esc(ROLL_SOURCES.destiny.label)+"\">"+sourceGlyphSvg("destiny")+"</span>"
-      : "<span class=\"fh-cd-src\"></span>";
+    /* The source token AND its empty 12px slot are gone (Eric: "violet +
+       Bardic, rien de plus") — the die's tint says destiny/tactical/bardic/
+       guidance/plain, the label names it, and for a label-less die the
+       wrapper's title keeps the full name on hover (same pattern as naked). */
+    var srcTitle=die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
+      :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"";
     var dieClasses="fh-cd-die"+(die.result!=null?" is-landed":"")+(animate&&die.result!=null?" is-spinning":"");
     // A die still in the hand carries its identity so a right click can reach it.
     var handle="";
-    if(die.pending&&die.result==null){
+    if(opts.readOnly){
+      /* Another player's die: the table reads it, nobody here tunes it. No
+         handles means the existing menu delegation never matches it. */
+    }
+    else if(die.pending&&die.result==null){
       if(die.stagedId)handle=" data-die-staged=\""+esc(die.stagedId)+"\"";
       else if(die.bonusId)handle=" data-die-bonus=\""+esc(die.bonusId)+"\"";
       else if(die.poolDestinyId)handle=" data-die-pool=\""+esc(die.poolDestinyId)+"\"";
@@ -2004,6 +2219,48 @@
       classes.push("is-tunable");
     }
     var materialName=dieMaterialName(die),face=dieSvg(die.sides,size,materialName,die.result==null?"?":die.result);
+    /* naked (Eric, 2026-08-03, sizes and wave 2026-08-04): a swarm die — no
+       source token, no label, just the die, in real pseudo-3D. A die that is
+       LANDING now is a live host: it tumbles at the roll size, and when its
+       wave settles the renderer swaps it for the cached bitmap at
+       data-settle-size — roll small, stop, zoom. A die merely re-rendered is
+       born as the snapshot directly: zero live contexts. Pending dice keep
+       the flat "?" face at roll scale. Colour will carry damage type later. */
+    if(opts.naked&&die.kind!=="modifier"){
+      if(ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0&&die.result!=null){
+        var nakedValue=Number(die.result);
+        var rolling=!!animate;
+        var rollSize=Number(opts.rollSizePx)||size;
+        var settleSize=Number(opts.settleSizePx)||size;
+        var hostSize=rolling?rollSize:settleSize;
+        face="<span class=\"fh-cd-static-die"+(Number(die.sides)===100?" is-percentile":"")+"\""+
+          (rolling?" data-wave=\""+(opts.wave!=null?opts.wave:0)+"\" data-settle-size=\""+settleSize+"\"":" data-snapshot=\"1\"")+
+          " data-sides=\""+Number(die.sides)+"\" data-result=\""+nakedValue+"\" data-pending=\"0\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(opts.waveIndex!=null?opts.waveIndex:index||0)+"\" data-animate=\""+(rolling?"1":"0")+"\" style=\"--fh-static-die-size:"+hostSize+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" result "+nakedValue+"\">"+
+          "<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static-die-result\" aria-hidden=\"true\"></b>"+
+          "<span class=\"fh-cd-static-die-fallback\">"+dieSvg(die.sides,hostSize,materialName,nakedValue)+"</span></span>";
+        dieClasses+=" is-static-die";
+      }
+      /* No corner mark in the swarm: the tint IS the provenance now
+         ("all in one"), and the title still names it on hover. */
+      var nakedTitle=die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
+        :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"";
+      return "<span class=\""+classes.join(" ")+" is-naked\""+(handle||(nakedTitle?" title=\""+esc(nakedTitle)+"\"":""))+">"+
+        "<span class=\""+dieClasses+"\">"+face+"</span></span>";
+    }
+    /* Static Area (tray rolls 5+): the settled pose as a cached bitmap. One
+       host, one numeral slot — even for d100, whose snapshot pair is drawn
+       into a single image by the generator. data-snapshot is what routes
+       FHStaticDice.mount away from creating a live context. */
+    if(opts.snapshot&&ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0&&die.result!=null){
+      var snapValue=Number(die.result);
+      face="<span class=\"fh-cd-static-die"+(Number(die.sides)===100?" is-percentile":"")+"\" data-snapshot=\"1\" data-sides=\""+Number(die.sides)+"\" data-result=\""+snapValue+"\" data-pending=\"0\" data-material=\""+esc(materialName)+"\" data-index=\""+Number(index||0)+"\" data-animate=\"0\" style=\"--fh-static-die-size:"+size+"px\" role=\"img\" aria-label=\"d"+Number(die.sides)+" result "+snapValue+"\">"+
+        "<canvas aria-hidden=\"true\"></canvas><b class=\"fh-cd-static-die-result\" aria-hidden=\"true\"></b>"+
+        "<span class=\"fh-cd-static-die-fallback\">"+face+"</span></span>";
+      dieClasses+=" is-static-die";
+      return "<span class=\""+classes.join(" ")+"\""+(srcTitle?" title=\""+esc(srcTitle)+"\"":"")+">"+
+        "<span class=\""+dieClasses+"\">"+face+"</span>"+
+        (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
+    }
     /* The WebGL renderer is deliberately only a renderer: the face was chosen
        before this markup exists. Larger pools retain the lightweight SVG tray
        and its lower GPU cost. */
@@ -2023,53 +2280,20 @@
         staticBody+"<span class=\"fh-cd-static-die-fallback\">"+face+"</span></span>";
       dieClasses+=" is-static-die";
     }
-    return "<span class=\""+classes.join(" ")+"\""+handle+">"+source+
+    /* noLabel (T9, Eric): on the tray's large line the tint already says the
+       provenance and the wrapper's title still names it — the visible label
+       under the die was the last redundant text. The judgment box's assembly
+       keeps its labels (you need to read what you are adding). A tunable die
+       keeps its interaction title; the source title only steps in when no
+       handle claimed the hover. */
+    return "<span class=\""+classes.join(" ")+"\""+(handle||(srcTitle?" title=\""+esc(srcTitle)+"\"":""))+">"+
       "<span class=\""+dieClasses+"\">"+face+"</span>"+
-      "<em>"+esc((die.label||("d"+die.sides))+status)+"</em></span>";
+      (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
   }
-  /* ── The event list, above the dice ─────────────────────────────
-     Announcements have no button and never wait: they stack, newest first,
-     and the newest is simply larger and brighter than the ones under it.
-     A decision is the one line that carries buttons, because it is the one
-     line that is asking rather than telling. */
-  function eventLine(event,current){
-    var parts=String(event.text||"").split(" · "),headline=parts.shift()||"Fate moves";
-    if(event.kind==="awakening"){var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};if(arcana.name)parts.push(arcana.name);}
-    if(event.chaosRoll)parts.push("total "+(Number(event.chaosRoll[0])+Number(event.chaosRoll[1])));
-    var link=event.kind==="chaos"?"<a class=\"fh-cd-elink\" href=\""+esc(toolUrl("rules",""))+"chapters/chaos-tables/\">table</a>":"";
-    return "<li class=\"fh-cd-eline is-"+esc(event.kind)+(current?" is-current":"")+"\">"+
-      "<b>"+esc(headline)+"</b>"+(parts.length?"<i>"+esc(parts.join(" · "))+"</i>":"")+link+"</li>";
-  }
-  function renderDecisionLine(){
-    var prompt=state.trayPrompt;
-    if(prompt&&prompt.type==="die-choice"){
-      return "<li class=\"fh-cd-eline is-decision is-die-choice is-current\"><b>"+(prompt.mode==="choice"?"A / D":"CHOOSE RESULT")+"</b>"+
-        "<i>"+esc(prompt.label)+" — either result may be kept</i>"+
-        "<span class=\"fh-cd-eacts is-dice\">"+(prompt.rolls||[]).map(function(result,index){
-          return "<button type=\"button\" data-die-choice=\""+index+"\" class=\"fh-cd-die\" aria-label=\"Keep "+result+"\">"+dieSvg(prompt.sides,30,dieMaterialName({sides:prompt.sides,result:result,dieRole:prompt.dieRole}),result)+"</button>";
-        }).join("")+"</span></li>";
-    }
-    if(prompt&&prompt.type==="nat1"){
-      return "<li class=\"fh-cd-eline is-decision is-nat1 is-current\"><b>NATURAL 1 · do you accept your fate?</b>"+
-        "<i>Accept: critical failure, +1 Destiny Point. Refuse: the 1 becomes 20, Destiny falls to 0, Chaos becomes pending.</i>"+
-        "<span class=\"fh-cd-eacts\"><button type=\"button\" data-tray-accept-fate>Accept</button>"+
-        "<button type=\"button\" class=\"is-danger\" data-tray-refuse-fate>Refuse</button></span></li>";
-    }
-    if(prompt&&prompt.type==="arcane1"){
-      var sides=Number(prompt.sides)||4;
-      return "<li class=\"fh-cd-eline is-decision is-arcane-critical-failure is-current\"><b>ARCANE CRITICAL FAILURE · do you accept your fate?</b>"+
-        "<i>Accept: the failure stands, +1 Destiny Point. Refuse: the 1 reads as "+sides+" — Arcane Critical Success — Destiny falls to 0, Chaos becomes pending.</i>"+
-        "<span class=\"fh-cd-eacts\"><button type=\"button\" data-arcane-fate=\"accept\">Accept</button>"+
-        "<button type=\"button\" class=\"is-danger\" data-arcane-fate=\"chaos\">Refuse</button></span></li>";
-    }
-    return "";
-  }
-  function renderEventList(){
-    var decision=renderDecisionLine();
-    var lines=state.events.slice(0,SHOWN_EVENTS).map(function(event,index){return eventLine(event,!index&&!decision);}).join("");
-    if(!decision&&!lines)return "";
-    return "<ul class=\"fh-cd-events\" aria-live=\"polite\">"+decision+lines+"</ul>";
-  }
+  /* The event list and its decision line are gone (third fitting): the
+     judgment window says the ruling and asks the decisions, the badge strip
+     carries the debts, the Stream keeps the record. state.events itself
+     stays — it persists, and frameMood still reads its newest entry. */
   /* Menus, under the dice: a die's own card, a badge's card, and the deferred
      fate cards. These are things the player opened, not things that happened. */
   function renderEventContent(){
@@ -2154,10 +2378,9 @@
     if(state.diePrompt){
       var target=findStagedDie(state.diePrompt);
       if(target){
-        /* The seal row is the source table (§1) read out loud, not a second
+        /* The robe row reads the source table (§1) out loud, not a second
            hand-kept list — which is how Tactical came to be drawable by the
            engine and unreachable from this card. */
-        var seals=[["","None"]].concat(SEALABLE_SOURCES.map(function(key){return [key,ROLL_SOURCES[key].label];}));
         var poolReady=state.destiny.dice.some(function(die){return die.available&&die.sides===target.sides;});
         var landed=target.scope==="landed";
         var isDestiny=target.scope==="destiny"||target.scope==="staged-destiny"||target.scope==="pool-destiny";
@@ -2168,15 +2391,49 @@
         var modes=landed?[]
           :target.scope==="free"||target.scope==="staged-destiny"||target.scope==="pool-destiny"?["flat","advantage","disadvantage"]
           :["flat","advantage","disadvantage","choice"];
-        // A free damage die has neither a source nor an advantage: only a colour.
-        var sealRow=!canSeal?"":"<div class=\"fh-cd-dmrow\"><span>Seal</span>"+seals.map(function(pair){
-            return "<button type=\"button\" class=\"fh-cd-dmseal"+(pair[0]?" "+sourceToneClass(pair[0]):"")+((target.sourceIcon||"")===pair[0]?" is-on":"")+"\" data-die-seal=\""+pair[0]+"\" title=\""+esc(pair[1])+"\">"+(pair[0]?bonusSourceMark(pair[0]):"—")+"</button>";
-          }).join("")+
-          "<button type=\"button\" class=\"fh-cd-dmseal is-destiny\" data-die-seal=\"destiny\""+(poolReady?"":" disabled")+" title=\""+(poolReady?"Take a Destiny d"+target.sides+" from the pool instead — ROLL is what spends it":"No Destiny d"+target.sides+" available")+"\">"+sourceGlyphSvg("destiny")+"</button></div>";
+        /* SEAL and COLOUR were two rows for two facets of the SAME thing — the
+           robe of the die (« le sceau EST le dé », R6, 2026-08-05). One row of
+           robes now: the seal-bearing robes first, each a pastille in its
+           SOURCE_TINT wearing its mark (★ on azure, ♪ on violet…), then the
+           plain colour pastilles, naked. The DATA does not move — sourceIcon
+           and colour stay two fields and a hand-picked colour still wins
+           visually — only the wardrobe is presented on one rail. Exactly ONE
+           pastille carries is-on: the robe the die actually wears. A sealed
+           die recoloured by hand ("Bardic + crimson") lights the crimson
+           pastille and paints the Bardic mark ON it — the seal follows the
+           robe. Choosing a seal robe dresses the whole die (tint included);
+           choosing a naked pastille recolours it and keeps its seal. */
+        function robePastille(tint,mark,on,attrs,title,disabled){
+          var m=DIE_MATERIAL[tint]||DIE_MATERIAL.ivory;
+          return "<button type=\"button\" class=\"fh-cd-dmrobe"+(on?" is-on":"")+"\" "+attrs+(disabled?" disabled":"")+" title=\""+esc(title)+"\">"+
+            dieSvg(6,15,tint,"")+(mark?"<span class=\"fh-cd-dmmark\" style=\"color:"+m.num+"\">"+mark+"</span>":"")+"</button>";
+        }
+        var robes="";
+        if(canSeal){
+          // "—" undresses the die completely: no seal, no manual colour.
+          robes+="<button type=\"button\" class=\"fh-cd-dmrobe is-none"+(!target.sourceIcon&&!target.colour?" is-on":"")+"\" data-die-seal=\"\" title=\"None — the die&#39;s own robe\">—</button>";
+          robes+=SEALABLE_SOURCES.map(function(key){
+            var tint=SOURCE_TINT[key]||"ash";
+            return robePastille(tint,bonusSourceMark(key),!target.colour&&(target.sourceIcon||"")===key,
+              "data-die-seal=\""+key+"\"",ROLL_SOURCES[key].label+" · "+tint,false);
+          }).join("");
+          robes+=robePastille("gold",sourceGlyphSvg("destiny"),false,"data-die-seal=\"destiny\"",
+            poolReady?"Destiny · gold — take a Destiny d"+target.sides+" from the pool instead; ROLL is what spends it":"No Destiny d"+target.sides+" available",!poolReady);
+        }
         // Gold is a Destiny die's identity, not a preference, so it is not offered a palette.
-        var colourRow=isDestiny?"":"<div class=\"fh-cd-dmrow\"><span>Colour</span>"+DIE_COLOURS.map(function(pair){
-            return "<button type=\"button\" class=\"fh-cd-dmcol"+((target.colour||"ivory")===pair[0]?" is-on":"")+"\" data-die-colour=\""+pair[0]+"\" title=\""+pair[1]+"\">"+dieSvg(6,15,pair[0],"")+"</button>";
-          }).join("")+"</div>";
+        if(!isDestiny)robes+=DIE_COLOURS.filter(function(pair){
+            /* On a sealable die the Ivory swatch was a lie twice over: colour
+               "ivory" is stored as "" so it could never light up, and clicking
+               it returned the die to its TINT, never to ivory. The seal robes
+               are that reset now, so Ivory is only offered where it is true. */
+            return !canSeal||pair[0]!=="ivory";
+          }).map(function(pair){
+            var on=target.colour?target.colour===pair[0]:!canSeal&&pair[0]==="ivory";
+            var mark=on&&canSeal&&target.sourceIcon?bonusSourceMark(target.sourceIcon):"";
+            return robePastille(pair[0],mark,on,"data-die-colour=\""+pair[0]+"\"",
+              pair[1]+(mark?" · sealed "+sealLabel(target.sourceIcon):""),false);
+          }).join("");
+        var robeRow=robes?"<div class=\"fh-cd-dmrow fh-cd-dmrobes\">"+robes+"</div>":"";
         var modeRow=!modes.length?"":"<div class=\"fh-cd-dmrow\"><span>Roll</span>"+modes.map(function(mode){
             var short=mode==="flat"?"—":mode==="advantage"?"A":mode==="disadvantage"?"D":"A/D";
             return "<button type=\"button\" class=\"fh-cd-dmmode"+((target.advantageMode||"flat")===mode?" is-on":"")+"\" data-die-mode-set=\""+mode+"\">"+short+"</button>";
@@ -2192,7 +2449,7 @@
         var head="d"+target.sides+(target.label&&target.label!=="d"+target.sides?" · "+esc(target.label):"")+(landed?" · FALLEN":"");
         // Removes THIS die only — emptying the whole tray is the permanent CLEAR TRAY.
         var removable=target.scope!=="base"&&!landed;
-        return "<div class=\"fh-cd-card is-diemenu\"><small>"+head+"</small>"+sealRow+colourRow+modeRow+portentRow+
+        return "<div class=\"fh-cd-card is-diemenu\"><small>"+head+"</small>"+robeRow+modeRow+portentRow+
           "<div class=\"fh-cd-acts\">"+(removable?"<button class=\"is-ghost\" data-die-drop>Remove this die</button>":"")+"<button data-tray-close>Done</button></div></div>";
       }
       state.diePrompt=null;
@@ -2202,13 +2459,14 @@
   function trayDiceForDisplay(){
     if(state.trayResults.length)return state.trayResults;
     if(state.rollConfig)return [];
-    var dice=state.traySelection.map(function(die){return {sides:die.sides,result:forcedDieResult(die.forcedResult,die.sides),label:"d"+die.sides,dieRole:"base",pending:true,freeId:die.id,colour:die.colour||"",forced:die.forcedResult!=null};});
-    // A Destiny die picked up with nothing else prepared waits here, first in
-    // the row and pulsing, until ROLL decides to spend it.
+    var dice=state.traySelection.map(function(die){return {sides:die.sides,result:forcedDieResult(die.forcedResult,die.sides),label:die.label||("d"+die.sides),dieRole:"base",pending:true,freeId:die.id,colour:die.colour||"",forced:die.forcedResult!=null};});
+    // A Destiny die picked up with nothing else prepared waits here, pulsing,
+    // until ROLL decides to spend it — at its construction-order place, like
+    // every die since Eric's left-to-right ruling (2026-08-04).
     var waiting=state.destinyStaged;
     if(waiting){
       if(state.destiny&&state.destiny.dice.some(function(die){return die.id===waiting.dieId&&die.available;}))
-        dice.unshift({sides:waiting.sides,result:forcedDieResult(waiting.forcedResult,waiting.sides),label:"Destiny",dieRole:"destiny",pending:true,flash:true,poolDestinyId:waiting.dieId,forced:waiting.forcedResult!=null});
+        dice.push({sides:waiting.sides,result:forcedDieResult(waiting.forcedResult,waiting.sides),label:"Destiny",dieRole:"destiny",pending:true,flash:true,poolDestinyId:waiting.dieId,forced:waiting.forcedResult!=null});
       else state.destinyStaged=null;
     }
     return dice;
@@ -2236,41 +2494,10 @@
     return String(die.landedKey||die.stagedId||die.bonusId||die.poolDestinyId||die.destinyDieId||die.freeId||
       ((die.dieRole||"die")+":"+die.sides+":"+index));
   }
-  function renderFrameInner(){
-    var dice=trayDiceForDisplay();
-    /* Each die decides for itself whether it has just landed. This used to be
-       one tray-wide signature, which meant that adding a single bonus die
-       re-rolled every die already lying in the tray -- the landed d20 span
-       again without its value ever changing. */
-    var previous=state.diceSignatures||{},signatures={},animated=false;
-    dice.forEach(function(die,index){signatures[dieAnimationKey(die,index)]=die.result==null?"?":String(die.result);});
-    var flags=dice.map(function(die,index){
-      var key=dieAnimationKey(die,index);
-      var animate=die.result!=null&&previous[key]!==signatures[key];
-      if(animate)animated=true;
-      return animate;
-    });
-    state.diceSignatures=signatures;
-    if(animated)armTrayReveal(dice.length);
-    /* While the dice are in the air the total stays out of sight: printing it
-       instantly answered the question before the roll could. */
-    var quiet=trayRevealPending();
-    var title=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
-    var detail=quiet?"Rolling…":state.trayResultText;
-    /* The Ruling (§5), when this heading IS one: a verdict, then the account.
-       The class is the surface's only claim about the line, and it is granted
-       by equality rather than by a flag someone might forget to clear — a
-       Chaos or Overreach prompt that overwrote trayTitle is not a verdict and
-       must not be dressed as one. */
-    var isRuling=!quiet&&!!state.trayVerdict&&title===state.trayVerdict;
-    var status=detail||title
-      ? "<b"+(isRuling?" class=\"fh-cd-verdict\"":"")+">"+esc(title||"")+"</b>"+
-        (detail?"<em"+(isRuling?" class=\"fh-cd-account\"":"")+">"+esc(detail)+"</em>":"")
-      : "<em>Ready — click a skill, a save or an ability.</em>";
-    // The verdict docks to the bottom of the frame; popups now live outside it.
-    return "<div class=\"fh-cd-dicerow\">"+dice.map(function(die,index){return visualDie(die,index,dice.length,flags[index]);}).join("")+"</div>"+
-      "<div class=\"fh-cd-status\" aria-live=\"polite\">"+status+"</div>";
-  }
+  /* renderFrameInner is gone: the frame, its dice row and the Ruling line all
+     live in the Dice Tray now (diceTrayInner) — the tray is the surface those
+     things were always describing. The per-die signature machinery moved with
+     them, line-prefixed so ten lines of dice can coexist. */
   /* One ROLL, one CLEAR TRAY. Nothing else is permanent. Below them the
      transient badges, then the tray, then whatever popup is owed — which
      pushes the stream down instead of covering the dice. */
@@ -2303,22 +2530,377 @@
     }).join("")+
       "<button type=\"button\" class=\"fh-cd-pendadd\" data-pending-add title=\"Pin a reminder of your own\" aria-label=\"Pin a badge\">…</button>";
     var menu=renderEventContent();
-    /* Events sit between the badges and the dice: what just happened reads
-       above the dice it happened to, and a menu the player opened stays under
-       them so it never pushes the roll off screen. */
+    /* Above the judgment window there are only the badges (Eric, 2026-08-03,
+       third fitting): the stacked announcement lines are gone — a ruling
+       reads in the window, a debt reads on the badge strip, and the Stream
+       keeps the record. A menu the player opened still stays under the
+       window so it never pushes anything off screen. */
     return "<section class=\"fh-cd-stage\" data-zone=\"roller\">"+
-      /* Round 8: ROLL itself moved into the console's white dice row (the slot
-         its ⋮ vacated) now that the whole console is always visible and the
-         die no longer needs to break out of flow to reach the gap above it.
-         Only CLEAR TRAY is left here. */
-      "<div class=\"fh-cd-acts-bar\">"+
-      "<button class=\"fh-cd-mainclear\" type=\"button\" data-clear-tray"+(busy?" disabled title=\"Answer the question above the dice first\"":"")+">CLEAR<i> TRAY</i></button></div>"+
-      "<div class=\"fh-cd-temps\">"+badges+"</div>"+
-      renderEventList()+
-      "<div class=\"fh-cd-frame"+(frameMood()?" mood-"+frameMood():"")+"\">"+renderFrameInner()+"</div>"+
+      /* Above the judgment box there is only the badge strip — plus, since
+         phase 3, the DISCREET clear in the corner (décision Eric: « un
+         clear tray plus discret peut aussi être présent dans le roll
+         builder ») — small, at the end of the strip, never a big button.
+         CLEAR TRAY's principal seat is the ⊕ popover. */
+      "<div class=\"fh-cd-temps\">"+badges+
+      "<button type=\"button\" class=\"fh-cd-clearmini\" data-clear-tray"+(busy?" disabled":"")+
+      " title=\""+(busy?"Answer the question above the dice first":"Clear tray — empty the hand")+"\" aria-label=\"Clear tray\">✕ clear</button></div>"+
+      renderJudgmentFrame()+
       (menu?"<div class=\"fh-cd-popups\">"+menu+"</div>":"")+
       "</section>";
   }
+  /* ── The judgment window (Eric, 2026-08-03, third fitting) ────────
+     The Roll Builder's frame is PERMANENT now, and everything the engine
+     says to the player passes through it, by priority:
+       1. a DECISION — Natural 1, an Arcane 1, an A/D choice: the one
+          moment the dock genuinely asks;
+       2. the ASSEMBLY — a hand with nothing landed, dice waiting on ROLL
+          (past six dice, a bare swarm);
+       3. the RULING of the roll just landed — verdict and account, the
+          same equality rule as always: oxblood only when the heading IS
+          the derived verdict;
+       4. rest — an invitation.
+     The stacked announcement lines above it are gone; the badge strip
+     carries the debts and the Stream keeps the record. The mood streaks
+     live here too — the moment's frame, not the registre's. */
+  function judgmentDecisionHtml(){
+    var prompt=state.trayPrompt;
+    if(prompt&&prompt.type==="die-choice"){
+      return "<div class=\"fh-cd-judgeask is-die-choice\"><b>"+(prompt.mode==="choice"?"A / D":"CHOOSE RESULT")+"</b>"+
+        "<i>"+esc(prompt.label)+" — either result may be kept</i>"+
+        "<span class=\"fh-cd-eacts is-dice\">"+(prompt.rolls||[]).map(function(result,index){
+          return "<button type=\"button\" data-die-choice=\""+index+"\" class=\"fh-cd-die\" aria-label=\"Keep "+result+"\">"+dieSvg(prompt.sides,30,dieMaterialName({sides:prompt.sides,result:result,dieRole:prompt.dieRole}),result)+"</button>";
+        }).join("")+"</span></div>";
+    }
+    if(prompt&&prompt.type==="nat1"){
+      return "<div class=\"fh-cd-judgeask is-nat1\"><b>NATURAL 1 · do you accept your fate?</b>"+
+        "<i>Accept: critical failure, +1 Destiny Point. Refuse: the 1 becomes 20, Destiny falls to 0, Chaos becomes pending.</i>"+
+        "<span class=\"fh-cd-eacts\"><button type=\"button\" data-tray-accept-fate>Accept</button>"+
+        "<button type=\"button\" class=\"is-danger\" data-tray-refuse-fate>Refuse</button></span></div>";
+    }
+    if(prompt&&prompt.type==="arcane1"){
+      var sides=Number(prompt.sides)||4;
+      return "<div class=\"fh-cd-judgeask is-arcane-critical-failure\"><b>ARCANE CRITICAL FAILURE · do you accept your fate?</b>"+
+        "<i>Accept: the failure stands, +1 Destiny Point. Refuse: the 1 reads as "+sides+" — Arcane Critical Success — Destiny falls to 0, Chaos becomes pending.</i>"+
+        "<span class=\"fh-cd-eacts\"><button type=\"button\" data-arcane-fate=\"accept\">Accept</button>"+
+        "<button type=\"button\" class=\"is-danger\" data-arcane-fate=\"chaos\">Refuse</button></span></div>";
+    }
+    return "";
+  }
+  function renderJudgmentFrame(){
+    var mood=frameMood();
+    var decision=judgmentDecisionHtml();
+    var dice=trayDiceForDisplay();
+    /* A COIN carries its value from birth (result is its face, not a landing)
+       — so "has anything landed?" must only read the real dice, or a +2
+       toggled during assembly convinces the frame the hand already fell and
+       the whole assembly (coin included) vanishes. That was bug R1. */
+    var assembling=dice.length&&!dice.some(function(die){return die.kind!=="modifier"&&die.result!=null;});
+    var assembly="";
+    if(assembling&&!decision){
+      var realDice=dice.filter(function(die){return die.kind!=="modifier";}).length;
+      var swarm=realDice>5;
+      var rows=realDice>10;
+      /* While STAGING every die stays visible (you need to see what you
+         are adding) — and the crowd reads on the SAME ratified grid as
+         the tray (Eric, 2026-08-05): 1-5 wrapped at 38 with labels, 6-10
+         naked 30→20, 11+ in rows of ten at 20 — never under 20 in a row
+         of ten; the judgment frame is height:auto and simply grows. */
+      var sizePx=rows?TRAY_DIE_ROW:swarm?Math.round(30-2.5*(realDice-6)):TRAY_DIE_SKILL;
+      assembly="<span class=\"fh-cd-tray-dice is-build"+(swarm?" is-swarm":"")+(rows?" is-rows":"")+"\""+
+        (swarm?" style=\"--fh-cd-tray-die-size:"+sizePx+"px\"":"")+">"+dice.map(function(die,index){
+        return visualDie(die,index,dice.length,false,{sizePx:sizePx,plainLabel:true,naked:swarm});
+      }).join("")+"</span>";
+    }
+    /* A decision COVERS the whole box (Eric: "pour les grandes occasions le
+       texte couvre tout le builder") — no columns, just the question. */
+    if(decision){
+      return "<div class=\"fh-cd-frame is-judgment is-takeover"+(mood?" mood-"+mood:"")+"\">"+decision+"</div>";
+    }
+    /* Otherwise three spaces on the wood, left to right: the informative
+       column (what Fate said — the Ruling, or the invitation), the dice
+       building left→right, and the roll's identity — "History / +1" —
+       centred on the right. The verdict-equality rule is unchanged. */
+    var quiet=trayRevealPending();
+    var heading=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
+    var detail=quiet?"Rolling…":state.trayResultText;
+    var isRuling=!quiet&&!!state.trayVerdict&&heading===state.trayVerdict;
+    /* The right column: the roll's name and flat bonus, nothing else — the
+       config while one is open, the open entry's identity otherwise. */
+    var cfg=state.rollConfig,idEntry=openEntry();
+    var rightName=cfg?cfg.name:idEntry?idEntry.name:(assembling?state.trayLabel||"Free roll":"");
+    /* NOTHING SAID TWICE: the +2 and the manual mod are visible as coins in
+       the assembly now (R1/R2), so the right column keeps the BASE bonus
+       alone — folding them back in would state each of them twice. */
+    var rightBonus=cfg&&isFinite(Number(cfg.baseBonus))?signed(Number(cfg.baseBonus))
+      :idEntry&&idEntry.kind==="d20"&&isFinite(Number(idEntry.baseBonus))?signed(idEntry.baseBonus):"";
+    /* Nothing said twice on the wood either: a heading that only restates
+       the right column's identity — "Arcana +10" while preparing, "Arcana
+       22" once landed (the no-verdict fallback title) — yields to it, and
+       the left keeps the informative part alone. A real verdict, or a
+       prompt like "Chaos", never starts with the roll's name and stays. */
+    if(heading&&rightName&&heading.indexOf(rightName)===0)heading="";
+    /* At rest the wood stays bare (T3): the invitation lives once, in the
+       tray's empty state — saying it twice was the doublon. */
+    var judgment=(heading&&heading!=="Dice Tray")||detail
+      ? (heading&&heading!=="Dice Tray"?"<b"+(isRuling?" class=\"fh-cd-verdict\"":"")+">"+esc(heading)+"</b>":"")+
+        (detail?"<em"+(isRuling?" class=\"fh-cd-account\"":"")+">"+esc(detail)+"</em>":"")
+      : "";
+    var right=rightName?"<span class=\"fh-cd-judgeright\"><b>"+esc(rightName)+"</b>"+(rightBonus?"<i>"+esc(rightBonus)+"</i>":"")+"</span>":"";
+    return "<div class=\"fh-cd-frame is-judgment"+(assembling?" is-assembly":"")+(mood?" mood-"+mood:"")+"\">"+
+      "<span class=\"fh-cd-judgment\">"+judgment+"</span>"+assembly+right+"</div>";
+  }
+  /* ── Phase 4: the COUNTED pool ("Dice Pool ≠ Dice Selector") ───────
+     The band's free middle carries a reserve of counted play resources,
+     noted like inspiration, at the Destiny ledger's level. Two natures:
+       - a SINGLE DIE ("d8 Bardic"): kind "die", count 0/1 — the pastille
+         is a tinted die; spending it stages a sealed/tinted bonus die and
+         the pastille disappears until the die is taken back or rolled;
+       - a COUNTER ("Tactical ×2"): kind "count", count N — the pastille
+         is a ×N chip; spending stages one die of the resource's nature
+         and decrements, exactly the way a Tactical seal stages today.
+     ROLL is what spends for good (same law as Destiny): a staged pool die
+     taken back before ROLL RE-CREDITS its resource, wherever the take-back
+     happens (die menu, right-click on the picker, CLEAR TRAY). The engine
+     and the table never learn any of this — a pool die is an ordinary
+     bonus/free die once staged. `origin` is carried for later phases
+     (sheet detection, player-to-player gifts) and never read here. */
+  var POOL_DIE_SIDES=[4,6,8,10,12];
+  var MAX_POOL_RESOURCES=12,MAX_POOL_COUNT=9;
+  /* The seal IS the die (R6): a pool tint that belongs to a seal stages
+     that seal, so "crimson Tactical" reproduces today's Tactical die. */
+  var POOL_TINT_SEAL={azure:"guidance",violet:"bardic",crimson:"tactical"};
+  // Offered in the pool cards, seal tints first — gold stays Destiny's own.
+  var POOL_TINTS=[["violet","Violet — Bardic's robe"],["crimson","Crimson — Tactical's robe"],["azure","Azure — Guidance's robe"],["green","Green"],["slate","Slate"],["ash","Ash"],["ivory","Ivory"]];
+  function poolList(){return Array.isArray(state.poolResources)?state.poolResources:(state.poolResources=[]);}
+  function poolResourceById(id){return poolList().find(function(res){return res.id===id;})||null;}
+  function visiblePoolResources(){return poolList().filter(function(res){return Number(res.count)>0;});}
+  function normalizePoolResource(raw){
+    if(!raw||typeof raw!=="object")return null;
+    var sides=POOL_DIE_SIDES.indexOf(Number(raw.sides))>=0?Number(raw.sides):8;
+    var kind=raw.kind==="count"?"count":"die";
+    var count=clamp(raw.count==null?1:raw.count,0,kind==="die"?1:MAX_POOL_COUNT);
+    return {id:raw.id||uuid(),label:String(raw.label||"Resource").slice(0,14),kind:kind,sides:sides,count:count,
+      tint:DIE_MATERIAL[raw.tint]&&raw.tint!=="white"&&raw.tint!=="chaos"&&raw.tint!=="gold"?raw.tint:"ash",
+      origin:raw.origin||undefined};
+  }
+  function normalizePoolResources(raw){
+    return (Array.isArray(raw)?raw:[]).map(normalizePoolResource).filter(Boolean).slice(0,MAX_POOL_RESOURCES);
+  }
+  function poolSourceIconFor(res){return POOL_TINT_SEAL[String(res.tint||"")]||"";}
+  function poolTitle(res){
+    var nature=res.kind==="die"?"d"+res.sides:"×"+res.count+" · spends a d"+res.sides;
+    return res.label+" — "+nature+" · click stages it (ROLL spends it) · right click to edit";
+  }
+  /* A pool die still WAITING (no result) that leaves the hand hands its
+     use back. A rolled die never comes back — it was spent, like Destiny. */
+  function recreditPoolResource(id){
+    var res=poolResourceById(id);
+    if(!res)return;
+    res.count=clamp(Number(res.count)+1,0,res.kind==="die"?1:MAX_POOL_COUNT);
+  }
+  function recreditPoolDie(die){
+    if(die&&die.poolResourceId&&die.result==null&&!die.locked)recreditPoolResource(die.poolResourceId);
+  }
+  function recreditPendingPoolDice(){
+    stagedList().forEach(recreditPoolDie);
+    state.traySelection.forEach(recreditPoolDie);
+    var cfg=state.rollConfig;
+    if(cfg)(cfg.bonusDice||[]).forEach(recreditPoolDie);
+  }
+  function poolResourceReferenced(id){
+    if(stagedList().some(function(die){return die.poolResourceId===id;}))return true;
+    if(state.traySelection.some(function(die){return die.poolResourceId===id;}))return true;
+    var cfg=state.rollConfig;
+    if(cfg&&(cfg.bonusDice||[]).some(function(die){return die.poolResourceId===id&&die.result==null;}))return true;
+    return false;
+  }
+  /* An emptied resource lingers invisibly only while a die of its still
+     waits in a hand (so cancelling can re-credit it); once nothing points
+     at it any more, it is truly consumed and leaves the list. */
+  function prunePoolResources(){
+    state.poolResources=poolList().filter(function(res){return Number(res.count)>0||poolResourceReferenced(res.id);});
+  }
+  /* Spending: click a pastille and the die is STAGED, wherever the hand
+     lives — an open roll, a prepared console, or nothing at all (the free
+     tray, with the builder invoked so the gesture works from rest). The
+     decrement happens now; ROLL makes it final, take-back undoes it. */
+  function spendPoolResource(id){
+    var res=poolResourceById(id);
+    if(!res||Number(res.count)<1){state.message="That pool resource is spent.";state.messageKind="warn";renderMessage();return;}
+    var icon=poolSourceIconFor(res),colour=icon?"":(res.tint||"");
+    state.poolPrompt=null;state.destinyPoolMenu=false;
+    invokeBuilder();
+    if(rollOpen()){
+      var entry=openEntry();
+      if(!entry)return;
+      if(entryBonusDice(entry).length+stagedBonusCount()>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
+      res.count=Number(res.count)-1;
+      state.rollSequence.staged=stagedList().concat([{id:uuid(),kind:"bonus",label:res.label,sides:res.sides,sourceIcon:icon,colour:colour,poolResourceId:res.id}]);
+      refreshOpenTray(entry);persistPlayState();render();return;
+    }
+    var cfg=state.rollConfig;
+    if(cfg&&!cfg.editingId){
+      syncConsoleInputs();
+      if((cfg.bonusDice||[]).length>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
+      res.count=Number(res.count)-1;
+      var bonus=newBonusDie(res.label,res.sides,icon||undefined,colour);
+      bonus.poolResourceId=res.id;
+      cfg.bonusDice.push(bonus);
+      syncPresetFlags(cfg);prepareTrayForConfig(cfg);persistPlayState();render();return;
+    }
+    if(state.traySelection.length>=MAX_FREE_DICE){pushEvent("The free-roll tray holds at most "+MAX_FREE_DICE+" dice","warn");refreshEventPanel();return;}
+    res.count=Number(res.count)-1;
+    var free=newFreeDie(res.sides,colour||SOURCE_TINT[icon]||"");
+    free.label=res.label;free.poolResourceId=res.id;
+    state.traySelection.push(free);state.trayResults=[];
+    persistPlayState();render();
+  }
+  /* ── The pool cards (add / edit / overflow list) ────────────────── */
+  function newPoolDraft(){return {label:"",kind:"die",sides:8,count:2,tint:"violet"};}
+  function openPoolEdit(id){
+    var res=poolResourceById(id);
+    if(!res)return;
+    state.poolPrompt={type:"edit",id:id,draft:{label:res.label,kind:res.kind,sides:res.sides,count:res.count,tint:res.tint}};
+    state.destinyPoolMenu=false;state.diePrompt=null;render();
+  }
+  // Like syncConsoleInputs: the card's free-text fields are read before any
+  // re-render, so a tint click never throws a half-typed label away.
+  function syncPoolCardInputs(){
+    var prompt=state.poolPrompt;
+    if(!prompt||!prompt.draft||!root)return;
+    var label=root.querySelector("#fhPsPoolLabel"),count=root.querySelector("#fhPsPoolCount");
+    if(label)prompt.draft.label=String(label.value||"").slice(0,14);
+    if(count)prompt.draft.count=clamp(count.value,1,MAX_POOL_COUNT);
+  }
+  /* R31 (racine, prouvée au banc) : un render() ASYNCHRONE — le timer du
+     reveal, le pulse d'appel de Destiny — reconstruit la carte pendant que le
+     joueur tape ; le champ renaissait depuis un draft jamais synchronisé, la
+     frappe était effacée en silence et « Add it » sauvait le défaut
+     « Resource ». Chaque frappe pousse donc le champ dans le draft : une
+     carte reconstruite renaît AVEC le texte tapé, quel que soit le chemin de
+     re-render (synchrone ou minuté). */
+  function onPoolCardInput(event){
+    var target=event&&event.target;
+    if(target&&(target.id==="fhPsPoolLabel"||target.id==="fhPsPoolCount"))syncPoolCardInputs();
+  }
+  function savePoolCard(){
+    var prompt=state.poolPrompt;
+    if(!prompt||!prompt.draft)return;
+    syncPoolCardInputs();
+    var draft=prompt.draft;
+    var next={id:prompt.id||uuid(),label:draft.label||"Resource",kind:draft.kind,sides:draft.sides,
+      count:draft.kind==="die"?1:clamp(draft.count,1,MAX_POOL_COUNT),tint:draft.tint};
+    if(prompt.type==="edit"){
+      var res=poolResourceById(prompt.id);
+      if(res){
+        // Editing never re-arms a single die that is currently out in a hand.
+        if(res.kind==="die"&&next.kind==="die")next.count=res.count;
+        Object.assign(res,normalizePoolResource(Object.assign({origin:res.origin},next)));
+      }
+    }else{
+      if(poolList().length>=MAX_POOL_RESOURCES){state.message="The pool holds at most "+MAX_POOL_RESOURCES+" resources.";state.messageKind="warn";renderMessage();return;}
+      poolList().push(normalizePoolResource(next));
+    }
+    state.poolPrompt=null;persistPlayState();render();
+  }
+  function deletePoolResource(id){
+    state.poolResources=poolList().filter(function(res){return res.id!==id;});
+    state.poolPrompt=null;persistPlayState();render();
+  }
+  /* One pastille: a tinted die for kind "die", a ×N chip for a counter,
+     the tiny label underneath either way (the ratified maquette). */
+  function poolChipFace(res,size){
+    if(res.kind==="die")return dieSvg(res.sides,size,res.tint||"ash","d"+res.sides);
+    var m=DIE_MATERIAL[res.tint]||DIE_MATERIAL.ash;
+    return "<span class=\"fh-cd-poolx\" style=\"width:"+size+"px;height:"+size+"px;background:"+m.fill+";border-color:"+m.rim+";color:"+m.num+"\">×"+Number(res.count)+"</span>";
+  }
+  function poolChipHtml(res){
+    return "<button type=\"button\" class=\"fh-cd-poolchip\" data-pool-spend=\""+esc(res.id)+"\" data-pool-id=\""+esc(res.id)+"\""+
+      " title=\""+esc(poolTitle(res))+"\" aria-label=\"Spend "+esc(res.label)+"\">"+
+      poolChipFace(res,20)+"<b class=\"fh-cd-poollab\">"+esc(res.label)+"</b></button>";
+  }
+  /* The strip between the gold dice and the arcana. Past what the band
+     measured room for (state.poolFit, syncPoolFit), the excess folds into
+     a +N chip that opens the list card — Destiny itself is NEVER folded. */
+  function renderPoolStrip(){
+    var visible=visiblePoolResources();
+    if(!visible.length)return "";
+    var fit=Math.max(1,Number(state.poolFit)||1),chips;
+    if(visible.length<=fit)chips=visible.map(poolChipHtml).join("");
+    else{
+      var shown=visible.slice(0,Math.max(0,fit-1)),hidden=visible.length-shown.length;
+      chips=shown.map(poolChipHtml).join("")+
+        "<button type=\"button\" class=\"fh-cd-poolmore"+(state.poolPrompt&&state.poolPrompt.type==="list"?" is-active":"")+"\" data-pool-list"+
+        " title=\""+hidden+" more pool resource"+(hidden===1?"":"s")+" — open the list\" aria-label=\"Show "+hidden+" more pool resources\">+"+hidden+"</button>";
+    }
+    return chips;
+  }
+  /* Measured, not guessed: how many pastilles the strip really has room
+     for at the current zoom and arcane. The strip is flex:1 overflow:hidden,
+     so its width never depends on its own content — one settle, no loop. */
+  var POOL_CHIP_W=27; // 24px chip + 3px gap, in step with .fh-cd-poolchip
+  function syncPoolFit(){
+    if(!root)return;
+    var box=root.querySelector(".fh-cd-poolres");
+    if(!box||!box.clientWidth)return;
+    var fit=Math.max(1,Math.floor((box.clientWidth+3)/POOL_CHIP_W));
+    if(fit!==state.poolFit){
+      state.poolFit=fit;
+      if(!syncPoolFit.busy){syncPoolFit.busy=true;try{render();}finally{syncPoolFit.busy=false;}}
+    }
+  }
+  function renderPoolCard(){
+    var prompt=state.poolPrompt;
+    if(!prompt)return "";
+    if(prompt.type==="list"){
+      var rows=visiblePoolResources().map(function(res){
+        return "<div class=\"fh-cd-poolrow\">"+
+          "<button type=\"button\" class=\"fh-cd-poolrowspend\" data-pool-spend=\""+esc(res.id)+"\" title=\""+esc(poolTitle(res))+"\">"+
+          poolChipFace(res,18)+"<span>"+esc(res.label)+"</span><i>"+(res.kind==="die"?"d"+res.sides:"×"+res.count+" · d"+res.sides)+"</i></button>"+
+          "<button type=\"button\" class=\"fh-cd-pooledit\" data-pool-edit=\""+esc(res.id)+"\" aria-label=\"Edit "+esc(res.label)+"\">✎</button></div>";
+      }).join("");
+      return "<div class=\"fh-cd-card is-poolcard\"><small>DICE POOL</small>"+
+        (rows||"<p>Nothing counted yet.</p>")+
+        "<div class=\"fh-cd-acts\"><button class=\"is-ghost\" data-pool-add>Add</button><button data-pool-close>Close</button></div></div>";
+    }
+    var draft=prompt.draft||newPoolDraft();
+    var editing=prompt.type==="edit";
+    var kindRow="<div class=\"fh-cd-dmrow\"><span>Nature</span>"+
+      "<button type=\"button\" class=\"fh-cd-dmmode"+(draft.kind==="die"?" is-on":"")+"\" data-pool-kind=\"die\" title=\"One die, waiting to be spent\">One die</button>"+
+      "<button type=\"button\" class=\"fh-cd-dmmode"+(draft.kind==="count"?" is-on":"")+"\" data-pool-kind=\"count\" title=\"A counted use — each spend stages one die\">Counter</button></div>";
+    var sidesRow="<div class=\"fh-cd-dmrow\"><span>"+(draft.kind==="die"?"Die":"Spends")+"</span>"+POOL_DIE_SIDES.map(function(sides){
+      return "<button type=\"button\" class=\"fh-cd-dmmode"+(draft.sides===sides?" is-on":"")+"\" data-pool-sides=\""+sides+"\">d"+sides+"</button>";
+    }).join("")+"</div>";
+    var countRow=draft.kind==="count"
+      ? "<div class=\"fh-cd-dmrow\"><span>Count</span>"+
+        "<button type=\"button\" class=\"fh-cd-dmmode\" data-pool-count-step=\"-1\">−</button>"+
+        "<input id=\"fhPsPoolCount\" type=\"number\" min=\"1\" max=\""+MAX_POOL_COUNT+"\" value=\""+Number(draft.count)+"\" aria-label=\"Uses left\">"+
+        "<button type=\"button\" class=\"fh-cd-dmmode\" data-pool-count-step=\"1\">+</button></div>"
+      : "";
+    // The robe row, re-used where it is natural (Q1): seal tints wear their
+    // marks, plain tints go naked — same pastilles as the die menu's rail.
+    var tintRow="<div class=\"fh-cd-dmrow fh-cd-dmrobes\"><span>Robe</span>"+POOL_TINTS.map(function(pair){
+      var seal=POOL_TINT_SEAL[pair[0]],m=DIE_MATERIAL[pair[0]]||DIE_MATERIAL.ivory;
+      return "<button type=\"button\" class=\"fh-cd-dmrobe"+(draft.tint===pair[0]?" is-on":"")+"\" data-pool-tint=\""+pair[0]+"\" title=\""+esc(pair[1])+"\">"+
+        dieSvg(6,15,pair[0],"")+(seal?"<span class=\"fh-cd-dmmark\" style=\"color:"+m.num+"\">"+bonusSourceMark(seal)+"</span>":"")+"</button>";
+    }).join("")+"</div>";
+    return "<div class=\"fh-cd-card is-poolcard\"><small>"+(editing?"POOL RESOURCE · "+esc(draft.label||"—"):"ADD A POOL RESOURCE")+"</small>"+
+      "<div class=\"fh-cd-dmrow\"><span>Label</span><input id=\"fhPsPoolLabel\" maxlength=\"14\" value=\""+esc(draft.label)+"\" placeholder=\"Bardic, Tactical…\" aria-label=\"Resource label\"></div>"+
+      kindRow+sidesRow+countRow+tintRow+
+      "<div class=\"fh-cd-acts\">"+(editing?"<button class=\"is-danger\" data-pool-delete=\""+esc(prompt.id)+"\">Remove</button>":"")+
+      "<button class=\"is-ghost\" data-pool-close>Cancel</button><button data-pool-save>"+(editing?"Save":"Add it")+"</button></div></div>";
+  }
+  /* ── The Destiny & Dice Pool band (phase 1, dock-dice-tray) ─────────
+     The old in-flow Destiny zone was rendered under the panel and covered
+     permanently by the summoned group (constat C1: never actually visible).
+     It is replaced by a persistent 44px strip anchored just ABOVE the Dice
+     Tray — UI-TERMINOLOGY zone 6, so the section is data-zone="dice-pool"
+     (the migration table retires data-zone="destiny": Destiny is the dice
+     family's name now, not the zone's). Everything COUNTED lives here: the
+     Points/Score ledger (one compact block; its −/+, Score edit and the
+     pool ⋮ rows all moved into the menu the block itself opens), the gold
+     dice at 22px with their staging behaviour intact, and the Major Arcana
+     in compact form on the right. */
   function renderDestiny(ch) {
     var arcana=ch.destinyBuild&&ch.destinyBuild.arcana||{};
     var overflow=Math.max(0,Number(state.destiny.points)-Number(state.destiny.score));
@@ -2332,44 +2914,65 @@
         (state.destinyStaged&&state.destinyStaged.dieId===die.id)||
         stagedList().some(function(item){return item.kind==="destiny"&&item.destinyDieId===die.id;}));
       return "<span class=\"fh-cd-poolwrap\"><button type=\"button\" class=\"fh-cd-picker-die"+(die?"":" is-empty")+(selected?" is-selected":"")+(die&&calling?" is-calling":"")+"\" "+(die?"data-destiny-die=\""+die.id+"\"":"disabled")+" title=\""+(die?"Left click waits it in the tray · right click takes it back":"")+"\" aria-label=\""+(die?"Spend":"No")+" Destiny d"+sides+"\">"+
-        pickerFace(sides,PICKER_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
+        pickerFace(sides,BAND_DIE_PX,die?"gold":"ivory","d"+sides)+(available.length>1?"<span class=\"fh-cd-mult\">×"+available.length+"</span>":"")+"</button></span>";
     }).join("");
-    // One ⋮ pilots every size's pool from a single popup -- not five separate
-    // menus scattered across the row. It never touches Points or Score, only
-    // how many dice of each size are in the pool.
+    /* One menu pilots the whole ledger from the block itself: the Points −/+
+       and input, the Score click-to-edit, then the five pool rows the old ⋮
+       carried. Same data hooks as before (data-destiny-step, -field,
+       -score-edit, -destiny-pool), so every behaviour is conserved. */
     var poolMenuOpen=!!state.destinyPoolMenu;
-    var poolMenu=poolMenuOpen?"<div class=\"fh-cd-dpoolmenu\">"+DIE_SEQUENCE.map(function(sides){
-      var count=state.destiny.dice.filter(function(die){return die.sides===sides&&die.available;}).length;
-      return "<div class=\"fh-cd-dpoolrow\"><b>d"+sides+"</b><span class=\"fh-cd-dpoolcount\">"+count+"</span>"+
-        "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(count?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button>"+
-        "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(count>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button></div>";
-    }).join("")+"</div>":"";
     // The Score changes once in a campaign, so it is plain text with a
     // click-to-edit affordance instead of a permanently locked input.
     var score=state.scoreEditing
       ? "<input class=\"fh-cd-scorein\" data-destiny-field=\"score\" type=\"number\" value=\""+state.destiny.score+"\" aria-label=\"Destiny Score\">"
       : "<button class=\"fh-cd-score\" type=\"button\" data-score-edit title=\"Click to change the Destiny Score\">"+state.destiny.score+"</button>";
-    return "<section class=\"fh-cd-zone\" data-zone=\"destiny\"><div class=\"fh-cd-cap\">DESTINY</div>"+
-      "<div class=\"fh-cd-destiny-row\">"+
-      /* Round 8: Points/Score share a .fh-cd-leadcol with the console's D/A/+2
-         (see renderConsole) -- a shared min-width, not a magic offset, is
-         what lines this ⋮ up with the console's ⋮ below it. */
-      "<span class=\"fh-cd-leadcol\">"+
-      "<span class=\"fh-cd-dgroup is-pts\"><span class=\"fh-cd-pts\">"+
+    var poolMenu=poolMenuOpen?"<div class=\"fh-cd-dpoolmenu is-band\">"+
+      "<div class=\"fh-cd-dledrow\"><span class=\"fh-cd-dlab\">POINTS</span><span class=\"fh-cd-pts\">"+
       "<button type=\"button\" data-destiny-step=\"points:-1\" aria-label=\"One Destiny Point less\">−</button>"+
       "<input data-destiny-field=\"points\" type=\"number\" value=\""+state.destiny.points+"\" aria-label=\"Current Destiny Points\">"+
-      "<button type=\"button\" data-destiny-step=\"points:1\" aria-label=\"One Destiny Point more\">+</button></span>"+
-      "<span class=\"fh-cd-dlab\">POINTS</span></span>"+
-      "<span class=\"fh-cd-dslash\">/</span>"+
-      "<span class=\"fh-cd-dgroup is-score\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</span>"+
+      "<button type=\"button\" data-destiny-step=\"points:1\" aria-label=\"One Destiny Point more\">+</button></span></div>"+
+      "<div class=\"fh-cd-dledrow\"><span class=\"fh-cd-dlab\">SCORE</span>"+score+"</div>"+
+      DIE_SEQUENCE.map(function(sides){
+        var count=state.destiny.dice.filter(function(die){return die.sides===sides&&die.available;}).length;
+        return "<div class=\"fh-cd-dpoolrow\"><b>d"+sides+"</b><span class=\"fh-cd-dpoolcount\">"+count+"</span>"+
+          "<button type=\"button\" data-destiny-pool=\""+sides+":-1\""+(count?"":" disabled")+" aria-label=\"Remove one Destiny d"+sides+"\">−</button>"+
+          "<button type=\"button\" data-destiny-pool=\""+sides+":1\""+(count>=3?" disabled":"")+" aria-label=\"Add one Destiny d"+sides+"\">+</button></div>";
+      }).join("")+
+      /* Phase 4 (Q1): the sober seat for adding a counted resource — one row
+         in the menu the ledger already opens, no new chrome on the band. */
+      "<button type=\"button\" class=\"fh-cd-dpooladd\" data-pool-add>＋ Add a pool resource</button>"+
+      "</div>":"";
+    return "<section class=\"fh-cd-zone fh-cd-band\" data-zone=\"dice-pool\">"+
+      "<span class=\"fh-cd-bandledger\">"+
+      "<button type=\"button\" class=\"fh-cd-bandpts"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\""+
+      " title=\"Destiny — "+state.destiny.points+" Points on a Score of "+state.destiny.score+" · click to adjust Points, Score and the dice pool\""+
+      " aria-label=\"Destiny: "+state.destiny.points+" Points, Score "+state.destiny.score+" — open the Destiny menu\">"+
+      sourceGlyphSvg("destiny")+"<b>"+state.destiny.points+"</b><i>/</i><span>"+state.destiny.score+"</span>"+
       (overflow?"<b class=\"fh-cd-overflow\" title=\"Points above your Score\">+"+overflow+"</b>":"")+
-      "</span>"+
-      "<span class=\"fh-cd-poolmenuwrap\"><button type=\"button\" class=\"fh-cd-dmenu"+(poolMenuOpen?" is-active":"")+"\" data-destiny-poolmenu aria-haspopup=\"true\" aria-expanded=\""+(poolMenuOpen?"true":"false")+"\" aria-label=\"Manage the Destiny dice pool\">"+glyph("dots")+"</button>"+poolMenu+"</span>"+
+      "</button>"+poolMenu+"</span>"+
       "<span class=\"fh-cd-pool\">"+dice+"</span>"+
+      /* Phase 4: the counted resources ride the free middle; their cards
+         (add / edit / +N list) pose above the whole band, full width. */
+      "<span class=\"fh-cd-poolres\">"+renderPoolStrip()+"</span>"+
+      renderPoolCard()+
       "<button type=\"button\" class=\"fh-cd-arcana"+(awakeningOwed()?" is-owed":"")+(arcanaDrawn()?"":" is-empty")+"\" data-arcana-draw"+
       " title=\""+(awakeningOwed()?"An Arcane Awakening is owed — draw your card":arcanaDrawn()?esc(arcana.power||"Your Major Arcana")+" — click to draw a new card":"No Major Arcana yet — click to draw one")+"\">"+
       esc(arcana.name||"Draw an Arcana")+(awakeningOwed()?" ✦":"")+"</button>"+
-      "</div></section>";
+      /* Phase 6: the deployed history's door — beside the ⊕, same dashed-gold
+         family, an expansion glyph. Its seat on the band was the chantier's
+         proposed one; toggling it is toggleTrayExpanded (same data hook as
+         the deployed's own ×). */
+      "<button type=\"button\" class=\"fh-cd-expbtn"+(state.trayExpanded?" is-active":"")+"\" data-tray-expand"+
+      " aria-expanded=\""+(state.trayExpanded?"true":"false")+"\" title=\"Expand the dice history\" aria-label=\"Expand the dice history\">"+
+      "<svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9.5 2.5h4v4M13.2 2.8 9.3 6.7M6.5 13.5h-4v-4M2.8 13.2l3.9-3.9\"/></svg></button>"+
+      /* Phase 3: the ⊕ — the free roll's door, far right where the maquette
+         puts it. A discreet dashed-gold button; its popover carries the
+         white picker that left the console, plus ROLL and CLEAR TRAY. */
+      "<span class=\"fh-cd-freewrap\"><button type=\"button\" class=\"fh-cd-freebtn"+(state.freePop?" is-active":"")+"\" data-free-pop"+
+      " aria-haspopup=\"true\" aria-expanded=\""+(state.freePop?"true":"false")+"\""+
+      " title=\"Free roll — open the dice picker\" aria-label=\"Open the free-roll dice picker\">⊕</button>"+
+      (state.freePop?renderFreePop():"")+"</span>"+
+      "</section>";
   }
   /* ── Stream: one finished roll per line, shaped for a later AboveVTT export ── */
   function outcomeTone(entry){
@@ -2491,25 +3094,33 @@
      decided nothing yet, and it moves into the account when there IS a
      verdict — so the identity of the roll is never lost and never doubled. */
   function rollRuling(entry){
-    if(!entry)return {verdict:"",title:"Roll",account:[]};
+    if(!entry)return {verdict:"",title:"Roll",account:[],display:[]};
     var found=rollVerdict(entry),verdict=found?found.verdict:"";
     var title=(entry.name||"Roll")+(entry.total==null?"":" "+entry.total);
-    var account=verdict?[title]:[];
-    rollParts(entry).forEach(function(part){account.push(part.k+" "+part.v);});
+    var head=verdict?[title]:[];
+    /* The per-die enumeration ("d6 5 · d6 2 · …") lives in `account` — the
+       FULL record, for the Stream and the hover title. It is condemned on
+       screen (Eric, lot texte T1: the dice speak for themselves), so
+       `display` is the same account WITHOUT it: title-fallback, what it
+       cost, where it leaves you, the DC. On-screen surfaces read display;
+       the record keeps account. */
+    var parts=[];
+    rollParts(entry).forEach(function(part){parts.push(part.k+" "+part.v);});
     /* What it cost, stated in points rather than left for the player to
        subtract two badges from each other. */
+    var tail=[];
     var spent=entry.destiny;
     if(spent){
       var change=Number(spent.pointsAfter)-Number(spent.pointsBefore);
       if(isFinite(change)&&change){
         var moved=Math.abs(change);
-        account.push((change<0?"Lost ":"Gained ")+moved+" Destiny Point"+(moved===1?"":"s"));
-        account.push("Current "+spent.pointsAfter);
+        tail.push((change<0?"Lost ":"Gained ")+moved+" Destiny Point"+(moved===1?"":"s"));
+        tail.push("Current "+spent.pointsAfter);
       }
     }
-    if(entry.destinyPointChange)account.push(entry.destinyPointChange.reason+" · Destiny "+entry.destinyPointChange.after);
-    if(rollHasDc(entry)&&entry.dc!=null)account.push("DC "+entry.dc);
-    return {verdict:verdict,title:title,account:account};
+    if(entry.destinyPointChange)tail.push(entry.destinyPointChange.reason+" · Destiny "+entry.destinyPointChange.after);
+    if(rollHasDc(entry)&&entry.dc!=null)tail.push("DC "+entry.dc);
+    return {verdict:verdict,title:title,account:head.concat(parts,tail),display:head.concat(tail)};
   }
   /* The one derivation every surface calls. Badges and Ruling come off the
      same entry in the same pass, so a surface cannot read one without the
@@ -2518,12 +3129,27 @@
     var ruling=rollRuling(entry);
     return {badges:rollBadges(entry),ruling:ruling,verdict:ruling.verdict};
   }
+  /* The dice of a roll, flattened for the wire. Additive on fh-roll/1: the
+     Dice Tray is the table's shared surface, so another player's dock draws
+     these instead of guessing dice out of the display strings in `parts`.
+     Old events simply lack the field and their lines render without dice —
+     graceful degradation, the bridge's own contract. */
+  function rollExportDice(entry){
+    return trayDiceFromEntry(entry).map(function(die){
+      return {sides:die.sides||null,result:die.result==null?null:Number(die.result),
+        label:die.label||"",role:die.kind==="modifier"?"modifier":(die.dieRole||"base"),
+        source:die.sourceIcon||"",dropped:!!die.dropped,colour:die.colour||"",tone:die.tone||"",
+        special:die.special||""};
+    });
+  }
   function rollExport(entry){
     return {schema:"fh-roll/1",id:entry.id,ts:entry.createdAt,campaign:state.code,
       character:state.character&&state.character.name||state.pseudo,kind:entry.kind,title:entry.name,
       ability:entry.ability||null,total:entry.total,dc:entry.dc===""||entry.dc==null?null:Number(entry.dc),
       outcome:entry.outcome||null,natural:entry.natural==null?null:entry.natural,
-      parts:rollParts(entry),badges:rollBadges(entry).map(function(badge){return badge.t;})};
+      bonus:entry.kind==="d20"?Number(entry.baseBonus)||0:null,
+      parts:rollParts(entry),badges:rollBadges(entry).map(function(badge){return badge.t;}),
+      dice:rollExportDice(entry)};
   }
   function attrJson(value){return esc(JSON.stringify(value)).replace(/'/g,"&#39;");}
 
@@ -2777,9 +3403,12 @@
     state.feed.tableUrl="";state.feed.tableState="recent";state.feed.wsRetry=0;
     try{state.feed.manualUrl=localStorage.getItem(manualTableKey(state.code))||"";}catch(e){state.feed.manualUrl="";}
     state.feed.status="";
-    // The backstop is not polled here: it loads once when the player opens
-    // the TABLE tab (or on an explicit refresh), never on a timer (§13.9).
-    if(feedActive())rendezvousTick();
+    /* The backstop still loads exactly ONCE and never on a timer (§13.9) —
+       but the trigger moved: the Dice Tray is the shared surface now and it
+       is persistent, so "the player opens the TABLE tab" became "the
+       character loads". Same single list() as before, new doorway. Refresh
+       stays the only way to a newer cloud log. */
+    if(feedActive()){rendezvousTick();refreshFeed();}
   }
   function stopFeed(){
     disconnectTableWs();
@@ -2836,6 +3465,465 @@
       "<span class=\"fh-cd-title\">"+esc(entry.name)+"</span><span class=\"fh-cd-total is-"+(quiet?"quiet":tone)+"\">"+(quiet?"…":entry.total)+"</span><span class=\"fh-cd-oic\">"+(quiet?"":icon)+"</span></span>"+
       "<span class=\"fh-cd-sl2\">"+parts+dc+badges+"</span></button></li>";
   }
+  /* ── The Dice Tray (zone 9) — the table's shared surface ──────────
+     Extracted from the roller. Shape ruled by Eric 2026-08-03: TEN rolls,
+     each line THREE spaces left to right with nothing said twice — the
+     name in full (no portrait, no visible time; the time surfaces on
+     hover), then the dice each carrying their full wrapper (source token /
+     die / label), then the ruling on three tiers: the roll's name in bold,
+     the total (with NATURAL 20/1 beside it), and the ruling itself,
+     abridged when long. The newest roll's dice land LARGE; the three
+     under it are small but still able to roll — simultaneous landings
+     must be seen — and below those the Static Area freezes everything as
+     bitmap snapshots (no live WebGL context: the ~16-context browser cap,
+     already paid for once by the picker). Beyond ten rolls, the Stream
+     keeps the record — or AboveVTT's own log does.
+
+     Your roll, the party's and the DM's land in the same list: you never
+     navigate to see what someone else rolled. So the tray inherits the
+     three feed states — LIVE / RECENT / OFF — and the founding rule,
+     never fall back silently: an unreachable table is written on the cap
+     in plain words, not folded into a quieter caption. */
+  function feedLineDice(event){
+    var display=event&&event.display||{};
+    if(!Array.isArray(display.dice))return [];
+    return display.dice.map(function(die){
+      var wire=die||{};
+      var shaped={sides:wire.sides,result:wire.result,label:wire.label||(wire.sides?"d"+wire.sides:"Bonus"),
+        sourceIcon:wire.source||"",dropped:!!wire.dropped,colour:wire.colour||"",tone:wire.tone||"",
+        special:wire.special||""};
+      if(wire.role==="modifier")shaped.kind="modifier";
+      else shaped.dieRole=wire.role||"base";
+      return shaped;
+    });
+  }
+  /* Mine from history, everyone else from the feed, one list newest-first.
+     My own rolls echo back through the feed too; the history copy is the
+     richer one (it can reopen, its dice carry handles), so the echo is
+     dropped rather than shown twice. */
+  function trayLines(){
+    var lines=[];
+    state.history.slice(0,TRAY_MAX).forEach(function(entry){
+      lines.push({kind:"mine",id:entry.id,ts:entry.createdAt||"",entry:entry});
+    });
+    var mineIds={};state.history.forEach(function(entry){mineIds[entry.id]=1;});
+    state.feed.events.forEach(function(event){
+      if(!event||event.type&&event.type!=="roll")return;
+      if(event.actor&&event.actor.pseudo===state.pseudo)return;
+      var key=String(event.rollId||event.id);
+      if(mineIds[key])return;
+      lines.push({kind:"feed",id:key,ts:event.ts||"",event:event});
+    });
+    /* A resurfaced roll (surfaceTrayLine — kept machinery, awaiting its
+       eye icon; the reading glass that first carried the gesture is gone,
+       Eric 2026-08-05) rides the moment it was called back up, not the
+       moment it was rolled: it climbs to line 1 NOW, and the next real
+       roll lands above it naturally. Display order only — createdAt, the
+       wire and the Stream keep the true time. */
+    lines.forEach(function(line){if(line.id===state.traySurfaceId&&state.traySurfaceAt)line.ts=state.traySurfaceAt;});
+    lines.sort(function(a,b){return String(b.ts).localeCompare(String(a.ts));});
+    return lines.slice(0,TRAY_MAX);
+  }
+  function surfaceTrayLine(id){
+    if(!id)return;
+    state.traySurfaceId=id;state.traySurfaceAt=new Date().toISOString();
+    /* M3 (Eric, 2026-08-06): the climb must be SEEN. Two one-shot flags,
+       each consumed by the next pass that honours it:
+       — trayScrollToTop: the registre scrolls back to its top so the line
+         that just moved to line 1 is actually in view (clicking from the
+         10th roll used to leave the viewport at the bottom, the climb
+         happening entirely above the fold). Consumed by render()'s scroll
+         restore — it is a USER gesture, so it replaces the remembered
+         position rather than fighting it.
+       — traySurfaceFlash: the line announces itself once — is-surfaced, a
+         brief liseré that plays on the first render after the climb and is
+         not re-applied by later renders (so a feed poll cannot restart it;
+         under prefers-reduced-motion the CSS keeps a static liseré instead,
+         which the next render then clears). Consumed by diceTrayInner. */
+    state.traySurfaceFlash=true;state.trayScrollToTop=true;
+    render();
+  }
+  function trayBadgeChip(kindClass,text){
+    return "<span class=\"fh-cd-badge is-"+esc(kindClass)+"\">"+esc(text)+"</span>";
+  }
+  /* The right-hand space: three tiers, nothing repeated from the other two
+     spaces. Tier 3 is the Ruling wearing the same authority rule as the old
+     frame: the oxblood verdict class lands only when the text IS the derived
+     verdict — a Chaos prompt written into the same slot gets neither. */
+  /* The line's two flanks (Eric, 2026-08-03, third fitting): the LEFT
+     speaks — the verdict, what Fate said about this roll ("CRITICAL
+     SUCCESS", "Fate accepted"), badges beside it — and the RIGHT
+     identifies: the roll's name in bold over its total ("Arcana +5 / 24"),
+     the account small under both. Nothing said twice; the dice keep the
+     middle. */
+  /* R7 (Eric, ratifié, phase 5): ONE proposition per line. Under the name,
+     the verdict if there is one, else the outcome, else nothing — and every
+     badge, count and second state leaves the line for the speak's hover
+     title (concaténé " · "). The Stream keeps the full enumeration (T22),
+     which is exactly what allows the line to cut. The ONE visible
+     exception: the "adjusted" badge — a single short word saying the
+     total changed — stays as a chip; measured, it holds inside the 56.
+     `speakTitle` rides back to trayLineHtml, which stamps it on the
+     speak span so the badges have a hover home even with no verdict. */
+  function trayLineSides(slot,quiet){
+    var left="",right="",speakTitle="";
+    if(slot.kind==="feed"){
+      var display=slot.event.display||{},tone=feedTone(display);
+      /* T8 (Eric): a badge that restates the outcome word for word is the
+         doublon — one line says it. Case-insensitive equality only; the
+         wire and the Stream keep the full badge list. */
+      var badges=(display.badges||[]).map(String).filter(function(text){
+        return !display.outcome||text.toLowerCase()!==String(display.outcome).toLowerCase();});
+      var adjustedTexts=badges.filter(function(text){return /^adjusted$/i.test(text);});
+      speakTitle=badges.filter(function(text){return adjustedTexts.indexOf(text)<0;}).join(" · ");
+      left=(display.outcome?"<b class=\"fh-cd-tray-outcome is-"+(tone||"none")+"\">"+esc(display.outcome)+"</b>":"")+
+        adjustedTexts.map(function(text){return trayBadgeChip("adjusted",text);}).join("");
+      /* T11: the CSS was already hiding the right flank's account — stop
+         generating it. The hover keeps it: the total carries the title. */
+      right="<b class=\"fh-cd-tray-title\">"+esc(String(display.title||"Roll")+(display.bonus!=null?" "+signed(display.bonus):""))+"</b>"+
+        "<span class=\"fh-cd-tray-total is-"+(tone||"none")+"\""+(display.dc!=null?" title=\"vs DC "+esc(display.dc)+"\"":"")+">"+esc(display.total!=null?display.total:"—")+"</span>";
+    }else if(slot.entry&&(slot.kind==="mine"||slot.structured)){
+      var entry=slot.entry,vocab=rollVocabulary(entry),ruling=vocab.ruling,tone2=outcomeTone(entry);
+      /* Quiet hides what the dice have not revealed — never what the player
+         already knew: MANUAL and adjusted describe the roll's construction
+         and stay visible while it rolls, exactly as the Stream always did. */
+      /* T7's on-line dedup died with the on-line badges (R7): everything but
+         "adjusted" leaves for the title, so a badge can no longer double the
+         verdict visually. The equality filter survives FOR THE TITLE — a
+         hover list that restates the visible verdict word for word would be
+         the same doublon one surface further out. */
+      var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler)&&
+        !(ruling.verdict&&badge.t.toLowerCase()===ruling.verdict.toLowerCase());});
+      var chips=kept.filter(function(badge){return badge.k==="adjusted";});
+      /* `kept` already hid the spoilers while the dice are in the air, so the
+         quiet title says only what the player knew before rolling (MANUAL…). */
+      speakTitle=kept.filter(function(badge){return badge.k!=="adjusted";})
+        .map(function(badge){return badge.t;}).join(" · ");
+      left=(quiet?"<em class=\"fh-cd-tray-account\">Rolling…</em>"
+          :ruling.verdict?"<b class=\"fh-cd-tray-verdict\">"+esc(ruling.verdict)+"</b>":"")+
+        chips.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
+      /* The live hand keeps trayResultText (it carries the open-roll status,
+         staged-dice count included); a settled history line re-derives the
+         account so it can never go stale. */
+      var account=quiet?"":(slot.kind==="live"?state.trayResultText:ruling.account.join(" · "));
+      /* T11: those two <em> were display:none on the carpet — dead text in
+         every line's DOM. The account (full record, T1) and the DC now ride
+         the total's hover title instead of being generated then hidden. */
+      var hover=[account,(!quiet&&entry.dc!==""&&entry.dc!=null)?"vs DC "+entry.dc:""].filter(Boolean).join(" · ");
+      right="<b class=\"fh-cd-tray-title\">"+esc(String(entry.name||"Roll")+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):""))+"</b>"+
+        "<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\""+(hover?" title=\""+esc(hover)+"\"":"")+">"+(quiet?"…":esc(entry.total))+"</span>";
+    }else{
+      /* A prompt that overwrote the tray fields while dice are engaged
+         ("Chaos" · "Roll 2d6 and read the Chaos table"). Raw fields, verdict
+         classes only by equality — never by flag. */
+      var heading=quiet&&state.trayQuietTitle?state.trayQuietTitle:state.trayTitle;
+      var detail=quiet?"Rolling…":state.trayResultText;
+      var isRuling=!quiet&&!!state.trayVerdict&&heading===state.trayVerdict;
+      /* T11: the detail's <em> was hidden on the carpet too — it rides the
+         heading's hover title now, nothing dead in the DOM. */
+      left="<b"+(isRuling?" class=\"fh-cd-tray-verdict\"":" class=\"fh-cd-tray-heading\"")+(detail?" title=\""+esc(detail)+"\"":"")+">"+esc(heading||"Dice Tray")+"</b>";
+      right="";
+    }
+    return {left:left,right:right,speakTitle:speakTitle};
+  }
+  /* Phase 6: `opts.readOnly` freezes a line for the DEPLOYED history — every
+     die loses its handles (visualDie's readOnly path: the menu delegation
+     never matches), the owner's reopen button renders as plain text, and the
+     climb's mark/flash stay the tray's affair. The gabarit itself is SHARED:
+     the deployed renders the same lines the tray does, one factored template. */
+  function trayLineHtml(slot,index,flags,quiet,opts){
+    var frozen=!!(opts&&opts.readOnly);
+    var sizeClass=index===0?"is-l1":index<4?"is-mid":"is-static";
+    var realDice=slot.dice.filter(function(die){return die.kind!=="modifier";}).length;
+    /* The ratified grid (Eric, lot BACKLOG-B 2026-08-05) — ONE law for
+       every line, L1 included, because every band is the same 56 now:
+         1-5   a skill hand: the wrapper stays, 38px WITH its label
+               (Bardic, Guidance…) — 38 + one label line ≈ 48, inside
+               the band's content;
+         6-10  one row of naked dice, 30 down to 20 as the crowd grows;
+         11-20 two rows of exactly ten at 20px (2×20 + gap ≈ 49);
+         21-30 three rows of ten at 20px — the one case that deepens
+               the line (is-deep, 72);
+         31+   the ∞ holds the zone, unchanged.
+       20px is the FLOOR of the rows because the floor is the numeral:
+       ~11px of digit at 20 reads, ~8px at the old 16 was texture. Roll
+       size EQUALS settle size for the same reason — a row may never dip
+       under 20 and a single row already sits at its legible size — so
+       roll-small-stop-zoom collapses to a straight tumble; the wave and
+       settle machinery stays (rows still land ten by ten under the
+       ~16-context cap, and the settled die is still reborn a snapshot). */
+    var swarm=realDice>5;
+    var infinite=realDice>30;
+    var rows=realDice>10&&!infinite;
+    var waved=rows;
+    var settlePx=rows?TRAY_DIE_ROW:swarm?Math.round(30-2.5*(realDice-6)):TRAY_DIE_SKILL;
+    var rollPx=settlePx;
+    var sizePx=swarm?rollPx:TRAY_DIE_SKILL;
+    var snapshot=index>=4||frozen;
+    var readOnly=slot.kind==="feed"||frozen;
+    var who=slot.kind==="feed"
+      ? (slot.event.actor&&(slot.event.actor.character||slot.event.actor.pseudo)||"—")
+      : (state.character&&state.character.name||state.pseudo||"Character");
+    var ts=slot.kind==="feed"?slot.ts:(slot.entry&&slot.entry.createdAt||"");
+    var time=ts?nowLabel(ts):"";
+    var diceHtml=infinite
+      ? "<b class=\"fh-cd-tray-inf\" title=\""+realDice+" dice — the full account is in the Stream\">∞</b>"
+      : slot.dice.map(function(die,di){
+      /* noLabel follows the grid, not T9 any more: a 1-5 skill hand keeps
+         its labels (Bardic, Guidance… — ratifié 2026-08-05); a swarm die
+         never had one to lose. And now that lines 2-4 can carry WRAPPED
+         dice (they were always naked before), they take the same
+         zero-context law the naked path already lives by: a die merely
+         re-rendered down there is born a snapshot; only a die landing
+         THIS pass animates as a live host — otherwise four lines of five
+         wrapped dice could claim 20 of the ~16 WebGL contexts. */
+      var landingNow=!!(flags&&flags[di]);
+      /* M3c: the one die the climb was FOR keeps a small persistent mark, so
+         it can be found again in a crowd once the line sits on top. */
+      var picked=!frozen&&!!(state.traySurfaceDie&&state.traySurfaceDie.lineId===slot.id&&Number(state.traySurfaceDie.di)===di);
+      return visualDie(die,di,slot.dice.length,landingNow,
+        {sizePx:sizePx,snapshot:(snapshot||(index>0&&!swarm&&!landingNow))&&!die.pending,readOnly:readOnly,plainLabel:true,noLabel:swarm,naked:swarm,
+         rollSizePx:rollPx,settleSizePx:settlePx,picked:picked,
+         wave:swarm&&waved?Math.floor(di/10):null,waveIndex:swarm?di%10:null});
+    }).join("");
+    var reopen=!frozen&&slot.kind==="mine"&&slot.entry&&slot.entry.kind==="d20";
+    /* R4 (Eric, ratifié, phase 5): the portrait/chip dies. The NAME itself,
+       small and in discreet uppercase, sits at the top-left of the line —
+       « HARNESS » / « BRUNIR », the validated maquette — for MY lines and
+       the feed's alike; the flank keeps its 80px (Q4). The full name and
+       the time still ride the hover title, and the reopen gesture the chip's
+       button carried now lives on the name. */
+    var hoverText=who+(time?" · "+time:"");
+    var whoHtml="<span class=\"fh-cd-tray-owner\" title=\""+esc(hoverText)+"\">"+
+      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+esc(who)+"</button>"
+        :"<b aria-label=\""+esc(who)+"\">"+esc(who)+"</b>")+"</span>";
+    var sides=trayLineSides(slot,quiet);
+    var row="<span class=\"fh-cd-tray-left\">"+whoHtml+"<span class=\"fh-cd-tray-speak\""+
+        (sides.speakTitle?" title=\""+esc(sides.speakTitle)+"\"":"")+">"+sides.left+"</span></span>"+
+      "<span class=\"fh-cd-tray-dice"+(swarm&&!infinite?" is-swarm":"")+(rows?" is-rows":"")+(infinite?" is-infinite":"")+"\""+
+        (swarm&&!infinite?" style=\"--fh-cd-tray-die-size:"+settlePx+"px\"":"")+">"+diceHtml+"</span>"+
+      "<span class=\"fh-cd-tray-right\">"+sides.right+"</span>";
+    /* The live hand keeps the frame — and with it the mood streaks that say
+       what the table still owes. History and feed lines carry no frame: a
+       debt belongs to the moment, not to the registre under it. */
+    if(slot.kind==="live"){
+      var mood=frameMood();
+      row="<div class=\"fh-cd-frame is-trayhand"+(mood?" mood-"+mood:"")+"\">"+row+"</div>";
+    }
+    /* 21-30 dice need three rows of ten at 20px — the ONE case that grows
+       a line past the 56px nominal (to 72; règle Eric, lot BACKLOG-B
+       2026-08-05). Past 30 the ∞ takes over and the line stays nominal. */
+    var deep=realDice>20&&!infinite;
+    /* M3b: the line that just climbed announces itself — once. The flag is
+       consumed by diceTrayInner after this pass, so later renders (feed
+       polls land every few seconds) never restart the liseré. */
+    var surfaced=!frozen&&!!(state.traySurfaceFlash&&slot.id===state.traySurfaceId&&slot.kind!=="live");
+    return "<li class=\"fh-cd-trayline "+sizeClass+(deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(surfaced?" is-surfaced":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
+  }
+  /* The three feed states, one derivation (T24): the Identity chip's title
+     and the Stream's cap read the SAME phrases instead of each keeping a
+     copy. Never fall back silently: the state is always shown — by the chip;
+     what moved to hover is only the paraphrase (T15). */
+  function feedStatusCaption(ts,offline){
+    return offline?"not reaching the table"
+      :ts==="live"?"every roll at the table, live"
+      :"no live table — cloud log, about 30s behind";
+  }
+  /* Phase 2 (mort du cap, Eric R5 2026-08-05): the LIVE/RECENT/OFF chip is
+     the state of THIS campaign connection, so it sits on the Identity line
+     next to the campaign code that names it. One producer for both the
+     full render (renderDockHeader) and the poll-path patch (renderFeedZone
+     swaps outerHTML on [data-feed-chip]) — the T24 single derivation
+     survives the move. Without a campaign there is no chip: the Identity
+     subtitle itself carries the « load a character » invitation then. */
+  function feedChipHtml(){
+    if(!feedActive())return "";
+    var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
+    return "<span class=\"fh-cd-traystate is-"+(offline?"off":ts)+"\" data-feed-chip title=\""+esc(feedStatusCaption(ts,offline))+"\">"+(offline?"OFF":ts==="live"?"LIVE":"RECENT")+"</span>";
+  }
+  function diceTrayInner(){
+    /* The cap is DEAD (phase 2, Eric R5): the tray is nothing but lines of
+       rolls now. Its cargo found seats elsewhere — the state chip on the
+       Identity line (feedChipHtml), URL…/Refresh/Clear tray in the
+       Identity ⋮ (renderDockHeader), the « load a character » invitation
+       on the Identity subtitle. Only the chevrons remain, floating. */
+    /* The live hand is the top line — but only once it has LANDED something.
+       A hand still being assembled (every die pending, no entry) belongs to
+       the Roll Builder, and renders in the roller's assembly frame instead:
+       the tray shows rolls, the builder shows intentions (Eric, 2026-08-03 —
+       "tu ne distingues pas le Dice Builder du Dice Tray ?"). The settled
+       entry the hand points at is excluded from the merged list below so the
+       same roll never appears twice. */
+    var live=trayDiceForDisplay();
+    /* Same law as the judgment frame's `assembling` (R1): a coin's result is
+       its face, not a landing — only a real die decides the hand is engaged. */
+    var engaged=live.some(function(die){return die.kind!=="modifier"&&die.result!=null;});
+    var liveEntry=null;
+    if(live.length&&engaged){
+      liveEntry=openEntry();
+      if(!liveEntry)for(var i=0;i<live.length&&!liveEntry;i++)if(live[i].entryId)liveEntry=entryById(live[i].entryId);
+    }
+    var slots=[];
+    if(live.length&&engaged){
+      var ruling=liveEntry?rollRuling(liveEntry):null;
+      slots.push({kind:"live",id:liveEntry?liveEntry.id:"live",entry:liveEntry,dice:live,
+        structured:!!(ruling&&(state.trayTitle===ruling.verdict||state.trayTitle===ruling.title))});
+    }
+    trayLines().forEach(function(line){
+      if(liveEntry&&line.kind==="mine"&&line.entry.id===liveEntry.id)return;
+      line.dice=line.kind==="mine"?trayDiceFromEntry(line.entry):feedLineDice(line.event);
+      slots.push(line);
+    });
+    slots=slots.slice(0,TRAY_MAX);
+    /* Per-die animation identity, prefixed by the line so two lines can hold
+       the same die shape without stealing each other's landings. Only the
+       first four lines may animate; the Static Area never does. */
+    var previous=state.diceSignatures||{},signatures={},liveAnimated=0;
+    slots.forEach(function(slot){
+      slot.dice.forEach(function(die,di){
+        signatures[slot.id+"§"+dieAnimationKey(die,di)]=die.result==null?"?":String(die.result);
+      });
+    });
+    var flags=slots.map(function(slot,si){
+      /* The reveal is timed on the dice that will actually animate — the
+         coins never roll, and past 30 real dice nothing renders at all
+         (armTrayReveal's own ∞ gate reads this same count). */
+      var real=slot.dice.filter(function(die){return die.kind!=="modifier";}).length;
+      return slot.dice.map(function(die,di){
+        if(si>=4)return false;
+        var key=slot.id+"§"+dieAnimationKey(die,di);
+        var moved=die.result!=null&&previous[key]!==signatures[key];
+        if(moved&&slot.kind==="live")liveAnimated=real;
+        return moved;
+      });
+    });
+    state.diceSignatures=signatures;
+    /* Only my own landing holds its answer back — the reveal machinery keeps
+       the total quiet until the dice stop. A feed roll was revealed on the
+       dock that rolled it. */
+    if(liveAnimated)armTrayReveal(liveAnimated);
+    var quiet=trayRevealPending();
+    var list=slots.length
+      ? slots.map(function(slot,si){return trayLineHtml(slot,si,flags[si],quiet&&si===0&&slot.kind==="live");}).join("")
+      : "<li class=\"fh-cd-trayline is-empty\"><em>Ready — click a skill, a save or an ability.</em></li>";
+    /* The scroll arrows (Eric's héritage n°4, and the bug behind it: ~350px
+       of rolls hide below the fold with NO affordance — "les dés dépassent
+       sous les bords"). Two thin chevrons on the list's edges, each only
+       shown when there is something on its side (syncTrayArrows toggles
+       is-can-up/down on the zone), one click = one band of scroll. */
+    var chevron=function(up){return "<svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\""+(up?"M3 10l5-5 5 5":"M3 6l5 5 5-5")+"\"/></svg>";};
+    var arrows="<button type=\"button\" class=\"fh-cd-trayarrow is-up\" data-tray-scroll=\"up\" aria-label=\"Scroll to newer rolls\">"+chevron(true)+"</button>"+
+      "<button type=\"button\" class=\"fh-cd-trayarrow is-down\" data-tray-scroll=\"down\" aria-label=\"Scroll to older rolls\">"+chevron(false)+"</button>";
+    // M3b: the announcement played this pass — it must not replay on the next.
+    state.traySurfaceFlash=false;
+    return "<ul class=\"fh-cd-traylist\">"+list+"</ul>"+arrows;
+  }
+  /* Shown only where useful: up when something is newer above, down when
+     rolls hide below the fold. Rides the zone so the arrows survive the
+     list's own re-scrolls without re-rendering anything. */
+  /* M3a's glide. Native scrollTo({behavior:"smooth"}) proved INERT on the
+     reborn traylist at the bench (measured: scrollTop pinned across a full
+     second), so the glide is driven by hand — ~240ms ease-out cubic on rAF,
+     from the restored position down to 0. If a later render rebuilds the
+     list mid-glide, the dead node's frame stops itself (isConnected) and
+     that render read the live mid-glide scrollTop as the position to keep —
+     the two mechanisms read/write the same live value, never fight. */
+  function smoothTrayScrollTop(node,from){
+    node.scrollTop=from;
+    if(!window.requestAnimationFrame){node.scrollTop=0;syncTrayArrows();return;}
+    var start=null,DURATION=240;
+    function step(ts){
+      if(!node.isConnected)return;
+      if(start==null)start=ts;
+      var k=Math.min(1,(ts-start)/DURATION);
+      node.scrollTop=from*Math.pow(1-k,3);
+      if(k<1)window.requestAnimationFrame(step);else syncTrayArrows();
+    }
+    window.requestAnimationFrame(step);
+  }
+  function syncTrayArrows(){
+    if(!root)return;
+    var zone=root.querySelector(".fh-cd-dicetray"),list=root.querySelector(".fh-cd-traylist");
+    if(!zone||!list)return;
+    zone.classList.toggle("is-can-up",list.scrollTop>2);
+    zone.classList.toggle("is-can-down",list.scrollTop<list.scrollHeight-list.clientHeight-2);
+  }
+  function renderDiceTray(){
+    return "<section class=\"fh-cd-zone fh-cd-dicetray\" data-zone=\"dice-tray\">"+diceTrayInner()+"</section>";
+  }
+  /* ── Phase 6 (architecture lot) — le tray déployé ────────────────────
+     Eric's ask, ratified: « voir un max de l'historique du stream de DÉS,
+     avec un bouton — ça recouvrirait tout sauf la fiche id du perso ».
+     This is the TRAY writ large, not the textual Stream (T22 — the Stream
+     keeps its enumeration and its ⋮ Identity seat, untouched): the same
+     visual lines trayLineHtml already draws, on the same ramp-A felt,
+     covering vitals+belt+panel+band+tray while Identity stays above.
+
+     DEPTH (documented): everything this session knows locally — my own
+     settled rolls from state.history (MAX_HISTORY = 20) merged with the
+     table's roll events from state.feed.events (FEED_MAX = 60, my echoes
+     deduped), true chronology newest-first, NO ten-line cap. Up to ~80
+     lines; every die is a zero-context bitmap snapshot (trayLineHtml is
+     called with index ≥ 4 and readOnly, so the WebGL budget stays 0).
+
+     INTERACTIONS (documented): the climb has no meaning here (everything
+     is already visible) — a click on a line only pings it briefly; the
+     die menus are disabled cleanly (their card renders inside the
+     summoned group at z 24, UNDER this surface at z 26, so readOnly is
+     the honest choice, same as feed lines); no re-roll — the live hand
+     stays the tray's affair. Closed by the × on its cap, by re-clicking
+     the band's button, and by Escape.
+
+     TAKEOVER RULE (chosen: the SAFE one): the deployed never coexists
+     with a claimed stage. Opening is refused while a roll transaction,
+     a pending reveal, an armed fate or a blocking prompt holds the
+     overlay (warnRollLocked says why), and render() retires the deployed
+     the instant overlayHeld() turns true — a nat-1 takeover arriving
+     from a Portent or a feed-triggered prompt is never hidden. */
+  function expandedTrayLines(){
+    var lines=[];
+    state.history.forEach(function(entry){lines.push({kind:"mine",id:entry.id,ts:entry.createdAt||"",entry:entry});});
+    var mineIds={};state.history.forEach(function(entry){mineIds[entry.id]=1;});
+    state.feed.events.forEach(function(event){
+      if(!event||event.type&&event.type!=="roll")return;
+      if(event.actor&&event.actor.pseudo===state.pseudo)return;
+      var key=String(event.rollId||event.id);
+      if(mineIds[key])return;
+      lines.push({kind:"feed",id:key,ts:event.ts||"",event:event});
+    });
+    /* True chronology — the tray's surface override (a climbed line) is a
+       display gesture of the ten-line registre, not of the full record. */
+    lines.sort(function(a,b){return String(b.ts).localeCompare(String(a.ts));});
+    lines.forEach(function(line){line.dice=line.kind==="mine"?trayDiceFromEntry(line.entry):feedLineDice(line.event);});
+    return lines;
+  }
+  function toggleTrayExpanded(){
+    if(state.trayExpanded){state.trayExpanded=false;render();return;}
+    if(rollTransactionActive()||trayRevealPending()||state.pendingArmed||
+       (state.trayPrompt&&!/^pending/.test(String(state.trayPrompt.type||"")))){warnRollLocked();return;}
+    state.trayExpanded=true;
+    // The deployed covers every transient beneath it — close them rather than strand them.
+    state.freePop=false;state.destinyPoolMenu=false;state.consoleMenu=false;state.menuOpen=false;
+    state.poolPrompt=null;state.diePrompt=null;
+    if(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")))state.trayPrompt=null;
+    if(state.builderOpen){if(state.rollConfig)syncConsoleInputs();retireBuilder();}
+    render();
+  }
+  function renderTrayExpanded(){
+    var lines=expandedTrayLines();
+    /* index si+4: every line is is-static and every settled die a snapshot —
+       the deployed is a registre, not a stage. flags null: nothing lands here. */
+    var body=lines.length
+      ? lines.map(function(slot,si){return trayLineHtml(slot,si+4,null,false,{readOnly:true});}).join("")
+      : "<li class=\"fh-cd-trayline is-empty\"><em>No rolls yet — this session's history lands here.</em></li>";
+    /* The section carries .fh-cd-dicetray ON PURPOSE: ramp A and every line
+       tint scoped to the tray apply by inheritance, and the gradient
+       stretches over the full height — depth still tells age, one language. */
+    return "<section class=\"fh-cd-zone fh-cd-dicetray fh-cd-trayexp\" data-zone=\"tray-expanded\" role=\"dialog\" aria-label=\"Dice history — every roll this session\">"+
+      "<div class=\"fh-cd-cap\">DICE HISTORY<small>"+lines.length+" roll"+(lines.length===1?"":"s")+" this session · newest first</small>"+
+      "<button type=\"button\" class=\"fh-cd-trayexp-x\" data-tray-expand aria-label=\"Close the dice history\">×</button></div>"+
+      "<ul class=\"fh-cd-traylist is-expanded\">"+body+"</ul></section>";
+  }
   /* One zone, two readings. The table log is NOT a belt tab: the belt is
      everything inside the character, and the party is not inside the character
      — and a feed you have to navigate to defeats the point, which is that the
@@ -2848,11 +3936,10 @@
   function streamZoneInner(){
     var table=state.streamView==="table";
     var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
-    var caption=table
-      ? (offline?"not reaching the table"
-        :ts==="live"?"every roll at the table, live"
-        :"no live table — cloud log, about 30s behind")
-      : "every roll, fully resolved";
+    /* One derivation with the tray cap (T24) — no second copy of the three
+       phrases — and the same T15 treatment: the caption rides the tabs'
+       hover titles, the tab's own colour (is-live / is-off) stays the loud
+       part. */
     var tableClass=(table?"is-on":"")+(offline?" is-off":ts==="live"?" is-live":"");
     // The manual override (plan §12.4's escape hatch): only offered when
     // there is a reason to reach for it — a table is not already live.
@@ -2864,10 +3951,10 @@
     var refresh=table&&ts==="recent"
       ? "<button type=\"button\" class=\"fh-cd-refresh\" data-feed-refresh title=\"Check the cloud log now\">Refresh</button>"
       : "";
-    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small>"+esc(caption)+"</small>"+manual+refresh+
+    var cap="<div class=\"fh-cd-cap\">"+(table?"TABLE":"STREAM")+"<small></small>"+manual+refresh+
       "<span class=\"fh-cd-streamtabs\">"+
-      "<button type=\"button\" data-stream-view=\"mine\" class=\""+(table?"":"is-on")+"\">Mine</button>"+
-      "<button type=\"button\" data-stream-view=\"table\" class=\""+tableClass+"\">Table</button></span>"+
+      "<button type=\"button\" data-stream-view=\"mine\" class=\""+(table?"":"is-on")+"\" title=\"every roll, fully resolved\">Mine</button>"+
+      "<button type=\"button\" data-stream-view=\"table\" class=\""+tableClass+"\" title=\""+esc(feedStatusCaption(ts,offline))+"\">Table</button></span>"+
       "<button type=\"button\" class=\"fh-cd-streamclose\" data-stream-toggle aria-label=\"Close the stream\" title=\"Close\">"+iconSvg("close")+"</button></div>";
     var list;
     if(table){
@@ -2884,6 +3971,31 @@
      Only this one zone is repainted, and only when its markup actually moved. */
   function renderFeedZone(){
     if(!root)return;
+    /* The chip lives on the Identity line now (phase 2) and the poll path
+       must keep it truthful without a full render() — same targeted-swap
+       rule as the zones below, and the SAME producer as the full render
+       (feedChipHtml), so T24's single derivation holds. feedActive() can
+       only change on paths that already re-render the whole header, so a
+       missing chip never has to appear here. */
+    var chip=root.querySelector("[data-feed-chip]");
+    if(chip){
+      var nextChip=feedChipHtml();
+      if(nextChip&&chip.outerHTML!==nextChip)chip.outerHTML=nextChip;
+    }
+    /* The Dice Tray is the shared surface, so a feed event repaints it first
+       — same targeted-swap rule as the stream: never a full render() on a
+       poll, and only when the markup actually moved. The remount is what
+       makes freshly merged dice animate (their signatures are new), and the
+       generator release right after is the snapshot pattern's contract. */
+    var tray=root.querySelector("[data-zone=\"dice-tray\"]");
+    if(tray){
+      var nextTray=diceTrayInner();
+      if(tray.innerHTML!==nextTray){
+        tray.innerHTML=nextTray;
+        if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(tray);
+        if(window.FHStaticDice&&window.FHStaticDice.releasePickerContext)window.FHStaticDice.releasePickerContext();
+      }
+    }
     var zone=root.querySelector("[data-zone=\"stream\"]");
     if(!zone)return;
     var next=streamZoneInner();
@@ -2918,6 +4030,9 @@
        selection segment -- left OR right click lights one on, which turns any
        other of the three off (all off = flat). See toggleRollMode(). The ⋮
        used to lead the white dice row; it sits here now, right after +2. */
+    /* Phase 3: the white picker LEFT the console for the ⊕ popover on the
+       band. What remains is the jet's command row — D/A/+2, the ⋮ (MOD/DC)
+       and the one big ROLL, spread in the space the picker vacated. */
     var row1="";
     if(cfg){
       row1="<div class=\"fh-cd-crow fh-cd-consolerow\">"+
@@ -2927,13 +4042,18 @@
         "<button type=\"button\" id=\"fhPsPlusTwo\" class=\"fh-cd-toggle is-plus2"+(cfg.plusTwo?" is-on":"")+"\""+(locked?" disabled":"")+" title=\"Fixed Fate's Hand +2 · left or right click to toggle\" aria-label=\"Fate's Hand plus two\" aria-pressed=\""+(cfg.plusTwo?"true":"false")+"\">+2</button>"+
         "</span>"+
         renderConsoleMenu(cfg)+
-        renderWhiteDice(cfg)+"</div>";
+        "<span class=\"fh-cd-consoleroll\">"+rollButtonHtml()+"</span></div>";
     }else{
-      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\"><span class=\"fh-cd-leadcol\"></span>"+renderConsoleMenu(null)+renderWhiteDice(null)+"</div>";
+      row1="<div class=\"fh-cd-crow fh-cd-consolerow is-free\"><span class=\"fh-cd-leadcol\"></span>"+renderConsoleMenu(null)+
+        "<span class=\"fh-cd-consoleroll\">"+rollButtonHtml()+"</span></div>";
     }
     // The FINE TUNE drawer is gone: a Portent belongs to one die, so it lives in
     // that die's own right-click menu rather than in a console-wide panel.
-    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\"><div class=\"fh-cd-cap\">ROLL CONSOLE</div>"+
+    /* The cap row is gone (T18, D4 tranchée) : "ROLL CONSOLE" said nothing
+       the tray below was not already saying (UI-TERMINOLOGY had condemned
+       it), and CLEAR TRAY found its final seat — the × on the Dice Tray's
+       own cap, the zone it acts on. An empty cap row was 17px of chrome. */
+    return "<section class=\"fh-cd-zone fh-cd-console\" data-zone=\"console\">"+
       head+row1+"</section>";
   }
   /* The console's ⋮: what a roll is tuned WITH rather than rolled with. MOD and
@@ -2960,12 +4080,17 @@
      die IS the button, same artwork-carries-the-word design it always had,
      just no longer needing to break out of .fh-cd-acts-bar to reach here since
      it now lives in the row it used to only visually overlap. */
+  /* The one ROLL, extracted (phase 3) so the console's command row and the
+     ⊕ popover can both carry it without either owning the markup. */
+  function rollButtonHtml(){
+    var busy=rollTransactionActive(),armed=state.pendingArmed;
+    return "<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">"+
+      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\"></button>";
+  }
   function renderWhiteDice(cfg){
     var checkLoaded=!!cfg,counts=trayDieCounts(),calling=callingNow();
     var full=checkLoaded&&trayBonusCount()>=MAX_BONUS_DICE;
-    var busy=rollTransactionActive(),armed=state.pendingArmed;
-    var rollBtn="<button class=\"fh-cd-mainroll"+(armed?" is-chaos":"")+"\" type=\"button\" data-roll-now"+(busy?" disabled":"")+">"+
-      "<img class=\"fh-cd-rolldie\" src=\""+esc((SITE_ROOT||"../")+"assets/img/roll-d20.webp")+"\" alt=\"ROLL\" width=\"120\" height=\"120\"></button>";
+    var rollBtn=rollButtonHtml();
     return "<div class=\"fh-cd-whiterow\">"+rollBtn+ROLL_DIE_SIZES.map(function(sides){
       var count=counts[sides]||0;
       var disabled=!!state.pendingArmed||(checkLoaded&&(sides===20||sides===100))||(full&&!count)||(!checkLoaded&&state.traySelection.length>=MAX_FREE_DICE&&!count);
@@ -2973,6 +4098,18 @@
         " title=\"Left click adds a d"+sides+" · right click or long press takes one back\" aria-label=\"Add a d"+sides+"; right-click to remove one\">"+
         pickerFace(sides,PICKER_DIE_PX,"white","d"+(sides===100?"%":sides))+(count?"<span class=\"fh-cd-mult\">×"+count+"</span>":"")+"</button>";
     }).join("")+"</div>";
+  }
+  /* ── The ⊕ popover (phase 3) ─────────────────────────────────────
+     The free-roll card the band's ⊕ opens, posed on the tray's top edge in
+     the die-menu's parchment dress: the white picker row (behaviours moved
+     verbatim — add a free die, or stage a bonus while a check is open),
+     ROLL, and CLEAR TRAY's principal seat. Closed by ROLL, an outside
+     click (OUTSIDE_CLICK_POPUPS) or re-clicking the ⊕. */
+  function renderFreePop(){
+    var busy=rollTransactionActive();
+    return "<div class=\"fh-cd-freepop\">"+renderWhiteDice(state.rollConfig)+
+      "<button type=\"button\" class=\"fh-cd-freeclear\" data-clear-tray"+(busy?" disabled":"")+
+      " title=\""+(busy?"Answer the question above the dice first":"Empty the hand — the registre keeps the rolls")+"\">CLEAR TRAY</button></div>";
   }
   /* Every die still in the hand answers to a right click, wherever it lives:
      the prepared d20, a reserved Destiny die, a bonus die, a staged die, or a
@@ -3100,11 +4237,13 @@
     if(target.scope==="pool-destiny"){state.destinyStaged=null;dropEventsTagged("staged-destiny");}
     else if(target.scope==="destiny"){var cfg=state.rollConfig;cfg.destinyDieId="";cfg.destinyConfirmed=false;cfg.destinyForcedResult=null;dropEventsTagged("staged-destiny");}
     else if(target.scope==="staged"||target.scope==="staged-destiny"){
+      // Phase 4: a staged die taken back before ROLL re-credits its resource.
+      recreditPoolDie(stagedList().find(function(die){return die.id===prompt.stagedId;}));
       state.rollSequence.staged=stagedList().filter(function(die){return die.id!==prompt.stagedId;});
       if(target.scope==="staged-destiny")dropEventsTagged("staged-destiny");
     }
-    else if(target.scope==="bonus"){var config=state.rollConfig;config.bonusDice=(config.bonusDice||[]).filter(function(die){return die.id!==prompt.bonusId;});syncPresetFlags(config);}
-    else if(target.scope==="free")state.traySelection=state.traySelection.filter(function(die){return die.id!==prompt.freeId;});
+    else if(target.scope==="bonus"){var config=state.rollConfig;recreditPoolDie((config.bonusDice||[]).find(function(die){return die.id===prompt.bonusId;}));config.bonusDice=(config.bonusDice||[]).filter(function(die){return die.id!==prompt.bonusId;});syncPresetFlags(config);}
+    else if(target.scope==="free"){recreditPoolDie(state.traySelection.find(function(die){return die.id===prompt.freeId;}));state.traySelection=state.traySelection.filter(function(die){return die.id!==prompt.freeId;});}
     state.diePrompt=null;refreshTrayForState();persistPlayState();render();
   }
   /* A seal renames the die it is put on, every time. Reading the old label back
@@ -3117,7 +4256,10 @@
      hand, and ROLL is still what spends it. */
   function sealStagedDie(seal){
     var target=findStagedDie(state.diePrompt);if(!target)return;
-    if(seal!=="destiny"){mutateStagedDie({sourceIcon:seal,label:sealLabel(seal)});return;}
+    /* Choosing a seal robe dresses the WHOLE die (R6): the seal's tint comes
+       back, so the manual colour is cleared — recolour afterwards from the
+       same row if you want "Bardic + crimson". "—" undresses both fields. */
+    if(seal!=="destiny"){mutateStagedDie({sourceIcon:seal,label:sealLabel(seal),colour:""});return;}
     var poolDie=state.destiny.dice.find(function(die){return die.available&&die.sides===target.sides;});
     if(!poolDie){state.message="No Destiny d"+target.sides+" is available in the pool.";state.messageKind="warn";renderMessage();return;}
     dropStagedDie();
@@ -3217,13 +4359,37 @@
     var initials=String(ch&&ch.name||"FH").split(/\s+/).map(function(word){return word.charAt(0);}).join("").slice(0,3).toUpperCase();
     var portrait=portraitFor(ch);
     var classes=ch?ch.classes.map(function(entry){return entry.name+" "+entry.level;}).join(" / "):"";
-    var subtitle=ch?esc(ch.species)+" · "+esc(classes)+(state.code?" · "+esc(state.code):""):"No character loaded";
+    /* Phase 2 (mort du cap): the connection chip rides the Identity line,
+       right after the campaign code it qualifies. Without a character the
+       old cap's invitation is said HERE — the one line that already states
+       the absence is the honest seat for what to do about it.
+       The line is a flex row with a hierarchy of sacrifice (measured at the
+       360 floor, where « Human · Wizard 5 · FH1 » + RECENT overflows by
+       ~15px): the species/class prose ellipsizes first; the campaign code
+       and the chip are incompressible — the STATE may never be the thing
+       that silently disappears. */
+    var subtitle=ch?"<span class=\"fh-cd-subwho\">"+esc(ch.species)+" · "+esc(classes)+"</span>"+
+        (state.code?"<span class=\"fh-cd-subcode\"> · "+esc(state.code)+"</span>":"")+feedChipHtml()
+      :"<span class=\"fh-cd-subwho\">No character loaded — load one to join the table</span>";
     var avatar=portrait
       ? "<img class=\"fh-cd-portrait\" src=\""+esc(portrait)+"\" alt=\"\" onerror=\"this.replaceWith(Object.assign(document.createElement('span'),{className:'fh-cd-portrait',textContent:'"+esc(initials)+"'}))\">"
       : "<span class=\"fh-cd-portrait\">"+esc(initials)+"</span>";
+    /* Phase 2 (mort du cap, Eric R5): the tray cap's ⋮ cargo moves in here,
+       grouped with Open Stream — they are all « the table », which is what
+       the chip beside FH1 announces. URL… and Refresh keep their exact
+       conditions and data hooks from the dead cap. */
+    var ts=state.feed.tableState,offline=ts==="off"||state.feed.status==="offline";
+    var feedManual=feedActive()&&ts!=="live"
+      ? "<button type=\"button\" data-table-url-set title=\"Paste the DM's table URL\">"+(state.feed.manualUrl?"Table URL set":"Table URL…")+"<small>from the DM</small></button>":"";
+    var feedRefresh=feedActive()&&ts==="recent"&&!offline
+      ? "<button type=\"button\" data-feed-refresh title=\"Check the cloud log now\">Refresh table<small>cloud log</small></button>":"";
+    /* Phase 2's provisional Clear tray entry is RETIRED (phase 3): its real
+       seats landed — CLEAR TRAY in the ⊕ popover, a discreet ✕ clear in the
+       builder overlay. The Identity ⋮ goes back to being the table's menu. */
     var menu=state.menuOpen?"<div class=\"fh-cd-menu\">"+
       "<div class=\"fh-cd-menurow\"><span>Zoom</span>"+renderZoomControl()+"</div>"+
       "<button type=\"button\" data-stream-toggle>"+(state.streamOpen?"Close Stream":"Open Stream")+"<small>consultable history</small></button>"+
+      feedManual+feedRefresh+
       "<div class=\"fh-cd-msep\"></div>"+
       "<button type=\"button\" id=\"fhPsSync\">"+(linked?"Sync D&amp;D Beyond":"Link D&amp;D Beyond")+"<small>pull</small></button>"+
       (linked?"<button type=\"button\" id=\"fhPsRelink\">Replace the DDB link</button>":"")+
@@ -3335,6 +4501,12 @@
     return "<div class=\"fh-cd-panelbody\" data-panel-body=\""+esc(panel.id)+"\">"+body+"</div>";
   }
   function render() {
+    /* Phase 6, the takeover rule's teeth: whatever holds the stage (a
+       blocking question, an armed fate, dice in the air, any prompt card)
+       retires the deployed history the moment it arrives — a takeover is
+       never hidden under it. State hygiene, so it runs ahead of every
+       early return. */
+    if(state.trayExpanded&&overlayHeld())state.trayExpanded=false;
     if(!root)return;
     var floating=inPip();
     root.className="fh-cd-root"+(state.dockOpen?" is-open":"")+(floating?" is-floating":"");
@@ -3358,21 +4530,73 @@
          not normally carry it -- otherwise switching tabs mid-transaction
          strands the dice where nobody can finish them. */
       var roller=!!(panel&&panel.showsRoller)||rollTransactionActive()||rollOpen();
-      /* Console and the roller (Roll Builder + its still-fused Dice Tray) are
-         `summoned` (UI-TERMINOLOGY.md zones 7-8): floated in .fh-cd-floatbottom,
-         anchored to the dock's bottom edge, on top of Dice Pool -- never in the
-         document flow that pushes the persistent stack down. Dice Pool itself
-         (renderDestiny) stays in flow: it is `persistent`, not summoned, even
-         though today it shares the same `roller` gate (a pre-existing gap, not
-         this pass's job to close). */
+      /* Phase 3: the summoned group (console + judgment, zones 7-8) is a
+         real overlay now — ABSENT at rest, so the panel runs down to the
+         band; it exists only while overlayVisible() says a jet is being
+         made, questioned or read (invoked/held/retired — see the block by
+         rollTransactionActive). It still floats in .fh-cd-floatbottom,
+         anchored just ABOVE the band, never covering the band or the tray.
+         Dice Pool (renderDestiny) is the persistent 44px BAND from phase 1
+         — it now also renders whenever the overlay is up, so the group's
+         anchor calc never runs without a band under it, on any panel. The
+         Dice Tray is `persistent` (zone 9): it renders on every panel --
+         the table's rolls land here even while you are reading Notes. */
+      var overlay=overlayVisible();
       inner=renderDockHeader(ch)+(state.chromeOpen?renderAccessZone():"")+
         renderStats(ch)+renderBelt()+renderPanelBody()+
-        (roller?renderDestiny(ch)+"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
+        (roller||overlay?renderDestiny(ch):"")+
+        renderDiceTray()+
+        (state.trayExpanded?renderTrayExpanded():"")+
+        (overlay?"<div class=\"fh-cd-floatbottom\">"+renderConsole()+renderStageZone()+"</div>":"")+
         (state.streamOpen?renderStream():"")+renderPops(ch);
     }
+    /* The registre must survive the render: every rebuild used to snap its
+       scroll back to the top — a feed poll lands every few seconds, so
+       reading an older roll was physically impossible (Eric: the dice
+       "dépassent sous les bords" and you can never reach them). */
+    var keepTrayScroll=(function(){var node=root.querySelector(".fh-cd-traylist");return node?node.scrollTop:0;})();
+    // Phase 6: the deployed list is reborn on every render too (feed polls
+    // land every few seconds) — keep the reader's place the same way.
+    var keepExpScroll=(function(){var node=root.querySelector(".fh-cd-trayexp .fh-cd-traylist");return node?node.scrollTop:0;})();
     root.innerHTML=seal+"<div class=\"fh-cd-dock\">"+inner+"</div>";
     renderMessage();
     if(window.FHStaticDice&&window.FHStaticDice.mount)window.FHStaticDice.mount(root);
+    /* The traylist node is reborn on every render — restore where the
+       reader was, rebind its scroll, re-derive which arrows have work. */
+    var trayScroller=root.querySelector(".fh-cd-traylist");
+    if(trayScroller){
+      /* M3a: a climb (surfaceTrayLine) asked for the top — that is a USER
+         gesture, so it wins over the kept position exactly once and BECOMES
+         the remembered position (the next render reads the live scrollTop,
+         which is now 0 or gliding there — the fbe871e preservation and this
+         scroll never fight, they read/write the same live value in turn).
+         The reborn list already sits at 0; to make the glide visible we
+         restore the old position first and scroll smoothly from there —
+         except under prefers-reduced-motion, where staying at 0 IS the
+         no-animation path. */
+      if(state.trayScrollToTop){
+        state.trayScrollToTop=false;
+        var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if(keepTrayScroll&&!reduced)smoothTrayScrollTop(trayScroller,keepTrayScroll);
+        // reduced motion, or nothing to glide over: the reborn node already sits at 0.
+      }
+      else if(keepTrayScroll)trayScroller.scrollTop=keepTrayScroll;
+      trayScroller.addEventListener("scroll",syncTrayArrows,{passive:true});
+    }
+    syncTrayArrows();
+    /* Phase 6: the deployed covers everything BUT Identity — measure the
+       real header (zoom moves it) and pin the overlay's top to its edge;
+       the stylesheet's 53px stays as the no-JS fallback. Scroll restored
+       for the same reason as the tray's. */
+    var expNode=root.querySelector(".fh-cd-trayexp");
+    if(expNode){
+      var headNode=root.querySelector(".fh-cd-head");
+      if(headNode&&headNode.offsetHeight)expNode.style.top=headNode.offsetHeight+"px";
+      var expList=expNode.querySelector(".fh-cd-traylist");
+      if(expList&&keepExpScroll)expList.scrollTop=keepExpScroll;
+    }
+    // Phase 4: measure the pool strip's real room and refold if it moved.
+    syncPoolFit();
     /* Picker buttons (Destiny row, white-dice row) are cached static images,
        not live dice -- their generator canvas exists only long enough to
        fill that cache. releasePickerContext is a no-op once the cache is
@@ -3380,6 +4604,8 @@
     if(window.FHStaticDice&&window.FHStaticDice.releasePickerContext)window.FHStaticDice.releasePickerContext();
     if(state.scoreEditing){var scoreInput=root.querySelector(".fh-cd-scorein");if(scoreInput&&scoreInput.focus){scoreInput.focus();if(scoreInput.select)scoreInput.select();}}
     if((state.popOpen==="inventory"||state.popOpen==="forge")&&state.inventory===null)loadInventory();
+    // Phase 3: every render re-arms (or cancels) the overlay's own retreat.
+    scheduleOverlayRetreat();
   }
   function syncPresetFlags(cfg){var guidance=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="guidance";}),bardic=(cfg.bonusDice||[]).find(function(die){return die.label.toLowerCase()==="bardic";});cfg.guidance=!!guidance;cfg.bardic=!!bardic;if(bardic){cfg.bardicSides=bardic.sides;state.prefs.bardicSides=bardic.sides;}}
   /* Only two free-text fields are left in the console; everything else is a
@@ -3390,8 +4616,8 @@
     if(custom)cfg.custom=Number(custom.value)||0;
     if(dc)cfg.dc=dc.value;
   }
-  function removeGenericBonusDie(index){var cfg=state.rollConfig;if(!cfg)return;syncConsoleInputs();index=Number(index);if(!cfg.bonusDice[index]||cfg.bonusDice[index].locked)return;cfg.bonusDice.splice(index,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
-  function openConfig(name,ability,bonus,note,dc){clearDiceTray(false);state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});prepareTrayForConfig(state.rollConfig);state.message="";state.messageKind="";render();window.setTimeout(function(){var roll=root&&root.querySelector("[data-roll-now]");if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
+  function removeGenericBonusDie(index){var cfg=state.rollConfig;if(!cfg)return;syncConsoleInputs();index=Number(index);if(!cfg.bonusDice[index]||cfg.bonusDice[index].locked)return;recreditPoolDie(cfg.bonusDice[index]);cfg.bonusDice.splice(index,1);syncPresetFlags(cfg);prepareTrayForConfig(cfg);render();}
+  function openConfig(name,ability,bonus,note,dc){clearDiceTray(false);state.rollConfig=rollInput(name,ability,bonus,{note:note,dc:dc});prepareTrayForConfig(state.rollConfig);state.message="";state.messageKind="";invokeBuilder();render();window.setTimeout(function(){var roll=root&&root.querySelector("[data-roll-now]");if(roll&&roll.focus)roll.focus({preventScroll:true});},0);}
   function loadInventory(){if(!state.code)return;state.inventory={loading:true};api("/inv/"+encodeURIComponent(state.code)).then(function(data){state.inventory=data;render();}).catch(function(error){state.inventory={error:"Could not load inventory: "+error.message};render();});}
   function loadParty(){var input=root.querySelector("#fhPsCode"),code=(input?input.value:state.code).trim().toUpperCase();state.code=code;state.party=[];state.record=null;state.character=null;state.pseudo="";state.inventory=null;state.loading=!!code;stopFeed();render();if(!code)return;try{localStorage.setItem("fh-my-campcode",code);}catch(e){}api("/party/"+encodeURIComponent(code)).then(function(data){state.party=(data.builds||[]).map(function(entry){return entry.pseudo;}).sort();var last=state.requestedPseudo||"";if(!last)try{last=localStorage.getItem("fh-my-pseudo")||"";}catch(e){}state.requestedPseudo="";state.loading=false;if(state.party.indexOf(last)>=0){state.pseudo=last;loadBuild();}else render();}).catch(function(error){state.requestedPseudo="";state.loading=false;state.message=error.message||"Could not reach the campaign server.";state.messageKind="danger";render();});}
   function loadBuild(){var who=state.pseudo;if(!state.code||!who)return;state.loading=true;render();try{localStorage.setItem("fh-my-pseudo",who);}catch(e){}Promise.all([api("/party/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)),api("/profile/"+encodeURIComponent(state.code)+"/"+encodeURIComponent(who)).catch(function(){return {profile:emptyProfile()};})]).then(function(results){state.record=results[0];state.profile=results[1].profile||emptyProfile();state.profileRevision=revisionOf(results[1]);state.character=effectiveCharacter();loadPlayState(state.character);state.loading=false;state.inventory=null;state.message="";rememberRoute();render();startFeed();}).catch(function(error){state.loading=false;state.record=null;state.character=null;stopFeed();state.message=error.message||"Could not load this character.";state.messageKind="danger";render();});}
@@ -3427,15 +4653,65 @@
     else{var next=node.dataset.dieMode;cfg.d20Mode=cfg.d20Mode===next?"flat":next;cfg.plusTwo=false;}
     prepareTrayForConfig(cfg);render();
   }
-  function handleClick(event){var button=event.target.closest("button");if(!button||!root.contains(button))return;
+  /* R3 (décision Eric, 2026-08-05): a LEFT click on a die of a lower tray
+     line calls the roll back up — surfaceTrayLine, the machinery kept exactly
+     for this. Display order only; a feed roll climbs too (local reading, no
+     remote write). Guard rails: never a <button> (the who-chip's reopen and
+     every other button keep their own actions), never the LIVE hand (its dice
+     already answer to menus and choices — the only line whose dice carry
+     interactions today), and the right click keeps the die menus untouched. */
+  /* Phase 6: inside the deployed history everything is already visible, so
+     the climb has no meaning — a click on a line only pings it, a brief
+     highlight to hold one's place in a long registre. Buttons (the cap's ×)
+     pass through untouched. No render: one class, one timer. */
+  function pingExpandedTrayLine(event){
+    if(!state.trayExpanded||!event.target||!event.target.closest)return false;
+    var line=event.target.closest(".fh-cd-trayexp li[data-tray-line]");
+    if(!line)return false;
+    if(event.target.closest("button"))return false;
+    line.classList.remove("is-ping");
+    void line.offsetWidth; // restart the animation if the same line is pinged twice
+    line.classList.add("is-ping");
+    window.setTimeout(function(){if(line.classList)line.classList.remove("is-ping");},700);
+    return true;
+  }
+  function surfaceClickedTrayDie(event){
+    if(!event.target||!event.target.closest)return false;
+    if(event.target.closest("button"))return false;
+    var die=event.target.closest(".fh-cd-diewrap");
+    if(!die)return false;
+    var line=die.closest("li[data-tray-line]");
+    if(!line||line.classList.contains("is-livehand"))return false;
+    // Phase 6 belt-and-braces: a deployed line never climbs (ping handled it).
+    if(line.closest&&line.closest(".fh-cd-trayexp"))return false;
+    /* M3c (Eric: "si j'ai 30 d6, c'est pratique"): remember WHICH die was
+       clicked — its position among the line's diewraps, which is the same
+       index the re-render walks (visualDie emits exactly one .fh-cd-diewrap
+       per die, coins included) — so the resurfaced line can keep a small
+       persistent mark on that one die. Extinction rule (documented): the
+       mark survives renders and stays until the next thing happens — another
+       climb replaces it, a new roll landing (addHistory), any die menu
+       opening (openDieMenu), or CLEAR TRAY clears it. */
+    var wraps=line.querySelectorAll?line.querySelectorAll(".fh-cd-diewrap"):[];
+    var di=Array.prototype.indexOf.call(wraps,die);
+    state.traySurfaceDie=di>=0?{lineId:line.getAttribute("data-tray-line"),di:di}:null;
+    surfaceTrayLine(line.getAttribute("data-tray-line"));
+    return true;
+  }
+  function handleClick(event){if(surfaceClickedTrayDie(event))return;if(pingExpandedTrayLine(event))return;
+    var button=event.target.closest("button");if(!button||!root.contains(button))return;
+    if(button.dataset.trayExpand!==undefined){toggleTrayExpanded();return;}
     if(state.rollConfig)syncConsoleInputs();
     if(button.dataset.dieChoice!==undefined){resolveDieChoice(button.dataset.dieChoice);return;}
     /* The one ROLL: it arms nothing and asks nothing, it rolls whatever the
        tray is currently holding. */
     if(button.dataset.rollNow!==undefined){
-      if(state.pendingArmed){rollPendingFate();return;}
-      if(rollOpen()){rollStagedDice();return;}
+      /* ROLL closes the ⊕ popover (its job is done) and summons the builder
+         so the flight and the verdict have their stage. */
+      if(state.pendingArmed){state.freePop=false;invokeBuilder();rollPendingFate();return;}
+      if(rollOpen()){state.freePop=false;invokeBuilder();rollStagedDice();return;}
       if(rollTransactionActive()){warnRollLocked();return;}
+      state.freePop=false;invokeBuilder();
       if(state.rollConfig)runConfiguredRoll();else rollTrayDice();
       return;
     }
@@ -3466,15 +4742,17 @@
       if(openingTable)refreshFeed();
       return;
     }
-    if(button.dataset.feedRefresh!==undefined){refreshFeed();return;}
+    /* These three ride the Identity ⋮ now (phase 2) — acting closes it. */
+    if(button.dataset.feedRefresh!==undefined){state.menuOpen=false;refreshFeed();render();return;}
     /* The escape hatch (plan §12.4): the DM reads the table URL out loud, a
        player pastes it here. Bypasses the rendezvous entirely — there is
        nothing to discover once a human has already said where it is. Blank
        clears the override and returns to normal rendezvous discovery. */
     if(button.dataset.tableUrlSet!==undefined){
+      state.menuOpen=false;
       var current=state.feed.manualUrl||"";
       var next=window.prompt("Table server URL from the DM (blank to clear):",current);
-      if(next===null)return;
+      if(next===null){render();return;}
       next=next.trim();
       try{
         if(next)localStorage.setItem(manualTableKey(state.code),next);
@@ -3483,9 +4761,13 @@
       state.feed.manualUrl=next;
       disconnectTableWs();state.feed.tableUrl="";state.feed.wsRetry=0;
       setTableState("recent");checkRendezvous();
+      render();
       return;
     }
-    if(button.dataset.clearTray!==undefined){if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}
+    if(button.dataset.clearTray!==undefined){state.menuOpen=false;if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);render();return;}
+    if(button.dataset.trayScroll!==undefined){var scrollList=root.querySelector(".fh-cd-traylist");if(scrollList){/* One click = one band: every line is the same 56px now (border-box,
+       paddings and separator inside), so the chevron steps exactly one. */
+      scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-56:56,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
     if(button.dataset.addTrayDie!==undefined){if(rollOpen())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
     if(button.dataset.removeTrayDie!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDie(button.dataset.removeTrayDie);return;}
     if(button.dataset.removeTraySize!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDieSize(button.dataset.removeTraySize);return;}
@@ -3496,6 +4778,10 @@
     if(button.dataset.dockOpen!==undefined){setDockOpen(true);return;}
     if(button.dataset.dockClose!==undefined){setDockOpen(false);return;}
     if(button.dataset.menuToggle!==undefined){state.menuOpen=!state.menuOpen;render();return;}
+    /* The ⊕ on the band: opens/closes the free-roll popover. Reachable in
+       every phase like the rest of the dock chrome — the picker inside it
+       carries its own guards. */
+    if(button.dataset.freePop!==undefined){state.freePop=!state.freePop;render();return;}
     if(button.dataset.openPop!==undefined){state.popOpen=button.dataset.openPop;state.activeContext=button.dataset.openPop;state.menuOpen=false;render();return;}
     if(button.dataset.closePop!==undefined){if(state.editDraft)state.editDraft=null;state.popOpen="";render();return;}
     if(button.dataset.chromeToggle!==undefined){state.chromeOpen=!state.chromeOpen;state.menuOpen=false;render();return;}
@@ -3510,6 +4796,19 @@
     /* A gold die is picked up exactly like a white one: the click stages it,
        ROLL spends it, and a right click on it in the tray puts it back. */
     if(button.dataset.destinyDie!==undefined){state.destinyPoolMenu=false;stageDestinyFromPool(button.dataset.destinyDie);return;}
+    /* Phase 4 — the counted pool. Spending respects the same lock the white
+       picker does; the cards themselves are chrome and stay reachable. */
+    if(button.dataset.poolSpend!==undefined){if(rollTransactionActive()){warnRollLocked();return;}spendPoolResource(button.dataset.poolSpend);return;}
+    if(button.dataset.poolList!==undefined){state.poolPrompt=state.poolPrompt&&state.poolPrompt.type==="list"?null:{type:"list"};state.destinyPoolMenu=false;render();return;}
+    if(button.dataset.poolAdd!==undefined){state.poolPrompt={type:"add",draft:newPoolDraft()};state.destinyPoolMenu=false;render();return;}
+    if(button.dataset.poolEdit!==undefined){openPoolEdit(button.dataset.poolEdit);return;}
+    if(button.dataset.poolClose!==undefined){state.poolPrompt=null;render();return;}
+    if(button.dataset.poolSave!==undefined){savePoolCard();return;}
+    if(button.dataset.poolDelete!==undefined){deletePoolResource(button.dataset.poolDelete);return;}
+    if(button.dataset.poolKind!==undefined){syncPoolCardInputs();if(state.poolPrompt&&state.poolPrompt.draft)state.poolPrompt.draft.kind=button.dataset.poolKind==="count"?"count":"die";render();return;}
+    if(button.dataset.poolSides!==undefined){syncPoolCardInputs();if(state.poolPrompt&&state.poolPrompt.draft)state.poolPrompt.draft.sides=Number(button.dataset.poolSides);render();return;}
+    if(button.dataset.poolTint!==undefined){syncPoolCardInputs();if(state.poolPrompt&&state.poolPrompt.draft)state.poolPrompt.draft.tint=button.dataset.poolTint;render();return;}
+    if(button.dataset.poolCountStep!==undefined){syncPoolCardInputs();if(state.poolPrompt&&state.poolPrompt.draft)state.poolPrompt.draft.count=clamp(Number(state.poolPrompt.draft.count)+Number(button.dataset.poolCountStep),1,MAX_POOL_COUNT);render();return;}
     if(rollTransactionActive()){warnRollLocked();return;}
     if(button.id==="fhPsChromeToggle"){state.chromeOpen=!state.chromeOpen;render();return;}
     if(button.id==="fhPsSync"||button.id==="fhPsRelink"||button.id==="fhPsLevel"||button.id==="fhPsCorrect")state.menuOpen=false;
@@ -3523,7 +4822,7 @@
     if(button.dataset.dieMode){var cfg=state.rollConfig,scope=button.dataset.dieScope,index=Number(button.dataset.dieIndex),next=button.dataset.dieMode;if(!cfg)return;if(scope==="destiny")cfg.destinyMode=cfg.destinyMode===next?"flat":next;else if(scope==="bonus"&&cfg.bonusDice[index]&&!cfg.bonusDice[index].locked)cfg.bonusDice[index].advantageMode=cfg.bonusDice[index].advantageMode===next?"flat":next;prepareTrayForConfig(cfg);render();return;}
     if(button.dataset.rollMode){if(!state.rollConfig||state.rollConfig.editingId)return;var mode=button.dataset.rollMode;state.rollConfig.plusTwo=mode==="plus2";state.rollConfig.d20Mode=mode==="plus2"?"flat":mode;prepareTrayForConfig(state.rollConfig);render();return;}
     if(button.dataset.openConsole){openConfig("Ability Check","STR",0,"Choose a skill row for its calculated bonus");return;}
-    if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);render();}return;}
+    if(button.dataset.historyId){var entry=state.history.find(function(item){return item.id===button.dataset.historyId;});if(entry&&entry.kind==="d20"){state.rollConfig=configFromEntry(entry);setTrayFromEntry(entry);invokeBuilder();render();}return;}
     if(button.dataset.destinyPoolmenu!==undefined){state.destinyPoolMenu=!state.destinyPoolMenu;render();return;}
     // Opening the console's ⋮ syncs first: its own inputs are what render()
     // is about to rebuild, so an unsynced value would be thrown away.
@@ -3563,6 +4862,10 @@
     if(picker)return picker.disabled?null:{kind:"picker",node:picker};
     var destinyPicker=event.target.closest("[data-destiny-die]");
     if(destinyPicker)return destinyPicker.disabled?null:{kind:"destinyPicker",node:destinyPicker};
+    /* Phase 4: right click (or long press) on a pool pastille is its
+       identity card — rename, robe, faces/count, remove. */
+    var poolChip=event.target.closest("[data-pool-id]");
+    if(poolChip)return {kind:"poolChip",node:poolChip};
     var rollToggle=event.target.closest("#fhPsPlusTwo,[data-die-mode][data-die-scope=\"d20\"]");
     if(rollToggle)return rollToggle.disabled?null:{kind:"rollToggle",node:rollToggle};
     var badge=event.target.closest("[data-pending-id]");
@@ -3571,6 +4874,8 @@
     return tunable?{kind:"die",node:tunable}:null;
   }
   function openDieMenu(node){
+    // M3c extinction: opening any die's menu retires the climb's mark.
+    state.traySurfaceDie=null;
     var data=node.dataset;
     state.diePrompt=data.dieStaged!==undefined?{stagedId:data.dieStaged}
       :data.dieBonus!==undefined?{bonusId:data.dieBonus}
@@ -3606,12 +4911,19 @@
     if(state.rollConfig&&state.rollConfig.destinyDieId===dieId){state.diePrompt={destinyDieId:dieId};dropStagedDie();return;}
     if(state.destinyStaged&&state.destinyStaged.dieId===dieId){state.diePrompt={poolId:dieId};dropStagedDie();return;}
   }
+  /* The reading glass is REMOVED (décision Eric, lot BACKLOG-B 2026-08-05).
+     It went dark behind a kill switch first (fccf1d0); Eric then ruled it
+     out for good — the switch, the hover clamp and the right-click
+     "remonter le jet" gesture that lived ON the glass are gone with it.
+     surfaceTrayLine SURVIVES as kept machinery: a future eye icon will
+     call it to climb a roll back to line 1. */
   function onTrayContext(event){
     var target=trayDieTarget(event);if(!target)return;
     event.preventDefault();
     if(target.kind==="badge")openBadgeMenu(target.node);
     else if(target.kind==="die")openDieMenu(target.node);
     else if(target.kind==="destinyPicker")takeBackDestinyDie(target.node);
+    else if(target.kind==="poolChip")openPoolEdit(target.node.dataset.poolId);
     else if(target.kind==="rollToggle")toggleRollMode(target.node);
     else takeBackDie(target.node);
   }
@@ -3625,6 +4937,7 @@
       if(target.kind==="badge")openBadgeMenu(target.node);
       else if(target.kind==="die")openDieMenu(target.node);
       else if(target.kind==="destinyPicker")takeBackDestinyDie(target.node);
+      else if(target.kind==="poolChip")openPoolEdit(target.node.dataset.poolId);
       else if(target.kind==="rollToggle")toggleRollMode(target.node);
       else takeBackDie(target.node);
     },500);
@@ -3637,20 +4950,71 @@
      handleClick -- which bails on anything that is not a <button>, so a panel's
      clickable row or tracker pip would otherwise never reach it. Core still
      handles everything outside a panel body, and anything the panel declines. */
-  function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
+  function onClick(event){if(state.trayHeld){state.trayHeld=false;return;}
+    if(delegateToPanel(event,"onClick"))return;try{handleClick(event);}catch(error){state.message="Roll Console error: "+(error&&error.message||"unknown error");state.messageKind="danger";pushEvent(state.message,"error");renderMessage();refreshEventPanel();if(window.console&&console.error)console.error(error);}}
   /* ── General rule: a click outside an open dropdown closes it ─────
-     Applies to every small anchored popup (the header's ⋮, the Destiny pool
-     menu, and whatever the same pattern grows next) -- not to the belt's
-     full panels or a roll's decision prompts, which already carry their own
-     explicit close/cancel and shouldn't vanish on a stray click. New popups
-     of the same kind register themselves here rather than each wiring up
-     their own outside-click listener. */
+     Applies to every small anchored popup and floating menu card (the
+     header's ⋮ — which since phase 2 also carries the dead tray cap's
+     cargo: URL…, Refresh, Clear tray — the Destiny pool menu, the
+     console ⋮ with its MOD/DC, a die's own menu — the seal card — and the badge
+     cards) -- not to the belt's full panels, the inline disclosures
+     with their own × (HP/EXH tracker, Access zone, Stream), or a
+     ROLL'S DECISION PROMPTS (nat1, die-choice, arcana-draw, chaos,
+     awakening): those are the roll's state machine, they must never
+     vanish on a stray click. A click INSIDE a popup never closes it.
+     New popups of the same kind register themselves here rather than
+     each wiring up their own outside-click listener. */
   var OUTSIDE_CLICK_POPUPS=[
     {isOpen:function(){return !!state.menuOpen;},close:function(){state.menuOpen=false;},box:".fh-cd-menu",toggle:"[data-menu-toggle]"},
     {isOpen:function(){return !!state.destinyPoolMenu;},close:function(){state.destinyPoolMenu=false;},box:".fh-cd-dpoolmenu",toggle:"[data-destiny-poolmenu]"},
     /* Closing this one commits first: it holds live MOD/DC inputs, and a
        value typed and then dismissed by clicking away must not be lost. */
-    {isOpen:function(){return !!state.consoleMenu;},close:function(){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=false;},box:".fh-cd-cmenu",toggle:"[data-console-menu]"}
+    {isOpen:function(){return !!state.consoleMenu;},close:function(){if(state.rollConfig)syncConsoleInputs();state.consoleMenu=false;},box:".fh-cd-cmenu",toggle:"[data-console-menu]"},
+    /* The die menu (right click / long press on a die: seal, colour, roll
+       mode, Portent). Its toggles are the dice themselves: a click landing
+       on a die is dice-work, not "elsewhere" — and the synthetic click a
+       long press leaves behind targets the OLD, detached die node, so
+       matching the die selectors also keeps a fresh menu from closing
+       itself. The Portent <select> sits inside the card and is safe. */
+    {isOpen:function(){return !!state.diePrompt;},close:function(){state.diePrompt=null;},
+     box:".fh-cd-card.is-diemenu",
+     toggle:"[data-die-staged],[data-die-bonus],[data-die-destiny],[data-die-pool],[data-die-free],[data-die-base],[data-die-landed]"},
+    /* The badge cards — pin (pending-new), rename (pending-menu), and the
+       waiting overreach/chaos notice (pending) — are menus, not decisions:
+       none of them is persisted with a roll sequence, and their own Close/
+       OK buttons don't save either, so closing loses nothing a button
+       wouldn't. The blocking prompts are filtered out by type here. */
+    {isOpen:function(){return !!(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")));},
+     close:function(){state.trayPrompt=null;},
+     box:".fh-cd-card",
+     toggle:"[data-pending-id],[data-pending-open],[data-pending-add]"},
+    /* Phase 4 — the pool cards (add / edit / +N list). Menus the player
+       opened, never decisions: a stray click dismisses them and only Save
+       writes. The pastilles are the toggles — a click on one is pool-work,
+       not "elsewhere". */
+    {isOpen:function(){return !!state.poolPrompt;},
+     close:function(){state.poolPrompt=null;},
+     box:".fh-cd-card.is-poolcard",
+     toggle:"[data-pool-id],[data-pool-list],[data-pool-add],[data-pool-edit]"},
+    /* Phase 3 — the ⊕ popover. Clicks in the overlay or on the band are
+       dice-work (staging a bonus mid-check, spending a gold die), not
+       "elsewhere": the popover stays for them. */
+    {isOpen:function(){return !!state.freePop;},close:function(){state.freePop=false;},
+     box:".fh-cd-freepop",
+     toggle:"[data-free-pop],.fh-cd-floatbottom,.fh-cd-band"},
+    /* Phase 3 — the builder overlay itself, LAST so a click that closes a
+       card above (dropping the hold) can retire it in the same pass. Only
+       the player-invoked half closes this way; a blocking question, an
+       armed fate or dice in the air are overlayHeld and never yield to a
+       stray click. The invokedAt window lets the very click that summoned
+       the overlay survive this handler (render has already replaced the
+       DOM, so the old target cannot be matched against the new overlay).
+       The dice surfaces — popover, band, tray, its chevrons — are
+       dice-work, not "elsewhere". */
+    {isOpen:function(){return !!state.builderOpen&&!overlayHeld()&&Date.now()-(state.builderInvokedAt||0)>300;},
+     close:function(){if(state.rollConfig)syncConsoleInputs();retireBuilder();},
+     box:".fh-cd-floatbottom",
+     toggle:".fh-cd-freepop,.fh-cd-band,.fh-cd-dicetray,[data-tray-scroll],[data-free-pop]"}
   ];
   function onOutsideClick(event){
     if(!root)return;
@@ -3674,7 +5038,30 @@
     if((event.metaKey||event.ctrlKey)&&/^[=+_-]$/.test(event.key)){
       event.preventDefault();stepZoom(event.key==="-"||event.key==="_"?-1:1);return;
     }
-    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();if(key==="c"||key==="escape"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
+    if(event.target.id==="fhPsCode"&&event.key==="Enter"){event.preventDefault();loadParty();return;}if(/INPUT|SELECT|TEXTAREA/.test(event.target.tagName))return;var key=String(event.key||"").toLowerCase();
+    /* Phase 3 — Escape RETIRES, it no longer clears: first the ⊕ popover,
+       then the overlay (with any open menu card) — but never a blocking
+       question, and never mid-transaction. With nothing left to retire it
+       keeps its old habit and clears the tray. C stays the clear key. */
+    if(key==="escape"){
+      event.preventDefault();
+      // Phase 6: the deployed history is the topmost player-invoked surface —
+      // Escape retires it first, before anything it covers.
+      if(state.trayExpanded){state.trayExpanded=false;render();return;}
+      if(state.freePop){state.freePop=false;render();return;}
+      if(state.poolPrompt){state.poolPrompt=null;render();return;}
+      if(rollTransactionActive()){warnRollLocked();return;}
+      if(state.builderOpen||state.diePrompt||(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")))){
+        if(state.rollConfig)syncConsoleInputs();
+        state.diePrompt=null;
+        if(state.trayPrompt&&/^pending/.test(String(state.trayPrompt.type||"")))state.trayPrompt=null;
+        retireBuilder();render();return;
+      }
+      // A roll's own card (arcana draw, chaos notice…) never yields to Escape.
+      if(state.trayPrompt)return;
+      clearDiceTray(true);return;
+    }
+    if(key==="c"){event.preventDefault();if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);return;}if(!state.rollConfig||state.rollConfig.editingId)return;if(key==="a"||key==="d"||key==="f"){event.preventDefault();state.rollConfig.plusTwo=false;state.rollConfig.d20Mode=key==="a"?"advantage":key==="d"?"disadvantage":"flat";prepareTrayForConfig(state.rollConfig);render();return;}if(key===" "){event.preventDefault();var roll=root&&root.querySelector("[data-roll-now]");if(roll&&!roll.disabled)roll.click();}}
 
   function setDockOpen(open){
     state.dockOpen=!!open;state.menuOpen=false;
@@ -3749,7 +5136,8 @@
     document.addEventListener("click",onOutsideClick);
     /* Panel-only hooks. focusout rather than blur, because blur does not bubble
        and a delegated listener would never see it. */
-    root.addEventListener("input",function(event){delegateToPanel(event,"onInput");});
+    // R31: the pool card's fields sync on every keystroke (see onPoolCardInput).
+    root.addEventListener("input",function(event){onPoolCardInput(event);delegateToPanel(event,"onInput");});
     root.addEventListener("focusout",function(event){delegateToPanel(event,"onBlur");});
     // Coming back to the tab is treated like reopening the TABLE tab: one
     // refresh, not a resumed poll (plan §13.9 fix 1 — RECENT is never on a

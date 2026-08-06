@@ -14,12 +14,13 @@ a selection to anything, so this needs a small addition to core
 (`fh-player-sheet.js`): a selection event panels emit and the Info Panel listens
 for. **Architect work, not a package chat** — it is core.
 
-**2. Dice Tray is not its own zone.** It is fused into `roller` (`fh-cd-stage`).
-Splitting it out brings three behaviours the drawing spells out and the code does
-not have: a comfort minimum of **four rolls visible**, scrolling down to **twenty**,
-and a **Static Area** below the first four where dice never animate.
-*Half-good news:* the state already carries `trayTitle: "Dice Tray"` — the name was
-already there, only the zone was not.
+**2. ~~Dice Tray is not its own zone.~~ BUILT 2026-08-03, branch
+`dock-dice-tray`.** Extracted from `roller` as `data-zone="dice-tray"`,
+persistent on every panel: four rolls always visible (large + 3 small), the
+Static Area below as snapshots, **ten** rolls held (Eric amended the twenty
+the same day), and the shared-surface inheritance — LIVE/RECENT/OFF on the
+cap, never a silent fallback. Line anatomy ruled by Eric 2026-08-03: see the
+end of `UI-ROLL-VOCABULARY.md`.
 
 **3. Actions panel: one list → three columns.** Actions, Bonus Actions, Reactions,
 with click-on-the-name rolling directly when nothing else is triggered, and opening

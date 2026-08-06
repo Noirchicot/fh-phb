@@ -12,8 +12,10 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
   globalThis.__fhPlayerSheetTest = {
     SKILLS, TOOLS, tierName, canonicalDdbUrl, canonicalToolName, knownToolName, importedTier,
     makeDestinySlots, normalizeDestiny, entryTotal, skillInfo, renderSkills, routeValue, rememberRoute,
-    renderDestiny, renderStageZone, renderConsole, renderEventContent, renderEventList, resolveNatOne, renderStream, renderStreamEntry, rollExport,
-    outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate
+    renderDestiny, renderStageZone, renderConsole, renderFreePop, renderEventContent, renderJudgmentFrame, resolveNatOne, renderStream, renderStreamEntry, rollExport,
+    outcomeFor, effectiveCharacter, addTrayDie, rollTrayDice, findStagedDie, state, pendingFate,
+    diceTrayInner, renderDiceTray, trayLines, trayDiceFromEntry, rollExportDice, feedLineDice,
+    renderDockHeader, feedChipHtml
   };
 })();
 `);
@@ -95,23 +97,37 @@ const destiny = t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}});
 assert.equal((destiny.match(/class="fh-cd-poolwrap/g) || []).length, 5, "Destiny dice render as five compact size groups");
 assert.match(destiny, /×2/, "duplicate Destiny dice use a compact multiplier");
 assert.match(destiny, /data-destiny-die/, "an available Destiny die is clickable in the pool");
-assert.match(destiny, /data-score-edit/, "the rarely changed Score is plain text you click to edit, with no lock");
 assert.doesNotMatch(destiny, /data-destiny-lock/, "the padlock is gone with the Score input box");
-assert.match(destiny, /fh-cd-dlab">POINTS</, "POINTS labels the left number");
-assert.match(destiny, /fh-cd-dlab">SCORE</, "SCORE labels the right number");
 assert.doesNotMatch(destiny, /fhPsLongRest/, "Rest moved out of Destiny into the vitals line");
 assert.match(destiny, /fh-cd-arcana[^>]*>The Hermit</, "the Arcana name still sits at the end of the row");
-// REWRITTEN (round 6): Eric asked for the caption back, matching SKILLS & TOOLS --
-// the Arcana name alone did not read as a section title.
-assert.match(destiny, /fh-cd-cap">DESTINY/, "the Destiny zone carries the same caption style as Skills & Tools");
-// REWRITTEN: Eric asked for one ⋮ piloting every size, not five scattered menus.
-assert.equal((destiny.match(/class="fh-cd-dmenu/g) || []).length,1,"a single ⋮ pilots every size's pool, not one per die");
+/* REWRITTEN (phase 1, band): the in-flow Destiny zone is dead — the band
+   replaces it. Its caption is gone (a 44px strip carries no section title),
+   the zone name follows UI-TERMINOLOGY's migration table (destiny →
+   dice-pool), and the strip anchors above the tray via .fh-cd-band. */
+assert.match(destiny, /data-zone="dice-pool"/, "the band is UI-TERMINOLOGY zone 6, dice-pool — data-zone=destiny is retired");
+assert.doesNotMatch(destiny, /data-zone="destiny"/, "the old destiny zone name is gone");
+assert.match(destiny, /class="fh-cd-zone fh-cd-band"/, "the strip wears the band class its CSS anchors on");
+assert.doesNotMatch(destiny, /fh-cd-cap/, "no caption on a 44px strip");
+/* REWRITTEN (phase 1, band): the ⋮ died with the old row — the ledger block
+   (points/score) is itself the button that opens the one menu, which now
+   carries the Points −/+, the Score edit AND the five pool rows. */
+assert.doesNotMatch(destiny, /fh-cd-dmenu/, "the standalone ⋮ is gone; the ledger block opens the menu");
+assert.equal((destiny.match(/data-destiny-poolmenu/g)||[]).length,1,"the ledger block is the single menu toggle");
+assert.match(destiny, /fh-cd-bandpts/, "the compact points/score block renders");
+assert.doesNotMatch(destiny, /data-score-edit/, "Score editing moved into the ledger menu — closed, the band shows only the numbers");
 assert.doesNotMatch(destiny, /fh-cd-poolstack/, "the old two-button stepper is gone");
 t.state.destinyPoolMenu=true;
 const destinyMenuOpen=t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}});
 assert.equal((destinyMenuOpen.match(/fh-cd-dpoolrow/g)||[]).length,5,"the single popup lists all five sizes at once");
 assert.match(destinyMenuOpen,/data-destiny-pool="4:1"/,"and each row can still add");
 assert.match(destinyMenuOpen,/data-destiny-pool="4:-1"/,"and remove that size specifically");
+/* Phase 1 additions: the menu inherited the old row's editors, hooks intact. */
+assert.match(destinyMenuOpen,/data-destiny-step="points:-1"/,"the Points − step lives in the menu");
+assert.match(destinyMenuOpen,/data-destiny-step="points:1"/,"the Points + step lives in the menu");
+assert.match(destinyMenuOpen,/data-destiny-field="points"/,"the Points input lives in the menu");
+assert.match(destinyMenuOpen,/data-score-edit/,"the Score click-to-edit lives in the menu");
+assert.match(destinyMenuOpen,/fh-cd-dlab">POINTS</,"POINTS labels its menu row");
+assert.match(destinyMenuOpen,/fh-cd-dlab">SCORE</,"SCORE labels its menu row");
 t.state.destinyPoolMenu=false;
 t.state.destiny.points=10;
 assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}),/fh-cd-overflow"[^>]*>\+2</,"points above the Score use a label-free visual overflow cue");
@@ -124,11 +140,37 @@ assert.doesNotMatch(destiny, /Prepared magic/, "unused prepared magic is omitted
 // console's white dice row (the slot the console's ⋮ vacated) -- the whole
 // console is always on screen now, so ROLL no longer needs a separate bar to
 // break out of. The roller carries only CLEAR TRAY.
-assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray\b/, "the roller no longer carries a bar of die buttons");
+/* REWRITTEN (dock-dice-tray, second fitting): the roller now hosts the
+   assembly frame, whose inner spans reuse the fh-cd-tray-dice/-ruling
+   classes — the claim is still about the OLD die-button bar, whose class
+   was exactly "fh-cd-tray". Match it as a whole class name. */
+assert.doesNotMatch(t.renderStageZone(), /fh-cd-tray[" ]/, "the roller no longer carries a bar of die buttons");
 assert.doesNotMatch(t.renderStageZone(), /data-roll-now/, "ROLL no longer lives in the roller");
 assert.match(t.renderConsole(), /data-roll-now/, "it carries the one permanent ROLL, in the white dice row instead");
-assert.match(t.renderStageZone(), /data-clear-tray/, "and CLEAR TRAY stays in the roller");
-assert.match(t.renderConsole(), /data-add-tray-die="100"/, "the white picker in the console exposes d4 through d100");
+/* REWRITTEN (phase 3, D1, 2026-08-05): CLEAR TRAY's real seats landed —
+   its principal home is the ⊕ popover on the band, and a DISCREET ✕ clear
+   rides the builder's badge strip (décision Eric: « un clear tray plus
+   discret peut aussi être présent dans le roll builder »). The provisional
+   Identity-⋮ entry of phase 2 is retired, and the console still carries no
+   clear of its own. */
+assert.match(t.renderStageZone(), /fh-cd-clearmini[^>]*data-clear-tray/, "the builder carries the discreet corner clear");
+assert.doesNotMatch(t.renderStageZone(), /fh-cd-freeclear/, "…never the big CLEAR TRAY — that seat is the ⊕ popover's");
+assert.doesNotMatch(t.renderConsole(), /data-clear-tray/, "the console row stays clear-free");
+assert.doesNotMatch(t.renderConsole(), /ROLL CONSOLE/, "whose cap row is gone with its caption");
+assert.doesNotMatch(t.diceTrayInner(), /data-clear-tray/, "the dead cap took the × with it");
+t.state.menuOpen=true;
+assert.doesNotMatch(t.renderDockHeader({name:"Awki",species:"Elf",classes:[{name:"Wizard",level:5}]}),
+  /data-clear-tray/, "phase 2's provisional Identity-⋮ seat is retired — redundant now");
+t.state.menuOpen=false;
+/* REWRITTEN (phase 3, D1): the white picker LEFT the console for the ⊕
+   popover on the band — the console keeps only the jet's command row
+   (D/A/+2, ⋮, ROLL). The popover carries the full d4→d% row, ROLL and
+   CLEAR TRAY's principal seat. */
+assert.doesNotMatch(t.renderConsole(), /data-add-tray-die/, "the white picker no longer lives in the console");
+assert.match(t.renderFreePop(), /data-add-tray-die="100"/, "the ⊕ popover exposes d4 through d100");
+assert.match(t.renderFreePop(), /data-roll-now/, "with the big ROLL");
+assert.match(t.renderFreePop(), /fh-cd-freeclear[^>]*data-clear-tray/, "and CLEAR TRAY's principal seat");
+assert.match(t.renderDestiny({destinyBuild:{arcana:{name:"The Hermit"}}}), /data-free-pop/, "the ⊕ is born on the band");
 
 t.state.record = {build:{
   character:{name:"Imported",abilityScores:{STR:9,DEX:9,CON:9,INT:9,WIS:9,CHA:9}},
@@ -224,8 +266,19 @@ t.state.profile.manualOverrides={};
 t.state.traySelection=[];
 [20,20,20,4,6,8,10].forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,7,"the free/damage tray accepts pools larger than a structured check");
-assert.match(t.renderStageZone(),/width="34"/,"large pools shrink their dice to stay inside the frame");
+/* REWRITTEN (dock-dice-tray, three fittings the same day): a hand with
+   nothing landed is the Roll Builder's, rendered in the permanent judgment
+   window; and past SIX dice a hand is a SWARM — bare mini dice, no source
+   token, no label, wrapping into rows (Eric ruled the threshold at >6).
+   Seven dice therefore render naked at 22px, not wrapped at 34. */
+assert.match(t.renderStageZone(),/fh-cd-frame is-judgment is-assembly/,"a pending hand renders in the judgment window, dressed as assembly");
+assert.match(t.renderStageZone(),/is-naked/,"past six dice the pool is a bare swarm");
+/* REWRITTEN (grille ratifiée Eric, lot BACKLOG-B 2026-08-05): the 6-10
+   band reads 30 down to 20 by the crowd — seven dice sit at 28, not at
+   the old 18-px mini whose numeral was texture. */
+assert.match(t.renderStageZone(),/width="28"/,"seven swarm dice read at 28px (30→20 across the 6-10 band)");
 assert.doesNotMatch(t.renderStageZone(),/width="52"/,"a crowded pool never keeps the full-size die");
+assert.doesNotMatch(t.diceTrayInner(),/is-livehand/,"and the tray shows no live hand while nothing has landed");
 t.state.traySelection=[];Array.from({length:8},()=>6).forEach(t.addTrayDie);
 assert.equal(t.state.traySelection.length,8,"an 8d6 Fireball pool fits without a special case");
 
@@ -270,9 +323,12 @@ assert.equal(t.pendingFate()[0].kind,"chaos");
 t.state.character={destinyBuild:{arcana:{name:"The Hermit"}}};
 // REWRITTEN (dock v6): a decision is a line in the event list above the dice,
 // not a card under them, so it is renderEventList that carries the question.
+/* REWRITTEN (dock-dice-tray, third fitting): the event list is gone — the
+   permanent judgment window carries the question now, with the same
+   buttons; the badge strip and the Stream carry everything else. */
 t.state.trayPrompt={type:"nat1",entryId:fate.id};
-assert.match(t.renderEventList(),/do you accept your fate\?/i,"the natural-1 choice is a decision line above the dice");
-assert.match(t.renderEventList(),/data-tray-accept-fate[\s\S]*data-tray-refuse-fate/,"with both answers on it");
+assert.match(t.renderJudgmentFrame(),/do you accept your fate\?/i,"the natural-1 choice is asked in the judgment window");
+assert.match(t.renderJudgmentFrame(),/data-tray-accept-fate[\s\S]*data-tray-refuse-fate/,"with both answers on it");
 assert.equal(t.renderEventContent(),"","and nothing under the dice, because nothing was opened");
 t.state.trayPrompt={type:"chaos",entryId:fate.id};
 assert.match(t.renderEventContent(),/Chaos has noticed/,"an opened Chaos card still renders under the dice");
@@ -282,7 +338,10 @@ assert.match(t.renderEventContent(),/Arcane Awakening/,"and so does an Awakening
 t.state.trayPrompt=null;
 t.state.events=[];
 assert.equal(t.renderEventContent(),"","with no prompt the roller frame stays clear for the dice");
-assert.equal(t.renderEventList(),"","and an empty list takes no room at all");
+/* REWRITTEN (lot texte T3, 2026-08-04): the invitation lives ONCE, in the
+   tray's empty state — a cleared judgment window is bare wood. */
+t.state.trayTitle="Dice Tray";t.state.trayResultText="";t.state.trayVerdict="";
+assert.doesNotMatch(t.renderJudgmentFrame(),/Ready — click a skill/,"a cleared window is bare wood — the tray says the invitation");
 
 t.state.code="FH1";
 t.state.pseudo="Mar";
