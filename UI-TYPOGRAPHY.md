@@ -107,10 +107,19 @@ The existing class names are kept as they are. This table is a dictionary, not
 a rename.
 
 **The arithmetic that makes this Eric's decision and not a session's:** the tray
-shows **four rolls at once**. Every pixel of band height is therefore multiplied
-by four, inside a zone living under the dock's 620px height floor and the zone
-budget of `UI-DIMENSIONS.md`. Moving a band from 56 to 72 is not +16px, it is
-**+64px** taken from everything else on the dock.
+shows **five rolls at once** — `--cd-tray-h` is `284px` (declared three times,
+`284 → 320 → 284`; the last wins), and the stylesheet states the settled sum
+itself: top padding 2 + 5 × 56 = **282 ≤ 284, five whole bands with 2px spare**,
+since the cap row died on 2026-08-05 and its 56 became a fifth line. Inside a
+zone living under the dock's 620px height floor and the budget of
+`UI-DIMENSIONS.md`, one band moved from 56 to 72 costs **+16px**, and the same
+move applied to all five costs **+80px** taken from everything else.
+
+> **Corrected 2026-08-06, same day as ratification.** This paragraph first said
+> *four* bands and *+64px*, taken from the handoff's description of the tray —
+> which predates the cap's death and the 84 → 56 revert. The Dice Tray session
+> caught it. **The stylesheet's own settled arithmetic outranks any prose
+> description of a zone, including this file's.**
 
 ---
 
@@ -120,6 +129,24 @@ budget of `UI-DIMENSIONS.md`. Moving a band from 56 to 72 is not +16px, it is
 in the tray are pills, icons and dice. They are not text, they do not belong to
 the T scale, and folding them in would rebuild the very soup this file exists to
 drain. If they need an authority one day, they get their own.
+
+---
+
+## Unsized text falls out of the zoom system entirely
+
+**No ancestor in the dock chain declares a `font-size`** — not `.fh-cd-root`,
+not `.fh-cd-dock`, not `.fh-cd-trayline`. Verified by inspection, 2026-08-06.
+
+The consequence is sharper than a wrong size: an element that declares no size
+and sits under no sized parent inherits **the page's 16px**, which is not
+multiplied by `--cd-fs` and therefore **does not respond to zoom at all**. It
+grows while everything around it shrinks. Found by the Dice Tray session on
+`.fh-cd-tray-outcome` (`font-weight:700` and nothing else) — its neighbour
+`.fh-cd-tray-verdict` is sized, it is not.
+
+**So this is a class of defect, not one element: every text node in the dock
+must land on a rung, explicitly or through a sized parent.** Silence is not a
+default here, it is an escape from the zoom system.
 
 ---
 
@@ -136,3 +163,16 @@ its comment describes an arithmetic that no longer holds — anyone reading the
 file top to bottom concludes 84. **This is the disease in one example**, and it
 is why "how tall is a row" could not be answered by reading. Not a functional
 bug; a cleanup to carry at the Dice Tray delivery review.
+
+`--cd-tray-h` has the same shape: declared at 1253 (`284`), 1621 (`320`) and
+1734 (`284`). Only a reader who scans to the end knows the answer. Beside it,
+`--cd-traycap-h:56px` (1621) is now dead outright — the cap row is no longer
+rendered.
+
+**And a warning about how this file was first written**, because it is the
+mistake most likely to be repeated: its opening inventory was drawn with a
+regex over selector *names* (`fh-cd-tray…`), which silently excluded every
+element that renders in the tray without carrying "tray" in its class —
+`.fh-cd-diewrap em`, the die label at the heart of the whole discussion, chief
+among them. **A zone's boundary is not visible in the stylesheet.** Inventory a
+zone from what it renders, never from what its selectors are called.
