@@ -2156,26 +2156,7 @@
       '<circle cx="50" cy="50" r="32" fill="none" stroke="'+body.facet+'" stroke-width="1.6"/>'+
       '<text class="fh-cd-num" x="50" y="54" font-size="28" text-anchor="middle" dominant-baseline="middle" fill="'+body.num+'">'+esc(label)+'</text></svg>';
   }
-  /* C3, moitié verticale du grief : un dé était en px FIXES pendant que le
-     texte suivait --cd-fs, donc à 150 % les dés paraissaient minuscules face
-     à leurs propres libellés (observé par Eric en mode Table, 2026-08-06).
-     Le multiplicateur est le ZOOM, pas --cd-fs : les tailles ci-dessous ont
-     été calibrées au réglage de texte par défaut, donc à 100 % rien ne bouge.
-     `zoomFactor` lit la même variable que le CSS, sur le documentElement du
-     bon document — `ownerDocument`, sans quoi le mode Table (PiP) lirait le
-     zoom de la fenêtre principale, qui n'est pas la sienne. */
-  function zoomFactor(){
-    try{
-      var doc=(root&&root.ownerDocument)||document;
-      var raw=doc.defaultView.getComputedStyle(doc.documentElement).getPropertyValue("--cd-zoom");
-      var z=parseFloat(raw);
-      return isFinite(z)&&z>0?z:1;
-    }catch(e){return 1;}
-  }
-  function dieSize(count){
-    var base=count>8?26:count>5?34:count>3?44:52;
-    return Math.round(base*zoomFactor());
-  }
+  function dieSize(count){return count>8?26:count>5?34:count>3?44:52;}
   /* opts (all optional): sizePx pins the die size instead of deriving it from
      the count (the tray's bands are fixed sizes, not crowd-relative), and
      snapshot renders the settled pose as a cached bitmap with NO live WebGL
@@ -4786,11 +4767,7 @@
     if(button.dataset.clearTray!==undefined){state.menuOpen=false;if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);render();return;}
     if(button.dataset.trayScroll!==undefined){var scrollList=root.querySelector(".fh-cd-traylist");if(scrollList){/* One click = one band: every line is the same 56px now (border-box,
        paddings and separator inside), so the chevron steps exactly one. */
-      /* One click = one band, and a band is 56 × zoom since C3 — a fixed 56
-         here would scroll a fraction of a line at 150% and more than one at
-         80%, which is exactly the kind of drift the chevron exists to avoid. */
-      var bandStep=Math.round(56*zoomFactor());
-      scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-bandStep:bandStep,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
+      scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-56:56,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
     if(button.dataset.addTrayDie!==undefined){if(rollOpen())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
     if(button.dataset.removeTrayDie!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDie(button.dataset.removeTrayDie);return;}
     if(button.dataset.removeTraySize!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDieSize(button.dataset.removeTraySize);return;}

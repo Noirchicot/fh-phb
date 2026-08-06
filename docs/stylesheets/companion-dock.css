@@ -1264,7 +1264,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    to roll, the Static Area below as frozen snapshots, ten rolls held.
    Heights are fixed per band so the zone's height is deterministic and the
    summoned group above can anchor to it -- see --cd-tray-h below. */
-.fh-cd-root{--cd-tray-h:calc(284px * var(--cd-zoom))}
+.fh-cd-root{--cd-tray-h:284px}
 .fh-cd-dicetray{height:var(--cd-tray-h);display:flex;flex-direction:column;padding-bottom:0;
   background:radial-gradient(120% 90% at 50% 8%,var(--cd-parch-2) 0%,var(--cd-parch-deep) 82%,#dccc9f 100%)}
 .fh-cd-dicetray>.fh-cd-cap{flex:none;margin-bottom:2px}
@@ -1278,7 +1278,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayline{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--cd-line-soft);
   padding:3px 2px;overflow:hidden;position:relative}
 .fh-cd-trayline:last-child{border-bottom:0}
-.fh-cd-trayline.is-empty{min-height:calc(40px * var(--cd-zoom));justify-content:center;color:var(--cd-faint);
+.fh-cd-trayline.is-empty{min-height:40px;justify-content:center;color:var(--cd-faint);
   font-size:calc(8.6px * var(--cd-fs));font-style:italic}
 /* Band heights: fixed, so whole lines are always exactly visible.
    The Live band's 84 was reverted to 56 when the cap died (see the Phase 2
@@ -1287,7 +1287,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    here — overridden 430 lines later and contradicting its own comment — was
    removed 2026-08-06; anyone reading top to bottom concluded 84.
    Names for these bands: UI-TYPOGRAPHY.md (Live · Current · Deep · Empty). */
-.fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{min-height:calc(56px * var(--cd-zoom))}
+.fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{min-height:56px}
 /* The live hand keeps the frame (mood streaks included) but sheds the fixed
    148px box it had in the roller: the line is the box now. */
 .fh-cd-dicetray .fh-cd-frame.is-trayhand{height:auto;min-height:78px;margin:0;flex:1;flex-direction:row;align-items:center;gap:6px;
@@ -1504,7 +1504,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-dicetray .fh-cd-frame.is-trayhand{border:0;background:none;box-shadow:none;padding:0 2px;min-height:0}
 /* Flanks at 80 / 68 (validated) — the dice take what they free. */
 .fh-cd-tray-left{width:80px}
-.fh-cd-tray-right{width:calc(68px * var(--cd-zoom));align-items:center;text-align:center}
+.fh-cd-tray-right{width:68px;align-items:center;text-align:center}
 .fh-cd-tray-right .fh-cd-tray-title{font-size:calc(8.2px * var(--cd-fs));color:#f4ecd8;white-space:normal;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.1}
 .fh-cd-tray-right .fh-cd-tray-total{font-size:calc(13px * var(--cd-fs))}
@@ -1732,8 +1732,8 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    (--cd-tray-h) is settled in its own block below: the two questions
    revert independently. APPENDED: same specificity as the earlier
    declarations, later in the sheet. */
-.fh-cd-trayline.is-l1{min-height:calc(56px * var(--cd-zoom))}
-.fh-cd-trayline.is-deep{min-height:calc(72px * var(--cd-zoom))}
+.fh-cd-trayline.is-l1{min-height:56px}
+.fh-cd-trayline.is-deep{min-height:72px}
 .fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:22px}
 /* The ratified arithmetic of the 1-5 hand — « 38 + label ≈ 48, inside
    the 56 » — used to need a display:none here on the retired token's
@@ -1930,7 +1930,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    the Major Arcana compact on the right. Ratified on the maquette:
    dark felt, gold liseré on top, dark seam below. The tray itself is
    untouched (bottom:0, --cd-tray-h 284). APPENDED only. */
-.fh-cd-root{--cd-band-h:calc(44px * var(--cd-zoom))}
+.fh-cd-root{--cd-band-h:44px}
 /* z-index 25, above the summoned group's 24: the two never overlap
    spatially, but the band's own popover (the ledger menu) opens UPWARD
    into the group's footprint and must ride over it — measured: at 23
@@ -2161,8 +2161,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    seat (line 1's top edge #6d6557), 14.1:1 at the dark bottom — the
    parchment family, a step quieter than the cap's near-white.
    APPENDED only. */
-.fh-cd-tray-left{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;
-  width:calc(80px * var(--cd-zoom))}
+.fh-cd-tray-left{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px}
 .fh-cd-tray-owner{display:block;max-width:100%;min-width:0}
 .fh-cd-tray-owner b,.fh-cd-tray-owner button{display:block;max-width:100%;padding:0;border:0;background:none;
   font-family:inherit;font-style:normal;font-size:calc(6.5px * var(--cd-fs));font-weight:700;
@@ -2233,36 +2232,3 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    when something newer is above, down only while rolls hide below, both in
    between. Only the seat moves. APPENDED — nothing above is rewritten. */
 .fh-cd-trayarrow{left:8px;transform:none}
-
-/* ── C3, moitié horizontale : les flancs suivent enfin le zoom ────────
-   Observé par Eric en mode Table (PiP), 2026-08-06, à 150 % : « Percept… »,
-   « Resourc », « Exhaust ». Le texte suit --cd-fs (= 1,15 × zoom) mais les
-   flancs étaient en px FIXES — 80 et 68. Le contenu grandit dans une boîte
-   qui ne bouge pas, donc il se fait tronquer : le zoom promettait « tout
-   bouge ensemble » et ne le tenait pas.
-
-   Le multiplicateur est --cd-zoom, PAS --cd-fs : les 80/68 ont été calibrés
-   au réglage de texte par défaut (fs = 1,15), donc à zoom 1 rien ne bouge —
-   c'est la condition pour que cette correction ne redessine pas le dock que
-   tu viens de valider.
-
-   La HAUTEUR de la zone (--cd-tray-h) et celle des bandes ne bougent PAS :
-   elles appartiennent au budget vertical du dock (UI-DIMENSIONS) et leur
-   sort est la décision D3, qui revient à Eric. Ici on ne répare que ce qui
-   a été vu. APPENDED. */
-
-/* ── Le panneau prend la place que le zoom lui rend (Eric, 2026-08-06) ──
-   Observé en mode Table juste après C3 : à 100 % dans une fenêtre haute, un
-   grand vide s'installait entre la dernière compétence et la bande. Toutes
-   les zones du dock sont `flex:none` et celle du panneau était `flex:0 1
-   auto` — elle savait rétrécir, jamais grandir. Le surplus vertical ne
-   revenait donc à personne : il devenait un trou.
-   C'est l'anomalie des « 45 px de flux morts » du plan mesures, que le zoom
-   vient de rendre spectaculaire — moins on zoome, plus le trou est grand.
-
-   Le panneau l'absorbe désormais, quel que soit l'onglet (`.fh-cd-panelbody`
-   est en display:contents, donc sa zone EST l'item flex du dock). Le
-   scroller à l'intérieur garde min-height:0 : il montre simplement plus de
-   lignes au lieu de laisser du vide. Le plancher et l'overflow:hidden de la
-   zone Skills, eux, ne bougent pas — seul le flex est repris. APPENDED. */
-.fh-cd-panelbody>.fh-cd-zone{flex:1 1 auto}

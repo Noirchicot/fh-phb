@@ -91,15 +91,8 @@ assert.doesNotMatch(t.renderDiceTray(), /fh-cd-traystate/, "the state chip left 
 assert.doesNotMatch(t.renderDiceTray(), /data-clear-tray/, "the × died with the cap");
 assert.match(t.renderDiceTray(), /fh-cd-traylist/, "the list survives");
 assert.match(t.renderDiceTray(), /data-tray-scroll="up"[\s\S]*data-tray-scroll="down"/, "and both chevrons float on");
-/* REWRITTEN 2026-08-06 (C3, Eric): a band is still 56 — but 56 AT ZOOM 1.
-   The tray used to hold its heights in fixed px while the text followed
-   --cd-fs, so at 150% in Table mode the dock lied about "everything scales
-   together" (UI-DIMENSIONS). The band is now 56 × --cd-zoom: identical at the
-   reference, proportional everywhere else. The assertion keeps its teeth —
-   it still pins the number 56 and still fails if someone changes one band
-   without the other — it just pins the whole expression now. */
-assert.match(css, /\.fh-cd-trayline\.is-mid,\.fh-cd-trayline\.is-static\{min-height:calc\(56px \* var\(--cd-zoom\)\)\}/,
-  "…and 56 × zoom is still what a standard band measures (change one, change both)");
+assert.match(css, /\.fh-cd-trayline\.is-mid,\.fh-cd-trayline\.is-static\{min-height:56px\}/,
+  "…and 56 is still what a standard band measures (change one, change both)");
 /* REWRITTEN (phase 2): the chevron's perch was calc(--cd-traycap-h + 4px)
    under a cap that no longer exists — its LAST word must be the top of the
    list. And the zone's LAST height word stays 284: with no cap that is
@@ -115,26 +108,19 @@ assert.equal(lastUpArrow && lastUpArrow[1], "4px", "the up chevron floats over l
    rows of ten, is-deep); and the chevron steps exactly one band. The
    last word on each height is pinned so an appended regression cannot
    quietly re-grow a line. */
-/* REWRITTEN 2026-08-06 (C3, Eric — « je veux que tout grandisse
-   proportionnellement »): every pinned height keeps its number and gains its
-   zoom factor. The teeth are unchanged — the LAST word on each height is
-   still what is checked, so an appended regression still cannot quietly
-   re-grow a line — but the truth being pinned is now "56 at zoom 1", not
-   "56 forever". A fixed px here was the defect: the text followed --cd-fs
-   while the boxes did not, and Table mode at 150% showed it. */
-const lastL1 = [...css.matchAll(/\.fh-cd-trayline\.is-l1\{min-height:calc\((\d+)px \* var\(--cd-zoom\)\)\}/g)].pop();
+const lastL1 = [...css.matchAll(/\.fh-cd-trayline\.is-l1\{min-height:(\d+)px\}/g)].pop();
 assert.equal(lastL1 && lastL1[1], "56", "line 1 is a 56px band like every other — a min-height, never a frozen 84");
-const lastDeep = [...css.matchAll(/\.fh-cd-trayline\.is-deep\{min-height:calc\((\d+)px \* var\(--cd-zoom\)\)\}/g)].pop();
+const lastDeep = [...css.matchAll(/\.fh-cd-trayline\.is-deep\{min-height:(\d+)px\}/g)].pop();
 assert.equal(lastDeep && lastDeep[1], "72", "only a 21-30-dice hand deepens its line, to 72");
 const lastL1T3 = [...css.matchAll(/\.fh-cd-trayline\.is-l1 \.fh-cd-tray-t3\{max-height:(\d+)px\}/g)].pop();
 assert.equal(lastL1T3 && lastL1T3[1], "22", "L1's tier-3 headroom was 84-era slack — back to the common 22");
-assert.match(source, /bandStep=Math\.round\(56\*zoomFactor\(\)\)/, "one chevron click steps exactly one band — 56 scaled by the zoom, never a raw 56");
+assert.match(source, /trayScroll==="up"\?-56:56/, "one chevron click steps exactly one 56px band");
 /* REWRITTEN (phase 2, mort du cap): the acted 284 now buys FIVE bands.
    With border-box folding each line's paddings and separator inside its
    56, and no cap row at all, the zone needs 2 (tray pad) + 5×56 = 282.
    BACKLOG-B's 284 already priced the cap's announced death — the LAST
    word is what the browser reads. */
-const lastTrayH = [...css.matchAll(/--cd-tray-h:calc\((\d+)px \* var\(--cd-zoom\)\)/g)].pop();
+const lastTrayH = [...css.matchAll(/--cd-tray-h:(\d+)px/g)].pop();
 assert.equal(lastTrayH && lastTrayH[1], "284", "the tray's last word on its height is the acted 284 — 2 + 5×56 = 282 needed, 2px spare");
 assert.doesNotMatch(t.renderStageZone(), /data-zone="dice-tray"/, "the roller does not carry the tray any more");
 
@@ -494,9 +480,7 @@ assert.match(css, /\.fh-cd-dicetray\{height:var\(--cd-tray-h\)/, "the zone's hei
    var(--cd-tray-h); the summoned group re-anchors ABOVE the band so it
    can never cover it again (constat C1 — the old in-flow Destiny zone
    was permanently hidden under the group). */
-/* REWRITTEN 2026-08-06 (C3): 44 at zoom 1, proportional beyond — the band
-   scales with the tray it sits on, or the two drift apart at 150%. */
-assert.match(css, /\.fh-cd-root\{--cd-band-h:calc\(44px \* var\(--cd-zoom\)\)\}/, "the band's height is a variable everything above it can anchor on");
+assert.match(css, /\.fh-cd-root\{--cd-band-h:44px\}/, "the band's height is a variable everything above it can anchor on");
 assert.match(css, /\.fh-cd-band\{position:absolute;left:0;right:0;bottom:var\(--cd-tray-h\);height:var\(--cd-band-h\)/,
   "the band sits exactly on the tray's top edge, at its fixed 44px");
 const lastFloatBottomAnchor=[...css.matchAll(/\.fh-cd-floatbottom\{bottom:([^;]*);/g)].pop();
