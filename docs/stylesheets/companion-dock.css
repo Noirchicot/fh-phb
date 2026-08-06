@@ -2166,3 +2166,14 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 /* The ping: a click's brief highlight — the deployed's only line gesture. */
 .fh-cd-trayexp .fh-cd-trayline.is-ping{animation:fh-cd-exp-ping .7s ease-out}
 @keyframes fh-cd-exp-ping{0%{background:rgba(255,217,138,.24)}100%{background:transparent}}
+
+/* ── R33 : le pulse est réservé aux dettes ─────────────────────────
+   Le badge EXHAUSTION clignotait à vide : la base .fh-cd-pending porte le
+   pulse fh-cd-call parce que sa robe de sang EST la dette (Chaos/Overreach
+   en attente d'être affrontés), et la variante or « condition » ne s'en
+   retirait pas — un simple niveau d'exhaustion non nul pulsait donc alors
+   que rien n'attendait le joueur. Règle ratifiée : ne clignote que ce qui
+   EXIGE l'attention (dette armée, décision en attente). L'exhaustion est
+   un état que la fiche connaît déjà, comme la note épinglée (.is-note,
+   déjà animation:none) : elle attend en or, immobile. */
+.fh-cd-pending.is-exhaustion{animation:none}

@@ -808,4 +808,23 @@ assert.match(css, /\.fh-cd-judgeright b\{[^}]*font-size:calc\(9\.4px \* var\(--c
 assert.match(css, /\.fh-cd-judgeright b\{[^}]*overflow-wrap:anywhere/,
   "…and an over-long single word wraps into the clamp's second line instead of clipping");
 
+// ── R33 : le pulse est réservé aux dettes — EXHAUSTION ne clignote plus à vide ──
+// La base .fh-cd-pending porte le pulse fh-cd-call parce que sa robe de sang
+// EST la dette (Chaos/Overreach en attente) ; les variantes « condition »
+// (exhaustion) et « note épinglée » s'en retirent : elles attendent, immobiles.
+assert.match(css, /\.fh-cd-pending\{[^}]*animation:fh-cd-call/,
+  "R33: a waiting debt still calls — the pulse stays on the blood robe");
+const exhBadgeRules = [...css.matchAll(/\.fh-cd-pending\.is-exhaustion\{([^}]*)\}/g)];
+assert.ok(exhBadgeRules.length, "the exhaustion badge wears its gold condition robe");
+assert.match(exhBadgeRules[exhBadgeRules.length - 1][1], /animation:none/,
+  "R33: a mere exhaustion level never pulses — nothing is owed");
+const noteBadgeRules = [...css.matchAll(/\.fh-cd-pending\.is-note\{([^}]*)\}/g)];
+assert.match(noteBadgeRules[noteBadgeRules.length - 1][1], /animation:none/,
+  "…and the pinned note stays still too, as before");
+// Le badge du strip porte bien la classe qui l'immobilise.
+t.state.vitals = Object.assign({}, t.state.vitals, { exhaustion: 2 });
+assert.match(t.renderStageZone(), /fh-cd-pending is-exhaustion"[^>]*>EXHAUSTION 2</,
+  "the strip's EXHAUSTION chip carries is-exhaustion, so the CSS opt-out reaches it");
+t.state.vitals.exhaustion = 0;
+
 console.log("dice-tray: all assertions passed");
