@@ -28,6 +28,20 @@
   --cd-zoom-pref:1;
   --cd-zoom:var(--cd-zoom-pref);
   --cd-fs:calc(1.15 * var(--cd-zoom));
+  /* The T scale — UI-TYPOGRAPHY.md, ratified by Eric 2026-08-06. Seven rungs,
+     T1 the SMALLEST (said out loud because H1 is the largest and that
+     inversion misleads). Every one of them carries --cd-fs, so a size written
+     as a rung follows the zoom by construction — which is exactly what an
+     unsized element does not do (see the outcome fix in the tray block).
+     T5 has no user yet: it exists because 9.6 -> 13 is the widest gap on the
+     low scale, and its first use is a deliberate choice, never a migration. */
+  --cd-t1:calc(6.8px * var(--cd-fs));   /* micro    — meta, mentions        */
+  --cd-t2:calc(7.4px * var(--cd-fs));   /* mention  — die label, verdict    */
+  --cd-t3:calc(8.4px * var(--cd-fs));   /* libellé  — labels               */
+  --cd-t4:calc(9.6px * var(--cd-fs));   /* corps    — the readable line     */
+  --cd-t5:calc(11px  * var(--cd-fs));   /* accent   — no user yet           */
+  --cd-t6:calc(13px  * var(--cd-fs));   /* titre    — line title, total     */
+  --cd-t7:calc(30px  * var(--cd-fs));   /* grand nombre — the result        */
   /* The reference is 425 x 680 at 100% zoom (UI-DIMENSIONS.md), not the old
      400px x --cd-fs formula -- that read 460px at the old 1.15 default, which
      was never the measured reference. Width now follows ZOOM, not the text
@@ -1266,9 +1280,13 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayline:last-child{border-bottom:0}
 .fh-cd-trayline.is-empty{min-height:40px;justify-content:center;color:var(--cd-faint);
   font-size:calc(8.6px * var(--cd-fs));font-style:italic}
-/* Band heights: fixed, so four lines are always exactly visible.
-   84 + 3x56 + cap ≈ the zone's 284. */
-.fh-cd-trayline.is-l1{min-height:84px}
+/* Band heights: fixed, so whole lines are always exactly visible.
+   The Live band's 84 was reverted to 56 when the cap died (see the Phase 2
+   block near the end of this sheet): five 56px bands + 2px padding = 282,
+   inside the zone's 284. The dead `is-l1{min-height:84px}` that used to sit
+   here — overridden 430 lines later and contradicting its own comment — was
+   removed 2026-08-06; anyone reading top to bottom concluded 84.
+   Names for these bands: UI-TYPOGRAPHY.md (Live · Current · Deep · Empty). */
 .fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{min-height:56px}
 /* The live hand keeps the frame (mood streaks included) but sheds the fixed
    148px box it had in the roller: the line is the box now. */
@@ -1316,7 +1334,13 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fh-cd-tray-account{font-style:normal;color:var(--cd-faint);font-size:calc(6.9px * var(--cd-fs));line-height:1.2;max-width:100%;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fh-cd-tray-outcome{font-weight:700}
+/* R40, fixed 2026-08-06. This declared no font-size at all, and NO ancestor
+   in the dock chain declares one either — so it inherited the PAGE's 16px,
+   which --cd-fs never touches: it grew while everything around it shrank.
+   It now reads at its neighbour's rungs (see .fh-cd-tray-verdict: T2, and T4
+   on the Live band). The class of defect is in UI-TYPOGRAPHY.md: silence is
+   not a default here, it is an escape from the zoom system. */
+.fh-cd-tray-outcome{font-weight:700;font-size:var(--cd-t2)}
 .fh-cd-tray-outcome.is-ok{color:var(--cd-ok)}
 .fh-cd-tray-outcome.is-bad{color:var(--cd-bad)}
 .fh-cd-tray-outcome.is-n20{color:var(--cd-gold-bright)}
@@ -1376,7 +1400,8 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* The verdict earns its size back on the large line — the old frame said it
    at 12px and tier 3 had whispered it. */
-.fh-cd-trayline.is-l1 .fh-cd-tray-verdict{font-size:calc(9.6px * var(--cd-fs))}
+.fh-cd-trayline.is-l1 .fh-cd-tray-verdict,
+.fh-cd-trayline.is-l1 .fh-cd-tray-outcome{font-size:var(--cd-t4)}
 .fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:30px}
 /* The Roll Builder's assembly frame: same bones as the tray's live hand,
    quieter dress — nothing here has happened yet. */
@@ -1618,8 +1643,15 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    (84 + 3×56 + list padding) stay exactly visible. Redeclaring the
    variables here wins over the original block (same specificity,
    later in the sheet) — APPENDED, nothing rewritten. */
-.fh-cd-root{--cd-traycap-h:56px;--cd-tray-h:320px}
-.fh-cd-dicetray>.fh-cd-cap{height:var(--cd-traycap-h);flex:none;align-items:center;
+/* REMOVED 2026-08-06 — the cap band and its variables. `diceTrayInner` no
+   longer emits a `.fh-cd-cap` at all (Phase 2, Eric R5): these rules had no
+   element to match, `--cd-traycap-h` had no live reader once
+   `.fh-cd-trayarrow.is-up` was re-anchored to `top:4px` at the end of the
+   sheet, and `--cd-tray-h:320px` was overridden back to 284 a hundred lines
+   below. Three declarations of one variable is how "how tall is the tray"
+   stopped being answerable by reading. The prose above is kept as the record
+   of why the band existed. */
+.fh-cd-dicetray>.fh-cd-cap{flex:none;align-items:center;
   margin:0 2px;padding:0 2px;border-bottom:1px solid rgba(244,236,216,.10)}
 .fh-cd-dicetray>.fh-cd-cap .fh-cd-traystate{font-size:calc(8.4px * var(--cd-fs));padding:4px 9px;border-radius:4px}
 .fh-cd-dicetray>.fh-cd-cap small{font-size:calc(8px * var(--cd-fs))}
@@ -1631,7 +1663,8 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayclear svg{width:12px;height:12px}
 /* The up chevron rides just under the cap's lower edge, wherever that
    edge is (carpet padding 2px + the cap's own height). */
-.fh-cd-trayarrow.is-up{top:calc(var(--cd-traycap-h) + 4px)}
+/* (was: top:calc(var(--cd-traycap-h) + 4px) — the cap it perched under is
+   gone; the live value is top:4px, set at the end of this sheet.) */
 
 /* ── Lot BACKLOG-A (Eric, 2026-08-05) — the line snap is withdrawn ────
    The snap of fbe871e fought the registre's own life. The dock rebuilds
@@ -1730,8 +1763,11 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    BACKLOG-A's 320 (which funded the old 84 + list margins: 2+56+2+84+
    3×56 = 312 needed) gives back its 36px to the sheet above. Same
    variable, so the summoned group's anchor (--cd-tray-h) and the
-   dock's padding-bottom follow by themselves. */
-.fh-cd-root{--cd-tray-h:284px}
+   dock's padding-bottom follow by themselves.
+   (The re-declaration that used to sit here is REMOVED, 2026-08-06: it
+   existed only to undo BACKLOG-A's 320, and that 320 is gone with the cap
+   block above. The single declaration is now at the top of the tray block,
+   `--cd-tray-h:284px`, and the reasoning stays here where it was earned.) */
 
 /* ── Lot R8 (Eric, 2026-08-05) — la rampe A : la profondeur raconte
    l'âge du jet ────────────────────────────────────────────────────────
