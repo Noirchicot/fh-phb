@@ -7,9 +7,13 @@ requête ne part vers le Worker de prod** (`fh-builds`) ni vers aucun cloud.
 ## Démarrer / rafraîchir (une commande)
 
 ```bash
-cd ~/tools/fh-phb/.claude/worktrees/mirror-lot
+cd ~/tools/fh-phb
 tools/mirror.sh
 ```
+
+> (Fusionné sur `main` le 2026-08-06 — l'ancien chemin
+> `.claude/worktrees/mirror-lot` n'existe plus ; tout se lance depuis le
+> dépôt principal.)
 
 Ce que fait la commande : build mkdocs → copie `tools/dock-harness.html` dans
 `site/` → démarre `tools/mirror-server.mjs` sur le **port 8130** (le banc du
