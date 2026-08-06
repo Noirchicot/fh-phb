@@ -2232,3 +2232,52 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    when something newer is above, down only while rolls hide below, both in
    between. Only the seat moves. APPENDED — nothing above is rewritten. */
 .fh-cd-trayarrow{left:8px;transform:none}
+
+/* ── Lot R34-R39 (P1-P8, P24, P29, P30, P5, P6, P10, P18) — les libellés
+   de dés tiennent dans la largeur de leur OBJET ────────────────────────
+   The defect was visible without measuring: a die's COLUMN was as wide as
+   its label the moment the label passed 38px. « Exhaustion » (48) and
+   « Original d20 » (52) pushed their neighbours apart and broke the row.
+   The CSS was allowing 64px on the live band and 44 on the others, i.e.
+   +26px above the die — that is the cause, and this is where it is paid.
+
+   P4/P24: the limit is the width of the OBJECT. 38px under a die, 26px
+   under a coin. That number is true at every zoom because it IS the object;
+   the character count of P4 is an aide-mémoire with a wide bracket, which is
+   why the word-by-word table lives in the script, not here.
+
+   P29: the rung is T1, not T2 — 8% smaller buys a character, puts the die
+   label on the SAME rung as the flank's items (one small size in the whole
+   tray), and takes « Bonus III » off the exact limit it was sitting on.
+
+   P5: one line, never two. A band of 56 offers ~48px of content: die 38 +
+   gap 2 + one line of text 9 = 49. It is already full. The
+   `-webkit-line-clamp:2` this overrides was a second line in waiting — the
+   band never had the height for it, so it would have overflowed silently
+   rather than wrapping. Same rule in the builder, so one die reads the same
+   in both places.
+
+   P6: past the limit, an ellipsis and never a mute cut — and the whole word
+   stays one hover away (Mac) or one tap on the die's card away (iPad). The
+   title is stamped by visualDie on EVERY die now, not only on the ones whose
+   label was suppressed.
+   APPENDED only. */
+.fh-cd-tray-dice .fh-cd-diewrap em,
+.fh-cd-frame.is-assembly .fh-cd-diewrap em,
+.fh-cd-trayline.is-mid .fh-cd-diewrap em,
+.fh-cd-trayline.is-static .fh-cd-diewrap em{
+  display:block;-webkit-line-clamp:none;max-height:none;
+  font-size:var(--cd-t1);max-width:38px;line-height:1.1;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* A coin is 26px wide, not 38: its label has a third less room (P24). */
+.fh-cd-tray-dice .fh-cd-diewrap.is-modifier em,
+.fh-cd-frame.is-assembly .fh-cd-diewrap.is-modifier em{max-width:26px}
+/* P18: the label of a forced die is white like every other. The violet moved
+   onto the badge below, where it carries its own ground. */
+.fh-cd-diewrap.is-forced em{color:inherit}
+.fh-cd-portent{position:absolute;top:-4px;left:-5px;z-index:2;min-width:11px;height:11px;padding:0 2px;
+  border-radius:5px;background:#5c3d7e;color:#f5edff;font-size:calc(6.5px * var(--cd-fs));font-weight:800;
+  line-height:11px;text-align:center;letter-spacing:0;pointer-events:none}
+/* P9's third narrow surface: the band's pastille holds 24px, and at T1 even
+   « Bardic » overflows it — which is why the resource carries a Short name. */
+.fh-cd-poollab{font-size:var(--cd-t1)}

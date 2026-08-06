@@ -1012,10 +1012,10 @@
        pool keeps its name and the id that re-credits its resource if it is
        taken back before ROLL. Plain free dice carry neither. */
     return {id:raw.id||uuid(),sides:sides,colour:dieColour(raw.colour),advantageMode:rollMode(raw.advantageMode),forcedResult:forcedDieResult(raw.forcedResult,sides),
-      label:raw.label?String(raw.label).slice(0,32):undefined,poolResourceId:raw.poolResourceId||undefined};
+      label:raw.label?String(raw.label).slice(0,32):undefined,short:raw.short?String(raw.short).slice(0,7):undefined,poolResourceId:raw.poolResourceId||undefined};
   }
   function newBonusDie(label,sides,sourceIcon,colour){return {id:uuid(),label:String(label||"Other I").slice(0,32),sides:ROLL_DIE_SIZES.indexOf(Number(sides))>=0?Number(sides):6,advantageMode:"flat",forcedResult:null,sourceIcon:bonusSourceFor(label,0,sourceIcon),colour:dieColour(colour)};}
-  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,origin:die.origin||undefined,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour),poolResourceId:die.poolResourceId||undefined};}
+  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,origin:die.origin||undefined,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour),short:die.short?String(die.short).slice(0,7):undefined,poolResourceId:die.poolResourceId||undefined};}
   function entryBonusDice(entry){
     if(Array.isArray(entry&&entry.bonusDice))return entry.bonusDice.map(normalizeBonusDie).slice(0,MAX_BONUS_DICE);
     var dice=[];
@@ -1227,7 +1227,7 @@
   }
   function trayDiceForPlan(plan,label,extra){
     extra=extra||{};var rolls=Array.isArray(plan&&plan.rolls)&&plan.rolls.length?plan.rolls:[plan&&plan.result];
-    return rolls.map(function(result,index){return Object.assign({sides:plan.sides,result:result,label:label+(rolls.length>1?" #"+(index+1):""),dropped:rolls.length>1&&plan.chosenIndex!=null&&index!==Number(plan.chosenIndex),choiceMode:rollMode(plan.mode||plan.advantageMode),forced:!!plan.forced,sourceIcon:plan.sourceIcon||"",colour:plan.colour||""},extra);});
+    return rolls.map(function(result,index){return Object.assign({sides:plan.sides,result:result,label:label+(rolls.length>1?" #"+(index+1):""),short:plan.short||"",dropped:rolls.length>1&&plan.chosenIndex!=null&&index!==Number(plan.chosenIndex),choiceMode:rollMode(plan.mode||plan.advantageMode),forced:!!plan.forced,sourceIcon:plan.sourceIcon||"",colour:plan.colour||""},extra);});
   }
   function pendingTrayDice(sides,label,mode,forced,extra){
     var manual=forcedDieResult(forced,sides),count=manual!=null||rollMode(mode)==="flat"?1:2,dice=[];
@@ -2095,7 +2095,14 @@
     violet:{fill:"#5c3d7e",light:"#8563a6",dark:"#372049",rim:"#241432",facet:"#452c5e",num:"#f5edff"},
     slate:{fill:"#4a4f55",light:"#727880",dark:"#2b2f34",rim:"#1c1f22",facet:"#3a3e44",num:"#f0f2f4"},
     // The plain-bonus tint (Eric, ratified 2026-08-03: "bonus lambda gris clair").
-    ash:{fill:"#c9cdd2",light:"#eceef1",dark:"#9aa0a8",rim:"#6b7178",facet:"#aeb3ba",num:"#3a3f45"}
+    /* P17: ash sat at 1.34 from ivory — two dice side by side, all but
+       indistinguishable. Darkening it would have traded one confusion for the
+       other (the further it moves from ivory, the deeper it sinks into the
+       ramp), so the brightness is KEPT and the difference moves onto the
+       temperature: the fill is pushed blue and the rim goes cold, nearly
+       black, where ivory wears a warm gold rim (#8a6a2a). On 38px a 3px rim
+       is an enormous signal. */
+    ash:{fill:"#c2c9d4",light:"#e8ecf2",dark:"#98a0ab",rim:"#2f353c",facet:"#a7b0bd",num:"#2b3138"}
   };
   // Offered in the right-click menu, in this order. "ivory" is the default.
   var DIE_COLOURS = [["ivory","Ivory"],["green","Green"],["gold","Gold"],["crimson","Crimson"],["azure","Azure"],["violet","Violet"],["slate","Slate"]];
@@ -2175,6 +2182,71 @@
       '<text class="fh-cd-num" x="50" y="54" font-size="28" text-anchor="middle" dominant-baseline="middle" fill="'+body.num+'">'+esc(label)+'</text></svg>';
   }
   function dieSize(count){return count>8?26:count>5?34:count>3?44:52;}
+  /* ── P7 : une entrée du lexique, DEUX formes — et c'est la surface qui
+     choisit (ratifiée Eric, 2026-08-07) ───────────────────────────────
+     There is no second list of words here. `die.label` stays the long form
+     and keeps going everywhere a long form belongs — the judgment box, the
+     die's card, the Stream, the hover, the wire (rollExportDice flattens the
+     same list, so a rename in this function reaches no machine). What this
+     function returns is the SHORT form, and it is read by exactly the three
+     narrow surfaces P7 names: under a die (38px), under a coin (26px), the
+     band's pool pastille (24px).
+
+     THE INVARIANT IS THE PIXEL, NOT THE CHARACTER COUNT (P29's own
+     correction): 38px is the width of the die, 26px the width of the coin,
+     and both are true at every zoom because they ARE the object. The
+     character count quoted in P4 is an aide-mémoire with a wide bracket,
+     which is precisely why the table below rules word by word instead of
+     truncating by length.
+
+     P3 governs the silences: a label never repeats the die's own shape.
+     « d20 », « d8 » die here — a d8 that says "d8" has said nothing. The
+     base d20 keeps a word because « Base d20 » names its ROLE, which the
+     shape does not say. */
+  var HAND_LABELS={
+    "d20":"Base d20",          // P30 — the role, not the form
+    "Original d20":"Base d20", // struck through and dimmed: the strike says "original"
+    "FATE 1→20":"Fate→20",
+    "FATE 1→1":"Fate→1",
+    "Guidance":"Guide",        // P8 — 40.6px overflowed by 2
+    "Overreach":"Over.R",      // P8, amended by Eric: OVER.R, not OVER
+    "FH bonus":"FH",           // P24 — the coin already prints "+2"; the word says WHAT, not how much
+    "Exhaustion":"EXH",        // P8/P30 — « Exhaust. » is 34px on a 26px coin
+    "Manual":"Mod"             // P8 — ends the Mod/Manual divergence between surfaces
+  };
+  var ABILITY_SHORT={Strength:"STR",Dexterity:"DEX",Constitution:"CON",Intelligence:"INT",Wisdom:"WIS",Charisma:"CHA"};
+  /* The short form of one label. `opts.short` is P9's « Court » field when the
+     die came from a pool resource that has one; without it the fallback is the
+     first word, which is the same default P9 pre-fills the field with. */
+  function shortDieLabel(text,opts){
+    opts=opts||{};
+    text=String(text==null?"":text).trim();
+    if(!text)return "";
+    if(HAND_LABELS[text]!=null)return HAND_LABELS[text];
+    // P3: the shape is drawn, it is not written. A bare « d8 » says nothing.
+    if(/^d(4|6|8|10|12|20|100)$/.test(text))return "";
+    // P8/P30 — the six saves, on the « XXX sv » pattern: « CON save » is 39px,
+    // over the die's 38, and « save » spelled out breaks on two abilities.
+    var save=/^(.+?)\s+save$/i.exec(text);
+    if(save){
+      var abbr=ABILITY_SHORT[save[1]]||(/^[A-Z]{3}$/.test(save[1])?save[1]:"");
+      if(abbr)return abbr+" sv";
+    }
+    // P8 — the two Chaos dice sit side by side; the number adds nothing.
+    if(/^Chaos\s*#\d+$/.test(text))return "Chaos";
+    if(opts.short)return String(opts.short).trim();
+    // P9's default, and P12's cascade one surface further in: the first word.
+    // The CSS ellipse is the last net, never the first (P6).
+    var first=text.split(/\s+/)[0];
+    return first;
+  }
+  /* What a die shows under itself in the hand. The long form is what the
+     wrapper's title carries, so P6's contrepartie holds: nothing is ever cut
+     without the whole word remaining one hover (Mac) or one card (iPad) away. */
+  function handLabel(die){
+    if(!die)return "";
+    return shortDieLabel(die.label,{short:die.short});
+  }
   /* opts (all optional): sizePx pins the die size instead of deriving it from
      the count (the tray's bands are fixed sizes, not crowd-relative), and
      snapshot renders the settled pose as a cached bitmap with NO live WebGL
@@ -2204,14 +2276,35 @@
       if(opts.naked){
         return "<span class=\""+classes.join(" ")+" is-naked\"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.max(14,Math.round(size*.9)),text,tone)+"</span></span>";
       }
-      return "<span class=\""+classes.join(" ")+"\""+(opts.noLabel?" title=\""+esc(die.label||"Bonus")+"\"":"")+"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span>"+(opts.noLabel?"":"<em>"+esc(die.label||"Bonus")+"</em>")+"</span>";
+      /* P20/P24: in the hand the coin keeps a word under it — but the SHORT
+         one, on 26px of coin rather than 38px of die, and it never repeats
+         the value already printed on the face. The long form stays on the
+         title, always, so P6's contrepartie holds whether or not the label
+         is drawn (it used to appear only when the label was suppressed). */
+      var coinShort=handLabel(die),coinFull=die.label||"Bonus";
+      return "<span class=\""+classes.join(" ")+"\" title=\""+esc(coinFull)+"\"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span>"+((opts.noLabel||!coinShort)?"":"<em>"+esc(coinShort)+"</em>")+"</span>";
     }
     /* The source token AND its empty 12px slot are gone (Eric: "violet +
        Bardic, rien de plus") — the die's tint says destiny/tactical/bardic/
        guidance/plain, the label names it, and for a label-less die the
        wrapper's title keeps the full name on hover (same pattern as naked). */
-    var srcTitle=die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
-      :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"";
+    /* P6: whatever is written under a die, the WHOLE word stays one hover
+       away — and on iPad, where there is no hover, one tap on the die's card.
+       So the full label is the title of every die, not only of the ones whose
+       label was suppressed; when a handle claims the hover for its own hint,
+       the name goes in FRONT of it rather than being displaced by it. */
+    var fullLabel=die.label||(die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:die.dieRole==="bonus"?rollSource(die.sourceIcon).label:"");
+    /* P18 (ratifiée Eric, 2026-08-07): a forced die used to be said by writing
+       its label in violet #7a4a9c — 1.18:1 on the live band, i.e. invisible,
+       in production, today. The tray's ground stays dark (R8 not reopened) and
+       the lettering under the dice stays white, so violet has nowhere left to
+       live as INK. It goes where it carries its own ground instead: a corner
+       badge on the die itself, the same form as P10's ×N — #f5edff on solid
+       #5c3d7e, 8.12:1. The label goes back to white, the flank says « Manual »
+       in informative ink, and a forced die is findable in a hand of thirty. */
+    var portent=die.forced?"<span class=\"fh-cd-portent\" aria-hidden=\"true\">M</span>":"";
+    var srcTitle=fullLabel;
+    var shortLabel=handLabel(die);
     var dieClasses="fh-cd-die"+(die.result!=null?" is-landed":"")+(animate&&die.result!=null?" is-spinning":"");
     // A die still in the hand carries its identity so a right click can reach it.
     var handle="";
@@ -2226,14 +2319,14 @@
       else if(die.destinyDieId)handle=" data-die-destiny=\""+esc(die.destinyDieId)+"\"";
       else if(die.freeId)handle=" data-die-free=\""+esc(die.freeId)+"\"";
       else if(die.dieRole==="base")handle=" data-die-base=\"1\"";
-      if(handle){classes.push("is-tunable");handle+=" title=\"Right click or long press: colour, advantage, Portent\"";}
+      if(handle){classes.push("is-tunable");handle+=" title=\""+(fullLabel?esc(fullLabel)+" — ":"")+"Right click or long press: colour, advantage, Portent\"";}
     }
     /* A die that has already fallen keeps answering — a Diviner replaces
        results after the fact, which is the whole of Portent. Destiny dice are
        the exception: what they read is what they cost. */
     else if(die.landedKey&&die.result!=null&&!die.dropped&&die.dieRole!=="destiny"){
       handle=" data-die-landed=\""+esc(die.landedKey)+"\" data-die-entry=\""+esc(die.entryId||"")+"\""+
-        " title=\"Right click or long press: colour, Portent\"";
+        " title=\""+(fullLabel?esc(fullLabel)+" — ":"")+"Right click or long press: colour, Portent\"";
       classes.push("is-tunable");
     }
     var materialName=dieMaterialName(die),face=dieSvg(die.sides,size,materialName,die.result==null?"?":die.result);
@@ -2260,10 +2353,9 @@
       }
       /* No corner mark in the swarm: the tint IS the provenance now
          ("all in one"), and the title still names it on hover. */
-      var nakedTitle=die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
-        :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"";
+      var nakedTitle=fullLabel;
       return "<span class=\""+classes.join(" ")+" is-naked\""+(handle||(nakedTitle?" title=\""+esc(nakedTitle)+"\"":""))+">"+
-        "<span class=\""+dieClasses+"\">"+face+"</span></span>";
+        "<span class=\""+dieClasses+"\">"+face+"</span>"+portent+"</span>";
     }
     /* Static Area (tray rolls 5+): the settled pose as a cached bitmap. One
        host, one numeral slot — even for d100, whose snapshot pair is drawn
@@ -2276,8 +2368,8 @@
         "<span class=\"fh-cd-static-die-fallback\">"+face+"</span></span>";
       dieClasses+=" is-static-die";
       return "<span class=\""+classes.join(" ")+"\""+(srcTitle?" title=\""+esc(srcTitle)+"\"":"")+">"+
-        "<span class=\""+dieClasses+"\">"+face+"</span>"+
-        (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
+        "<span class=\""+dieClasses+"\">"+face+"</span>"+portent+
+        ((opts.noLabel||!shortLabel)?"":"<em>"+esc(shortLabel+status)+"</em>")+"</span>";
     }
     /* The WebGL renderer is deliberately only a renderer: the face was chosen
        before this markup exists. Larger pools retain the lightweight SVG tray
@@ -2305,8 +2397,8 @@
        keeps its interaction title; the source title only steps in when no
        handle claimed the hover. */
     return "<span class=\""+classes.join(" ")+"\""+(handle||(srcTitle?" title=\""+esc(srcTitle)+"\"":""))+">"+
-      "<span class=\""+dieClasses+"\">"+face+"</span>"+
-      (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
+      "<span class=\""+dieClasses+"\">"+face+"</span>"+portent+
+      ((opts.noLabel||!shortLabel)?"":"<em>"+esc(shortLabel+status)+"</em>")+"</span>";
   }
   /* The event list and its decision line are gone (third fitting): the
      judgment window says the ruling and asks the decisions, the badge strip
@@ -2697,7 +2789,15 @@
     var sides=POOL_DIE_SIDES.indexOf(Number(raw.sides))>=0?Number(raw.sides):8;
     var kind=raw.kind==="count"?"count":"die";
     var count=clamp(raw.count==null?1:raw.count,0,kind==="die"?1:MAX_POOL_COUNT);
-    return {id:raw.id||uuid(),label:String(raw.label||"Resource").slice(0,14),kind:kind,sides:sides,count:count,
+    /* P9 (ratifiée Eric, 2026-08-07): « Bardic Inspiration » is 61px on a
+       24px pastille and 44.9px under a 38px die — it does not fit anywhere it
+       is shown. So the resource carries TWO names: the one the player reads
+       on a card (14), and the one the narrow surfaces can hold (7). The short
+       one defaults to the first word, which is what P9 pre-fills it with, and
+       stays editable — « Song of Rest » wants « SoR », not « Song ». */
+    var label=String(raw.label||"Resource").slice(0,14);
+    var short=String(raw.short==null?"":raw.short).trim().slice(0,7)||label.split(/\s+/)[0].slice(0,7);
+    return {id:raw.id||uuid(),label:label,short:short,kind:kind,sides:sides,count:count,
       tint:DIE_MATERIAL[raw.tint]&&raw.tint!=="white"&&raw.tint!=="chaos"&&raw.tint!=="gold"?raw.tint:"ash",
       origin:raw.origin||undefined};
   }
@@ -2753,7 +2853,7 @@
       if(!entry)return;
       if(entryBonusDice(entry).length+stagedBonusCount()>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
       res.count=Number(res.count)-1;
-      state.rollSequence.staged=stagedList().concat([{id:uuid(),kind:"bonus",label:res.label,sides:res.sides,sourceIcon:icon,colour:colour,poolResourceId:res.id}]);
+      state.rollSequence.staged=stagedList().concat([{id:uuid(),kind:"bonus",label:res.label,short:res.short,sides:res.sides,sourceIcon:icon,colour:colour,poolResourceId:res.id}]);
       refreshOpenTray(entry);persistPlayState();render();return;
     }
     var cfg=state.rollConfig;
@@ -2762,23 +2862,23 @@
       if((cfg.bonusDice||[]).length>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
       res.count=Number(res.count)-1;
       var bonus=newBonusDie(res.label,res.sides,icon||undefined,colour);
-      bonus.poolResourceId=res.id;
+      bonus.short=res.short;bonus.poolResourceId=res.id;
       cfg.bonusDice.push(bonus);
       syncPresetFlags(cfg);prepareTrayForConfig(cfg);persistPlayState();render();return;
     }
     if(state.traySelection.length>=MAX_FREE_DICE){pushEvent("The free-roll tray holds at most "+MAX_FREE_DICE+" dice","warn");refreshEventPanel();return;}
     res.count=Number(res.count)-1;
     var free=newFreeDie(res.sides,colour||SOURCE_TINT[icon]||"");
-    free.label=res.label;free.poolResourceId=res.id;
+    free.label=res.label;free.short=res.short;free.poolResourceId=res.id;
     state.traySelection.push(free);state.trayResults=[];
     persistPlayState();render();
   }
   /* ── The pool cards (add / edit / overflow list) ────────────────── */
-  function newPoolDraft(){return {label:"",kind:"die",sides:8,count:2,tint:"violet"};}
+  function newPoolDraft(){return {label:"",short:"",kind:"die",sides:8,count:2,tint:"violet"};}
   function openPoolEdit(id){
     var res=poolResourceById(id);
     if(!res)return;
-    state.poolPrompt={type:"edit",id:id,draft:{label:res.label,kind:res.kind,sides:res.sides,count:res.count,tint:res.tint}};
+    state.poolPrompt={type:"edit",id:id,draft:{label:res.label,short:res.short,kind:res.kind,sides:res.sides,count:res.count,tint:res.tint}};
     state.destinyPoolMenu=false;state.diePrompt=null;render();
   }
   // Like syncConsoleInputs: the card's free-text fields are read before any
@@ -2786,8 +2886,9 @@
   function syncPoolCardInputs(){
     var prompt=state.poolPrompt;
     if(!prompt||!prompt.draft||!root)return;
-    var label=root.querySelector("#fhPsPoolLabel"),count=root.querySelector("#fhPsPoolCount");
+    var label=root.querySelector("#fhPsPoolLabel"),short=root.querySelector("#fhPsPoolShort"),count=root.querySelector("#fhPsPoolCount");
     if(label)prompt.draft.label=String(label.value||"").slice(0,14);
+    if(short)prompt.draft.short=String(short.value||"").slice(0,7);
     if(count)prompt.draft.count=clamp(count.value,1,MAX_POOL_COUNT);
   }
   /* R31 (racine, prouvée au banc) : un render() ASYNCHRONE — le timer du
@@ -2799,7 +2900,7 @@
      re-render (synchrone ou minuté). */
   function onPoolCardInput(event){
     var target=event&&event.target;
-    if(target&&(target.id==="fhPsPoolLabel"||target.id==="fhPsPoolCount"))syncPoolCardInputs();
+    if(target&&(target.id==="fhPsPoolLabel"||target.id==="fhPsPoolShort"||target.id==="fhPsPoolCount"))syncPoolCardInputs();
   }
   function savePoolCard(){
     var prompt=state.poolPrompt;
@@ -2827,15 +2928,25 @@
   }
   /* One pastille: a tinted die for kind "die", a ×N chip for a counter,
      the tiny label underneath either way (the ratified maquette). */
-  function poolChipFace(res,size){
-    if(res.kind==="die")return dieSvg(res.sides,size,res.tint||"ash","d"+res.sides);
-    var m=DIE_MATERIAL[res.tint]||DIE_MATERIAL.ash;
-    return "<span class=\"fh-cd-poolx\" style=\"width:"+size+"px;height:"+size+"px;background:"+m.fill+";border-color:"+m.rim+";color:"+m.num+"\">×"+Number(res.count)+"</span>";
+  /* P10 / R39 (ratifiée Eric, 2026-08-07): a counted resource stops being a
+     « ×2 » square and becomes ITS DIE, in its tint, with the count as a
+     corner badge — .fh-cd-mult, the exact form the Destiny row and the
+     selector already use. Ratified with it: top-right like everywhere, GOLD
+     (the dock's language for quantity) rather than the resource's tint,
+     hidden at ×1 as the selector already hides it, and capped at ×9 so the
+     badge is never more than two signs. `withBadge` carries the fifth
+     precision — the badge lives on the BAND only: spending a resource puts a
+     die in play, and a die in play carries no count. */
+  function poolChipFace(res,size,withBadge){
+    var face=dieSvg(res.sides,size,res.tint||"ash","d"+res.sides);
+    if(!withBadge||res.kind!=="count")return face;
+    var count=Number(res.count)||0;
+    return face+(count>1?"<span class=\"fh-cd-mult\">×"+Math.min(9,count)+"</span>":"");
   }
   function poolChipHtml(res){
     return "<button type=\"button\" class=\"fh-cd-poolchip\" data-pool-spend=\""+esc(res.id)+"\" data-pool-id=\""+esc(res.id)+"\""+
       " title=\""+esc(poolTitle(res))+"\" aria-label=\"Spend "+esc(res.label)+"\">"+
-      poolChipFace(res,20)+"<b class=\"fh-cd-poollab\">"+esc(res.label)+"</b></button>";
+      poolChipFace(res,20,true)+"<b class=\"fh-cd-poollab\">"+esc(res.short||res.label)+"</b></button>";
   }
   /* The strip between the gold dice and the arcana. Past what the band
      measured room for (state.poolFit, syncPoolFit), the excess folds into
@@ -2903,7 +3014,9 @@
         dieSvg(6,15,pair[0],"")+(seal?"<span class=\"fh-cd-dmmark\" style=\"color:"+m.num+"\">"+bonusSourceMark(seal)+"</span>":"")+"</button>";
     }).join("")+"</div>";
     return "<div class=\"fh-cd-card is-poolcard\"><small>"+(editing?"POOL RESOURCE · "+esc(draft.label||"—"):"ADD A POOL RESOURCE")+"</small>"+
-      "<div class=\"fh-cd-dmrow\"><span>Label</span><input id=\"fhPsPoolLabel\" maxlength=\"14\" value=\""+esc(draft.label)+"\" placeholder=\"Bardic, Tactical…\" aria-label=\"Resource label\"></div>"+
+      "<div class=\"fh-cd-dmrow\"><span>Name</span><input id=\"fhPsPoolLabel\" maxlength=\"14\" value=\""+esc(draft.label)+"\" placeholder=\"Bardic Inspiration\" aria-label=\"Resource name\"></div>"+
+      // P9: the name the 24px pastille and the 38px die can hold. Empty = the first word.
+      "<div class=\"fh-cd-dmrow\"><span>Short</span><input id=\"fhPsPoolShort\" maxlength=\"7\" value=\""+esc(draft.short||"")+"\" placeholder=\""+esc((draft.label||"").split(/\\s+/)[0].slice(0,7))+"\" title=\"Seven characters — what fits under a die and on the band's pastille\" aria-label=\"Short name\"></div>"+
       kindRow+sidesRow+countRow+tintRow+
       "<div class=\"fh-cd-acts\">"+(editing?"<button class=\"is-danger\" data-pool-delete=\""+esc(prompt.id)+"\">Remove</button>":"")+
       "<button class=\"is-ghost\" data-pool-close>Cancel</button><button data-pool-save>"+(editing?"Save":"Add it")+"</button></div></div>";

@@ -33,7 +33,8 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
     state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
     renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
     surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie, dieSvg,
-    renderDockHeader, feedChipHtml, feedStatusCaption
+    renderDockHeader, feedChipHtml, feedStatusCaption,
+    shortDieLabel, handLabel, normalizePoolResource, poolChipFace, LEX, rollRuling
   };
 })();
 `);
@@ -198,7 +199,12 @@ assert.match(lines[0], /is-l1/, "the newest roll is the large band");
    lines 2-4 are reborn as snapshots at rest, exactly as the naked ones
    were; only a die landing this pass animates as a live host. */
 assert.match(lines[0], /--fh-static-die-size:38px/, "a skill hand lands at 38px — one grid for every line");
-assert.match(lines[0], /<em>d20<\/em>/, "and keeps its label under the die");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P3 + P30). « d20 » under an icosahedron
+   repeats the shape the die already draws, which is precisely what P3
+   forbids; the base die keeps a word because « Base d20 » names its ROLE.
+   The assertion still holds what it was written to hold — that a skill hand
+   keeps a label under the die — it just holds it to the ratified word. */
+assert.match(lines[0], /<em>Base d20<\/em>/, "and keeps its label under the die — the role, not the shape");
 assert.match(lines[1], /is-mid/, "rolls 2-4 are the small band");
 assert.doesNotMatch(lines[1], /is-naked/, "a 1-5 hand keeps its wrapper on the lower lines too");
 assert.match(lines[1], /--fh-static-die-size:38px/, "at the same 38px — the crowd, not the band, sets the size");
@@ -869,3 +875,88 @@ assert.match(t.renderStageZone(), /fh-cd-pending is-exhaustion"[^>]*>EXHAUSTION 
 t.state.vitals.exhaustion = 0;
 
 console.log("dice-tray: all assertions passed");
+
+/* ── Lot R34-R39 — les libellés de dés (P1-P8, P24, P29, P30) ──────────
+   P7 is the whole design: ONE lexicon entry, TWO forms, and the surface
+   chooses. `die.label` stays the long form and keeps reaching the judgment
+   box, the card, the Stream, the hover and the wire; the short form exists
+   only under a die (38px), under a coin (26px) and on the band's pastille
+   (24px). So these assertions pin the SHORT side, and the ones after them
+   pin that the long side did not move with it. */
+assert.equal(t.shortDieLabel("Exhaustion"), "EXH", "48px of « Exhaustion » on a 26px coin — P8/P30");
+assert.equal(t.shortDieLabel("FH bonus"), "FH", "P24: the coin already prints « +2 »; the word says WHAT, not how much");
+assert.equal(t.shortDieLabel("Manual"), "Mod", "P8 — and it ends the Mod/Manual divergence between surfaces");
+assert.equal(t.shortDieLabel("Guidance"), "Guide", "P8 — 40.6px overflowed the die by 2");
+assert.equal(t.shortDieLabel("Overreach"), "Over.R", "P8, amended by Eric: Over.R, not Over");
+assert.equal(t.shortDieLabel("Chaos #1"), "Chaos", "P8 — the two Chaos dice sit side by side; the number adds nothing");
+assert.equal(t.shortDieLabel("Chaos #2"), "Chaos", "…both of them");
+assert.equal(t.shortDieLabel("FATE 1→20"), "Fate→20", "P30");
+assert.equal(t.shortDieLabel("Original d20"), "Base d20", "P30 — the strike-through says « original », the word says the role");
+assert.equal(t.shortDieLabel("d20"), "Base d20", "P30 — the role, which the shape does not say");
+
+// P3: a label never repeats the die's own shape. Six silences, not six words.
+["d4","d6","d8","d10","d12","d100"].forEach(shape => {
+  assert.equal(t.shortDieLabel(shape), "", "P3: « " + shape + " » under that very shape says nothing");
+});
+
+/* P30's save pattern. « save » spelled out breaks on two abilities (CON save
+   39px, CHA save 38.2 — the die is 38), so all six ride « XXX sv ». */
+assert.equal(t.shortDieLabel("WIS save"), "WIS sv", "the ability stays, the word shrinks");
+assert.equal(t.shortDieLabel("Wisdom save"), "WIS sv", "…written out or abbreviated, one pattern");
+assert.equal(t.shortDieLabel("CON save"), "CON sv", "the widest of the six still holds");
+
+/* P9: a resource carries two names. The short one defaults to the first word
+   — which is exactly what P9 pre-fills the field with — and is capped at 7. */
+assert.equal(t.shortDieLabel("Bardic Inspiration", {short:"Bardic"}), "Bardic", "the typed Short name wins");
+assert.equal(t.shortDieLabel("Bardic Inspiration"), "Bardic", "…and without one, the first word is the default");
+assert.equal(t.normalizePoolResource({label:"Bardic Inspiration"}).short, "Bardic", "P9 pre-fills Short with the first word");
+assert.equal(t.normalizePoolResource({label:"Song of Rest", short:"SoR"}).short, "SoR", "…and the player may override it");
+assert.equal(t.normalizePoolResource({label:"Tactical Mind", short:"Overlong"}).short, "Overlon", "…within the seven characters the pastille can hold");
+assert.equal(t.normalizePoolResource({label:"Tactical Mind"}).label, "Tactical Mind", "the long name keeps its own 14 (P9) — it is what the card and the hover show");
+
+/* P6, the contrepartie of P4: nothing is ever cut without the whole word
+   remaining one hover away. The title is on EVERY die now — it used to appear
+   only when the label had been suppressed. */
+const exhCoin = t.visualDie({kind:"modifier", result:-2, label:"Exhaustion", tone:"exhaustion"}, 0, 3, false, {sizePx:38, plainLabel:true});
+assert.match(exhCoin, /<em>EXH<\/em>/, "the coin wears the short form");
+assert.match(exhCoin, /title="Exhaustion"/, "…and the long one on its hover");
+const bardicDie = t.visualDie({sides:8, result:5, label:"Bardic Inspiration", short:"Bardic", dieRole:"bonus"}, 0, 3, false, {sizePx:38, plainLabel:true, readOnly:true});
+assert.match(bardicDie, /<em>Bardic<\/em>/, "the die wears the Short name");
+assert.match(bardicDie, /title="Bardic Inspiration"/, "…and the whole one stays reachable");
+const freeD8 = t.visualDie({sides:8, result:5, label:"d8", dieRole:"base"}, 0, 3, false, {sizePx:38, plainLabel:true, readOnly:true});
+assert.doesNotMatch(freeD8, /<em>/, "P3: a silenced label emits no element at all — an empty <em> is still a row of layout");
+
+/* P10 / R39: a counted resource is its die with a corner badge, not a « ×2 »
+   square — and the badge lives on the band only, hidden at ×1, capped at ×9. */
+const counted = t.normalizePoolResource({label:"Bardic", kind:"count", count:3, sides:8, tint:"violet"});
+assert.match(t.poolChipFace(counted, 20, true), /fh-cd-mult">×3</, "the count rides as a corner badge on the band");
+assert.doesNotMatch(t.poolChipFace(counted, 20, true), /fh-cd-poolx/, "the ×N square is gone — the resource is its die again");
+assert.doesNotMatch(t.poolChipFace(counted, 18, false), /fh-cd-mult/, "…and a die in play carries no count (P10e)");
+const one = t.normalizePoolResource({label:"Bardic", kind:"count", count:1, sides:8});
+assert.doesNotMatch(t.poolChipFace(one, 20, true), /fh-cd-mult/, "hidden at ×1, as the selector already hides it");
+const nine = t.normalizePoolResource({label:"Bardic", kind:"count", count:12, sides:8});
+assert.match(t.poolChipFace(nine, 20, true), /×9</, "capped at ×9 — never more than two signs");
+
+/* P18: the Portent stops being violet INK (1.18:1 on the live band — invisible
+   in production) and becomes a badge that carries its own ground. */
+const forced = t.visualDie({sides:20, result:20, label:"d20", dieRole:"base", forced:true}, 0, 1, false, {sizePx:38, plainLabel:true, readOnly:true});
+assert.match(forced, /class="fh-cd-portent"/, "a forced die wears the corner badge");
+assert.doesNotMatch(freeD8, /fh-cd-portent/, "…and an ordinary one does not");
+
+/* The CSS half of the same decision: the label is held to the width of its
+   object, on one line, and the latent second line is closed. */
+/* Anchored on the appended rule's own last selector, on its own line: the
+   second-fitting rule of 2026-08-03 opens with the same two selectors, and
+   matching it instead would have tested the very declaration this replaces. */
+const labelRule = css.match(/\n\.fh-cd-trayline\.is-static \.fh-cd-diewrap em\{[\s\S]*?\}/);
+assert.ok(labelRule, "the label rule is appended at the end of the sheet");
+assert.ok(css.lastIndexOf(labelRule[0]) > css.indexOf("-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}"),
+  "…after the two-line rule it closes, so it wins at equal specificity");
+assert.match(labelRule[0], /max-width:38px/, "P4: the width of the die");
+assert.match(labelRule[0], /font-size:var\(--cd-t1\)/, "P29: the T1 rung, named, so it follows the zoom by construction");
+assert.match(labelRule[0], /white-space:nowrap/, "P5: one line");
+assert.match(labelRule[0], /text-overflow:ellipsis/, "P6: an ellipsis, never a mute cut");
+assert.match(labelRule[0], /-webkit-line-clamp:none/, "…and the latent second line is closed — the band never had the height for it");
+assert.match(css, /\.fh-cd-diewrap\.is-modifier em\{max-width:26px\}/, "P24: a coin is 26px, not 38");
+assert.ok(css.lastIndexOf(".fh-cd-diewrap.is-forced em{color:inherit}") > css.indexOf(".fh-cd-diewrap.is-forced em{color:#7a4a9c}"),
+  "the white label wins over the invisible violet by coming later — appended, never rewritten");
