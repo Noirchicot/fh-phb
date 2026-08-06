@@ -2401,8 +2401,14 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-tray-mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:1px}
 .fh-cd-tray-mid .fh-cd-tray-dice{flex:0 1 auto;width:100%}
+/* The legend wears the ink of the labels it REPLACES, not the flank's
+   informative parchment: it sits on the ramp, not on the flat #24201a, and
+   #b3a68c on the ramp's light top is ~1.5:1. P13-bis's ink table is measured
+   against the flank's ground and does not travel to the felt — R8 is not
+   reopened, so the writing among the dice stays white, legend included. */
 .fh-cd-tray-legend{display:block;max-width:100%;font-size:var(--cd-t1);line-height:1.1;
-  color:#b3a68c;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  color:#cdb68c;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-legend{color:#e8dcc0}
 
 /* ── Lot R34-R39 (P16) — l'assise des dés du builder repasse au sombre
    (rouvre R9, partiellement) ────────────────────────────────────────────
