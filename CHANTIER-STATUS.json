@@ -51,7 +51,7 @@
       "name": "Dice Tray — lot R34-R39 (pastilles & libellés)",
       "repo": "fh-phb",
       "state": "en-attente",
-      "note": "⚠️ Le CODE du tray est fusionné (79195ea) mais le CHANTIER reste ouvert : le lot R34-R39 + 33 décisions n'a jamais été construit. ✅ 2026-08-06 : les deux verrous sautent — Q1-Q3 R38 étaient déjà tranchées (P11 : ruban V3, périmètre restreint, bandes 72) et le LEXIQUE est ratifié (grammaire « famille + ce qui l'a produit » : Crit 20 · Fumble 1 · Crit ∞ · Fumble ∞ ; affichage renommé, fil machine gelé, dédup T7/T8 par jeton). Cible prête : worktree ~/tools/fh-worktrees/tray-labels, branche tray-labels-r34-r39, harnais 8127, 19/19 vertes. LE LOT PEUT PARTIR. Backlog : icône œil, tâche B."
+      "note": "SÉQUENCE (Eric, 2026-08-06) : vérif PiP → lot R34-R39 → rafraîchissement du banc. ⚠️ Ce qui manque à l'écran n'est PAS « fait mais pas déployé » : ce n'est pas encore écrit — le banc public sert déjà tout ce qui existe. ⚠️ Le CODE du tray est fusionné (79195ea) mais le CHANTIER reste ouvert : le lot R34-R39 + 33 décisions n'a jamais été construit. ✅ 2026-08-06 : les deux verrous sautent — Q1-Q3 R38 étaient déjà tranchées (P11 : ruban V3, périmètre restreint, bandes 72) et le LEXIQUE est ratifié (grammaire « famille + ce qui l'a produit » : Crit 20 · Fumble 1 · Crit ∞ · Fumble ∞ ; affichage renommé, fil machine gelé, dédup T7/T8 par jeton). Cible prête : worktree ~/tools/fh-worktrees/tray-labels, branche tray-labels-r34-r39, harnais 8127, 19/19 vertes. LE LOT PEUT PARTIR. Backlog : icône œil, tâche B."
     },
     {
       "name": "Widget Übersicht chantier",
