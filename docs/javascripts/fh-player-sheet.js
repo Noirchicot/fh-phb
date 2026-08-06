@@ -4786,7 +4786,11 @@
     if(button.dataset.clearTray!==undefined){state.menuOpen=false;if(rollTransactionActive())warnRollLocked();else clearDiceTray(true);render();return;}
     if(button.dataset.trayScroll!==undefined){var scrollList=root.querySelector(".fh-cd-traylist");if(scrollList){/* One click = one band: every line is the same 56px now (border-box,
        paddings and separator inside), so the chevron steps exactly one. */
-      scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-56:56,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
+      /* One click = one band, and a band is 56 × zoom since C3 — a fixed 56
+         here would scroll a fraction of a line at 150% and more than one at
+         80%, which is exactly the kind of drift the chevron exists to avoid. */
+      var bandStep=Math.round(56*zoomFactor());
+      scrollList.scrollBy({top:button.dataset.trayScroll==="up"?-bandStep:bandStep,behavior:"smooth"});window.setTimeout(syncTrayArrows,220);}return;}
     if(button.dataset.addTrayDie!==undefined){if(rollOpen())stageBonusDie(button.dataset.addTrayDie);else if(rollTransactionActive())warnRollLocked();else addTrayDie(button.dataset.addTrayDie);return;}
     if(button.dataset.removeTrayDie!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDie(button.dataset.removeTrayDie);return;}
     if(button.dataset.removeTraySize!==undefined){if(rollTransactionActive())warnRollLocked();else removeTrayDieSize(button.dataset.removeTraySize);return;}

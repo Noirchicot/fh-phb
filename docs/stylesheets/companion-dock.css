@@ -1264,7 +1264,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    to roll, the Static Area below as frozen snapshots, ten rolls held.
    Heights are fixed per band so the zone's height is deterministic and the
    summoned group above can anchor to it -- see --cd-tray-h below. */
-.fh-cd-root{--cd-tray-h:284px}
+.fh-cd-root{--cd-tray-h:calc(284px * var(--cd-zoom))}
 .fh-cd-dicetray{height:var(--cd-tray-h);display:flex;flex-direction:column;padding-bottom:0;
   background:radial-gradient(120% 90% at 50% 8%,var(--cd-parch-2) 0%,var(--cd-parch-deep) 82%,#dccc9f 100%)}
 .fh-cd-dicetray>.fh-cd-cap{flex:none;margin-bottom:2px}
@@ -1278,7 +1278,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayline{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--cd-line-soft);
   padding:3px 2px;overflow:hidden;position:relative}
 .fh-cd-trayline:last-child{border-bottom:0}
-.fh-cd-trayline.is-empty{min-height:40px;justify-content:center;color:var(--cd-faint);
+.fh-cd-trayline.is-empty{min-height:calc(40px * var(--cd-zoom));justify-content:center;color:var(--cd-faint);
   font-size:calc(8.6px * var(--cd-fs));font-style:italic}
 /* Band heights: fixed, so whole lines are always exactly visible.
    The Live band's 84 was reverted to 56 when the cap died (see the Phase 2
@@ -1287,7 +1287,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    here — overridden 430 lines later and contradicting its own comment — was
    removed 2026-08-06; anyone reading top to bottom concluded 84.
    Names for these bands: UI-TYPOGRAPHY.md (Live · Current · Deep · Empty). */
-.fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{min-height:56px}
+.fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{min-height:calc(56px * var(--cd-zoom))}
 /* The live hand keeps the frame (mood streaks included) but sheds the fixed
    148px box it had in the roller: the line is the box now. */
 .fh-cd-dicetray .fh-cd-frame.is-trayhand{height:auto;min-height:78px;margin:0;flex:1;flex-direction:row;align-items:center;gap:6px;
@@ -1732,8 +1732,8 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    (--cd-tray-h) is settled in its own block below: the two questions
    revert independently. APPENDED: same specificity as the earlier
    declarations, later in the sheet. */
-.fh-cd-trayline.is-l1{min-height:56px}
-.fh-cd-trayline.is-deep{min-height:72px}
+.fh-cd-trayline.is-l1{min-height:calc(56px * var(--cd-zoom))}
+.fh-cd-trayline.is-deep{min-height:calc(72px * var(--cd-zoom))}
 .fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:22px}
 /* The ratified arithmetic of the 1-5 hand — « 38 + label ≈ 48, inside
    the 56 » — used to need a display:none here on the retired token's
@@ -1930,7 +1930,7 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    the Major Arcana compact on the right. Ratified on the maquette:
    dark felt, gold liseré on top, dark seam below. The tray itself is
    untouched (bottom:0, --cd-tray-h 284). APPENDED only. */
-.fh-cd-root{--cd-band-h:44px}
+.fh-cd-root{--cd-band-h:calc(44px * var(--cd-zoom))}
 /* z-index 25, above the summoned group's 24: the two never overlap
    spatially, but the band's own popover (the ledger menu) opens UPWARD
    into the group's footprint and must ride over it — measured: at 23
