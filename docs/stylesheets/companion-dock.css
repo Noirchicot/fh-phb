@@ -28,6 +28,20 @@
   --cd-zoom-pref:1;
   --cd-zoom:var(--cd-zoom-pref);
   --cd-fs:calc(1.15 * var(--cd-zoom));
+  /* The T scale — UI-TYPOGRAPHY.md, ratified by Eric 2026-08-06. Seven rungs,
+     T1 the SMALLEST (said out loud because H1 is the largest and that
+     inversion misleads). Every one of them carries --cd-fs, so a size written
+     as a rung follows the zoom by construction — which is exactly what an
+     unsized element does not do (see the outcome fix in the tray block).
+     T5 has no user yet: it exists because 9.6 -> 13 is the widest gap on the
+     low scale, and its first use is a deliberate choice, never a migration. */
+  --cd-t1:calc(6.8px * var(--cd-fs));   /* micro    — meta, mentions        */
+  --cd-t2:calc(7.4px * var(--cd-fs));   /* mention  — die label, verdict    */
+  --cd-t3:calc(8.4px * var(--cd-fs));   /* libellé  — labels               */
+  --cd-t4:calc(9.6px * var(--cd-fs));   /* corps    — the readable line     */
+  --cd-t5:calc(11px  * var(--cd-fs));   /* accent   — no user yet           */
+  --cd-t6:calc(13px  * var(--cd-fs));   /* titre    — line title, total     */
+  --cd-t7:calc(30px  * var(--cd-fs));   /* grand nombre — the result        */
   /* The reference is 425 x 680 at 100% zoom (UI-DIMENSIONS.md), not the old
      400px x --cd-fs formula -- that read 460px at the old 1.15 default, which
      was never the measured reference. Width now follows ZOOM, not the text
@@ -1266,9 +1280,13 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayline:last-child{border-bottom:0}
 .fh-cd-trayline.is-empty{min-height:40px;justify-content:center;color:var(--cd-faint);
   font-size:calc(8.6px * var(--cd-fs));font-style:italic}
-/* Band heights: fixed, so four lines are always exactly visible.
-   84 + 3x56 + cap ≈ the zone's 284. */
-.fh-cd-trayline.is-l1{min-height:84px}
+/* Band heights: fixed, so whole lines are always exactly visible.
+   The Live band's 84 was reverted to 56 when the cap died (see the Phase 2
+   block near the end of this sheet): five 56px bands + 2px padding = 282,
+   inside the zone's 284. The dead `is-l1{min-height:84px}` that used to sit
+   here — overridden 430 lines later and contradicting its own comment — was
+   removed 2026-08-06; anyone reading top to bottom concluded 84.
+   Names for these bands: UI-TYPOGRAPHY.md (Live · Current · Deep · Empty). */
 .fh-cd-trayline.is-mid,.fh-cd-trayline.is-static{min-height:56px}
 /* The live hand keeps the frame (mood streaks included) but sheds the fixed
    148px box it had in the roller: the line is the box now. */
@@ -1316,7 +1334,13 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fh-cd-tray-account{font-style:normal;color:var(--cd-faint);font-size:calc(6.9px * var(--cd-fs));line-height:1.2;max-width:100%;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fh-cd-tray-outcome{font-weight:700}
+/* R40, fixed 2026-08-06. This declared no font-size at all, and NO ancestor
+   in the dock chain declares one either — so it inherited the PAGE's 16px,
+   which --cd-fs never touches: it grew while everything around it shrank.
+   It now reads at its neighbour's rungs (see .fh-cd-tray-verdict: T2, and T4
+   on the Live band). The class of defect is in UI-TYPOGRAPHY.md: silence is
+   not a default here, it is an escape from the zoom system. */
+.fh-cd-tray-outcome{font-weight:700;font-size:var(--cd-t2)}
 .fh-cd-tray-outcome.is-ok{color:var(--cd-ok)}
 .fh-cd-tray-outcome.is-bad{color:var(--cd-bad)}
 .fh-cd-tray-outcome.is-n20{color:var(--cd-gold-bright)}
@@ -1376,7 +1400,8 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* The verdict earns its size back on the large line — the old frame said it
    at 12px and tier 3 had whispered it. */
-.fh-cd-trayline.is-l1 .fh-cd-tray-verdict{font-size:calc(9.6px * var(--cd-fs))}
+.fh-cd-trayline.is-l1 .fh-cd-tray-verdict,
+.fh-cd-trayline.is-l1 .fh-cd-tray-outcome{font-size:var(--cd-t4)}
 .fh-cd-trayline.is-l1 .fh-cd-tray-t3{max-height:30px}
 /* The Roll Builder's assembly frame: same bones as the tray's live hand,
    quieter dress — nothing here has happened yet. */
@@ -1618,8 +1643,15 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    (84 + 3×56 + list padding) stay exactly visible. Redeclaring the
    variables here wins over the original block (same specificity,
    later in the sheet) — APPENDED, nothing rewritten. */
-.fh-cd-root{--cd-traycap-h:56px;--cd-tray-h:320px}
-.fh-cd-dicetray>.fh-cd-cap{height:var(--cd-traycap-h);flex:none;align-items:center;
+/* REMOVED 2026-08-06 — the cap band and its variables. `diceTrayInner` no
+   longer emits a `.fh-cd-cap` at all (Phase 2, Eric R5): these rules had no
+   element to match, `--cd-traycap-h` had no live reader once
+   `.fh-cd-trayarrow.is-up` was re-anchored to `top:4px` at the end of the
+   sheet, and `--cd-tray-h:320px` was overridden back to 284 a hundred lines
+   below. Three declarations of one variable is how "how tall is the tray"
+   stopped being answerable by reading. The prose above is kept as the record
+   of why the band existed. */
+.fh-cd-dicetray>.fh-cd-cap{flex:none;align-items:center;
   margin:0 2px;padding:0 2px;border-bottom:1px solid rgba(244,236,216,.10)}
 .fh-cd-dicetray>.fh-cd-cap .fh-cd-traystate{font-size:calc(8.4px * var(--cd-fs));padding:4px 9px;border-radius:4px}
 .fh-cd-dicetray>.fh-cd-cap small{font-size:calc(8px * var(--cd-fs))}
@@ -1631,7 +1663,8 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
 .fh-cd-trayclear svg{width:12px;height:12px}
 /* The up chevron rides just under the cap's lower edge, wherever that
    edge is (carpet padding 2px + the cap's own height). */
-.fh-cd-trayarrow.is-up{top:calc(var(--cd-traycap-h) + 4px)}
+/* (was: top:calc(var(--cd-traycap-h) + 4px) — the cap it perched under is
+   gone; the live value is top:4px, set at the end of this sheet.) */
 
 /* ── Lot BACKLOG-A (Eric, 2026-08-05) — the line snap is withdrawn ────
    The snap of fbe871e fought the registre's own life. The dock rebuilds
@@ -1730,8 +1763,11 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    BACKLOG-A's 320 (which funded the old 84 + list margins: 2+56+2+84+
    3×56 = 312 needed) gives back its 36px to the sheet above. Same
    variable, so the summoned group's anchor (--cd-tray-h) and the
-   dock's padding-bottom follow by themselves. */
-.fh-cd-root{--cd-tray-h:284px}
+   dock's padding-bottom follow by themselves.
+   (The re-declaration that used to sit here is REMOVED, 2026-08-06: it
+   existed only to undo BACKLOG-A's 320, and that 320 is gone with the cap
+   block above. The single declaration is now at the top of the tray block,
+   `--cd-tray-h:284px`, and the reasoning stays here where it was earned.) */
 
 /* ── Lot R8 (Eric, 2026-08-05) — la rampe A : la profondeur raconte
    l'âge du jet ────────────────────────────────────────────────────────
@@ -2177,3 +2213,334 @@ button.fh-cd-mstat.is-active{border-color:var(--cd-gold);background:var(--cd-par
    un état que la fiche connaît déjà, comme la note épinglée (.is-note,
    déjà animation:none) : elle attend en or, immobile. */
 .fh-cd-pending.is-exhaustion{animation:none}
+
+/* ── Flèches de marge (Eric, 2026-08-06, vérif PiP) ──────────────────
+   The scroll chevrons were centred — a perch inherited from the cap that
+   used to sit above them. The cap died; the centre of a band is where the
+   DICE are, and dice are the tallest thing a line holds: 38px inside a 56px
+   band leaves 9px of clearance, and a 14px chevron at top:4px eats it. The
+   affordance was hiding the very rolls it exists to reach.
+
+   They move to the LEFT MARGIN — the flank column, where the tallest thing
+   is a name of small text (~10px) vertically centred, so the top of the band
+   is genuinely free. This is héritage n°4, "les flèches de marge, logées
+   dans les flancs existants, coût 0 en largeur utile": no pixel is taken
+   from the dice, and no vertical budget is touched (the zone is 282 of 284,
+   there was never a spare row to give them).
+
+   Behaviour is unchanged and correct as measured with Eric: up appears only
+   when something newer is above, down only while rolls hide below, both in
+   between. Only the seat moves. APPENDED — nothing above is rewritten. */
+.fh-cd-trayarrow{left:8px;transform:none}
+
+/* ── Lot R34-R39 (P1-P8, P24, P29, P30, P5, P6, P10, P18) — les libellés
+   de dés tiennent dans la largeur de leur OBJET ────────────────────────
+   The defect was visible without measuring: a die's COLUMN was as wide as
+   its label the moment the label passed 38px. « Exhaustion » (48) and
+   « Original d20 » (52) pushed their neighbours apart and broke the row.
+   The CSS was allowing 64px on the live band and 44 on the others, i.e.
+   +26px above the die — that is the cause, and this is where it is paid.
+
+   P4/P24: the limit is the width of the OBJECT. 38px under a die, 26px
+   under a coin. That number is true at every zoom because it IS the object;
+   the character count of P4 is an aide-mémoire with a wide bracket, which is
+   why the word-by-word table lives in the script, not here.
+
+   P29: the rung is T1, not T2 — 8% smaller buys a character, puts the die
+   label on the SAME rung as the flank's items (one small size in the whole
+   tray), and takes « Bonus III » off the exact limit it was sitting on.
+
+   P5: one line, never two. A band of 56 offers ~48px of content: die 38 +
+   gap 2 + one line of text 9 = 49. It is already full. The
+   `-webkit-line-clamp:2` this overrides was a second line in waiting — the
+   band never had the height for it, so it would have overflowed silently
+   rather than wrapping. Same rule in the builder, so one die reads the same
+   in both places.
+
+   P6: past the limit, an ellipsis and never a mute cut — and the whole word
+   stays one hover away (Mac) or one tap on the die's card away (iPad). The
+   title is stamped by visualDie on EVERY die now, not only on the ones whose
+   label was suppressed.
+   APPENDED only. */
+.fh-cd-tray-dice .fh-cd-diewrap em,
+.fh-cd-frame.is-assembly .fh-cd-diewrap em,
+.fh-cd-trayline.is-mid .fh-cd-diewrap em,
+.fh-cd-trayline.is-static .fh-cd-diewrap em{
+  display:block;-webkit-line-clamp:none;max-height:none;
+  font-size:var(--cd-t1);max-width:38px;line-height:1.1;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* A coin is 26px wide, not 38: its label has a third less room (P24). */
+.fh-cd-tray-dice .fh-cd-diewrap.is-modifier em,
+.fh-cd-frame.is-assembly .fh-cd-diewrap.is-modifier em{max-width:26px}
+/* P18: the label of a forced die is white like every other. The violet moved
+   onto the badge below, where it carries its own ground. */
+.fh-cd-diewrap.is-forced em{color:inherit}
+.fh-cd-portent{position:absolute;top:-4px;left:-5px;z-index:2;min-width:11px;height:11px;padding:0 2px;
+  border-radius:5px;background:#5c3d7e;color:#f5edff;font-size:calc(6.5px * var(--cd-fs));font-weight:800;
+  line-height:11px;text-align:center;letter-spacing:0;pointer-events:none}
+/* P9's third narrow surface: the band's pastille holds 24px, and at T1 even
+   « Bardic » overflows it — which is why the resource carries a Short name. */
+.fh-cd-poollab{font-size:var(--cd-t1)}
+
+/* ── Lot R34-R39 (P13, P13-bis, P13-ter, P15, P22) — le flanc gauche :
+   une pile d'items sur un fond qui ne bouge plus ───────────────────────
+   P13-bis is a MEASUREMENT that constrains P13, not a taste. The live band
+   sits on the top of ramp A (#7b7264 where the items are) and NOTHING reaches
+   4.5:1 there — red 2.19, orange 2.77, green 2.93, gold 3.51. And it is
+   structural: no single colour can satisfy 4.5:1 at both ends of a ramp that
+   runs #7b7264 → #28241d. The two constraints are mathematically
+   incompatible, so one of them has to go, and it is the ramp — under the
+   flank only.
+
+   Not a translucent veil (the ramp would still show through and the seat
+   would still vary band by band) but an OPAQUE, FLAT ground over the whole
+   height, at #24201a — which is the foot of ramp A itself, so the flank reads
+   as the tray's floor rather than as a foreign bar laid on top of it.
+
+   The real gain is not the contrast, it is the SATURATION. Today's red
+   #f09a90 carries 40% saturation: a salmon, bleached to survive the felt. On
+   a flat dark ground #ff7a68 holds 6.35:1 while keeping 59% — the red is red
+   again.
+
+   Eric flagged one risk to check on the bench: a flat dark column against the
+   light top of the ramp draws a visible vertical edge on band 1. It is a
+   deliberate edge (the flank is a different surface), but it is his to accept
+   or refuse.
+   APPENDED only. */
+/* P15: the box keeps the 80px footprint it has today and finds its padding on
+   the INSIDE, so the 14px go to the dice (261 → 275) and not to a gutter. The
+   useful width is therefore 68 — the number P12's cascade and P13's items are
+   both measured against. */
+.fh-cd-dicetray .fh-cd-tray-left{
+  position:relative;flex:none;width:80px;align-self:stretch;box-sizing:border-box;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;
+  padding:2px 6px 2px 4px;background:#24201a;border-radius:3px}
+/* Bug 7 of the relevé, recorded rather than silently overwritten: the comment
+   on .fh-cd-tray-owner above states « 4.89:1 mesuré à son assise la plus
+   claire (#6d6557) ». That measurement predates the cap's death. Band 1 then
+   sat below the ramp's 20%; it has sat at the very top since, and the name was
+   in fact at 3.60:1 — the prose described a geometry that no longer existed.
+   On the flat #24201a it is 13.76, and this line is now true by construction
+   rather than by luck. */
+.fh-cd-tray-owner b,.fh-cd-tray-owner button{color:#f4ecd8}
+/* The pile. One line per fact, T1, no encapsulation: THE CASE SAYS THE RARITY
+   AND THE COLOUR SAYS THE MEANING. Everything here is one line and ellipsed —
+   a fact that wraps is two facts as far as the eye is concerned. */
+.fh-cd-tray-speak{display:flex;flex-direction:column;align-items:flex-start;gap:0;
+  max-width:100%;min-width:0;overflow:hidden}
+.fh-cd-tray-item{display:block;max-width:100%;font-size:var(--cd-t1);font-weight:700;
+  line-height:1.1;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fh-cd-tray-item.is-caps{text-transform:uppercase;font-weight:800;letter-spacing:.04em}
+/* Measured on #24201a — the whole point of the opaque ground. */
+.fh-cd-dicetray .fh-cd-tray-item.is-ok{color:#8fc97a}       /* 8.33 */
+.fh-cd-dicetray .fh-cd-tray-item.is-bad{color:#ff7a68}      /* 6.35, saturation 59% */
+.fh-cd-dicetray .fh-cd-tray-item.is-urgent{color:#f0a24a}   /* 7.69 */
+.fh-cd-dicetray .fh-cd-tray-item.is-destiny{color:#ffd98a}  /* 11.99 */
+.fh-cd-dicetray .fh-cd-tray-item.is-info{color:#b3a68c}     /* 6.75 */
+/* The orange blinks for five seconds at its birth and then holds still — a
+   debt that pulses forever is wallpaper, and R33 already settled that only
+   what DEMANDS attention may move. The class is stamped from the roll's own
+   timestamp, not from the element, so a feed poll cannot restart it. */
+.fh-cd-tray-item.is-fresh{animation:fh-cd-item-fresh 1s ease-in-out 5}
+@keyframes fh-cd-item-fresh{0%,100%{opacity:1}50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.fh-cd-tray-item.is-fresh{animation:none}}
+/* The live band lifts one step, as every other tray ink does up there. */
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-item.is-ok{color:#a9dd93}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-item.is-bad{color:#ff9384}
+
+/* P13-ter / P22 — la bande grandit pour ce qu'elle porte.
+   72 carries a fifth item or two rows of ten; 85 carries three rows, and
+   costs a visible roll (85 + 3×56 = 253 of 284) for the good reason that
+   there are thirty dice to show. */
+.fh-cd-trayline.is-deeper{min-height:85px}
+.fh-cd-trayline.is-deeper .fh-cd-tray-dice.is-rows{max-height:none}
+
+/* Le filet du débordement silencieux (bug 2 du relevé).
+   P23 should stop a hand from ever exceeding the zone — but a net that never
+   speaks is how this defect lived in production: overflow-x:auto with
+   scrollbar-width:none means the dice simply leave the screen, with no arrow,
+   no shadow, no bar. If the arithmetic is ever wrong, the edge says so. */
+.fh-cd-tray-dice{scroll-snap-type:x proximity}
+.fh-cd-trayline .fh-cd-tray-dice{
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 10px),rgba(0,0,0,.15) 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 10px),rgba(0,0,0,.15) 100%)}
+
+/* ── Lot R34-R39 (P31, P32, bug 6 du relevé) — le flanc droit ──────────
+   P31: the name at T1, the type at T3 under it, the total at T4. The gain of
+   T1 on line 1 is the one that decides it — the eighteen skills stop folding
+   (« Animal Handling » 60.9 on 68, « Sleight of Hand » 57.2), where nine names
+   out of ten broke over two lines at the old 8.2px. The clamp stays as a net
+   under the ellipsis, not as the normal case.
+
+   Bug 6 of the relevé: this column was 68px FIXED while its title followed
+   --cd-fs — exactly the defect R32 measured and fixed in the judgment box
+   (« Performance » is 67px at fs 1 and 77 at 1.15, so it truncated to
+   « Performa »), never carried across to the tray's own line. Same fix, same
+   reasoning: the column follows the scale its text follows, identical to the
+   pixel at the reference.
+   APPENDED only. */
+.fh-cd-dicetray .fh-cd-tray-right{width:calc(68px * var(--cd-fs));flex:none}
+.fh-cd-dicetray .fh-cd-tray-right .fh-cd-tray-title{
+  font-size:var(--cd-t1);line-height:1.1;letter-spacing:0;overflow-wrap:anywhere}
+/* The type, and only when the name does not already say it. « Skill » is never
+   written: the name of a skill IS the skill. */
+.fh-cd-dicetray .fh-cd-tray-right .fh-cd-tray-kind{
+  display:block;max-width:100%;font-style:normal;font-size:var(--cd-t3);font-weight:600;
+  line-height:1.1;color:#b3a68c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fh-cd-dicetray .fh-cd-tray-right .fh-cd-tray-total{font-size:var(--cd-t4)}
+
+/* ── Lot R34-R39 (P19, P20) — la légende de l'essaim ───────────────────
+   One descriptive line under the crowd, where a word under each die no longer
+   fits. T1, informative ink, centred. On 275px the heaviest hand measured is
+   183, so the width is never the constraint — and there are 19px free under a
+   swarm in a band of 56, of which the legend takes 8.6.
+
+   The middle column becomes a stack ONLY when there is a legend to stack, so
+   a hand's dice span stays the direct flex child it has always been.
+   APPENDED only. */
+.fh-cd-tray-mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px}
+.fh-cd-tray-mid .fh-cd-tray-dice{flex:0 1 auto;width:100%}
+/* The legend wears the ink of the labels it REPLACES, not the flank's
+   informative parchment: it sits on the ramp, not on the flat #24201a, and
+   #b3a68c on the ramp's light top is ~1.5:1. P13-bis's ink table is measured
+   against the flank's ground and does not travel to the felt — R8 is not
+   reopened, so the writing among the dice stays white, legend included. */
+.fh-cd-tray-legend{display:block;max-width:100%;font-size:var(--cd-t1);line-height:1.1;
+  color:#cdb68c;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fh-cd-dicetray .fh-cd-trayline.is-l1 .fh-cd-tray-legend{color:#e8dcc0}
+
+/* ── Lot R34-R39 (P16) — l'assise des dés du builder repasse au sombre
+   (rouvre R9, partiellement) ────────────────────────────────────────────
+   Eric, 2026-08-07: « le builder devra être sombre aussi du coup ». It is a
+   consequence of R8 not being reopened, not a change of taste: the tray stays
+   dark, and a die must read the same while it is being assembled and once it
+   has fallen.
+
+   And the measurement says the same thing from the other side. R9 put the
+   builder on the sheet's parchment (#f4ecd8 → #e9dcbc); an ivory die on
+   #f4ecd8 is 1.02:1 — the SAME luminance as its ground. So in the builder,
+   today, in production, an ivory die is not an object: it is an outline held
+   up by its rim (4.27) and its drop shadow. The defect was already there; P16
+   is the same invoice discovered in the other zone.
+
+   WHAT DOES NOT COME BACK: the wooden box. R9 killed it for good and this
+   does not resurrect it — there is no border, no inset shadow, no frame.
+   What returns is the SEAT the dice are laid on, in continuity with the tray
+   beneath it, and with it the light lettering R9 had turned to dark ink.
+   APPENDED only. */
+.fh-cd-frame.is-judgment{
+  background:linear-gradient(180deg,#2f2a22 0%,#26221b 60%,#211e18 100%);
+  border-radius:6px}
+/* The lettering R9 reversed to ink goes back to light — measured on #26221b. */
+.fh-cd-frame.is-judgment .fh-cd-judgment>b{color:#f4ecd8}          /* 13.4 */
+.fh-cd-frame.is-judgment .fh-cd-judgment>b.fh-cd-verdict{color:#ffd98a}
+.fh-cd-frame.is-judgment .fh-cd-judgment>em,
+.fh-cd-frame.is-judgment .fh-cd-judgment>em.fh-cd-account{color:#b3a68c}
+.fh-cd-frame.is-judgment .fh-cd-diewrap em{color:#cdb68c}
+.fh-cd-judgeright b{color:#f4ecd8}
+.fh-cd-judgeright i{color:#ffd98a}
+/* The takeover keeps its drama, in gold on the dark seat rather than oxblood
+   on the sheet — oxblood on #26221b is 1.9:1, which is the same trap P18 just
+   paid for under the dice. */
+.fh-cd-frame.is-judgment .fh-cd-judgeask>b{color:#ffd98a}
+.fh-cd-frame.is-judgment .fh-cd-judgeask>i{color:#e0cda4}
+/* The dice are lifted off the seat again, not pressed into a sheet. */
+.fh-cd-frame.is-judgment .fh-cd-static-die,
+.fh-cd-frame.is-judgment .fh-cd-die svg,
+.fh-cd-frame.is-judgment .fh-cd-judgeask .fh-cd-die{filter:drop-shadow(0 3px 5px rgba(10,7,3,.55))}
+/* The moods were deepened to bronze for the parchment; on the dark seat they
+   glow again, exactly as they were pitched to. */
+.fh-cd-frame.is-judgment.mood-arcane-success::before,
+.fh-cd-frame.is-judgment.mood-crit-success::before{
+  background:radial-gradient(120% 90% at 50% 50%,rgba(255,217,138,.30) 0%,rgba(255,217,138,.08) 55%,transparent 78%)}
+.fh-cd-frame.is-judgment.mood-awakening::before{
+  background-image:conic-gradient(from 0deg at 50% 50%,rgba(255,217,138,.32),transparent 22%,rgba(201,164,90,.28) 46%,transparent 70%,rgba(255,217,138,.32))}
+
+/* ── Lot R34-R39 (P15, suite) — les gouttières autour des flancs meurent
+   MEASURED ON THE BUILT PAGE, and the number is not the one the relevé
+   predicted. P15's « +14 » comes from the flank absorbing the 6px gutters it
+   used to sit between: now that it carries its own ground and its own inside
+   padding, a gap around it is a second margin. Removing both gutters is the
+   real mechanism of the decision, and it gives the dice 12px back.
+
+   What it does NOT give is 275. Measured at the reference (dock 425, zoom
+   100%, --cd-fs 1.15) the dice zone lands at 249, and the arithmetic says why:
+     425 − tray padding 8 − line padding 4 − flank 80 − right flank 78.2
+         − the dice span's own 4 = 250.8, i.e. 249 as laid out.
+   The relevé's « 261 → 275 » counted neither the tray's own 8px padding nor
+   the fact that the right flank is 68 × --cd-fs = 78.2 at the shipped default
+   — and that second one is bug 6's own fix talking: paying bug 6 costs 10px
+   of dice. The two ratified decisions collide, and they collide on the zone
+   budget, which is the architect's. Recorded here rather than arbitrated.
+   APPENDED only. */
+.fh-cd-dicetray .fh-cd-trayline{gap:0}
+
+/* ── Trouvé au banc en vérifiant P19 : l'essaim débordait de 2px ───────
+   The swarm declares `gap:3px` on `.fh-cd-tray-dice.is-swarm` — two classes.
+   `.fh-cd-trayline.is-mid .fh-cd-tray-dice{gap:5px}` is THREE, so it was
+   silently winning on every band but the live one, and the die size the script
+   computes (30 − 2.5 × (n − 6)) is derived against 3. Measured on the built
+   page: eight dice plus a coin came to 251 in a zone of 249 and wrapped to a
+   second row, which grew the band from 56 to 68.
+
+   This is the SAME trap the rows block already documents and already pins —
+   « the mid/static bands' 5px rule is more specific than the swarm's 3px and
+   was silently winning, which made the arithmetic land at NINE a row ». It
+   was fixed for the rows and not for the swarm. Pinned here the same way.
+   APPENDED only. */
+.fh-cd-trayline .fh-cd-tray-dice.is-swarm{gap:3px}
+
+/* ── Reprise du budget de zone — Eric, 2026-08-07 : « on va reprendre ce
+   qu'on peut à gauche et à droite » ──────────────────────────────────
+   Décision d'architecture, prise APRÈS mesure au banc et non par calcul.
+   Six dés pleine taille demandent 268 (6×38 + 5×8) ; la zone en valait 249.
+
+   CE QUE CHAQUE CÔTÉ POUVAIT DONNER, mesuré au banc à la référence
+   (dock 425, zoom 100 %, --cd-fs 1.15), pas estimé :
+   • DROITE — 17,3px de mou. Le pire des dix-huit noms de compétence,
+     « Animal Handling », fait 60,9 dans une boîte de 78,2 ; « Sleight of
+     Hand » 57,2. La base passe de 68 à 56 → 64,4 rendus, soit 3,5 de marge
+     au pire cas, et le titre garde son ellipse comme filet.
+   • GAUCHE — RIEN. Le flanc n'était pas trop large, il était trop court
+     pour son propre item : « FATE REFUSED » mesurait 81,8 pour 70 d'utile,
+     et comme la ligne de flux ne connaît pas l'ellipse, il passait à DEUX
+     lignes (13 → 26px vérifiés au banc) en volant un fait à la pile, sans
+     rien dire. Eric a tranché les mots : « Fate Refused » (69,7) et
+     « Awakening » (58,1) — la casse quitte ces deux-là, ce qui est un
+     amendement à P13 (« la casse dit la rareté ») assumé comme tel : leur
+     couleur continue de dire la rareté. Le flanc garde donc ses 80px.
+   • LES GOUTTIÈRES — 8px, rendus par la ligne (2 de chaque côté) et par la
+     zone des dés elle-même (2 de chaque côté). Le fond opaque du flanc
+     gauche fait déjà la séparation que ce padding dessinait ; le padding
+     de 8 de la zone du tray tient la respiration extérieure.
+
+   Total rendu aux dés : 13,8 (droite) + 8 (gouttières) → la zone mesurée
+   après coup pilote TRAY_DICE_W, qui reste la seule source du seuil P23.
+   Le gap de 8 entre colonnes n'est PAS touché : il est ratifié, et le payer
+   aurait laissé six dés à zéro marge.
+   APPENDED only. */
+.fh-cd-dicetray .fh-cd-tray-right{width:calc(56px * var(--cd-fs))}
+.fh-cd-dicetray .fh-cd-trayline{padding-left:0;padding-right:0}
+.fh-cd-dicetray .fh-cd-trayline .fh-cd-tray-dice{padding-left:0;padding-right:0}
+
+/* La ligne de FLUX apprend l'ellipse que la pile connaît déjà.
+   `.fh-cd-tray-item` (mes jets) est nowrap + ellipsis depuis P13 ; la ligne
+   des autres joueurs passe par `.fh-cd-tray-outcome`, restée en
+   white-space:normal — et elle affiche les chaînes MACHINE, gelées par
+   contrat et donc longues (« Critical failure · Fate accepted »). Elle
+   wrappait dans un parent en overflow:hidden : la deuxième ligne était
+   coupée, invisible, silencieuse. Même règle pour les deux surfaces —
+   un fait qui wrappe est deux faits pour l'œil. Le texte entier reste au
+   survol, comme ailleurs. */
+.fh-cd-dicetray .fh-cd-tray-outcome{
+  display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Le dernier pixel, et il ne coûte pas une lettre — mesuré au banc : la zone
+   tombait à 267 pour les 268 que six dés demandent. Le flanc gauche rend 1px
+   de BOÎTE (80 → 79) et le reprend sur sa gouttière intérieure droite
+   (6 → 5), donc son utile reste EXACTEMENT à 70 : « Fate Refused » (69,7)
+   tient comme avant, la cascade du nom et la pile sont mesurées contre le
+   même 70 qu'hier. Un pixel de chrome, zéro pixel de texte.
+   APPENDED only. */
+.fh-cd-dicetray .fh-cd-tray-left{width:79px;padding-right:5px}

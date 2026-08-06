@@ -33,7 +33,9 @@ const instrumented = source.replace(/\}\)\(\);\s*$/, `
     state, TRAY_MAX, MAX_FREE_DICE, trayLines, trayDiceFromEntry, feedLineDice, diceTrayInner,
     renderDiceTray, renderStageZone, rollExport, rollExportDice, visualDie, clearDiceTray,
     surfaceTrayLine, prepareTrayForConfig, renderJudgmentFrame, surfaceClickedTrayDie, dieSvg,
-    renderDockHeader, feedChipHtml, feedStatusCaption
+    renderDockHeader, feedChipHtml, feedStatusCaption,
+    shortDieLabel, handLabel, normalizePoolResource, poolChipFace, LEX, rollRuling,
+    trayOwnerName, trayFlankItems, evictFlankItems, textWidthPx, trayRollName, trayLegend
   };
 })();
 `);
@@ -172,9 +174,19 @@ assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*text-tra
 assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*font-size:calc\(6\.5px \* var\(--cd-fs\)\)/, "…at the maquette's tiny size");
 assert.match(css, /\.fh-cd-tray-owner b,\.fh-cd-tray-owner button\{[^}]*color:#f4ecd8/,
   "…in the parchment tint measured on the ramp (4.89:1 at line 1's light top edge, 14.1:1 at the dark bottom)");
-const lastLeftFlank = [...css.matchAll(/\.fh-cd-tray-left\{([^}]+)\}/g)].pop();
-assert.match(lastLeftFlank && lastLeftFlank[1], /flex-direction:column/, "the flank is a two-storey column now — name above, the one proposition under");
-assert.match(css, /\.fh-cd-tray-left\{width:80px\}/, "and it keeps its ratified 80px (Q4)");
+/* REWRITTEN 2026-08-07 (reprise du budget de zone). This used to read the LAST
+   `.fh-cd-tray-left` block and expect the two-storey column in it — which only
+   held while nothing was ever appended after it. The reprise appends a width
+   and a padding, so the last block is now those two declarations and the old
+   assertion failed on a change that is correct. Rewritten to the cascade it
+   actually cares about: the column must still be DECLARED somewhere, and the
+   flank's useful width must still be 70 — that 70 is what P12's cascade and
+   P13's items are measured against, and « Fate Refused » (69.7) lives on it. */
+const leftFlankBlocks = [...css.matchAll(/\.fh-cd-tray-left\{([^}]+)\}/g)].map(m => m[1]);
+assert.ok(leftFlankBlocks.some(b => /flex-direction:column/.test(b)),
+  "the flank is a two-storey column — name above, the one proposition under");
+assert.ok(leftFlankBlocks.some(b => /width:79px/.test(b)) && leftFlankBlocks.some(b => /padding-right:5px/.test(b)),
+  "the box gave one pixel to the dice (80 → 79) and took it back from its own inner gutter (6 → 5): useful stays 70, no text moved");
 assert.match(inner, /fh-cd-tray-title/, "the roll's name in bold, right flank");
 assert.match(inner, /fh-cd-tray-total/, "the total under it");
 assert.match(inner, /Arcana \+7/, "the title carries the bonus, not the arithmetic");
@@ -198,7 +210,12 @@ assert.match(lines[0], /is-l1/, "the newest roll is the large band");
    lines 2-4 are reborn as snapshots at rest, exactly as the naked ones
    were; only a die landing this pass animates as a live host. */
 assert.match(lines[0], /--fh-static-die-size:38px/, "a skill hand lands at 38px — one grid for every line");
-assert.match(lines[0], /<em>d20<\/em>/, "and keeps its label under the die");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P3 + P30). « d20 » under an icosahedron
+   repeats the shape the die already draws, which is precisely what P3
+   forbids; the base die keeps a word because « Base d20 » names its ROLE.
+   The assertion still holds what it was written to hold — that a skill hand
+   keeps a label under the die — it just holds it to the ratified word. */
+assert.match(lines[0], /<em>Base d20<\/em>/, "and keeps its label under the die — the role, not the shape");
 assert.match(lines[1], /is-mid/, "rolls 2-4 are the small band");
 assert.doesNotMatch(lines[1], /is-naked/, "a 1-5 hand keeps its wrapper on the lower lines too");
 assert.match(lines[1], /--fh-static-die-size:38px/, "at the same 38px — the crowd, not the band, sets the size");
@@ -260,7 +277,15 @@ const twelvePass = t.diceTrayInner();
    gap ≈ 49, inside the 56 band), so twelve dice now wrap and wave. */
 assert.match(twelvePass, /is-rows/, "eleven to twenty wrap into two rows of ten");
 assert.match(twelvePass, /data-wave="1"/, "…and tumble row after row: 10, 2");
-assert.doesNotMatch(twelvePass, /is-deep/, "two rows still live inside the nominal 56");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P22's ratified table of regimes). The
+   2026-08-05 grid put 11-20 dice in the nominal 56; the 2026-08-07 table
+   states 72 for that regime, twice — in the relevé's summary and in Sujet 6 —
+   and 85 only for 21-30. Worth recording because the two do not disagree by
+   accident: two rows of 20 plus the legend measure ~53, which WOULD hold
+   inside 56, so the 72 buys margin rather than paying for content. Ratified
+   as written; the slack is Eric's to reclaim if he wants the row back. */
+assert.match(twelvePass, /is-deep(?!er)/, "eleven to twenty sit in the deep band (72)");
+assert.doesNotMatch(twelvePass, /is-deeper/, "…and only 21-30 reach the 85 that costs a visible roll");
 t.state.history = [trayHand("twentyfive", 25, 88)];
 t.state.diceSignatures = {};
 const rowsPass = t.diceTrayInner();
@@ -360,16 +385,36 @@ assert.match(css, /\.fh-cd-dicetray \.fh-cd-trayline\.is-l1 \.fh-cd-tray-verdict
    sunk shadow — and every lettering that was light-on-wood is ink on
    parchment again. The dice alone carry a drop shadow to say « posés
    dessus ». The LAST word each time must be the parchment dress. */
+/* REWRITTEN 2026-08-07 (lot R34-R39, P16 — Eric reopens R9 in part).
+   The assertion held two things at once and only one of them was R9's point.
+   R9 killed the WOODEN BOX, and that stays killed — no border, no inset
+   shadow, no frame. R9 also put the dice on the sheet's parchment, and that
+   is what P16 reverses: an ivory die on #f4ecd8 is 1.02:1, the same luminance
+   as its ground, so in the builder a die is not an object today, it is an
+   outline held up by its rim and its shadow. The seat goes back to dark, in
+   continuity with the tray below it, and a die reads the same while it is
+   being assembled and once it has fallen. So: the box is still dead, the
+   parchment seat is not. */
 const lastJudgmentDress = [...css.matchAll(/\.fh-cd-frame\.is-judgment\{([^}]+)\}/g)].pop();
-assert.equal(lastJudgmentDress && lastJudgmentDress[1],
-  "border:0;background:none;box-shadow:none;border-radius:0",
-  "the builder's last dress is bare parchment — no wood, no box, no inset shadow");
+assert.doesNotMatch(lastJudgmentDress && lastJudgmentDress[1], /border:[^0]|box-shadow:(?!none)/,
+  "the wooden box stays dead — no border, no sunk shadow (R9, not reopened)");
+assert.match(lastJudgmentDress && lastJudgmentDress[1], /background:linear-gradient\(180deg,#2f2a22/,
+  "…but the dice get a dark seat back, so a die reads the same in the builder and in the tray (P16)");
+assert.ok(css.lastIndexOf(".fh-cd-frame.is-judgment .fh-cd-judgment>b{color:#f4ecd8}") >
+  css.indexOf(".fh-cd-frame.is-judgment .fh-cd-judgment>b{color:var(--cd-ink)}"),
+  "…and the lettering R9 had turned to dark ink comes back light, by appending, never by rewriting");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P16): R9 turned this lettering to dark
+   ink because it had put the builder on parchment. The seat is dark again, so
+   the ink follows it back — « ils repassent en clair » is P16's own trailing
+   clause, the one the relevé warns not to forget. */
 const lastJudgmentB = [...css.matchAll(/\.fh-cd-frame\.is-judgment \.fh-cd-judgment>b\{color:([^}]+)\}/g)].pop();
-assert.equal(lastJudgmentB && lastJudgmentB[1], "var(--cd-ink)",
-  "the builder's headings are ink on parchment again");
+assert.equal(lastJudgmentB && lastJudgmentB[1], "#f4ecd8",
+  "the builder's headings are light on the dark seat again — 13.4:1 on #26221b");
+/* And the takeover cannot keep oxblood: on #26221b it is 1.9:1, the very trap
+   P18 has just paid for under the dice. Same drama, in gold. */
 const lastJudgeAskB = [...css.matchAll(/\.fh-cd-frame\.is-judgment \.fh-cd-judgeask>b\{color:([^}]+)\}/g)].pop();
-assert.equal(lastJudgeAskB && lastJudgeAskB[1], "var(--cd-oxblood)",
-  "the grande occasion asks its question in oxblood — dramatic on the light sheet");
+assert.equal(lastJudgeAskB && lastJudgeAskB[1], "#ffd98a",
+  "the grande occasion asks its question in gold — oxblood on a dark seat is 1.9:1");
 assert.match(css, /\.fh-cd-frame\.is-judgment \.fh-cd-static-die\{filter:drop-shadow/,
   "the dice are what casts a shadow on the sheet");
 
@@ -751,24 +796,52 @@ assert.ok(growRule > fixedRule,
 t.state.feed.events = []; t.state.trayResults = []; t.state.rollSequence = null; t.state.diceSignatures = {};
 t.state.history = [d20Entry("nat1-acc", "Persuasion", 1, 8, 0, {
   natural:1, natChoice:"accept",
-  destinyPointChange:{before:0, after:1, reason:"Natural 1 accepted"}
+  destinyPointChange:{before:0, after:1, reason:"Fumble 1 accepted"}
 })];
 const nat1Pass = t.diceTrayInner();
 const nat1Line = nat1Pass.match(/<li[^>]*data-tray-line="nat1-acc"[^>]*>[\s\S]*?<\/li>/)[0];
-assert.match(nat1Line, /fh-cd-tray-verdict">FUMBLE 1</, "the accepted 1 speaks as FUMBLE 1 — the ratified rename");
-assert.doesNotMatch(nat1Line, /fh-cd-badge/, "and carries NO badge chip — one proposition per line");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P13) — the single proposition became a
+   PILE. R7 answered « a nat 1 accepted stacks three blocks and grows the band
+   to 104px » by keeping ONE line and sending the rest to a hover; P13 answers
+   it properly, with one line per FACT at T1, the case saying the rarity and
+   the colour saying the meaning. Four of them fit the 56 that one broken
+   sentence used to overflow. The verdict now reads in its SHORT form, because
+   the flank is one of P7's narrow surfaces. */
+assert.match(nat1Line, /fh-cd-tray-item is-bad is-caps">FUMBLE 1</, "the accepted 1 speaks as FUMBLE 1, in capitals because it is rare and in red because it is not good");
+assert.doesNotMatch(nat1Line, /fh-cd-badge/, "and carries NO badge chip — the pile is items, not chips");
 const nat1Title = nat1Line.match(/fh-cd-tray-speak" title="([^"]*)"/);
 assert.ok(nat1Title, "the speak span carries the hover title that says the rest");
-assert.match(nat1Title[1], /NATURAL 1 accepted/, "…the badge vocabulary moved there");
-assert.match(nat1Title[1], /Natural 1 accepted · Destiny 1/, "…the Destiny count too — concaténé lisiblement");
+/* REWRITTEN 2026-08-06 (lot R34-R39, L87 — dedup by token).
+   It asserted that « NATURAL 1 accepted » survived on the hover. It survived
+   only because the dedup compared TEXTS: the badge said « NATURAL 1 accepted »,
+   the verdict said « FUMBLE 1 », the strings differed, and the filter let a
+   badge through that names the very ruling already printed on the line. The
+   dedup now compares the rule id, both sides carry `natural-1-accepted`, and
+   the doublon is gone — which is the fix, not a regression. What must still
+   ride the hover is everything the verdict does NOT already say. */
+assert.equal(nat1Title[1], "Fumble 1 accepted · Destiny 1",
+  "the accepted-1 badge is absorbed by its own verdict (dedup by id); what remains is the Destiny count, which the verdict does not say");
 
-// A natural 20 line says CRITICAL 20, and its badge joins the title.
+// A natural 20 line says CRITICAL 20, and its badge is absorbed by it.
 t.state.history = [d20Entry("nat20", "Arcana", 20, 27, 0, {natural:20})];
 t.state.diceSignatures = {};
 const nat20Line = t.diceTrayInner().match(/<li[^>]*data-tray-line="nat20"[^>]*>[\s\S]*?<\/li>/)[0];
-assert.match(nat20Line, /fh-cd-tray-verdict">CRITICAL 20</, "a natural 20 speaks as CRITICAL 20");
+/* REWRITTEN 2026-08-07 (lot R34-R39, P13 + P7). « CRITICAL 20 » is 54px and
+   the useful flank is 68 (P15) — it fits, but it FILLS the column, which is
+   what R35 flagged. The flank is a short surface, so it says « CRIT 20 » (32)
+   and the judgment box keeps the long form. Same entry, two forms, and the
+   surface chooses: that is P7, not a second lexicon. */
+assert.match(nat20Line, /fh-cd-tray-item is-ok is-caps">CRIT 20</, "a natural 20 speaks as CRIT 20 on the flank — green, and in capitals");
 assert.doesNotMatch(nat20Line, /fh-cd-badge/, "no chip beside it");
-assert.match(nat20Line, /fh-cd-tray-speak" title="[^"]*NATURAL 20/, "the Stream's badge word survives on the hover");
+/* REWRITTEN 2026-08-06 (lot R34-R39, L87). The old assertion pinned the
+   BROKEN state: « NATURAL 20 » reached the hover because the renamed verdict
+   no longer matched the un-renamed badge, so the same ruling was stated twice
+   under two names. Both are « CRITICAL 20 » now AND both carry the id
+   `natural-20`, so the line says it once. A nat 20 with nothing else to
+   report therefore has no hover title at all — that is the point of T7/T8. */
+const nat20Title = nat20Line.match(/fh-cd-tray-speak" title="([^"]*)"/);
+assert.ok(!nat20Title || !/CRITICAL 20|NATURAL 20/.test(nat20Title[1]),
+  "the badge that restates the verdict is absorbed by it, whatever either is called");
 
 // The « adjusted » exception: one short word, it stays visible as a chip.
 t.state.history = [d20Entry("adj", "Stealth", 11, 19, 0, {adjusted:true, d20s:[11], kept:11})];
@@ -788,6 +861,31 @@ const feedTitle = loudFeedLine.match(/fh-cd-tray-speak" title="([^"]*)"/);
 assert.ok(feedTitle && /Chaos 2d6 = 7/.test(feedTitle[1]), "the other badges ride the speak's hover title");
 assert.ok(!/NATURAL 20/.test(feedTitle[1]) || !/^NATURAL 20$/i.test(feedTitle[1]),
   "(T8 still filters a badge that only restates the outcome)");
+
+/* ── L87 sur le fil : la dédup du feed passe au JETON ─────────────────
+   The event above is an OLD one — no `badgeIds`, no `verdictId` — and it
+   still dedups by text, which is the graceful-degradation half of the
+   contract. A dock that has this lot posts the tokens, and then the text
+   equality is not merely unnecessary but WRONG: L9-L14 froze the outcome
+   at « Natural 20 » while L17 renamed the badge « CRITICAL 20 », so the two
+   strings are now designed to differ and only the id can tell that they say
+   the same thing. */
+t.state.feed.events = [feedRoll("feed-token", "Wen", "Ilyra", "Arcana", 27, 0,
+  {display:{outcome:"Natural 20", verdictId:"natural-20",
+    badges:["CRITICAL 20", "Chaos 2d6 = 7"], badgeIds:["natural-20", "chaos-roll"]}})];
+const tokenFeedLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="feed-token"[^>]*>[\s\S]*?<\/li>/)[0];
+const tokenFeedTitle = tokenFeedLine.match(/fh-cd-tray-speak" title="([^"]*)"/);
+assert.match(tokenFeedLine, /fh-cd-tray-outcome[^>]*>Natural 20</, "the outcome is the wire's, untouched");
+assert.equal(tokenFeedTitle && tokenFeedTitle[1], "Chaos 2d6 = 7",
+  "the badge carrying the verdict's own id is absorbed even though its TEXT no longer matches the outcome");
+t.state.feed.events = [];
+
+/* The tokens are on the wire, additively: an old dock simply lacks the two
+   fields and keeps the text path it always had. */
+const wire = t.rollExport(d20Entry("wire-n20", "Arcana", 20, 27, 0, {natural:20}));
+assert.deepEqual(Array.from(wire.badges), ["CRITICAL 20"], "the wire carries the renamed badge (L17: Stream · Tray · Wire)");
+assert.deepEqual(Array.from(wire.badgeIds), ["natural-20"], "…and its id beside it, so another dock can dedup by token");
+assert.equal(wire.verdictId, "natural-20", "…with the verdict's own token to compare against");
 
 // The machine-facing outcomes did NOT move — the tones regex-match them.
 assert.match(loudFeedLine, /fh-cd-tray-outcome is-n20/, "feedTone still recognises « Natural 20 » — the outcome side is untouched");
@@ -828,3 +926,289 @@ assert.match(t.renderStageZone(), /fh-cd-pending is-exhaustion"[^>]*>EXHAUSTION 
 t.state.vitals.exhaustion = 0;
 
 console.log("dice-tray: all assertions passed");
+
+/* ── Lot R34-R39 — les libellés de dés (P1-P8, P24, P29, P30) ──────────
+   P7 is the whole design: ONE lexicon entry, TWO forms, and the surface
+   chooses. `die.label` stays the long form and keeps reaching the judgment
+   box, the card, the Stream, the hover and the wire; the short form exists
+   only under a die (38px), under a coin (26px) and on the band's pastille
+   (24px). So these assertions pin the SHORT side, and the ones after them
+   pin that the long side did not move with it. */
+assert.equal(t.shortDieLabel("Exhaustion"), "EXH", "48px of « Exhaustion » on a 26px coin — P8/P30");
+assert.equal(t.shortDieLabel("FH bonus"), "FH", "P24: the coin already prints « +2 »; the word says WHAT, not how much");
+assert.equal(t.shortDieLabel("Manual"), "Mod", "P8 — and it ends the Mod/Manual divergence between surfaces");
+assert.equal(t.shortDieLabel("Guidance"), "Guide", "P8 — 40.6px overflowed the die by 2");
+assert.equal(t.shortDieLabel("Overreach"), "Over.R", "P8, amended by Eric: Over.R, not Over");
+assert.equal(t.shortDieLabel("Chaos #1"), "Chaos", "P8 — the two Chaos dice sit side by side; the number adds nothing");
+assert.equal(t.shortDieLabel("Chaos #2"), "Chaos", "…both of them");
+assert.equal(t.shortDieLabel("FATE 1→20"), "Fate→20", "P30");
+assert.equal(t.shortDieLabel("Original d20"), "Base d20", "P30 — the strike-through says « original », the word says the role");
+assert.equal(t.shortDieLabel("d20"), "Base d20", "P30 — the role, which the shape does not say");
+
+// P3: a label never repeats the die's own shape. Six silences, not six words.
+["d4","d6","d8","d10","d12","d100"].forEach(shape => {
+  assert.equal(t.shortDieLabel(shape), "", "P3: « " + shape + " » under that very shape says nothing");
+});
+
+/* P30's save pattern. « save » spelled out breaks on two abilities (CON save
+   39px, CHA save 38.2 — the die is 38), so all six ride « XXX sv ». */
+assert.equal(t.shortDieLabel("WIS save"), "WIS sv", "the ability stays, the word shrinks");
+assert.equal(t.shortDieLabel("Wisdom save"), "WIS sv", "…written out or abbreviated, one pattern");
+assert.equal(t.shortDieLabel("CON save"), "CON sv", "the widest of the six still holds");
+
+/* P9: a resource carries two names. The short one defaults to the first word
+   — which is exactly what P9 pre-fills the field with — and is capped at 7. */
+assert.equal(t.shortDieLabel("Bardic Inspiration", {short:"Bardic"}), "Bardic", "the typed Short name wins");
+assert.equal(t.shortDieLabel("Bardic Inspiration"), "Bardic", "…and without one, the first word is the default");
+assert.equal(t.normalizePoolResource({label:"Bardic Inspiration"}).short, "Bardic", "P9 pre-fills Short with the first word");
+assert.equal(t.normalizePoolResource({label:"Song of Rest", short:"SoR"}).short, "SoR", "…and the player may override it");
+assert.equal(t.normalizePoolResource({label:"Tactical Mind", short:"Overlong"}).short, "Overlon", "…within the seven characters the pastille can hold");
+assert.equal(t.normalizePoolResource({label:"Tactical Mind"}).label, "Tactical Mind", "the long name keeps its own 14 (P9) — it is what the card and the hover show");
+
+/* P6, the contrepartie of P4: nothing is ever cut without the whole word
+   remaining one hover away. The title is on EVERY die now — it used to appear
+   only when the label had been suppressed. */
+const exhCoin = t.visualDie({kind:"modifier", result:-2, label:"Exhaustion", tone:"exhaustion"}, 0, 3, false, {sizePx:38, plainLabel:true});
+assert.match(exhCoin, /<em>EXH<\/em>/, "the coin wears the short form");
+assert.match(exhCoin, /title="Exhaustion"/, "…and the long one on its hover");
+const bardicDie = t.visualDie({sides:8, result:5, label:"Bardic Inspiration", short:"Bardic", dieRole:"bonus"}, 0, 3, false, {sizePx:38, plainLabel:true, readOnly:true});
+assert.match(bardicDie, /<em>Bardic<\/em>/, "the die wears the Short name");
+assert.match(bardicDie, /title="Bardic Inspiration"/, "…and the whole one stays reachable");
+const freeD8 = t.visualDie({sides:8, result:5, label:"d8", dieRole:"base"}, 0, 3, false, {sizePx:38, plainLabel:true, readOnly:true});
+assert.doesNotMatch(freeD8, /<em>/, "P3: a silenced label emits no element at all — an empty <em> is still a row of layout");
+
+/* P10 / R39: a counted resource is its die with a corner badge, not a « ×2 »
+   square — and the badge lives on the band only, hidden at ×1, capped at ×9. */
+const counted = t.normalizePoolResource({label:"Bardic", kind:"count", count:3, sides:8, tint:"violet"});
+assert.match(t.poolChipFace(counted, 20, true), /fh-cd-mult">×3</, "the count rides as a corner badge on the band");
+assert.doesNotMatch(t.poolChipFace(counted, 20, true), /fh-cd-poolx/, "the ×N square is gone — the resource is its die again");
+assert.doesNotMatch(t.poolChipFace(counted, 18, false), /fh-cd-mult/, "…and a die in play carries no count (P10e)");
+const one = t.normalizePoolResource({label:"Bardic", kind:"count", count:1, sides:8});
+assert.doesNotMatch(t.poolChipFace(one, 20, true), /fh-cd-mult/, "hidden at ×1, as the selector already hides it");
+const nine = t.normalizePoolResource({label:"Bardic", kind:"count", count:12, sides:8});
+assert.match(t.poolChipFace(nine, 20, true), /×9</, "capped at ×9 — never more than two signs");
+
+/* P18: the Portent stops being violet INK (1.18:1 on the live band — invisible
+   in production) and becomes a badge that carries its own ground. */
+const forced = t.visualDie({sides:20, result:20, label:"d20", dieRole:"base", forced:true}, 0, 1, false, {sizePx:38, plainLabel:true, readOnly:true});
+assert.match(forced, /class="fh-cd-portent"/, "a forced die wears the corner badge");
+assert.doesNotMatch(freeD8, /fh-cd-portent/, "…and an ordinary one does not");
+
+/* The CSS half of the same decision: the label is held to the width of its
+   object, on one line, and the latent second line is closed. */
+/* Anchored on the appended rule's own last selector, on its own line: the
+   second-fitting rule of 2026-08-03 opens with the same two selectors, and
+   matching it instead would have tested the very declaration this replaces. */
+const labelRule = css.match(/\n\.fh-cd-trayline\.is-static \.fh-cd-diewrap em\{[\s\S]*?\}/);
+assert.ok(labelRule, "the label rule is appended at the end of the sheet");
+assert.ok(css.lastIndexOf(labelRule[0]) > css.indexOf("-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}"),
+  "…after the two-line rule it closes, so it wins at equal specificity");
+assert.match(labelRule[0], /max-width:38px/, "P4: the width of the die");
+assert.match(labelRule[0], /font-size:var\(--cd-t1\)/, "P29: the T1 rung, named, so it follows the zoom by construction");
+assert.match(labelRule[0], /white-space:nowrap/, "P5: one line");
+assert.match(labelRule[0], /text-overflow:ellipsis/, "P6: an ellipsis, never a mute cut");
+assert.match(labelRule[0], /-webkit-line-clamp:none/, "…and the latent second line is closed — the band never had the height for it");
+assert.match(css, /\.fh-cd-diewrap\.is-modifier em\{max-width:26px\}/, "P24: a coin is 26px, not 38");
+assert.ok(css.lastIndexOf(".fh-cd-diewrap.is-forced em{color:inherit}") > css.indexOf(".fh-cd-diewrap.is-forced em{color:#7a4a9c}"),
+  "the white label wins over the invisible violet by coming later — appended, never rewritten");
+
+/* ── Lot R34-R39 — le flanc gauche (P12, P12-bis, P13, P14, P15) ───────
+   The measuring tool first, because the cascade and the pile both stand on
+   it. It is checked against Eric's own measurements of the real table, taken
+   on the rendered dock — if this drifts, every branch below drifts with it. */
+/* Measured at T1 × the default --cd-fs (6.8 × 1.15 = 7.82), which is the size
+   Eric's numbers were taken at — T1 is a rung, not a pixel. */
+const nameW = text => t.textWidthPx(text, 6.8 * 1.15, 0.09);
+[["CARACOLE", 49], ["BRUGAR", 38], ["AWKI PACHA-KAY", 78.3], ["NOIRCHICOT", 57]].forEach(([text, measured]) => {
+  assert.ok(Math.abs(nameW(text) - measured) < measured * 0.04,
+    "the width model tracks the measured « " + text + " » (" + nameW(text).toFixed(1) + " vs " + measured + ")");
+});
+
+/* P12-bis: a trailing parenthesis is a D&D Beyond convention — the player's
+   first name or a build marker — and this column says the CHARACTER. Without
+   it, « Paxxi (Laurent) » fitted whole and « Brann (Laurent) » overflowed by
+   2.5px: two characters of one player, two treatments, for two letters. */
+assert.equal(t.trayOwnerName("Brann (Laurent)"), "Brann", "the player's name in brackets falls before the cascade runs");
+assert.equal(t.trayOwnerName("Paxxi (Laurent)"), "Paxxi", "…for both of them, so they are treated alike");
+assert.equal(t.trayOwnerName("took (fh)"), "took", "…and the build marker goes the same way");
+assert.equal(t.trayOwnerName("(Laurent)"), "(Laurent)", "a name that is ONLY a parenthesis keeps it — stripping it would leave nothing");
+
+/* P12: whole name → first word → the CSS ellipsis. The real table never
+   reaches the third branch; the second one exists for exactly one name. */
+assert.equal(t.trayOwnerName("Caracole"), "Caracole", "a name that fits is written whole");
+assert.equal(t.trayOwnerName("Yedrivel"), "Yedrivel", "…as all but one on Eric's table do");
+assert.equal(t.trayOwnerName("Awki Pacha-Kay"), "Awki", "78.3 on a useful 68: the one name the cascade is for");
+assert.equal(t.trayOwnerName("Brugar Furnace"), "Brugar", "…and the first word is what it falls back to, never a cut");
+assert.equal(t.trayOwnerName("Noirchicot"), "Noirchicot", "the campaign pseudo, the fallback when a character has no name, still fits");
+
+/* P13: the pile. One line per fact; the case says the rarity, the colour says
+   the meaning. The worst case Eric found on the bench — a nat 1 accepted with
+   Chaos armed and exhaustion — is four lines, exactly a band of 56. */
+const worst = t.trayFlankItems({
+  natural:1, natChoice:"accept", exhaustion:2,
+  destinyPointChange:{before:6, after:7, reason:"Fumble 1 accepted"}, dc:"15", total:8
+}, t.rollRuling({natural:1, natChoice:"accept", dc:"15", total:8}));
+assert.deepEqual(plain(worst).map(i => i.t), ["FUMBLE 1", "Destiny +1 → 7", "Exhaustion 2"],
+  "the facts, in the reading order: verdict, consequence, harm");
+assert.deepEqual(plain(worst).map(i => i.tone), ["bad", "destiny", "bad"], "…the colour says the meaning");
+assert.deepEqual(plain(worst).map(i => i.caps), [true, false, false], "…and the case says the rarity");
+
+/* P14b — the informative does NOT enter the pile. « vs DC 15 » is redundant
+   with the verdict (« Success » IS the comparison to the DC) and « Manual » /
+   « adjusted » already live in the total's hover with the arithmetic. This is
+   what makes four lines enough in the ordinary regime. */
+assert.ok(!plain(worst).some(i => /DC/.test(i.t)), "the DC does not enter the pile — the verdict already is the comparison");
+const adjusted = t.trayFlankItems({natural:12, dc:"", total:19, adjusted:true, d20Forced:true},
+  t.rollRuling({natural:12, dc:"", total:19}));
+assert.deepEqual(plain(adjusted).map(i => i.t), [], "neither « adjusted » nor « Manual »: the flank tells what happened, it does not do the sums");
+
+/* « Fate Refused 1→20 » splits in two — one fact per line is the point.
+   REWRITTEN 2026-08-07 (Eric's ruling on the two long items): FATE REFUSED
+   measured 81.8 against the flank's useful 70 and wrapped, stealing a line
+   from the pile in silence; Eric chose the words « Fate Refused » (69.7) and
+   « Awakening » (58.1). The case leaves those two — an amendment to P13's
+   « the case says the rarity », made deliberately: their colour still says it,
+   and a fact that does not fit says nothing at all. */
+const refused = t.trayFlankItems({natural:1, natChoice:"chaos", transformed:true, dc:"", total:24},
+  t.rollRuling({natural:1, natChoice:"chaos", dc:"", total:24}));
+assert.deepEqual(plain(refused).map(i => i.t), ["Fate Refused", "1→20", "Chaos pending"],
+  "the ruling, then what it did to the die, then the debt it armed");
+assert.equal(plain(refused)[1].tone, "info", "« 1→20 » is written in informative ink…");
+assert.equal(plain(refused)[1].fam, "info", "…and is the first to be evicted, though it belongs to the verdict's story");
+
+/* P14a — eviction is NOT the display order read backwards. A debt is the
+   third thing you read and never the first thing you sacrifice. */
+const overflowing = [
+  {t:"FUMBLE 1", fam:"verdict", tone:"bad", caps:true},
+  {t:"Destiny +1 → 7", fam:"destiny", tone:"destiny", caps:false},
+  {t:"Chaos pending", fam:"urgent", tone:"urgent", caps:false},
+  {t:"Exhaustion 2", fam:"bad", tone:"bad", caps:false},
+  {t:"1→20", fam:"info", tone:"info", caps:false}
+];
+assert.deepEqual(plain(t.evictFlankItems(overflowing, 4)).map(i => i.t),
+  ["FUMBLE 1", "Destiny +1 → 7", "Chaos pending", "Exhaustion 2"],
+  "the informative falls first, and what survives keeps the reading order");
+assert.deepEqual(plain(t.evictFlankItems(overflowing, 2)).map(i => i.t), ["FUMBLE 1", "Chaos pending"],
+  "squeezed to two: the verdict and the debt — never the debt before the harm");
+assert.equal(t.evictFlankItems(overflowing, 9).length, 5, "nothing is evicted when everything fits");
+
+/* P13-bis: the flank stops riding the ramp. No colour can hold 4.5:1 at both
+   ends of #7b7264 → #28241d — the two constraints are incompatible, so the
+   ramp goes, under the flank only, and the red gets its saturation back. */
+const flankRule = css.match(/\.fh-cd-dicetray \.fh-cd-tray-left\{[\s\S]*?\}/);
+assert.ok(flankRule, "the flank's own ground is appended");
+assert.match(flankRule[0], /background:#24201a/, "opaque and flat — the foot of ramp A, so it reads as the tray's floor");
+assert.match(flankRule[0], /align-self:stretch/, "…over the whole height, or the seat would still vary band by band");
+assert.match(css, /\.fh-cd-tray-item\.is-bad\{color:#ff7a68\}/, "the red is red again: 6.35:1 at 59% saturation, where #f09a90 was a 40% salmon");
+assert.match(css, /\.fh-cd-tray-item\{[^}]*font-size:var\(--cd-t1\)/, "the pile sits on the same rung as the die labels — one small size in the whole tray");
+assert.match(css, /\.fh-cd-tray-item\.is-caps\{[^}]*text-transform:uppercase/, "the case is a rule of the surface, not of the strings");
+assert.match(css, /\.fh-cd-trayline\.is-deeper\{min-height:85px\}/, "P22: three rows of ten reach 85, the one assumed overflow");
+
+/* ── Lot R34-R39 — le flanc droit (P31, P32) ───────────────────────────
+   The type is written only when the name does not already say it, and
+   « Skill » is never written: the name of a skill IS the skill. */
+const rn = name => plain(t.trayRollName(name));
+assert.deepEqual(rn("Persuasion"), {name:"Persuasion", type:""}, "a skill is never anything but a check");
+assert.deepEqual(rn("Constitution Save"), {name:"Constitution", type:"Save"}, "an ability alone does not say which of the two it is");
+assert.deepEqual(rn("Dexterity Check"), {name:"Dexterity", type:"Check"}, "…so the type takes line 2");
+assert.deepEqual(rn("Greatsword Attack"), {name:"Greatsword", type:"Attack"}, "one weapon name serves two rolls");
+assert.deepEqual(rn("Chaos"), {name:"Chaos", type:""}, "when the type IS the name, there is no second line to write");
+
+/* P32's amendment: the prefix was never the weight — the CATEGORY was.
+   « Tool - Musical Instrument (Lute) » is 118px on a column of 68. */
+assert.equal(rn("Tool - Musical Instrument (Lute)").name, "T. Mus. Lute", "category to one word, specifier without brackets");
+assert.equal(rn("Tool - Musical Instrument (Bagpipes)").name, "T. Mus. Bagpipes", "…and it still holds on the longest specifier");
+assert.equal(rn("Tool - Vehicles (Land)").name, "T. Veh. Land", "same rule, no second abbreviation");
+assert.equal(rn("Tool - Gaming Set (Dice)").name, "T. Gam. Dice", "…mechanical, so there is no field for Eric to fill in");
+assert.equal(rn("Tool - Thieves' Tools").name, "T. Thieves'", "no specifier: the noun the sheet already carries is what drops");
+assert.equal(rn("Tool - Herbalism Kit").name, "T. Herbalism", "…Kit, Tools, Supplies and Set alike");
+assert.equal(rn("Tool - Soulforging Tools").name, "T. Soulforging", "…including Eric's own");
+/* « Une seule abréviation, jamais deux » — the rule that decides the form.
+   « T. Mus. Inst. Bagpipes » is 81.8px, and « T. Mus. Inst. Drum » cleared the
+   limit by 0.7px, which is not a margin. */
+assert.equal((rn("Tool - Musical Instrument (Bagpipes)").name.match(/\./g) || []).length, 2,
+  "never two abbreviations beyond the T. prefix — « T. Mus. Inst. Drum » cleared the limit by 0.7px, which is not a margin");
+
+/* Bug 6 of the relevé: the column was 68px FIXED while its title followed
+   --cd-fs. R32 measured and fixed exactly this in the judgment box and it was
+   never carried across to the tray's own line. */
+assert.match(css, /\.fh-cd-dicetray \.fh-cd-tray-right\{width:calc\(68px \* var\(--cd-fs\)\)/,
+  "the column follows the scale its text follows — R32's fix, finally repeated here");
+assert.match(css, /\.fh-cd-tray-title\{\s*\n?\s*font-size:var\(--cd-t1\)/,
+  "P31: T1 on line 1 is what stops the eighteen skill names folding");
+
+/* ── Lot R34-R39 — la légende de l'essaim (P19, P20) ───────────────────
+   The legend says what the dice ARE — how many, of what shape, from what
+   source. It NEVER says what they did: the « d6 5 · d6 5 · … » enumeration
+   Eric killed on 2026-08-04 must not come back through this door, and that is
+   the one assertion here worth more than the others. */
+const swarm8 = [];
+for (let i = 0; i < 8; i++) swarm8.push({sides:6, result:(i % 6) + 1});
+swarm8.push({sides:8, result:7, label:"Bardic Inspiration", short:"Bardic", dieRole:"bonus"});
+swarm8.push({kind:"modifier", result:2, label:"FH bonus"});
+swarm8.push({kind:"modifier", result:-2, label:"Exhaustion", tone:"exhaustion"});
+assert.equal(t.trayLegend(swarm8), "8d6 · Bardic d8 · +2 FH · −2 EXH",
+  "the groups of dice, then the coins — the ratified format");
+assert.doesNotMatch(t.trayLegend(swarm8), /d\d+\s*[=:]?\s*\d/,
+  "no « d6 5 » pair anywhere in it — the legend counts, it does not report, and that enumeration was killed on 2026-08-04");
+assert.equal(t.trayLegend([{sides:20, result:14, label:"d20", dieRole:"base"}, {sides:20, result:3, label:"d20", dieRole:"base"}]),
+  "2d20", "« Base d20 » names a role, not a source: in a crowd it adds nothing");
+/* P20: the coin keeps its word in the legend even though it lost it under the
+   die — that is the trade, not a loss. */
+assert.match(t.trayLegend(swarm8), /\+2 FH/, "the coin's word survives in the legend…");
+const nakedCoin = t.visualDie({kind:"modifier", result:2, label:"FH bonus"}, 9, 10, false, {naked:true, sizePx:20, plainLabel:true});
+assert.doesNotMatch(nakedCoin, /<em>/, "…precisely because it is not under the coin any more");
+
+t.state.feed.events = []; t.state.trayResults = []; t.state.rollSequence = null; t.state.diceSignatures = {};
+t.state.history = [{id:"legend-line", kind:"tray", name:"Damage roll", dice:swarm8.filter(d => d.kind !== "modifier"), total:40, createdAt:isoAt(0)}];
+const legendLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="legend-line"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.match(legendLine, /class="fh-cd-tray-legend">/, "a swarm line carries its legend");
+assert.match(legendLine, /fh-cd-tray-mid/, "…in a stacked middle column");
+
+// A hand keeps its labels and gets NO legend: it has no room for a second line.
+t.state.history = [{id:"hand-line", kind:"tray", name:"Damage roll", dice:[{sides:6, result:4}, {sides:6, result:2}], total:6, createdAt:isoAt(0)}];
+t.state.diceSignatures = {};
+const handLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="hand-line"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.doesNotMatch(handLine, /fh-cd-tray-legend/, "the hand has its labels — two regimes, two tools");
+assert.doesNotMatch(handLine, /fh-cd-tray-mid/, "…and its middle span stays the direct flex child it has always been");
+
+/* P23, the arithmetic itself: three ordinary hands overflowed in production
+   because the threshold counted DICE and the coins were counted nowhere. */
+t.state.history = [{id:"coins-line", kind:"tray", name:"Dexterity Check",
+  dice:[{sides:20, result:14}, {sides:20, result:9}, {sides:6, result:3}, {sides:6, result:5},
+        {kind:"modifier", result:2, label:"FH bonus"}, {kind:"modifier", result:-1, label:"Exhaustion"},
+        {kind:"modifier", result:3, label:"Manual"}],
+  total:35, createdAt:isoAt(0)}];
+t.state.diceSignatures = {};
+const coinsLine = t.diceTrayInner().match(/<li[^>]*data-tray-line="coins-line"[^>]*>[\s\S]*?<\/li>/)[0];
+assert.match(coinsLine, /is-swarm/,
+  "four dice and three coins is 4×38 + 3×26 + 6×8 = 278 on a measured zone of 268 — it must break to the swarm, and the old count-of-dice threshold let it overflow in silence");
+
+/* REWRITTEN 2026-08-07 (reprise du budget de zone, Eric : « on va reprendre ce
+   qu'on peut à gauche et à droite »). The zone is 268, MEASURED on the built
+   page at the reference — it was 249, and at 249 the hand held five dice while
+   P15 had announced six. The sixth was bought by measuring what each flank
+   could give: the right one had 17.3px of slack over « Animal Handling » and
+   went to 56 × --cd-fs, the left one had none and kept its useful 70, and the
+   gutters gave the rest. The assertion below therefore flips — six dice are a
+   HAND now — and it is rewritten to that truth rather than relaxed: the
+   threshold still stands on a measured constant, which is the whole point of
+   P23. The slack at six is ZERO, so this pair of assertions is also the alarm
+   that fires if a future pixel ever leaves one of the flanks. */
+const fiveDice = {id:"five", kind:"tray", name:"Damage roll", total:20, createdAt:isoAt(0),
+  dice:[1,2,3,4,5].map(n => ({sides:6, result:n}))};
+const sixDice = {id:"six", kind:"tray", name:"Damage roll", total:26, createdAt:isoAt(0),
+  dice:[1,2,3,4,5,6].map(n => ({sides:6, result:n}))};
+t.state.history = [fiveDice]; t.state.diceSignatures = {};
+assert.doesNotMatch(t.diceTrayInner().match(/<li[^>]*data-tray-line="five"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
+  "five dice at full size are 222 of 268 — a hand");
+t.state.history = [sixDice]; t.state.diceSignatures = {};
+assert.doesNotMatch(t.diceTrayInner().match(/<li[^>]*data-tray-line="six"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
+  "six at full size are 268 of 268 — a hand, exactly: what the reprise bought and what P15 announced");
+const sevenDice = {id:"seven", kind:"tray", name:"Damage roll", total:30, createdAt:isoAt(0),
+  dice:[1,2,3,4,5,6,1].map(n => ({sides:6, result:n}))};
+t.state.history = [sevenDice]; t.state.diceSignatures = {};
+assert.match(t.diceTrayInner().match(/<li[^>]*data-tray-line="seven"[^>]*>[\s\S]*?<\/li>/)[0], /is-swarm/,
+  "seven are 314 — the first hand the zone cannot hold, so the swarm takes over");
+assert.match(css, /\.fh-cd-dicetray \.fh-cd-trayline\{gap:0\}/,
+  "P15's real mechanism: the flank carries its own padding, so the gutters around it are a second margin");

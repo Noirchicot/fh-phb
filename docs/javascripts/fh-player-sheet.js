@@ -66,6 +66,33 @@
      the numeral: ~11px of digit at 20, ~8px (texture) at the old 16. */
   var TRAY_DIE_SKILL = 38;
   var TRAY_DIE_ROW = 20;
+  /* P15 / P23 / P25 (ratifiées Eric, 2026-08-07). The flank gives its padding
+     back from the inside and keeps its 80px footprint, so the dice go from 261
+     to 275 — and those 14px buy a sixth die in the hand, nothing else. A coin
+     is 26px wide, not 38, which is why the swarm threshold has to be an
+     ARITHMETIC on widths and not a count of dice. */
+  /* 268 — REWRITTEN 2026-08-07. It was 249, and 249 was honestly measured:
+     the relevé's 275 counted neither the tray's own 8px padding nor the right
+     flank's 68 × --cd-fs = 78.2 (bug 6's fix costing 10px of dice), so at 249
+     the hand held FIVE dice and P15's sixth was arithmetic, not a zone.
+     Eric's ruling on that collision (2026-08-07): « on va reprendre ce qu'on
+     peut à gauche et à droite ». What each side could actually give was then
+     MEASURED at the bench, not calculated — the right flank had 17.3px of
+     slack over its worst name (« Animal Handling » 60.9 in 78.2) and went to
+     56 × --cd-fs; the left flank had NONE and kept its useful 70, because it
+     was never too wide, only too short for its own longest item; the gutters
+     gave 8; and the last pixel came from the left flank's box (80 → 79) with
+     its inner padding shortened to match, so no text moved.
+     Read back on the built page: the zone is 268 and six dice at full size
+     fit exactly (6×38 + 5×8 = 268), with the four regimes still landing on
+     56 / 56 / 72 / 85. STATED PLAINLY: the slack is ZERO. Anything that ever
+     adds a pixel to either flank drops the hand back to five — which is why
+     this constant is read from the bench and never adjusted by arithmetic. */
+  var TRAY_DICE_W = 268;   // the zone the dice actually have, measured
+  var TRAY_COIN_W = 26;    // a coin is three quarters of a die
+  var TRAY_HAND_GAP = 8;   // the live band's gap between two columns
+  var TRAY_ROW_COL = 20;   // P25: twelve columns of 20 — 12×20 + 11×3 = 273
+  var TRAY_ROW_GAP = 3;
   var MAX_EXHAUSTION = 6;
 
   var root;
@@ -1012,10 +1039,10 @@
        pool keeps its name and the id that re-credits its resource if it is
        taken back before ROLL. Plain free dice carry neither. */
     return {id:raw.id||uuid(),sides:sides,colour:dieColour(raw.colour),advantageMode:rollMode(raw.advantageMode),forcedResult:forcedDieResult(raw.forcedResult,sides),
-      label:raw.label?String(raw.label).slice(0,32):undefined,poolResourceId:raw.poolResourceId||undefined};
+      label:raw.label?String(raw.label).slice(0,32):undefined,short:raw.short?String(raw.short).slice(0,7):undefined,poolResourceId:raw.poolResourceId||undefined};
   }
   function newBonusDie(label,sides,sourceIcon,colour){return {id:uuid(),label:String(label||"Other I").slice(0,32),sides:ROLL_DIE_SIZES.indexOf(Number(sides))>=0?Number(sides):6,advantageMode:"flat",forcedResult:null,sourceIcon:bonusSourceFor(label,0,sourceIcon),colour:dieColour(colour)};}
-  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,origin:die.origin||undefined,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour),poolResourceId:die.poolResourceId||undefined};}
+  function normalizeBonusDie(die,index){die=die||{};var sides=ROLL_DIE_SIZES.indexOf(Number(die.sides))>=0?Number(die.sides):6,label=String(die.label||"Other I").slice(0,32);return {id:die.id||("bonus-"+index+"-"+uuid()),label:label,sides:sides,advantageMode:rollMode(die.advantageMode||die.mode),forcedResult:forcedDieResult(die.forcedResult,sides),rolls:Array.isArray(die.rolls)?die.rolls.map(Number):undefined,result:die.result!=null?Number(die.result):undefined,chosenIndex:die.chosenIndex!=null?Number(die.chosenIndex):undefined,forced:!!die.forced,origin:die.origin||undefined,sourceIcon:bonusSourceFor(label,index,die.sourceIcon),colour:dieColour(die.colour),short:die.short?String(die.short).slice(0,7):undefined,poolResourceId:die.poolResourceId||undefined};}
   function entryBonusDice(entry){
     if(Array.isArray(entry&&entry.bonusDice))return entry.bonusDice.map(normalizeBonusDie).slice(0,MAX_BONUS_DICE);
     var dice=[];
@@ -1068,27 +1095,45 @@
      outranks a natural 20, and a DC is only consulted when nothing louder
      happened. */
   function rollHasDc(entry){return entry.dc !== "" && isFinite(Number(entry.dc));}
-  /* Lexique ratifié (Eric, 2026-08-05, phase 5) — the SPOKEN side only.
+  /* ── Le lexique ratifié, en constantes (L88, Eric 2026-08-06) ───────
+     L88 asked for exactly this: the four ratified words written ONCE, so the
+     next rename is one edit instead of an inventory. The grammar is « famille
+     + ce qui l'a produit » — the number is the d20's natural result, the ∞ is
+     the Destiny die. Nothing else may read as a family name.
+
+     THE LINE THAT DIVIDES THIS FILE: these are DISPLAY. The machine-facing
+     `outcome` strings below (and on the wire) do not move — outcomeTone,
+     feedTone and intentOutcome regex-match them, other players' docks read
+     them, and L9-L14 froze them deliberately. Rename what is read by a human;
+     freeze what is read by a program. */
+  var LEX={
+    crit20:"Crit 20", CRIT20:"CRITICAL 20", crit20Short:"CRIT 20",
+    fumble1:"Fumble 1", FUMBLE1:"FUMBLE 1",
+    critInf:"∞ critical", CRITINF:"∞ CRITICAL",
+    fumbleInf:"∞ fumble", FUMBLEINF:"∞ FUMBLE"
+  };
+  /* Lexique ratifié (Eric, 2026-08-05 puis 2026-08-06) — the SPOKEN side only.
      Four verdicts renamed: CRITICAL 20, FUMBLE 1, ∞ CRITICAL, ∞ FUMBLE.
      The machine-facing `outcome` strings DO NOT MOVE — outcomeTone and
-     feedTone regex-match them, and the wire carries them. The undecided
-     "NATURAL 1 · CHOOSE" and the takeover prompt keep their old words:
-     their renames (L6) are proposed, not ratified. */
+     feedTone regex-match them, and the wire carries them.
+     The undecided 1 now says FUMBLE 1 · CHOOSE: L6 rode the automatic
+     cascade of the 2026-08-06 ratification (« ces lignes ne font qu'appliquer
+     les quatre termes »), so it is no longer a proposal. */
   var ROLL_VERDICTS=[
     {id:"arcane-critical-failure",when:function(e){return !!(e.destiny&&e.destiny.criticalFailure);},
-      outcome:"Critical failure",verdict:"∞ FUMBLE"},
+      outcome:"Critical failure",verdict:LEX.FUMBLEINF},
     {id:"arcane-critical-success",when:function(e){return !!(e.destiny&&e.destiny.criticalSuccess);},
-      outcome:"Critical success",verdict:"∞ CRITICAL"},
+      outcome:"Critical success",verdict:LEX.CRITINF},
     {id:"fate-refused",when:function(e){return e.natChoice==="chaos";},
       outcome:"Critical success · Chaos",verdict:"FATE REFUSED"},
     {id:"natural-20",when:function(e){return e.natural===20;},
-      outcome:"Natural 20",verdict:"CRITICAL 20"},
+      outcome:"Natural 20",verdict:LEX.CRIT20},
     {id:"natural-1-accepted",when:function(e){return e.natural===1&&e.natChoice==="accept";},
-      outcome:"Critical failure · Fate accepted",verdict:"FUMBLE 1"},
+      outcome:"Critical failure · Fate accepted",verdict:LEX.FUMBLE1},
     /* A 1 nobody has answered yet is undecided, and the Ruling says so rather
        than picking for the player. */
     {id:"natural-1-open",when:function(e){return e.natural===1;},
-      outcome:"Natural 1 · choose fate",verdict:"NATURAL 1 · CHOOSE"},
+      outcome:"Natural 1 · choose fate",verdict:LEX.FUMBLE1+" · CHOOSE"},
     {id:"success",when:function(e){return rollHasDc(e)&&e.total>=Number(e.dc);},
       outcome:"Success",verdict:"SUCCESS"},
     {id:"failure",when:rollHasDc,outcome:"Failure",verdict:"FAILURE"}
@@ -1112,8 +1157,8 @@
       var over = Number(state.destiny.overreach)||0;
       if (over > 0) chaos = {overreach:over,dc:10+over};
     }
-    if(!silent&&criticalSuccess)pushEvent("ARCANE CRITICAL SUCCESS · Destiny d"+die.sides+" rolled "+result,"arcane-critical-success");
-    else if(!silent&&criticalFailure)pushEvent("ARCANE CRITICAL FAILURE · Destiny d"+die.sides+" rolled 1","arcane-critical-failure");
+    if(!silent&&criticalSuccess)pushEvent(LEX.CRITINF+" · Destiny d"+die.sides+" rolled "+result,"arcane-critical-success");
+    else if(!silent&&criticalFailure)pushEvent(LEX.FUMBLEINF+" · Destiny d"+die.sides+" rolled 1","arcane-critical-failure");
     return {dieId:die.id,sides:die.sides,result:result,rolls:(plan.rolls||[result]).slice(),chosenIndex:plan.chosenIndex==null?0:plan.chosenIndex,advantageMode:rollMode(plan.mode),forced:!!plan.forced,cost:cost,pointsBefore:before,pointsAfter:state.destiny.points,criticalSuccess:criticalSuccess,criticalFailure:criticalFailure,chaos:chaos,recovered:recovered};
   }
   /* A 1 on a Destiny die is no longer a verdict, it is an offer — the mirror of
@@ -1139,8 +1184,8 @@
     if(!spent)return [];
     var change=spent.pointsAfter-spent.pointsBefore,events=[],parts=[],rollEntry=state.rollSequence&&state.rollSequence.entry||state.history.find(function(entry){return entry.id===entryId;});
     var offered=!!arcaneDecision(spent,entryId);
-    if(spent.criticalSuccess)parts.push("ARCANE CRITICAL SUCCESS","Destiny d"+spent.sides+" rolled "+spent.result);
-    else if(spent.criticalFailure)parts.push("ARCANE CRITICAL FAILURE","Destiny d"+spent.sides+" rolled 1");
+    if(spent.criticalSuccess)parts.push(LEX.CRITINF,"Destiny d"+spent.sides+" rolled "+spent.result);
+    else if(spent.criticalFailure)parts.push(LEX.FUMBLEINF,"Destiny d"+spent.sides+" rolled 1");
     else parts.push("Destiny d"+spent.sides+" rolled "+spent.result);
     // A failure still waiting on its answer announces the roll and nothing else:
     // the points it moved may be undone, and a line must not claim what may be undone.
@@ -1162,7 +1207,7 @@
     var events=[];
     if(choice==="accept"){
       spent.arcaneChoice="accept";
-      var accepted=["ARCANE FATE ACCEPTED · Critical failure","Gained 1 Destiny Point","Current "+state.destiny.points];
+      var accepted=["∞ FATE ACCEPTED · "+LEX.fumbleInf,"Gained 1 Destiny Point","Current "+state.destiny.points];
       if(spent.recovered)accepted.push("Gained a Destiny d"+spent.recovered.sides);
       events.push({text:accepted.join(" · "),kind:"arcane-critical-failure",entryId:entry.id});
     }else{
@@ -1177,7 +1222,7 @@
          surface keeps quoting the pre-refusal balance forever. */
       spent.pointsAfter=state.destiny.points;
       addPendingFate({kind:"chaos",entryId:entry.id,ability:entry.ability||"",name:entry.name||"Arcane failure refused"});
-      events.push({text:"ARCANE FATE REFUSED · The 1 becomes "+spent.sides+" · Arcane Critical Success"+(hadPoints?" · Destiny becomes 0":""),kind:"arcane-critical-success",entryId:entry.id},
+      events.push({text:"∞ FATE REFUSED · The 1 becomes "+spent.sides+" · "+LEX.critInf+(hadPoints?" · Destiny becomes 0":""),kind:"arcane-critical-success",entryId:entry.id},
         {text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id});
     }
     recomputeEntry(entry);
@@ -1188,14 +1233,14 @@
   function naturalDestiny(entry) {
     var events=[];
     if (entry.natural === 20) {
-      var before = state.destiny.points,recovered=setDestinyPoints(before-1,"Natural 20",true,true);
-      entry.destinyPointChange={before:before,after:state.destiny.points,reason:"Natural 20"};
+      var before = state.destiny.points,recovered=setDestinyPoints(before-1,LEX.crit20,true,true);
+      entry.destinyPointChange={before:before,after:state.destiny.points,reason:LEX.crit20};
       entry.awakening=state.destiny.points===0;
       // The draw is owed from this moment until the card is actually dealt.
       // A count, not a flag: a second Natural 20 at 0 before the first card is
       // drawn owes a second draw, not the same one twice.
       if(entry.awakening)state.destiny.awakeningOwed=(Number(state.destiny.awakeningOwed)||0)+1;
-      var parts=[entry.awakening?"ARCANE AWAKENING · Natural 20 at Destiny 0":"NATURAL 20 · Fate bends in your favor","Lost 1 Destiny Point","Current "+state.destiny.points];
+      var parts=[entry.awakening?"ARCANE AWAKENING · "+LEX.crit20+" at Destiny 0":LEX.CRIT20+" · Fate bends in your favor","Lost 1 Destiny Point","Current "+state.destiny.points];
       if(recovered)parts.push("Gained a Destiny d"+recovered.sides);
       events.push({text:parts.join(" · "),kind:entry.awakening?"awakening":"nat20",entryId:entry.id});
     } else if (entry.natural === 1) entry.natChoice = null;
@@ -1209,7 +1254,7 @@
   }
   function trayDiceForPlan(plan,label,extra){
     extra=extra||{};var rolls=Array.isArray(plan&&plan.rolls)&&plan.rolls.length?plan.rolls:[plan&&plan.result];
-    return rolls.map(function(result,index){return Object.assign({sides:plan.sides,result:result,label:label+(rolls.length>1?" #"+(index+1):""),dropped:rolls.length>1&&plan.chosenIndex!=null&&index!==Number(plan.chosenIndex),choiceMode:rollMode(plan.mode||plan.advantageMode),forced:!!plan.forced,sourceIcon:plan.sourceIcon||"",colour:plan.colour||""},extra);});
+    return rolls.map(function(result,index){return Object.assign({sides:plan.sides,result:result,label:label+(rolls.length>1?" #"+(index+1):""),short:plan.short||"",dropped:rolls.length>1&&plan.chosenIndex!=null&&index!==Number(plan.chosenIndex),choiceMode:rollMode(plan.mode||plan.advantageMode),forced:!!plan.forced,sourceIcon:plan.sourceIcon||"",colour:plan.colour||""},extra);});
   }
   function pendingTrayDice(sides,label,mode,forced,extra){
     var manual=forcedDieResult(forced,sides),count=manual!=null||rollMode(mode)==="flat"?1:2,dice=[];
@@ -1426,7 +1471,7 @@
   function stagedBonusCount(){return stagedList().filter(function(item){return item.kind!=="destiny";}).length;}
   function openStatusText(entry){
     var staged=stagedList().length,base=rollDetailText(entry);
-    return base+(staged?(base?" · ":"")+staged+" new die"+(staged===1?"":"s")+" ready":"");
+    return base+(staged?(base?" · ":"")+staged+" new "+(staged===1?"die":"dice")+" ready":"");
   }
   /* The verdict is the headline; the account that produced it stays legible
      but discreet underneath. Both are read off the Ruling (§5) rather than
@@ -1663,7 +1708,7 @@
   function resolveNatOne(id, choice) {
     var entry=state.history.find(function (item) { return item.id===id; }); if(!entry||entry.natural!==1||entry.natChoice)return;
     var events=[];
-    if(choice==="accept") { var before=state.destiny.points,recovered=setDestinyPoints(before+1,"Natural 1 accepted",true,true);entry.natChoice="accept";entry.destinyPointChange={before:before,after:state.destiny.points,reason:"Natural 1 accepted"};var accepted=["FATE ACCEPTED · Critical failure","Gained 1 Destiny Point","Current "+state.destiny.points];if(recovered)accepted.push("Gained a Destiny d"+recovered.sides);events.push({text:accepted.join(" · "),kind:"nat1",entryId:entry.id}); }
+    if(choice==="accept") { var before=state.destiny.points,recovered=setDestinyPoints(before+1,LEX.fumble1+" accepted",true,true);entry.natChoice="accept";entry.destinyPointChange={before:before,after:state.destiny.points,reason:LEX.fumble1+" accepted"};var accepted=["FATE ACCEPTED · "+LEX.fumble1,"Gained 1 Destiny Point","Current "+state.destiny.points];if(recovered)accepted.push("Gained a Destiny d"+recovered.sides);events.push({text:accepted.join(" · "),kind:"nat1",entryId:entry.id}); }
     // Defying fate no longer rolls Chaos on the spot: the 2d6 are deferred
     // behind a pending marker so the table is never blocked mid-turn.
     else { var oldPoints=state.destiny.points;entry.natChoice="chaos";entry.originalKept=entry.kept;entry.transformed=true;entry.kept=20;setDestinyPoints(0,"Invoked Chaos",false,true);entry.total=entryTotal(entry);addPendingFate({kind:"chaos",entryId:entry.id,ability:entry.ability||"",name:entry.name||"Defied roll"});events.push({text:"FATE DEFIED · The 1 becomes 20"+(oldPoints?" · Destiny becomes 0":""),kind:"nat1",entryId:entry.id},{text:"CHAOS IS PENDING · 1 fatigue point per round until you face it",kind:"chaos",entryId:entry.id}); }
@@ -2043,7 +2088,7 @@
     // No trailing result popup here either: the tray shows the verdict and the
     // stream keeps it. Only a natural 20 or 1 is worth stopping for.
     var special=dice.find(function(die){return die.sides===20&&(die.result===1||die.result===20);}),events=[];
-    if(special)events.push({text:(special.result===20?"NATURAL 20 IN THE TRAY":"NATURAL 1 IN THE TRAY")+" · "+entry.name+" · Total "+entry.total,kind:special.result===20?"nat20":"nat1",entryId:entry.id});
+    if(special)events.push({text:(special.result===20?LEX.CRIT20+" IN THE TRAY":LEX.FUMBLE1+" IN THE TRAY")+" · "+entry.name+" · Total "+entry.total,kind:special.result===20?"nat20":"nat1",entryId:entry.id});
     state.rollSequence=null;state.queueDone="";
     if(events.length){state.rollSequence={phase:"free-tray",entryId:entry.id};announceEvents(events,"finish-sequence");return;}
     persistPlayState();render();
@@ -2077,7 +2122,14 @@
     violet:{fill:"#5c3d7e",light:"#8563a6",dark:"#372049",rim:"#241432",facet:"#452c5e",num:"#f5edff"},
     slate:{fill:"#4a4f55",light:"#727880",dark:"#2b2f34",rim:"#1c1f22",facet:"#3a3e44",num:"#f0f2f4"},
     // The plain-bonus tint (Eric, ratified 2026-08-03: "bonus lambda gris clair").
-    ash:{fill:"#c9cdd2",light:"#eceef1",dark:"#9aa0a8",rim:"#6b7178",facet:"#aeb3ba",num:"#3a3f45"}
+    /* P17: ash sat at 1.34 from ivory — two dice side by side, all but
+       indistinguishable. Darkening it would have traded one confusion for the
+       other (the further it moves from ivory, the deeper it sinks into the
+       ramp), so the brightness is KEPT and the difference moves onto the
+       temperature: the fill is pushed blue and the rim goes cold, nearly
+       black, where ivory wears a warm gold rim (#8a6a2a). On 38px a 3px rim
+       is an enormous signal. */
+    ash:{fill:"#c2c9d4",light:"#e8ecf2",dark:"#98a0ab",rim:"#2f353c",facet:"#a7b0bd",num:"#2b3138"}
   };
   // Offered in the right-click menu, in this order. "ivory" is the default.
   var DIE_COLOURS = [["ivory","Ivory"],["green","Green"],["gold","Gold"],["crimson","Crimson"],["azure","Azure"],["violet","Violet"],["slate","Slate"]];
@@ -2157,6 +2209,71 @@
       '<text class="fh-cd-num" x="50" y="54" font-size="28" text-anchor="middle" dominant-baseline="middle" fill="'+body.num+'">'+esc(label)+'</text></svg>';
   }
   function dieSize(count){return count>8?26:count>5?34:count>3?44:52;}
+  /* ── P7 : une entrée du lexique, DEUX formes — et c'est la surface qui
+     choisit (ratifiée Eric, 2026-08-07) ───────────────────────────────
+     There is no second list of words here. `die.label` stays the long form
+     and keeps going everywhere a long form belongs — the judgment box, the
+     die's card, the Stream, the hover, the wire (rollExportDice flattens the
+     same list, so a rename in this function reaches no machine). What this
+     function returns is the SHORT form, and it is read by exactly the three
+     narrow surfaces P7 names: under a die (38px), under a coin (26px), the
+     band's pool pastille (24px).
+
+     THE INVARIANT IS THE PIXEL, NOT THE CHARACTER COUNT (P29's own
+     correction): 38px is the width of the die, 26px the width of the coin,
+     and both are true at every zoom because they ARE the object. The
+     character count quoted in P4 is an aide-mémoire with a wide bracket,
+     which is precisely why the table below rules word by word instead of
+     truncating by length.
+
+     P3 governs the silences: a label never repeats the die's own shape.
+     « d20 », « d8 » die here — a d8 that says "d8" has said nothing. The
+     base d20 keeps a word because « Base d20 » names its ROLE, which the
+     shape does not say. */
+  var HAND_LABELS={
+    "d20":"Base d20",          // P30 — the role, not the form
+    "Original d20":"Base d20", // struck through and dimmed: the strike says "original"
+    "FATE 1→20":"Fate→20",
+    "FATE 1→1":"Fate→1",
+    "Guidance":"Guide",        // P8 — 40.6px overflowed by 2
+    "Overreach":"Over.R",      // P8, amended by Eric: OVER.R, not OVER
+    "FH bonus":"FH",           // P24 — the coin already prints "+2"; the word says WHAT, not how much
+    "Exhaustion":"EXH",        // P8/P30 — « Exhaust. » is 34px on a 26px coin
+    "Manual":"Mod"             // P8 — ends the Mod/Manual divergence between surfaces
+  };
+  var ABILITY_SHORT={Strength:"STR",Dexterity:"DEX",Constitution:"CON",Intelligence:"INT",Wisdom:"WIS",Charisma:"CHA"};
+  /* The short form of one label. `opts.short` is P9's « Court » field when the
+     die came from a pool resource that has one; without it the fallback is the
+     first word, which is the same default P9 pre-fills the field with. */
+  function shortDieLabel(text,opts){
+    opts=opts||{};
+    text=String(text==null?"":text).trim();
+    if(!text)return "";
+    if(HAND_LABELS[text]!=null)return HAND_LABELS[text];
+    // P3: the shape is drawn, it is not written. A bare « d8 » says nothing.
+    if(/^d(4|6|8|10|12|20|100)$/.test(text))return "";
+    // P8/P30 — the six saves, on the « XXX sv » pattern: « CON save » is 39px,
+    // over the die's 38, and « save » spelled out breaks on two abilities.
+    var save=/^(.+?)\s+save$/i.exec(text);
+    if(save){
+      var abbr=ABILITY_SHORT[save[1]]||(/^[A-Z]{3}$/.test(save[1])?save[1]:"");
+      if(abbr)return abbr+" sv";
+    }
+    // P8 — the two Chaos dice sit side by side; the number adds nothing.
+    if(/^Chaos\s*#\d+$/.test(text))return "Chaos";
+    if(opts.short)return String(opts.short).trim();
+    // P9's default, and P12's cascade one surface further in: the first word.
+    // The CSS ellipse is the last net, never the first (P6).
+    var first=text.split(/\s+/)[0];
+    return first;
+  }
+  /* What a die shows under itself in the hand. The long form is what the
+     wrapper's title carries, so P6's contrepartie holds: nothing is ever cut
+     without the whole word remaining one hover (Mac) or one card (iPad) away. */
+  function handLabel(die){
+    if(!die)return "";
+    return shortDieLabel(die.label,{short:die.short});
+  }
   /* opts (all optional): sizePx pins the die size instead of deriving it from
      the count (the tray's bands are fixed sizes, not crowd-relative), and
      snapshot renders the settled pose as a cached bitmap with NO live WebGL
@@ -2186,14 +2303,35 @@
       if(opts.naked){
         return "<span class=\""+classes.join(" ")+" is-naked\"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.max(14,Math.round(size*.9)),text,tone)+"</span></span>";
       }
-      return "<span class=\""+classes.join(" ")+"\""+(opts.noLabel?" title=\""+esc(die.label||"Bonus")+"\"":"")+"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span>"+(opts.noLabel?"":"<em>"+esc(die.label||"Bonus")+"</em>")+"</span>";
+      /* P20/P24: in the hand the coin keeps a word under it — but the SHORT
+         one, on 26px of coin rather than 38px of die, and it never repeats
+         the value already printed on the face. The long form stays on the
+         title, always, so P6's contrepartie holds whether or not the label
+         is drawn (it used to appear only when the label was suppressed). */
+      var coinShort=handLabel(die),coinFull=die.label||"Bonus";
+      return "<span class=\""+classes.join(" ")+"\" title=\""+esc(coinFull)+"\"><span class=\"fh-cd-die fh-cd-token\">"+tokenSvg(Math.round(size*.68),text,tone)+"</span>"+((opts.noLabel||!coinShort)?"":"<em>"+esc(coinShort)+"</em>")+"</span>";
     }
     /* The source token AND its empty 12px slot are gone (Eric: "violet +
        Bardic, rien de plus") — the die's tint says destiny/tactical/bardic/
        guidance/plain, the label names it, and for a label-less die the
        wrapper's title keeps the full name on hover (same pattern as naked). */
-    var srcTitle=die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
-      :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"";
+    /* P6: whatever is written under a die, the WHOLE word stays one hover
+       away — and on iPad, where there is no hover, one tap on the die's card.
+       So the full label is the title of every die, not only of the ones whose
+       label was suppressed; when a handle claims the hover for its own hint,
+       the name goes in FRONT of it rather than being displaced by it. */
+    var fullLabel=die.label||(die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:die.dieRole==="bonus"?rollSource(die.sourceIcon).label:"");
+    /* P18 (ratifiée Eric, 2026-08-07): a forced die used to be said by writing
+       its label in violet #7a4a9c — 1.18:1 on the live band, i.e. invisible,
+       in production, today. The tray's ground stays dark (R8 not reopened) and
+       the lettering under the dice stays white, so violet has nowhere left to
+       live as INK. It goes where it carries its own ground instead: a corner
+       badge on the die itself, the same form as P10's ×N — #f5edff on solid
+       #5c3d7e, 8.12:1. The label goes back to white, the flank says « Manual »
+       in informative ink, and a forced die is findable in a hand of thirty. */
+    var portent=die.forced?"<span class=\"fh-cd-portent\" aria-hidden=\"true\">M</span>":"";
+    var srcTitle=fullLabel;
+    var shortLabel=handLabel(die);
     var dieClasses="fh-cd-die"+(die.result!=null?" is-landed":"")+(animate&&die.result!=null?" is-spinning":"");
     // A die still in the hand carries its identity so a right click can reach it.
     var handle="";
@@ -2208,14 +2346,14 @@
       else if(die.destinyDieId)handle=" data-die-destiny=\""+esc(die.destinyDieId)+"\"";
       else if(die.freeId)handle=" data-die-free=\""+esc(die.freeId)+"\"";
       else if(die.dieRole==="base")handle=" data-die-base=\"1\"";
-      if(handle){classes.push("is-tunable");handle+=" title=\"Right click or long press: colour, advantage, Portent\"";}
+      if(handle){classes.push("is-tunable");handle+=" title=\""+(fullLabel?esc(fullLabel)+" — ":"")+"Right click or long press: colour, advantage, Portent\"";}
     }
     /* A die that has already fallen keeps answering — a Diviner replaces
        results after the fact, which is the whole of Portent. Destiny dice are
        the exception: what they read is what they cost. */
     else if(die.landedKey&&die.result!=null&&!die.dropped&&die.dieRole!=="destiny"){
       handle=" data-die-landed=\""+esc(die.landedKey)+"\" data-die-entry=\""+esc(die.entryId||"")+"\""+
-        " title=\"Right click or long press: colour, Portent\"";
+        " title=\""+(fullLabel?esc(fullLabel)+" — ":"")+"Right click or long press: colour, Portent\"";
       classes.push("is-tunable");
     }
     var materialName=dieMaterialName(die),face=dieSvg(die.sides,size,materialName,die.result==null?"?":die.result);
@@ -2242,10 +2380,9 @@
       }
       /* No corner mark in the swarm: the tint IS the provenance now
          ("all in one"), and the title still names it on hover. */
-      var nakedTitle=die.dieRole==="bonus"?(die.label||rollSource(die.sourceIcon).label)
-        :die.dieRole==="destiny"?ROLL_SOURCES.destiny.label:"";
+      var nakedTitle=fullLabel;
       return "<span class=\""+classes.join(" ")+" is-naked\""+(handle||(nakedTitle?" title=\""+esc(nakedTitle)+"\"":""))+">"+
-        "<span class=\""+dieClasses+"\">"+face+"</span></span>";
+        "<span class=\""+dieClasses+"\">"+face+"</span>"+portent+"</span>";
     }
     /* Static Area (tray rolls 5+): the settled pose as a cached bitmap. One
        host, one numeral slot — even for d100, whose snapshot pair is drawn
@@ -2258,8 +2395,8 @@
         "<span class=\"fh-cd-static-die-fallback\">"+face+"</span></span>";
       dieClasses+=" is-static-die";
       return "<span class=\""+classes.join(" ")+"\""+(srcTitle?" title=\""+esc(srcTitle)+"\"":"")+">"+
-        "<span class=\""+dieClasses+"\">"+face+"</span>"+
-        (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
+        "<span class=\""+dieClasses+"\">"+face+"</span>"+portent+
+        ((opts.noLabel||!shortLabel)?"":"<em>"+esc(shortLabel+status)+"</em>")+"</span>";
     }
     /* The WebGL renderer is deliberately only a renderer: the face was chosen
        before this markup exists. Larger pools retain the lightweight SVG tray
@@ -2287,8 +2424,8 @@
        keeps its interaction title; the source title only steps in when no
        handle claimed the hover. */
     return "<span class=\""+classes.join(" ")+"\""+(handle||(srcTitle?" title=\""+esc(srcTitle)+"\"":""))+">"+
-      "<span class=\""+dieClasses+"\">"+face+"</span>"+
-      (opts.noLabel?"":"<em>"+esc((die.label||("d"+die.sides))+status)+"</em>")+"</span>";
+      "<span class=\""+dieClasses+"\">"+face+"</span>"+portent+
+      ((opts.noLabel||!shortLabel)?"":"<em>"+esc(shortLabel+status)+"</em>")+"</span>";
   }
   /* The event list and its decision line are gone (third fitting): the
      judgment window says the ruling and asks the decisions, the badge strip
@@ -2369,7 +2506,7 @@
     }
     if(prompt&&prompt.type==="awakening"){
       var arcana=state.character&&state.character.destinyBuild&&state.character.destinyBuild.arcana||{};
-      return "<div class=\"fh-cd-card is-awakening\"><small>DESTINY REACHES ZERO</small><b>Arcane Awakening</b><p>Natural 20 · "+esc(arcana.name||"Major Arcana")+"</p><div class=\"fh-cd-acts\"><button data-tray-close>OK</button></div></div>";
+      return "<div class=\"fh-cd-card is-awakening\"><small>DESTINY REACHES ZERO</small><b>Arcane Awakening</b><p>"+LEX.crit20+" · "+esc(arcana.name||"Major Arcana")+"</p><div class=\"fh-cd-acts\"><button data-tray-close>OK</button></div></div>";
     }
     /* Right click on a die: its colour, its seal and its own advantage, in one
        card instead of three menus. The card offers only what THAT die can do —
@@ -2507,7 +2644,7 @@
   function rollSummaryText(){
     var cfg=state.rollConfig,staged=stagedList().length;
     if(state.pendingArmed)return state.pendingArmed.kind==="chaos"?"2d6 · Chaos table":"d20 save · DC "+(Number(state.pendingArmed.dc)||10);
-    if(rollOpen())return staged?staged+" new die"+(staged===1?"":"s"):"the same check again";
+    if(rollOpen())return staged?staged+" new "+(staged===1?"die":"dice"):"the same check again";
     if(state.destinyStaged&&!cfg)return "★ Destiny d"+state.destinyStaged.sides+" · spends it";
     if(!cfg)return state.traySelection.length?(state.traySelection.length===1?"1 die":state.traySelection.length+" dice"):"pick dice above";
     var summary=[(cfg.d20Mode==="advantage"?"2d20kh ":cfg.d20Mode==="disadvantage"?"2d20kl ":cfg.d20Mode==="choice"?"2d20 A/D ":"d20 ")+signed(Number(cfg.baseBonus)+(cfg.plusTwo?2:0)+(Number(cfg.custom)||0))];
@@ -2572,15 +2709,15 @@
         }).join("")+"</span></div>";
     }
     if(prompt&&prompt.type==="nat1"){
-      return "<div class=\"fh-cd-judgeask is-nat1\"><b>NATURAL 1 · do you accept your fate?</b>"+
+      return "<div class=\"fh-cd-judgeask is-nat1\"><b>"+LEX.FUMBLE1+" · do you accept your fate?</b>"+
         "<i>Accept: critical failure, +1 Destiny Point. Refuse: the 1 becomes 20, Destiny falls to 0, Chaos becomes pending.</i>"+
         "<span class=\"fh-cd-eacts\"><button type=\"button\" data-tray-accept-fate>Accept</button>"+
         "<button type=\"button\" class=\"is-danger\" data-tray-refuse-fate>Refuse</button></span></div>";
     }
     if(prompt&&prompt.type==="arcane1"){
       var sides=Number(prompt.sides)||4;
-      return "<div class=\"fh-cd-judgeask is-arcane-critical-failure\"><b>ARCANE CRITICAL FAILURE · do you accept your fate?</b>"+
-        "<i>Accept: the failure stands, +1 Destiny Point. Refuse: the 1 reads as "+sides+" — Arcane Critical Success — Destiny falls to 0, Chaos becomes pending.</i>"+
+      return "<div class=\"fh-cd-judgeask is-arcane-critical-failure\"><b>"+LEX.FUMBLEINF+" · do you accept your fate?</b>"+
+        "<i>Accept: the failure stands, +1 Destiny Point. Refuse: the 1 reads as "+sides+" — "+LEX.critInf+" — Destiny falls to 0, Chaos becomes pending.</i>"+
         "<span class=\"fh-cd-eacts\"><button type=\"button\" data-arcane-fate=\"accept\">Accept</button>"+
         "<button type=\"button\" class=\"is-danger\" data-arcane-fate=\"chaos\">Refuse</button></span></div>";
     }
@@ -2679,7 +2816,15 @@
     var sides=POOL_DIE_SIDES.indexOf(Number(raw.sides))>=0?Number(raw.sides):8;
     var kind=raw.kind==="count"?"count":"die";
     var count=clamp(raw.count==null?1:raw.count,0,kind==="die"?1:MAX_POOL_COUNT);
-    return {id:raw.id||uuid(),label:String(raw.label||"Resource").slice(0,14),kind:kind,sides:sides,count:count,
+    /* P9 (ratifiée Eric, 2026-08-07): « Bardic Inspiration » is 61px on a
+       24px pastille and 44.9px under a 38px die — it does not fit anywhere it
+       is shown. So the resource carries TWO names: the one the player reads
+       on a card (14), and the one the narrow surfaces can hold (7). The short
+       one defaults to the first word, which is what P9 pre-fills it with, and
+       stays editable — « Song of Rest » wants « SoR », not « Song ». */
+    var label=String(raw.label||"Resource").slice(0,14);
+    var short=String(raw.short==null?"":raw.short).trim().slice(0,7)||label.split(/\s+/)[0].slice(0,7);
+    return {id:raw.id||uuid(),label:label,short:short,kind:kind,sides:sides,count:count,
       tint:DIE_MATERIAL[raw.tint]&&raw.tint!=="white"&&raw.tint!=="chaos"&&raw.tint!=="gold"?raw.tint:"ash",
       origin:raw.origin||undefined};
   }
@@ -2735,7 +2880,7 @@
       if(!entry)return;
       if(entryBonusDice(entry).length+stagedBonusCount()>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
       res.count=Number(res.count)-1;
-      state.rollSequence.staged=stagedList().concat([{id:uuid(),kind:"bonus",label:res.label,sides:res.sides,sourceIcon:icon,colour:colour,poolResourceId:res.id}]);
+      state.rollSequence.staged=stagedList().concat([{id:uuid(),kind:"bonus",label:res.label,short:res.short,sides:res.sides,sourceIcon:icon,colour:colour,poolResourceId:res.id}]);
       refreshOpenTray(entry);persistPlayState();render();return;
     }
     var cfg=state.rollConfig;
@@ -2744,23 +2889,23 @@
       if((cfg.bonusDice||[]).length>=MAX_BONUS_DICE){state.message="A roll carries at most "+MAX_BONUS_DICE+" bonus dice.";state.messageKind="warn";renderMessage();return;}
       res.count=Number(res.count)-1;
       var bonus=newBonusDie(res.label,res.sides,icon||undefined,colour);
-      bonus.poolResourceId=res.id;
+      bonus.short=res.short;bonus.poolResourceId=res.id;
       cfg.bonusDice.push(bonus);
       syncPresetFlags(cfg);prepareTrayForConfig(cfg);persistPlayState();render();return;
     }
     if(state.traySelection.length>=MAX_FREE_DICE){pushEvent("The free-roll tray holds at most "+MAX_FREE_DICE+" dice","warn");refreshEventPanel();return;}
     res.count=Number(res.count)-1;
     var free=newFreeDie(res.sides,colour||SOURCE_TINT[icon]||"");
-    free.label=res.label;free.poolResourceId=res.id;
+    free.label=res.label;free.short=res.short;free.poolResourceId=res.id;
     state.traySelection.push(free);state.trayResults=[];
     persistPlayState();render();
   }
   /* ── The pool cards (add / edit / overflow list) ────────────────── */
-  function newPoolDraft(){return {label:"",kind:"die",sides:8,count:2,tint:"violet"};}
+  function newPoolDraft(){return {label:"",short:"",kind:"die",sides:8,count:2,tint:"violet"};}
   function openPoolEdit(id){
     var res=poolResourceById(id);
     if(!res)return;
-    state.poolPrompt={type:"edit",id:id,draft:{label:res.label,kind:res.kind,sides:res.sides,count:res.count,tint:res.tint}};
+    state.poolPrompt={type:"edit",id:id,draft:{label:res.label,short:res.short,kind:res.kind,sides:res.sides,count:res.count,tint:res.tint}};
     state.destinyPoolMenu=false;state.diePrompt=null;render();
   }
   // Like syncConsoleInputs: the card's free-text fields are read before any
@@ -2768,8 +2913,9 @@
   function syncPoolCardInputs(){
     var prompt=state.poolPrompt;
     if(!prompt||!prompt.draft||!root)return;
-    var label=root.querySelector("#fhPsPoolLabel"),count=root.querySelector("#fhPsPoolCount");
+    var label=root.querySelector("#fhPsPoolLabel"),short=root.querySelector("#fhPsPoolShort"),count=root.querySelector("#fhPsPoolCount");
     if(label)prompt.draft.label=String(label.value||"").slice(0,14);
+    if(short)prompt.draft.short=String(short.value||"").slice(0,7);
     if(count)prompt.draft.count=clamp(count.value,1,MAX_POOL_COUNT);
   }
   /* R31 (racine, prouvée au banc) : un render() ASYNCHRONE — le timer du
@@ -2781,7 +2927,7 @@
      re-render (synchrone ou minuté). */
   function onPoolCardInput(event){
     var target=event&&event.target;
-    if(target&&(target.id==="fhPsPoolLabel"||target.id==="fhPsPoolCount"))syncPoolCardInputs();
+    if(target&&(target.id==="fhPsPoolLabel"||target.id==="fhPsPoolShort"||target.id==="fhPsPoolCount"))syncPoolCardInputs();
   }
   function savePoolCard(){
     var prompt=state.poolPrompt;
@@ -2809,15 +2955,25 @@
   }
   /* One pastille: a tinted die for kind "die", a ×N chip for a counter,
      the tiny label underneath either way (the ratified maquette). */
-  function poolChipFace(res,size){
-    if(res.kind==="die")return dieSvg(res.sides,size,res.tint||"ash","d"+res.sides);
-    var m=DIE_MATERIAL[res.tint]||DIE_MATERIAL.ash;
-    return "<span class=\"fh-cd-poolx\" style=\"width:"+size+"px;height:"+size+"px;background:"+m.fill+";border-color:"+m.rim+";color:"+m.num+"\">×"+Number(res.count)+"</span>";
+  /* P10 / R39 (ratifiée Eric, 2026-08-07): a counted resource stops being a
+     « ×2 » square and becomes ITS DIE, in its tint, with the count as a
+     corner badge — .fh-cd-mult, the exact form the Destiny row and the
+     selector already use. Ratified with it: top-right like everywhere, GOLD
+     (the dock's language for quantity) rather than the resource's tint,
+     hidden at ×1 as the selector already hides it, and capped at ×9 so the
+     badge is never more than two signs. `withBadge` carries the fifth
+     precision — the badge lives on the BAND only: spending a resource puts a
+     die in play, and a die in play carries no count. */
+  function poolChipFace(res,size,withBadge){
+    var face=dieSvg(res.sides,size,res.tint||"ash","d"+res.sides);
+    if(!withBadge||res.kind!=="count")return face;
+    var count=Number(res.count)||0;
+    return face+(count>1?"<span class=\"fh-cd-mult\">×"+Math.min(9,count)+"</span>":"");
   }
   function poolChipHtml(res){
     return "<button type=\"button\" class=\"fh-cd-poolchip\" data-pool-spend=\""+esc(res.id)+"\" data-pool-id=\""+esc(res.id)+"\""+
       " title=\""+esc(poolTitle(res))+"\" aria-label=\"Spend "+esc(res.label)+"\">"+
-      poolChipFace(res,20)+"<b class=\"fh-cd-poollab\">"+esc(res.label)+"</b></button>";
+      poolChipFace(res,20,true)+"<b class=\"fh-cd-poollab\">"+esc(res.short||res.label)+"</b></button>";
   }
   /* The strip between the gold dice and the arcana. Past what the band
      measured room for (state.poolFit, syncPoolFit), the excess folds into
@@ -2885,7 +3041,9 @@
         dieSvg(6,15,pair[0],"")+(seal?"<span class=\"fh-cd-dmmark\" style=\"color:"+m.num+"\">"+bonusSourceMark(seal)+"</span>":"")+"</button>";
     }).join("")+"</div>";
     return "<div class=\"fh-cd-card is-poolcard\"><small>"+(editing?"POOL RESOURCE · "+esc(draft.label||"—"):"ADD A POOL RESOURCE")+"</small>"+
-      "<div class=\"fh-cd-dmrow\"><span>Label</span><input id=\"fhPsPoolLabel\" maxlength=\"14\" value=\""+esc(draft.label)+"\" placeholder=\"Bardic, Tactical…\" aria-label=\"Resource label\"></div>"+
+      "<div class=\"fh-cd-dmrow\"><span>Name</span><input id=\"fhPsPoolLabel\" maxlength=\"14\" value=\""+esc(draft.label)+"\" placeholder=\"Bardic Inspiration\" aria-label=\"Resource name\"></div>"+
+      // P9: the name the 24px pastille and the 38px die can hold. Empty = the first word.
+      "<div class=\"fh-cd-dmrow\"><span>Short</span><input id=\"fhPsPoolShort\" maxlength=\"7\" value=\""+esc(draft.short||"")+"\" placeholder=\""+esc((draft.label||"").split(/\\s+/)[0].slice(0,7))+"\" title=\"Seven characters — what fits under a die and on the band's pastille\" aria-label=\"Short name\"></div>"+
       kindRow+sidesRow+countRow+tintRow+
       "<div class=\"fh-cd-acts\">"+(editing?"<button class=\"is-danger\" data-pool-delete=\""+esc(prompt.id)+"\">Remove</button>":"")+
       "<button class=\"is-ghost\" data-pool-close>Cancel</button><button data-pool-save>"+(editing?"Save":"Add it")+"</button></div></div>";
@@ -3027,9 +3185,9 @@
      order and is part of the declaration. */
   var ROLL_BADGE_RULES=[
     {id:"natural-20",k:"n20",when:function(e){return e.natural===20;},
-      text:function(){return "NATURAL 20";}},
+      text:function(){return LEX.CRIT20;}},
     {id:"natural-1-accepted",k:"chaos",when:function(e){return e.natural===1&&e.natChoice==="accept";},
-      text:function(){return "NATURAL 1 accepted";}},
+      text:function(){return LEX.fumble1+" accepted";}},
     {id:"fate-refused",k:"chaos",when:function(e){return e.natChoice==="chaos";},
       text:function(){return "Fate refused";}},
     {id:"chaos-roll",k:"chaos",when:function(e){return !!e.chaosRoll;},
@@ -3043,7 +3201,7 @@
     {id:"destiny-spend",k:"destiny",when:function(e){return !!e.destiny;},
       text:function(e){
         var spent=e.destiny,change=Number(spent.pointsAfter)-Number(spent.pointsBefore);
-        var head=spent.criticalSuccess?"Arcane Critical Success":spent.criticalFailure?"Arcane Critical Failure":"Destiny d"+spent.sides+"="+spent.result;
+        var head=spent.criticalSuccess?LEX.critInf:spent.criticalFailure?LEX.fumbleInf:"Destiny d"+spent.sides+"="+spent.result;
         return head+(isFinite(change)&&change?" · "+(change>0?"+":"")+change+" pt → "+spent.pointsAfter:"");
       }},
     {id:"arcane-fate-refused",k:"chaos",when:function(e){return !!(e.destiny&&e.destiny.arcaneChoice==="chaos");},
@@ -3094,7 +3252,7 @@
      decided nothing yet, and it moves into the account when there IS a
      verdict — so the identity of the roll is never lost and never doubled. */
   function rollRuling(entry){
-    if(!entry)return {verdict:"",title:"Roll",account:[],display:[]};
+    if(!entry)return {verdict:"",verdictId:"",title:"Roll",account:[],display:[]};
     var found=rollVerdict(entry),verdict=found?found.verdict:"";
     var title=(entry.name||"Roll")+(entry.total==null?"":" "+entry.total);
     var head=verdict?[title]:[];
@@ -3120,7 +3278,13 @@
     }
     if(entry.destinyPointChange)tail.push(entry.destinyPointChange.reason+" · Destiny "+entry.destinyPointChange.after);
     if(rollHasDc(entry)&&entry.dc!=null)tail.push("DC "+entry.dc);
-    return {verdict:verdict,title:title,account:head.concat(parts,tail),display:head.concat(tail)};
+    /* L87: the dedup used to compare TEXTS, and the moment the verdict was
+       renamed (« NATURAL 20 » → « CRITICAL 20 ») while its badge was not, the
+       comparison stopped matching and the flank restated the same fact under
+       two names. The rule id is the token both sides already share — badge
+       `natural-20` and verdict `natural-20` are the same ruling — so the
+       dedup rides the id and renaming display text is free from here on. */
+    return {verdict:verdict,verdictId:found?found.id:"",title:title,account:head.concat(parts,tail),display:head.concat(tail)};
   }
   /* The one derivation every surface calls. Badges and Ruling come off the
      same entry in the same pass, so a surface cannot read one without the
@@ -3149,6 +3313,12 @@
       outcome:entry.outcome||null,natural:entry.natural==null?null:entry.natural,
       bonus:entry.kind==="d20"?Number(entry.baseBonus)||0:null,
       parts:rollParts(entry),badges:rollBadges(entry).map(function(badge){return badge.t;}),
+      /* Additive on fh-roll/1 (graceful degradation, the bridge's contract):
+         the badge ids and the verdict's id, so ANOTHER dock can dedup a feed
+         line by token instead of by text — the same fix as L87, one surface
+         further out. Old events lack both fields and keep the text path. */
+      badgeIds:rollBadges(entry).map(function(badge){return badge.id;}),
+      verdictId:rollRuling(entry).verdictId||null,
       dice:rollExportDice(entry)};
   }
   function attrJson(value){return esc(JSON.stringify(value)).replace(/'/g,"&#39;");}
@@ -3565,14 +3735,231 @@
      total changed — stays as a chip; measured, it holds inside the 56.
      `speakTitle` rides back to trayLineHtml, which stamps it on the
      speak span so the badges have a hover home even with no verdict. */
+  /* ── Mesurer le texte sans le rendre (P12, P13, P31) ────────────────
+     The flank's cascade and the item pile are decided from a WIDTH, and the
+     width has to be known before the markup exists — a name that will not fit
+     must fall back to its first word, not be cut by the CSS after the fact.
+
+     The table below is Helvetica's advance widths in units of 1/1000 em. It is
+     not the shipped face (-apple-system is SF), and it is not a guess either:
+     it was checked against Eric's own measurements of the real table, taken on
+     the rendered dock at T1 with the flank's .09em letter-spacing —
+       CARACOLE       computed 48.7   measured 49
+       BRUGAR         computed 37.7   measured 38
+       AWKI PACHA-KAY computed 77.2   measured 78.3
+     — i.e. within ~1.5% across a short, a medium and the longest name on the
+     table. That is more than the cascade needs, because the cascade's job is
+     to pick a BRANCH, and the CSS ellipsis is still underneath it as the last
+     net (P6). Unknown characters fall back to the average, never to zero. */
+  var GLYPH_W={
+    " ":278,"-":333,"'":191,"’":191,".":278,",":278,"·":333,"—":1000,"–":556,
+    "→":800,"∞":800,"×":584,"−":584,"+":584,"(":333,")":333,"/":278,":":278,"=":584,"#":556,
+    "0":556,"1":556,"2":556,"3":556,"4":556,"5":556,"6":556,"7":556,"8":556,"9":556,
+    A:667,B:667,C:722,D:722,E:667,F:611,G:778,H:722,I:278,J:500,K:667,L:556,M:833,
+    N:722,O:778,P:667,Q:778,R:722,S:667,T:611,U:722,V:667,W:944,X:667,Y:667,Z:611,
+    a:556,b:556,c:500,d:556,e:556,f:278,g:556,h:556,i:222,j:222,k:500,l:222,m:833,
+    n:556,o:556,p:556,q:556,r:333,s:500,t:278,u:556,v:500,w:722,x:500,y:500,z:500
+  };
+  function textWidthPx(text,sizePx,letterSpacingEm){
+    text=String(text==null?"":text);
+    var em=0,i;
+    for(i=0;i<text.length;i++)em+=(GLYPH_W[text.charAt(i)]||556)/1000;
+    return (em+text.length*(Number(letterSpacingEm)||0))*Number(sizePx||0);
+  }
+  /* ── P12 / P12-bis : le nom du personnage, une ligne, trois branches ──
+     T1, uppercase, 68px of useful flank (P15). Whole name → first word →
+     ellipsis, and the ellipsis is a net that the real table never reaches.
+
+     P12-bis first: a trailing parenthesis is a D&D Beyond convention — the
+     player's first name, or a build marker — and this column says the
+     CHARACTER. Without the rule, « Paxxi (Laurent) » would fit whole at 77.2
+     while « Brann (Laurent) » overflowed by 2.5: two characters of the same
+     player treated differently for the sake of two letters. */
+  /* 7.82 and not 6.8: T1 is 6.8px MULTIPLIED by --cd-fs, whose default is
+     1.15 at 100% zoom — and that is the size Eric's measurements were taken
+     at. The flank's 68px, by contrast, is raw CSS px. The two therefore only
+     line up at the reference, which is the zoom defect bug 6 belongs to and
+     which the architect owns; the cascade is computed at the reference, as the
+     relevé was, and the CSS ellipsis stays underneath at every other zoom. */
+  var TRAY_OWNER_W=68, TRAY_T1=6.8*1.15, TRAY_OWNER_LS=0.09;
+  function trayOwnerName(name){
+    var text=String(name==null?"":name).trim();
+    if(!text)return "";
+    text=text.replace(/\s*\([^()]*\)\s*$/,"").trim()||text;
+    /* Measured in uppercase, RETURNED in its own case: the flank has worn
+       text-transform:uppercase since phase 5, so uppercasing here as well
+       would only make the markup shout at a reader who is not looking at the
+       flank (aria, the deployed history, a copy-paste). The width is what
+       needs the capitals — caps are wider, and it is caps that must fit. */
+    if(textWidthPx(text.toUpperCase(),TRAY_T1,TRAY_OWNER_LS)<=TRAY_OWNER_W)return text;
+    return text.split(/\s+/)[0]||text;
+  }
+  /* ── P13 / P14 : le verdict devient une PILE d'items ────────────────
+     One line per fact, no encapsulation, all at T1. THE CASE SAYS THE RARITY
+     AND THE COLOUR SAYS THE MEANING — that is the whole grammar, and it is
+     what lets four facts live where one sentence used to break over four
+     lines and grow the band to 104px (Eric's bench finding).
+
+     P14b is the rule that makes four lines enough: the informative does NOT
+     enter the pile. « vs DC 15 » is redundant with the verdict (« Success »
+     IS the comparison to the DC) and « Manual » / « adjusted » already live
+     in the total's hover with the arithmetic. The flank tells what happened;
+     it does not do the sums. So the pile is a pile of FACTS and the hover
+     keeps the how.
+
+     Display order is the narrative — verdict, consequence, debt, harm. The
+     EVICTION order is not the same list read backwards (P14a): a debt is the
+     third thing you read and never the first thing you sacrifice. */
+  /* P14a — the eviction order, from the most protected to the first to fall.
+     It is NOT the display order read backwards: a debt is the third thing you
+     read and never the first thing you sacrifice. `fam` is what ranks; `tone`
+     is what colours — the two coincide often enough to be confused, and the
+     « 1→20 » line is exactly where they part (it belongs to the verdict's
+     story, it is written in informative ink, and it is the first to go). */
+  var FLANK_EVICTION={verdict:0,urgent:1,destiny:2,bad:3,info:4};
+  /* ── P31 / P32 : le flanc droit — le nom, puis le type SEULEMENT s'il
+     manque (ratifiées Eric, 2026-08-07) ────────────────────────────────
+     Line 1 is the roll's NAME at T1, line 2 its TYPE at T3, and line 2 is
+     written only when the name does not already say it. « Skill » is never
+     written (Eric): the name of a skill IS the skill. The decisive gain of
+     T1 on line 1 is that the names stop folding — all eighteen skills hold
+     inside 68px, the longest being « Animal Handling » at 60.9 — which was
+     the flank's first defect, nine names out of ten on two lines at T3.
+
+     P32, and its amendment: « Tool - » cost 23px of 68 for something the
+     sheet already says. But the prefix was not the weight — the CATEGORY was:
+     « Tool - Musical Instrument (Lute) » is 118px and « T. Musical Instrument
+     (Lute) » still 103. The ratified rule is `T. ` + the category abbreviated
+     to ONE word + the specifier, no parentheses. One abbreviation, never two:
+     « T. Mus. Inst. Bagpipes » is 81.8 and « T. Mus. Inst. Drum » cleared the
+     limit by 0.7px, which is not a margin. With « Mus. » alone everything
+     holds, and the specifier disambiguates by itself — nobody confuses a lute
+     with a vehicle. This is mechanical, so it needs no field to fill in. */
+  function trayRollName(name){
+    var text=String(name==null?"":name).trim();
+    if(!text)return {name:"Roll",type:""};
+    var tool=/^tool\s*[-:–]\s*(.+)$/i.exec(text);
+    if(tool){
+      var rest=tool[1].trim(),spec=/^(.+?)\s*\(([^()]+)\)\s*$/.exec(rest);
+      if(spec){
+        var category=spec[1].trim().split(/\s+/)[0].replace(/[^A-Za-z']/g,"");
+        return {name:"T. "+(category.length>4?category.slice(0,3)+".":category)+" "+spec[2].trim(),type:""};
+      }
+      // No specifier: drop the noun the sheet already carries (Tools, Kit, Supplies).
+      return {name:"T. "+rest.replace(/\s+(tools?|kit|supplies|set)$/i,""),type:""};
+    }
+    /* The type is glued onto the name upstream (« Constitution Save »,
+       « Greatsword Attack »). Splitting it is what gives line 2 something to
+       hold and line 1 its width back. */
+    var typed=/^(.+?)\s+(save|check|attack|damage)$/i.exec(text);
+    if(typed)return {name:typed[1],type:typed[2].charAt(0).toUpperCase()+typed[2].slice(1).toLowerCase()};
+    return {name:text,type:""};
+  }
+  /* ── P19 / P20 : la légende de l'essaim (ratifiées Eric, 2026-08-07) ──
+     Past six columns the hand has no room for a word under each die, so ONE
+     descriptive line under the crowd explains it: the groups of dice, then
+     the coins — « 8d6 · Bardic d8 · +2 FH · −2 EXH ». T1, informative ink,
+     centred; on 275px the heaviest hand measured is 183, so one line always
+     suffices and the width is never the constraint.
+
+     ⚠️ THE GUARD-RAIL, and it is the whole point: the legend says what the
+     dice ARE — how many, of what shape, from what source. It NEVER says what
+     they did. The « d6 5 · d6 5 · … » enumeration Eric killed on 2026-08-04
+     does not come back through this door.
+
+     P20 is the same decision seen from the coin: in the hand it keeps its word
+     under it; in the swarm it is only its value, painted on its face, and the
+     legend carries the word instead. */
+  function trayLegend(dice){
+    if(!Array.isArray(dice)||!dice.length)return "";
+    var groups=[],index={},coins=[];
+    dice.forEach(function(die){
+      if(die.kind==="modifier"){
+        var value=Number(die.result)||0;
+        coins.push((value>=0?"+":"−")+Math.abs(value)+(handLabel(die)?" "+handLabel(die):""));
+        return;
+      }
+      var name=handLabel(die),shape="d"+Number(die.sides);
+      // « Base d20 » names a role, not a source: in a crowd it adds nothing.
+      if(name===HAND_LABELS.d20)name="";
+      var key=name+"|"+shape;
+      if(index[key]==null){index[key]=groups.length;groups.push({name:name,shape:shape,n:0});}
+      groups[index[key]].n++;
+    });
+    var said=groups.map(function(group){
+      // « 8d6 » when they are alike and nameless, « Bardic d8 » when they have a source.
+      return group.name?group.name+" "+group.shape:(group.n>1?group.n:"")+group.shape;
+    });
+    return said.concat(coins).join(" · ");
+  }
+  function trayFlankItems(entry,ruling){
+    if(!entry)return [];
+    var items=[],spent=entry.destiny;
+    /* 1. The verdict, in its SHORT form — the flank is one of P7's narrow
+       surfaces, so « CRITICAL 20 » reads « CRIT 20 » here and keeps its long
+       form in the judgment box. « CHOOSE » is dropped: the choice is blocking
+       (it covers the builder), so what belongs on the line is its
+       consequence, not a call to action the player cannot miss anyway. */
+    var verdictId=ruling&&ruling.verdictId;
+    if(verdictId==="natural-20")items.push({t:LEX.crit20Short,fam:"verdict",tone:"ok",caps:true});
+    else if(verdictId==="arcane-critical-success")items.push({t:"CRIT ∞",fam:"verdict",tone:"ok",caps:true});
+    else if(verdictId==="natural-1-accepted"||verdictId==="natural-1-open")items.push({t:LEX.FUMBLE1,fam:"verdict",tone:"bad",caps:true});
+    else if(verdictId==="arcane-critical-failure")items.push({t:"FUMBLE ∞",fam:"verdict",tone:"bad",caps:true});
+    else if(verdictId==="fate-refused"){
+      /* « FATE REFUSED 1→20 » splits in two: the ruling, then what it did to
+         the die. One fact per line is the point of the pile. */
+      items.push({t:"Fate Refused",fam:"verdict",tone:"ok",caps:false});
+      items.push({t:"1→20",fam:"info",tone:"info",caps:false});
+    }
+    else if(verdictId==="success")items.push({t:"Success",fam:"verdict",tone:"ok",caps:false});
+    else if(verdictId==="failure")items.push({t:"Failure",fam:"verdict",tone:"bad",caps:false});
+    // 2. What Destiny did — the consequence, in gold.
+    if(entry.awakening)items.push({t:"Awakening",fam:"destiny",tone:"destiny",caps:false});
+    if(spent)items.push({t:"Destiny d"+spent.sides,fam:"destiny",tone:"destiny",caps:false});
+    var change=entry.destinyPointChange;
+    if(change)items.push({t:"Destiny "+(Number(change.after)===0?"→ 0":(Number(change.after)-Number(change.before)>0?"+":"−")+Math.abs(Number(change.after)-Number(change.before))+" → "+change.after),fam:"destiny",tone:"destiny",caps:false});
+    else if(spent&&isFinite(Number(spent.pointsAfter))&&Number(spent.pointsAfter)!==Number(spent.pointsBefore)){
+      var moved=Number(spent.pointsAfter)-Number(spent.pointsBefore);
+      items.push({t:"Destiny "+(Number(spent.pointsAfter)===0?"→ 0":(moved>0?"+":"−")+Math.abs(moved)+" → "+spent.pointsAfter),fam:"destiny",tone:"destiny",caps:false});
+    }
+    // 3. The debt — orange, and never evicted: it is what the table still owes.
+    if(entry.natChoice==="chaos"||(spent&&spent.arcaneChoice==="chaos"))items.push({t:"Chaos pending",fam:"urgent",tone:"urgent",caps:false});
+    if(spent&&spent.chaos)items.push({t:"Overreach "+spent.chaos.overreach,fam:"urgent",tone:"urgent",caps:false});
+    // 4. The harm.
+    if(entry.exhaustion)items.push({t:"Exhaustion "+entry.exhaustion,fam:"bad",tone:"bad",caps:false});
+    /* P14a — eviction, when the pile is deeper than the band. The order is
+       NOT the display order: verdict and urgent are never evicted, then
+       Destiny, then harm. The informative never entered (P14b), so it cannot
+       be the thing that falls out. */
+    return items;
+  }
+  function evictFlankItems(items,capacity){
+    if(items.length<=capacity)return items;
+    var ordered=items.map(function(item,index){return {item:item,index:index};});
+    ordered.sort(function(a,b){
+      var rank=FLANK_EVICTION[a.item.fam]-FLANK_EVICTION[b.item.fam];
+      return rank||a.index-b.index;
+    });
+    var keep={};
+    ordered.slice(0,capacity).forEach(function(row){keep[row.index]=true;});
+    return items.filter(function(item,index){return keep[index];});
+  }
   function trayLineSides(slot,quiet){
     var left="",right="",speakTitle="";
     if(slot.kind==="feed"){
       var display=slot.event.display||{},tone=feedTone(display);
       /* T8 (Eric): a badge that restates the outcome word for word is the
-         doublon — one line says it. Case-insensitive equality only; the
-         wire and the Stream keep the full badge list. */
-      var badges=(display.badges||[]).map(String).filter(function(text){
+         doublon — one line says it. The wire and the Stream keep the full
+         badge list.
+         L87, feed side: the comparison rides the TOKEN when the event carries
+         one (`badgeIds` + `verdictId`, both additive on fh-roll/1), and falls
+         back to the case-insensitive text equality for events posted by a dock
+         that predates them. Text equality alone was what broke the moment the
+         verdict was renamed without its outcome — and on this side the outcome
+         is frozen by L9-L14, so the two strings are now DESIGNED to differ. */
+      var badgeIds=Array.isArray(display.badgeIds)?display.badgeIds:null;
+      var badges=(display.badges||[]).map(String).filter(function(text,index){
+        if(badgeIds&&display.verdictId)return badgeIds[index]!==display.verdictId;
         return !display.outcome||text.toLowerCase()!==String(display.outcome).toLowerCase();});
       var adjustedTexts=badges.filter(function(text){return /^adjusted$/i.test(text);});
       speakTitle=badges.filter(function(text){return adjustedTexts.indexOf(text)<0;}).join(" · ");
@@ -3580,7 +3967,9 @@
         adjustedTexts.map(function(text){return trayBadgeChip("adjusted",text);}).join("");
       /* T11: the CSS was already hiding the right flank's account — stop
          generating it. The hover keeps it: the total carries the title. */
-      right="<b class=\"fh-cd-tray-title\">"+esc(String(display.title||"Roll")+(display.bonus!=null?" "+signed(display.bonus):""))+"</b>"+
+      var feedName=trayRollName(display.title);
+      right="<b class=\"fh-cd-tray-title\">"+esc(feedName.name+(display.bonus!=null?" "+signed(display.bonus):""))+"</b>"+
+        (feedName.type?"<i class=\"fh-cd-tray-kind\">"+esc(feedName.type)+"</i>":"")+
         "<span class=\"fh-cd-tray-total is-"+(tone||"none")+"\""+(display.dc!=null?" title=\"vs DC "+esc(display.dc)+"\"":"")+">"+esc(display.total!=null?display.total:"—")+"</span>";
     }else if(slot.entry&&(slot.kind==="mine"||slot.structured)){
       var entry=slot.entry,vocab=rollVocabulary(entry),ruling=vocab.ruling,tone2=outcomeTone(entry);
@@ -3589,18 +3978,40 @@
          and stay visible while it rolls, exactly as the Stream always did. */
       /* T7's on-line dedup died with the on-line badges (R7): everything but
          "adjusted" leaves for the title, so a badge can no longer double the
-         verdict visually. The equality filter survives FOR THE TITLE — a
-         hover list that restates the visible verdict word for word would be
-         the same doublon one surface further out. */
+         verdict visually. The filter survives FOR THE TITLE — a hover list
+         that restates the visible verdict word for word would be the same
+         doublon one surface further out.
+         L87, fixed 2026-08-06: it compared `badge.t` to `ruling.verdict` as
+         TEXT. The verdict was renamed CRITICAL 20 and the badge was not, so
+         the comparison silently stopped firing and every natural 20 said its
+         own name twice — once on the line, once in its hover. Both sides
+         already carry the same rule id; the id is what they are compared on
+         now, and the display text is free to move for good. */
       var kept=vocab.badges.filter(function(badge){return !(quiet&&badge.spoiler)&&
-        !(ruling.verdict&&badge.t.toLowerCase()===ruling.verdict.toLowerCase());});
+        !(ruling.verdictId&&badge.id===ruling.verdictId);});
       var chips=kept.filter(function(badge){return badge.k==="adjusted";});
       /* `kept` already hid the spoilers while the dice are in the air, so the
          quiet title says only what the player knew before rolling (MANUAL…). */
       speakTitle=kept.filter(function(badge){return badge.k!=="adjusted";})
         .map(function(badge){return badge.t;}).join(" · ");
+      /* P13 (ratifiée Eric, 2026-08-07): the single proposition becomes a PILE
+         — one line per fact, no encapsulation, the case saying the rarity and
+         the colour saying the meaning. Four lines fit a band of 56 and five a
+         deep one; the count rides back to trayLineHtml, which is what deepens
+         the band, so the geometry is decided from the same list that is drawn.
+         `Rolling…` still owns the flank alone while the dice are in the air:
+         a pile of facts about a roll nobody has seen yet would be the spoiler
+         the whole quiet path exists to prevent. */
+      var flankItems=quiet?[]:evictFlankItems(trayFlankItems(entry,ruling),slot.flankCapacity||4);
+      /* The orange blinks for five seconds AT ITS BIRTH, and the birth is the
+         roll's own timestamp — not the moment this markup was built. A tray
+         line is re-rendered every few seconds by the feed poll, so keying the
+         animation on the element would have made a debt blink forever. */
+      var fresh=!quiet&&entry.createdAt&&(Date.now()-Date.parse(entry.createdAt))<5000;
       left=(quiet?"<em class=\"fh-cd-tray-account\">Rolling…</em>"
-          :ruling.verdict?"<b class=\"fh-cd-tray-verdict\">"+esc(ruling.verdict)+"</b>":"")+
+          :flankItems.map(function(item){
+              return "<b class=\"fh-cd-tray-item is-"+item.tone+(item.caps?" is-caps":"")+(fresh&&item.tone==="urgent"?" is-fresh":"")+"\">"+esc(item.t)+"</b>";
+            }).join(""))+
         chips.map(function(badge){return trayBadgeChip(badge.k,badge.t);}).join("");
       /* The live hand keeps trayResultText (it carries the open-roll status,
          staged-dice count included); a settled history line re-derives the
@@ -3610,7 +4021,15 @@
          every line's DOM. The account (full record, T1) and the DC now ride
          the total's hover title instead of being generated then hidden. */
       var hover=[account,(!quiet&&entry.dc!==""&&entry.dc!=null)?"vs DC "+entry.dc:""].filter(Boolean).join(" · ");
-      right="<b class=\"fh-cd-tray-title\">"+esc(String(entry.name||"Roll")+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):""))+"</b>"+
+      /* The name is split from its type here rather than upstream: `entry.name`
+         is the record, it reaches the Stream and the wire, and P31 is a
+         decision about a 68px column — not about what a roll is called. */
+      var mineName=trayRollName(entry.name);
+      /* The hover appears only where something was actually shortened — a name
+         that is written whole needs no tooltip repeating it. */
+      var mineFull=(mineName.name+(mineName.type?" "+mineName.type:""))!==String(entry.name||"Roll")?String(entry.name||"Roll"):"";
+      right="<b class=\"fh-cd-tray-title\""+(mineFull?" title=\""+esc(mineFull)+"\"":"")+">"+esc(mineName.name+(entry.kind==="d20"&&isFinite(Number(entry.baseBonus))?" "+signed(entry.baseBonus):""))+"</b>"+
+        (mineName.type?"<i class=\"fh-cd-tray-kind\">"+esc(mineName.type)+"</i>":"")+
         "<span class=\"fh-cd-tray-total is-"+(quiet?"quiet":(tone2||"none"))+"\""+(hover?" title=\""+esc(hover)+"\"":"")+">"+(quiet?"…":esc(entry.total))+"</span>";
     }else{
       /* A prompt that overwrote the tray fields while dice are engaged
@@ -3652,7 +4071,21 @@
        roll-small-stop-zoom collapses to a straight tumble; the wave and
        settle machinery stays (rows still land ten by ten under the
        ~16-context cap, and the settled die is still reborn a snapshot). */
-    var swarm=realDice>5;
+    /* ── P23 (ratifiée Eric, 2026-08-07) : le seuil se calcule sur la LARGEUR
+       Three ordinary hands overflowed in production because the threshold
+       counted REAL DICE and the coins were counted nowhere — a coin is 26px
+       plus a gap, and « 2d20 advantage + 2 bonus + 3 coins » is four dice and
+       278px on a zone of 275. And the overflow was silent: the zone is
+       overflow-x:auto with scrollbar-width:none, so the dice simply left the
+       screen. The rule is the arithmetic itself:
+           dice × 38 + coins × 26 + (columns − 1) × 8 ≤ 275
+       Règle de tête, and it is worth carrying: a coin is three quarters of a
+       die, and the hand holds up to six. P15's 14px are what bought the sixth
+       (6 × 38 + 5 × 8 = 268, which did not fit in the old 261). */
+    var coinCount=slot.dice.length-realDice;
+    var columns=slot.dice.length;
+    var handWidth=realDice*TRAY_DIE_SKILL+coinCount*TRAY_COIN_W+Math.max(0,columns-1)*TRAY_HAND_GAP;
+    var swarm=columns>0&&handWidth>TRAY_DICE_W;
     var infinite=realDice>30;
     var rows=realDice>10&&!infinite;
     var waved=rows;
@@ -3694,14 +4127,38 @@
        the time still ride the hover title, and the reopen gesture the chip's
        button carried now lives on the name. */
     var hoverText=who+(time?" · "+time:"");
+    /* P12/P12-bis: the cascade decides a BRANCH before the markup exists —
+       whole name, else first word, else the CSS ellipsis underneath as the
+       last net. The hover keeps the source name in full, parenthesis and all,
+       so nothing is lost by the column that says the character. */
+    var shownWho=trayOwnerName(who)||who;
     var whoHtml="<span class=\"fh-cd-tray-owner\" title=\""+esc(hoverText)+"\">"+
-      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+esc(who)+"</button>"
-        :"<b aria-label=\""+esc(who)+"\">"+esc(who)+"</b>")+"</span>";
+      (reopen?"<button type=\"button\" data-history-id=\""+esc(slot.entry.id)+"\" aria-label=\""+esc(who)+" — reopen this roll\">"+esc(shownWho)+"</button>"
+        :"<b aria-label=\""+esc(who)+"\">"+esc(shownWho)+"</b>")+"</span>";
+    /* P13-ter: FIVE items need a deep band, and the pile has to be counted
+       before it is drawn — the band's height and the capacity handed to the
+       eviction are the same decision. A deep band costs a visible roll
+       (72 + 3×56 = 240, and the 44 left will not hold a fifth), which is
+       exactly why the informative never enters the pile (P14b) and why five
+       items are an exceptional chain rather than a Tuesday. */
+    var pileSize=(!quiet&&slot.entry&&(slot.kind==="mine"||slot.kind==="live"||slot.structured))
+      ? trayFlankItems(slot.entry,rollRuling(slot.entry)).length : 0;
+    var deepFlank=pileSize>=5;
+    slot.flankCapacity=deepFlank?5:4;
     var sides=trayLineSides(slot,quiet);
+    var legend=swarm&&!infinite?trayLegend(slot.dice):"";
     var row="<span class=\"fh-cd-tray-left\">"+whoHtml+"<span class=\"fh-cd-tray-speak\""+
         (sides.speakTitle?" title=\""+esc(sides.speakTitle)+"\"":"")+">"+sides.left+"</span></span>"+
+      /* P19: the legend belongs to the swarm and to the rows, never to the
+         hand — the hand has its labels and, at 0.4px of remaining height, no
+         room for a second line anyway. Two regimes, two tools: a word under a
+         die designates THAT object, a legend can only count. The wrapper is
+         raised ONLY when there is a legend to stack, so a hand's middle span
+         stays the direct flex child it has always been. */
+      (legend?"<span class=\"fh-cd-tray-mid\">":"")+
       "<span class=\"fh-cd-tray-dice"+(swarm&&!infinite?" is-swarm":"")+(rows?" is-rows":"")+(infinite?" is-infinite":"")+"\""+
         (swarm&&!infinite?" style=\"--fh-cd-tray-die-size:"+settlePx+"px\"":"")+">"+diceHtml+"</span>"+
+      (legend?"<small class=\"fh-cd-tray-legend\">"+esc(legend)+"</small></span>":"")+
       "<span class=\"fh-cd-tray-right\">"+sides.right+"</span>";
     /* The live hand keeps the frame — and with it the mood streaks that say
        what the table still owes. History and feed lines carry no frame: a
@@ -3713,12 +4170,18 @@
     /* 21-30 dice need three rows of ten at 20px — the ONE case that grows
        a line past the 56px nominal (to 72; règle Eric, lot BACKLOG-B
        2026-08-05). Past 30 the ∞ takes over and the line stays nominal. */
-    var deep=realDice>20&&!infinite;
+    /* P22: three rows of ten are 66px of dice, 76.6 with the legend and its
+       gap — a band of 83.6, rounded to 85. It costs a visible roll (85 + 3×56
+       = 253 of 284) and that is assumed: there are thirty dice to show, which
+       is a good reason to overflow. Below it, 11-20 dice sit in the 72 P13-ter
+       also uses; the two constraints landed on the same numbers. */
+    var deeper=realDice>20&&!infinite;
+    var deep=(rows&&!deeper)||deepFlank;
     /* M3b: the line that just climbed announces itself — once. The flag is
        consumed by diceTrayInner after this pass, so later renders (feed
        polls land every few seconds) never restart the liseré. */
     var surfaced=!frozen&&!!(state.traySurfaceFlash&&slot.id===state.traySurfaceId&&slot.kind!=="live");
-    return "<li class=\"fh-cd-trayline "+sizeClass+(deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(surfaced?" is-surfaced":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
+    return "<li class=\"fh-cd-trayline "+sizeClass+(deeper?" is-deeper":deep?" is-deep":"")+(slot.kind==="feed"?" is-feed":" is-mine")+(slot.kind==="live"?" is-livehand":"")+(surfaced?" is-surfaced":"")+"\" data-tray-line=\""+esc(slot.id)+"\">"+row+"</li>";
   }
   /* The three feed states, one derivation (T24): the Identity chip's title
      and the Stream's cap read the SAME phrases instead of each keeping a
