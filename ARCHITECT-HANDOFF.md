@@ -369,6 +369,39 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 
 ## 6. State at handoff
 
+> 🌙 **EVENING OF 2026-08-06 — the PiP check passed, the zoom chapter was
+> opened and closed again.** All of it lives on `tray-labels-r34-r39`;
+> **`main` was not touched** (it is still `4d4ba4b`).
+>
+> **PiP: 4/4.** Floating menus open inside the detached window (the classic
+> failure avoided), a roll fires and lands, closing restores the docked view
+> with state intact. Eric drove it; the seat only measured.
+>
+> **Kept on the branch** — `0cbcf9a`: the T scale exists in code
+> (`--cd-t1`…`--cd-t7`), `.fh-cd-tray-outcome` reads a rung instead of
+> inheriting the page's 16px outside the zoom system, and the dead
+> `is-l1{min-height:84px}`, the orphan cap rules and `--cd-traycap-h` are
+> gone (`--cd-tray-h` is declared once). `6de2d36`: the scroll chevrons moved
+> off the dice into the left flank — centred, they sat on the top line's dice.
+>
+> **Reverted** (`c6d6293`, reverting `26a384a` + `6274856` + `98d989f`):
+> making the flanks, dice, zone, bands, chevron step and panel follow
+> `--cd-zoom`. It measured clean — every ratio exactly 1.500 — but the skills
+> panel could vanish at 125 % in a short PiP window, and neither of us could
+> say whether that was new. **Eric: « lâche l'affaire avec le zoom ».**
+> The standing lesson, and the reason it is written here rather than lost:
+> **the zoom chapter restarts from the DECISION, not the CSS — what does
+> zooming mean inside a dock of fixed height?** Until that is answered every
+> fix is a 1am patch. The old zoom (merged 2026-08-03, never deployed) stays
+> as it was.
+>
+> **Mirror**: refreshed and pushed (`FH-Mirror` `b516bec`) but **not live** —
+> GitHub Actions is failing to assign a runner (`The job was not acquired by
+> Runner of type hosted`), so the build is cancelled after ~15 min and the
+> deploy skips. Nothing to fix in the repo; queued commits accumulate and the
+> next build that gets a machine ships them all. The bench therefore still
+> serves the previous refresh.
+
 > ✅ **DICE TRAY MERGED 2026-08-06 — `main` = `79195ea` (guide v1.5 = `9cb9c5a`).**
 > 47 commits from `dock-dice-tray`: the tray extracted as zone 9 with **five**
 > named bands (Live/Current/Deep/Empty — the cap died on 08-05 and its 56px
