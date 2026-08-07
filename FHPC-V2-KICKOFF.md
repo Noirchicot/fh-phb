@@ -52,6 +52,19 @@ transplantée dans `fhpc/ARCHITECTURE.md` au lot 1).
 11. **Zéro build, zéro framework, zéro dépendance runtime.** ESM natif,
     `node:test`. Dépendances de **dev** : autorisées si épinglées (précédent
     linkedom), listées dans la section du lot.
+12. **⚠️ LE SRD EST LA BASE, FH EST UNE COUCHE PAR-DESSUS — jamais l'inverse,
+    jamais mélangés.** (Eric, 2026-08-07, en arrêtant l'architecte : *« on
+    construit théoriquement le SRD en premier, pourquoi tu me poses des
+    questions sur FH ? FH c'est la couche par-dessus »*.) Tout lot qui touche
+    une règle du jeu doit pouvoir répondre **oui** à : *« un personnage SRD
+    pur, sans aucune couche FH chargée, traverse-t-il ce code de bout en
+    bout ? »* Une mécanique FH (Destinée, Chaos, Overreach, Éveil, Arcanes)
+    vit dans un **module activé par un drapeau de couche**, jamais tissée dans
+    le chemin commun.
+    **Payé le 2026-08-07** : le lot `3-moteur` a porté fidèlement le moteur v1
+    — et donc **384 lignes sur 2 556 citant une mécanique FH, sans aucun
+    interrupteur**. La commande était fautive, pas le lot : elle disait
+    « porter » sans exiger la séparation. D'où le lot `5-moteur-srd-fh`.
 
 ---
 
@@ -277,12 +290,72 @@ livraison). Parallèle autorisé avec le lot `2-schemas`.
 
 ---
 
+## §L5 — LOT `5-moteur-srd-fh` : le SRD dessous, FH en couche — **Opus · high**
+
+**Après merge du lot `3-moteur`** (il coupe le code que ce lot a livré). Worktree
+`~/tools/fhpc-worktrees/5-moteur-srd-fh`, branche `5-moteur-srd-fh`. Parallèle
+autorisé avec le lot `4-couche-srd` (répertoires disjoints : `src/play/` contre
+`src/tools/` + `layers/`).
+
+**Pourquoi ce lot existe.** Le lot 3 a porté le moteur v1 fidèlement, ce qui
+était sa commande — et le moteur v1 est un moteur **Fate's Hand**, pas un
+moteur SRD. Mesuré le 2026-08-07 : **384 lignes sur 2 556** citent une mécanique
+FH (326 dans `session.mjs`), et **aucun drapeau, aucun interrupteur** ne permet
+d'éteindre FH. C'est la loi §0.12 qui manquait. Eric a ratifié la correction le
+même jour : **garder le lot 3 comme base testée, couper ensuite.**
+
+**Ce qui rend ce lot faisable, et qu'il faut avoir en tête** : la coupe n'est
+PAS une coupe par *pureté* (celle qui a un plafond bas — trois refus mesurés en
+v1). C'est une coupe **par capacité** : un drapeau allume un module. Elle se
+fait sur du code déjà sorti du DOM, avec **64 tests** qui disent immédiatement
+si elle casse quelque chose. Ce filet n'a jamais existé en v1.
+
+1. **Mesurer avant de couper.** Inventorier, ligne par ligne, ce qui est SRD
+   (d20, avantage/désavantage, modificateur, DD, compétences, dégâts,
+   historique, transaction) et ce qui est FH (Destinée, Chaos, Overreach,
+   Éveil, Arcanes). **Tout ce qui ne se range pas clairement d'un côté est un
+   STOP**, pas un arbitrage du lot (loi §0.10).
+2. **Le mécanisme d'extension existe probablement déjà — vérifie-le avant d'en
+   inventer un.** Le moteur porté a des **phases de séquence** nommées
+   (`rollSequence.phase`, `BLOCKING_PHASES`). L'hypothèse de l'architecte est
+   qu'un module de couche s'inscrit sur une phase, et que cela suffit — comme
+   le vocabulaire `data-*` de la v1 qu'il a suffi de *nommer*. **Si les phases
+   existantes ne suffisent pas, ne bricole pas : remonte à l'architecte** avec
+   la mesure de ce qui manque.
+3. **Les modules FH s'enregistrent, ils ne sont pas appelés.** Le chemin commun
+   ne cite jamais Destinée ni Chaos. Pas de `if (fh) … else …` semé dans le
+   code : c'est la forme dégradée de la même erreur.
+4. **Pas de code mort derrière un interrupteur** (loi §0.6) : les modules FH
+   sont du code vivant, chargés quand leur drapeau est levé, absents sinon.
+5. **Les 64 tests restent verts**, et la discipline `REWRITTEN` (loi §0.7)
+   s'applique à chaque assertion que la coupe rend fausse. Les suites qui
+   testent une mécanique FH deviennent des suites **de la couche FH** —
+   déplacées, jamais supprimées.
+
+### 🎯 Le test d'acceptation — c'est lui qui dit si le lot a réussi
+
+> **Un personnage SRD pur, aucune couche FH chargée, lance un jet de compétence
+> de bout en bout et obtient son résultat.**
+
+Écrit comme une suite exécutable (`tests/play-srd-only.test.mjs`), il fait foi.
+S'il passe, la séparation est réelle ; s'il ne peut pas être écrit, elle est
+décorative — et le lot le dit platement plutôt que de la maquiller.
+
+6. **Livrable** : `src/play/` recoupé, le test d'acceptation, l'inventaire écrit
+   de la coupe (ce qui est parti côté FH et pourquoi), `contracts/play.md` mis à
+   jour, et la liste des drapeaux de couche que FH doit lever — elle devient
+   une entrée du schéma `fh-layer/1`.
+
+---
+
 ## §6 — Séquencement, revue, fusion
 
 ```
 VAGUE 1 : 1-squelette    (Sonnet·high, sur main)   ← seul, tout en dépend
-VAGUE 2 : 2-schemas      (Opus·high)   ∥   3-moteur (Opus·high)
-VAGUE 3 : 4-couche-srd   (Sonnet·medium)           ← dépend du lot 2 FUSIONNÉ
+VAGUE 2 : 2-schemas      (Opus·high)   ∥   3-moteur (Opus·high)     ✅ livrés
+VAGUE 3 : 4-couche-srd   (Sonnet·medium)  ∥  5-moteur-srd-fh (Opus·high)
+          ↑ dépend du lot 2 FUSIONNÉ         ↑ dépend du lot 3 FUSIONNÉ
+          (répertoires disjoints : src/tools/+layers/ contre src/play/)
 ```
 
 ### La règle de séquencement — une seule, et elle est vérifiable
