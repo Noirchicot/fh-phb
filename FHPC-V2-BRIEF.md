@@ -136,6 +136,74 @@ donc rien ne presse — mais on ne débranche rien.
 
 ---
 
+## 4b. L'inventaire d'Eric — les surfaces et les fonctions
+
+Eric a donné cet inventaire de vive voix le 2026-08-07, avant le virage. Il est
+reproduit ici parce qu'il n'existe nulle part ailleurs et qu'il **ne se déduit
+d'aucun fichier** : c'est son intention produit, pas l'état du code.
+
+⚠️ **Comment le lire.** Les états (« fini », « à faire ») décrivent le **dock
+v1**, qui gèle. Ce n'est **pas un backlog à exécuter**. C'est la liste de ce
+que chaque surface doit **finir par savoir faire** — donc une **liste
+d'exigences pour la v2**, et le meilleur test qui existe d'une architecture
+proposée : si un découpage rend l'une de ces lignes coûteuse, il est faux.
+
+### Les surfaces visibles
+
+| Surface | Ce qu'Eric en dit | Ce que ça pèse pour la v2 |
+|---|---|---|
+| **Roller** | « quasi fini, quelques petits bugs à revoir » | La partie mûre. C'est elle qu'on porte (§4) |
+| **Badges** | « soit la rattacher au roller, soit la rendre indépendante. **À statuer** » | Une question d'architecture ouverte, posée par Eric lui-même. Le lexique de jet (`badgeIds`) existe déjà et rend l'indépendance possible |
+| **D&DP** | « **à refaire, sur la structure**. Le free roller part de là » | Une refonte structurelle assumée, avec une dépendance en aval |
+| **Console** | « architecture **différente** selon Skill, Actions ou Spells (probablement) » | ⚠️ Le signal le plus fort de l'inventaire : une même surface avec trois formes. Elle ne peut pas être un bloc unique |
+| **Dice Builder** | « quelques considérations esthétiques mais **il fonctionne** » | Acquis |
+| **ID du perso** | « contiendra **les fonctions globales dans son menu**, en plus de l'ID » | ⚠️ Entre en tension avec une règle ratifiée (*Identity = identité + chrome de fenêtre uniquement, jamais de navigation de contenu*). Si ce sont des actions de contenu, c'est un **amendement**, pas une exécution — voir §11 |
+| **Vitals** | « doit encore intégrer **les PV, les Conditions, Short rest / Long rest**. Du travail là-dessus » | Les rests touchent des ressources que d'autres surfaces possèdent. C'est un test de la frontière de commande (§3.2) |
+| **Skills** | « **fini** » | Acquis |
+| **Actions** | « **travail de fond** à faire » | |
+| **Spells** | « à faire » | Le plus gros morceau de données ; dépend directement de la couche SRD |
+| **Traits** | « à faire » | |
+| **Notes** | « à faire » | Contenu saisi à la main → c'est exactement ce que le défaut de persistance touche |
+| **Gear** | « à faire » | |
+| **Craft** | « tout est **déjà câblé mais pas rattaché** au FHPC — il va probablement fonctionner **en parallèle avec Gear** » | Deux surfaces sur un même stock d'objets. À traiter comme un cas de propriété partagée dès la conception, pas après |
+| **Info Panel** | ajouté par Eric juste après (« oui j'avais oublié l'info panel ») | |
+
+### Les fonctions invisibles à l'œil nu
+
+Eric les appelle ainsi. Ce sont les surfaces **sans écran** — et c'est là que
+se joue la thèse du produit.
+
+| Fonction | Statut au 2026-08-07 |
+|---|---|
+| **KV cloud** | Existe. Contraintes dures, voir §6 |
+| **Rattachement à AboveVTT** | Existe (pont, extension Chrome) |
+| **Character builder** | ⭐ **C'est devenu le produit lui-même** |
+| **DM Panel** | « peut être sympa **à discuter** » — pas tranché |
+| **Connexion SRD** | Base importée (`fh-srd`) — « j'ai importé le SRD pour pouvoir tout construire ici » |
+| **Connexion FH** | Existe, et doit être **débrayable** : « possible de désactiver l'aspect FH pour être pur SRD » |
+| **Connexion à d'autres extensions D&D** | Ouverture à prévoir |
+| **Connexion IA pour piloter** | ⭐ Devenue la décision 1 (serveur MCP) |
+| **Connexion à un Homebrew** | ⭐ Devenue la décision 2 (le conteneur du MJ) |
+| **Connexion à d'autres VTT** | ⭐ Le cœur de la thèse — Foundry, Roll20 |
+| **Pull chez D&D Beyond** | « ancienne fonction, **pas nécessairement viable sur le long cours** » — confirmé depuis comme contrainte juridique (§3.5) |
+
+### Les précisions données le même jour
+
+- **Le builder aura deux interfaces distinctes** : « probablement une interface
+  différente sur mobile », et « s'ouvrira **pleine page** sur PC/Mac ».
+  **Pas du responsive** — deux surfaces.
+- **Le compte joueur** : « le joueur a un compte joueur avec des persos, il peut
+  **créer, gérer** des persos, et **se rattacher à une campagne** ». À lire avec
+  la décision 3 : il héberge ses données, il partage une copie.
+- **Le multilingue** : « oui, effectivement c'est bien d'**ouvrir l'option** ».
+  Ouvrir, pas livrer — mais une décision qui coûte cher à rétrofitter.
+- **Retour en arrière sur la complexité de FH** : « pas nécessaire au-delà des
+  corrections **bardic, tactic, destiny** ».
+- **Les persos existants** : « ils sont tous sur DDB et on sait les importer » —
+  d'où la décision 4.
+
+---
+
 ## 5. Pourquoi la v1 ne peut pas y aller par refactoring
 
 Ce n'est pas une opinion, c'est mesuré le 2026-08-07 :
