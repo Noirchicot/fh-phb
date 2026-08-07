@@ -564,6 +564,16 @@ une mesure a contredit une affirmation confiante qui était la sienne.
 | **Règles et juridique SRD** | Sonnet · high | SRD 5.2.1 CC-BY-4.0, règles **et** licence | ⚖️ La couche FH de base : publique, privée, ou publique-réduite ? |
 | **Fate's Hand** | Opus · medium | Les règles maison d'Eric | L'Éveil arcanique : le moteur peut-il appliquer la partie chiffrée ? |
 
+**Les trois fils existent depuis le 2026-08-08.** Titres exacts, pour les
+retrouver via `list_sessions` (l'architecte peut leur écrire avec
+`send_message`) :
+
+| Conseiller | Titre du fil |
+|---|---|
+| Fate's Hand | `EXPERT Fate's Hand system advisor` |
+| SRD | `EXPERT conseiller SRD` |
+| VTT | `EXPERT  conseiller VTT` (deux espaces après EXPERT) |
+
 **Les trois lois gravées dans chaque mandat**, et c'est ce qui les rend utiles
 plutôt que dangereux :
 1. **Dire « je ne sais pas » plutôt qu'inventer.** Une réponse assurée et fausse
