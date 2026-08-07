@@ -113,5 +113,12 @@
     "Distribution de l'extension AboveVTT (packaging, installation MJ).",
     "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — le tray est fusionné, cette vérif reste due avant l'OUVERTURE DE LA PORTE."
   ],
-  "problems": []
+  "problems": [
+    {
+      "name": "🚨 TROU DE CONTENU CRITIQUE — les tables de progression de classe ne sont pas dans fh-srd (trouvé 2026-08-08)",
+      "repo": "fh-srd",
+      "state": "probleme",
+      "note": "TROUVÉ par l'EXPERT conseiller SRD, VÉRIFIÉ par l'architecte sur les exports : les tables de progression de classe (emplacements de sorts par niveau, sorts connus, progression chiffrée) N'EXISTENT PAS comme données dans ~/tools/fh-srd/exports/srd/{fr,en}/class.json. La mention « Spell Slots per Spell Level » n'apparaît QUE comme fragment de texte au milieu d'une description ; zéro table niveau→emplacements, zéro 'cantrips known', zéro 'progression'. Le README de fh-srd le confirme : ces tables sont DÉLIBÉRÉMENT DIFFÉRÉES (« the class level-progression tables (spell slots, class resource dice) deliberately deferred »). CONSÉQUENCE DIRECTE : le builder NE PEUT PAS DÉRIVER UN LANCEUR — ni ses emplacements, ni sa progression. Ce n'est pas un problème de multiclassage, c'est un magicien NIVEAU 1 qui ne se construit pas. Touche le chemin critique du 7 novembre (M2 build + M3 builder desktop). ACTION : un lot d'import des tables de progression dans fh-srd est nécessaire AVANT que le builder puisse dériver quoi que ce soit de lanceur ; à ordonner par Eric. Le lot 4-couche-srd doit, lui, DOCUMENTER l'absence plutôt que de la découvrir. 📌 C'est la première trouvaille des conseillers experts, et elle justifie à elle seule le dispositif : l'architecte ne l'avait pas vue en deux jours."
+    }
+  ]
 }
