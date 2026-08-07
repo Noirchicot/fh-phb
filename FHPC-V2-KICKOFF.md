@@ -1,0 +1,285 @@
+# FHPC v2 — KICKOFF : plan de lots exécutables
+
+**Écrit le 2026-08-07 par l'architecte v2 (Fable), après ratification par Eric des
+quatre décisions d'architecture.** Ce fichier est lu par les **sessions de lot**
+(Opus/Sonnet) : chaque lot exécute sa section, rien d'autre. L'architecte (fil
+séparé) revoit et fusionne — discipline `ARCHITECT-HANDOFF.md` §4 : *vérifier,
+ne pas croire*.
+
+Décisions ratifiées et architecture complète : vault
+`7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHPC v2 — Architecture.md`
+(miroir des décisions ; le §1 ci-dessous est la version canonique côté dépôt,
+transplantée dans `fhpc/ARCHITECTURE.md` à J0).
+
+---
+
+## §0 — Lois communes à TOUS les lots (non négociables)
+
+1. **`git push`, création de remote GitHub, tout déploiement = gestes d'Eric.**
+   Tendre les commandes, ne jamais les passer.
+2. **Ne jamais écrire dans `fh-phb`, `fh-srd`, `fh-worker`, `fh-table`** — lecture
+   seule. Le travail v2 vit dans `~/tools/fhpc` (créé à J0).
+3. **Rapporter n'est pas livrer.** Fin de lot = commits réels, arbre propre,
+   SHAs listés, suites vertes re-exécutées. Deux lots v1 ont dit « terminé »
+   avec tout en non-commité.
+4. **Nommer la branche d'après le travail, AVANT de commencer.** Jamais de nom
+   généré.
+5. **Aucun repli silencieux, aucun échec muet.** Un module manquant, un schéma
+   violé, un MANIFEST qui ne matche pas → erreur bruyante qui nomme la chose.
+6. **Pas de code mort derrière un interrupteur.** Une feature non voulue est
+   supprimée, pas désactivée.
+7. **Assertions** : quand un changement rend une assertion fausse, la réécrire à
+   la nouvelle vérité et la marquer `REWRITTEN` **sur sa propre ligne** (une
+   marque en milieu de ligne a déjà commenté quatre assertions et rendu une
+   suite verte à tort). Jamais relâcher, jamais supprimer.
+8. **Dépôt public** : jamais de propos sur des personnes, jamais de contenu
+   WotC ni de contenu tiers non-CC. Le juridique est une problématique de
+   premier rang (Eric, 2026-08-07).
+9. **Lois économiques (Eric, 2026-08-07)** : aucun serveur mondial à maintenir
+   (seule exception tolérée, à trancher par Eric : le partage public de
+   homebrew) ; **aucune table ne doit être obligée de payer un KV cloud** — le
+   transport de table vit sur la machine du MJ, le cloud n'est qu'un appoint
+   gratuit optionnel.
+10. **Décision non couverte par ta section → STOP, question à l'architecte.**
+    Ne jamais improviser une valeur, un nom ou une règle (la v1 a payé « 43
+    tailles de police inventées » pour l'avoir permis).
+11. **Zéro build, zéro framework, zéro dépendance runtime.** ESM natif,
+    `node:test`. Dépendances de **dev** : autorisées si épinglées (précédent
+    linkedom), listées dans la section du lot.
+
+---
+
+## §1 — Architecture canonique (→ à transplanter dans `fhpc/ARCHITECTURE.md` à J0)
+
+> À J0 : déplacer le contenu de cette section dans `~/tools/fhpc/ARCHITECTURE.md`
+> et remplacer ici par « → transplanté ». Une seule copie vivante.
+
+### Le produit
+
+Constructeur de personnage indépendant sur SRD 5.2, couches de règles
+empilables (FH livrée, homebrew par MJ). Thèse : « le joueur peut se balader
+partout avec ses persos et les tweaker. » FHPC est un serveur MCP ; l'IA du
+joueur porte le perso dans les VTT. Le personnage appartient au joueur, la
+campagne au MJ. Date dure unique : **2026-11-07, la table d'Eric joue**.
+
+### Le document `fh-char/1` — deux étages, un fichier JSON
+
+- **`resolved`** : la fiche jouable, valeurs finales uniquement (CA, PV,
+  compétences, actions, sorts avec DD/bonus calculés, ressources comptées,
+  vitals persistants). Aucun pointeur vers des règles. Joue sans ses couches,
+  et **le dit** (dégradation bruyante).
+- **`build`** : manifeste des couches (`{id, version, hash}`), choix,
+  **overrides de première classe** (`{path, value, note, by}`) appliqués en
+  dernier. « La parole du MJ bat le JSON » ; les tweaks survivent à toute
+  reconstruction ; l'écart règles↔décision est affichable, jamais écrasé.
+
+Règles : (1) `resolved` n'est écrit que par la dérivation — pli de la pile
+SRD → FH → homebrew → overrides ; (2) un seul chemin d'édition avec ou sans
+couches : l'override ; (3) ouvert sans ses couches : `resolved` joue, `build`
+reste inerte et intact, les couches manquantes sont listées et affichées.
+
+### Les couches `fh-layer/1` — données, jamais du code
+
+Manifeste + records par genre (les 12 genres `fh-srd` : armor, background,
+class, feat, gear, glossary, item, monster, species, spell, tool, weapon —
+plus les genres FH à venir). Une couche **ajoute** des records, **patche** un
+record par id, **désactive** un record, **lève des drapeaux de capacités**
+(ex. `fh.destiny`). Jamais d'exécutable — un homebrew d'inconnu est inoffensif
+à charger. Les mécaniques nouvelles sont des **modules moteur** activés par les
+drapeaux, pas du contenu de couche (décision Q4).
+
+### Les blocs — verbes en entrée, événements en sortie, état privé
+
+Chaque bloc : ses verbes (seul point d'entrée), sa tranche d'état (lui seul
+l'écrit), ses événements (seul moyen pour les autres de savoir). Personne ne
+lit l'état d'un autre bloc autrement qu'en s'abonnant. Contrat écrit par bloc
+dans `contracts/`.
+
+| Bloc | Verbes (échantillon) | État possédé | Événements |
+|---|---|---|---|
+| `doc` | open, save, list, import, export, duplicate | documents au repos (stockage local) | doc-opened, doc-saved |
+| `layers` | register, enable, disable, query(kind, id) | contenu des couches chargées, pile active | layers-changed |
+| `build` | choose, set, override, rebuild, validate | tranche `build` du perso ouvert | char-rebuilt (avec diff) |
+| `play` | vocabulaire `data-*` v1 nommé : stageDie, roll, spendDestiny, resolvePending… | état de séance : transaction, pools, main, tray, historique | roll-settled (`fh-roll/1` + `intent`), pool-changed |
+| `table` | share, join, goLive | état de livraison, LIVE/RECENT/OFF | feed-updated, table-status |
+| `mcp` | adaptateur : doc/build/play en tools+resources | aucun | — |
+| `connect-ddb` | pull, push (détachable, jamais diffusé) | état de liaison | — |
+
+UI (consommatrices, jamais propriétaires) : `ui-builder-desktop` (premier,
+iPad compris), `ui-builder-mobile` (plus tard, pensé différemment — « on ne
+peut pas tout voir en même temps »), vue de jeu minimale (date), dock v1
+(gelé, repli). Bibliothèques pures partagées : visuels de dés, lexique de jet.
+
+**Test d'acceptation de la carte** : toute feature écrit l'état d'UN seul
+bloc ; les traversées passent par événements. Une feature qui exige d'écrire
+deux tranches = bug de découpage, corriger avant de coder.
+
+### Persistance (leçons `fix-panel-persistence`, gravées)
+
+1. Jamais de fusion par `||` — le vide ne bat jamais le rempli sans choix
+   explicite de l'utilisateur.
+2. Tout rejet bruyant de bout en bout (contre-modèle : `safeOpaque → null`).
+3. Une seule liste blanche générée du schéma, client ET serveur — jamais de
+   strip silencieux derrière un `200 OK`.
+4. L'état de séance (main, sélection, transaction) ne voyage pas ; les
+   ressources comptées vivent dans `resolved` et se décrémentent **au
+   règlement** (événement), pas par élagage de références.
+
+Baseline du voyage : export/import fichier. Toute synchro : optionnelle et
+débranchable.
+
+---
+
+## §2 — LOT J0 : squelette du dépôt `fhpc` — **Sonnet · high**
+
+**Branche** : `main` (création du dépôt). **Aucun worktree.**
+
+1. `git init ~/tools/fhpc`, `package.json` (`"name": "fhpc"`, `"type":
+   "module"`, `"private": false`, zéro dépendance), `.gitignore` (node_modules,
+   .DS_Store).
+2. `ARCHITECTURE.md` ← transplanter le §1 ci-dessus (puis remplacer §1 du
+   kickoff par « → transplanté », commit dans `fh-phb`… **NON** — loi §0.2 :
+   ne pas écrire dans fh-phb. Signaler à l'architecte, qui fera le remplacement).
+3. `TRAPS.md` ← copier tel quel le tableau `ARCHITECT-HANDOFF.md` §3 (fh-phb)
+   + le tableau du brief `FHPC-V2-BRIEF.md` §6, précédés d'un en-tête français :
+   provenance, date de copie, « chaque ligne est une erreur déjà facturée ».
+4. `CLAUDE.md` (court) : zéro build/framework/dep runtime ; push = Eric ;
+   contrats dans `contracts/` ratifiés par l'architecte ; lire `TRAPS.md` avant
+   de toucher KV/tunnel/CSS/fichier généré ; lois §0.8–0.9.
+5. `contracts/TEMPLATE.md` : sections **Nom · Rôle (2 lignes) · Verbes (table :
+   verbe, payload, effet, erreurs) · Événements (type, payload, quand) ·
+   Tranche d'état (forme, qui la lit) · Invariants · Dépendances interdites ·
+   Obligations de test**. Puis 7 stubs (`doc.md`, `layers.md`, `build.md`,
+   `play.md`, `table.md`, `mcp.md`, `connect-ddb.md`) : Rôle rempli depuis la
+   table du §1, le reste « à remplir par le lot propriétaire, ratifié par
+   l'architecte avant merge ».
+6. `schemas/README.md` : « fh-char/1 et fh-layer/1 arrivent au lot B ; spec
+   dans FHPC-V2-KICKOFF.md §3 ».
+7. **Noyau** `src/kernel/registry.mjs` + `src/kernel/bus.mjs` (~100 l. au
+   total) :
+   - registry : `defineBlock(name, {verbs})` ; `dispatch("bloc.verbe",
+     payload)` route vers la fonction ; bloc ou verbe inconnu → `throw` avec le
+     nom exact (jamais silencieux). Pas de validation de payload pour l'instant
+     (les schémas arrivent au lot B) — ne pas construire de socket vide.
+   - bus : `on(type, fn)` → unsubscribe ; `emit(type, data)` ajoute `at`
+     (epoch ms) ; pas de wildcard, pas de file async.
+   - `assertBlocks(names)` : vérifie que chaque bloc nommé est défini, sinon
+     `throw` listant les manquants (leçon du bloc d'alias sans garde).
+8. Tests `node:test` (`tests/kernel.test.mjs`) : dispatch ok, verbe inconnu
+   jette, bloc inconnu jette, on/emit/off, assertBlocks manquant jette.
+9. `README.md` : 15 lignes max — le produit, la thèse, la date, pointeurs vers
+   ARCHITECTURE/TRAPS/contracts. Pas de LICENSE (choix d'Eric, plus tard —
+   le dépôt contiendra son IP).
+10. Commits atomiques, messages clairs. **Fin de lot** : `node --test` vert,
+    arbre propre, SHAs listés, et tendre à Eric (sans les exécuter) :
+    `gh repo create Noirchicot/fhpc --public --source ~/tools/fhpc --push`.
+
+---
+
+## §3 — LOT B : schémas `fh-char/1` + `fh-layer/1` — **Opus · high**
+
+**Après J0.** Worktree `~/tools/fhpc-worktrees/schemas`, branche `schemas-v1`.
+Parallèle autorisé avec le lot C (répertoires disjoints).
+
+1. `schemas/fh-char.schema.json` (JSON Schema 2020-12). Inventaire imposé :
+   - racine : `schema:"fh-char/1"`, `id`, `name`, `created`, `modified`.
+   - `resolved` : abilities (6), proficiency, ac, vitals persistants
+     (`hpMax, hpCurrent, tempHp, conditions[]`), speeds, senses, languages,
+     saves, skills, attacks/actions, spellcasting (dc, attackBonus, slots,
+     spells[]), `resources[]` (comptées : `{id, name, max, current}`), traits,
+     gear, craft, notes — les six panneaux v1 (traits/actions/spells/gear/
+     craft/notes) sont l'inventaire de référence des champs jouables.
+   - `build` : `layers[]` (`{id, version, hash}` — ordre = pile), `choices[]`
+     (`{path, recordRef…}` — forme proposée par le lot, ratifiée par
+     l'architecte), `overrides[]` (`{path, value, note?, by}` — `by` :
+     `"player"` ou `"gm"`).
+   - Invariants en `$comment` : resolved écrit par dérivation seule ; overrides
+     appliqués en dernier ; état de séance interdit dans le document.
+2. `schemas/fh-layer.schema.json` : manifeste (`schema:"fh-layer/1"`, `id`,
+   `version`, `name`, `flags[]`), `records` par genre (les 12 genres §1, clef
+   = id de record), opérations `add` (défaut) / `patch {id, changes}` /
+   `disable {id}`. Jamais de champ exécutable.
+3. `examples/` : un personnage SRD niveau 1 complet (resolved + build, en FR),
+   une couche homebrew neutre minimale (3 records, 1 patch, 1 disable, 1 flag).
+   **Aucun contenu FH** (il arrive avec Eric au M2), aucun contenu WotC
+   hors SRD.
+4. Tests : chaque exemple valide contre son schéma ; un exemple mutilé par cas
+   d'invariant (état de séance dans le doc, override sans path…) **échoue**.
+   Dépendance dev autorisée : `ajv` épinglé (validation dans les tests
+   seulement — le runtime reste zéro-dep).
+5. Livrable : schémas + exemples + tests verts + **liste des choix de forme
+   pris** (pour ratification architecte avant merge).
+
+---
+
+## §4 — LOT C : portage du moteur de jets — **Opus · high**
+
+**Après J0.** Worktree `~/tools/fhpc-worktrees/engine`, branche `engine-port`.
+Parallèle autorisé avec le lot B.
+
+1. Source (lecture seule) : `~/tools/fh-phb`, `docs/javascripts/
+   fh-player-sheet.js` sur `main` (~5 645 l.) — en extraire le MOTEUR :
+   transaction de jet et ses gardes (`rollTransactionActive`), phases de
+   séquence, Destinée, Chaos, Overreach, pools, règlement, historique. La
+   branche `split-pure-modules` porte déjà `fh-dice-visual.js` (372 l.) et
+   `fh-utils.js` (35 l.) prouvés purs — les reprendre de là (lecture,
+   cherry-read, pas de merge).
+2. **Porter, ne pas réécrire.** Le comportement est la vérité, les suites en
+   sont la preuve : inventorier les suites de `tests/` (19) et porter celles
+   qui encodent le moteur (au minimum roller-state-machine et
+   roll-vocabulary) ; adapter les préludes (plus de DOM, plus de
+   `vm.runInNewContext` — ESM natif + `node:test`), discipline `REWRITTEN`
+   (loi §0.7) pour chaque assertion touchée, avec raison.
+3. Cible : bloc `play` derrière le noyau J0 — verbes nommés depuis le
+   vocabulaire `data-*` v1 (stageDie, roll, spendDestiny, resolvePending…),
+   état de séance privé, événements `roll-settled` émis **aux points de
+   règlement réels** (openRollState + branche finish-sequence, gardés par la
+   transaction — piège `addHistory` : le règlement n'est PAS dans addHistory).
+   Les formats `fh-roll/1` (vue) et `intent` (machine) sont portés tels quels.
+4. Zéro DOM, zéro `window`, zéro accès réseau dans le bloc. Le lexique de jet
+   (ROLL_SOURCES, badges, verdicts) est porté comme module pur consommé par
+   `play`.
+5. Livrable : `src/play/` + suites portées vertes + **inventaire écrit** :
+   quelles fonctions v1 sont entrées, lesquelles sont restées et pourquoi,
+   quelles assertions ont été `REWRITTEN` et pourquoi. Contrat `contracts/
+   play.md` rempli (ratification architecte avant merge).
+
+---
+
+## §5 — LOT D : générateur de couche SRD — **Sonnet · medium**
+
+**Après merge du lot B** (il consomme `fh-layer.schema.json`). Worktree
+`~/tools/fhpc-worktrees/srd-layer`, branche `srd-layer-gen`.
+
+1. `src/tools/gen-srd-layer.mjs` : lit `~/tools/fh-srd/exports/srd/{fr,en}/
+   *.json` (lecture seule), **vérifie d'abord chaque SHA-256 contre
+   `exports/MANIFEST.json`** — mismatch → échec bruyant qui nomme le fichier
+   (piège des fichiers générés : le MANIFEST est là pour être vérifié, pas
+   admiré).
+2. Émet `layers/srd-5.2.1-fr.layer.json` et `layers/srd-5.2.1-en.layer.json`
+   conformes à `fh-layer/1` : 12 genres, records `add`, id de couche stable,
+   version reprise de la source, attribution CC-BY transportée par record
+   (champ du schéma B — si le schéma B n'a pas prévu l'attribution par record,
+   STOP et question à l'architecte, loi §0.10).
+3. Déterministe : deux exécutions → sortie byte-identique ; la sortie est
+   commitée et un re-run laisse l'arbre propre (discipline fh-srd).
+4. Tests : MANIFEST vérifié (cas mismatch → jette), validation des deux
+   couches contre le schéma (ajv dev), comptes par genre ≥ seuils relevés à la
+   génération, spot-check de 3 ids connus (ex. un sort, une espèce, un feat).
+
+---
+
+## §6 — Séquencement, revue, fusion
+
+```
+J0 (Sonnet·high) ──► B (Opus·high, schemas-v1) ──► D (Sonnet·medium, srd-layer-gen)
+                └──► C (Opus·high, engine-port)     [B ∥ C : répertoires disjoints]
+```
+
+- **Un seul lot par worktree, jamais deux fils dans le même** (leçon MOE).
+- L'**architecte** (fil dédié) : revoit chaque livraison (diff lu, suites
+  re-exécutées dans un clone indépendant — `npm install` d'abord, piège
+  linkedom), trial-merge avant merge réel, met à jour `CHANTIER-STATUS.json`
+  et le vault à chaque fusion.
+- Après D : jalon M2 (bloc `build` + MCP v0 + démarrage couche FH avec Eric) —
+  lots à découper par l'architecte à ce moment-là, pas avant.
