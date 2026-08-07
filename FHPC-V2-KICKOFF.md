@@ -677,7 +677,7 @@ retrouver via `list_sessions` (l'architecte peut leur écrire avec
 | Fate's Hand | `EXPERT Fate's Hand system advisor` |
 | SRD | `EXPERT conseiller SRD` |
 | VTT | `EXPERT  conseiller VTT` (deux espaces après EXPERT) |
-| Produit | `EXPERT produit` — créé le 2026-08-08, mandat livré le même jour |
+| Produit | `EXPERT produit` — **antérieur aux trois autres** : ce siège a précédé celui de l'architecte et **a suggéré sa création**. Mandat mis à jour le 2026-08-08 |
 
 ⚠️ **Piège d'outillage, payé le 2026-08-08** : `list_sessions` n'a pas retourné
 le fil `EXPERT produit` même à 14 entrées, alors que l'interface le montrait —
@@ -694,12 +694,27 @@ plutôt que dangereux :
    basse.
 3. **Nommer qui devrait répondre** quand la question dépasse le domaine.
 
+> 📌 **La leçon du 2026-08-08, et elle vaut pour TOUS les sièges.** Le mandat du
+> conseiller produit reproche au premier occupant de son siège « trois faits
+> faux en une journée, tous par confiance, tous corrigés par une simple lecture
+> de fichier ». Le même jour, l'architecte a trouvé **trois faits faux dans ce
+> mandat** (un fichier annoncé qui n'existe nulle part, un cherry-pick devenu
+> inutile, une page vault décrite comme écrasée alors qu'elle venait d'être
+> créée) — et s'est lui-même fait démentir **quatre fois par une mesure**, dont
+> une fois par un lot. **Aucun siège n'est plus fiable qu'un autre : tout siège
+> dérive dès qu'il écrit de mémoire au lieu de relire.** C'est la seule raison
+> d'être de la loi n°2 (citer la source vérifiable) — elle ne protège pas contre
+> l'incompétence, elle protège contre la confiance.
+
 **Deux gardes de périmètre** : l'expert VTT doit se documenter par recherche
 web avant de répondre (les API bougent, la connaissance d'un modèle a une date
 de péremption) ; l'expert FH ne dépose **jamais** de contenu Fate's Hand dans
 le dépôt public — il en parle, il ne l'y écrit pas.
 
-**Le conseiller PRODUIT a été demandé par Eric et créé le 2026-08-08** : vision globale du positionnement de Fate's Hand dans l'univers D&D sur le web. Sa première mission est de vérifier que le document de fondation — ratifié le 3 août, **avant** le virage du 7 — tient encore maintenant que le produit a changé de nature. Il hérite aussi de la question de la couche FH publique/privée, que l'expert SRD a sortie du terrain juridique pour la remettre sur le terrain commercial.
+**Le conseiller PRODUIT n'est pas un ajout du 2026-08-08 : il PRÉCÈDE le siège
+d'architecte et en a suggéré la création.** Corrigé le jour même — l'architecte
+l'avait d'abord noté comme « à créer », puis comme « créé le 2026-08-08 », deux
+fois faux. Son domaine : vision globale du positionnement de Fate's Hand dans l'univers D&D sur le web. Sa première mission est de vérifier que le document de fondation — ratifié le 3 août, **avant** le virage du 7 — tient encore maintenant que le produit a changé de nature. Il hérite aussi de la question de la couche FH publique/privée, que l'expert SRD a sortie du terrain juridique pour la remettre sur le terrain commercial.
 
 **Un cinquième est identifié, pas créé** : un conseiller *interface de builder*,
 utile au M3 seulement, et cadré pour apporter les conventions du domaine sans
