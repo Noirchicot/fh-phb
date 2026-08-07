@@ -17,8 +17,11 @@ transplantée dans `fhpc/ARCHITECTURE.md` au lot 1).
 
 1. **`git push`, création de remote GitHub, tout déploiement = gestes d'Eric.**
    Tendre les commandes, ne jamais les passer.
-2. **Ne jamais écrire dans `fh-phb`, `fh-srd`, `fh-worker`, `fh-table`** — lecture
-   seule. Le travail v2 vit dans `~/tools/fhpc` (créé au lot 1).
+2. **Écris uniquement dans le dépôt que ta section te désigne.** Par défaut c'est
+   `~/tools/fhpc` ; `fh-phb`, `fh-srd`, `fh-worker`, `fh-table` sont en **lecture
+   seule**. **Amendé le 2026-08-08** : un lot dont le périmètre EST un autre
+   dépôt (ex. `6-srd-tables` dans `fh-srd`) y écrit — et n'écrit alors nulle part
+   ailleurs, `fhpc` compris.
 3. **Rapporter n'est pas livrer.** Fin de lot = commits réels, arbre propre,
    SHAs listés, suites vertes re-exécutées. Deux lots v1 ont dit « terminé »
    avec tout en non-commité.
@@ -446,6 +449,85 @@ sont de la séance et meurent avec elle.
 
 ---
 
+## §L6 — LOT `6-srd-tables` : les deux tables qui manquent — **Opus · high**
+
+⚠️ **Ce lot travaille dans `~/tools/fh-srd`, PAS dans `fhpc`** (loi §0.2 amendée).
+Branche `6-srd-tables` coupée de `main` de `fh-srd`. **Aucune dépendance** : il
+peut partir immédiatement, en parallèle des lots 4 et 5 — autre dépôt.
+
+**POURQUOI CE LOT EXISTE — deux trous mesurés le 2026-08-08 par les conseillers
+experts, et vérifiés par l'architecte.** Ils bloquent le builder, donc la date
+du 7 novembre :
+
+1. **Les tables de progression de classe n'existent pas comme données.** Aucune
+   table niveau → emplacements de sorts ; la mention « Spell Slots per Spell
+   Level » n'est qu'un **fragment de texte** au milieu d'une description.
+   Conséquence : **un magicien niveau 1 ne reçoit pas ses emplacements.**
+2. **Les 18 compétences du SRD ne sont records dans aucun des 12 genres.**
+   Vérifié : rien pour athlétisme, discrétion, persuasion, arcanes ; seul
+   « perception » apparaît, et c'est le *concept* de perception passive dans
+   `glossary.json`. Conséquence : **un personnage ne peut pas choisir ses
+   compétences.**
+
+**LIS D'ABORD LA CALIBRATION QUI T'ATTEND — elle t'économise le plus dur.** Le
+parser précédent a délibérément différé cette table **en laissant sa mesure au
+successeur**, dans le docstring de `src/parse_classes_en.py` : la table de
+progression est **row-coherent** dans le texte extrait — « a blank-line-separated
+group of N lines per level, matching the column count » — **contrairement** aux
+tables d'équipement qui étaient complètement mélangées. Il le qualifie lui-même
+de « meaningfully easier starting point ». Le README §« Equipment's genuine
+multi-column table question » complète le tableau. **Ne re-mesure pas ce qui est
+déjà écrit ; vérifie-le et pars de là.**
+
+### Ce qu'il faut produire
+
+1. **La progression de classe**, pour les 12 classes, en **FR et EN** : bonus de
+   maîtrise par niveau, emplacements de sorts par niveau de sort, et la colonne
+   de ressource propre à chaque classe (Rages, Points de Sorcellerie…). Forme des
+   records à proposer — c'est un choix de structure, argumente-le comme le parser
+   de classes a argumenté le sien.
+2. **Les compétences** : les 18 du SRD, avec leur caractéristique. Elles n'ont
+   aujourd'hui aucun genre. **Propose le genre `skill`** (recommandé par l'expert
+   Fate's Hand, qui a mesuré l'absence) — mais dis si la source justifie un autre
+   rangement.
+3. **Un livrable écrit : la FORME des nouveaux records.** L'architecte s'en sert
+   pour réviser `fh-char/1` et `fh-layer/1` côté `fhpc`, où les 12 genres sont
+   énumérés en dur et où un genre inconnu est rejeté bruyamment. **Ce n'est pas
+   ton travail de toucher `fhpc`** — livre la forme, l'architecte révise le
+   contrat.
+
+### La discipline de `fh-srd`, qui n'est pas la même que celle de `fhpc`
+
+Ce dépôt a ses propres règles, plus strictes, et elles sont la raison de sa
+fiabilité — **respecte-les à la lettre** :
+- **Déterminisme** : deux exécutions produisent une sortie byte-identique, les
+  exports sont commités, et un rebuild laisse l'arbre **propre**.
+- **La source est épinglée par SHA-256** (`sources/sources.lock.json`) — WotC a
+  déjà réédité le PDF FR sous le même numéro de version, le pin n'est pas de la
+  paranoïa.
+- **L'attribution est testée caractère pour caractère** à chaque exécution, en
+  rouvrant le PDF source.
+- **Le tripwire lexical** écarte les produits d'identité ; ne le contourne
+  jamais, et si un terme te bloque, remonte-le plutôt que de l'exclure toi-même.
+- **`exports/MANIFEST.json` doit être régénéré** — c'est lui que `fhpc` vérifie.
+- Le dépôt est **PUBLIC** et sous CC-BY : rien qui ne vienne du SRD.
+
+### Le test d'acceptation
+
+> Un **magicien de niveau 3** peut recevoir ses emplacements de sorts, et un
+> **roublard de niveau 1** peut choisir ses compétences — **depuis les exports
+> seuls**, sans qu'aucune valeur ne soit codée en dur ailleurs.
+
+Écris-le comme une suite exécutable. S'il ne passe pas, le lot n'a pas atteint
+son but, quel que soit le nombre de records produits.
+
+**Si la table résiste à l'extraction** — c'est un vrai risque, le parser
+précédent l'a différée deux fois — **dis-le platement avec la mesure** plutôt que
+de livrer un parseur approximatif. Une table de progression fausse produirait des
+personnages silencieusement faux, ce qui est pire que pas de table du tout.
+
+---
+
 ## §6 — Séquencement, revue, fusion
 
 ```
@@ -454,6 +536,11 @@ VAGUE 2 : 2-schemas      (Opus·high)   ∥   3-moteur (Opus·high)     ✅ livr
 VAGUE 3 : 4-couche-srd   (Sonnet·medium)  ∥  5-moteur-srd-fh (Opus·high)
           ↑ dépend du lot 2 FUSIONNÉ         ↑ dépend du lot 3 FUSIONNÉ
           (répertoires disjoints : src/tools/+layers/ contre src/play/)
+
+HORS VAGUES — 6-srd-tables (Opus·high), dans le dépôt fh-srd, AUCUNE dépendance.
+          Part quand Eric veut. Priorité d'Eric le 2026-08-08 : « le lot
+          d'imports FH srd en premier » — sans lui, le M2 construirait un moteur
+          de dérivation qui n'a rien à dériver.
 ```
 
 ### La règle de séquencement — une seule, et elle est vérifiable
