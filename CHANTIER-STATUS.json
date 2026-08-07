@@ -28,7 +28,8 @@
       "La synchro multi-appareils du joueur : assumée par lui, ou service optionnel ? (Direction ratifiée avec l'architecture : baseline = export/import fichier ; toute synchro optionnelle et débranchable.)",
       "Le sort du dock v1 au-delà du gel (long terme) : maintenu, archivé, ou repris comme troisième vue. Pour le 7 nov c'est tranché (Q1) : vue de jeu neuve, dock gelé en repli.",
       "Ce que « fonctions globales dans le menu de l'ID » recouvre — si ce sont des actions de contenu, c'est un amendement à une règle ratifiée."
-    ]
+    ],
+    "archivage_v1": "✅ FAIT le 2026-08-07 à la demande d'Eric (« archive l'ancien pour éviter les confusions v1 v2 »). VAULT : 10 comptes rendus v1 déplacés dans `Chantier FH & FHPC/Archive v1 — dock (gelé)/` avec un mode d'emploi qui dit pourquoi c'est gelé, ce qui a été porté en v2 et ce qui reste ouvert dedans ; le _MENU.md du logbook est restructuré en trois blocs (v2 en cours / vivant sert-aux-deux / archive v1) ; page de repérage `FH — Qui est où.md` CRÉÉE — elle était citée comme attelée par ARCHITECT-HANDOFF §3b mais n'existait pas. MÉMOIRE CLAUDE : 8 fiches v1 déplacées en `memory/archive-v1/`, remplacées par une fiche unique `project_fhpc_v1_frozen` (gel + backlog v1 non construit + infra qui vit encore). RIEN N'EST SUPPRIMÉ : le dock reste jouable et sert de repli pour le 7 novembre."
   },
   "gate": {
     "open": false,
