@@ -9,7 +9,7 @@ ne pas croire*.
 Décisions ratifiées et architecture complète : vault
 `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHPC v2 — Architecture.md`
 (miroir des décisions ; le §1 ci-dessous est la version canonique côté dépôt,
-transplantée dans `fhpc/ARCHITECTURE.md` à J0).
+transplantée dans `fhpc/ARCHITECTURE.md` au lot 1).
 
 ---
 
@@ -18,12 +18,18 @@ transplantée dans `fhpc/ARCHITECTURE.md` à J0).
 1. **`git push`, création de remote GitHub, tout déploiement = gestes d'Eric.**
    Tendre les commandes, ne jamais les passer.
 2. **Ne jamais écrire dans `fh-phb`, `fh-srd`, `fh-worker`, `fh-table`** — lecture
-   seule. Le travail v2 vit dans `~/tools/fhpc` (créé à J0).
+   seule. Le travail v2 vit dans `~/tools/fhpc` (créé au lot 1).
 3. **Rapporter n'est pas livrer.** Fin de lot = commits réels, arbre propre,
    SHAs listés, suites vertes re-exécutées. Deux lots v1 ont dit « terminé »
    avec tout en non-commité.
-4. **Nommer la branche d'après le travail, AVANT de commencer.** Jamais de nom
-   généré.
+4. **Nommer la branche d'après le travail, AVANT de commencer — et la faire
+   commencer par son NUMÉRO DE LOT** (règle d'Eric, 2026-08-07 : *« mets la
+   lettre ou le numéro au début, ce numéro me donne aussi l'ordre »*).
+   Convention : `<n>-<sujet>` — `1-squelette`, `2-schemas`, `3-moteur`,
+   `4-couche-srd`. Le numéro est l'ordre de la file, pas la vague : deux lots
+   parallèles portent deux numéros consécutifs. Même forme pour le worktree
+   (`~/tools/fhpc-worktrees/<n>-<sujet>`) et pour le titre du lot partout où
+   il apparaît (kickoff, board, vault). Jamais de nom généré.
 5. **Aucun repli silencieux, aucun échec muet.** Un module manquant, un schéma
    violé, un MANIFEST qui ne matche pas → erreur bruyante qui nomme la chose.
 6. **Pas de code mort derrière un interrupteur.** Une feature non voulue est
@@ -49,9 +55,9 @@ transplantée dans `fhpc/ARCHITECTURE.md` à J0).
 
 ---
 
-## §1 — Architecture canonique (→ à transplanter dans `fhpc/ARCHITECTURE.md` à J0)
+## §1 — Architecture canonique (→ à transplanter dans `fhpc/ARCHITECTURE.md` au lot 1)
 
-> À J0 : déplacer le contenu de cette section dans `~/tools/fhpc/ARCHITECTURE.md`
+> Au lot 1 : déplacer le contenu de cette section dans `~/tools/fhpc/ARCHITECTURE.md`
 > et remplacer ici par « → transplanté ». Une seule copie vivante.
 
 ### Le produit
@@ -130,7 +136,7 @@ débranchable.
 
 ---
 
-## §2 — LOT J0 : squelette du dépôt `fhpc` — **Sonnet · high**
+## §L1 — LOT `1-squelette` : le dépôt `fhpc` — **Sonnet · high**
 
 **Branche** : `main` (création du dépôt). **Aucun worktree.**
 
@@ -153,14 +159,14 @@ débranchable.
    `play.md`, `table.md`, `mcp.md`, `connect-ddb.md`) : Rôle rempli depuis la
    table du §1, le reste « à remplir par le lot propriétaire, ratifié par
    l'architecte avant merge ».
-6. `schemas/README.md` : « fh-char/1 et fh-layer/1 arrivent au lot B ; spec
-   dans FHPC-V2-KICKOFF.md §3 ».
+6. `schemas/README.md` : « fh-char/1 et fh-layer/1 arrivent au lot `2-schemas` ; spec
+   dans FHPC-V2-KICKOFF.md §L2 ».
 7. **Noyau** `src/kernel/registry.mjs` + `src/kernel/bus.mjs` (~100 l. au
    total) :
    - registry : `defineBlock(name, {verbs})` ; `dispatch("bloc.verbe",
      payload)` route vers la fonction ; bloc ou verbe inconnu → `throw` avec le
      nom exact (jamais silencieux). Pas de validation de payload pour l'instant
-     (les schémas arrivent au lot B) — ne pas construire de socket vide.
+     (les schémas arrivent au lot `2-schemas`) — ne pas construire de socket vide.
    - bus : `on(type, fn)` → unsubscribe ; `emit(type, data)` ajoute `at`
      (epoch ms) ; pas de wildcard, pas de file async.
    - `assertBlocks(names)` : vérifie que chaque bloc nommé est défini, sinon
@@ -176,10 +182,11 @@ débranchable.
 
 ---
 
-## §3 — LOT B : schémas `fh-char/1` + `fh-layer/1` — **Opus · high**
+## §L2 — LOT `2-schemas` : `fh-char/1` + `fh-layer/1` — **Opus · high**
 
-**Après J0.** Worktree `~/tools/fhpc-worktrees/schemas`, branche `schemas-v1`.
-Parallèle autorisé avec le lot C (répertoires disjoints).
+**Après le lot 1.** Worktree `~/tools/fhpc-worktrees/schemas`, branche `2-schemas`
+(nommée `schemas-v1` au lancement du 2026-08-07 ; renommée par l'architecte à la
+livraison). Parallèle autorisé avec le lot `3-moteur` (répertoires disjoints).
 
 1. `schemas/fh-char.schema.json` (JSON Schema 2020-12). Inventaire imposé :
    - racine : `schema:"fh-char/1"`, `id`, `name`, `created`, `modified`.
@@ -212,10 +219,11 @@ Parallèle autorisé avec le lot C (répertoires disjoints).
 
 ---
 
-## §4 — LOT C : portage du moteur de jets — **Opus · high**
+## §L3 — LOT `3-moteur` : portage du moteur de jets — **Opus · high**
 
-**Après J0.** Worktree `~/tools/fhpc-worktrees/engine`, branche `engine-port`.
-Parallèle autorisé avec le lot B.
+**Après le lot 1.** Worktree `~/tools/fhpc-worktrees/engine`, branche `3-moteur`
+(nommée `engine-port` au lancement du 2026-08-07 ; renommée par l'architecte à la
+livraison). Parallèle autorisé avec le lot `2-schemas`.
 
 1. Source (lecture seule) : `~/tools/fh-phb`, `docs/javascripts/
    fh-player-sheet.js` sur `main` (~5 645 l.) — en extraire le MOTEUR :
@@ -230,7 +238,7 @@ Parallèle autorisé avec le lot B.
    roll-vocabulary) ; adapter les préludes (plus de DOM, plus de
    `vm.runInNewContext` — ESM natif + `node:test`), discipline `REWRITTEN`
    (loi §0.7) pour chaque assertion touchée, avec raison.
-3. Cible : bloc `play` derrière le noyau J0 — verbes nommés depuis le
+3. Cible : bloc `play` derrière le noyau du lot 1 — verbes nommés depuis le
    vocabulaire `data-*` v1 (stageDie, roll, spendDestiny, resolvePending…),
    état de séance privé, événements `roll-settled` émis **aux points de
    règlement réels** (openRollState + branche finish-sequence, gardés par la
@@ -246,10 +254,10 @@ Parallèle autorisé avec le lot B.
 
 ---
 
-## §5 — LOT D : générateur de couche SRD — **Sonnet · medium**
+## §L4 — LOT `4-couche-srd` : générateur de la couche SRD — **Sonnet · medium**
 
-**Après merge du lot B** (il consomme `fh-layer.schema.json`). Worktree
-`~/tools/fhpc-worktrees/srd-layer`, branche `srd-layer-gen`.
+**Après merge du lot `2-schemas`** (il consomme `fh-layer.schema.json`). Worktree
+`~/tools/fhpc-worktrees/4-couche-srd`, branche `4-couche-srd`.
 
 1. `src/tools/gen-srd-layer.mjs` : lit `~/tools/fh-srd/exports/srd/{fr,en}/
    *.json` (lecture seule), **vérifie d'abord chaque SHA-256 contre
@@ -259,7 +267,7 @@ Parallèle autorisé avec le lot B.
 2. Émet `layers/srd-5.2.1-fr.layer.json` et `layers/srd-5.2.1-en.layer.json`
    conformes à `fh-layer/1` : 12 genres, records `add`, id de couche stable,
    version reprise de la source, attribution CC-BY transportée par record
-   (champ du schéma B — si le schéma B n'a pas prévu l'attribution par record,
+   (champ du schéma du lot 2 — s'il n'a pas prévu l'attribution par record,
    STOP et question à l'architecte, loi §0.10).
 3. Déterministe : deux exécutions → sortie byte-identique ; la sortie est
    commitée et un re-run laisse l'arbre propre (discipline fh-srd).
@@ -272,9 +280,9 @@ Parallèle autorisé avec le lot B.
 ## §6 — Séquencement, revue, fusion
 
 ```
-VAGUE 1 : J0 (Sonnet·high, main)                       ← seul, tout en dépend
-VAGUE 2 : B (Opus·high, schemas-v1) ∥ C (Opus·high, engine-port)
-VAGUE 3 : D (Sonnet·medium, srd-layer-gen)             ← seul, dépend de B fusionné
+VAGUE 1 : 1-squelette    (Sonnet·high, sur main)   ← seul, tout en dépend
+VAGUE 2 : 2-schemas      (Opus·high)   ∥   3-moteur (Opus·high)
+VAGUE 3 : 4-couche-srd   (Sonnet·medium)           ← dépend du lot 2 FUSIONNÉ
 ```
 
 ### La règle de séquencement — une seule, et elle est vérifiable
@@ -283,8 +291,9 @@ VAGUE 3 : D (Sonnet·medium, srd-layer-gen)             ← seul, dépend de B f
 > Le test, applicable sans l'architecte : *le prompt du lot cite-t-il un fichier
 > qu'un autre lot est en train d'écrire ?* Oui → il attend. Non → il part.
 
-Appliqué ici : le prompt de D cite `schemas/fh-layer.schema.json` (écrit par B)
-→ **D attend**. Les prompts de B et C ne citent aucun fichier de l'autre
+Appliqué ici : le prompt du lot 4 cite `schemas/fh-layer.schema.json` (écrit par
+le lot 2) → **le lot 4 attend**. Les prompts des lots 2 et 3 ne citent aucun
+fichier de l'autre
 (`schemas/` + `examples/` contre `src/play/` + `tests/`) → **ils partent
 ensemble**.
 
@@ -300,9 +309,9 @@ faute — c'est un **coût de rebase**, payé par l'architecte à la revue. La f
 serait de le faire quand l'amont produit un artefact **dont le lot a besoin
 pour travailler**.
 
-**Mesuré le 2026-08-07** : J0, B et C lancés simultanément. Zéro dégât, deux
-rebases à faire (`schemas` coupé 3 commits trop tôt, avant le noyau ; `engine`
-1 commit trop tôt). `engine` a eu le noyau **de justesse** — coupé une minute
+**Mesuré le 2026-08-07** : les lots 1, 2 et 3 lancés simultanément. Zéro dégât, deux
+rebases à faire (le lot 2 coupé 3 commits trop tôt, avant le noyau ; le lot 3
+1 commit trop tôt). Le lot 3 a eu le noyau **de justesse** — coupé une minute
 plus tôt, il aurait pu s'écrire son propre noyau. La marge était de la chance,
 pas de la méthode : c'est l'argument pour la vague 1 seule.
 
@@ -313,7 +322,7 @@ pas de la méthode : c'est l'argument pour la vague 1 seule.
   re-exécutées dans un clone indépendant — `npm install` d'abord, piège
   linkedom), trial-merge avant merge réel, met à jour `CHANTIER-STATUS.json`
   et le vault à chaque fusion.
-- Après D : jalon M2 (bloc `build` + MCP v0 + démarrage couche FH avec Eric) —
+- Après le lot `4-couche-srd` : jalon M2 (bloc `build` + MCP v0 + démarrage couche FH avec Eric) —
   lots à découper par l'architecte à ce moment-là, pas avant.
 
 ---
@@ -323,7 +332,7 @@ pas de la méthode : c'est l'argument pour la vague 1 seule.
 **Relevé sur disque, pas cité de mémoire.** Tout est en **lecture seule** pour
 les lots. Aucun de ces chemins ne se modifie sans ordre d'Eric.
 
-### JSON SRD — la source du lot D
+### JSON SRD — la source du lot `4-couche-srd`
 
 `~/tools/fh-srd/exports/srd/fr/` et `.../en/` — **12 fichiers chacun** :
 `armor, background, class, feat, gear, glossary, item, monster, species,
@@ -367,7 +376,7 @@ copie comme une autorité.
   `SKILL_ABILITY`, `TOOLS`, `TOOL_ORDER`, `TIERS`, `CLASS_SAVES`, `CREATURES`,
   `KNOWLEDGE`, `PASSIVES`, `TOOL_ALIASES`, `SKILL_ALIASES` — et la mécanique
   FH elle-même (`destiny` 344 occurrences, `chaos` 110, `overreach` 46,
-  `ARCANA` 50) : c'est le périmètre du **lot C**.
+  `ARCANA` 50) : c'est le périmètre du **lot `3-moteur`**.
 - **Loot engine** `~/Scripts/loot_engine_standalone.py` (352 l.) : `_EMBEDDED`,
   `DD_VALS`, `RARITY`, `PRESENCE`, `GOLD`, `THEME_FILE`.
 
@@ -379,8 +388,8 @@ copie comme une autorité.
 `nativeSkillTiers`, `destinyFeats{diceFeats,score,originFeatId}`, `meta`,
 `builderState` (19 clés).
 
-> 📌 **Conséquence pour le LOT B** : ces sept fichiers sont un **test
+> 📌 **Conséquence pour le LOT `2-schemas`** : ces sept fichiers sont un **test
 > d'acceptation gratuit** du schéma `fh-char/1`. Le schéma doit pouvoir
 > représenter chacun d'eux sans perte (la conversion elle-même n'est pas du
-> lot B — seulement la preuve que la forme les couvre). Un champ v1 qui
+> lot 2 — seulement la preuve que la forme les couvre). Un champ v1 qui
 > n'entre nulle part est un trou de schéma, à remonter à l'architecte.
