@@ -392,6 +392,23 @@ quelconque : c'était la forme « compétence » prise pour la règle générale
 Livrer les trois types SRD (compétence, action, sort) ; FH s'inscrit par-dessus
 sans que le chemin commun le cite.
 
+**C. ⚠️ NE PORTE PAS `keepArcana` TEL QUEL — c'est un bug garanti.** Trouvé par
+l'expert Fate's Hand le 2026-08-08, et il corrige deux prémisses fausses que
+l'architecte avait lui-même écrites. Le déclencheur d'un Éveil arcanique n'est
+**pas** « deux 20 naturels » : c'est **un** 20 naturel qui amène les Points de
+Destinée **à 0** (vault, `D&D 5+ Fate's Hand Mechanic.md:58` et `:108`). Et on
+ne pioche pas un Arcane majeur : on pioche dans **les 78 cartes** — un
+**mineur** donne des points temporaires et une Brique, **aucun +1 au Score** ;
+seul un **majeur** donne +1 au Score maximum.
+`keepArcana()` v1 applique `score+1` / `points+10` **inconditionnellement**, ce
+qui n'est juste que parce que le paquet v1 ne contient que les 22 majeurs.
+Porté avec 78 cartes, **tout mineur donnerait +1 au Score**.
+→ La partie chiffrée **n'existe pas** tant que la carte n'est pas connue : elle
+est fonction de la carte. Un seul chemin (la pioche règle et applique), pas
+deux moitiés. Et le `+1` au Score maximum est un **acquis permanent sans source
+de règle** : écrit seulement dans `resolved`, la prochaine dérivation l'efface
+(invariant 1). L'historique des Éveils doit vivre en `build.choices` scalaires.
+
 **B. Sortir les textes du moteur** (loi §0.13). La structure est déjà saine —
 chaque verdict a son `id` — mais les libellés anglais vivent dans le module, et
 `FATE REFUSED` est écrit en dur au milieu de verdicts qui passent par la table.
