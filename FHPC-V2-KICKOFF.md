@@ -590,6 +590,13 @@ retrouver via `list_sessions` (l'architecte peut leur écrire avec
 | Fate's Hand | `EXPERT Fate's Hand system advisor` |
 | SRD | `EXPERT conseiller SRD` |
 | VTT | `EXPERT  conseiller VTT` (deux espaces après EXPERT) |
+| Produit | `EXPERT produit` — créé le 2026-08-08, mandat livré le même jour |
+
+⚠️ **Piège d'outillage, payé le 2026-08-08** : `list_sessions` n'a pas retourné
+le fil `EXPERT produit` même à 14 entrées, alors que l'interface le montrait —
+un fil sans activité enregistrée peut être invisible à l'API. L'architecte en a
+conclu à tort qu'il n'existait pas. **Ne jamais conclure « ça n'existe pas »
+d'une liste tronquée** : c'est une mesure incomplète présentée comme un fait.
 
 **Les trois lois gravées dans chaque mandat**, et c'est ce qui les rend utiles
 plutôt que dangereux :
@@ -605,7 +612,9 @@ web avant de répondre (les API bougent, la connaissance d'un modèle a une date
 de péremption) ; l'expert FH ne dépose **jamais** de contenu Fate's Hand dans
 le dépôt public — il en parle, il ne l'y écrit pas.
 
-**Un quatrième est identifié, pas créé** : un conseiller *interface de builder*,
+**Le conseiller PRODUIT a été demandé par Eric et créé le 2026-08-08** : vision globale du positionnement de Fate's Hand dans l'univers D&D sur le web. Sa première mission est de vérifier que le document de fondation — ratifié le 3 août, **avant** le virage du 7 — tient encore maintenant que le produit a changé de nature. Il hérite aussi de la question de la couche FH publique/privée, que l'expert SRD a sortie du terrain juridique pour la remettre sur le terrain commercial.
+
+**Un cinquième est identifié, pas créé** : un conseiller *interface de builder*,
 utile au M3 seulement, et cadré pour apporter les conventions du domaine sans
 décider à la place d'Eric — qui a l'interface en tête. **Écartés
 délibérément** : « expérience de table » (Eric est le MJ, ce serait un
