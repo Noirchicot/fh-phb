@@ -283,3 +283,72 @@ J0 (Sonnet·high) ──► B (Opus·high, schemas-v1) ──► D (Sonnet·medi
   et le vault à chaque fusion.
 - Après D : jalon M2 (bloc `build` + MCP v0 + démarrage couche FH avec Eric) —
   lots à découper par l'architecte à ce moment-là, pas avant.
+
+---
+
+## §7 — Où est la matière (inventaire relevé le 2026-08-07)
+
+**Relevé sur disque, pas cité de mémoire.** Tout est en **lecture seule** pour
+les lots. Aucun de ces chemins ne se modifie sans ordre d'Eric.
+
+### JSON SRD — la source du lot D
+
+`~/tools/fh-srd/exports/srd/fr/` et `.../en/` — **12 fichiers chacun** :
+`armor, background, class, feat, gear, glossary, item, monster, species,
+spell, tool, weapon`. Volumes FR : monster 1,0 Mo · spell 684 Ko (descriptions
+comprises) · item 468 Ko · glossary 208 Ko · class 204 Ko · le reste sous
+72 Ko. Intégrité : `exports/MANIFEST.json` (SHA-256 par fichier) —
+**à vérifier avant usage**, plus `exports/exclusions.json`.
+
+### Contenu FH **déjà structuré en JSON** — 635 Ko, vault `5.RPG/Fate's Hand/8. Tools/`
+
+C'était la surprise du relevé : une part importante du contenu FH n'est pas à
+formaliser depuis la prose, elle est déjà en JSON exploitable.
+
+| Fichier | Contenu |
+|---|---|
+| `LLM Soulforge engine/Soulforge Catalysts v3 (FH).json` (267 Ko) | **465 catalysts** |
+| `Soulforge Ingredients (FH).json` (114 Ko) | **210 ingredients** |
+| `LLM Loot Engine/Spells.json` (117 Ko) | sorts indexés par classe |
+| `LLM Loot Engine/{Arcana,Armements,Consumables,Implements,Relics}.json` (38/21/27/21/15 Ko) | objets magiques FH, clés par rareté (`perm.common.arcana`…) |
+| `LLM Loot Engine/{loot_index,nonmagical_treasure_tables}.json` | index de thèmes/raretés, tables de trésor non magique |
+
+⚠️ `Soulforge Catalysts v3` est un **chantier ouvert d'Eric** (recalibrage
+pricing v3, catégorie Signature non tranchée) — **lire, jamais réécrire**.
+
+### Règles FH en prose — vault `5.RPG/Fate's Hand/0. D&D 5+ Rules/`
+
+**39 fichiers `.md`** en 8 chapitres : `1. Character Creation Rolls` (3) ·
+`2. Species Modifications` (3) · `3. Arcane Destinies` (5, dont *The Major
+Arcana* et *Tables de Fatalité par Attribut*) · `4. Skills` (11) · `5. Feats`
+(1) · `6. Spells & Magic` (6) · `7. Classes & Subclasses` (4) ·
+`8. Adventuring` (5) + `Boons and Flaws.md`.
+**C'est la SOURCE** : `fh-phb/docs/chapters/` (19 `.md`) en est la copie
+générée par `sync_from_vault.py` — piège du fichier généré, ne jamais lire la
+copie comme une autorité.
+
+### Tables jouables dans le code v1 — lecture seule
+
+- **Skill builder** `~/tools/fh-skills/fh-skill-builder.html` : `ARCANA`,
+  `SKILLS`, `TOOLS`, `TIER_LEVELS`, `KEEN_SENSES_SKILLS`, `STEP_DEFS`.
+- **Dock** `~/tools/fh-phb/docs/javascripts/fh-player-sheet.js` : `SKILLS`,
+  `SKILL_ABILITY`, `TOOLS`, `TOOL_ORDER`, `TIERS`, `CLASS_SAVES`, `CREATURES`,
+  `KNOWLEDGE`, `PASSIVES`, `TOOL_ALIASES`, `SKILL_ALIASES` — et la mécanique
+  FH elle-même (`destiny` 344 occurrences, `chaos` 110, `overreach` 46,
+  `ARCANA` 50) : c'est le périmètre du **lot C**.
+- **Loot engine** `~/Scripts/loot_engine_standalone.py` (352 l.) : `_EMBEDDED`,
+  `DD_VALS`, `RARITY`, `PRESENCE`, `GOLD`, `THEME_FILE`.
+
+### Sept personnages FH v1 réels — `~/tools/fh-phb/builds/*.fh.json`
+
+`nodren, took, mar_del_ran, skrall_oksa, narsur_haglad, shuko_akalad, marf` —
+~6,8 Ko chacun. Forme v1 : `character{ddbId,name,campaign,abilityScores}`,
+`destiny{score,arcana,breakdown,notesText}`, `background`, `skills[]`,
+`nativeSkillTiers`, `destinyFeats{diceFeats,score,originFeatId}`, `meta`,
+`builderState` (19 clés).
+
+> 📌 **Conséquence pour le LOT B** : ces sept fichiers sont un **test
+> d'acceptation gratuit** du schéma `fh-char/1`. Le schéma doit pouvoir
+> représenter chacun d'eux sans perte (la conversion elle-même n'est pas du
+> lot B — seulement la preuve que la forme les couvre). Un champ v1 qui
+> n'entre nulle part est un trou de schéma, à remonter à l'architecte.
