@@ -272,11 +272,43 @@ Parallèle autorisé avec le lot B.
 ## §6 — Séquencement, revue, fusion
 
 ```
-J0 (Sonnet·high) ──► B (Opus·high, schemas-v1) ──► D (Sonnet·medium, srd-layer-gen)
-                └──► C (Opus·high, engine-port)     [B ∥ C : répertoires disjoints]
+VAGUE 1 : J0 (Sonnet·high, main)                       ← seul, tout en dépend
+VAGUE 2 : B (Opus·high, schemas-v1) ∥ C (Opus·high, engine-port)
+VAGUE 3 : D (Sonnet·medium, srd-layer-gen)             ← seul, dépend de B fusionné
 ```
 
+### La règle de séquencement — une seule, et elle est vérifiable
+
+> **Un lot démarre après que l'artefact dont il dépend est MERGÉ sur `main`.**
+> Le test, applicable sans l'architecte : *le prompt du lot cite-t-il un fichier
+> qu'un autre lot est en train d'écrire ?* Oui → il attend. Non → il part.
+
+Appliqué ici : le prompt de D cite `schemas/fh-layer.schema.json` (écrit par B)
+→ **D attend**. Les prompts de B et C ne citent aucun fichier de l'autre
+(`schemas/` + `examples/` contre `src/play/` + `tests/`) → **ils partent
+ensemble**.
+
+**Le risque n'est pas le conflit git — c'est qu'un lot n'ayant pas trouvé sa
+dépendance l'INVENTE**, en silence, et que la divergence n'apparaisse qu'au
+merge (§0.10). C'est pour ça que chaque prompt de lot dépendant porte un
+**garde STOP** explicite nommant ce qui doit exister.
+
+**Un worktree fige son point de départ.** `git worktree add` prend un
+instantané : tout commit arrivé après dans le lot amont devra être rebasé.
+Créer les worktrees pendant que le lot amont commite encore n'est donc pas une
+faute — c'est un **coût de rebase**, payé par l'architecte à la revue. La faute
+serait de le faire quand l'amont produit un artefact **dont le lot a besoin
+pour travailler**.
+
+**Mesuré le 2026-08-07** : J0, B et C lancés simultanément. Zéro dégât, deux
+rebases à faire (`schemas` coupé 3 commits trop tôt, avant le noyau ; `engine`
+1 commit trop tôt). `engine` a eu le noyau **de justesse** — coupé une minute
+plus tôt, il aurait pu s'écrire son propre noyau. La marge était de la chance,
+pas de la méthode : c'est l'argument pour la vague 1 seule.
+
 - **Un seul lot par worktree, jamais deux fils dans le même** (leçon MOE).
+- **L'architecte donne le feu vert de chaque vague**, après avoir revu, fusionné
+  et rebasé la précédente.
 - L'**architecte** (fil dédié) : revoit chaque livraison (diff lu, suites
   re-exécutées dans un clone indépendant — `npm install` d'abord, piège
   linkedom), trial-merge avant merge réel, met à jour `CHANTIER-STATUS.json`
