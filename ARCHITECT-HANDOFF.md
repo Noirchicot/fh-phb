@@ -15,7 +15,7 @@ Read both. Read nothing else to start.
 | **1** | What the seat does (owns core, verifies, merges, writes prompts) | First session, always |
 | **2** | Standing rules: layout · rules content · behaviour · **ecosystem & posture (AboveVTT)** · **what FHPC is aiming at** (foundation, sequence) | First session, always — and §2's naming rules before writing ANY package prompt |
 | **3** | Traps already paid for (one table) | First session; re-scan before touching CSS, KV, tunnels, or a generated file |
-| **3b** | **The single-source-of-truth map** · `CHANTIER-STATUS.json` (architect-maintained) · logbook single-source rule · vault-plugin-dead exception | First session; §3b's board rule at EVERY merge |
+| **3b** | **The single-source-of-truth map** (⛓️ **coupled to the vault page `FH — Qui est où`** — edit both together) · `CHANTIER-STATUS.json` (architect-maintained) · logbook single-source rule · vault-plugin-dead exception | First session; §3b's board rule at EVERY merge |
 | **4** | Running the package chats: worktrees table · **verify-don't-trust recipe** · tests · deploy · the living guide rule | Before reviewing any delivery, every time |
 | **5** | How Eric works (relay protocol, vault, logbook, obsidian:// links) | First session |
 | **6** | State at handoff — dated blocks, NEWEST NEAR THE TOP · 🚦 **DEPLOY GATE** · the dock lots order | Top blocks + the gate: every session. Older blocks: only when a subject resurfaces |
@@ -218,6 +218,22 @@ authority per kind of thing, everything on a git with a GitHub remote:
 | Chantier colours (fini/en-cours/probleme) | `CHANTIER-STATUS.json`, architect-maintained | fh-phb git |
 | Build recipes & session accounts | vault logbook, `Chantier FH & FHPC/` folder only | vault git → GitHub → iPad |
 | Volatile per-machine state | Claude memory (Mac only) — never load-bearing | — |
+
+> ⛓️ **THIS TABLE IS COUPLED — Eric, 2026-08-07.** A plain-language restatement of
+> this map lives in the vault: `Chantier FH & FHPC/FH — Qui est où.md` (« qui est
+> où » — main / FH public / FH miroir, tables and colour chips, written to be read
+> by a non-developer on an iPad). **Change this table, change that file in the SAME
+> session.** It is NOT a mirror and no hook regenerates it — it is hand-written, so
+> it stays true only if you keep it true.
+>
+> Triggers: any edit to this map · any deploy to the public site · any push to
+> `FH-Mirror` · any repo added to or dropped from the `main` row above.
+>
+> If you cannot update it in the same session (no vault access), write
+> `⚠️ PÉRIMÉE depuis le YYYY-MM-DD` at the top of that file instead. Eric reads it
+> as truth — a short, clear, WRONG page is worse than no page. Rule also recorded
+> vault-side in `7.CLAUDE AND ERIC LOGBOOK/Claude Logbook Rules.md`, § *Fiches
+> dérivées — règle d'attelage*.
 
 **This file has a read-only mirror in the vault** — `Chantier FH & FHPC/
 ARCHITECT-HANDOFF (miroir).md`, so Eric can read it on the iPad. It is
