@@ -65,6 +65,17 @@ transplantée dans `fhpc/ARCHITECTURE.md` au lot 1).
     — et donc **384 lignes sur 2 556 citant une mécanique FH, sans aucun
     interrupteur**. La commande était fautive, pas le lot : elle disait
     « porter » sans exiger la séparation. D'où le lot `5-moteur-srd-fh`.
+13. **Le moteur produit des IDENTIFIANTS, l'interface produit des MOTS.**
+    Aucun texte qu'un joueur peut lire ne vit dans un bloc de logique : un
+    verdict est `natural-20`, pas « Natural 20 ». C'est ce qui « ouvre
+    l'option » multilingue qu'Eric a demandée le 2026-08-07 — ouvrir, pas
+    livrer, mais une porte qui coûte cher à rouvrir après coup.
+    **Mesuré le 2026-08-08** dans le moteur porté : la structure est saine
+    (chaque verdict a déjà son `id` séparé de son texte) mais les libellés
+    anglais sont dans le module — « Critical success », « Natural 20 »,
+    « Success », « Failure » — et `FATE REFUSED` est même écrit en dur au
+    milieu de verdicts qui passent, eux, par la table de libellés. Sortie des
+    textes : lot `5-moteur-srd-fh`.
 
 ---
 
@@ -288,6 +299,34 @@ livraison). Parallèle autorisé avec le lot `2-schemas`.
    couches contre le schéma (ajv dev), comptes par genre ≥ seuils relevés à la
    génération, spot-check de 3 ids connus (ex. un sort, une espèce, un feat).
 
+### 🌍 Le multilingue — la limite est MESURÉE, documente-la, ne la maquille pas
+
+**Fait établi le 2026-08-08 par l'architecte, ne le re-mesure pas, ne le
+contourne pas :** les deux langues du SRD n'ont **aucune clé de jointure**.
+Les identifiants portent la langue (`srd:species:fr:drakeide` contre
+`srd:species:en:dragonborn`), **zéro** identifiant commun sur les 339 sorts,
+9 espèces et 17 dons vérifiés ; les slugs diffèrent ; aucun champ
+`translation_of` ; et l'appariement par rang dans le document **échoue dès le
+deuxième élément** (les deux catalogues sont triés alphabétiquement, chacun
+dans sa langue : *Elfe* tombe en face de *Dwarf*).
+
+**Conséquence, à écrire noir sur blanc dans le livrable** : un personnage bâti
+sur la couche FR **ne peut pas** être rouvert sur la couche EN — ses
+références n'existent pas de l'autre côté. Ce n'est **pas un défaut du lot**,
+c'est une propriété de la source. Elle est acceptée pour l'instant (Eric,
+2026-08-07 : « ouvrir l'option », pas la livrer).
+
+Ce que le lot fait, donc :
+5. Les deux couches restent **autonomes**, chacune déclarant sa langue dans son
+   manifeste. **N'invente aucune correspondance FR↔EN** — une correspondance
+   devinée est pire que pas de correspondance (elle donnerait un personnage
+   silencieusement faux).
+6. Écrire `layers/TRADUCTION.md` : la mesure ci-dessus, la conséquence pour un
+   joueur, et les pistes pour le futur chantier d'appariement (rapprochement
+   par données structurées — niveau + école + portée pour un sort — puis
+   arbitrage humain des ambiguïtés). **C'est une note de cadrage, pas un
+   travail à faire dans ce lot.**
+
 ---
 
 ## §L5 — LOT `5-moteur-srd-fh` : le SRD dessous, FH en couche — **Opus · high**
@@ -332,19 +371,61 @@ si elle casse quelque chose. Ce filet n'a jamais existé en v1.
    testent une mécanique FH deviennent des suites **de la couche FH** —
    déplacées, jamais supprimées.
 
+### Deux exigences ajoutées le 2026-08-08, après l'inventaire d'Eric (BRIEF §4b)
+
+**A. Les jets se COMPOSENT — la console a trois formes, pas une.** Eric :
+*« architecture différente selon Skill, Actions ou Spells »*. Ce ne sont pas
+trois habillages : une **compétence** est un jet contre un seuil ; une
+**action** en est deux, liés (toucher, puis des dégâts dont le critique double
+les dés) ; un **sort** est encore autre chose — souvent aucun jet du lanceur
+mais une sauvegarde de la cible, plus un emplacement consommé, un niveau de
+lancement, parfois de la concentration.
+
+C'est **le même mécanisme** que la séparation SRD/FH : une séquence de phases
+nommées sur laquelle on s'inscrit. Le valider sur deux usages au lieu d'un est
+la raison d'être de ce lot — traités séparément, on construirait deux fois la
+même chose et elles divergeraient.
+→ Un **type de jet** déclare ses phases ET ses réglages. La liste des réglages
+est fermée **par type**, jamais globalement. ⚠️ Corrige au passage le verbe
+`configure` livré par le lot 3, qui accepte aujourd'hui un patch partiel
+quelconque : c'était la forme « compétence » prise pour la règle générale.
+Livrer les trois types SRD (compétence, action, sort) ; FH s'inscrit par-dessus
+sans que le chemin commun le cite.
+
+**B. Sortir les textes du moteur** (loi §0.13). La structure est déjà saine —
+chaque verdict a son `id` — mais les libellés anglais vivent dans le module, et
+`FATE REFUSED` est écrit en dur au milieu de verdicts qui passent par la table.
+Le moteur rend des identifiants ; les mots deviennent des données que l'UI
+consomme. Aucune traduction n'est demandée ici : on ouvre la porte, on ne
+livre pas les langues.
+
 ### 🎯 Le test d'acceptation — c'est lui qui dit si le lot a réussi
 
 > **Un personnage SRD pur, aucune couche FH chargée, lance un jet de compétence
 > de bout en bout et obtient son résultat.**
+>
+> Et son pendant pour l'exigence A : **une attaque enchaîne toucher puis dégâts
+> comme deux phases d'un même jet**, sans qu'aucune ligne du chemin commun ne
+> cite Destinée, Chaos ni Overreach.
 
 Écrit comme une suite exécutable (`tests/play-srd-only.test.mjs`), il fait foi.
 S'il passe, la séparation est réelle ; s'il ne peut pas être écrit, elle est
 décorative — et le lot le dit platement plutôt que de la maquiller.
 
-6. **Livrable** : `src/play/` recoupé, le test d'acceptation, l'inventaire écrit
-   de la coupe (ce qui est parti côté FH et pourquoi), `contracts/play.md` mis à
-   jour, et la liste des drapeaux de couche que FH doit lever — elle devient
-   une entrée du schéma `fh-layer/1`.
+6. **Livrable** : `src/play/` recoupé, les deux tests d'acceptation,
+   l'inventaire écrit de la coupe (ce qui est parti côté FH et pourquoi), les
+   trois types de jet SRD avec leurs réglages fermés, les textes sortis en
+   données, `contracts/play.md` mis à jour, et la liste des drapeaux de couche
+   que FH doit lever — elle devient une entrée du schéma `fh-layer/1`.
+
+**Une décision d'architecte déjà prise, ne la rouvre pas** (elle vient du lot 3,
+point ouvert n°1) : pendant une séance, `play` tient une **copie de travail**
+des points de vie et des ressources comptées — personne d'autre n'y écrit — et
+le bloc `doc` en prend un **instantané à chaque événement** (`pool-changed`,
+`roll-settled`). C'est le brouillon recopié en continu : la vitesse du brouillon
+sans le risque de perdre une soirée. Les points de vie appartiennent au
+personnage et voyagent avec lui ; la main de dés, la sélection et la transaction
+sont de la séance et meurent avec elle.
 
 ---
 
