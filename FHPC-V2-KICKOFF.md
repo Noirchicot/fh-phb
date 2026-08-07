@@ -547,3 +547,43 @@ copie comme une autorité.
 > représenter chacun d'eux sans perte (la conversion elle-même n'est pas du
 > lot 2 — seulement la preuve que la forme les couvre). Un champ v1 qui
 > n'entre nulle part est un trou de schéma, à remonter à l'architecte.
+
+---
+
+## §8 — Les conseillers experts (créés le 2026-08-08)
+
+Décision d'Eric : trois **conseillers**, distincts des lots. Un lot **fait** du
+travail dans un worktree ; un conseiller **répond à des questions** et ne
+modifie rien. Ils existent parce que l'architecte a buté trois fois en deux
+jours sur des questions hors de son domaine — et parce que, trois fois aussi,
+une mesure a contredit une affirmation confiante qui était la sienne.
+
+| Conseiller | Modèle · effort | Ce qu'il couvre | Première question |
+|---|---|---|---|
+| **VTT et interopérabilité** | Sonnet · high | Foundry, Roll20, AboveVTT, **Owlbear Rodeo** — après une recherche web d'actualisation obligatoire | Que doit contenir un personnage pour entrer dans chacun, et qu'est-ce qui manque à `fh-char/1` ? |
+| **Règles et juridique SRD** | Sonnet · high | SRD 5.2.1 CC-BY-4.0, règles **et** licence | ⚖️ La couche FH de base : publique, privée, ou publique-réduite ? |
+| **Fate's Hand** | Opus · medium | Les règles maison d'Eric | L'Éveil arcanique : le moteur peut-il appliquer la partie chiffrée ? |
+
+**Les trois lois gravées dans chaque mandat**, et c'est ce qui les rend utiles
+plutôt que dangereux :
+1. **Dire « je ne sais pas » plutôt qu'inventer.** Une réponse assurée et fausse
+   ne réduit pas l'incertitude : elle la remplace par une erreur qu'on ne
+   découvre qu'en la construisant.
+2. **Citer la source dès qu'elle est vérifiable**, et signaler une certitude
+   basse.
+3. **Nommer qui devrait répondre** quand la question dépasse le domaine.
+
+**Deux gardes de périmètre** : l'expert VTT doit se documenter par recherche
+web avant de répondre (les API bougent, la connaissance d'un modèle a une date
+de péremption) ; l'expert FH ne dépose **jamais** de contenu Fate's Hand dans
+le dépôt public — il en parle, il ne l'y écrit pas.
+
+**Un quatrième est identifié, pas créé** : un conseiller *interface de builder*,
+utile au M3 seulement, et cadré pour apporter les conventions du domaine sans
+décider à la place d'Eric — qui a l'interface en tête. **Écartés
+délibérément** : « expérience de table » (Eric est le MJ, ce serait un
+doublon) et « MCP » (l'architecte le porte). Le **relecteur adversarial**, qui
+a eu le meilleur rendement mesuré de la v1 — quatre défauts réels, 32 lignes de
+correctif contre 162 lignes de tests — n'est **pas** un conseiller mais un
+**lot** : on ne lui pose pas de questions, on lui donne du code à casser. À
+lancer quand le builder existera.
