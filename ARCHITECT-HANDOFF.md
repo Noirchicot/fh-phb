@@ -10,6 +10,15 @@ Read both. Read nothing else to start.
 
 ## 0. Map of this file — for the successor in a hurry
 
+> 🔀 **STOP — the product pivoted on 2026-08-07. Read `FHPC-V2-BRIEF.md`
+> first.** FHPC is now an **independent character builder** on SRD with
+> stackable rule layers, not a companion bolted to a VTT. This file still
+> describes the v1 dock: its **rules (§2), its paid traps (§3), its board
+> rule (§3b) and how Eric works (§5) all still hold**, and are exactly what
+> the v2 must carry over. What is superseded is the *product*: the six-step
+> sequence in §2 and the deploy gate in §6, which is **frozen, not opened**.
+> `FHPC-V2-BRIEF.md` §9 lists precisely what is obsolete.
+
 | § | What it holds | When to read it |
 |---|---|---|
 | **1** | What the seat does (owns core, verifies, merges, writes prompts) | First session, always |
@@ -384,6 +393,63 @@ mandatory. Never let it claim a branch is on `main` when it is not.
 ---
 
 ## 6. State at handoff
+
+> 🔀 **2026-08-07 — THE PRODUCT PIVOTED. Read `FHPC-V2-BRIEF.md` before
+> anything below this block.** Eric changed the product on 2026-08-07: FHPC is
+> no longer a table companion bolted to a VTT, it is an **independent character
+> builder** on SRD with stackable rule layers (FH, homebrew, more if deals
+> come). His thesis, in his words: **« le joueur peut se balader partout avec
+> ses persos et les tweaker. »** He will open the v2 thread himself, fresh, on
+> the Mac, with Fable.
+>
+> **This changes what §6 measures.** The deploy gate below has six items and
+> every one of them is a v1 dock surface. It is **FROZEN — not opened, not
+> settled**. Nothing about it is wrong; it simply no longer measures the road.
+> `CHANTIER-STATUS.json` carries the current state of play.
+>
+> **Four things Eric ratified the same day** (full text, with consequences, in
+> `FHPC-V2-BRIEF.md` §2): FHPC is an **MCP server**, not a client — the
+> player's AI carries the character into the VTT. **SRD and a base FH layer
+> ship with the platform**; homebrew is a container each DM fills; WotC content
+> only ever arrives with an agreement. **The character belongs to the player,
+> the campaign to the DM** — the player hosts their own data and shares a copy;
+> Eric does not become a host. And **his table does not play on FHPC today**
+> (« les données joueurs sont en sécurité ailleurs, on peut les perdre ici »)
+> — but **in three months, his table plays FH.** That is the only hard date in
+> the chantier.
+>
+> **What was done from this seat on 2026-08-07** — the interim architect seat,
+> taken at Eric's instruction, on the iPad:
+> - **One extraction delivered**: `split-pure-modules` — `fh-utils.js` (35 l.)
+>   and `fh-dice-visual.js` (372 l.) cut out of `fh-player-sheet.js`
+>   (5 645 → 5 294 l.), 19/19 green, the three load-order lists (`mkdocs.yml`,
+>   `tools/dock-harness.html`, the test prelude) all synchronised. **Not
+>   merged.** The alias-block technique — which makes a cut verifiable byte by
+>   byte because no call site changes — is its real deliverable.
+> - **Three extractions refused on a measured inventory**, each with its note
+>   on its branch: `table-feed` (107 `state` accesses, a real cycle between
+>   `profileWrite` and `api()`), `pool-resources` (a 31-entry minimum contract,
+>   three co-written mutable handles), `es-modules` (mkdocs 9.7.7 *can* emit
+>   `type="module"`; the blocker is the test harness — `vm.runInNewContext`
+>   compiles classic scripts only). ⚠️ **The three evaluation branches are
+>   stacked on `split-pure-modules`**, so their diff against `main` carries the
+>   JS. Cherry-pick the doc commits to keep only the notes.
+> - **`fix-panel-persistence`** — investigation only, **do not merge**. The
+>   defect is real (`persistPlayState()` writes `panelData`/`poolResources` to
+>   `localStorage` and not to the cloud profile) but the obvious fix is worse
+>   than the defect, and Eric's decision 4 voids the urgency. Its five gate
+>   points are worth reading before the v2 designs persistence.
+>
+> **The standing lesson of the day**: a cut by *purity* has a low ceiling. The
+> code that blocks parallel work is exactly the code that touches `state`. The
+> seam that would actually work is the **command boundary** — who owns which
+> verbs and which slice of state. That is the single most useful measured fact
+> this seat produced, and `FHPC-V2-BRIEF.md` §3.2 and §5 carry it forward.
+>
+> ⚠️ **A seat discipline was broken and is recorded here on purpose**: 395
+> lines of `fh-player-sheet.js` were restructured from a non-architect seat,
+> against a ratified decision in `COMPANION-BUILD-PLAN.md:186` not to carve the
+> core. It is on a branch, unmerged, and it is why §1 exists.
 
 > 🌙 **EVENING OF 2026-08-06 — the PiP check passed, the zoom chapter was
 > opened and closed again.** All of it lives on `tray-labels-r34-r39`;

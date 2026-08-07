@@ -9,11 +9,31 @@
     "Couleurs côté widget : fini=vert, en-cours=orange, en-attente=blanc, probleme=rouge."
   ],
   "as_of": "2026-08-07",
+  "virage": {
+    "date": "2026-08-07",
+    "display": "🔀 VIRAGE PRODUIT — FHPC devient un CONSTRUCTEUR DE PERSONNAGE indépendant",
+    "these": "« Le joueur peut se balader partout avec ses persos et les tweaker » (Eric).",
+    "quoi": "Plus un compagnon de table attaché à un VTT : un builder bâti sur le SRD, avec des couches de règles empilables (FH, homebrew, d'autres si accords). Le joueur emporte son perso vers Foundry / AboveVTT / Roll20 et le modifie.",
+    "decisions_ratifiees": [
+      "1 — FHPC est un serveur MCP, pas un client : c'est l'IA du joueur qui porte le perso dans la VTT.",
+      "2 — SRD + une couche FH de base livrés avec la plateforme ; le homebrew est un conteneur que chaque MJ remplit ; contenu WotC seulement s'il y a accord. Le perso doit voyager SANS que toutes les règles soient chargées.",
+      "3 — Le personnage appartient au joueur, la campagne au MJ. Le joueur héberge ses données et partage une copie. Eric ne devient pas hébergeur.",
+      "4 — La table d'Eric ne joue pas sur FHPC aujourd'hui (données en sécurité ailleurs, on peut les perdre ici). MAIS : dans trois mois, la table joue à FH."
+    ],
+    "echeance_dure": "2026-11-07 — la table d'Eric joue à FH sur le nouveau produit. Seule date dure du chantier.",
+    "passage_de_temoin": "fh-phb/FHPC-V2-BRIEF.md (+ miroir vault : Chantier FH & FHPC/FHPC v2 — Passage de témoin). Eric ouvre le fil v2 lui-même, neuf, sur Mac, avec Fable.",
+    "non_tranche": [
+      "Où vit le partage public de homebrew — un format ne suffit pas, il faut un endroit, et c'est le seul point où Eric redeviendrait hébergeur.",
+      "La synchro multi-appareils du joueur : assumée par lui, ou service optionnel ?",
+      "Le sort du dock v1 au-delà du gel : maintenu, archivé, ou repris comme troisième vue.",
+      "Ce que « fonctions globales dans le menu de l'ID » recouvre — si ce sont des actions de contenu, c'est un amendement à une règle ratifiée."
+    ]
+  },
   "gate": {
     "open": false,
-    "display": "🚦 Porte de déploiement FERMÉE — écart main↔site VOULU, pas une alerte",
-    "reason": "Rien ne se déploie tant que Info Panel, Dice Pool, Console, Dice Tray et Roll Builder ne sont pas tous reconstruits (décision Eric 2026-08-03).",
-    "reopens_when": "Les cinq surfaces du bas du dock sont fusionnées et vérifiées, PUIS la passe typographique globale (moitié haute sur les crans T1-T7 + test de conformité) — ajoutée par Eric le 2026-08-06 : elle passe avant le déploiement pour que les joueurs ne voient pas le dock changer deux fois."
+    "display": "🧊 Porte de déploiement GELÉE (2026-08-07) — ses 6 items mesurent un produit qui n'est plus le chemin",
+    "reason": "Fermée par Eric le 2026-08-03 (rien ne se déploie tant qu'Info Panel, Dice Pool, Console, Dice Tray et Roll Builder ne sont pas reconstruits). GELÉE depuis le virage du 2026-08-07 : ses six items sont tous des surfaces du dock v1. Ni ouverte, ni soldée — elle ne mesure simplement plus la route. L'écart main↔site reste VOULU, pas une alerte.",
+    "reopens_when": "Décision d'Eric, et seulement lui. Le dock v1 gèle : sa table n'est pas dessus (décision 4), donc rien ne presse — mais on ne débranche rien."
   },
   "deployed": {
     "site": "https://noirchicot.github.io/fh-phb/",
@@ -47,6 +67,18 @@
     }
   ],
   "wip": [
+    {
+      "name": "Découpage du Player Companion — 1 livré, 3 refusés sur inventaire (2026-08-07)",
+      "repo": "fh-phb",
+      "state": "en-attente",
+      "note": "RIEN N'EST FUSIONNÉ, main intact (9aaf6ce). Les cinq branches sont sur origin. ✅ `split-pure-modules` (5d0012b) : fh-utils.js (35 l.) + fh-dice-visual.js (372 l.) sortis de fh-player-sheet.js (5645→5294 l.), bloc d'alias, 19/19 verts, les TROIS listes d'ordre de chargement synchronisées (mkdocs.yml, tools/dock-harness.html, le prélude des tests). Son vrai livrable est la TECHNIQUE du bloc d'alias : aucun site d'appel ne change, donc la coupe se vérifie octet par octet. ⚠️ Défaut connu à ne pas reproduire : le bloc lit window.FH.utils.esc SANS GARDE — si un module ne charge pas, le dock ne monte pas du tout. ❌ TROIS REFUS ARGUMENTÉS, chacun avec sa note sur sa branche : `table-feed` (14d5eff, 107 accès à state, cycle réel profileWrite↔api()), `pool-resources` (8783bcf, contrat minimal à 31 entrées, trois poignées mutables co-écrites), `es-modules` (47c10b7, mkdocs 9.7.7 SAIT émettre type=module — c'est le harnais vm.runInNewContext qui ne compile que du script classique). ⚠️ LES TROIS BRANCHES D'ÉVALUATION SONT EMPILÉES SUR split-pure-modules : leur diff contre main porte le JS ; cherry-pick les commits de doc pour ne garder que les notes. 📌 LEÇON DEBOUT : une coupe par PURETÉ a un plafond bas — le code qui bloque le travail parallèle est exactement celui qui touche state ; la bonne couture est la FRONTIÈRE DE COMMANDE (qui possède quels verbes, quelle tranche d'état). ⚠️ DISCIPLINE ENFREINTE, notée exprès : 395 lignes de fh-player-sheet.js restructurées depuis un siège non-architecte, contre une décision ratifiée (COMPANION-BUILD-PLAN.md:186) de ne pas tailler le cœur."
+    },
+    {
+      "name": "Persistance panelData / poolResources — enquête, NE PAS FUSIONNER",
+      "repo": "fh-phb",
+      "state": "en-attente",
+      "note": "Branche `fix-panel-persistence` (580feba, sur origin) : enquête seule, AUCUN changement de comportement. Le défaut est réel — persistPlayState() écrit panelData et poolResources en localStorage (fh-player-sheet.js:785-786) mais ne les envoie pas au profil cloud (:789), donc tout ce qu'un joueur saisit à la main dans les six panneaux est lié à l'appareil, alors que COMPANION-BUILD-PLAN.md:124 promet l'inverse. MAIS le correctif évident (ajouter les deux clés à saveProfile) est PIRE que le défaut : la précédence profil-d'abord fait gagner un {} truthy, qui écrase sans erreur un appareil richement rempli. Cinq points documentés dans PERSISTENCE-PANELDATA.md. Rendue caduque pour la v1 par la décision 4 d'Eric ; l'enquête reste à lire AVANT que la v2 ne dessine sa persistance."
+    },
     {
       "name": "Widget Übersicht chantier",
       "repo": "hooks/widget",
