@@ -54,6 +54,11 @@ const sandbox={URL,clearTimeout,console,crypto,setTimeout,window:{crypto,setTime
 sandbox.globalThis=sandbox;
 const chaosPath=path.join(__dirname,"..","docs","javascripts","chaos-tables.js");
 vm.runInNewContext(fs.readFileSync(chaosPath,"utf8"),sandbox,{filename:chaosPath});
+/* fh-utils.js et fh-dice-visual.js sont chargés avant le dock par mkdocs.yml
+   (extraction du 2026-08-07) ; le bac à sable doit faire pareil. */
+["fh-utils.js", "fh-dice-visual.js"].forEach(function (f) {
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, "..", "docs", "javascripts", f), "utf8"), sandbox, {filename: f});
+});
 vm.runInNewContext(source,sandbox,{filename:sourcePath});
 const t=sandbox.__fhPool;
 

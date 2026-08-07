@@ -52,6 +52,11 @@ const sandbox = {
 };
 sandbox.document = {addEventListener() {}};
 sandbox.globalThis = sandbox;
+/* fh-utils.js et fh-dice-visual.js sont chargés avant le dock par mkdocs.yml
+   (extraction du 2026-08-07) ; le bac à sable doit faire pareil. */
+["fh-utils.js", "fh-dice-visual.js"].forEach(function (f) {
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, "..", "docs", "javascripts", f), "utf8"), sandbox, {filename: f});
+});
 vm.runInNewContext(instrumented, sandbox, {filename: sourcePath});
 const t = sandbox.__fhTrayExp;
 

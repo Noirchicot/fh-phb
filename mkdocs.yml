@@ -60,6 +60,11 @@ extra_javascript:
   # Progressive WebGL renderer for d6/d20 results. It never rolls; the dock
   # passes it faces that have already been resolved by the FHPC state machine.
   - javascripts/fh-static-dice.js
+  # Fonctions pures extraites du dock le 2026-08-07 : présentation des dés et
+  # utilitaires. Doivent charger AVANT fh-player-sheet.js, qui les lit via
+  # window.FH.utils / window.FH.diceVisual. fh-dice-visual dépend de fh-utils.
+  - javascripts/fh-utils.js
+  - javascripts/fh-dice-visual.js
   - javascripts/fh-player-sheet.js
 
 markdown_extensions:
