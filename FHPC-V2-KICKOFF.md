@@ -283,7 +283,10 @@ livraison). Parallèle autorisé avec le lot `2-schemas`.
 
 ## §L4 — LOT `4-couche-srd` : générateur de la couche SRD — **Sonnet · medium**
 
-**Après merge du lot `2-schemas`** (il consomme `fh-layer.schema.json`). Worktree
+⚠️ **NE PAS LANCER AVANT** (corrigé le 2026-08-08, voir §6) : ce lot dépend du lot
+`2-schemas` **fusionné** (fait), du lot **`6-srd-tables` LIVRÉ**, et de la
+**révision des schémas par l'architecte** — sans le genre `skill` au contrat, il
+générerait une couche SRD sans compétences. Worktree
 `~/tools/fhpc-worktrees/4-couche-srd`, branche `4-couche-srd`.
 
 1. `src/tools/gen-srd-layer.mjs` : lit `~/tools/fh-srd/exports/srd/{fr,en}/
@@ -374,7 +377,7 @@ si elle casse quelque chose. Ce filet n'a jamais existé en v1.
    testent une mécanique FH deviennent des suites **de la couche FH** —
    déplacées, jamais supprimées.
 
-### Deux exigences ajoutées le 2026-08-08, après l'inventaire d'Eric (BRIEF §4b)
+### Les exigences ajoutées le 2026-08-08 — inventaire d'Eric (BRIEF §4b) et résolution de la Q7
 
 **A. Les jets se COMPOSENT — la console a trois formes, pas une.** Eric :
 *« architecture différente selon Skill, Actions ou Spells »*. Ce ne sont pas
@@ -419,6 +422,97 @@ Le moteur rend des identifiants ; les mots deviennent des données que l'UI
 consomme. Aucune traduction n'est demandée ici : on ouvre la porte, on ne
 livre pas les langues.
 
+**D. LA Q7 EST RÉSOLUE — « bardic, tactic, destiny » nomme une CAPACITÉ, pas une
+liste de règles.** Tranchée par Eric le 2026-08-08 via l'expert Fate's Hand, qui a
+écarté les *deux* lectures que l'architecte proposait. La phrase ne parle ni des
+jetons d'affichage ni des règles FH : elle nomme **dépenser un dé pendant ou après
+un jet**. Les trois nommés partagent trois propriétés qu'aucun autre bonus ne
+partage — un **dé** (pas un modificateur : il a des faces extrêmes qui déclenchent
+des règles), applicable **après coup** sur un jet déjà connu comme raté, adossé à
+une **ressource comptée**.
+
+**D.1 — Le moteur porte TROIS verbes de dé, et ils ne se ramènent pas l'un à
+l'autre.** Les traiter comme un seul est le bug que cette section existe pour
+empêcher.
+
+| Verbe | Qui | Fenêtre | Cible |
+|---|---|---|---|
+| **Ajouter** un dé | Bardic Inspiration · Tactical Mind · Destinée | après un **échec** (les deux SRD) / n'importe quand (Destinée) | le **total** |
+| **Relancer** un dé | Inspiration héroïque (SRD 5.2) | **immédiatement** après ce dé | **n'importe quel dé** — le d20, un dé bonus, un dé de dégâts |
+| **Monter** avec avantage | Guidance, Inspiration 2014 | **avant** le jet | le **d20** |
+
+Sources vérifiées : Bardic Inspiration et Tactical Mind (**Guerrier niveau 2**, pas
+Battle Master) dans `fh-srd/exports/srd/en/class.json` ; Inspiration héroïque dans
+`glossary.json` → `srd:glossary:en:heroic-inspiration`, p.183 : *« expend it to
+reroll any die immediately after rolling it »*. **Trois fenêtres, trois cibles,
+trois portes.** Un moteur qui les traite pareil laissera passer un Bardic sur un
+succès. *Guidance* sort du lot des corrections pour une raison nette : il se lance
+avant — c'est un bonus de montage, pas une correction.
+
+⚠️ **L'Inspiration héroïque a été RETIRÉE de Fate's Hand, et le SRD la garde.** Le
+moteur doit donc faire tourner une mécanique que le système maison n'utilise pas.
+C'est le **meilleur cas de test de la pile en couches** du chantier — voir le test
+d'acceptation ci-dessous, qui la prend pour juge.
+
+**D.2 — CE QUI NE TOMBE SURTOUT PAS : la transaction de jet ROUVRABLE.** Un jet
+réglé n'est pas figé : il doit pouvoir recevoir un dé et **changer de verdict**.
+C'est précisément ce que la phrase d'Eric demande de garder. Le mécanisme existe
+déjà dans le moteur porté et il est **intouchable** — vérifié par l'architecte :
+`adjustment-choice` est une **phase bloquante** (`src/play/session.mjs:51`),
+`completeHistoryAdjustment` en est la sortie, `entry.adjusted` est posé en deux
+points (`:787` et `:950`), badge `adjusted` (`src/play/lexicon.mjs:142`).
+
+**D.3 — Ce qui tombe, et c'est réel : le vocabulaire de scellage.**
+`SEALABLE_SOURCES` (`src/play/lexicon.mjs:37`) déclare **six** sources scellables :
+`guidance`, `bardic`, `tactical`, `other-1`, `other-2`, `other-3`. Sous la
+définition d'Eric, seuls **`bardic` et `tactical`** sont des dés de correction. Les
+quatre autres sont de l'habillage d'affichage, pas de la mécanique — à **supprimer,
+pas à désactiver** (loi §0.6). `destiny` est déjà exclu du scellage exprès, et le
+commentaire du fichier (`:35-36`) dit pourquoi : *« un dé de Destinée se prend dans
+la réserve, ce n'est pas un autocollant »*.
+
+**D.4 — Le remboursement conditionnel.** Tactical Mind n'est **pas** dépensé si le
+test échoue quand même (SRD, Guerrier niv. 2). Or l'invariant 4 de `fh-char/1` dit
+« décrémenté **au règlement** » : un règlement qui **rend** la ressource selon le
+résultat n'est écrit nulle part. **À vérifier dans `src/play/session.mjs` et à
+livrer** — c'est une vérification, pas une décision.
+
+**D.5 — LE DON DE DÉ ENTRE JOUEURS — décision ratifiée par Eric le 2026-08-08.**
+*« Le dé de Bardic est donné par un barde au joueur : il faudrait qu'un joueur
+puisse donner un dé à un autre joueur. Dans de rares cas, notamment avec l'Arcane
+du Diable, un joueur peut donner un dé de Destinée à un autre joueur, en réaction
+ou à l'avance. »*
+
+C'est une capacité de premier rang, pas un cas limite — et elle traverse **deux
+documents `fh-char/1`**, ce que la décision 3 (le personnage appartient au joueur)
+n'avait pas prévu. Découpage tranché par l'architecte, à respecter tel quel :
+
+- **Le don est un verbe du bloc `play` chez le DONNEUR** : il décrémente **sa**
+  ressource et émet un événement. Le dé reçu est, chez le **RECEVEUR**, une
+  ressource comptée ordinaire **portant sa provenance** (qui l'a donné, quelle
+  source, quelle fenêtre de validité).
+- **Le lot 5 construit les deux bouts, PAS le transport.** Faire voyager le dé
+  d'une machine à l'autre est du bloc `table` (M4). Dans le lot 5, un dé reçu se
+  pose directement — un test suffit à le prouver.
+- **La provenance est un besoin de SCHÉMA** : `resolved.resources[]` n'a pas de
+  champ de provenance aujourd'hui. **Ne l'invente pas** — l'architecte révise
+  `fh-char/1` dans la même passe que le genre `skill` du lot 6. **Livre la forme
+  dont tu as besoin, il ratifie** (loi §0.10).
+- **La couche compte** : donner un **dé de Bardic** est SRD ; donner un **dé de
+  Destinée** (Arcane du Diable, en réaction ou à l'avance) est **FH**, donc un
+  module à drapeau qui s'inscrit sur le même verbe. Un test de plus de la
+  séparation — et un bon.
+- ⚠️ **La fenêtre « à l'avance » n'est pas la même que « en réaction ».** Un dé
+  donné à l'avance est une ressource qui **attend** sur la fiche du receveur ; un
+  dé donné en réaction arrive **pendant une transaction ouverte**. Ce sont deux
+  portes, comme en D.1 — ne les confonds pas.
+
+**D.6 — La portée de la phrase, pour qu'aucune simplification ne déborde.** Elle
+porte sur la complexité du **jet**, jamais sur celle du **builder**. Elle ne retire
+rien aux 26 compétences, à la réserve de points, aux planchers, ni aux 78 arcanes.
+Et `destiny` étant **nommément** conservé, tout ce qui en découle reste : Chaos,
+Overreach, sa sauvegarde, Tables de Fatalité, Éveil arcanique.
+
 ### 🎯 Le test d'acceptation — c'est lui qui dit si le lot a réussi
 
 > **Un personnage SRD pur, aucune couche FH chargée, lance un jet de compétence
@@ -427,16 +521,29 @@ livre pas les langues.
 > Et son pendant pour l'exigence A : **une attaque enchaîne toucher puis dégâts
 > comme deux phases d'un même jet**, sans qu'aucune ligne du chemin commun ne
 > cite Destinée, Chaos ni Overreach.
+>
+> **Et le troisième, ajouté le 2026-08-08 et le plus dur des trois** : **un
+> personnage SRD pur dépense son Point d'inspiration héroïque pour RELANCER un dé
+> déjà lancé, et le verdict du jet est recalculé.** FH a retiré cette mécanique,
+> le SRD la garde : si elle ne marche pas avec FH débrayé, la thèse en couches ne
+> tient pas. C'est le seul test qui prouve la séparation dans le sens difficile —
+> une mécanique SRD que le système maison n'utilise **pas**.
 
-Écrit comme une suite exécutable (`tests/play-srd-only.test.mjs`), il fait foi.
-S'il passe, la séparation est réelle ; s'il ne peut pas être écrit, elle est
-décorative — et le lot le dit platement plutôt que de la maquiller.
+Écrits comme des suites exécutables (`tests/play-srd-only.test.mjs`), ils font
+foi. S'ils passent, la séparation est réelle ; si l'un d'eux ne peut pas être
+écrit, elle est décorative — et le lot le dit platement plutôt que de la
+maquiller.
 
-6. **Livrable** : `src/play/` recoupé, les deux tests d'acceptation,
+6. **Livrable** : `src/play/` recoupé, les **trois** tests d'acceptation,
    l'inventaire écrit de la coupe (ce qui est parti côté FH et pourquoi), les
-   trois types de jet SRD avec leurs réglages fermés, les textes sortis en
-   données, `contracts/play.md` mis à jour, et la liste des drapeaux de couche
-   que FH doit lever — elle devient une entrée du schéma `fh-layer/1`.
+   trois types de jet SRD avec leurs réglages fermés, les **trois verbes de dé**
+   (D.1) avec leurs trois portes, le **don de dé** aux deux bouts sans transport
+   (D.5), la vérification du remboursement conditionnel (D.4), la coupe de
+   `SEALABLE_SOURCES` (D.3), les textes sortis en données,
+   `contracts/play.md` mis à jour, et **deux listes pour l'architecte** : les
+   drapeaux de couche que FH doit lever, et **la forme de provenance dont un dé
+   reçu a besoin** dans `resolved.resources[]`. Les deux deviennent des entrées
+   de schéma — c'est lui qui les écrit, pas le lot.
 
 **Une décision d'architecte déjà prise, ne la rouvre pas** (elle vient du lot 3,
 point ouvert n°1) : pendant une séance, `play` tient une **copie de travail**
@@ -451,9 +558,19 @@ sont de la séance et meurent avec elle.
 
 ## §L6 — LOT `6-srd-tables` : les deux tables qui manquent — **Opus · high**
 
-⚠️ **Ce lot travaille dans `~/tools/fh-srd`, PAS dans `fhpc`** (loi §0.2 amendée).
-Branche `6-srd-tables` coupée de `main` de `fh-srd`. **Aucune dépendance** : il
-peut partir immédiatement, en parallèle des lots 4 et 5 — autre dépôt.
+⚠️ **Ce lot travaille dans `fh-srd`, PAS dans `fhpc`** (loi §0.2 amendée).
+**Worktree monté par l'architecte le 2026-08-08** :
+`~/tools/fh-srd-worktrees/6-srd-tables`, branche `6-srd-tables` coupée de `main`
+(`3decd7c`). **Aucune dépendance** : il part immédiatement, en parallèle du lot 5
+(autre dépôt). ⚠️ **Le lot 4, lui, dépend de CE lot** — voir §6.
+
+> 🔧 **Détail d'outillage, déjà réglé — ne le cherche pas.** Les PDF sources
+> (11 Mo) sont **hors git** (`.gitignore` : `sources/pdf/`), donc absents d'un
+> worktree nu — et le dépôt rouvre le PDF à chaque exécution pour tester
+> l'attribution. L'architecte a posé un lien symbolique
+> `sources/pdf → ~/tools/fh-srd/sources/pdf` dans ton worktree : les deux PDF sont
+> là, épinglés par `sources/sources.lock.json`. Ne re-télécharge rien. `build/`
+> (la base sqlite) est aussi un artefact ignoré : il se régénère chez toi.
 
 **POURQUOI CE LOT EXISTE — deux trous mesurés le 2026-08-08 par les conseillers
 experts, et vérifiés par l'architecte.** Ils bloquent le builder, donc la date
@@ -533,15 +650,41 @@ personnages silencieusement faux, ce qui est pire que pas de table du tout.
 ```
 VAGUE 1 : 1-squelette    (Sonnet·high, sur main)   ← seul, tout en dépend
 VAGUE 2 : 2-schemas      (Opus·high)   ∥   3-moteur (Opus·high)     ✅ livrés
-VAGUE 3 : 4-couche-srd   (Sonnet·medium)  ∥  5-moteur-srd-fh (Opus·high)
-          ↑ dépend du lot 2 FUSIONNÉ         ↑ dépend du lot 3 FUSIONNÉ
-          (répertoires disjoints : src/tools/+layers/ contre src/play/)
+VAGUE 3 : 6-srd-tables   (Opus·high, dépôt fh-srd)  ∥  5-moteur-srd-fh (Opus·high)
+          ↑ aucune dépendance, priorité d'Eric        ↑ dépend du lot 3 FUSIONNÉ
+          (dépôts différents : fh-srd contre fhpc)     🚀 LANCÉS le 2026-08-08
 
-HORS VAGUES — 6-srd-tables (Opus·high), dans le dépôt fh-srd, AUCUNE dépendance.
-          Part quand Eric veut. Priorité d'Eric le 2026-08-08 : « le lot
-          d'imports FH srd en premier » — sans lui, le M2 construirait un moteur
-          de dérivation qui n'a rien à dériver.
+VAGUE 4 : 4-couche-srd   (Sonnet·medium)
+          ↑ dépend du lot 6 LIVRÉ **et** de la révision des schémas par
+            l'architecte. Voir la correction ci-dessous.
 ```
+
+### ⚠️ CORRECTION DU 2026-08-08 — le lot 4 n'est PAS parallèle au lot 6
+
+La version précédente de ce §6 classait le lot 6 « hors vagues, aucune dépendance,
+peut partir en parallèle des lots 4 et 5 ». **Le lot 6 n'a effectivement aucune
+dépendance — mais le lot 4, lui, dépend de LUI.** Le raisonnement fautif était
+« autre dépôt » ; ce n'est pas le test. Le test est celui d'Eric, et il s'applique
+d'un dépôt à l'autre. Mesuré par l'architecte avant lancement :
+
+1. Le prompt du lot 4 cite `fh-srd/exports/srd/{fr,en}/*.json` et
+   `exports/MANIFEST.json` — **le lot 6 écrit ces fichiers**, sa propre discipline
+   lui imposant de régénérer le MANIFEST.
+2. Plus contraignant encore : dans `schemas/fh-layer.schema.json`, `records` est
+   `additionalProperties: false` avec les **12 genres énumérés en dur** (idem
+   `fh-char.schema.json:624`). **Un genre `skill` serait rejeté bruyamment.** Le
+   lot 4 lancé aujourd'hui ne *peut pas* porter les compétences, même si elles
+   existaient déjà.
+
+**Le mode d'échec, s'il partait quand même** : il livrerait une couche SRD sans
+compétences ni emplacements de sorts — commitée, tests verts, seuils respectés —
+et le trou n'apparaîtrait qu'au M2, quand le builder ne trouve rien à choisir. Ce
+n'est pas un conflit git, c'est exactement ce que la règle de séquencement existe
+pour empêcher.
+
+**La chaîne réelle** : lot 6 livre la forme des records → **l'architecte révise
+`fh-char/1` et `fh-layer/1`** (c'est du contrat, donc son travail) → le lot 4
+génère.
 
 ### La règle de séquencement — une seule, et elle est vérifiable
 

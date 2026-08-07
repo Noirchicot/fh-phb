@@ -107,39 +107,67 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 | `1-squelette` | ✅ fusionné — noyau : registre de verbes + bus |
 | `2-schemas` | ✅ fusionné — `fh-char/1` et `fh-layer/1` |
 | `3-moteur` | ✅ fusionné — moteur de jets hors DOM |
-| `4-couche-srd` | 🟢 débloqué, prêt à lancer |
-| `5-moteur-srd-fh` | 🟢 débloqué, prêt à lancer |
-| `6-srd-tables` | 🟢 écrit et **prioritaire** (décision d'Eric) — dépôt `fh-srd` |
+| `4-couche-srd` | ⛔ **ne part pas** — dépend du lot 6 **livré** + révision des schémas (voir ci-dessous) |
+| `5-moteur-srd-fh` | 🚀 **LANCÉ** le 2026-08-08 — worktree `~/tools/fhpc-worktrees/5-moteur-srd-fh` |
+| `6-srd-tables` | 🚀 **LANCÉ** le 2026-08-08, prioritaire — worktree `~/tools/fh-srd-worktrees/6-srd-tables` |
 
-### 🚨 Trois problèmes ouverts
+> ⚠️ **Correction de séquencement du 2026-08-08 : le lot 4 n'est pas parallèle au
+> lot 6.** Le kickoff disait « autre dépôt, donc parallèle » — ce n'est pas le
+> test. Mesuré : le prompt du lot 4 cite les exports + le MANIFEST que le lot 6
+> réécrit, et surtout `fh-layer.schema.json` énumère les **12 genres en dur**
+> (`additionalProperties: false`), donc un genre `skill` y serait **rejeté
+> bruyamment**. Lancé aujourd'hui, le lot 4 livrerait une couche SRD **sans
+> compétences ni emplacements** — verte, commitée, et fausse jusqu'au M2. La
+> chaîne réelle : lot 6 → **révision des schémas par ce siège** → lot 4.
+
+### 🚨 Trois problèmes ouverts (les trois ont maintenant un porteur)
 
 1. **Les tables de progression de classe n'existent pas** comme données dans
    `fh-srd` → un magicien niveau 1 ne reçoit pas ses emplacements de sorts.
+   → **lot 6, lancé.** Dé-risqué avant lancement : la table est bien dans le texte
+   de `class.json`, row-coherent ligne par ligne.
 2. **Les 18 compétences du SRD ne sont records dans aucun genre** → un personnage
-   ne peut pas choisir ses compétences.
-3. **`keepArcana` porté tel quel serait un bug garanti** — déjà neutralisé dans
-   la commande du lot 5.
+   ne peut pas choisir ses compétences. → **lot 6, lancé.**
+3. **`keepArcana` porté tel quel serait un bug garanti** — neutralisé dans la
+   commande du lot 5, **lancé**.
 
-Les deux premiers **bloquent le builder, donc la date du 7 novembre**. D'où le
-lot 6, prioritaire.
+Les deux premiers **bloquent le builder, donc la date du 7 novembre**. Ils restent
+**ouverts jusqu'à livraison ET revue** — un lot lancé n'est pas un trou bouché.
+
+### ✅ Résolu par Eric le 2026-08-08 — ne pas le rouvrir
+
+- **La Q7, « bardic, tactic, destiny »** : ni les jetons d'affichage, ni les règles
+  FH. La phrase nomme une **capacité du moteur** — *dépenser un dé pendant ou après
+  un jet*. Elle donne **trois verbes** (ajouter / relancer / monter avec avantage),
+  trois fenêtres, trois cibles. Ce qui tombe : quatre des six `SEALABLE_SOURCES`.
+  Ce qui est **intouchable** : la transaction de jet **rouvrable**.
+- **Le don de dé entre joueurs**, apporté par Eric : un joueur peut donner un dé à
+  un autre (Bardic = SRD ; dé de Destinée via l'**Arcane du Diable**, en réaction
+  ou à l'avance = FH). Traverse **deux documents `fh-char/1`** — la décision 3 ne
+  l'avait pas prévu. Découpage tranché : verbe chez le donneur, ressource **avec
+  provenance** chez le receveur, **transport au M4** (bloc `table`).
+- **Le Point d'inspiration héroïque**, quatrième cas apporté par Eric : retiré de
+  FH, **gardé par le SRD**. Promu **troisième test d'acceptation du lot 5** — c'est
+  la seule preuve de la séparation dans le sens difficile.
 
 ### Ce qui attend une décision d'Eric
 
-- *« bardic, tactic, destiny »* — parlait-il des trois **jetons de source** du
-  plateau de dés, ou des trois **règles** qui modifient un d20 ? Sa réponse change
-  ce qui tombe de la simplification. L'expert Fate's Hand a refusé de trancher à
-  sa place, et il a eu raison.
 - Les points ouverts du BRIEF §11.
 
 ### Ce qui attend l'architecte
 
-- **Arbitrer trois ajouts au schéma** proposés par l'expert VTT : un champ
-  portrait/token (Foundry et Owlbear en ont besoin), la taille et le type de
-  créature, et un lien optionnel d'une action vers l'objet qui la porte.
-- **Réviser les schémas** quand le lot 6 aura livré la forme des nouveaux records
-  (le genre `skill` notamment) — les 12 genres sont énumérés en dur et un genre
-  inconnu est rejeté bruyamment. **C'est du contrat, donc le travail de ce
-  siège**, pas celui du lot.
+**Une seule passe de révision des schémas, quand le lot 6 aura livré** — trois
+sources à traiter ensemble plutôt qu'en trois versions successives :
+
+1. **La forme des nouveaux records du lot 6** (le genre `skill` notamment) : les
+   12 genres sont énumérés en dur et un genre inconnu est rejeté bruyamment.
+2. **Les trois ajouts de l'expert VTT** : un champ portrait/token (Foundry et
+   Owlbear en ont besoin), la taille et le type de créature, un lien optionnel
+   d'une action vers l'objet qui la porte.
+3. **La provenance d'un dé reçu** dans `resolved.resources[]` (décision du don de
+   dé) — le lot 5 livre la forme dont il a besoin, ce siège l'écrit.
+
+**C'est du contrat, donc le travail de ce siège**, pas celui des lots.
 
 ---
 
