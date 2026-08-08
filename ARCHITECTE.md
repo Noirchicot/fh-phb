@@ -39,6 +39,13 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 - **Il ne construit pas les lots.** C'est pour ça qu'ils existent.
 - **Il ne pousse pas, ne déploie pas.** `git push`, la création de remotes et
   tout déploiement sont **les gestes d'Eric** — lui tendre les commandes.
+  > 📌 **Précédent du 2026-08-08, à ne pas généraliser.** Eric, à distance et
+  > empêché, a **explicitement** demandé que l'architecte pousse les trois
+  > dépôts, puis déploie. La règle n'est pas levée : elle a été levée **une
+  > fois, sur sa parole, pour cette session**. La demander quand elle bloque est
+  > légitime ; la supposer acquise ne l'est pas. ⚠️ Et `deploy_pages.sh` porte
+  > dans son en-tête « Claude ne l'exécute pas » — un fichier ne lève pas une
+  > règle, seul Eric le fait, et il faut le dire en le faisant.
 - **Il ne tranche pas à sa place** les points ouverts du BRIEF §11.
 - **Il ne commite jamais le vault à la main** : le plugin Obsidian Git s'en
   charge en quelques secondes, et un commit manuel emporte son staging en cours.
@@ -98,162 +105,127 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'état du chantier — 2026-08-08
+## 5. L'état du chantier — 2026-08-08, fin de soirée
 
-**`~/tools/fhpc`** (public), `main` = `3667368`, **238 tests verts**.
-**`~/tools/fh-srd`**, `main` = `4651a43`, **42 suites vertes**, 14 genres / 2 613 records.
+| Dépôt | `main` | Suites |
+|---|---|---|
+| `~/tools/fhpc` | `d988c97` | **409 vertes** |
+| `~/tools/fh-srd` | `e83015a` | **47 vertes** |
+| `~/tools/fh-phb` | `dc85cf9` | (board + mandat) |
 
-| Lot | État |
-|---|---|
-| `1-squelette` | ✅ fusionné — noyau : registre de verbes + bus |
-| `2-schemas` | ✅ fusionné — `fh-char/1` et `fh-layer/1` |
-| `3-moteur` | ✅ fusionné — moteur de jets hors DOM |
-| `4-couche-srd` | ✅ **FUSIONNÉ** le 2026-08-08 — couches SRD FR+EN, **14 genres / 2 613 records** |
-| `5-moteur-srd-fh` | ✅ **FUSIONNÉ** le 2026-08-08 — la coupe est **réelle** : le chemin commun passe de 244 à 7 mentions de la Destinée, et **les 7 sont des commentaires** |
-| `6-srd-tables` | ✅ **FUSIONNÉ** le 2026-08-08 — `fh-srd` `main` = `4651a43`, 42 suites vertes, **14 genres / 2 613 records** |
-| `7-bloc-layers` | ✅ **FUSIONNÉ** le 2026-08-08 — la pile de couches, `query` seul chemin de lecture |
-| `RELECTEUR Adverserial` | ✅ **FUSIONNÉ** le 2026-08-08 — 11 gardes attaqués, **4 creux**, dont la loi §0.12 qui ne tenait pas |
+**Tout est poussé, arbres propres, aucun lot en cours.** Les cinq branches
+locales de `fh-phb` (`pkg10-dice`, `codex/*`, `architect/queue-actions-v1`…)
+sont du travail v1 antérieur, pas de la dette de cette session.
 
-> ⚠️ **Correction de séquencement du 2026-08-08 : le lot 4 n'est pas parallèle au
-> lot 6.** Le kickoff disait « autre dépôt, donc parallèle » — ce n'est pas le
-> test. Mesuré : le prompt du lot 4 cite les exports + le MANIFEST que le lot 6
-> réécrit, et surtout `fh-layer.schema.json` énumère les **12 genres en dur**
-> (`additionalProperties: false`), donc un genre `skill` y serait **rejeté
-> bruyamment**. Lancé aujourd'hui, le lot 4 livrerait une couche SRD **sans
-> compétences ni emplacements** — verte, commitée, et fausse jusqu'au M2. La
-> chaîne réelle : lot 6 → **révision des schémas par ce siège** → lot 4.
+### 🎉 Le M2 est complet, et le produit fait ce qu'il promet
 
-### ✅ Les deux trous de contenu sont BOUCHÉS (2026-08-08)
+> Un personnage de niveau 1 **se construit de bout en bout sans interface**, il
+> **se pilote de l'extérieur par MCP**, il **se sauvegarde et voyage**, et il
+> tourne **sur la vraie matière** — sans échafaudage.
 
-Ils bloquaient le builder, donc la date du 7 novembre. Le lot 6 les a comblés et
-la revue l'a **vérifié plutôt que cru** :
+Lots fusionnés depuis la version précédente de ce fichier : `8-srd-mecanique`,
+`9-bloc-build`, `10-mcp-v0`, `11-srd-colonnes`, `12-build-gardes`,
+`13-confrontation`, `14-bloc-doc`, `15-couche-fh-especes`,
+`16-moteur-destinee`, `17-couche-fh-retrait`.
 
-1. **Progression de classe** → genre `class-progression`, 12 classes × 20 niveaux
-   × 2 langues. Un magicien niveau 3 reçoit ses 4 emplacements de niveau 1 et ses
-   2 de niveau 2, **depuis les exports seuls**.
-2. **Les 18 compétences** → genre `skill`, avec leur caractéristique, 2 langues.
+### ⭐ Et la couche Fate's Hand existe
 
-**Ce qui rend le verdict solide** — le témoin de progression se saute lui-même
-avec un code 0 quand les PDF manquent : il fallait vérifier qu'il avait *tourné*,
-pas qu'il était vert. Il a tourné : 3 480 cellules confrontées au rendu poppler,
-2 200 valeurs recoupées contre la table de multiclassage du SRD, 1 960 accords
-FR/EN. Et le garde a été **violé délibérément** (emplacement de magicien 2→7) :
-acceptance et témoin rouges, MANIFEST détectant un écart d'un octet.
+**C'est la première fois que les règles d'Eric ne sont plus un document mais du
+logiciel.** Les douze espèces, en anglais, par-dessus le SRD — `Splinter of
+Anon`, `Twice-Born`, `Outlasting`, les Bases de Destinée, `Educated` et `Fast
+Learner`. Le moteur plafonne le Score et la **Vibration**, perdue au portage,
+est revenue. Et les couches savent enfin **retirer**.
 
-### ✅ Plus aucun problème ouvert
-
-Le piège **`keepArcana`** est réglé **et testé** par le lot 5 : un Arcane mineur
-ne monte pas le Score, une carte qui ne déclare pas son rang **jette**, et le +1
-permanent part au document (il n'a pas de source de règle — écrit dans `resolved`
-seul, la prochaine dérivation l'effacerait).
-
-### ✅ Résolu par Eric le 2026-08-08 — ne pas le rouvrir
-
-- **La Q7, « bardic, tactic, destiny »** : ni les jetons d'affichage, ni les règles
-  FH. La phrase nomme une **capacité du moteur** — *dépenser un dé pendant ou après
-  un jet*. Elle donne **trois verbes** (ajouter / relancer / monter avec avantage),
-  trois fenêtres, trois cibles. Ce qui tombe : quatre des six `SEALABLE_SOURCES`.
-  Ce qui est **intouchable** : la transaction de jet **rouvrable**.
-- **Le don de dé entre joueurs**, apporté par Eric : un joueur peut donner un dé à
-  un autre (Bardic = SRD ; dé de Destinée via l'**Arcane du Diable**, en réaction
-  ou à l'avance = FH). Traverse **deux documents `fh-char/1`** — la décision 3 ne
-  l'avait pas prévu. Découpage tranché : verbe chez le donneur, ressource **avec
-  provenance** chez le receveur, **transport au M4** (bloc `table`).
-- **Le Point d'inspiration héroïque**, quatrième cas apporté par Eric : retiré de
-  FH, **gardé par le SRD**. Promu **troisième test d'acceptation du lot 5** — c'est
-  la seule preuve de la séparation dans le sens difficile.
-
-### Ce qui attend une décision d'Eric
-
-- Les points ouverts du BRIEF §11.
-
-### Ce qui attend l'architecte
-
-✅ **La passe de révision des schémas est FAITE** (2026-08-08, `main` = `c2e92b0`,
-158 tests verts, onze gardes neufs avec chacun son rejet). Cinq décisions : les
-deux genres neufs · `ruleValues` distinct de `flags` (un drapeau allume un module,
-une valeur de règle remplace un nombre — `fh.exhaustion` est une valeur) ·
-`resources[].origin` pour le dé donné · les quatre champs d'interopérabilité VTT ·
-et `slotsRecharge`, qui bouche un trou réel trouvé en poursuivant la collision
-`spell_slots` — sans lui un occultiste ne récupérerait jamais ses emplacements.
-
-🎉 **LES SIX LOTS SONT LIVRÉS.** Le M1 est complet : schémas, moteur coupé
-SRD/FH, couche SRD générée, et les deux tables de contenu qui manquaient.
-
-🎉 **LE M2 EST ATTEINT — 2026-08-08.** `fhpc` `main` = `ced9b1c`, **276 tests
-verts** ; `fh-srd` `main` = `f26cb75`, **44 suites vertes**. Les lots
-`8-srd-mecanique` et `9-bloc-build` sont **fusionnés**.
-
-> **Un personnage de niveau 1 se construit de bout en bout sans interface**, en
-> appelant les verbes — `choose`, `set`, `override`, `rebuild`, `validate` —
-> **sur la vraie matière et sans échafaudage**.
-
-⏭️ **La prochaine action : le MCP v0**, qui prouve la dérivation en la pilotant
-de l'extérieur. Il hérite de la forme **à deux verbes** (`choose` pose un
-record, `set` pose un scalaire), ratifiée exprès pour lui. Puis la couche FH
-avec Eric — le vrai long pôle.
-
-### Les deux dettes du M2, mesurées et déclarées (jamais devinées)
-
-- **Les traits d'espèce.** Refusés par le lot 8, mesure à l'appui : la mise en
-  page à deux colonnes est aplatie et `srd:species:en:human` finit sur le
-  tableau du Tieffelin. **Le préalable n'est pas un meilleur parseur de prose,
-  c'est la réparation de l'extraction à deux colonnes** — c'est un lot à part.
-- **Le `castType` d'un sort.** Refusé, et **le schéma a cédé, pas le lot** :
-  cinq constructions de la prose ressemblent à une sauvegarde et une seule est
-  le fait ; *Couteau de glace* est génuinement les deux, ce que l'énumération
-  ne sait pas dire. Elle est reconnue insuffisante — point ouvert daté.
-
-### Ce que cette nuit a appris, et qui vaut pour tout siège
-
-**Un test qui n'a jamais échoué exprès ne prouve rien — et un test peut cesser
-de prouver sans que personne ne touche à rien.** Le lot 9 a trouvé que **cinq
-de ses propres preuves** s'appuyaient sur une couche *accidentellement* pauvre :
-le jour où la source s'enrichit, elles s'évaporent en silence, garantie
-comprise. Un refus se prouve sur une privation **délibérée et ciblée**, jamais
-sur une pénurie de circonstance.
-
-**Et l'architecte a eu tort quatre fois, corrigé par les lots à chaque fois** :
-`ability_key` francisé (question du lot 8), quatre champs absents du contrat
-(question du lot 9, dont `senses[].name` qui rendait ma propre forme incapable
-de produire un sens valide), `castType` obligatoire, et une preuve « rien n'a
-bougé » qu'il fallait re-formuler. **Les quatre sont venues de lots qui ont posé
-une question au lieu d'inventer.** C'est ce que les commandes demandaient, et
-c'est ce qui a payé.
-
-> ⚠️ **La mesure qui a fait passer le M2 d'un lot à deux, et qu'il ne faut pas
-> réoublier.** Le kickoff disait « les schémas sont révisés, la matière est là,
-> découpe la dérivation ». **La matière est là, mais pas sous la forme que la
-> dérivation consomme** : le SRD exporté porte des *phrases* là où le moteur a
-> besoin de nombres et de clefs (`saves = ["Intelligence","Sagesse"]`,
-> `"d6 par niveau de Magicien"`, `"9 m"`, la vision dans le noir noyée dans
-> 1 851 caractères de prose). **8 champs de `resolved` sur 20 sont dérivables**,
-> et les deux genres propres sont exactement les deux que le lot 6 a construits.
-> Le `resolved` de l'exemple du lot 2 est **écrit à la main** : il ne prouve rien
-> sur la dérivabilité. Lancé seul, le lot de dérivation aurait écrit un parseur
-> de prose dans `fhpc` ou une table `"Sagesse" → wis` dans le moteur.
-
-**Ce qui rend les deux lots parallèles**, mesuré et non supposé : `data` est
-**ouvert** au schéma (`safeKey`/`safeValue`) et `gen-srd-layer.mjs:87` le
-transporte **en bloc**. Un champ neuf traverse schéma et générateur sans qu'on
-touche à l'un ou à l'autre. Le prix payé d'avance :
-**`fhpc/contracts/DERIVATION-FIELDS.md`**, qui nomme chaque champ. Le lot 9
-travaille sur une **fixture** aux noms du contrat.
-
-🎯 **À LA FUSION, LE GESTE QUI N'APPARTIENT QU'À CE SIÈGE** : régénérer les
-couches depuis `fh-srd` et **rejouer l'acceptation du lot 9 SANS sa fixture**.
-C'est le seul moment où une divergence de nom entre les deux dépôts peut être
-vue. Ne pas fusionner l'un sans l'autre sans l'avoir fait.
-
-Puis le MCP v0, qui prouve la dérivation en la pilotant de l'extérieur.
-
-📌 Contexte du jalon **M2** — un personnage dérivé de bout en
-bout par verbes seuls, prouvé par le MCP v0, et le démarrage de la couche FH
-avec Eric. Chemin critique mesuré : bloc `layers` → bloc `build` → MCP v0. Le
-lot `7-bloc-layers` est découpé et prêt ; `doc` est indépendant mais hors
-chemin critique.
+**Décision de cadre d'Eric** : la couche FH est **publique**, les règles
+actuelles sont publiques, rien de l'actuel n'est à vendre ; des aspects payants
+viendront plus tard sous forme de contenu bloqué. **Sa table joue en anglais** —
+le français viendra après coup.
 
 ---
+
+## 5b. LA MÉTHODE QUI A PAYÉ — à reprendre telle quelle
+
+Eric relit **ses propres chapitres** avec ce siège : l'architecte lit, rend sa
+lecture **et ses doutes**, Eric corrige. Rendement mesuré sur trois chapitres :
+
+- **huit corrections** aux chapitres d'Eric (portées en tâches, vault `0.TASKS/Tasks RPG.md`) ;
+- **deux défauts réels dans le code** — le Score qui ne plafonnait rien, la
+  Vibration perdue au portage ;
+- **deux fausses alertes de l'architecte**, retirées après vérification.
+
+📌 **Aucun des deux défauts n'aurait été trouvé en lisant le code seul, ni les
+règles seules.** Il fallait les confronter. C'est le rendement le plus élevé de
+tout le chantier, et il ne coûte que du temps de lecture.
+
+⚠️ **Et un taux d'erreur de deux sur quatre, du côté de l'architecte.** C'est la
+raison pour laquelle chaque mesure est **montrée** à Eric plutôt que résumée en
+conclusion.
+
+---
+
+## 5c. LES TROIS ERREURS DE CE SIÈGE — les plus chères de la session
+
+**Elles valent plus que les réussites : elles disent où ce siège dérive.**
+
+1. **Une mesure faite sur le mauvais objet.** L'architecte a publié au board
+   qu'une affirmation d'un lot était fausse, « vérifié de quatre façons ».
+   Il cherchait le **nom d'une classe** — or une table de progression ne
+   contient jamais le nom de sa classe, elle porte des **noms d'aptitude**. Sa
+   frontière de mot excluait même « Bardic ». Quatre vérifications, toutes sur
+   le mauvais objet, et une conclusion assurée publiée à Eric.
+   → **Une mesure fausse est plus dangereuse qu'une absence de mesure : elle
+   porte l'autorité d'un chiffre.**
+2. **Une hygiène qui masquait un défaut.** Il n'a pas reproduit une instabilité
+   de suite rapportée par un lot, parce qu'il remettait l'arbre propre entre ses
+   passes. Le défaut était réel — une contamination **entre** exécutions.
+   → **Quand une mesure contredit un rapport, suspecte d'abord ton protocole.**
+3. **Deux lectures hâtives du domaine.** Il a pris « la vibration » pour une
+   coquille de dictée (c'est un élément de premier rang des 22 Arcanes), et a
+   écrit que la contribution de l'Arcane au Score n'était pas chiffrée (chaque
+   carte porte son `Destiny Impact`).
+   → **Le domaine d'Eric ne se devine pas. Aller lire vaut mieux que déduire.**
+
+---
+
+## 5d. CE QUE CE SIÈGE DOIT ENCORE — dettes annoncées et NON payées
+
+1. ⚠️ **La révision du schéma.** Le **Score de Destinée** avec son détail de
+   calcul (`GAP-DERIVED`) et **`build.budgets`** pour le pool de compétences
+   (`GAP-BUDGET`). **Tant qu'elle manque, le Score existe dans le moteur mais
+   PAS dans le document — il ne voyage donc pas avec le personnage**, et le
+   plafond ne peut pas s'appuyer sur une valeur portée par la fiche.
+   > 📌 Fait établi en lisant le chapitre 3 : **le Score n'est pas une formule
+   > fermée.** Maîtrise + Base d'espèce + `Destiny Impact` de l'Arcane sont
+   > chiffrés ; **l'arrière-plan et la Gloire/Damnation sont des décisions de
+   > MJ**. Le Score est donc **largement dérivable, partiellement tenu** — il
+   > lui faut une collection avec son détail, pas un champ.
+2. **Le câblage MCP → `doc`** : petit lot, pour qu'une IA sauvegarde un
+   personnage et pas seulement le construise.
+
+### Ce qui attend une réponse d'Eric
+
+- La description de l'**Humain** a été corrigée **sans qu'il le demande** (la
+  prose SRD décrivait `Resourceful`, que le lot retirait) — réversible.
+- **« Forest Gnome » / « Rock Gnome »** survivent dans le texte du trait de
+  lignage du Hoddon : dépend de ses sous-lignées, non tranchées.
+- **`Ceremony` n'est pas au SRD** (vérifié sur 339 sorts) : Eric a tranché
+  qu'un sort neuf sous un autre nom porterait l'effet — travail du chapitre des
+  sorts.
+- La **licence** de la couche FH, posée au plus strict en attendant.
+- Les points ouverts du BRIEF §11 — **aucun ne bloque le 7 novembre**, et le
+  n°1 (partage de homebrew) est **résolu** : le site d'Eric tient **une liste**,
+  chacun héberge et décide de partager.
+
+### La suite de la couche FH, avec Eric
+
+Chapitre 4 (26 compétences, 4 paliers, pool par classe) · les 22 Arcanes · les
+Tables de Fatalité. 📌 **Le contenu n'est pas le problème** — les Arcanes et les
+Tables sont **déjà des données propres**. Ce sont les règles écrites nulle part
+qui bloquaient, et une dizaine ont été réglées en une soirée.
+
+**Calendrier** : 91 jours avant le 7 novembre au moment de cette passation, et
+le M2 était planifié « début septembre ». L'avance est réelle.
+
 
 ## 6. Les conseillers — les consulter avant de deviner
 
