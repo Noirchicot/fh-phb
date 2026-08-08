@@ -100,15 +100,16 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ## 5. L'état du chantier — 2026-08-08
 
-**`~/tools/fhpc`** (public), `main` = `faac1e4`, **127 tests verts**.
+**`~/tools/fhpc`** (public), `main` = `56c5a9b`, **147 tests verts**.
+**`~/tools/fh-srd`**, `main` = `4651a43`, **42 suites vertes**, 14 genres / 2 613 records.
 
 | Lot | État |
 |---|---|
 | `1-squelette` | ✅ fusionné — noyau : registre de verbes + bus |
 | `2-schemas` | ✅ fusionné — `fh-char/1` et `fh-layer/1` |
 | `3-moteur` | ✅ fusionné — moteur de jets hors DOM |
-| `4-couche-srd` | ⛔ **ne part pas** — dépend du lot 6 **livré** + révision des schémas (voir ci-dessous) |
-| `5-moteur-srd-fh` | 🚀 **LANCÉ** le 2026-08-08 — worktree `~/tools/fhpc-worktrees/5-moteur-srd-fh` |
+| `4-couche-srd` | ⛔ **le seul qui reste** — il n'attend plus **que ce siège** (le lot 6 est fusionné) |
+| `5-moteur-srd-fh` | ✅ **FUSIONNÉ** le 2026-08-08 — la coupe est **réelle** : le chemin commun passe de 244 à 7 mentions de la Destinée, et **les 7 sont des commentaires** |
 | `6-srd-tables` | ✅ **FUSIONNÉ** le 2026-08-08 — `fh-srd` `main` = `4651a43`, 42 suites vertes, **14 genres / 2 613 records** |
 
 > ⚠️ **Correction de séquencement du 2026-08-08 : le lot 4 n'est pas parallèle au
@@ -137,10 +138,12 @@ pas qu'il était vert. Il a tourné : 3 480 cellules confrontées au rendu poppl
 FR/EN. Et le garde a été **violé délibérément** (emplacement de magicien 2→7) :
 acceptance et témoin rouges, MANIFEST détectant un écart d'un octet.
 
-### 🚨 Un problème ouvert
+### ✅ Plus aucun problème ouvert
 
-- **`keepArcana` porté tel quel serait un bug garanti** — neutralisé dans la
-  commande du lot 5, en cours.
+Le piège **`keepArcana`** est réglé **et testé** par le lot 5 : un Arcane mineur
+ne monte pas le Score, une carte qui ne déclare pas son rang **jette**, et le +1
+permanent part au document (il n'a pas de source de règle — écrit dans `resolved`
+seul, la prochaine dérivation l'effacerait).
 
 ### ✅ Résolu par Eric le 2026-08-08 — ne pas le rouvrir
 
