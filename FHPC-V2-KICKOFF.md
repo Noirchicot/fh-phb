@@ -669,6 +669,80 @@ personnages silencieusement faux, ce qui est pire que pas de table du tout.
 
 ---
 
+## §L7 — LOT `7-bloc-layers` : le bloc qui tient la pile de couches — **Opus · high**
+
+**Découpé le 2026-08-08, après la fusion des six premiers lots.** Worktree
+`~/tools/fhpc-worktrees/7-bloc-layers`, branche `7-bloc-layers`.
+
+**Premier maillon du chemin critique du M2** : `layers` → `build` → MCP v0. Il
+peut partir seul ; le bloc `doc` est indépendant de lui mais hors chemin
+critique, et l'architecte le tient pour ne pas arbitrer trois revues à la fois.
+
+> 🔧 **Le nom t'a été libéré avant que tu arrives.** `src/layers/` contenait les
+> modules moteur de la couche FH ; ils sont partis dans `src/modules/fh/` le
+> 2026-08-08, exprès, pour que `src/layers/` soit **à toi** — comme `src/play/`
+> est au bloc `play`. Ne les ramène pas : un module moteur activé par un
+> drapeau (décision Q4) n'est pas un document de couche.
+
+### Ce que le bloc possède
+
+| | |
+|---|---|
+| **Verbes** | `register`, `enable`, `disable`, `query(kind, id)` |
+| **État possédé** | le contenu des couches chargées, et **la pile active** (l'ordre compte : SRD → FH → homebrew) |
+| **Événement** | `layers-changed` |
+
+### Ce qu'il consomme, et qui existe déjà
+
+- Le **format** `fh-layer/1` (`schemas/fh-layer.schema.json`), ratifié et révisé
+  le 2026-08-08 — **14 genres**, plus `flags` et `ruleValues`.
+- **Deux vraies couches SRD** : `layers/srd-5.2.1-{fr,en}.layer.json`, 14 genres,
+  2 613 records. Tu n'as pas à fabriquer de fixture : la matière est là.
+- La couche homebrew d'exemple du lot 2, pour le cas « une couche patche et
+  désactive ».
+
+### Ce qui doit être vrai à la sortie
+
+1. **`query(kind, id)` est le SEUL chemin de lecture.** Personne ne lit le
+   contenu d'une couche autrement — c'est la loi des blocs (`ARCHITECTURE.md`).
+2. **La pile est ordonnée, et le pli est le sien** : le dernier qui parle gagne
+   (SRD dessous, FH par-dessus, homebrew au-dessus). `patch` modifie un record
+   par id, `disable` le retire ; une couche haute qui patche un record absent
+   est un **échec bruyant**, pas un silence (loi §0.5).
+3. **`flags` et `ruleValues` sont exposés séparément.** Un drapeau répond « ce
+   module tourne-t-il ? », une valeur de règle répond « quel nombre le moteur
+   applique-t-il ? » — la révision du 2026-08-08 les a séparés exprès. Une clef
+   `ruleValues` inconnue du moteur est **rejetée bruyamment** : sans ça, une
+   faute de frappe dans un homebrew devient un réglage ignoré en silence.
+4. **Zéro exécutable chargé.** Un JSON homebrew d'inconnu doit être inoffensif —
+   c'est la décision Q4, et le lot 2 a déjà un garde anti-exécutable : va le
+   lire dans `tests/schemas.test.mjs` plutôt que d'en écrire un deuxième.
+5. **Aucune correspondance FR↔EN.** Les deux couches SRD sont autonomes ; monter
+   les deux ensemble n'apparie rien (voir `layers/TRADUCTION.md`). Si ta pile a
+   besoin de savoir dans quelle langue elle est, elle lit `lang` — elle ne
+   devine jamais.
+
+### Le test d'acceptation
+
+> **Les deux vraies couches SRD se chargent, et `query("skill", …)` rend les 18
+> compétences ; une couche homebrew empilée par-dessus en patche une et en
+> désactive une autre, et `query` rend le résultat plié — sans qu'aucun autre
+> bloc n'ait lu son état.**
+
+Écris-le comme une suite exécutable. Et **attaque tes propres gardes** : un garde
+de ce dépôt qui n'a pas été violé une fois ne vaut pas ce qu'il coûte — c'est la
+leçon du 2026-08-08, où un garde structurel a été trouvé faible **en l'attaquant**
+alors qu'il était vert depuis le début.
+
+### Livrable
+
+`src/layers/` + `contracts/layers.md` rempli (ratification architecte avant
+merge) + les suites, vertes et re-exécutées. Et **la liste des questions que tu
+n'as pas tranchées** : le bloc `build` arrive derrière toi et héritera de tes
+choix de forme.
+
+---
+
 ## §6 — Séquencement, revue, fusion
 
 ```
