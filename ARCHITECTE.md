@@ -380,6 +380,18 @@ Retrouvables par leur titre, joignables par message.
 | Fate's Hand | `EXPERT Fate's Hand system advisor` |
 | VTT | `EXPERT  conseiller VTT` (deux espaces) |
 
+### ✍️ Et un cinquième siège, créé le 2026-08-09 : `GHOSTWRITER`
+
+**Il n'est pas un conseiller — il ÉCRIT.** Mandat : `GHOSTWRITER.md`. Sa mission :
+faire entrer dans le TEXTE des règles les décisions ratifiées en fil d'architecte,
+pour que le vault et le site publié disent enfin la même chose.
+
+⚠️ **Ce que ce siège-ci doit savoir de lui** : le site est **généré** depuis le vault
+par `sync_from_vault.py` (19 pages, 19 mappées, **zéro éditable sur place**), et le
+**bloc canonique des compétences n'est pas publié** — `grep -c "Revisited Skills"
+sync_from_vault.py` → **0**. C'est le mécanisme qui a laissé le chapitre 4 se
+contredire, et c'est pour ça que ce siège existe.
+
 **Ils se sont payés en une séance** : les deux trous de contenu ci-dessus et le
 piège `keepArcana` viennent d'eux, et l'architecte ne les avait pas vus en deux
 jours. **Lire leurs réponses avant de refaire leur travail.**
