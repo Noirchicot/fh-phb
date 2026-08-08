@@ -283,11 +283,35 @@ livraison). Parallèle autorisé avec le lot `2-schemas`.
 
 ## §L4 — LOT `4-couche-srd` : générateur de la couche SRD — **Sonnet · medium**
 
-⚠️ **NE PAS LANCER AVANT** (corrigé le 2026-08-08, voir §6) : ce lot dépend du lot
-`2-schemas` **fusionné** (fait), du lot **`6-srd-tables` LIVRÉ**, et de la
-**révision des schémas par l'architecte** — sans le genre `skill` au contrat, il
-générerait une couche SRD sans compétences. Worktree
-`~/tools/fhpc-worktrees/4-couche-srd`, branche `4-couche-srd`.
+✅ **DÉBLOQUÉ le 2026-08-08** — ses trois conditions sont remplies : lot `2-schemas`
+fusionné, lot `6-srd-tables` fusionné (`fh-srd` `main` = `4651a43`), et la révision
+des schémas est **écrite et testée** (`fhpc` `main` = `c2e92b0`, 158 tests verts).
+Worktree `~/tools/fhpc-worktrees/4-couche-srd`, branche `4-couche-srd`.
+
+> ⚠️ **CE QUI A CHANGÉ SOUS TES PIEDS DEPUIS QUE CETTE SECTION A ÉTÉ ÉCRITE — lis
+> ceci avant le point 1, sinon tu génèreras une couche incomplète en la croyant
+> complète.**
+>
+> - **`fh-srd` a 14 genres, plus 12.** Deux genres neufs : **`skill`** (18 records
+>   par langue, avec leur caractéristique) et **`class-progression`** (12 classes ×
+>   20 niveaux, bonus de maîtrise, emplacements de sorts, ressource de classe).
+>   Ils sont dans `exports/srd/{fr,en}/` comme les autres et **dans le MANIFEST**.
+>   Ce sont eux qui débloquent le builder : sans eux, un personnage ne choisit pas
+>   ses compétences et un magicien ne reçoit pas ses emplacements.
+> - **Les deux schémas les acceptent** depuis la révision du 2026-08-08. Le compte
+>   à viser est **2 613 records** au total. Si ton générateur en émet 2 553, il a
+>   silencieusement sauté les deux genres neufs — c'est le premier chiffre à
+>   regarder.
+> - **La forme des nouveaux records est documentée** dans `fh-srd/docs/RECORD-SHAPES.md`.
+>   Lis-la ; elle a été écrite pour être lue d'ici.
+> - ⚠️ **Un piège de forme, connu et arbitré — ne le « corrige » pas.** Dans
+>   `class-progression`, `spell_slots` est un **tableau** chez un lanceur plein (9
+>   entrées, 5 chez un demi-lanceur) et **absent** chez l'**occultiste**, dont la
+>   magie de pacte vit en scalaire dans `resources.spell_slots` avec son
+>   `slot_level`. C'est **fidèle à la source** et l'architecte l'a tranché : tu
+>   **transportes les records tels quels**, sans réconcilier ni aplatir. Le
+>   discriminant fiable est `spell_slot_levels` ∈ {0, 5, 9}. La traduction en fiche
+>   jouable est le travail du bloc `build` au M2, pas le tien.
 
 1. `src/tools/gen-srd-layer.mjs` : lit `~/tools/fh-srd/exports/srd/{fr,en}/
    *.json` (lecture seule), **vérifie d'abord chaque SHA-256 contre
@@ -654,9 +678,9 @@ VAGUE 3 : 6-srd-tables   (Opus·high, dépôt fh-srd)  ∥  5-moteur-srd-fh (Opu
           ↑ aucune dépendance, priorité d'Eric        ↑ dépend du lot 3 FUSIONNÉ
           (dépôts différents : fh-srd contre fhpc)     🚀 LANCÉS le 2026-08-08
 
-VAGUE 4 : 4-couche-srd   (Sonnet·medium)
-          ↑ dépend du lot 6 LIVRÉ **et** de la révision des schémas par
-            l'architecte. Voir la correction ci-dessous.
+VAGUE 4 : 4-couche-srd   (Sonnet·medium)  ✅ DÉBLOQUÉ le 2026-08-08
+          ↑ lot 6 fusionné + schémas révisés (fhpc main = c2e92b0).
+            C'est le DERNIER lot avant le jalon M2.
 ```
 
 ### ⚠️ CORRECTION DU 2026-08-08 — le lot 4 n'est PAS parallèle au lot 6

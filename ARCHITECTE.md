@@ -100,7 +100,7 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ## 5. L'état du chantier — 2026-08-08
 
-**`~/tools/fhpc`** (public), `main` = `56c5a9b`, **147 tests verts**.
+**`~/tools/fhpc`** (public), `main` = `c2e92b0`, **158 tests verts**.
 **`~/tools/fh-srd`**, `main` = `4651a43`, **42 suites vertes**, 14 genres / 2 613 records.
 
 | Lot | État |
@@ -108,7 +108,7 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 | `1-squelette` | ✅ fusionné — noyau : registre de verbes + bus |
 | `2-schemas` | ✅ fusionné — `fh-char/1` et `fh-layer/1` |
 | `3-moteur` | ✅ fusionné — moteur de jets hors DOM |
-| `4-couche-srd` | ⛔ **le seul qui reste** — il n'attend plus **que ce siège** (le lot 6 est fusionné) |
+| `4-couche-srd` | 🟢 **DÉBLOQUÉ et prêt** — worktree monté, commande réécrite. Le **dernier** avant le M2 |
 | `5-moteur-srd-fh` | ✅ **FUSIONNÉ** le 2026-08-08 — la coupe est **réelle** : le chemin commun passe de 244 à 7 mentions de la Destinée, et **les 7 sont des commentaires** |
 | `6-srd-tables` | ✅ **FUSIONNÉ** le 2026-08-08 — `fh-srd` `main` = `4651a43`, 42 suites vertes, **14 genres / 2 613 records** |
 
@@ -167,32 +167,16 @@ seul, la prochaine dérivation l'effacerait).
 
 ### Ce qui attend l'architecte
 
-⏭️ **LA PROCHAINE ACTION DU CHANTIER, et elle est à ce siège** : une seule passe
-de révision des schémas. **Elle débloque le lot 4**, qui ne peut pas partir avant.
+✅ **La passe de révision des schémas est FAITE** (2026-08-08, `main` = `c2e92b0`,
+158 tests verts, onze gardes neufs avec chacun son rejet). Cinq décisions : les
+deux genres neufs · `ruleValues` distinct de `flags` (un drapeau allume un module,
+une valeur de règle remplace un nombre — `fh.exhaustion` est une valeur) ·
+`resources[].origin` pour le dé donné · les quatre champs d'interopérabilité VTT ·
+et `slotsRecharge`, qui bouche un trou réel trouvé en poursuivant la collision
+`spell_slots` — sans lui un occultiste ne récupérerait jamais ses emplacements.
 
-1. **Les genres 13 et 14** — `skill` et `class-progression` à ajouter dans
-   `fh-layer.schema.json` **et** `fh-char.schema.json` (les 12 genres y sont
-   énumérés en dur avec `additionalProperties: false`). Forme livrée par le lot :
-   `fh-srd/docs/RECORD-SHAPES.md`, écrit pour ce siège. Coût annoncé : deux lignes
-   par schéma plus le corps des records.
-2. **Les trois ajouts de l'expert VTT** : un champ portrait/token (Foundry et
-   Owlbear en ont besoin), la taille et le type de créature, un lien optionnel
-   d'une action vers l'objet qui la porte.
-3. **La provenance d'un dé reçu** dans `resolved.resources[]` (décision du don de
-   dé) — le lot 5 livre la forme dont il a besoin, ce siège l'écrit.
-4. ⚠️ **La collision `spell_slots`, trouvée à la revue du lot 6 — le lot ne l'a
-   pas documentée.** Le mot porte **deux sens à deux profondeurs** : chez un
-   lanceur plein, `levels[].spell_slots` est un **tableau** (9 entrées, 5 chez un
-   demi-lanceur) ; chez l'**occultiste**, cette clé est **absente** et la magie de
-   pacte vit dans `levels[].resources.spell_slots`, un **scalaire**, avec
-   `resources.slot_level`. La donnée est juste et fidèle à la source, mais **la
-   forme invite l'erreur** : un builder qui teste `spell_slot_levels == 0` pour
-   dire « pas d'emplacements » conclura qu'un occultiste n'en a aucun — soit
-   exactement le personnage silencieusement faux que ce lot existait pour
-   empêcher. Le discriminant est fiable (`spell_slot_levels` ∈ {0, 5, 9}), donc
-   c'est un travail de **contrat**, pas de données.
-
-**C'est du contrat, donc le travail de ce siège**, pas celui des lots.
+⏭️ **La prochaine action** : lancer le lot `4-couche-srd`, le dernier avant le
+jalon M2. Sa commande est réécrite, son worktree est monté.
 
 ---
 
