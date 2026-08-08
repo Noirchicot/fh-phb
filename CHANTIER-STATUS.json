@@ -289,5 +289,19 @@
     "debloque_par_ce_lot": "QUESTION 3 du lot : `src/modules/fh/index.mjs` déclenche encore la Vibration sur `character.destinyBuild.arcana`, un chemin v1. Le chemin ratifié est `build.choices[fh.destiny.arcana].ref.id`, et la couche porte enfin le contenu que ce moteur voulait lire. La dette est DÉBLOQUÉE, elle attend un lot.",
     "question_non_tranchee": "Le `power` et la `vibration` de la carte dans `resolved` (jouabilité sans couches, BRIEF §3.1) : le contrat du module rend {stat, underived} et ne peut pas écrire resolved.traits[]. Il faut un second point d'injection. Les trois textes VOYAGENT déjà dans la couche — la matière est là, rien à réécrire le jour où l'architecte ouvre le point.",
     "non_pousse": "fhpc main = 1f70ca5, 4 commits d'avance sur origin. Geste d'Eric."
-  }
+  },
+  "canal_refs_generalise": {
+    "date": "2026-08-09",
+    "display": "✅ DETTE PAYÉE — canal `feats` → `refs` généralisé (fhpc a3bf5ce, 459 verts). Le chapitre 4 n'est plus bloqué côté contrat.",
+    "erreur_de_l_architecte_attrapee_par_les_gardes": "Première version : tous les `ref` résolus d'avance. Deux tests ont rougi et ils avaient raison — résoudre d'avance avec `must` VOLE au module sa distinction entre « couche non montée » (genre vide → déclarer) et « record inexistant » (ref mort → refuser). Résolution rendue paresseuse et PAR module.",
+    "tests_ajoutes": "2 — le reste de la suite ne prouvait que l'absence de casse. Un module VOIT class/background/feat/species aplatis et NE VOIT PAS son propre namespace ; le garde de réclamation mord sur tous les genres."
+  },
+  "exhaustion_contradiction_vive": {
+    "date": "2026-08-09",
+    "statut": "OUVERT — dette d'architecte, attend le chiffre d'Eric",
+    "trouve_par": "une question de GHOSTWRITER",
+    "mesure": "Le moteur applique −2/degré (src/play/session.mjs:55, SRD_EXHAUSTION_PER_LEVEL). L'intention FH ratifiée est −1 (`ruleValues`, `fh.exhaustion`). src/layers/stack.mjs:82-85 : la correspondance `fh.exhaustion` ↔ `exhaustionPerLevel` n'est écrite NULLE PART.",
+    "consequence_pour_ghost": "Il n'écrit pas −1 dans la prose, et il ne convertit PAS l'Épuisement en Tilt — c'est un modificateur appliqué au jet, pas un +2 au DC. Il écrit le comportement en vigueur et NOMME le trou."
+  },
+  "ghostwriter_cree": "✅ 2026-08-09 — cinquième siège, et le premier qui ÉCRIT. Mandat `GHOSTWRITER.md`. Périmètre : le vault seul (il ne synchronise pas, ne publie pas). Deux missions : corriger l'existant (passe validée par Eric) et, discrètement, écrire le corpus neuf dans `~/obsidian-vault/DO NOT OPEN BEFORE CHRISTMAS/`."
 }

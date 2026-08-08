@@ -105,25 +105,55 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'état du chantier — 2026-08-09
+## 5. L'état du chantier — 2026-08-09, fin de session
 
 | Dépôt | `main` | Suites | Distant |
 |---|---|---|---|
-| `~/tools/fhpc` | `1f70ca5` | **457 vertes** | ⚠️ en retard (`e6b9c0e` poussé) |
-| `~/tools/fh-srd` | `20c6598` | **48 vertes** | ✅ à jour |
-| `~/tools/fh-phb` | (board + mandat) | — | ⚠️ en retard |
+| `~/tools/fhpc` | `a3bf5ce` | **459 vertes** | ⚠️ en retard |
 
-📌 **Mesuré au démarrage du 2026-08-09** : les trois dépôts étaient **tous à
-jour** sur leur distant — le prompt de passation annonçait pourtant `fhpc` et
-`fh-phb` en retard. Eric avait poussé entre-temps. C'est la troisième fois que
-cette ligne est écrite fausse dans un document de passation : **`git ls-remote
-origin refs/heads/main` au démarrage, toujours, et jamais la mémoire.**
-📌 **Précision mesurée le 2026-08-08** : ce siège a écrit trois fois « non
-poussé » sans revérifier, alors qu'Eric poussait au fil des commandes qu'on lui
-tendait. `git status -sb` ne suffit pas — **`git ls-remote origin refs/heads/main`
-est la seule mesure qui fasse foi**. Et `fh-srd` porte maintenant une **correction de contenu
-publié** : le site public est en retard sur `main` tant qu'il n'a pas été
-redéployé, ce qui est *aussi* son geste.
+### Ce que cette session a livré
+
+| | |
+|---|---|
+| Genre `arcana` ouvert (`d8273b9`) | GAP-KIND clos — et il répondait AUSSI à « où vit l'Arcane du personnage ? » sans un champ neuf |
+| Lot `20-arcanes-fh` fusionné (`1f70ca5`) | Les 22 cartes et `Destiny Touched (fh)` existent comme contenu. 22/22 vérifiées contre la source |
+| Canal `feats` → `refs` généralisé (`a3bf5ce`) | La dette ouverte à la fusion du lot 20. Le chapitre 4 n'est plus bloqué côté contrat |
+| Siège **`GHOSTWRITER`** créé | `GHOSTWRITER.md`. Lancé, il a déjà rendu ses premiers constats |
+
+### ⚠️ CE QUE CE SIÈGE DOIT — quatre dettes, dont deux neuves
+
+1. **Porter `refs` / `consumed` dans `contracts/build.md`.** Le contrat du module
+   vit dans `INVENTAIRE-LOT-19.md` §2 et dans les commentaires de `derive.mjs`,
+   pas dans un contrat ratifié. **Le lot 20 l'a demandé explicitement.** Court.
+2. 🆕 **Câbler `fh.exhaustion` → `exhaustionPerLevel`.** Trouvé grâce à une
+   question de GHOST, et c'est une contradiction VIVE : le moteur applique
+   **−2 par degré** (`src/play/session.mjs:55`, valeur SRD), l'intention FH
+   ratifiée est **−1** (`ruleValues` du schéma), et `src/layers/stack.mjs:82-85`
+   dit que la correspondance **n'est écrite nulle part**. ⏸ Attend le chiffre
+   d'Eric, qu'il tranchait côté règles en fin de session.
+3. **Le point d'injection pour le `power` / la `vibration` d'une carte** dans
+   `resolved` (jouabilité sans couches, BRIEF §3.1). Sans urgence : les textes
+   voyagent déjà dans la couche, rien ne sera à réécrire.
+4. 🆕 **Un garde qui compare les copies d'un même nombre.** Proposé à Eric,
+   **non tranché**. Le besoin est mesuré deux fois : les 22 Arcanes existent en
+   **trois** exemplaires (builder, `arcana.js`, couche `fhpc`) et l'Épuisement
+   aussi (prose, constante moteur, intention de schéma). Rien ne les compare.
+
+### Ce qui attend une décision d'ERIC
+
+| Sujet | |
+|---|---|
+| Le **chiffre de l'Épuisement** | bloque la dette n°2 |
+| Renommer `Destiny Touched (fh)` → **`Auspicious (fh)`** | proposé, mesuré libre dans son lore. 1 ligne + le homebrew DDB |
+| La **forme à trois têtes** du chapitre 4 | le canon entre dans la `MAP`, ou il cesse d'énoncer la règle. Ma recommandation : qu'il RÉFÉRENCE au lieu d'énoncer |
+| Le **garde des copies** (dette n°4) | |
+
+### Lots prêts à partir
+
+- **Chapitre 4** (26 compétences, pools, Tilt) — débloqué par `a3bf5ce`. Les
+  décisions sont ratifiées, vault `FHV2 - Couche FH.md`.
+- **La Vibration lit encore un chemin v1** (`src/modules/fh/index.mjs`) —
+  débloqué par le lot 20 : ce qui lui manquait existe enfin.
 
 **Les trois chantiers de la soirée du 2026-08-08 sont FUSIONNÉS, aucun lot en
 cours, aucun worktree :**
