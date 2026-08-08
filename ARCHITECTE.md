@@ -109,11 +109,19 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 | Dépôt | `main` | Suites |
 |---|---|---|
-| `~/tools/fhpc` | `d988c97` | **409 vertes** |
+| `~/tools/fhpc` | `15db710` | **415 vertes** |
 | `~/tools/fh-srd` | `e83015a` | **47 vertes** |
-| `~/tools/fh-phb` | `dc85cf9` | (board + mandat) |
+| `~/tools/fh-phb` | (board + mandat) | — |
 
-**Tout est poussé, arbres propres, aucun lot en cours.** Les cinq branches
+⚠️ **`fhpc` `15db710` n'est PAS poussé** — le push est le geste d'Eric.
+
+**Deux chantiers tournent** (lancés le 2026-08-08 sur ordre d'Eric, « lance ce
+qui n'a pas besoin de mon contexte ») :
+
+| Chantier | Dépôt / branche | Ce qu'il fait |
+|---|---|---|
+| `18-srd-ancrage` | `fh-srd` / `18-srd-ancrage` | Répare l'ancrage des blocs flottants. Prémisse **vérifiée avant lancement** : `srd:item:en:armor-of-resistance` fait 1581 caractères et se termine sur la table des leviers de l'*Apparatus of the Crab* — défaut **publié en ligne** |
+| `RELECTEUR Adverserial — couche FH` | `fhpc` / `relecteur-adverserial-fh` | Attaque les gardes des lots 14→17, jamais attaqués. Périmètre : `src/doc/`, `src/modules/fh/`, `src/tools/`, `layers/`. **Interdit** : `src/mcp/`, `bin/`, `schemas/` (l'architecte y écrit) | Les cinq branches
 locales de `fh-phb` (`pkg10-dice`, `codex/*`, `architect/queue-actions-v1`…)
 sont du travail v1 antérieur, pas de la dette de cette session.
 
@@ -199,8 +207,38 @@ conclusion.
    > chiffrés ; **l'arrière-plan et la Gloire/Damnation sont des décisions de
    > MJ**. Le Score est donc **largement dérivable, partiellement tenu** — il
    > lui faut une collection avec son détail, pas un champ.
-2. **Le câblage MCP → `doc`** : petit lot, pour qu'une IA sauvegarde un
-   personnage et pas seulement le construise.
+
+   ### ⚠️ ET LA DETTE EST À TROIS MAILLONS, PAS UN — mesuré le 2026-08-08
+
+   Écrire le schéma seul déplacerait le trou d'un cran. Les trois mesures, à
+   refaire plutôt qu'à croire :
+
+   | Maillon | Mesure | Qui |
+   |---|---|---|
+   | **Le schéma** | `fh-char.schema.json` : `stats` **0**, `budgets` **0**, `destiny` **0** occurrence (pour comparaison, `craft` et `resources` : 2 chacun) | contrat → **architecte** |
+   | **La dérivation** | `grep -rn "destiny\|stats" src/build/` → **aucune ligne**, alors que `layers/fh-species-en.layer.json` porte déjà `data.destiny.base` par espèce (Araag = 2). Personne ne lit ce champ | un lot court |
+   | **La porte du moteur** | `src/modules/fh/index.mjs:114-118` lit `character.destinyBuild.score` et `build.destinyFeats.score` — des **noms de champs v1** qu'aucun bloc n'écrit, présents seulement dans les harnais de test | le même lot |
+
+   **Q15-8 est TRANCHÉE par Eric le 2026-08-08**, et `GAP-BUDGET` est donc
+   débloqué : un personnage créé au **niveau 5** reçoit les paliers qu'il a
+   **traversés** — +2 au niveau 1, +2 au niveau 3 — et **pas** celui du niveau
+   6. `by_level` est cumulatif sur les niveaux ≤ niveau courant.
+
+   **`GAP-DERIVED` attend l'EXPERT Fate's Hand** (question posée le
+   2026-08-08, à sa demande explicite) : l'arrière-plan et la Gloire/Damnation
+   sont-ils des **termes de la même somme**, ou d'une autre nature ? et la
+   Gloire/Damnation **bouge-t-elle en cours de campagne** ?
+
+2. ✅ **Le câblage MCP → `doc` — PAYÉ le 2026-08-08** (`fhpc` `15db710`, 415
+   tests verts). Une IA **garde** un personnage, elle ne fait plus que le
+   construire. Trois outils qui ne fabriquent rien et routent vers les verbes
+   du lot 14 ; `src/mcp/` ne gagne pas une ligne de disque.
+   > 📌 **La décision qui vaut d'être retenue** : *le catalogue décrit LE
+   > SERVEUR, pas le dépôt.* Le magasin vient de `--store` et n'a aucun défaut
+   > (décision D2) ; sans lui, le bloc `doc` n'est pas monté et ses outils ne
+   > sont **pas publiés**. Publier `doc.save` sans pouvoir enregistrer
+   > promettrait une porte qui n'ouvre sur rien — et **une IA lit un catalogue
+   > comme un contrat**.
 
 ### Ce qui attend une réponse d'Eric
 
