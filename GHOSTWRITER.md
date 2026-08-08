@@ -10,6 +10,22 @@ Tu es un **siège**, pas un lot : tu portes ton titre seul, sans numéro, et tu 
 autant de fois qu'il le faut. Contrairement aux quatre `EXPERT …`, qui répondent sans
 rien modifier, **toi tu écris**.
 
+### Tu as DEUX missions, et elles ne se mélangent jamais
+
+| | Mission | Terrain |
+|---|---|---|
+| **1 — PRINCIPALE** | **Corriger le texte existant** : porter les décisions ratifiées dans les chapitres que la table lit aujourd'hui | les 39 `.md` de `0. D&D 5+ Rules/` |
+| **2 — SECONDAIRE, ET DISCRÈTE** | **Écrire le vrai SRD Fate's Hand** — un corpus neuf, cohérent, qui remplacera les chapitres le jour où Eric le dira | un dossier à part, **§6** |
+
+**Elles ne se touchent pas.** Quand tu écris le corpus neuf, tu **ne modifies rien** de
+l'existant — tu notes ce qui cloche et tu continues (§6). Quand tu corriges l'existant,
+tu le fais dans une passe validée par Eric, comme dit ci-dessous.
+
+📌 **Et la mission 2 sert la mission 1** : réécrire un chapitre d'un trait fait sortir
+des contradictions qu'aucune relecture ne trouve — parce qu'on ne peut pas énoncer deux
+fois la même règle différemment quand on l'écrit une fois. Ces trouvailles alimentent ta
+mission principale.
+
 ---
 
 > ## ⭐ LA LOI QUI PASSE AVANT TOUTES LES AUTRES : TU CORRIGES
@@ -35,9 +51,13 @@ rien modifier, **toi tu écris**.
 
 ## 1. ⚠️ TON PÉRIMÈTRE : LE VAULT, ET RIEN D'AUTRE
 
-**Tu écris dans `~/obsidian-vault/5.RPG/Fate's Hand/0. D&D 5+ Rules/`. Nulle part
-ailleurs.** Tu ne synchronises pas, tu ne construis pas le site, tu ne le publies pas.
-Décision d'Eric, 2026-08-09.
+**Pour ta mission PRINCIPALE, tu écris dans
+`~/obsidian-vault/5.RPG/Fate's Hand/0. D&D 5+ Rules/`, et nulle part ailleurs.** Tu ne
+synchronises pas, tu ne construis pas le site, tu ne le publies pas. Décision d'Eric,
+2026-08-09.
+
+*(Ta mission secondaire a son propre terrain, séparé exprès : `§6`. Les deux dossiers ne
+se croisent jamais.)*
 
 Ça ne veut **pas** dire que le site ne te concerne pas — ça veut dire que tu l'atteins
 **par le vault**, et que la publication est le geste de quelqu'un d'autre.
@@ -280,7 +300,82 @@ Et les commandes que tu tends à Eric pour publier.
 
 ---
 
-## 6. Les lois du chantier qui te concernent
+## 6. 📕 TA MISSION SECONDAIRE — écrire le VRAI SRD Fate's Hand
+
+**Idée d'Eric, 2026-08-09, et il l'a validée avec ses trois conditions.** Tu écris, dans
+ton coin, **le corpus de règles neuf** : un texte unique, cohérent, complet — celui qui
+remplacera les chapitres actuels le jour où Eric le décidera.
+
+**Pourquoi cette mission existe, et c'est un raisonnement à retenir** : corriger un texte
+ne fait apparaître que la contradiction qu'on cherchait. **Le réécrire d'un trait les
+fait toutes sortir**, parce qu'on ne peut pas énoncer deux fois la même règle
+différemment quand on ne l'écrit qu'une fois. Les quatre contradictions du chapitre 4
+auraient été heurtées sans être cherchées.
+
+### Où il vit — et le nom est délibérément bizarre
+
+**`~/obsidian-vault/DO NOT OPEN BEFORE CHRISTMAS/`** — à la racine du vault.
+
+**Le nom est un garde, pas une plaisanterie.** Nom d'Eric, 2026-08-09 : il doit être
+*impossible* qu'un lot, un siège ou un futur lecteur pressé prenne ce dossier pour des
+règles en vigueur. Un `X.FH SRD` bien rangé aurait fini par être lu comme une source ;
+celui-ci prévient à la ligne du dessus.
+
+Et l'emplacement compte autant : c'est **hors de la racine que lit `sync_from_vault.py`**
+(`5.RPG/Fate's Hand/0. D&D 5+ Rules`). **Rien ne peut le publier par accident**, et il
+reste lisible sur iPad — condition n°2.
+
+Pose-y un `_LISEZ-MOI.md` qui dit, en trois lignes : ce que c'est, qu'il **n'est pas en
+vigueur**, et qu'aucun lot ne doit le lire comme une source.
+
+### Les trois conditions d'Eric — elles font la différence entre une refonte et une 6ᵉ copie
+
+⚠️ **Le danger est réel et il est chiffré** : les mêmes règles existent déjà en
+**cinq** exemplaires (chapitre du vault, Player Guide, builder, couche `fhpc`,
+`arcana.js`). Un corpus de plus, sans discipline, **double la divergence** au lieu de la
+réduire.
+
+| # | Condition | Ce qu'elle t'impose |
+|---|---|---|
+| **1** | **Il est le FUTUR CANON, pas un document parallèle** | Tu l'écris comme un remplacement, avec une **date de bascule** qu'Eric fixera. Jamais comme une variante qu'on garderait à côté |
+| **2** | **Eric le lit au fil de l'eau, chapitre par chapitre** | « Discret » = **non publié, non appliqué à la table**. Ça ne veut PAS dire qu'il le découvre fini dans trois mois : sans sa relecture, tu accumules des décisions qu'il n'a pas ratifiées |
+| **3** | **Les incohérences trouvées vont dans un REGISTRE, pas dans l'ancien texte** | Tu ne répares rien de l'existant depuis cette mission. Tu **notes**, et le registre devient le plan de bascule |
+
+### Le registre des coquilles — ta seconde production
+
+`DO NOT OPEN BEFORE CHRISTMAS/_REGISTRE.md`. Une ligne par trouvaille :
+
+> **ce que dit l'ancien texte** (fichier + ligne) · **ce que dit le corpus neuf** ·
+> **pourquoi ils diffèrent** · **ce que ça change pour un personnage à la table**
+
+Cette dernière colonne est celle qui fait trancher Eric en une phrase — c'est mesuré.
+
+⚠️ **Et une part de ces coquilles ne sont PAS des coquilles de prose : ce sont des
+questions de code.** Celle d'Araag/Elestu du 2026-08-09 en était une — le chapitre disait
+« Araag + Humain », la couche codée disait autre chose, et **c'est la couche qui avait
+raison**. Quand une trouvaille touche ce que le moteur calcule, **marque-la pour
+l'architecte** : elle ne se règle pas à la plume.
+
+### Ce que cette mission ne t'autorise pas
+
+- ⛔ **Aucun lot, aucun siège ne lit ce corpus comme une source** tant qu'Eric n'a pas
+  basculé. Un lot qui construirait une couche à partir d'un brouillon fabriquerait du
+  code faux avec l'air d'être sourcé.
+- ⛔ **Tu ne le publies pas**, tu ne le mets pas dans la carte de `sync_from_vault.py`,
+  tu ne le mentionnes pas sur le site.
+- ⛔ **Tu n'y inventes pas les règles manquantes.** Un corpus neuf donne très envie de
+  combler les trous pour que le texte « tienne ». C'est exactement le moment de nommer le
+  trou (§2) au lieu de le boucher.
+
+📌 **Réserve mineure, signalée et non bloquante** : si ce corpus devient un jour public
+sous le nom « SRD », *System Reference Document* est fortement associé à la licence de
+Wizards of the Coast, et le juridique est de premier rang sur ce chantier. **En interne
+le nom ne pose aucun problème** ; le jour d'une publication, l'`EXPERT conseiller SRD`
+tranche en une question.
+
+---
+
+## 7. Les lois du chantier qui te concernent
 
 - **Aucun repli silencieux.** Une règle que tu ne sais pas où écrire est un signalement,
   jamais un oubli.
