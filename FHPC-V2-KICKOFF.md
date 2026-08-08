@@ -953,9 +953,35 @@ pricing v3, catégorie Signature non tranchée) — **lire, jamais réécrire**.
 Arcana* et *Tables de Fatalité par Attribut*) · `4. Skills` (11) · `5. Feats`
 (1) · `6. Spells & Magic` (6) · `7. Classes & Subclasses` (4) ·
 `8. Adventuring` (5) + `Boons and Flaws.md`.
-**C'est la SOURCE** : `fh-phb/docs/chapters/` (19 `.md`) en est la copie
-générée par `sync_from_vault.py` — piège du fichier généré, ne jamais lire la
-copie comme une autorité.
+⚠️ **CETTE LIGNE A ÉTÉ REQUALIFIÉE LE 2026-08-08 — ne la lis plus telle
+qu'elle était écrite.** Elle disait « c'est la SOURCE » du vault, et
+`fh-phb/docs/chapters/` (19 `.md`) sa copie générée par `sync_from_vault.py`,
+« ne jamais lire la copie comme une autorité ».
+
+**Eric, 2026-08-08 : « la dernière mouture fiable est sur le site WEB, pas sur
+mon vault perso » — et, précisé : « pour les arcanes et les bonus », « le plus
+récent c'est le site ».**
+
+**Ce que l'architecte a MESURÉ le même jour, plutôt que de basculer l'autorité
+sur parole** — parce que renverser une source de vérité sans mesure est
+exactement ce qui fabrique un fait faux :
+
+| Comparaison | Résultat |
+|---|---|
+| Chapitre des Arcanes, **vault ↔ site** | **Identiques**, à 9 lignes près qui sont *uniquement* la syntaxe des liens (`[[wikilink]]` → lien mkdocs) et un saut de ligne final. Aucune divergence de contenu |
+| **Builder en ligne ↔ chapitre** | Les **22 cartes** portent la même valeur des deux côtés. Zéro désaccord |
+| **Builder ↔ les 7 personnages réels** | Les 6 cartes réellement portées concordent (Chariot 1, Hermit 2, Death 0, Hanged Man 1, Hierophant 2, Sun 1) |
+
+**Conclusion utile, et elle est plus précise que « le vault » ou « le site »** :
+pour les Arcanes et leurs bonus, **les valeurs chiffrées font autorité dans le
+builder** (`~/tools/fh-skills/fh-skill-builder.html`, `const ARCANA`) — c'est
+l'outil que la table utilise, et il est confirmé par les personnages réels. Le
+chapitre les répète fidèlement. **Il n'y a pas de conflit à arbitrer ici.**
+
+⚠️ **Ce que cette mesure ne dit PAS** : elle porte sur le chapitre des Arcanes,
+pas sur les 39 fichiers de règles. Sur les autres chapitres, l'avertissement
+d'Eric tient et n'a pas été vérifié — **mesurer avant de citer**, chapitre par
+chapitre, plutôt que de rejouer l'ancienne certitude à l'envers.
 
 ### Tables jouables dans le code v1 — lecture seule
 
