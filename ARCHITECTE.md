@@ -109,7 +109,7 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 | `3-moteur` | ✅ fusionné — moteur de jets hors DOM |
 | `4-couche-srd` | ⛔ **ne part pas** — dépend du lot 6 **livré** + révision des schémas (voir ci-dessous) |
 | `5-moteur-srd-fh` | 🚀 **LANCÉ** le 2026-08-08 — worktree `~/tools/fhpc-worktrees/5-moteur-srd-fh` |
-| `6-srd-tables` | 🚀 **LANCÉ** le 2026-08-08, prioritaire — worktree `~/tools/fh-srd-worktrees/6-srd-tables` |
+| `6-srd-tables` | ✅ **FUSIONNÉ** le 2026-08-08 — `fh-srd` `main` = `4651a43`, 42 suites vertes, **14 genres / 2 613 records** |
 
 > ⚠️ **Correction de séquencement du 2026-08-08 : le lot 4 n'est pas parallèle au
 > lot 6.** Le kickoff disait « autre dépôt, donc parallèle » — ce n'est pas le
@@ -120,19 +120,27 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 > compétences ni emplacements** — verte, commitée, et fausse jusqu'au M2. La
 > chaîne réelle : lot 6 → **révision des schémas par ce siège** → lot 4.
 
-### 🚨 Trois problèmes ouverts (les trois ont maintenant un porteur)
+### ✅ Les deux trous de contenu sont BOUCHÉS (2026-08-08)
 
-1. **Les tables de progression de classe n'existent pas** comme données dans
-   `fh-srd` → un magicien niveau 1 ne reçoit pas ses emplacements de sorts.
-   → **lot 6, lancé.** Dé-risqué avant lancement : la table est bien dans le texte
-   de `class.json`, row-coherent ligne par ligne.
-2. **Les 18 compétences du SRD ne sont records dans aucun genre** → un personnage
-   ne peut pas choisir ses compétences. → **lot 6, lancé.**
-3. **`keepArcana` porté tel quel serait un bug garanti** — neutralisé dans la
-   commande du lot 5, **lancé**.
+Ils bloquaient le builder, donc la date du 7 novembre. Le lot 6 les a comblés et
+la revue l'a **vérifié plutôt que cru** :
 
-Les deux premiers **bloquent le builder, donc la date du 7 novembre**. Ils restent
-**ouverts jusqu'à livraison ET revue** — un lot lancé n'est pas un trou bouché.
+1. **Progression de classe** → genre `class-progression`, 12 classes × 20 niveaux
+   × 2 langues. Un magicien niveau 3 reçoit ses 4 emplacements de niveau 1 et ses
+   2 de niveau 2, **depuis les exports seuls**.
+2. **Les 18 compétences** → genre `skill`, avec leur caractéristique, 2 langues.
+
+**Ce qui rend le verdict solide** — le témoin de progression se saute lui-même
+avec un code 0 quand les PDF manquent : il fallait vérifier qu'il avait *tourné*,
+pas qu'il était vert. Il a tourné : 3 480 cellules confrontées au rendu poppler,
+2 200 valeurs recoupées contre la table de multiclassage du SRD, 1 960 accords
+FR/EN. Et le garde a été **violé délibérément** (emplacement de magicien 2→7) :
+acceptance et témoin rouges, MANIFEST détectant un écart d'un octet.
+
+### 🚨 Un problème ouvert
+
+- **`keepArcana` porté tel quel serait un bug garanti** — neutralisé dans la
+  commande du lot 5, en cours.
 
 ### ✅ Résolu par Eric le 2026-08-08 — ne pas le rouvrir
 
@@ -156,16 +164,30 @@ Les deux premiers **bloquent le builder, donc la date du 7 novembre**. Ils reste
 
 ### Ce qui attend l'architecte
 
-**Une seule passe de révision des schémas, quand le lot 6 aura livré** — trois
-sources à traiter ensemble plutôt qu'en trois versions successives :
+⏭️ **LA PROCHAINE ACTION DU CHANTIER, et elle est à ce siège** : une seule passe
+de révision des schémas. **Elle débloque le lot 4**, qui ne peut pas partir avant.
 
-1. **La forme des nouveaux records du lot 6** (le genre `skill` notamment) : les
-   12 genres sont énumérés en dur et un genre inconnu est rejeté bruyamment.
+1. **Les genres 13 et 14** — `skill` et `class-progression` à ajouter dans
+   `fh-layer.schema.json` **et** `fh-char.schema.json` (les 12 genres y sont
+   énumérés en dur avec `additionalProperties: false`). Forme livrée par le lot :
+   `fh-srd/docs/RECORD-SHAPES.md`, écrit pour ce siège. Coût annoncé : deux lignes
+   par schéma plus le corps des records.
 2. **Les trois ajouts de l'expert VTT** : un champ portrait/token (Foundry et
    Owlbear en ont besoin), la taille et le type de créature, un lien optionnel
    d'une action vers l'objet qui la porte.
 3. **La provenance d'un dé reçu** dans `resolved.resources[]` (décision du don de
    dé) — le lot 5 livre la forme dont il a besoin, ce siège l'écrit.
+4. ⚠️ **La collision `spell_slots`, trouvée à la revue du lot 6 — le lot ne l'a
+   pas documentée.** Le mot porte **deux sens à deux profondeurs** : chez un
+   lanceur plein, `levels[].spell_slots` est un **tableau** (9 entrées, 5 chez un
+   demi-lanceur) ; chez l'**occultiste**, cette clé est **absente** et la magie de
+   pacte vit dans `levels[].resources.spell_slots`, un **scalaire**, avec
+   `resources.slot_level`. La donnée est juste et fidèle à la source, mais **la
+   forme invite l'erreur** : un builder qui teste `spell_slot_levels == 0` pour
+   dire « pas d'emplacements » conclura qu'un occultiste n'en a aucun — soit
+   exactement le personnage silencieusement faux que ce lot existait pour
+   empêcher. Le discriminant est fiable (`spell_slot_levels` ∈ {0, 5, 9}), donc
+   c'est un travail de **contrat**, pas de données.
 
 **C'est du contrat, donc le travail de ce siège**, pas celui des lots.
 
