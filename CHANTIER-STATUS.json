@@ -312,5 +312,25 @@
     "piege_ecarte": "⚠️ INVENTAIRE-LOT-19.md §2 décrit la forme d'AVANT la généralisation du 2026-08-09 : il ne connaît ni `records`, ni `refs`, ni `consumed`. Il n'est pas réécrit (un rapport de lot est daté, pas vivant) mais le contrat dit maintenant explicitement de ne plus le lire comme le contrat.",
     "ecrit_depuis_le_code_pas_de_memoire": "Chaque clause est adossée au test qui la prouve, par son nom. Les deux affirmations reprises d'un rapport plutôt que du code ont été re-mesurées avant d'être écrites : `../modules/` figure bien dans FORBIDDEN (tests/build-block.test.mjs:61) et `dispatch(\"layers.flags\")` est bien la porte des drapeaux (src/build/block.mjs:239,347). C'est la parade à la faute du 2026-08-09 — écrire depuis son souvenir du contrat au lieu de le relire.",
     "la_lecon_gravee_au_contrat": "La résolution des `ref` est PARESSEUSE et PAR MODULE. La première version de l'architecte résolvait tout d'avance avec `must` ; deux tests ont rougi et ils avaient raison — résoudre d'avance vole au module sa distinction entre « couche non montée » (genre vide → déclarer) et « record inexistant » (ref mort → refuser). C'est désormais écrit au contrat, pas seulement dans un commentaire."
+  },
+  "lot_21_vibration_tilt": {
+    "date": "2026-08-10",
+    "statut": "🟠 PRÊT À PARTIR — worktree monté, commande écrite, PAS ENCORE LANCÉ (c'est Eric qui ouvre le fil)",
+    "display": "LOT 21-vibration-tilt (Opus·high) — priorité d'ERIC, qui a choisi cet ordre contre la recommandation de l'architecte (celui-ci proposait le chapitre 4 d'abord). Worktree ~/tools/fhpc-worktrees/21-vibration-tilt, branche coupée de main=6344cce, `npm install` fait, 459 verts en base vérifiés — le piège linkedom est payé d'avance.",
+    "A_la_vibration_est_MORTE": "⚠️ MESURÉ, ET C'EST PLUS GRAVE QUE « un chemin v1 à moderniser ». arcanaKnown() (src/modules/fh/index.mjs:342) lit state.character.destinyBuild.arcana. Mesures : `destinyBuild` = 0 occurrence dans schemas/fh-char.schema.json ET 0 dans examples/*.json ; state.character reçoit le document fh-char/1 par open() (session.mjs:1569) ; l'Arcane vit en v2 sous build.choices[fh.destiny.arcana].ref. Donc arcanaKnown() rend TOUJOURS false sur un document v2 : la Vibration ne se déclenche JAMAIS. Le critique arcanique, lui, a bien lieu.",
+    "B_le_tilt": "La règle ratifiée par Eric le 2026-08-09 (vault FHV2 - Couche FH.md). Table à 5 lignes, aucun Tilt négatif, un malus s'exprime en donnant un Tilt à l'autre côté. Module à drapeau dans src/modules/fh/ (loi §0.12) ; il ne réimplémente PAS l'avantage/désavantage SRD, il les PRODUIT.",
+    "piege_majeur_grave_dans_la_commande": "⛔ « Plus de −2 » ne concerne QUE les malus situationnels. L'ÉPUISEMENT GARDE SON CHIFFRE (−1 sous FH, confirmé par Eric le 2026-08-10, déjà câblé et déjà testé) et les −2 des Tables de Fatalité aussi (séquelles du Chaos sur une carac, pas des modificateurs de jet). La commande interdit nommément de toucher exhaustionPenalty / SRD_EXHAUSTION_PER_LEVEL / exhaustionPerLevel — sans ce garde-fou, un lot zélé aurait supprimé une mécanique juste.",
+    "ce_que_le_lot_n_invente_pas": "Deux Tilts sur le DC (par symétrie ce serait un Désavantage, mais Eric ne l'a PAS dit → STOP, question à l'architecte). Et aucune table de synergie : 1 = +2, 2 = avantage, et c'est DÉCIDÉ À LA TABLE — FHPC ne modélise aucune synergie."
+  },
+  "renommage_auspicious": {
+    "date": "2026-08-10",
+    "display": "✅ « Destiny Touched (fh) » → « Auspicious (fh) » (fhpc 57edb55, 459 verts). Décision d'Eric.",
+    "l_id_suit_le_nom": "Décision d'architecte, MESURÉE avant d'être prise : `grep -rn destiny-touched` ne trouve l'id que dans la couche, un test et un message d'erreur — AUCUN document, exemple ou build ne l'ancre. Un id est une ancre d'override et non un mot ; le renommer coûte cher dès qu'un document le porte, et aujourd'hui il ne coûte rien. Garder l'id `destiny-touched` sous un nom « Auspicious » aurait fabriqué deux noms pour une chose.",
+    "reste_a_faire_hors_depot": "⚠️ Le homebrew D&D Beyond porte encore l'ancien nom — geste d'Eric."
+  },
+  "dette_4_garde_des_copies": {
+    "date": "2026-08-10",
+    "statut": "✅ TRANCHÉ PAR ERIC — à construire, mais APRÈS le lot 21 (il comparera des valeurs que le lot 21 touche)",
+    "display": "Un garde qui compare les copies d'un même nombre. Besoin mesuré deux fois : les 22 Arcanes existent en TROIS exemplaires (builder fh-skill-builder.html, arcana.js, couche fhpc) et l'Épuisement aussi (prose, constante moteur, ruleValues). Rien ne les compare — et les deux contradictions trouvées cette semaine venaient exactement de là."
   }
 }
