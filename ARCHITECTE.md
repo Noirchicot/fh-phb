@@ -114,85 +114,110 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'état du chantier — 2026-08-08, fin de session
+## 5. L'état du chantier — 2026-08-09, fin de session
 
 | Dépôt | `main` | Suites | Distant |
 |---|---|---|---|
-| `~/tools/fhpc` | `a3bf5ce` | **459 vertes** | ⚠️ en retard |
+| `~/tools/fhpc` | `512898d` | **517 vertes** | ✅ à jour |
+| `~/tools/fh-phb` | `2c21a55` | — | ✅ à jour |
+| `~/tools/fh-srd` | `20c6598` | — | ✅ à jour |
+
+**Rien n'est en vol** : aucun worktree, aucun lot en cours, aucune fusion à
+moitié, arbres propres. Les branches de lot sont conservées, jamais `--force`.
+
+### ⭐ LE CHANTIER CHANGE DE NATURE — c'est LA chose à savoir en reprenant
+
+Le moteur et le contenu sont **faits**. Ce qui reste tient en un mot :
+**l'interface**, et elle n'a **pas une ligne** — mesuré : aucun HTML, aucun
+CSS, et les deux seules occurrences de `window.` dans `src/` sont des
+commentaires décrivant ce qui a été retiré.
+
+Conséquence de séquencement, et elle gouverne tout le reste : le filet couvre
+la **vue de jeu** (dock v1 en saisie manuelle si M4 glisse), il ne couvre
+**pas le builder**. Sans builder, la table n'a pas de personnages. **C'est le
+builder, et rien d'autre, qui décide du 7 novembre.**
 
 ### Ce que cette session a livré
 
 | | |
 |---|---|
-| Genre `arcana` ouvert (`d8273b9`) | GAP-KIND clos — et il répondait AUSSI à « où vit l'Arcane du personnage ? » sans un champ neuf |
-| Lot `20-arcanes-fh` fusionné (`1f70ca5`) | Les 22 cartes et `Destiny Touched (fh)` existent comme contenu. 22/22 vérifiées contre la source |
-| Canal `feats` → `refs` généralisé (`a3bf5ce`) | La dette ouverte à la fusion du lot 20. Le chapitre 4 n'est plus bloqué côté contrat |
-| Siège **`GHOSTWRITER`** créé, puis **endormi** | `GHOSTWRITER.md`. Lancé, il a rendu une passe — et **sa première question a sorti la dette n°2**. Eric l'a mis en sommeil le soir même : *« il fera son boulot beaucoup plus tard, ça fait une contrainte en moins pour le suivant »*. ⛔ **Ne le réveille pas de toi-même** — c'est la décision d'Eric, pas un oubli. Rien n'est supprimé, son mandat est complet |
+| **Lot 21 `vibration-tilt`** fusionné | La Vibration était **morte** (elle interrogeait `destinyBuild`, absent du format v2 : 0 occurrence au schéma, 0 dans les documents). Le **Tilt** entre comme module à drapeau |
+| **Lot 22 `chapitre-4-competences`** fusionné | **26 compétences, 36 outils, 12 pools**. La couche retire autant qu'elle ajoute |
+| **Dette n°1 payée** | Le protocole des modules de statistique entre dans `contracts/build.md`, chaque clause adossée à son test |
+| **Deux décisions de règle d'Eric gravées** | Le Tilt côté cible (**+2, non cumulatif**) et sa composition avec le SRD (**une seule table**) |
+| **Renommage `Auspicious (fh)`** | Nom **et** id — mesuré qu'aucun document ne l'ancrait encore |
+| **Dates réalignées** | La dérive était de **deux jours** |
 
-### ⚠️ CE QUE CE SIÈGE DOIT — quatre dettes, dont deux neuves
+### ⚠️ DEUX DETTES DE CE MANDAT ÉTAIENT FAUSSES — la leçon la plus chère du jour
 
-1. **Porter `refs` / `consumed` dans `contracts/build.md`.** Le contrat du module
-   vit dans `INVENTAIRE-LOT-19.md` §2 et dans les commentaires de `derive.mjs`,
-   pas dans un contrat ratifié. **Le lot 20 l'a demandé explicitement.** Court.
-2. ~~**Câbler `fh.exhaustion` → `exhaustionPerLevel`.**~~ ❌ **CETTE DETTE ÉTAIT
-   FAUSSE — mesurée et requalifiée le 2026-08-09.** Elle disait « contradiction
-   VIVE : le moteur applique −2 par degré alors que l'intention FH est −1 ».
-   **Sonde sur les deux piles montées** : SRD pur → −2/degré, couche FH → **−1
-   /degré**. C'est déjà câblé (surcharge `layer.rules`,
-   `src/modules/fh/index.mjs:78`) et **déjà épinglé par un test**
-   (`tests/play-srd-only.test.mjs:482-483`). Eric a confirmé −1 le 2026-08-09 :
-   sa réponse **ratifie le comportement en vigueur**, il n'y a rien à changer.
+Elles avaient été **recopiées de passation en passation sans jamais être
+remesurées**, et un lot a dû refuser de travailler pour que la seconde tombe.
 
-   📌 **La faute était de lire `SRD_EXHAUSTION_PER_LEVEL` (`session.mjs:55`) —
-   le DÉFAUT avant surcharge — comme la valeur appliquée.** C'est encore
-   l'erreur n°1 du §5c, mesurer le mauvais objet : ici, une constante prise
-   pour un comportement. Trois documents la portaient (ce mandat, le tableau de
-   bord, le brief de GHOST) parce qu'elle a été **recopiée** sans être
-   remesurée. **Une dette recopiée n'est pas une dette vérifiée.**
+1. **L'Épuisement** — annoncé « contradiction vive, le moteur applique −2 ».
+   Sonde : SRD pur −2/degré, **couche FH −1/degré**, déjà câblé et déjà testé.
+   La faute : lire la constante `SRD_EXHAUSTION_PER_LEVEL` (le **défaut avant
+   surcharge**) comme la valeur appliquée.
+2. **`GAP-BUDGET`** — annoncé non payé. `build.budgets` existe et est
+   `required` depuis le 2026-08-08.
 
-   **Ce qui reste, et c'est plus étroit** : le pont entre les `ruleValues` d'une
-   couche de DONNÉES et les `rules` d'un module MOTEUR — point ouvert n°4 de
-   `contracts/layers.md`, ajourné sciemment le 2026-08-08. Le chiffre FH vit
-   dans du **code**, pas dans une couche. ⚠️ **Et le piège du signe y est
-   maintenant gravé** : les couches écrivent `-1` (pénalité signée), le moteur
-   déclare `1` (multiplicateur positif, appliqué par `-level * perLevel`). Un
-   pont qui recopie donnerait `-3 × -1 = +3`, **un bonus d'Épuisement**.
-3. **Le point d'injection pour le `power` / la `vibration` d'une carte** dans
-   `resolved` (jouabilité sans couches, BRIEF §3.1). Sans urgence : les textes
-   voyagent déjà dans la couche, rien ne sera à réécrire.
-4. 🆕 **Un garde qui compare les copies d'un même nombre.** Proposé à Eric,
-   **non tranché**. Le besoin est mesuré deux fois : les 22 Arcanes existent en
-   **trois** exemplaires (builder, `arcana.js`, couche `fhpc`) et l'Épuisement
-   aussi (prose, constante moteur, intention de schéma). Rien ne les compare.
+📌 **UNE DETTE RECOPIÉE N'EST PAS UNE DETTE VÉRIFIÉE.** Avant d'agir sur une
+ligne de ce fichier, la remesurer. C'est la consigne qui aurait économisé le
+plus de temps aujourd'hui.
+
+### ⚠️ CE QUE CE SIÈGE DOIT ENCORE
+
+1. **La dérivation du pool de compétences** — débloquée par l'arbitrage du
+   jour : un pool dérivé vit dans `resolved.stats[]`, **jamais** dans
+   `build.budgets` (l'argument est le **barde**, dont le pool change à chaque
+   niveau). Chemin déjà ratifié. **Lot court, et il précède le builder** : un
+   builder qui ne sait pas dire « il te reste 7 points » n'est pas un builder.
+2. **`state.character` : le document ou `resolved` ?** Trois formes se
+   contredisent (`saveInfo` lit `ch.pb` et `ch.savingProficiencies`, absents du
+   schéma `resolved`), et **aucun appelant de production n'existe** pour
+   arbitrer. Le lot 21 a tranché pour la Vibration seule et l'a signalé.
+   ⚠️ Deviendra bloquante quand l'interface ouvrira une séance.
+3. **Le moment `mount` n'est invoqué nulle part** — déclaré dans `MOMENTS`,
+   jamais appelé. Du vocabulaire mort : à brancher ou à retirer (§0.6).
+4. **`normalizeDestiny` lit encore `ch.destinyBuild.score`** — le dernier
+   chemin v1 vivant, même maladie que celle que le lot 21 a réparée.
+5. **Le garde des copies** — ratifié par Eric, jamais construit. Les 22 Arcanes
+   existent en trois exemplaires et rien ne les compare.
 
 ### Ce qui attend une décision d'ERIC
 
 | Sujet | |
 |---|---|
-| Le **chiffre de l'Épuisement** | bloque la dette n°2 |
-| Renommer `Destiny Touched (fh)` → **`Auspicious (fh)`** | proposé, mesuré libre dans son lore. 1 ligne + le homebrew DDB |
-| La **forme à trois têtes** du chapitre 4 | le canon entre dans la `MAP`, ou il cesse d'énoncer la règle. Ma recommandation : qu'il RÉFÉRENCE au lieu d'énoncer |
-| Le **garde des copies** (dette n°4) | |
+| **Le découpage du builder** | « Builder desktop complet » est un jalon, pas un lot. La coupe dépend de ce qu'il a en tête — recommandation de ce siège : une première tranche qui fait **un personnage niveau 1 de bout en bout à l'écran**, et rien d'autre |
+| **Le conseiller « interface de builder »** | Identifié depuis l'ouverture du chantier et daté « utile au M3 seulement ». **On y est.** Proposé, pas créé |
+| ~~Le chiffre de l'Épuisement~~ | ✅ −1, et c'était déjà le comportement |
+| ~~Le Tilt (DC, composition SRD)~~ | ✅ les deux tranchés |
+| ~~`Auspicious (fh)`~~ | ✅ renommé. Le homebrew DDB garde l'ancien nom — **décision d'Eric, ne pas y revenir** : le canon est le dépôt |
 
-### Lots prêts à partir
+### 📉 LE TAUX D'ERREUR DE CE SIÈGE, AUJOURD'HUI — et c'est lui le vrai signal
 
-- **Chapitre 4** (26 compétences, pools, Tilt) — débloqué par `a3bf5ce`. Les
-  décisions sont ratifiées, vault `FHV2 - Couche FH.md`.
-- **La Vibration lit encore un chemin v1** (`src/modules/fh/index.mjs`) —
-  débloqué par le lot 20 : ce qui lui manquait existe enfin.
+**Dix erreurs en une session.** Huit rattrapées avant publication, **deux
+seulement par les lots eux-mêmes** :
 
-**Les trois chantiers de la soirée du 2026-08-08 sont FUSIONNÉS, aucun lot en
-cours, aucun worktree :**
+- **Deux commandes de lot fausses** : le lot 21 a démenti « `state.character`
+  est bien un `fh-char/1` » (une inférence présentée comme une mesure) ; le lot
+  22 a démenti « aucun trou de contrat sur ta route » — j'avais vérifié qu'un
+  champ **existe** sans vérifier qu'il est **écrivable**.
+- **Trois sondes sur le mauvais objet** : la condition d'un `throw` recopiée
+  sans ses sorties anticipées (elle annonçait un défaut grave inexistant) ;
+  `vibrationFor` cherché sur le mauvais objet ; un `grep` du mot `document`
+  qui est le mot du domaine ici.
+- **Un faux positif de revue** : un test lu comme *supprimé* alors qu'il était
+  *renommé* — il aurait accusé un lot d'avoir violé la loi §0.7.
+- **Trois fautes d'outillage** : `git merge -F -` ne lit pas stdin (la fusion a
+  échoué en silence, seule la re-mesure l'a vue) ; un message de commit amputé
+  par des backticks non protégés ; un SHA de `fh-phb` publié pour `fhpc`.
 
-| Chantier | Dépôt / branche | Ce qu'il fait |
-|---|---|---|
-| ~~`18-srd-ancrage`~~ | ✅ **FUSIONNÉ** (`6c2eab1`) | Le défaut publié est corrigé : `armor-of-resistance` passe de 1581 à **285** caractères, l'Apparatus récupère sa table. **2 records changés sur 2613**, vérifié au comparateur indépendant de l'architecte. Ce n'était pas un défaut d'ordre de lecture mais d'**ancrage** — le lot 11 s'était trompé de cause |
-| ~~`19-score-destinee`~~ | ✅ **FUSIONNÉ** (`e6b9c0e`) | `resolved.stats[]` n'est plus vide : le Score est publié terme par terme et **survit à une reconstruction**. Il corrige aussi une faute de l'architecte — voir §5e |
-| ~~`RELECTEUR Adverserial — couche FH`~~ | ✅ **FUSIONNÉ** (`e374898`) | Un vrai défaut de code — un dé de Destinée perdu sur un refus —, quatre gardes creux, un invariant non couvert. 14 lignes de correctif contre 220 de tests |
-
-Les cinq branches locales de `fh-phb` (`pkg10-dice`, `codex/*`,
-`architect/queue-actions-v1`…) sont du travail v1 antérieur, pas de la dette de
-cette session.
+📌 **La forme est toujours la même — mesurer le mauvais objet — et elle se
+renouvelle indéfiniment.** La seule parade qui a marché à chaque fois :
+**re-mesurer quand le résultat surprend, et montrer la mesure plutôt que la
+conclusion.** C'est aussi pourquoi les quatre corrections apportées par des
+lots sont des résultats et non des incidents : **la revue marche dans les deux
+sens.**
 
 ## 5e. CE QUE LA SOIRÉE DU 2026-08-08 A APPRIS — à lire avant de reprendre
 
