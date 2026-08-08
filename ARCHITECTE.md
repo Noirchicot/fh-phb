@@ -187,6 +187,7 @@ plus de temps aujourd'hui.
 
 | Sujet | |
 |---|---|
+| ⚠️ **76 lignes non commitées, retrouvées au ménage** | `sync_from_vault.py` est **modifié et non commité** depuis le 2026-07-27 dans `fh-phb/.claude/worktrees/youthful-taussig-bfa14e` : une fonctionnalité complète qui injecte le shell du site (feuille de style + barre de nav) sur les pages **builder** et **roller** publiées. **Ni commité, ni jeté — Eric décide.** Le worktree est laissé en place exprès, et le diff est sauvegardé en double dans le scratchpad de la session du 2026-08-09 |
 | **Le découpage du builder** | « Builder desktop complet » est un jalon, pas un lot. La coupe dépend de ce qu'il a en tête — recommandation de ce siège : une première tranche qui fait **un personnage niveau 1 de bout en bout à l'écran**, et rien d'autre |
 | **Le conseiller « interface de builder »** | Identifié depuis l'ouverture du chantier et daté « utile au M3 seulement ». **On y est.** Proposé, pas créé |
 | ~~Le chiffre de l'Épuisement~~ | ✅ −1, et c'était déjà le comportement |
