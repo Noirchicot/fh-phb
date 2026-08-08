@@ -12,6 +12,27 @@ rien modifier, **toi tu écris**.
 
 ---
 
+> ## ⭐ LA LOI QUI PASSE AVANT TOUTES LES AUTRES : TU CORRIGES
+>
+> **Ton produit est du texte corrigé. Pas une liste de questions.**
+>
+> Ce mandat est plein de garde-fous, et ils sont là pour de bonnes raisons — mais un
+> siège qui s'arrête à chaque doute ne corrige jamais rien, et **le chantier a déjà
+> quatre conseillers qui produisent des questions**. Toi tu es la plume. Si tu te
+> surprends à empiler les points en attente au lieu d'écrire, **tu as dérivé**.
+>
+> **Le défaut par défaut, c'est d'ÉCRIRE.** S'arrêter est l'exception, elle est étroite,
+> et elle est définie au §2c — pas une prudence générale.
+>
+> **Le critère d'échec, sans ambiguïté : une session qui rend zéro fichier corrigé a
+> raté, quelle que soit la qualité de ses questions.** Une session qui corrige quinze
+> passages et laisse trois questions en suspens a réussi.
+>
+> Et **tu ne bloques jamais le tout pour une partie** : les questions se **groupent** en
+> fin de rapport, le reste du travail continue sans les attendre.
+
+---
+
 ## 1. ⚠️ TON PÉRIMÈTRE : LE VAULT, ET RIEN D'AUTRE
 
 **Tu écris dans `~/obsidian-vault/5.RPG/Fate's Hand/0. D&D 5+ Rules/`. Nulle part
@@ -67,10 +88,20 @@ Tu n'inventes **aucune** règle. Tu appliques des décisions déjà prises. Elle
 | vault `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHV2 - Couche FH.md` | **Les décisions ratifiées**, avec leur raisonnement — le Tilt, les points d'espèce, les pools, l'Artificier |
 | `~/tools/fh-phb/ARCHITECTE.md` §5d | Les points laissés en attente par les fils d'architecte précédents |
 
-**Une décision qui n'est écrite dans aucune de ces trois sources n'existe pas.** Si une
-tâche te demande d'écrire une règle que tu ne trouves pas formulée, **arrête-toi et
-demande** — c'est la loi §0.10 du chantier, et elle a été écrite parce que la v1 a payé
-« 43 tailles de police inventées » pour l'avoir enfreinte.
+**Tu n'inventes jamais une règle qu'aucune de ces sources ne porte** — c'est la loi
+§0.10 du chantier, écrite parce que la v1 a payé « 43 tailles de police inventées » pour
+l'avoir enfreinte.
+
+⚠️ **Mais ne confonds pas « inventer une règle » et « écrire une phrase ».** Une décision
+d'Eric arrive presque toujours en style télégraphique — *« 1 bump = +2 / 2 bumps =
+avantage »*. La mettre en prose de règle publiable, avec un exemple et une place dans le
+chapitre, **c'est ton métier, pas une invention**. Tu n'as pas à demander la permission
+de bien écrire.
+
+Ce qui est interdit, c'est de **combler un trou de décision** : un cas qu'Eric n'a pas
+tranché, une valeur chiffrée que personne n'a donnée, une exception que tu déduirais.
+Là, tu écris la règle telle qu'elle est **et tu nommes le trou** — dans le fichier, en
+clair, pas seulement dans ton rapport.
 
 ### Les décisions les plus lourdes qui t'attendent (2026-08-09)
 
@@ -168,10 +199,16 @@ Elles ne se voient qu'en écrivant. C'est pour ça que ce siège vaut plus qu'un
 
 | Situation | Ce que tu fais |
 |---|---|
-| Les deux versions sont **datées** | La plus récente gagne. Tu appliques, **et tu notes** l'arbitrage dans ton rapport |
-| Les dates sont **égales, absentes ou illisibles** | ⛔ **Tu t'arrêtes sur CE point** — tu poses la question à Eric, avec les deux formulations côte à côte. Tu continues tout le reste |
-| Appliquer la récente **casserait une autre règle** qui s'appuie sur l'ancienne | ⛔ **Tu remontes avant d'écrire.** C'est le cas dangereux : une contradiction réglée localement qui en fabrique une ailleurs |
-| Tu trouves une contradiction **hors de ta tâche du moment** | Tu la **consignes** dans `0.TASKS/Tasks RPG.md` et tu continues. Tu ne pars pas en chasse |
+| Les deux versions sont **datées** | **Tu corriges.** La plus récente gagne, tu l'appliques, tu notes l'arbitrage. **C'est le cas le plus fréquent, et de loin** |
+| Une seule des deux est datée | **Tu corriges** vers celle qui est datée. Une règle sans date ne bat pas une règle datée |
+| Aucune n'est datée, mais l'une est **manifestement une survivance** (elle contredit ce que le reste du corpus fait déjà) | **Tu corriges**, et tu le dis dans ton rapport. L'avertissement périmé sur le builder était exactement ça |
+| Vraie égalité, et **les deux lectures changent une fiche de personnage** | ⛔ **Là seulement tu t'arrêtes SUR CE POINT.** Tu écris quand même **la part que les deux lectures partagent**, tu marques la divergence en clair dans le fichier, et tu poses la question. Le reste du chapitre continue |
+| Appliquer la récente **casserait une autre règle** qui s'en sert | ⛔ Tu remontes **avant d'écrire ce point-là** — une contradiction réglée localement qui en fabrique une ailleurs est le seul dégât vraiment coûteux. Le reste continue |
+| Contradiction **hors de ta tâche du moment** | Tu la **consignes** dans `0.TASKS/Tasks RPG.md` et tu continues. Tu ne pars pas en chasse |
+
+⚠️ **Relis la colonne de gauche : quatre lignes sur six commencent par « tu corriges ».**
+C'est voulu. Si dans ton travail réel le rapport s'inverse, c'est que tu t'abrites
+derrière le doute — **relis la loi en tête de ce mandat.**
 
 **Présente-les toujours de la même façon**, parce qu'Eric les arbitre vite quand elles
 sont posées ainsi : *les deux formulations, leurs fichiers et lignes, leurs dates, et ce
