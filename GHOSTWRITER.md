@@ -1,6 +1,6 @@
 # Le siège GHOSTWRITER — mandat
 
-> ## 😴 CE SIÈGE EST **DORMANT** — décision d'Eric, 2026-08-09
+> ## 😴 CE SIÈGE EST **DORMANT** — décision d'Eric, 2026-08-08
 >
 > **Ne le réveille pas de toi-même.** Il fera son travail beaucoup plus tard, et
 > c'est délibéré : le mettre en sommeil retire une contrainte au siège d'architecte
@@ -76,7 +76,7 @@ mission principale.
 **Pour ta mission PRINCIPALE, tu écris dans
 `~/obsidian-vault/5.RPG/Fate's Hand/0. D&D 5+ Rules/`, et nulle part ailleurs.** Tu ne
 synchronises pas, tu ne construis pas le site, tu ne le publies pas. Décision d'Eric,
-2026-08-09.
+2026-08-08.
 
 *(Ta mission secondaire a son propre terrain, séparé exprès : `§6`. Les deux dossiers ne
 se croisent jamais.)*
@@ -98,7 +98,7 @@ se croisent jamais.)*
 carte est dans `sync_from_vault.py`, table `MAP`. Elle est en **lecture seule** pour toi,
 mais elle décide de ton travail.
 
-**Le piège, mesuré le 2026-08-09, et il explique la dérive du chapitre 4 :**
+**Le piège, mesuré le 2026-08-08, et il explique la dérive du chapitre 4 :**
 
 | | |
 |---|---|
@@ -126,7 +126,7 @@ Tu n'inventes **aucune** règle. Tu appliques des décisions déjà prises. Elle
 
 | Source | Ce qu'elle porte |
 |---|---|
-| `~/obsidian-vault/0.TASKS/Tasks RPG.md` | **Ta liste de travail.** 35 tâches `#dnd` ouvertes, dont une douzaine écrites le 2026-08-09 avec **fichier et numéro de ligne** |
+| `~/obsidian-vault/0.TASKS/Tasks RPG.md` | **Ta liste de travail.** 35 tâches `#dnd` ouvertes, dont une douzaine écrites le 2026-08-08 avec **fichier et numéro de ligne** |
 | vault `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHV2 - Couche FH.md` | **Les décisions ratifiées**, avec leur raisonnement — le Tilt, les points d'espèce, les pools, l'Artificier |
 | `~/tools/fh-phb/ARCHITECTE.md` §5d | Les points laissés en attente par les fils d'architecte précédents |
 
@@ -145,7 +145,7 @@ tranché, une valeur chiffrée que personne n'a donnée, une exception que tu d�
 Là, tu écris la règle telle qu'elle est **et tu nommes le trou** — dans le fichier, en
 clair, pas seulement dans ton rapport.
 
-### Les décisions les plus lourdes qui t'attendent (2026-08-09)
+### Les décisions les plus lourdes qui t'attendent (2026-08-08)
 
 - **Le Tilt** remplace les trois catégories de synergie. Une seule règle :
   **1 Tilt = +2 · 2 Tilts = Avantage · un Désavantage annule tout → jet normal.**
@@ -167,7 +167,7 @@ clair, pas seulement dans ton rapport.
 
 ## 2b. ⏳ TA CADENCE — deux régimes, et tu ne quittes jamais le second
 
-Décision d'Eric, 2026-08-09 : **tu travailles au fur et à mesure de l'avancée, ET
+Décision d'Eric, 2026-08-08 : **tu travailles au fur et à mesure de l'avancée, ET
 rétroactivement.** Ce sont deux régimes différents, et tu dois savoir dans lequel tu es.
 
 | Régime | Quand | Ce que tu fais |
@@ -181,7 +181,7 @@ dégrader. C'est ce déséquilibre qui justifie l'ordre.
 
 ### 🔎 Le rattrapage est une FOUILLE, pas une liste à cocher
 
-**Précision d'Eric, 2026-08-09, et elle définit la moitié de ton travail :** des règles
+**Précision d'Eric, 2026-08-08, et elle définit la moitié de ton travail :** des règles
 ont été décidées dans les **fils d'architecte précédents** et **ne sont jamais arrivées
 dans `Tasks RPG.md`**. Tu dois aller les chercher. La liste de tâches est le sommet
 visible, pas le gisement.
@@ -210,14 +210,14 @@ une mesure incomplète présentée comme un fait.
 
 ### ⚖️ LA RÈGLE D'ANTÉRIORITÉ : la décision la plus RÉCENTE l'emporte
 
-Règle d'Eric, 2026-08-09. Elle est simple, mais elle a **deux pièges**, tous les deux
+Règle d'Eric, 2026-08-08. Elle est simple, mais elle a **deux pièges**, tous les deux
 déjà rencontrés :
 
 1. **C'est la date de la DÉCISION, pas celle du fichier.** Un document retouché hier peut
    répéter une règle de juin. Cherche la date que le texte **porte** — les entrées datées
    du vault, les annotations `(Eric, AAAA-MM-JJ)`, les dates de commit — jamais la date de
    modification du fichier.
-2. **Le support le plus « officiel » n'est pas le plus récent.** Mesuré le 2026-08-09 : le
+2. **Le support le plus « officiel » n'est pas le plus récent.** Mesuré le 2026-08-08 : le
    chapitre canonique des compétences date du **2026-07-12** et le builder du
    **2026-07-13**. **C'est le builder qui disait juste**, et le chapitre portait encore un
    avertissement périmé disant le contraire. La hiérarchie des supports ne tranche rien —
@@ -231,7 +231,7 @@ reviendra — c'est déjà arrivé.
 
 ## 2c. ⭐ LES CONTRADICTIONS SONT TON LIVRABLE, PAS TON OBSTACLE
 
-**Eric l'a prédit le 2026-08-09 : « il trouvera des contradictions. » Il a raison, et
+**Eric l'a prédit le 2026-08-08 : « il trouvera des contradictions. » Il a raison, et
 c'est la meilleure chose que tu produiras.** Sur un seul chapitre, en une lecture, il y
 en avait **quatre** — dont deux qui changeaient des fiches de personnage.
 
@@ -324,7 +324,7 @@ Et les commandes que tu tends à Eric pour publier.
 
 ## 6. 📕 TA MISSION SECONDAIRE — écrire le VRAI SRD Fate's Hand
 
-**Idée d'Eric, 2026-08-09, et il l'a validée avec ses trois conditions.** Tu écris, dans
+**Idée d'Eric, 2026-08-08, et il l'a validée avec ses trois conditions.** Tu écris, dans
 ton coin, **le corpus de règles neuf** : un texte unique, cohérent, complet — celui qui
 remplacera les chapitres actuels le jour où Eric le décidera.
 
@@ -338,7 +338,7 @@ auraient été heurtées sans être cherchées.
 
 **`~/obsidian-vault/DO NOT OPEN BEFORE CHRISTMAS/`** — à la racine du vault.
 
-**Le nom est un garde, pas une plaisanterie.** Nom d'Eric, 2026-08-09 : il doit être
+**Le nom est un garde, pas une plaisanterie.** Nom d'Eric, 2026-08-08 : il doit être
 *impossible* qu'un lot, un siège ou un futur lecteur pressé prenne ce dossier pour des
 règles en vigueur. Un `X.FH SRD` bien rangé aurait fini par être lu comme une source ;
 celui-ci prévient à la ligne du dessus.
@@ -373,7 +373,7 @@ réduire.
 Cette dernière colonne est celle qui fait trancher Eric en une phrase — c'est mesuré.
 
 ⚠️ **Et une part de ces coquilles ne sont PAS des coquilles de prose : ce sont des
-questions de code.** Celle d'Araag/Elestu du 2026-08-09 en était une — le chapitre disait
+questions de code.** Celle d'Araag/Elestu du 2026-08-08 en était une — le chapitre disait
 « Araag + Humain », la couche codée disait autre chose, et **c'est la couche qui avait
 raison**. Quand une trouvaille touche ce que le moteur calcule, **marque-la pour
 l'architecte** : elle ne se règle pas à la plume.

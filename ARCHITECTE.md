@@ -105,7 +105,7 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'état du chantier — 2026-08-09, fin de session
+## 5. L'état du chantier — 2026-08-08, fin de session
 
 | Dépôt | `main` | Suites | Distant |
 |---|---|---|---|
@@ -126,12 +126,12 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
    vit dans `INVENTAIRE-LOT-19.md` §2 et dans les commentaires de `derive.mjs`,
    pas dans un contrat ratifié. **Le lot 20 l'a demandé explicitement.** Court.
 2. ~~**Câbler `fh.exhaustion` → `exhaustionPerLevel`.**~~ ❌ **CETTE DETTE ÉTAIT
-   FAUSSE — mesurée et requalifiée le 2026-08-10.** Elle disait « contradiction
+   FAUSSE — mesurée et requalifiée le 2026-08-09.** Elle disait « contradiction
    VIVE : le moteur applique −2 par degré alors que l'intention FH est −1 ».
    **Sonde sur les deux piles montées** : SRD pur → −2/degré, couche FH → **−1
    /degré**. C'est déjà câblé (surcharge `layer.rules`,
    `src/modules/fh/index.mjs:78`) et **déjà épinglé par un test**
-   (`tests/play-srd-only.test.mjs:482-483`). Eric a confirmé −1 le 2026-08-10 :
+   (`tests/play-srd-only.test.mjs:482-483`). Eric a confirmé −1 le 2026-08-09 :
    sa réponse **ratifie le comportement en vigueur**, il n'y a rien à changer.
 
    📌 **La faute était de lire `SRD_EXHAUSTION_PER_LEVEL` (`session.mjs:55`) —
@@ -187,7 +187,7 @@ cette session.
 
 ## 5e. CE QUE LA SOIRÉE DU 2026-08-08 A APPRIS — à lire avant de reprendre
 
-### ✅ PAYÉ LE 2026-08-09 — le genre `arcana` est ouvert (`fhpc` `d8273b9`)
+### ✅ PAYÉ LE 2026-08-08 — le genre `arcana` est ouvert (`fhpc` `d8273b9`)
 
 `GAP-KIND` est **clos**, 440 tests verts, revérifiés dans un clone indépendant.
 Ce qui suit est conservé parce que le raisonnement reste la meilleure
@@ -228,7 +228,7 @@ dérivable faute de pouvoir le lire.
 | Personnages portant sorts / rituels / craft / gear | **0 sur 7** ⚠️ mais le format v1 n'a **aucun champ** pour ça : l'absence ne prouve rien sur la table |
 
 → **Ouvrir le genre `arcana` est du contrat, donc le travail de ce siège**, et
-il précède le lot des Arcanes. ✅ **Fait le 2026-08-09.**
+il précède le lot des Arcanes. ✅ **Fait le 2026-08-08.**
 
 📌 **Et une distinction que la mesure a rendue nette** : le don
 `Destiny Touched (fh)` (+2, porté par 5 personnages sur 7) **n'a jamais été
@@ -427,13 +427,13 @@ Retrouvables par leur titre, joignables par message.
 | Fate's Hand | `EXPERT Fate's Hand system advisor` |
 | VTT | `EXPERT  conseiller VTT` (deux espaces) |
 
-### ✍️ Et un cinquième siège, créé le 2026-08-09 : `GHOSTWRITER`
+### ✍️ Et un cinquième siège, créé le 2026-08-08 : `GHOSTWRITER`
 
 **Il n'est pas un conseiller — il ÉCRIT.** Mandat : `GHOSTWRITER.md`. Sa mission :
 faire entrer dans le TEXTE des règles les décisions ratifiées en fil d'architecte,
 pour que le vault et le site publié disent enfin la même chose.
 
-**Son périmètre, resserré par Eric le 2026-08-09 : le VAULT SEUL.** Il ne lance pas
+**Son périmètre, resserré par Eric le 2026-08-08 : le VAULT SEUL.** Il ne lance pas
 `sync_from_vault.py`, ne construit pas le site, ne publie pas — il signale seulement
 quelles pages publiées sont devenues en retard. La synchronisation reste le geste
 d'Eric.
