@@ -25,8 +25,12 @@ transplantée dans `fhpc/ARCHITECTURE.md` au lot 1).
 3. **Rapporter n'est pas livrer.** Fin de lot = commits réels, arbre propre,
    SHAs listés, suites vertes re-exécutées. Deux lots v1 ont dit « terminé »
    avec tout en non-commité.
-4. **Nommer la branche d'après le travail, AVANT de commencer — et la faire
-   commencer par son NUMÉRO DE LOT** (règle d'Eric, 2026-08-07 : *« mets la
+4. **Nommer la branche d'après le travail, AVANT de commencer — et, POUR UN
+   LOT, la faire commencer par son NUMÉRO**
+   ⚠️ *Précision d'Eric, 2026-08-08 : « pas besoin de numéro sur les experts ».*
+   Le numéro donne l'ordre d'une **file de lots** ; un **siège** (les quatre
+   `EXPERT …`, le `RELECTEUR Adverserial`) n'est pas dans la file — il porte son
+   titre seul.** (règle d'Eric, 2026-08-07 : *« mets la
    lettre ou le numéro au début, ce numéro me donne aussi l'ordre »*).
    Convention : `<n>-<sujet>` — `1-squelette`, `2-schemas`, `3-moteur`,
    `4-couche-srd`. Le numéro est l'ordre de la file, pas la vague : deux lots
@@ -740,6 +744,92 @@ alors qu'il était vert depuis le début.
 merge) + les suites, vertes et re-exécutées. Et **la liste des questions que tu
 n'as pas tranchées** : le bloc `build` arrive derrière toi et héritera de tes
 choix de forme.
+
+---
+
+## §S1 — SIÈGE `RELECTEUR Adverserial` : casser les gardes du M1 — **Opus · high**
+
+> 🏷️ **Nommage tranché par Eric le 2026-08-08** : *« RELECTEUR Adverserial »*, et
+> *« pas besoin de numéro sur les experts »*. **La règle du numéro en tête ne vaut
+> que pour les LOTS** — le numéro y donne l'ordre d'une file, et un siège n'est
+> pas dans la file : il n'a pas de rang, il a un rôle. Les sièges portent donc
+> leur titre seul : `EXPERT …` pour les quatre conseillers, `RELECTEUR
+> Adverserial` pour celui-ci.
+>
+> ⚠️ **Mais il ne travaille PAS comme les EXPERT.** Un conseiller répond à des
+> questions et ne modifie rien ; celui-ci **travaille dans un worktree et écrit
+> du code**. C'est la seule chose à ne pas confondre entre eux.
+
+Worktree `~/tools/fhpc-worktrees/relecteur-adverserial`, branche
+`relecteur-adverserial`. **Parallèle autorisé avec le lot `7-bloc-layers`** —
+périmètres disjoints, voir la clôture ci-dessous.
+
+### Pourquoi ce lot existe, et pourquoi MAINTENANT
+
+En v1, ce rôle a eu **le meilleur rendement mesuré du chantier** : quatre
+défauts réels, **32 lignes de correctif contre 162 lignes de tests**. Le plan
+initial le gardait pour « quand le builder existera ». **Avancé le 2026-08-08**,
+sur une mesure fraîche :
+
+> Le garde structurel de `play-block` était **vert depuis le lot 3**. Il n'a été
+> trouvé creux qu'en l'attaquant : il n'assertait qu'un **compte de fichiers**,
+> donc pointé sur le mauvais répertoire il restait vert, et les modules de la
+> couche FH seraient sortis de la loi zéro-DOM **sans un mot**.
+
+C'est un échantillon de **un**, sur un dépôt qui porte maintenant **170 tests**
+et quatre blocs fusionnés — et sur lequel le bloc `build` va s'empiler. Si
+d'autres gardes sont creux, le M2 se construit dessus et on l'apprend en
+novembre. **Le bon moment pour casser une fondation, c'est quand elle est
+stable et pas encore recouverte.**
+
+### Le mandat
+
+**On ne te pose pas de questions : on te donne du code à casser.**
+
+1. **Attaque chaque garde en le VIOLANT**, un par un. Un garde qui ne rougit pas
+   sous une violation délibérée est **pire que pas de garde** : il achète une
+   confiance qu'il ne couvre pas. Les suspects connus, pour commencer et **pas
+   pour t'arrêter là** :
+   - les gardes qui assertent un **compte** (`length >= N`) sans nommer ce qui
+     doit être là — c'est exactement le défaut trouvé le 2026-08-08 ;
+   - les gardes qui **retirent les commentaires** avant d'inspecter
+     (`play-srd-only`, `play-block`) : leur dépouilleur est une regex, et une
+     regex a des angles ;
+   - les tests qui **se sautent** au lieu d'échouer quand une fixture manque
+     (le précédent est dans `fh-srd` : un témoin qui sortait avec le code 0) ;
+   - les marques `REWRITTEN` : vérifier qu'aucune ne **commente** une assertion
+     (le bug du 2026-08-07, quatre assertions muettes et une suite verte).
+2. **Cherche les invariants qu'AUCUN test ne couvre.** Un invariant écrit en
+   `$comment` et jamais exécuté est une intention, pas une garantie.
+3. **Chaque défaut trouvé arrive avec sa preuve exécutable** : le test qui
+   échoue AVANT le correctif, et qui passe après. Sans ce test, ce n'est pas un
+   défaut trouvé, c'est une opinion.
+
+### Ce que tu n'as PAS le droit de faire
+
+- **Aucune fonctionnalité neuve.** Tu durcis et tu corriges ce qui est cassé.
+  Si une correction demande une décision d'architecture → **STOP**, question à
+  l'architecte (loi §0.10).
+- **Ne touche pas `src/layers/`** : c'est le territoire du lot `7-bloc-layers`,
+  qui l'écrit en ce moment. Ton périmètre est le **M1 fusionné** — `src/kernel/`,
+  `src/play/`, `src/modules/fh/`, `src/schemas/`, `src/tools/`, `schemas/`,
+  `layers/`, et leurs suites.
+- **Ne relâche jamais une assertion pour faire passer une suite.** Une
+  assertion rendue fausse par un changement se **réécrit à la nouvelle vérité**
+  et se marque `REWRITTEN` **sur sa propre ligne** (loi §0.7).
+
+### Le livrable
+
+Un **inventaire écrit** qui, pour chaque garde attaqué, dit : *tenait* ou
+*creux* — et pour les creux, ce qu'il croyait couvrir, ce qu'il couvrait
+vraiment, et le test qui le prouve. **Les gardes qui ont tenu comptent autant
+que ceux qui ont cédé** : le but est de savoir ce que valent nos 170 tests, pas
+d'en ajouter.
+
+> ⚠️ **Le piège de ce siège : le zèle.** Un relecteur adversarial qui rend
+> quarante remarques cosmétiques noie les trois qui comptent. Le précédent v1 a
+> rendu **quatre** défauts. Classe ce que tu trouves, et dis platement quand
+> l'attaque n'a **rien** donné — c'est un résultat, pas un échec.
 
 ---
 
