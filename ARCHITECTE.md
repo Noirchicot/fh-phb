@@ -110,17 +110,20 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 | Dépôt | `main` | Suites |
 |---|---|---|
 | `~/tools/fhpc` | `e374898` | **418 vertes** |
-| `~/tools/fh-srd` | `e83015a` | **47 vertes** |
+| `~/tools/fh-srd` | `20c6598` | **48 vertes** |
 | `~/tools/fh-phb` | (board + mandat) | — |
 
-⚠️ **`fhpc` `e374898` n'est PAS poussé** — le push est le geste d'Eric.
+⚠️ **Ni `fhpc` `e374898` ni `fh-srd` `20c6598` ne sont poussés** — le push est
+le geste d'Eric. Et `fh-srd` porte maintenant une **correction de contenu
+publié** : le site public est en retard sur `main` tant qu'il n'a pas été
+redéployé, ce qui est *aussi* son geste.
 
-**Un chantier tourne encore** (lancés le 2026-08-08 sur ordre d'Eric, « lance
-ce qui n'a pas besoin de mon contexte ») :
+**Les deux chantiers lancés le 2026-08-08 sur ordre d'Eric (« lance ce qui n'a
+pas besoin de mon contexte ») sont FUSIONNÉS :**
 
 | Chantier | Dépôt / branche | Ce qu'il fait |
 |---|---|---|
-| `18-srd-ancrage` | `fh-srd` / `18-srd-ancrage` | Répare l'ancrage des blocs flottants. Prémisse **vérifiée avant lancement** : `srd:item:en:armor-of-resistance` fait 1581 caractères et se termine sur la table des leviers de l'*Apparatus of the Crab* — défaut **publié en ligne** |
+| ~~`18-srd-ancrage`~~ | ✅ **FUSIONNÉ** (`6c2eab1`) | Le défaut publié est corrigé : `armor-of-resistance` passe de 1581 à **285** caractères, l'Apparatus récupère sa table. **2 records changés sur 2613**, vérifié au comparateur indépendant de l'architecte. Ce n'était pas un défaut d'ordre de lecture mais d'**ancrage** — le lot 11 s'était trompé de cause |
 | ~~`RELECTEUR Adverserial — couche FH`~~ | ✅ **FUSIONNÉ** (`e374898`) | Un vrai défaut de code — un dé de Destinée perdu sur un refus —, quatre gardes creux, un invariant non couvert. 14 lignes de correctif contre 220 de tests |
 
 Les cinq branches locales de `fh-phb` (`pkg10-dice`, `codex/*`,
