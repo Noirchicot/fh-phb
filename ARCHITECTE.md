@@ -107,13 +107,17 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ## 5. L'état du chantier — 2026-08-08, fin de soirée
 
-| Dépôt | `main` | Suites |
-|---|---|---|
-| `~/tools/fhpc` | `e6b9c0e` | **438 vertes** |
-| `~/tools/fh-srd` | `20c6598` | **48 vertes** |
-| `~/tools/fh-phb` | (board + mandat) | — |
+| Dépôt | `main` | Suites | Distant |
+|---|---|---|---|
+| `~/tools/fhpc` | `d8273b9` | **440 vertes** | ⚠️ en retard (`e6b9c0e` poussé) |
+| `~/tools/fh-srd` | `20c6598` | **48 vertes** | ✅ à jour |
+| `~/tools/fh-phb` | (board + mandat) | — | ⚠️ en retard |
 
-⚠️ **`fhpc` `e6b9c0e` et `fh-phb` ne sont pas poussés.** `fh-srd` l'est.
+📌 **Mesuré au démarrage du 2026-08-09** : les trois dépôts étaient **tous à
+jour** sur leur distant — le prompt de passation annonçait pourtant `fhpc` et
+`fh-phb` en retard. Eric avait poussé entre-temps. C'est la troisième fois que
+cette ligne est écrite fausse dans un document de passation : **`git ls-remote
+origin refs/heads/main` au démarrage, toujours, et jamais la mémoire.**
 📌 **Précision mesurée le 2026-08-08** : ce siège a écrit trois fois « non
 poussé » sans revérifier, alors qu'Eric poussait au fil des commandes qu'on lui
 tendait. `git status -sb` ne suffit pas — **`git ls-remote origin refs/heads/main`
@@ -136,11 +140,35 @@ cette session.
 
 ## 5e. CE QUE LA SOIRÉE DU 2026-08-08 A APPRIS — à lire avant de reprendre
 
-### La prochaine pièce est à l'architecte, et elle bloque le lot suivant
+### ✅ PAYÉ LE 2026-08-09 — le genre `arcana` est ouvert (`fhpc` `d8273b9`)
 
-⚠️ **Le genre `arcana` n'existe pas dans l'énumération fermée des genres**
-(`fh-char.schema.json` et `fh-layer.schema.json`). C'est le trou `GAP-KIND`, et
-il est devenu bloquant : le lot 19 a dû **déclarer** l'impact de l'Arcane non
+`GAP-KIND` est **clos**, 440 tests verts, revérifiés dans un clone indépendant.
+Ce qui suit est conservé parce que le raisonnement reste la meilleure
+description de *pourquoi* c'était la pièce à poser en premier.
+
+**Et l'ouverture a donné plus que prévu.** `$defs/kind` est référencé à **deux**
+endroits de `fh-char/1` — `build.choices[].ref.kind` et
+`resolved.stats[].breakdown[].source.kind`. Ouvrir le genre répond donc **aussi**
+à « où vit l'Arcane du personnage ? » (`contracts/play.md` n°9, ouverte depuis
+le lot 16), **sans un champ neuf** : la carte se pose comme l'espèce, la classe
+et l'historique se posent déjà. Il ne reste **rien de contractuel** — du
+contenu (la couche des 22 cartes) et de la dérivation.
+
+⚠️ **Une collision a dû être arbitrée, et c'est la première exemption à une loi
+qu'Eric a ratifiée.** Le garde §0.12 interdit le vocabulaire Fate's Hand dans
+`src/layers/` et mord sur `"destiny"` nu comme sur `resolveArcana` — or
+l'énumération fermée **exige** que `arcana` y soit écrit, sous garde de dérive.
+Arbitrage : un nom de genre est une **clef de vocabulaire**, pas une mécanique ;
+le critère de §0.12 (*« un personnage SRD pur traverse-t-il ce code ? »*) reste
+vrai, le genre est un seau vide. Le masque ne retire que le genre **entre
+guillemets**, sa liste est **lue dans le schéma**, sa portée est `src/layers/`
+seul, et **il est attaqué**. Le MCP, lui, n'a reçu **aucune** exemption : sa
+liste de genres était une copie du contrat qui avait déjà dérivé, elle est
+retirée. **À revoir si Eric préfère un autre arbitrage — c'est un commit.**
+
+⚠️ **Le genre `arcana` n'existait pas dans l'énumération fermée des genres**
+(`fh-char.schema.json` et `fh-layer.schema.json`). C'était le trou `GAP-KIND`,
+devenu bloquant : le lot 19 a dû **déclarer** l'impact de l'Arcane non
 dérivable faute de pouvoir le lire.
 
 **Or c'est le terme le plus important, mesuré sur les personnages réels d'Eric** :
@@ -153,7 +181,13 @@ dérivable faute de pouvoir le lire.
 | Personnages portant sorts / rituels / craft / gear | **0 sur 7** ⚠️ mais le format v1 n'a **aucun champ** pour ça : l'absence ne prouve rien sur la table |
 
 → **Ouvrir le genre `arcana` est du contrat, donc le travail de ce siège**, et
-il précède le lot des Arcanes.
+il précède le lot des Arcanes. ✅ **Fait le 2026-08-09.**
+
+📌 **Et une distinction que la mesure a rendue nette** : le don
+`Destiny Touched (fh)` (+2, porté par 5 personnages sur 7) **n'a jamais été
+bloqué par le schéma**. `feat` est un genre depuis le premier jour ; il ne
+manquait qu'un *record*. Les deux moitiés du lot des Arcanes n'avaient donc
+pas le même obstacle — une seule attendait du contrat.
 
 ### La source de vérité des Arcanes, triangulée
 
