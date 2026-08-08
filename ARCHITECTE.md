@@ -109,26 +109,90 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 | Dépôt | `main` | Suites |
 |---|---|---|
-| `~/tools/fhpc` | `771f54c` | **420 vertes** |
+| `~/tools/fhpc` | `e6b9c0e` | **438 vertes** |
 | `~/tools/fh-srd` | `20c6598` | **48 vertes** |
 | `~/tools/fh-phb` | (board + mandat) | — |
 
-⚠️ **Ni `fhpc` `771f54c` ni `fh-srd` `20c6598` ne sont poussés** — le push est
-le geste d'Eric. Et `fh-srd` porte maintenant une **correction de contenu
+⚠️ **`fhpc` `e6b9c0e` et `fh-phb` ne sont pas poussés.** `fh-srd` l'est.
+📌 **Précision mesurée le 2026-08-08** : ce siège a écrit trois fois « non
+poussé » sans revérifier, alors qu'Eric poussait au fil des commandes qu'on lui
+tendait. `git status -sb` ne suffit pas — **`git ls-remote origin refs/heads/main`
+est la seule mesure qui fasse foi**. Et `fh-srd` porte maintenant une **correction de contenu
 publié** : le site public est en retard sur `main` tant qu'il n'a pas été
 redéployé, ce qui est *aussi* son geste.
 
-**Les deux chantiers lancés le 2026-08-08 sur ordre d'Eric (« lance ce qui n'a
-pas besoin de mon contexte ») sont FUSIONNÉS :**
+**Les trois chantiers de la soirée du 2026-08-08 sont FUSIONNÉS, aucun lot en
+cours, aucun worktree :**
 
 | Chantier | Dépôt / branche | Ce qu'il fait |
 |---|---|---|
 | ~~`18-srd-ancrage`~~ | ✅ **FUSIONNÉ** (`6c2eab1`) | Le défaut publié est corrigé : `armor-of-resistance` passe de 1581 à **285** caractères, l'Apparatus récupère sa table. **2 records changés sur 2613**, vérifié au comparateur indépendant de l'architecte. Ce n'était pas un défaut d'ordre de lecture mais d'**ancrage** — le lot 11 s'était trompé de cause |
+| ~~`19-score-destinee`~~ | ✅ **FUSIONNÉ** (`e6b9c0e`) | `resolved.stats[]` n'est plus vide : le Score est publié terme par terme et **survit à une reconstruction**. Il corrige aussi une faute de l'architecte — voir §5e |
 | ~~`RELECTEUR Adverserial — couche FH`~~ | ✅ **FUSIONNÉ** (`e374898`) | Un vrai défaut de code — un dé de Destinée perdu sur un refus —, quatre gardes creux, un invariant non couvert. 14 lignes de correctif contre 220 de tests |
 
 Les cinq branches locales de `fh-phb` (`pkg10-dice`, `codex/*`,
 `architect/queue-actions-v1`…) sont du travail v1 antérieur, pas de la dette de
 cette session.
+
+## 5e. CE QUE LA SOIRÉE DU 2026-08-08 A APPRIS — à lire avant de reprendre
+
+### La prochaine pièce est à l'architecte, et elle bloque le lot suivant
+
+⚠️ **Le genre `arcana` n'existe pas dans l'énumération fermée des genres**
+(`fh-char.schema.json` et `fh-layer.schema.json`). C'est le trou `GAP-KIND`, et
+il est devenu bloquant : le lot 19 a dû **déclarer** l'impact de l'Arcane non
+dérivable faute de pouvoir le lire.
+
+**Or c'est le terme le plus important, mesuré sur les personnages réels d'Eric** :
+
+| Fait mesuré | Chiffre |
+|---|---|
+| Personnages portant un Arcane | **7 sur 7** |
+| Valeur de l'impact | **variable : 0, 1 ou 2 selon la carte** — jamais codable en dur |
+| Personnages portant `Destiny Touched (fh)` (+2) | **5 sur 7** |
+| Personnages portant sorts / rituels / craft / gear | **0 sur 7** ⚠️ mais le format v1 n'a **aucun champ** pour ça : l'absence ne prouve rien sur la table |
+
+→ **Ouvrir le genre `arcana` est du contrat, donc le travail de ce siège**, et
+il précède le lot des Arcanes.
+
+### La source de vérité des Arcanes, triangulée
+
+`~/tools/fh-skills/fh-skill-builder.html`, `const ARCANA` — **c'est l'outil que
+la table utilise**, et il est confirmé par les personnages réels. Le chapitre du
+site le répète à l'identique (22/22), et site et vault ne diffèrent que par la
+syntaxe des liens. **Pas de conflit à arbitrer.** Voir kickoff §7, requalifié.
+
+### Le verdict d'Eric sur ce qui attend, et ce qui n'attend pas
+
+| Sujet | Verdict, et pourquoi |
+|---|---|
+| **22 Arcanes** | 🔴 **maintenant** — 7/7, valeur variable |
+| **`Destiny Touched (fh)`** | 🟠 **maintenant**, ce don SEUL. Le catalogue complet avec filtrage est plus tard |
+| **Battlefield** | 🟢 plus tard, **et sans doute jamais comme donnée** : tout se ramène à avantage/désavantage/+2, que le moteur a déjà |
+| **Dark rituals · Soulforging** | 🟢 plus tard — 0/7, et `craft` attend déjà au schéma |
+| **Sorts** | ⚠️ **indéterminé** : le format v1 ne portait pas les sorts, donc leur absence ne mesure rien. Les 339 sorts SRD sont dans la couche ; ce qui manque est le **chapitre 6** d'Eric |
+
+### Les erreurs de mesure de ce siège — quatre en une soirée
+
+Toutes rattrapées avant publication, **aucune sortie vers Eric comme un fait** —
+mais le taux est le vrai signal, et c'est lui qui a motivé la passation :
+
+1. Sonde MCP écrite avec les **mauvaises clefs `_meta`** → le serveur semblait
+   en erreur. C'était la sonde.
+2. Attaque d'un garde lancée sur **le mauvais fichier de suite** → verte, ce qui
+   aurait accusé un lot à tort.
+3. Lecture de `data.destiny` sur des records **`patch`**, qui portent leurs
+   valeurs sous `changes` → « 9 espèces sans Base de Destinée », faux.
+4. Attaque du garde de somme injectée dans **un terme du détail au lieu du
+   total** → la somme restait cohérente, ce qui aurait dit « le garde ne couvre
+   pas ce chemin ».
+
+📌 **Les quatre sont la même faute** : mesurer le mauvais objet. C'est l'erreur
+n°1 du §5c, et elle se reproduit sous des formes nouvelles à chaque fois. La
+parade qui a marché à chaque coup : **quand une mesure contredit ce qu'on
+attend, suspecter d'abord son propre protocole.**
+
+---
 
 ### 🎉 Le M2 est complet, et le produit fait ce qu'il promet
 
