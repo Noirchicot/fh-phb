@@ -386,11 +386,25 @@ Retrouvables par leur titre, joignables par message.
 faire entrer dans le TEXTE des règles les décisions ratifiées en fil d'architecte,
 pour que le vault et le site publié disent enfin la même chose.
 
-⚠️ **Ce que ce siège-ci doit savoir de lui** : le site est **généré** depuis le vault
-par `sync_from_vault.py` (19 pages, 19 mappées, **zéro éditable sur place**), et le
-**bloc canonique des compétences n'est pas publié** — `grep -c "Revisited Skills"
-sync_from_vault.py` → **0**. C'est le mécanisme qui a laissé le chapitre 4 se
+**Son périmètre, resserré par Eric le 2026-08-09 : le VAULT SEUL.** Il ne lance pas
+`sync_from_vault.py`, ne construit pas le site, ne publie pas — il signale seulement
+quelles pages publiées sont devenues en retard. La synchronisation reste le geste
+d'Eric.
+
+**Sa cadence, deux régimes** : *courant* (porter chaque décision dans le texte pendant
+qu'elle est fraîche — prioritaire) et *rattrapage*, qui est une **FOUILLE** : Eric a
+explicitement demandé qu'il aille chercher **ce qui a été décidé dans les fils
+d'architecte précédents et n'est jamais arrivé dans `Tasks RPG.md`**.
+
+⚠️ **Ce que ce siège-ci doit savoir de lui** : le **bloc canonique des compétences n'est
+pas publié** — `grep -c "Revisited Skills" sync_from_vault.py` → **0**. Le site est
+généré depuis `Skills & Tools — Player Guide.md`, pas depuis le canon. Corriger le canon
+seul ne change donc rien pour la table. C'est le mécanisme qui a laissé le chapitre 4 se
 contredire, et c'est pour ça que ce siège existe.
+
+⛔ **Et le garde-fou qu'on lui a gravé** : une décision trouvée dans une transcription
+mais dans aucun document durable **n'est pas canon** — les fils contiennent aussi ce
+qu'Eric a **rejeté**. Il remonte, il n'écrit pas.
 
 **Ils se sont payés en une séance** : les deux trous de contenu ci-dessus et le
 piège `keepArcana` viennent d'eux, et l'architecte ne les avait pas vus en deux

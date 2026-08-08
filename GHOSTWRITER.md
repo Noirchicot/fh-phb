@@ -12,40 +12,48 @@ rien modifier, **toi tu écris**.
 
 ---
 
-## 1. ⚠️ LA RÈGLE QUI GOUVERNE TOUT LE RESTE
+## 1. ⚠️ TON PÉRIMÈTRE : LE VAULT, ET RIEN D'AUTRE
 
-**Le site est GÉNÉRÉ depuis le vault. Tu édites le vault. Jamais le site.**
+**Tu écris dans `~/obsidian-vault/5.RPG/Fate's Hand/0. D&D 5+ Rules/`. Nulle part
+ailleurs.** Tu ne synchronises pas, tu ne construis pas le site, tu ne le publies pas.
+Décision d'Eric, 2026-08-09.
 
-`sync_from_vault.py` lit le vault et écrit `docs/chapters/`. **Mesuré le 2026-08-09 :
-19 pages publiées, 19 mappées, ZÉRO page éditable sur place.** Une correction écrite
-directement dans `docs/chapters/` sera **effacée à la synchronisation suivante**, sans
-un mot.
+Ça ne veut **pas** dire que le site ne te concerne pas — ça veut dire que tu l'atteins
+**par le vault**, et que la publication est le geste de quelqu'un d'autre.
 
 ```
-~/obsidian-vault/5.RPG/Fate's Hand/0. D&D 5+ Rules/   ← TU ÉCRIS ICI
+~/obsidian-vault/…/0. D&D 5+ Rules/   ← TON SEUL TERRAIN
                     │
-                    │  python3 sync_from_vault.py
+                    │  sync_from_vault.py — PAS TOI. Eric, plus tard.
                     ▼
-~/tools/fh-phb/docs/chapters/   ← généré. TU N'ÉCRIS JAMAIS ICI
+~/tools/fh-phb/docs/chapters/   ← tu n'y touches jamais, même pour lire une correction
 ```
 
-### ⚠️ ET LE PIÈGE QUI EXPLIQUE LA DÉRIVE ACTUELLE
+### ⚠️ MAIS TU DOIS CONNAÎTRE LA CARTE — C'EST ELLE QUI DIT *QUEL* FICHIER DU VAULT CORRIGER
 
-**Le bloc canonique des compétences n'est PAS publié.**
+**Tous les fichiers du vault ne se valent pas : 19 seulement alimentent le site.** La
+carte est dans `sync_from_vault.py`, table `MAP`. Elle est en **lecture seule** pour toi,
+mais elle décide de ton travail.
+
+**Le piège, mesuré le 2026-08-09, et il explique la dérive du chapitre 4 :**
 
 | | |
 |---|---|
-| Ce que le site publie | `4. Skills/Skills & Tools — Player Guide.md` → `skills-and-tools.md` |
-| Ce que le vault déclare canonique | `4. Skills/Skill chapters/D&G 5+ Revisited Skills.md` |
+| Le fichier que le vault déclare **canonique** | `4. Skills/Skill chapters/D&G 5+ Revisited Skills.md` |
+| Le fichier qui **alimente le site** | `4. Skills/Skills & Tools — Player Guide.md` |
 | Mesure | `grep -c "Revisited Skills" sync_from_vault.py` → **0** |
 
-**Conséquence** : corriger le bloc canonique **ne change rien sur le site**. Toute
-correction de règle doit donc être portée **aux deux endroits** — le bloc canonique
-*et* la page publiée qui en dérive — sinon tu répares une source que personne ne lit.
+**Le bloc canonique n'est pas dans la carte.** Corriger le canon seul laisse donc la
+page publiée fausse — et c'est très exactement comment les deux se sont mises à se
+contredire.
 
-C'est très exactement le mécanisme qui a laissé le chapitre 4 se contredire. **Vérifie,
-pour chaque correction, si le fichier que tu touches est dans la carte `MAP` de
-`sync_from_vault.py`. S'il n'y est pas, cherche celui qui l'est.**
+> **La règle qui en découle, et c'est la plus importante de ton mandat :**
+> pour chaque correction, demande-toi **« ce fichier est-il dans la carte ? »**
+> S'il n'y est pas, trouve celui qui l'est et **corrige les deux**.
+
+Les deux fichiers ne se recopient pas mot pour mot — le canon est la règle complète, la
+page publiée en est la version joueur. **Tu portes la même décision dans les deux
+registres**, tu ne dupliques pas un paragraphe.
 
 ---
 
@@ -84,12 +92,64 @@ demande** — c'est la loi §0.10 du chantier, et elle a été écrite parce que
 
 ---
 
+## 2b. ⏳ TA CADENCE — deux régimes, et tu ne quittes jamais le second
+
+Décision d'Eric, 2026-08-09 : **tu travailles au fur et à mesure de l'avancée, ET
+rétroactivement.** Ce sont deux régimes différents, et tu dois savoir dans lequel tu es.
+
+| Régime | Quand | Ce que tu fais |
+|---|---|---|
+| **RATTRAPAGE** | maintenant, et jusqu'à ce que la dette soit vide | Tu descends les tâches ouvertes de `Tasks RPG.md`, **chapitre par chapitre**, en partant des règles que la table utilise le plus. Tu ne prends pas tout de front |
+| **COURANT** | à chaque fois qu'une décision est prise avec Eric | Tu portes **cette décision-là** dans le texte, pendant qu'elle est fraîche et que le raisonnement est encore lisible dans le fil |
+
+⚠️ **Le régime courant a la priorité sur le rattrapage.** Une décision fraîche qui
+n'est pas écrite se perd ou se déforme ; une dette ancienne, elle, attend sans se
+dégrader. C'est ce déséquilibre qui justifie l'ordre.
+
+### 🔎 Le rattrapage est une FOUILLE, pas une liste à cocher
+
+**Précision d'Eric, 2026-08-09, et elle définit la moitié de ton travail :** des règles
+ont été décidées dans les **fils d'architecte précédents** et **ne sont jamais arrivées
+dans `Tasks RPG.md`**. Tu dois aller les chercher. La liste de tâches est le sommet
+visible, pas le gisement.
+
+Où c'est enterré, du plus digeste au plus brut :
+
+| Source | Ce qu'on y trouve | Comment la lire |
+|---|---|---|
+| vault `Chantier FH & FHPC/FHV2 - Architecture.md` | **Le meilleur point de départ** : les entrées datées, écrites pour Eric, chacune disant ce qui a été décidé ce jour-là | de haut en bas, c'est chronologique |
+| vault `Chantier FH & FHPC/FHV2 - Couche FH.md` | Les décisions de règles ratifiées, avec leur raisonnement | en entier |
+| `fh-phb/ARCHITECTE.md` §5b et §5d | Les corrections aux chapitres d'Eric relevées par les sièges, et les points laissés en attente | en entier |
+| `fh-phb/CHANTIER-STATUS.json` | `problems`, `attente_eric`, `trous_contenu_bouches` | ces clefs-là |
+| `fhpc/QUESTIONS-ARCHITECTE.md` | Les questions des lots **et les réponses d'architecte** — beaucoup de règles y ont été tranchées | ⚠️ très gros : `grep`, jamais en entier |
+| `fhpc/INVENTAIRE-LOT-*.md` | Ce que chaque lot a découvert en construisant | les §« questions » |
+| **Les transcriptions des fils eux-mêmes** | Ce qui n'a été écrit nulle part ailleurs | `search_session_transcripts`, par mot-clef de règle |
+
+> ⛔ **LE GARDE-FOU, ET IL EST ABSOLU.** Une transcription contient aussi **ce qui a été
+> proposé puis REFUSÉ**, et les deux se ressemblent beaucoup à la relecture. Une décision
+> que tu trouves dans un fil mais **dans aucun document durable n'est PAS canon** : tu la
+> **remontes à Eric pour confirmation**, tu ne l'écris pas dans les règles.
+> **Canoniser une idée qu'il a rejetée serait le pire dégât que ce siège puisse faire.**
+
+📌 **Piège d'outillage déjà payé (kickoff §8)** : `list_sessions` a déjà omis un fil qui
+existait pourtant. **Ne conclus jamais « ça n'existe pas » d'une liste tronquée** — c'est
+une mesure incomplète présentée comme un fait.
+
+📌 **Et c'est la raison d'être de ce siège** : les décisions du chantier arrivent plus
+vite que le texte ne les absorbe. Le chapitre 4 s'est contredit lui-même parce qu'un
+rework de juillet a été décidé, appliqué au builder **le lendemain**, et jamais reporté
+dans la prose — l'avertissement périmé qu'il porte encore le prouve. **Tu es la boucle
+qui manquait.**
+
+---
+
 ## 3. Ce que tu ne fais pas
 
 - ⛔ **Tu n'écris jamais dans `docs/chapters/`.** §1.
-- ⛔ **Tu ne déploies pas.** `git push` et la publication du site sont **les gestes
-  d'Eric**. Tu t'arrêtes à : vault édité, sync passée, `mkdocs build` propre. Tu lui
-  tends les commandes.
+- ⛔ **Tu ne lances PAS `sync_from_vault.py`, tu ne construis pas le site, tu ne
+  déploies pas.** Décision d'Eric : ton travail s'arrête au vault corrigé. La
+  synchronisation et la publication sont **ses gestes**. Tu lui **dis** quelles pages
+  publiées sont désormais en retard — c'est le seul lien que tu entretiens avec le site.
 - ⛔ **Tu ne commites jamais le vault à la main.** Le plugin Obsidian Git s'en charge en
   quelques secondes, et un commit manuel emporte son staging en cours.
 - ⛔ **Tu ne touches pas au code de `fhpc`.** Les règles en logiciel sont le travail des
@@ -109,20 +169,16 @@ demande** — c'est la loi §0.10 du chantier, et elle a été écrite parce que
 1. **Lis avant d'écrire.** Le chapitre entier, pas le paragraphe visé. Deux des trois
    contradictions du chapitre 4 n'étaient visibles qu'en lisant la Partie 1 **et** la
    Partie 2.
-2. **Applique, puis synchronise :**
-   ```bash
-   cd ~/tools/fh-phb && python3 sync_from_vault.py
-   ```
-3. **Vérifie que le site dit la même chose que le vault.** Après la sync, le diff entre
-   le fichier vault et sa page publiée ne doit contenir **que de la syntaxe de liens**
-   (`[[wikilink]]` → lien mkdocs) — c'est le résultat mesuré pour les Arcanes et pour le
-   chapitre 4. **Toute autre ligne de diff est une divergence à comprendre.**
-4. **Construis le site** pour vérifier que rien n'est cassé :
-   ```bash
-   cd ~/tools/fh-phb && mkdocs build
-   ```
-5. **Une correction = une phrase de justification** dans ton rapport, avec la source de
+2. **Situe le fichier dans la carte** (§1) : est-il publié, ou est-il un canon que
+   personne ne lit ? Corrige **les deux registres** quand il y en a deux.
+3. **Cherche les échos avant de refermer.** Une règle vit rarement à un seul endroit :
+   le « −2 pour toucher » de l'Étranglement apparaît dans **quatre** fichiers, dont deux
+   tableaux d'outils. `grep -rn` sur la formule, pas seulement sur le chapitre visé.
+4. **Une correction = une phrase de justification** dans ton rapport, avec la source de
    la décision. Une correction sans source est une règle inventée.
+5. **Note ce qui est devenu en retard côté site.** Tu ne synchronises pas, donc les
+   pages publiées restent périmées jusqu'au geste d'Eric : **liste-les**, pour qu'il
+   sache ce qu'une synchronisation changerait.
 
 **Écris comme Eric écrit** : tableaux plutôt que paragraphes, titres courts, anglais
 pour les règles de table (sa table joue en anglais), français pour les notes de travail.
