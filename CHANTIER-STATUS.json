@@ -279,5 +279,15 @@
     "ce_qui_reste": "Du CONTENU (une couche portant les 22 cartes) et de la DÉRIVATION (le module apprenant à lire un choix qui porte un `ref`) — plus rien de contractuel. Le don `Destiny Touched (fh)` (+2), lui, n'a JAMAIS été bloqué par le schéma : `feat` est un genre depuis le début, il ne manquait que le record.",
     "porte_du_moteur_encore_v1": "`src/modules/fh/index.mjs:114-118` lit toujours `character.destinyBuild.arcana` / `.score`, des noms de champs v1 qu'aucun bloc n'écrit. C'est du code, donc le travail du lot, pas du contrat.",
     "non_pousse": "fhpc d8273b9 n'est PAS poussé — geste d'Eric."
+  },
+  "lot_20_arcanes_fusionne": {
+    "date": "2026-08-09",
+    "display": "✅ LOT 20-arcanes-fh FUSIONNÉ (fhpc main = 1f70ca5, 457 tests verts). Les 22 Arcanes majeurs et Destiny Touched (fh) existent comme contenu ; le Score dérive enfin ses deux termes les plus portés.",
+    "verifie_pas_cru": "Comparateur indépendant de l'architecte : 22/22 cartes identiques à la source (nom, chiffre romain, impact), 0 écart, impacts répartis 5/9/8 sur 0/1/2. Suites re-jouées dans un clone indépendant avec npm install. Garde du canal `consumed` DÉSARMÉ exprès : il mord.",
+    "deux_erreurs_de_l_architecte": "⚠️ Le lot a trouvé DEUX erreurs dans la commande, les deux justes. (1) Elle exigeait que la valeur soit LUE dans le record tout en désignant destiny-stat.mjs comme seul fichier de logique — or aucun module n'avait de chemin de lecture, un `ref` arrivait en identifiant nu : commande contradictoire, dont la seule issue était le codage en dur qu'elle interdisait. (2) Elle affirmait que le don « n'avait jamais manqué que sa fiche » — faux : les dons d'origine vivent sous build.choices[background.originFeat[n]], hors du namespace de tout module, donc invisibles. MÊME FAUTE QUE §5e, vue de l'autre côté : écrire une commande de mémoire au lieu de relire le contrat.",
+    "dette_ouverte_architecte": "GÉNÉRALISER `input.feats`. C'est le premier d'une série de champs ad hoc : le chapitre 4 aura le même besoin pour la classe et l'historique (leurs records sont désignés par des `ref` hors namespace). `input.records` est bon et général ; `input.feats` ne l'est pas. À porter au contrat `build` AVANT le lot du chapitre 4.",
+    "debloque_par_ce_lot": "QUESTION 3 du lot : `src/modules/fh/index.mjs` déclenche encore la Vibration sur `character.destinyBuild.arcana`, un chemin v1. Le chemin ratifié est `build.choices[fh.destiny.arcana].ref.id`, et la couche porte enfin le contenu que ce moteur voulait lire. La dette est DÉBLOQUÉE, elle attend un lot.",
+    "question_non_tranchee": "Le `power` et la `vibration` de la carte dans `resolved` (jouabilité sans couches, BRIEF §3.1) : le contrat du module rend {stat, underived} et ne peut pas écrire resolved.traits[]. Il faut un second point d'injection. Les trois textes VOYAGENT déjà dans la couche — la matière est là, rien à réécrire le jour où l'architecte ouvre le point.",
+    "non_pousse": "fhpc main = 1f70ca5, 4 commits d'avance sur origin. Geste d'Eric."
   }
 }
