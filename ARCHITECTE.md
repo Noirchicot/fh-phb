@@ -39,6 +39,15 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 - **Il ne construit pas les lots.** C'est pour ça qu'ils existent.
 - **Il ne pousse pas, ne déploie pas.** `git push`, la création de remotes et
   tout déploiement sont **les gestes d'Eric** — lui tendre les commandes.
+  > 📌 **La question qu'Eric a posée le 2026-08-09, et la réponse à lui redonner
+  > telle quelle : « je ne sais jamais si je dois push sur un fil externe. »**
+  > **JAMAIS depuis un fil de lot.** Un lot travaille sur une BRANCHE, dans un
+  > worktree ; cette branche n'a aucune raison d'exister sur GitHub. Elle se
+  > fusionne localement, et **seul `main` se pousse**, après revue, avec la
+  > commande que l'architecte tend. Pousser une branche de lot créerait une
+  > branche distante à nettoyer et — bien pire — donnerait l'illusion que le
+  > travail est intégré alors qu'il n'est pas revu. **Le lot commite,
+  > l'architecte fusionne, Eric pousse `main`.**
   > 📌 **Précédent du 2026-08-08, à ne pas généraliser.** Eric, à distance et
   > empêché, a **explicitement** demandé que l'architecte pousse les trois
   > dépôts, puis déploie. La règle n'est pas levée : elle a été levée **une
