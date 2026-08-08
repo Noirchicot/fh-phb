@@ -121,9 +121,11 @@ ce qui n'a pas besoin de mon contexte ») :
 | Chantier | Dépôt / branche | Ce qu'il fait |
 |---|---|---|
 | `18-srd-ancrage` | `fh-srd` / `18-srd-ancrage` | Répare l'ancrage des blocs flottants. Prémisse **vérifiée avant lancement** : `srd:item:en:armor-of-resistance` fait 1581 caractères et se termine sur la table des leviers de l'*Apparatus of the Crab* — défaut **publié en ligne** |
-| ~~`RELECTEUR Adverserial — couche FH`~~ | ✅ **FUSIONNÉ** (`e374898`) | Un vrai défaut de code — un dé de Destinée perdu sur un refus —, quatre gardes creux, un invariant non couvert. 14 lignes de correctif contre 220 de tests | Les cinq branches
-locales de `fh-phb` (`pkg10-dice`, `codex/*`, `architect/queue-actions-v1`…)
-sont du travail v1 antérieur, pas de la dette de cette session.
+| ~~`RELECTEUR Adverserial — couche FH`~~ | ✅ **FUSIONNÉ** (`e374898`) | Un vrai défaut de code — un dé de Destinée perdu sur un refus —, quatre gardes creux, un invariant non couvert. 14 lignes de correctif contre 220 de tests |
+
+Les cinq branches locales de `fh-phb` (`pkg10-dice`, `codex/*`,
+`architect/queue-actions-v1`…) sont du travail v1 antérieur, pas de la dette de
+cette session.
 
 ### 🎉 Le M2 est complet, et le produit fait ce qu'il promet
 
