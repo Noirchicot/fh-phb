@@ -180,10 +180,35 @@ et `slotsRecharge`, qui bouche un trou réel trouvé en poursuivant la collision
 🎉 **LES SIX LOTS SONT LIVRÉS.** Le M1 est complet : schémas, moteur coupé
 SRD/FH, couche SRD générée, et les deux tables de contenu qui manquaient.
 
-⏭️ **La prochaine action** : découper le lot **`8-bloc-build`** — la dérivation.
-Il consomme `layers` (fusionné) et `fh-char/1` (révisé), et son test
-d'acceptation **est** le M2 : un personnage niveau 1 dérivé de bout en bout
-**par verbes seuls**. Puis le MCP v0 qui en est la preuve.
+🚀 **DEUX LOTS TOURNENT depuis le 2026-08-08** — `8-srd-mecanique` (dans
+`fh-srd`) et `9-bloc-build` (dans `fhpc`), en parallèle. **La prochaine action
+est une REVUE, pas un découpage.**
+
+> ⚠️ **La mesure qui a fait passer le M2 d'un lot à deux, et qu'il ne faut pas
+> réoublier.** Le kickoff disait « les schémas sont révisés, la matière est là,
+> découpe la dérivation ». **La matière est là, mais pas sous la forme que la
+> dérivation consomme** : le SRD exporté porte des *phrases* là où le moteur a
+> besoin de nombres et de clefs (`saves = ["Intelligence","Sagesse"]`,
+> `"d6 par niveau de Magicien"`, `"9 m"`, la vision dans le noir noyée dans
+> 1 851 caractères de prose). **8 champs de `resolved` sur 20 sont dérivables**,
+> et les deux genres propres sont exactement les deux que le lot 6 a construits.
+> Le `resolved` de l'exemple du lot 2 est **écrit à la main** : il ne prouve rien
+> sur la dérivabilité. Lancé seul, le lot de dérivation aurait écrit un parseur
+> de prose dans `fhpc` ou une table `"Sagesse" → wis` dans le moteur.
+
+**Ce qui rend les deux lots parallèles**, mesuré et non supposé : `data` est
+**ouvert** au schéma (`safeKey`/`safeValue`) et `gen-srd-layer.mjs:87` le
+transporte **en bloc**. Un champ neuf traverse schéma et générateur sans qu'on
+touche à l'un ou à l'autre. Le prix payé d'avance :
+**`fhpc/contracts/DERIVATION-FIELDS.md`**, qui nomme chaque champ. Le lot 9
+travaille sur une **fixture** aux noms du contrat.
+
+🎯 **À LA FUSION, LE GESTE QUI N'APPARTIENT QU'À CE SIÈGE** : régénérer les
+couches depuis `fh-srd` et **rejouer l'acceptation du lot 9 SANS sa fixture**.
+C'est le seul moment où une divergence de nom entre les deux dépôts peut être
+vue. Ne pas fusionner l'un sans l'autre sans l'avoir fait.
+
+Puis le MCP v0, qui prouve la dérivation en la pilotant de l'extérieur.
 
 📌 Contexte du jalon **M2** — un personnage dérivé de bout en
 bout par verbes seuls, prouvé par le MCP v0, et le démarrage de la couche FH
