@@ -180,9 +180,46 @@ et `slotsRecharge`, qui bouche un trou réel trouvé en poursuivant la collision
 🎉 **LES SIX LOTS SONT LIVRÉS.** Le M1 est complet : schémas, moteur coupé
 SRD/FH, couche SRD générée, et les deux tables de contenu qui manquaient.
 
-🚀 **DEUX LOTS TOURNENT depuis le 2026-08-08** — `8-srd-mecanique` (dans
-`fh-srd`) et `9-bloc-build` (dans `fhpc`), en parallèle. **La prochaine action
-est une REVUE, pas un découpage.**
+🎉 **LE M2 EST ATTEINT — 2026-08-08.** `fhpc` `main` = `ced9b1c`, **276 tests
+verts** ; `fh-srd` `main` = `f26cb75`, **44 suites vertes**. Les lots
+`8-srd-mecanique` et `9-bloc-build` sont **fusionnés**.
+
+> **Un personnage de niveau 1 se construit de bout en bout sans interface**, en
+> appelant les verbes — `choose`, `set`, `override`, `rebuild`, `validate` —
+> **sur la vraie matière et sans échafaudage**.
+
+⏭️ **La prochaine action : le MCP v0**, qui prouve la dérivation en la pilotant
+de l'extérieur. Il hérite de la forme **à deux verbes** (`choose` pose un
+record, `set` pose un scalaire), ratifiée exprès pour lui. Puis la couche FH
+avec Eric — le vrai long pôle.
+
+### Les deux dettes du M2, mesurées et déclarées (jamais devinées)
+
+- **Les traits d'espèce.** Refusés par le lot 8, mesure à l'appui : la mise en
+  page à deux colonnes est aplatie et `srd:species:en:human` finit sur le
+  tableau du Tieffelin. **Le préalable n'est pas un meilleur parseur de prose,
+  c'est la réparation de l'extraction à deux colonnes** — c'est un lot à part.
+- **Le `castType` d'un sort.** Refusé, et **le schéma a cédé, pas le lot** :
+  cinq constructions de la prose ressemblent à une sauvegarde et une seule est
+  le fait ; *Couteau de glace* est génuinement les deux, ce que l'énumération
+  ne sait pas dire. Elle est reconnue insuffisante — point ouvert daté.
+
+### Ce que cette nuit a appris, et qui vaut pour tout siège
+
+**Un test qui n'a jamais échoué exprès ne prouve rien — et un test peut cesser
+de prouver sans que personne ne touche à rien.** Le lot 9 a trouvé que **cinq
+de ses propres preuves** s'appuyaient sur une couche *accidentellement* pauvre :
+le jour où la source s'enrichit, elles s'évaporent en silence, garantie
+comprise. Un refus se prouve sur une privation **délibérée et ciblée**, jamais
+sur une pénurie de circonstance.
+
+**Et l'architecte a eu tort quatre fois, corrigé par les lots à chaque fois** :
+`ability_key` francisé (question du lot 8), quatre champs absents du contrat
+(question du lot 9, dont `senses[].name` qui rendait ma propre forme incapable
+de produire un sens valide), `castType` obligatoire, et une preuve « rien n'a
+bougé » qu'il fallait re-formuler. **Les quatre sont venues de lots qui ont posé
+une question au lieu d'inventer.** C'est ce que les commandes demandaient, et
+c'est ce qui a payé.
 
 > ⚠️ **La mesure qui a fait passer le M2 d'un lot à deux, et qu'il ne faut pas
 > réoublier.** Le kickoff disait « les schémas sont révisés, la matière est là,
