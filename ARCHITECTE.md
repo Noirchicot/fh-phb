@@ -100,7 +100,7 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ## 5. L'état du chantier — 2026-08-08
 
-**`~/tools/fhpc`** (public), `main` = `c2e92b0`, **158 tests verts**.
+**`~/tools/fhpc`** (public), `main` = `b4cd30a`, **170 tests verts**.
 **`~/tools/fh-srd`**, `main` = `4651a43`, **42 suites vertes**, 14 genres / 2 613 records.
 
 | Lot | État |
@@ -108,7 +108,7 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 | `1-squelette` | ✅ fusionné — noyau : registre de verbes + bus |
 | `2-schemas` | ✅ fusionné — `fh-char/1` et `fh-layer/1` |
 | `3-moteur` | ✅ fusionné — moteur de jets hors DOM |
-| `4-couche-srd` | 🟢 **DÉBLOQUÉ et prêt** — worktree monté, commande réécrite. Le **dernier** avant le M2 |
+| `4-couche-srd` | ✅ **FUSIONNÉ** le 2026-08-08 — couches SRD FR+EN, **14 genres / 2 613 records** |
 | `5-moteur-srd-fh` | ✅ **FUSIONNÉ** le 2026-08-08 — la coupe est **réelle** : le chemin commun passe de 244 à 7 mentions de la Destinée, et **les 7 sont des commentaires** |
 | `6-srd-tables` | ✅ **FUSIONNÉ** le 2026-08-08 — `fh-srd` `main` = `4651a43`, 42 suites vertes, **14 genres / 2 613 records** |
 
@@ -175,8 +175,14 @@ une valeur de règle remplace un nombre — `fh.exhaustion` est une valeur) ·
 et `slotsRecharge`, qui bouche un trou réel trouvé en poursuivant la collision
 `spell_slots` — sans lui un occultiste ne récupérerait jamais ses emplacements.
 
-⏭️ **La prochaine action** : lancer le lot `4-couche-srd`, le dernier avant le
-jalon M2. Sa commande est réécrite, son worktree est monté.
+🎉 **LES SIX LOTS SONT LIVRÉS.** Le M1 est complet : schémas, moteur coupé
+SRD/FH, couche SRD générée, et les deux tables de contenu qui manquaient.
+
+⏭️ **La prochaine action** : le jalon **M2** — un personnage dérivé de bout en
+bout par verbes seuls, prouvé par le MCP v0, et le démarrage de la couche FH
+avec Eric. Chemin critique mesuré : bloc `layers` → bloc `build` → MCP v0. Le
+lot `7-bloc-layers` est découpé et prêt ; `doc` est indépendant mais hors
+chemin critique.
 
 ---
 
