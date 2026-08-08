@@ -105,11 +105,11 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'état du chantier — 2026-08-08, fin de soirée
+## 5. L'état du chantier — 2026-08-09
 
 | Dépôt | `main` | Suites | Distant |
 |---|---|---|---|
-| `~/tools/fhpc` | `d8273b9` | **440 vertes** | ⚠️ en retard (`e6b9c0e` poussé) |
+| `~/tools/fhpc` | `1f70ca5` | **457 vertes** | ⚠️ en retard (`e6b9c0e` poussé) |
 | `~/tools/fh-srd` | `20c6598` | **48 vertes** | ✅ à jour |
 | `~/tools/fh-phb` | (board + mandat) | — | ⚠️ en retard |
 
