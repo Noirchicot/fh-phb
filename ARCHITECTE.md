@@ -100,7 +100,7 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ## 5. L'état du chantier — 2026-08-08
 
-**`~/tools/fhpc`** (public), `main` = `b4cd30a`, **170 tests verts**.
+**`~/tools/fhpc`** (public), `main` = `3667368`, **238 tests verts**.
 **`~/tools/fh-srd`**, `main` = `4651a43`, **42 suites vertes**, 14 genres / 2 613 records.
 
 | Lot | État |
@@ -111,6 +111,8 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 | `4-couche-srd` | ✅ **FUSIONNÉ** le 2026-08-08 — couches SRD FR+EN, **14 genres / 2 613 records** |
 | `5-moteur-srd-fh` | ✅ **FUSIONNÉ** le 2026-08-08 — la coupe est **réelle** : le chemin commun passe de 244 à 7 mentions de la Destinée, et **les 7 sont des commentaires** |
 | `6-srd-tables` | ✅ **FUSIONNÉ** le 2026-08-08 — `fh-srd` `main` = `4651a43`, 42 suites vertes, **14 genres / 2 613 records** |
+| `7-bloc-layers` | ✅ **FUSIONNÉ** le 2026-08-08 — la pile de couches, `query` seul chemin de lecture |
+| `RELECTEUR Adverserial` | ✅ **FUSIONNÉ** le 2026-08-08 — 11 gardes attaqués, **4 creux**, dont la loi §0.12 qui ne tenait pas |
 
 > ⚠️ **Correction de séquencement du 2026-08-08 : le lot 4 n'est pas parallèle au
 > lot 6.** Le kickoff disait « autre dépôt, donc parallèle » — ce n'est pas le
@@ -178,7 +180,12 @@ et `slotsRecharge`, qui bouche un trou réel trouvé en poursuivant la collision
 🎉 **LES SIX LOTS SONT LIVRÉS.** Le M1 est complet : schémas, moteur coupé
 SRD/FH, couche SRD générée, et les deux tables de contenu qui manquaient.
 
-⏭️ **La prochaine action** : le jalon **M2** — un personnage dérivé de bout en
+⏭️ **La prochaine action** : découper le lot **`8-bloc-build`** — la dérivation.
+Il consomme `layers` (fusionné) et `fh-char/1` (révisé), et son test
+d'acceptation **est** le M2 : un personnage niveau 1 dérivé de bout en bout
+**par verbes seuls**. Puis le MCP v0 qui en est la preuve.
+
+📌 Contexte du jalon **M2** — un personnage dérivé de bout en
 bout par verbes seuls, prouvé par le MCP v0, et le démarrage de la couche FH
 avec Eric. Chemin critique mesuré : bloc `layers` → bloc `build` → MCP v0. Le
 lot `7-bloc-layers` est découpé et prêt ; `doc` est indépendant mais hors
