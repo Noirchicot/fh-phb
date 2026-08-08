@@ -109,11 +109,11 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 | Dépôt | `main` | Suites |
 |---|---|---|
-| `~/tools/fhpc` | `e374898` | **418 vertes** |
+| `~/tools/fhpc` | `771f54c` | **420 vertes** |
 | `~/tools/fh-srd` | `20c6598` | **48 vertes** |
 | `~/tools/fh-phb` | (board + mandat) | — |
 
-⚠️ **Ni `fhpc` `e374898` ni `fh-srd` `20c6598` ne sont poussés** — le push est
+⚠️ **Ni `fhpc` `771f54c` ni `fh-srd` `20c6598` ne sont poussés** — le push est
 le geste d'Eric. Et `fh-srd` porte maintenant une **correction de contenu
 publié** : le site public est en retard sur `main` tant qu'il n'a pas été
 redéployé, ce qui est *aussi* son geste.
