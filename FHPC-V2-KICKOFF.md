@@ -7,7 +7,7 @@ séparé) revoit et fusionne — discipline `ARCHITECT-HANDOFF.md` §4 : *vérif
 ne pas croire*.
 
 Décisions ratifiées et architecture complète : vault
-`7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHPC v2 — Architecture.md`
+`7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHV2 - Architecture.md`
 (miroir des décisions ; le §1 ci-dessous est la version canonique côté dépôt,
 transplantée dans `fhpc/ARCHITECTURE.md` au lot 1).
 

@@ -18,7 +18,7 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 | `FHPC-V2-BRIEF.md` | Le produit, ses contraintes, ses pièges — et **§4b, l'inventaire d'Eric** : 15 surfaces et 11 fonctions, le meilleur jeu de tests d'une architecture |
 | `FHPC-V2-KICKOFF.md` | **Le travail** : §0 les lois communes, §1 l'architecture canonique, §L1–§L6 les lots, §6 le séquencement, §7 la matière, §8 les conseillers |
 | `CHANTIER-STATUS.json` | **L'état**, problèmes ouverts compris |
-| vault `Chantier FH & FHPC/FHPC v2 — Architecture.md` | Les décisions ratifiées et l'avancement daté, écrit pour Eric |
+| vault `Chantier FH & FHPC/FHV2 - Architecture.md` | Les décisions ratifiées et l'avancement daté, écrit pour Eric |
 
 ---
 

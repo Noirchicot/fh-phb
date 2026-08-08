@@ -14,7 +14,7 @@ lots, les fusions — il travaille vite et bien. Ce siège tient autre chose.
 | `~/tools/fh-phb/FHPC-V2-BRIEF.md` | L'objectif, les contraintes, les pièges — et son **§4b : l'inventaire d'Eric** |
 | `~/tools/fh-phb/FHPC-V2-KICKOFF.md` | Ce que l'architecte a décidé (§0 les lois, §L1–§L6 les lots, §8 les conseillers) |
 | `~/tools/fh-phb/CHANTIER-STATUS.json` | L'état du chantier, **problèmes ouverts compris** |
-| vault `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHPC v2 — Architecture.md` | Les décisions ratifiées et l'avancement daté |
+| vault `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/FHV2 - Architecture.md` | Les décisions ratifiées et l'avancement daté |
 
 ---
 
@@ -70,10 +70,10 @@ Ne jamais rapporter ce qu'un autre siège **dit** avoir fait. Aller lire.
 - `CONSEILLER-PRODUIT.md` était annoncé comme existant : il ne l'était pas. Ce
   fichier-ci est sa première version réelle.
 - Le §4b du brief **est** sur `main` — le cherry-pick proposé était inutile.
-- La page vault `FH — Qui est où` n'a **pas** été réécrite en perdant sa forme :
+- La page vault `FHV2 - Qui est où` n'a **pas** été réécrite en perdant sa forme :
   elle a été **créée** le 2026-08-07 au soir, son historique ne compte qu'un
   commit, et aucune page n'a été supprimée du dossier. La page riche du commit
-  `1b75936` est `FHPC v2 — Passage de témoin`, une autre page.
+  `1b75936` est `FHV2 - Passage témoin`, une autre page.
 
 ### L'écriture pour Eric
 
@@ -108,8 +108,8 @@ de fiche : elle est courte, claire et **fausse** — donc on la croit.
 
 | Fiche dérivée (vault) | Sa source |
 |---|---|
-| `FH — Qui est où` | `ARCHITECT-HANDOFF.md` §3b |
-| `FHPC v2 — Passage de témoin` | `FHPC-V2-BRIEF.md` |
+| `FHV2 - Qui est où` | `ARCHITECT-HANDOFF.md` §3b |
+| `FHV2 - Passage témoin` | `FHPC-V2-BRIEF.md` |
 
 Si la mise à jour ne peut pas suivre dans la foulée : écrire
 `⚠️ PÉRIMÉE depuis le AAAA-MM-JJ` en tête de la fiche.
@@ -154,7 +154,7 @@ travail** — l'architecte peut les relayer.
 > **Dire ce que la recherche a confirmé et ce qu'elle n'a pas pu confirmer.**
 
 1. ⚠️ **Celle que personne ne s'est posée.** Le document de fondation (vault,
-   `FHPC — Positionnement & Stratégie.md`) a été ratifié le **3 août**. Le produit
+   `FHV2 - Positionnement.md`) a été ratifié le **3 août**. Le produit
    a **viré le 7** — de compagnon de table attaché à une VTT à constructeur de
    personnage indépendant. Personne n'a revérifié depuis.
    *Qu'est-ce qui est devenu **faux**, **douteux** ou **incomplet** — et qu'est-ce
