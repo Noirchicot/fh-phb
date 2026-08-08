@@ -8,7 +8,7 @@
     "(règle gravée dans ARCHITECT-HANDOFF.md). states: fini | en-cours | en-attente | probleme.",
     "Couleurs côté widget : fini=vert, en-cours=orange, en-attente=blanc, probleme=rouge."
   ],
-  "as_of": "2026-08-09",
+  "as_of": "2026-08-10",
   "virage": {
     "date": "2026-08-07",
     "display": "🔀 VIRAGE PRODUIT — FHPC devient un CONSTRUCTEUR DE PERSONNAGE indépendant",
@@ -278,7 +278,7 @@
     "pourquoi_maintenant": "Le lot 19 avait dû DÉCLARER l'impact de l'Arcane non dérivable faute d'un genre où le lire — alors que c'est le terme le plus important du Score : 7 personnages réels d'Eric sur 7 en portent un, et sa valeur vaut 0, 1 ou 2 SELON LA CARTE, donc jamais codable en dur.",
     "ce_qui_reste": "Du CONTENU (une couche portant les 22 cartes) et de la DÉRIVATION (le module apprenant à lire un choix qui porte un `ref`) — plus rien de contractuel. Le don `Destiny Touched (fh)` (+2), lui, n'a JAMAIS été bloqué par le schéma : `feat` est un genre depuis le début, il ne manquait que le record.",
     "porte_du_moteur_encore_v1": "`src/modules/fh/index.mjs:114-118` lit toujours `character.destinyBuild.arcana` / `.score`, des noms de champs v1 qu'aucun bloc n'écrit. C'est du code, donc le travail du lot, pas du contrat.",
-    "non_pousse": "fhpc d8273b9 n'est PAS poussé — geste d'Eric."
+    "non_pousse": "✅ POUSSÉ — vérifié le 2026-08-10 par `git ls-remote origin refs/heads/main` sur les trois dépôts : fhpc a3bf5ce, fh-phb bd01e44, fh-srd 20c6598, tous alignés local↔distant, arbres propres. Cette clef disait « non poussé » et c'était devenu FAUX — Eric a poussé après la session. Un tableau de bord périmé est pire que pas de tableau."
   },
   "lot_20_arcanes_fusionne": {
     "date": "2026-08-09",
@@ -288,7 +288,7 @@
     "dette_ouverte_architecte": "GÉNÉRALISER `input.feats`. C'est le premier d'une série de champs ad hoc : le chapitre 4 aura le même besoin pour la classe et l'historique (leurs records sont désignés par des `ref` hors namespace). `input.records` est bon et général ; `input.feats` ne l'est pas. À porter au contrat `build` AVANT le lot du chapitre 4.",
     "debloque_par_ce_lot": "QUESTION 3 du lot : `src/modules/fh/index.mjs` déclenche encore la Vibration sur `character.destinyBuild.arcana`, un chemin v1. Le chemin ratifié est `build.choices[fh.destiny.arcana].ref.id`, et la couche porte enfin le contenu que ce moteur voulait lire. La dette est DÉBLOQUÉE, elle attend un lot.",
     "question_non_tranchee": "Le `power` et la `vibration` de la carte dans `resolved` (jouabilité sans couches, BRIEF §3.1) : le contrat du module rend {stat, underived} et ne peut pas écrire resolved.traits[]. Il faut un second point d'injection. Les trois textes VOYAGENT déjà dans la couche — la matière est là, rien à réécrire le jour où l'architecte ouvre le point.",
-    "non_pousse": "fhpc main = 1f70ca5, 4 commits d'avance sur origin. Geste d'Eric."
+    "non_pousse": "✅ POUSSÉ — vérifié le 2026-08-10 par `git ls-remote origin refs/heads/main` sur les trois dépôts : fhpc a3bf5ce, fh-phb bd01e44, fh-srd 20c6598, tous alignés local↔distant, arbres propres. Cette clef disait « non poussé » et c'était devenu FAUX — Eric a poussé après la session. Un tableau de bord périmé est pire que pas de tableau."
   },
   "canal_refs_generalise": {
     "date": "2026-08-09",
@@ -303,5 +303,13 @@
     "mesure": "Le moteur applique −2/degré (src/play/session.mjs:55, SRD_EXHAUSTION_PER_LEVEL). L'intention FH ratifiée est −1 (`ruleValues`, `fh.exhaustion`). src/layers/stack.mjs:82-85 : la correspondance `fh.exhaustion` ↔ `exhaustionPerLevel` n'est écrite NULLE PART.",
     "consequence_pour_ghost": "Il n'écrit pas −1 dans la prose, et il ne convertit PAS l'Épuisement en Tilt — c'est un modificateur appliqué au jet, pas un +2 au DC. Il écrit le comportement en vigueur et NOMME le trou."
   },
-  "ghostwriter_cree": "😴 DORMANT depuis le 2026-08-09, sur décision d'Eric le soir de sa création : « il fera son boulot beaucoup plus tard, ça fait une contrainte en moins pour le suivant ». Cinquième siège, et le premier qui ÉCRIT ; mandat `GHOSTWRITER.md`, complet et intact. Sa SEULE passe a trouvé la contradiction de l'Épuisement, devenue dette d'architecte n°2 — elle vit sans lui. ⛔ Ne pas le réveiller sans un ordre d'Eric."
+  "ghostwriter_cree": "😴 DORMANT depuis le 2026-08-09, sur décision d'Eric le soir de sa création : « il fera son boulot beaucoup plus tard, ça fait une contrainte en moins pour le suivant ». Cinquième siège, et le premier qui ÉCRIT ; mandat `GHOSTWRITER.md`, complet et intact. Sa SEULE passe a trouvé la contradiction de l'Épuisement, devenue dette d'architecte n°2 — elle vit sans lui. ⛔ Ne pas le réveiller sans un ordre d'Eric.",
+  "dette_1_payee_refs_consumed": {
+    "date": "2026-08-10",
+    "display": "✅ DETTE D'ARCHITECTE N°1 PAYÉE — le protocole des modules de statistique entre dans `contracts/build.md`. Le lot 20 l'avait demandé explicitement ; le chapitre 4 hérite d'une forme désormais OPPOSABLE.",
+    "pourquoi": "Le contrat du module vivait dans l'en-tête de src/build/derive.mjs (un commentaire) et dans INVENTAIRE-LOT-19.md §2 (un rapport daté) — ni l'un ni l'autre ratifiés. MESURÉ avant d'écrire : `contracts/build.md` ne contenait AUCUNE occurrence de `contribute`, `records`, `refs` ni `consumed`. Deux lots avaient déjà écrit contre cette forme sans qu'elle soit nulle part opposable.",
+    "piege_ecarte": "⚠️ INVENTAIRE-LOT-19.md §2 décrit la forme d'AVANT la généralisation du 2026-08-09 : il ne connaît ni `records`, ni `refs`, ni `consumed`. Il n'est pas réécrit (un rapport de lot est daté, pas vivant) mais le contrat dit maintenant explicitement de ne plus le lire comme le contrat.",
+    "ecrit_depuis_le_code_pas_de_memoire": "Chaque clause est adossée au test qui la prouve, par son nom. Les deux affirmations reprises d'un rapport plutôt que du code ont été re-mesurées avant d'être écrites : `../modules/` figure bien dans FORBIDDEN (tests/build-block.test.mjs:61) et `dispatch(\"layers.flags\")` est bien la porte des drapeaux (src/build/block.mjs:239,347). C'est la parade à la faute du 2026-08-09 — écrire depuis son souvenir du contrat au lieu de le relire.",
+    "la_lecon_gravee_au_contrat": "La résolution des `ref` est PARESSEUSE et PAR MODULE. La première version de l'architecte résolvait tout d'avance avec `must` ; deux tests ont rougi et ils avaient raison — résoudre d'avance vole au module sa distinction entre « couche non montée » (genre vide → déclarer) et « record inexistant » (ref mort → refuser). C'est désormais écrit au contrat, pas seulement dans un commentaire."
+  }
 }
