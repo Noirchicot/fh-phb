@@ -109,19 +109,19 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 | Dépôt | `main` | Suites |
 |---|---|---|
-| `~/tools/fhpc` | `15db710` | **415 vertes** |
+| `~/tools/fhpc` | `e374898` | **418 vertes** |
 | `~/tools/fh-srd` | `e83015a` | **47 vertes** |
 | `~/tools/fh-phb` | (board + mandat) | — |
 
-⚠️ **`fhpc` `15db710` n'est PAS poussé** — le push est le geste d'Eric.
+⚠️ **`fhpc` `e374898` n'est PAS poussé** — le push est le geste d'Eric.
 
-**Deux chantiers tournent** (lancés le 2026-08-08 sur ordre d'Eric, « lance ce
-qui n'a pas besoin de mon contexte ») :
+**Un chantier tourne encore** (lancés le 2026-08-08 sur ordre d'Eric, « lance
+ce qui n'a pas besoin de mon contexte ») :
 
 | Chantier | Dépôt / branche | Ce qu'il fait |
 |---|---|---|
 | `18-srd-ancrage` | `fh-srd` / `18-srd-ancrage` | Répare l'ancrage des blocs flottants. Prémisse **vérifiée avant lancement** : `srd:item:en:armor-of-resistance` fait 1581 caractères et se termine sur la table des leviers de l'*Apparatus of the Crab* — défaut **publié en ligne** |
-| `RELECTEUR Adverserial — couche FH` | `fhpc` / `relecteur-adverserial-fh` | Attaque les gardes des lots 14→17, jamais attaqués. Périmètre : `src/doc/`, `src/modules/fh/`, `src/tools/`, `layers/`. **Interdit** : `src/mcp/`, `bin/`, `schemas/` (l'architecte y écrit) | Les cinq branches
+| ~~`RELECTEUR Adverserial — couche FH`~~ | ✅ **FUSIONNÉ** (`e374898`) | Un vrai défaut de code — un dé de Destinée perdu sur un refus —, quatre gardes creux, un invariant non couvert. 14 lignes de correctif contre 220 de tests | Les cinq branches
 locales de `fh-phb` (`pkg10-dice`, `codex/*`, `architect/queue-actions-v1`…)
 sont du travail v1 antérieur, pas de la dette de cette session.
 
