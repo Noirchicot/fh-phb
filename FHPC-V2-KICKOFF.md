@@ -1073,9 +1073,12 @@ d'architecte et en a suggéré la création.** Corrigé le jour même — l'arch
 l'avait d'abord noté comme « à créer », puis comme « créé le 2026-08-08 », deux
 fois faux. Son domaine : vision globale du positionnement de Fate's Hand dans l'univers D&D sur le web. Sa première mission est de vérifier que le document de fondation — ratifié le 3 août, **avant** le virage du 7 — tient encore maintenant que le produit a changé de nature. Il hérite aussi de la question de la couche FH publique/privée, que l'expert SRD a sortie du terrain juridique pour la remettre sur le terrain commercial.
 
-**Un cinquième est identifié, pas créé** : un conseiller *interface de builder*,
-utile au M3 seulement, et cadré pour apporter les conventions du domaine sans
-décider à la place d'Eric — qui a l'interface en tête. **Écartés
+**Le cinquième est CRÉÉ le 2026-08-09** : le conseiller *interface de builder*,
+mandat `CONSEILLER-INTERFACE.md`, titre du fil `EXPERT conseiller interface`.
+Il était « identifié, pas créé — utile au M3 seulement » ; **on y est**, le
+moteur et le contenu sont faits et l'interface n'a pas une ligne. Cadré pour
+apporter les conventions du domaine **sans décider à la place d'Eric**, qui a
+l'interface en tête. **Écartés
 délibérément** : « expérience de table » (Eric est le MJ, ce serait un
 doublon) et « MCP » (l'architecte le porte). Le **relecteur adversarial**, qui
 a eu le meilleur rendement mesuré de la v1 — quatre défauts réels, 32 lignes de
