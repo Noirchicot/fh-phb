@@ -118,7 +118,7 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 | Genre `arcana` ouvert (`d8273b9`) | GAP-KIND clos — et il répondait AUSSI à « où vit l'Arcane du personnage ? » sans un champ neuf |
 | Lot `20-arcanes-fh` fusionné (`1f70ca5`) | Les 22 cartes et `Destiny Touched (fh)` existent comme contenu. 22/22 vérifiées contre la source |
 | Canal `feats` → `refs` généralisé (`a3bf5ce`) | La dette ouverte à la fusion du lot 20. Le chapitre 4 n'est plus bloqué côté contrat |
-| Siège **`GHOSTWRITER`** créé | `GHOSTWRITER.md`. Lancé, il a déjà rendu ses premiers constats |
+| Siège **`GHOSTWRITER`** créé, puis **endormi** | `GHOSTWRITER.md`. Lancé, il a rendu une passe — et **sa première question a sorti la dette n°2**. Eric l'a mis en sommeil le soir même : *« il fera son boulot beaucoup plus tard, ça fait une contrainte en moins pour le suivant »*. ⛔ **Ne le réveille pas de toi-même** — c'est la décision d'Eric, pas un oubli. Rien n'est supprimé, son mandat est complet |
 
 ### ⚠️ CE QUE CE SIÈGE DOIT — quatre dettes, dont deux neuves
 

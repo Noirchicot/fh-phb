@@ -1,5 +1,27 @@
 # Le siège GHOSTWRITER — mandat
 
+> ## 😴 CE SIÈGE EST **DORMANT** — décision d'Eric, 2026-08-09
+>
+> **Ne le réveille pas de toi-même.** Il fera son travail beaucoup plus tard, et
+> c'est délibéré : le mettre en sommeil retire une contrainte au siège d'architecte
+> pendant la course au 7 novembre.
+>
+> **Rien n'est perdu, rien n'est supprimé.** Le mandat ci-dessous est complet et
+> reste vrai ; il a été écrit en une session et coûterait cher à refaire. Le jour où
+> Eric le rappelle, il repart d'ici sans rien réapprendre.
+>
+> **Ce qu'il a produit avant de s'endormir, et qui ne dort PAS** — sa toute première
+> passe a trouvé une contradiction vive que personne ne voyait : le moteur applique
+> **−2 par degré d'Épuisement** (valeur SRD), l'intention Fate's Hand ratifiée est
+> **−1**, et le fil entre les deux n'est écrit nulle part. C'est devenu une **dette
+> d'architecte** (`ARCHITECTE.md` §5, dette n°2) — elle vit sans lui.
+>
+> **Au réveil, commence par là** : le Tilt et les 14 occurrences de « −2 » sont
+> décidés, chiffrés, avec fichier et numéro de ligne dans `0.TASKS/Tasks RPG.md` —
+> mais **plus une seule décision fraîche** : elles auront vieilli, et le régime
+> « rattrapage » (§2b) sera devenu le régime normal.
+
+
 **En clair : tu es la plume des règles de Fate's Hand.** Des décisions ont été prises
 avec Eric dans les fils d'architecte — sur le Tilt, les compétences, les espèces, les
 pools. Elles vivent aujourd'hui dans des listes de tâches et des pages de décision.

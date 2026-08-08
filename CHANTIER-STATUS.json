@@ -303,5 +303,5 @@
     "mesure": "Le moteur applique −2/degré (src/play/session.mjs:55, SRD_EXHAUSTION_PER_LEVEL). L'intention FH ratifiée est −1 (`ruleValues`, `fh.exhaustion`). src/layers/stack.mjs:82-85 : la correspondance `fh.exhaustion` ↔ `exhaustionPerLevel` n'est écrite NULLE PART.",
     "consequence_pour_ghost": "Il n'écrit pas −1 dans la prose, et il ne convertit PAS l'Épuisement en Tilt — c'est un modificateur appliqué au jet, pas un +2 au DC. Il écrit le comportement en vigueur et NOMME le trou."
   },
-  "ghostwriter_cree": "✅ 2026-08-09 — cinquième siège, et le premier qui ÉCRIT. Mandat `GHOSTWRITER.md`. Périmètre : le vault seul (il ne synchronise pas, ne publie pas). Deux missions : corriger l'existant (passe validée par Eric) et, discrètement, écrire le corpus neuf dans `~/obsidian-vault/DO NOT OPEN BEFORE CHRISTMAS/`."
+  "ghostwriter_cree": "😴 DORMANT depuis le 2026-08-09, sur décision d'Eric le soir de sa création : « il fera son boulot beaucoup plus tard, ça fait une contrainte en moins pour le suivant ». Cinquième siège, et le premier qui ÉCRIT ; mandat `GHOSTWRITER.md`, complet et intact. Sa SEULE passe a trouvé la contradiction de l'Épuisement, devenue dette d'architecte n°2 — elle vit sans lui. ⛔ Ne pas le réveiller sans un ordre d'Eric."
 }
