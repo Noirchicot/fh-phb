@@ -297,11 +297,12 @@
     "tests_ajoutes": "2 — le reste de la suite ne prouvait que l'absence de casse. Un module VOIT class/background/feat/species aplatis et NE VOIT PAS son propre namespace ; le garde de réclamation mord sur tous les genres."
   },
   "exhaustion_contradiction_vive": {
-    "date": "2026-08-09",
-    "statut": "OUVERT — dette d'architecte, attend le chiffre d'Eric",
-    "trouve_par": "une question de GHOSTWRITER",
-    "mesure": "Le moteur applique −2/degré (src/play/session.mjs:55, SRD_EXHAUSTION_PER_LEVEL). L'intention FH ratifiée est −1 (`ruleValues`, `fh.exhaustion`). src/layers/stack.mjs:82-85 : la correspondance `fh.exhaustion` ↔ `exhaustionPerLevel` n'est écrite NULLE PART.",
-    "consequence_pour_ghost": "Il n'écrit pas −1 dans la prose, et il ne convertit PAS l'Épuisement en Tilt — c'est un modificateur appliqué au jet, pas un +2 au DC. Il écrit le comportement en vigueur et NOMME le trou."
+    "date": "2026-08-10",
+    "statut": "❌ REQUALIFIÉE — la dette était FAUSSE. Eric a tranché −1 le 2026-08-10, et −1 est DÉJÀ ce que le moteur applique.",
+    "display": "❌ « CONTRADICTION VIVE » DÉMENTIE PAR LA MESURE. Sonde d'architecte sur les DEUX piles montées : SRD pur → −2 par degré ; couche FH montée → −1 par degré. C'est déjà câblé (surcharge `layer.rules`, src/modules/fh/index.mjs:78) et déjà épinglé par un test (tests/play-srd-only.test.mjs:482-483). La réponse d'Eric RATIFIE le comportement en vigueur : rien à changer côté chiffre.",
+    "la_faute": "Lire `SRD_EXHAUSTION_PER_LEVEL` (session.mjs:55) — le DÉFAUT avant surcharge — comme la valeur appliquée. Encore l'erreur n°1 du §5c : mesurer le mauvais objet, ici une constante prise pour un comportement. TROIS documents la portaient (ARCHITECTE.md, ce tableau, le brief de GHOSTWRITER) parce qu'elle a été RECOPIÉE sans être remesurée. Une dette recopiée n'est pas une dette vérifiée.",
+    "ce_qui_reste_vraiment": "Le pont entre les `ruleValues` d'une couche de DONNÉES et les `rules` d'un module MOTEUR — point ouvert n°4 de contracts/layers.md, ajourné sciemment le 2026-08-08. Le chiffre FH vit dans du CODE, pas dans une couche, alors que `ruleValues` a été séparé de `flags` exprès pour porter « quel nombre le moteur applique-t-il ? ».",
+    "piege_grave_au_contrat": "⚠️ LE SIGNE. Les couches écrivent `fh.exhaustion: -1` (pénalité signée) ; le moteur déclare `exhaustionPerLevel: 1` (multiplicateur positif, appliqué par `-level * perLevel`, session.mjs:179). Un pont qui RECOPIE la valeur donnerait -3 × -1 = +3, un BONUS d'Épuisement, silencieux et jouable. Le pont doit normaliser et refuser bruyamment un signe inattendu. Nuance vérifiée pour ne pas crier au loup : les -1 sont des FIXTURES de test, AUCUNE couche livrée ne porte `ruleValues` — le piège est encore gratuit à désamorcer."
   },
   "ghostwriter_cree": "😴 DORMANT depuis le 2026-08-09, sur décision d'Eric le soir de sa création : « il fera son boulot beaucoup plus tard, ça fait une contrainte en moins pour le suivant ». Cinquième siège, et le premier qui ÉCRIT ; mandat `GHOSTWRITER.md`, complet et intact. Sa SEULE passe a trouvé la contradiction de l'Épuisement, devenue dette d'architecte n°2 — elle vit sans lui. ⛔ Ne pas le réveiller sans un ordre d'Eric.",
   "dette_1_payee_refs_consumed": {

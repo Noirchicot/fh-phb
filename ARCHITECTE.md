@@ -125,12 +125,29 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 1. **Porter `refs` / `consumed` dans `contracts/build.md`.** Le contrat du module
    vit dans `INVENTAIRE-LOT-19.md` §2 et dans les commentaires de `derive.mjs`,
    pas dans un contrat ratifié. **Le lot 20 l'a demandé explicitement.** Court.
-2. 🆕 **Câbler `fh.exhaustion` → `exhaustionPerLevel`.** Trouvé grâce à une
-   question de GHOST, et c'est une contradiction VIVE : le moteur applique
-   **−2 par degré** (`src/play/session.mjs:55`, valeur SRD), l'intention FH
-   ratifiée est **−1** (`ruleValues` du schéma), et `src/layers/stack.mjs:82-85`
-   dit que la correspondance **n'est écrite nulle part**. ⏸ Attend le chiffre
-   d'Eric, qu'il tranchait côté règles en fin de session.
+2. ~~**Câbler `fh.exhaustion` → `exhaustionPerLevel`.**~~ ❌ **CETTE DETTE ÉTAIT
+   FAUSSE — mesurée et requalifiée le 2026-08-10.** Elle disait « contradiction
+   VIVE : le moteur applique −2 par degré alors que l'intention FH est −1 ».
+   **Sonde sur les deux piles montées** : SRD pur → −2/degré, couche FH → **−1
+   /degré**. C'est déjà câblé (surcharge `layer.rules`,
+   `src/modules/fh/index.mjs:78`) et **déjà épinglé par un test**
+   (`tests/play-srd-only.test.mjs:482-483`). Eric a confirmé −1 le 2026-08-10 :
+   sa réponse **ratifie le comportement en vigueur**, il n'y a rien à changer.
+
+   📌 **La faute était de lire `SRD_EXHAUSTION_PER_LEVEL` (`session.mjs:55`) —
+   le DÉFAUT avant surcharge — comme la valeur appliquée.** C'est encore
+   l'erreur n°1 du §5c, mesurer le mauvais objet : ici, une constante prise
+   pour un comportement. Trois documents la portaient (ce mandat, le tableau de
+   bord, le brief de GHOST) parce qu'elle a été **recopiée** sans être
+   remesurée. **Une dette recopiée n'est pas une dette vérifiée.**
+
+   **Ce qui reste, et c'est plus étroit** : le pont entre les `ruleValues` d'une
+   couche de DONNÉES et les `rules` d'un module MOTEUR — point ouvert n°4 de
+   `contracts/layers.md`, ajourné sciemment le 2026-08-08. Le chiffre FH vit
+   dans du **code**, pas dans une couche. ⚠️ **Et le piège du signe y est
+   maintenant gravé** : les couches écrivent `-1` (pénalité signée), le moteur
+   déclare `1` (multiplicateur positif, appliqué par `-level * perLevel`). Un
+   pont qui recopie donnerait `-3 × -1 = +3`, **un bonus d'Épuisement**.
 3. **Le point d'injection pour le `power` / la `vibration` d'une carte** dans
    `resolved` (jouabilité sans couches, BRIEF §3.1). Sans urgence : les textes
    voyagent déjà dans la couche, rien ne sera à réécrire.
