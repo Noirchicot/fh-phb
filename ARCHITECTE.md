@@ -114,18 +114,137 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-09, fin de session (relire ceci en premier)
+## 5. L'ÉTAT DU CHANTIER — 2026-08-10 (relire ceci en premier)
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `02efc1a` | ⚠️ **8 commits d'avance, NON POUSSÉS** | **565 vertes** |
-| `~/tools/fh-phb` | `d3f19d2` | ⚠️ **5 d'avance** | — |
-| `~/tools/fh-srd` | `20c6598` | à jour | — |
+| `~/tools/fhpc` | `cec7291` | ⚠️ **3 commits d'avance, NON POUSSÉS** | **570 vertes** |
+| `~/tools/fh-phb` | `8bc1cf7`+ | à remesurer | — |
+| `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
 ⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`) : ils ont une
-durée de vie de quelques minutes ici. **Rien en vol** : aucun worktree, aucun
-lot en cours, arbres propres. ⚠️ Une branche distante à nettoyer :
-`git -C ~/tools/fhpc push origin --delete 25-builder-affichage`.
+durée de vie de quelques minutes ici.
+
+```bash
+git -C ~/tools/fhpc push origin main
+```
+
+**CE QUI EST EN VOL** :
+
+- ✅ **Lot `27-violations-clefs` FUSIONNÉ le 2026-08-10** — `cec7291`,
+  570 verts. Worktree retiré, **branche conservée**. Détail complet dans
+  `CHANTIER-STATUS.json` et §« LE LOT 27 A REPRIS SON ARCHITECTE » ci-dessous.
+  **Rien d'autre en vol** dans `fhpc` : aucun worktree, aucun lot en cours.
+- ⚠️ **Le worktree de `fh-phb` existe toujours**, à `797163d` :
+  `fh-phb/.claude/worktrees/youthful-taussig-bfa14e` — c'est celui des 76 lignes
+  non commitées de `sync_from_vault.py`, **toujours en attente d'Eric**.
+  📌 **Ce siège a écrit « aucun worktree » le 2026-08-09 en n'ayant mesuré que
+  `fhpc`. Codex l'a démenti par la mesure.** Onzième erreur de la série, même
+  forme que les dix autres : *mesurer le mauvais objet*.
+
+⚠️ **Une branche distante à nettoyer, et ce n'est PLUS celle du mandat
+précédent** : `25-builder-affichage` est supprimée, mais `7-bloc-layers`
+survit sur `origin` :
+`git -C ~/tools/fhpc push origin --delete 7-bloc-layers`.
+
+---
+
+### ⭐⭐ LA FORME DU BUILDER EST RATIFIÉE — 2026-08-10
+
+Eric a mené la discussion avec Codex à partir des deux études de celui-ci
+(vault `Chantier FH & FHPC/FHPC — Étude builders du marché.md` et
+`FHPC — Assistant IA, connecteurs et fenêtre de chat.md`), puis a soumis le
+tout à l'arbitrage de ce siège. **Cinq points tranchés :**
+
+| | Décision | Statut |
+|---|---|---|
+| **Forme** | **Assistant pur** + un **plan escamotable** (colonne desktop, surface temporaire sur téléphone), **fermé par défaut**. Même document, mêmes verbes, jamais un second builder | ✅ accordé sans réserve |
+| **Ordre** | `0 Univers/couches → 1 Concept → 2 Classe → 3 Espèce → 4 Historique → 5 Caractéristiques → 6 Destinée → 7 Compétences → 8 Revue`. L'écran `Save` disparaît : le document EST l'état | ✅ accordé — **et le moteur l'impose** : `skill-pool.mjs:574`, sans record de classe le module ne publie RIEN, même si l'espèce donne des points. Classe avant espèce est une contrainte, pas un goût |
+| **Projection de décision** | ⭐ **Un carnet de plus rendu par `rebuild`**, à côté des six qu'il rend déjà. **GÉNÉRIQUE** — une entrée par point de décision, indexée par son chemin — et **jamais « la projection de l'étape Compétences »** : une étape est un objet d'interface, huit étapes gravées dans le moteur violent §0.13 | ✅ arbitré par ce siège, **correction apportée à la proposition de Codex** |
+| **Séquencement** | **27 d'abord** (il est le prérequis : la projection a besoin d'une clef de refus), puis la projection, puis la coquille responsive, puis l'étape Compétences de bout en bout | ✅ ratifié par Eric |
+| **Lot 27, forme** | **clef + paramètres**, pas message | ✅ confirmé par Eric le 2026-08-10 |
+
+**Les quatre arguments qui ont mis la projection dans `rebuild`** (à ne pas
+refaire) : le précédent des six carnets existants · `fh-char/1` n'a nulle part
+où garder un rapport et l'invariant 4 interdit d'écrire `build` ·
+`render-fiche.mjs` ne connaît le nom d'AUCUN champ et lui apprendre ce qu'est
+un palier casserait ses propriétés 1 et 4 · ⭐ **et le décisif : l'IA a besoin
+de la MÊME projection.** La note IA d'Eric pose que l'humain et l'IA emploient
+les mêmes opérations ; une projection qui vit dans l'écran ne peut pas être
+servie par le MCP, et un assistant devrait refaire les règles.
+
+### ⛔ LA « RÈGLE À GRAVER » N'AVAIT RIEN À GRAVER — mesuré le 2026-08-10
+
+Eric a ratifié : *« un choix de compétence accordé par l'espèce est
+supplémentaire et ne consomme aucun point du pool »*, et Codex l'a présenté
+comme une correction à porter avant l'interface. **Mesure, module lancé sur un
+Araag et sur une espèce sans grant :**
+
+```
+── Araag (grant)  → TOTAL = 7        ── sans grant → TOTAL = 7
+     12  Class Pool · Wizard              12  Class Pool · Wizard
+     -2  Wizard · 2 imposed                -2  Wizard · 2 imposed
+     -2  Sage · 2 imposed                  -2  Sage · 2 imposed
+     -1  Sage · 1 imposed                  -1  Sage · 1 imposed
+      1  Araag · 1 granted choice
+     -1  Araag · 1 imposed choice
+```
+
+**7 = 7.** Le net zéro du lot 24 délivrait **déjà exactement** la règle
+qu'Eric croyait devoir trancher. Rien à graver, aucun nombre ne bouge.
+📌 **Reste un geste, cosmétique** : les deux lignes qui s'annulent décrivent
+l'ancien modèle mental (le grant entre puis se place) ; le modèle d'Eric est
+« le grant est dehors ». Retirer la paire et publier le choix offert comme son
+propre terme — **même total** — peut voyager dans le lot builder.
+
+### 🔴 LE TROU QUE PERSONNE N'AVAIT VU — et c'est le cœur de l'étape témoin
+
+**Deux des quatre paliers d'Eric n'existent que sur le papier.**
+
+| Mesure | |
+|---|---|
+| Le schéma déclare quatre paliers | `resolved.skills[].proficiency` : `none · half · proficient · expertise` |
+| La dérivation n'en écrit que deux | `derive.mjs:689` → `isProficient ? "proficient" : "none"` ; `:736` → `"proficient"`. **`half` et `expertise` ne sont écrits par rien** |
+| Aucun canal pour dépenser à un palier | La sélection existe déjà pour les imposés/offerts (`set{path, value:slug}`, validée contre l'ensemble légal — `allowedSlugs()`, `derive.mjs:290`), mais elle ne pose que « maîtrisé » |
+| Le verrou d'expertise n'est opposé à rien | `expertise_from_level: 4` est lu par personne — zéro occurrence dans `block.mjs` |
+| `granted_skill_choice.from` n'est pas republié | `allowedSlugs()` le résout **déjà** en interne (`"any"` compris) et ne le sort pas. L'UI ne peut pas offrir les trois choix de l'Elestu |
+
+📌 **Ni le §5 de la veille, ni l'inventaire de l'artefact, ni le prompt de
+Codex ne nommaient ce trou.** Il est le vrai contenu du lot Compétences.
+
+### ⚠️ ET UNE TROISIÈME DETTE RECOPIÉE QUI TOMBE
+
+Le §5 disait : *« 27 et 28 visent tous deux `block.mjs` : séquentiels »*.
+**Faux.** Mesuré : **27** vise `block.mjs` (8 `push`, dont 1 `spread`) **et
+`validate.mjs`** (5) **et `src/mcp/tools.mjs`** ; **28** vise `derive.mjs`.
+Ils ne se croisent pas. **En revanche 28 croise le lot Compétences**, qui doit
+écrire les paliers dans `derive.mjs` — ces deux-là sont séquentiels.
+
+### 🤝 LE LOT 27 A REPRIS SON PROPRE ARCHITECTE, ET IL AVAIT RAISON
+
+Codex s'est **arrêté sans commiter** et a contesté deux points de la commande.
+Les deux tiennent, remesurés :
+
+1. **« Treize sites » était faux** — `block.mjs` porte 8 `violations.push` dont
+   **un `...spread`** (`:357`) : **7** producteurs de texte, + 5 dans
+   `statSumViolations` = **12**.
+2. **Deux consignes se contredisaient** — `block.mjs:347` **ensemence** le
+   tableau avec les chaînes de `charInvariantViolations` *avant* le premier
+   `push`, et elles sortent au `:445`. Interdire les chaînes publiques tout en
+   interdisant de toucher `invariants.mjs` était intenable.
+
+**Arbitrage rendu** : une **clef enveloppe** `document.invariant-violated`
+`{message}`, **sans `path`**, posée à la frontière de `build.validate` seule
+(`rebuild:316` passe les mêmes invariants dans un `fail()` — un `throw` n'est
+pas une sortie publique). C'est **le même arbitrage que `derive.threw`** pour
+la même raison : *une faute de structure n'est pas une décision de joueur
+invalide, aucune interface n'a de carte rouge à peindre pour ça*. **Deux
+entonnoirs, une seule forme.** → **12 producteurs, 13 clefs.**
+
+📌 **Le treize de la première rédaction était juste par accident et faux par
+raisonnement.** C'est le troisième lot de ce chantier à corriger son
+architecte ; **la revue marche dans les deux sens**, et un lot qui s'arrête
+plutôt que de choisir seul fait exactement son travail.
 
 ### ⭐⭐ CE QUI A CHANGÉ, ET C'EST LA CHOSE À COMPRENDRE : LE MOTEUR EST FINI
 
@@ -192,23 +311,24 @@ elles tiennent. Le second rapport (enquête marché, demandée par Eric) :
 
 ### CE QUI ATTEND ERIC — et rien d'autre
 
-1. **`Hide Plan` ou assistant pur ?** La seule bifurcation de forme restante.
-2. **L'ordre des huit étapes** — le conseiller propose de le revoir « par
-   taille de décision » plutôt que de garder celui de son outil.
-3. Les deux `git push` (voir le tableau ci-dessus), et la branche à supprimer.
+1. La branche distante `7-bloc-layers` à supprimer (commande ci-dessus).
+2. Les **76 lignes non commitées** de `sync_from_vault.py` dans le worktree
+   `fh-phb` : commiter ou jeter. Ouvert depuis le 2026-07-27.
+3. **`build.budgets` : on le garde ou on le retire ?** Toujours ouvert, et
+   désormais sans aucun consommateur connu.
 
-### LE PROCHAIN LOT, PROPOSÉ ET NON ÉCRIT
+*(Les deux `git push` sont faits ; `Hide Plan` et l'ordre des étapes sont
+tranchés — voir la section « LA FORME DU BUILDER EST RATIFIÉE ».)*
 
-**L'étape `skills` de l'assistant, seule, de bout en bout.** C'est la plus
-caractéristique (26 compétences × 4 paliers, pool 12-18, imposés déjà placés,
-expertise éteinte jusqu'au niveau 4) et la seule dont le moteur vient
-d'apprendre à nourrir chaque terme. Les sept autres étapes sont du travail
-connu. ⚠️ **Ne pas l'écrire avant qu'Eric ait tranché le point 1.**
+### LES LOTS — ordre ratifié le 2026-08-10
 
-Restent aussi, prêts mais non écrits : `27-violations-clefs` (Eric a tranché
-**clef + paramètres**, pas message) et `28-attribution` (l'option C du
-conseiller — mesuré : `derive.mjs:1091-1096` calcule `base`, `dex` et
-`acBonus` puis les jette). ⚠️ **Les deux visent `block.mjs` : séquentiels.**
+| | Lot | État |
+|---|---|---|
+| 1 | **`27-violations-clefs`** | ✅ **FUSIONNÉ** le 2026-08-10 (`cec7291`, 570 verts) |
+| 2 | **La projection de décision** | 📝 **C'EST LE PROCHAIN, et il est débloqué** — un septième carnet de `rebuild`, **générique** (une entrée par point de décision, indexée par son chemin), portant options / coûts / disponibilité / **clef de refus**. ⚠️ Ne pas le graver par étape. 📌 Sa clef de refus **existe maintenant** : les treize du lot 27, et le mécanisme partagé est `src/labels.mjs` |
+| 3 | **La coquille responsive** | assistant pur + plan escamotable, desktop et téléphone |
+| 4 | ⭐ **L'étape Compétences, de bout en bout** | Elle emporte les **trois trous rouges** ci-dessus : écrire `half`/`expertise`, ouvrir un canal de dépense par palier, opposer `expertise_from_level`. ⚠️ **Vise `derive.mjs`** |
+| — | **`28-attribution`** | prêt, non écrit. `derive.mjs:1091-1096` calcule `base`, `dex` et `acBonus` puis les jette. ⚠️ **Séquentiel avec le lot 4**, pas avec 27 |
 
 ### 🤝 UN ARCHITECTE ASSISTANT ENTRE EN JEU — `CODEX-ASSISTANT.md`
 
