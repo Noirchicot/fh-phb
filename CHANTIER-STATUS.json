@@ -154,6 +154,18 @@
   ],
   "problems": [
     {
+      "id": "POOL-IMPOSES-ESPECE",
+      "statut": "ouvert — DÉCISION D'ERIC, bloquante pour le builder",
+      "source": "lot 23, 2026-08-09",
+      "texte": "Les maîtrises imposées par l'ESPÈCE (Araag `Skillful`, Elestu `Keen Senses` — un `granted_skill_choice`) se déduisent-elles du pool comme celles de la classe et de l'arrière-plan ? La règle d'Eric du 2026-08-08 nomme « la classe ou l'arrière-plan » et rien d'autre ; le canon dit « les bases du SRD fixent les compétences et outils imposés ». L'espèce n'est nommée nulle part. Aujourd'hui DÉCLARÉ, jamais compté : un Araag verra 1 point de plus qu'il ne devrait, ou le bon compte — personne ne peut le dire. Un mot d'Eric suffit."
+    },
+    {
+      "id": "BUDGETS-SANS-CONSOMMATEUR",
+      "statut": "ouvert — ARBITRAGE ARCHITECTE + ERIC",
+      "source": "lots 22 et 23, 2026-08-09",
+      "texte": "`build.budgets` est `required` au schéma `fh-char/1` (public), vide dans le seul document d'exemple, et `grep -rn budgets src/` ne rend rien : aucun des cinq verbes ne l'écrit ni ne le lit. Son unique « premier consommateur concret » annoncé — le pool de compétences — est parti dans `resolved.stats[]` au lot 23. La loi §0.6 (pas de vocabulaire mort) se pose donc sur lui. Retirer un champ `required` d'un schéma public n'est pas le geste d'un lot."
+    },
+    {
       "id": "G012-BUILD-KERNEL-SCHEMAS",
       "statut": "ouvert",
       "source": "RELECTEUR couche FH, 2026-08-08",
@@ -364,5 +376,15 @@
     "la_trouvaille": "⚠️ LE ONZIÈME N'A PAS ÉTÉ RETIRÉ, ET C'EST LA RAISON DE VÉRIFIER AVANT. `.claude/worktrees/youthful-taussig-bfa14e` portait `sync_from_vault.py` MODIFIÉ ET NON COMMITÉ depuis le 2026-07-27 : 76 insertions, une fonctionnalité complète (injection du shell du site — feuille de style et barre de nav — sur les pages d'outils publiées, builder et roller). Ce n'est pas un résidu, c'est du travail réel, à un `rm` près de la perte. C'est exactement le piège gravé au mandat (« un lot a annoncé terminé avec tout en non-commité »). Le worktree est LAISSÉ EN PLACE et le diff est sauvegardé en double (patch + fichier complet) dans le scratchpad de la session. DÉCISION D'ERIC ATTENDUE : commiter, jeter, ou laisser dormir.",
     "fils_archives": "5 fils : « Chapitre 4 compétences » (lot 22), « 21 Vibration et Tilt » (lot 21), « LOT-20-ARCANES review » (lot 20) — les trois fusionnés, inventaires commités — plus les deux sièges d'architecte qu'Eric avait déjà marqués « (retired) ».",
     "non_touches": "Les CINQ conseillers (EXPERT produit, SRD, VTT, Fate's Hand, interface) répondent encore. GHOSTWRITER n'est PAS archivé : il dort sur décision d'Eric, l'archiver irait au-delà de ce qu'il a dit. Les fils v1 du dock non plus — proposés, pas tranchés."
+  },
+  "lot_23_pool_competences": {
+    "date": "2026-08-09",
+    "statut": "✅ FUSIONNÉ — fhpc main = a10858e, 530 tests verts APRÈS fusion, arbre propre, worktree retiré, branche conservée. ⚠️ NON POUSSÉ : le push est le geste d'Eric.",
+    "display": "✅ LOT 23-pool-competences FUSIONNÉ — LE DERNIER MORCEAU DE MOTEUR AVANT LE BUILDER. Un module à drapeau `fh.skills` publie l'ancre `fh:skill-points` dans `resolved.stats[]`, avec son détail. 1418 insertions, 13 tests neufs (5 acceptations + 8 attaques).",
+    "le_contrat_ratifie": "`level` entre dans le protocole d'injection des modules de statistique — SEUL contrat qui bouge, strictement additif. La mesure du lot, REFAITE par l'architecte : `proficiency` ne dit pas le niveau (5, 6, 7 et 8 la donnent toutes à 3), donc une statistique qui s'accumule PAR NIVEAU n'avait qu'une issue, une table en dur. Même précédent que `feats` au lot 20, généralisé en `refs` le lendemain.",
+    "le_lot_a_corrige_ce_siege": "📌 CINQUIÈME fois qu'un lot rattrape l'architecte, et la faute est de la même famille que les précédentes. Ma commande affirmait « un Rogue niveau 1 publie un pool de 18 » ET « les imposés se déduisent » — les deux ne peuvent pas être vraies du même nombre. 18 est le POOL DE CLASSE, le total publié est CE QUI RESTE : 11. La mesure qui tranche est d'ERIC et elle est indépendante du code — sa réforme vise « environ 2 points libres à 7-10 » : magicien 12−5 = 7, druide 14−5 = 9, roublard 18−7 = 11.",
+    "verifie_pas_cru": "530/530 dans un CLONE INDÉPENDANT avec `npm install` refait. ⚠️ ET UNE TROUVAILLE D'HYGIÈNE AU PASSAGE : ~/tools/fhpc n'avait AUCUN node_modules, ajv se résolvait depuis /Users/Eric/node_modules en 8.18.0 alors que le lock déclare 8.20.0 — le filet du dépôt principal jugeait sous une version non déclarée. `npm ci` fait, 530 verts sous 8.20.0.",
+    "attaque_reproduite_par_l_architecte": "🎯 LA MESURE QUI VALIDE LE LOT. Le rapport annonce que les douze pools écrits EN DUR dans le module, toutes valeurs justes, laissent les cinq acceptations vertes. REPRODUIT : table en dur posée dans le clone → 12/13, SEUL le garde dédié (« ni le pool ni le coût ne sont écrits dans le code ») mord. C'est lui qui protège la capacité d'Eric à rééquilibrer le pool depuis la couche. Arbre restauré et revérifié à 530 avant fusion.",
+    "ce_qui_reste_ouvert": "Quatre points DÉCLARÉS et jamais devinés (loi §0.10) : (1) les maîtrises imposées par l'ESPÈCE se déduisent-elles ? — DÉCISION D'ERIC, le builder affichera 1 point de trop pour l'Araag et l'Elestu tant qu'elle n'est pas prise ; (2) `build.budgets` n'a plus AUCUN consommateur connu, la loi §0.6 se pose sur un champ `required` d'un schéma public ; (3) les outils imposés par la classe — `tool_proficiencies` est une phrase ; (4) le multiclassage — le pli ne dérive qu'une classe, et le `by_level` de la couche a fusionné le +1 du barde avec le +2 universel."
   }
 }

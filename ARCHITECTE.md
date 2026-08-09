@@ -118,12 +118,28 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 | Dépôt | `main` | Suites | Distant |
 |---|---|---|---|
-| `~/tools/fhpc` | `512898d` | **517 vertes** | ✅ à jour |
-| `~/tools/fh-phb` | `2c21a55` | — | ✅ à jour |
+| `~/tools/fhpc` | `a10858e` | **530 vertes** | ⚠️ **4 commits d'avance, non poussés** |
+| `~/tools/fh-phb` | *(bouge à chaque entrée de ce fichier)* | — | à remesurer |
 | `~/tools/fh-srd` | `20c6598` | — | ✅ à jour |
+
+⛔ **NE CITE JAMAIS CES SHA DE MÉMOIRE — remesure-les.** Mesuré en direct le
+2026-08-09 : entre le démarrage d'un fil et sa quatrième commande, `fh-phb` a
+bougé de deux commits parce qu'Eric poussait pendant qu'on mesurait. Un SHA a
+ici une durée de vie de quelques minutes.
+`git ls-remote origin refs/heads/main` sur les trois dépôts, à chaque reprise.
 
 **Rien n'est en vol** : aucun worktree, aucun lot en cours, aucune fusion à
 moitié, arbres propres. Les branches de lot sont conservées, jamais `--force`.
+
+### 🧰 UNE HYGIÈNE QUI MANQUAIT, ET QUI FAISAIT MENTIR LE FILET
+
+`~/tools/fhpc` n'avait **aucun `node_modules`**. `ajv` se résolvait depuis
+`/Users/Eric/node_modules` en **8.18.0**, alors que le lock du dépôt déclare
+**8.20.0** : les suites de la copie de travail étaient jugées par un validateur
+que le dépôt ne déclare pas. Aucun test n'en tombait — c'est bien le problème.
+`npm ci` fait, 530 verts sous 8.20.0. **La routine « rejouer dans un clone
+indépendant avec `npm install` » n'avait jamais été appliquée au dépôt
+principal lui-même.**
 
 ### ⭐ LE CHANTIER CHANGE DE NATURE — c'est LA chose à savoir en reprenant
 
@@ -164,32 +180,65 @@ remesurées**, et un lot a dû refuser de travailler pour que la seconde tombe.
 ligne de ce fichier, la remesurer. C'est la consigne qui aurait économisé le
 plus de temps aujourd'hui.
 
-### ⚠️ CE QUE CE SIÈGE DOIT ENCORE
+### ⚠️ CE QUE CE SIÈGE DOIT ENCORE — **remesuré une par une le 2026-08-09**
 
-1. **La dérivation du pool de compétences** — débloquée par l'arbitrage du
-   jour : un pool dérivé vit dans `resolved.stats[]`, **jamais** dans
-   `build.budgets` (l'argument est le **barde**, dont le pool change à chaque
-   niveau). Chemin déjà ratifié. **Lot court, et il précède le builder** : un
-   builder qui ne sait pas dire « il te reste 7 points » n'est pas un builder.
-2. **`state.character` : le document ou `resolved` ?** Trois formes se
-   contredisent (`saveInfo` lit `ch.pb` et `ch.savingProficiencies`, absents du
-   schéma `resolved`), et **aucun appelant de production n'existe** pour
-   arbitrer. Le lot 21 a tranché pour la Vibration seule et l'a signalé.
-   ⚠️ Deviendra bloquante quand l'interface ouvrira une séance.
-3. **Le moment `mount` n'est invoqué nulle part** — déclaré dans `MOMENTS`,
-   jamais appelé. Du vocabulaire mort : à brancher ou à retirer (§0.6).
-4. **`normalizeDestiny` lit encore `ch.destinyBuild.score`** — le dernier
-   chemin v1 vivant, même maladie que celle que le lot 21 a réparée.
-5. **Le garde des copies** — ratifié par Eric, jamais construit. Les 22 Arcanes
-   existent en trois exemplaires et rien ne les compare.
+> 📌 Chaque ligne porte la mesure qui la prouve, refaite ce jour-là. Une dette
+> sans sa mesure est une rumeur : quand tu la reprends, refais-la.
+
+1. ~~**La dérivation du pool de compétences**~~ ✅ **PAYÉE** — lot 23 fusionné
+   (`a10858e`, 530 verts). Le module `fh.skills` publie `fh:skill-points` dans
+   `resolved.stats[]` avec son détail.
+2. **`state.character` : le document ou `resolved` ?** — et **la dette n°4 est
+   la même réparation, pas une autre**. Mesuré : `session.mjs:1578` `open()`
+   reçoit `character` d'un appelant ; `session.mjs:203` lit
+   `ch.savingProficiencies` ; `index.mjs:130` `normalizeDestiny` lit
+   `ch.destinyBuild.score`, puis `ch.build.destinyFeats.score`, puis `ch.pb` —
+   **trois noms de champs v1 dans une seule fonction**, aucun au schéma
+   `resolved`. **Aucun appelant de production.** ⚠️ Bloquante dès que
+   l'interface ouvrira une séance. **Un lot, pas deux.**
+3. **Le moment `mount` n'est invoqué nulle part** — remesuré : déclaré
+   `sequence.mjs:48` ; les `run("…")` du dépôt sont `session-clear`, `reopen`,
+   `result`, `pre-roll` ×2, `session-open`, `session-snapshot`. `run("mount")`
+   n'apparaît **que dans un commentaire**. Vocabulaire mort (§0.6).
+4. *(fusionnée dans la n°2 — c'est la même fonction.)*
+5. **Le garde des copies** — remesuré : 22 cartes dans
+   `layers/fh-arcana-en.layer.json`, 22 dans `fh-skills/fh-skill-builder.html`,
+   et `tests/fh-arcana.test.mjs` ne compare la couche **qu'à elle-même**. Rien
+   ne confronte les copies. Débloqué : il attendait le lot 21, fusionné.
+
+### ⭐ TROIS LOTS DE CONTRAT NÉS DU CONSEILLER INTERFACE (2026-08-09)
+
+Le conseiller `EXPERT interface Builder` a rendu son premier rapport, et il a
+sorti **trois trous de contrat** que ce siège n'avait pas vus. **Les trois
+mesures ont été refaites par l'architecte, les trois tiennent.** Les trois
+lots sont courts, et **tous les trois coûtent nettement plus cher une fois le
+builder écrit**.
+
+| Lot | Mesure qui le motive | Statut |
+|---|---|---|
+| **Verbe de retrait `clear{path}`** | `block.mjs:127` `place()` pose ou remplace, **jamais ne retire** ; les cinq verbes sont `choose·set·override·rebuild·validate` ; `grep "clear\|remove\|unset\|delete" src/build/` → **zéro**. Sans lui, un joueur ne peut pas changer d'avis et un MJ ne peut pas **lever** une surcharge posée par erreur | ✅ **ACCORDÉ par l'architecte.** Les deux autres formes (`set{value:null}`, `choose{ref:null}`) sont écartées : elles entrent en collision frontale avec deux refus déjà écrits et testés |
+| **`violations` en `{path, message}`** | 13 sites, tous des phrases françaises en gabarit ; le chemin fautif est **dans la prose**. Une interface devrait analyser du français pour poser une marque rouge au bon endroit | à trancher **avec Eric** : message, ou **clef + paramètres** (§0.13) ? Ça double le lot et ne se refait pas deux fois — ses diagnostics sont en français, sa table joue en anglais |
+| **Attribution hors document** | ⭐ **La question que l'expert m'assignait, et la réponse est OUI** : `derive.mjs:1091-1096` calcule `base`, `dex` et `acBonus` — nommés, dans la même portée — puis les jette dans `resolved.ac = base + dex + acBonus`. La provenance existe une ligne avant d'être perdue. `rebuild` rend déjà cinq carnets hors document (`underived`, `unconsumed`, `shadowed`, `warnings`, `diff`) ; un sixième ne change pas la nature du verbe | prêt |
+
+⚠️ **Séquencement** : le lot d'attribution vise `src/build/derive.mjs`, que le
+lot 23 écrivait. Il est maintenant libre — mais le test d'Eric reste la règle :
+*le prompt du lot cite-t-il un fichier qu'un autre lot est en train d'écrire ?*
+
+📌 **Et un fait mineur, mesuré, à corriger en passant** : `resolved.required`
+compte **21** clefs, `contracts/build.md:109` et `:383` disent « vingt ». Sans
+danger — vérifié que le garde **lit le schéma**
+(`tests/build-derive.test.mjs:48`) au lieu de compter 20 en dur. Trois mots.
 
 ### Ce qui attend une décision d'ERIC
 
 | Sujet | |
 |---|---|
 | ⚠️ **76 lignes non commitées, retrouvées au ménage** | `sync_from_vault.py` est **modifié et non commité** depuis le 2026-07-27 dans `fh-phb/.claude/worktrees/youthful-taussig-bfa14e` : une fonctionnalité complète qui injecte le shell du site (feuille de style + barre de nav) sur les pages **builder** et **roller** publiées. **Ni commité, ni jeté — Eric décide.** Le worktree est laissé en place exprès, et le diff est sauvegardé en double dans le scratchpad de la session du 2026-08-09 |
-| **Le découpage du builder** | « Builder desktop complet » est un jalon, pas un lot. La coupe dépend de ce qu'il a en tête — recommandation de ce siège : une première tranche qui fait **un personnage niveau 1 de bout en bout à l'écran**, et rien d'autre |
-| **Le conseiller « interface de builder »** | Identifié depuis l'ouverture du chantier et daté « utile au M3 seulement ». **On y est.** Proposé, pas créé |
+| ⛔ **Les imposés d'ESPÈCE se déduisent-ils du pool ?** | **Un mot suffit, et c'est bloquant pour le builder.** L'Araag (`Skillful`) et l'Elestu (`Keen Senses`) portent un `granted_skill_choice`. Sa règle du 2026-08-08 nomme « la classe ou l'arrière-plan » — l'espèce n'est nommée nulle part. Le lot 23 l'a **déclaré** plutôt que deviné (loi §0.10) : tant que c'est ouvert, ces deux espèces afficheront peut-être **1 point de trop** |
+| **`build.budgets` : on le garde ou on le retire ?** | Plus **aucun** consommateur connu depuis que le pool est parti dans `resolved.stats[]`. Champ `required` d'un **schéma public** : le retirer n'est pas le geste d'un lot. La loi §0.6 (pas de vocabulaire mort) dit de le retirer ; la prudence dit qu'un schéma public ne se rétrécit pas à la légère |
+| **Le découpage du builder** | « Builder desktop complet » est un jalon, pas un lot. Recommandation de ce siège, **confirmée par le conseiller interface** : une première tranche qui fait **un personnage niveau 1 de bout en bout à l'écran**, et rien d'autre |
+| **La « tranche 0 » proposée par le conseiller** | Une marche **avant** la tranche 1 : la fiche en **lecture seule**, une page qui défile, zéro onglet, zéro design — un instrument, pas une maquette. Elle mesure si le document **se regarde** (le M2 n'a prouvé qu'il se *construit*). ⚠️ Elle ne demande **aucun dessin à Eric** : le geste qu'on lui demandera est de **trier** devant la page (« ça reste visible, ça part derrière un onglet »), pas d'inventer une mise en page. Six rubriques de `resolved` n'ont aucune place dans le v1 : `speeds`, `senses`, `languages`, `currency`, `resources` — et **`stats`, celle qui porte le pool et le Score** |
+| ~~Le conseiller « interface de builder »~~ | ✅ **Créé et il a rendu.** Trois trous de contrat, tous vérifiés justes. Fil : `EXPERT interface Builder` |
 | ~~Le chiffre de l'Épuisement~~ | ✅ −1, et c'était déjà le comportement |
 | ~~Le Tilt (DC, composition SRD)~~ | ✅ les deux tranchés |
 | ~~`Auspicious (fh)`~~ | ✅ renommé. Le homebrew DDB garde l'ancien nom — **décision d'Eric, ne pas y revenir** : le canon est le dépôt |
