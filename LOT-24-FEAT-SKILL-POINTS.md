@@ -7,7 +7,8 @@ tu poses la valeur d'un seul don dans la couche, et tu rends visibles deux
 lignes qui manquent au détail.
 
 **Worktree** : `~/tools/fhpc-worktrees/24-feat-skill-points`
-**Branche** : `24-feat-skill-points`, coupée de `main` = `a10858e`
+**Branche** : `24-feat-skill-points`, coupée de `main` = `6afa930`
+*(recalée : `a10858e` ne portait pas encore la section du contrat que tu dois lire)*
 ⛔ **Tu ne touches JAMAIS `main`, et tu ne pousses RIEN** — ni ta branche, ni
 quoi que ce soit. Tu commites en local, l'architecte fusionne, Eric pousse.
 `npm install` est déjà fait dans le worktree (ajv 8.20.0).
