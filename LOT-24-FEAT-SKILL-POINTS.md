@@ -1,5 +1,9 @@
 # Lot 24 — `24-feat-skill-points`
 
+> **[Sonnet · high]** — spécification fermée, précédent existant à copier
+> (`destiny-stat.mjs`). Le `high` n'est pas pour le code, il est pour les
+> **attaques** : la table en dur du lot 23 passait cinq tests sur cinq.
+
 **En clair : un don d'origine doit pouvoir donner des points de compétence, et
 aujourd'hui il ne peut pas.** Eric a ratifié l'algorithme complet du pool le
 2026-08-09 ; le lot 23 en a livré tout sauf ce terme-là. Tu ajoutes le canal,

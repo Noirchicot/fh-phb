@@ -1,5 +1,9 @@
 # Lot 25 — `25-builder-affichage`
 
+> **[Opus · high]** — le seul des trois qui demande du jugement plutôt que de
+> l'exécution : son vrai livrable est *« quelles rubriques ne s'affichent pas
+> proprement, et pourquoi »*. Et c'est le premier HTML du dépôt.
+
 **En clair : tu construis la PREMIÈRE MOITIÉ DU BUILDER — sa couche
 d'affichage.** Pas une fiche de perso, pas un produit à côté : l'écran que le
 builder utilisera, livré sans les verbes, pour qu'on vérifie qu'il tient avant

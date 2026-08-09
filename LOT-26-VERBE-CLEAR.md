@@ -1,5 +1,9 @@
 # Lot 26 — `26-verbe-clear`
 
+> **[Sonnet · high]** — petit en volume, mais il touche un **contrat public**
+> (un sixième verbe, publié ou non au catalogue MCP) et trois arbitrages
+> restent à rendre. Le `high` est pour ça, pas pour la taille.
+
 **En clair : aujourd'hui un joueur ne peut pas changer d'avis.** Le moteur sait
 poser une décision et la remplacer, jamais l'**enlever**. Et un MJ qui a forcé
 une valeur par erreur ne peut plus la lever — l'override survit à tout, par
