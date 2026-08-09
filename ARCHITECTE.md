@@ -114,7 +114,113 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'état du chantier — 2026-08-09, fin de session
+## 5. L'ÉTAT DU CHANTIER — 2026-08-09, fin de session (relire ceci en premier)
+
+| Dépôt | `main` local | Distant | Suites |
+|---|---|---|---|
+| `~/tools/fhpc` | `02efc1a` | ⚠️ **8 commits d'avance, NON POUSSÉS** | **565 vertes** |
+| `~/tools/fh-phb` | `d3f19d2` | ⚠️ **5 d'avance** | — |
+| `~/tools/fh-srd` | `20c6598` | à jour | — |
+
+⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`) : ils ont une
+durée de vie de quelques minutes ici. **Rien en vol** : aucun worktree, aucun
+lot en cours, arbres propres. ⚠️ Une branche distante à nettoyer :
+`git -C ~/tools/fhpc push origin --delete 25-builder-affichage`.
+
+### ⭐⭐ CE QUI A CHANGÉ, ET C'EST LA CHOSE À COMPRENDRE : LE MOTEUR EST FINI
+
+Quatre lots fusionnés le 2026-08-09 — **23** (pool de compétences), **24**
+(`Skilled` = +6 et les lignes « net zero »), **25** (la couche d'affichage
+d'une FICHE), **26** (le verbe `clear`). L'algorithme du skill pool d'Eric est
+**ratifié et gravé** dans `contracts/build.md` § *THE SKILL POOL*.
+
+### ⛔ ET LA CONFUSION QU'IL NE FAUT PAS REFAIRE : LE BUILDER N'EST PAS LA FICHE
+
+Ce siège a posé que « le builder EST la fiche plus des endroits où cliquer »,
+**déduit** de la loi « le document est l'état, il n'y a pas de brouillon ».
+**La déduction est invalide** : cette loi dit *où vivent les données*, pas
+*combien d'écrans il y a*. Eric a tranché, et sa mesure était sous nos yeux
+depuis deux jours — son propre `~/tools/fh-skills/fh-skill-builder.html`, que
+sa table utilise, est un **assistant en HUIT ÉTAPES** :
+`identity → abilities → species → class → background → destiny → skills → save`.
+
+| | **BUILDER** | **FICHE** |
+|---|---|---|
+| Quand | on **crée**, on **monte** | on **vit avec** |
+| Forme | suite d'étapes, une décision à la fois | un écran, tout visible |
+| Montre | **la matière de la décision en cours** | l'état courant |
+| Bandeau permanent | ⛔ **aucun** — « on s'en fout des permanents dans un builder » (Eric) | ✅ c'est tout l'intérêt |
+
+📌 Le tri permanent/onglets qu'Eric a rendu (7 onglets, 5 passives, carte de
+Destinée et portrait au bandeau, Skill Points dans le panneau) est **ratifié et
+vrai — mais il décrit LA FICHE.** Il est rangé sous ce nom dans
+`CHANTIER-STATUS.json` → `tri_ecran_ratifie_2026_08_09`.
+
+📌 **Trois canevas distincts, ne plus les confondre** : le **dock v1**
+(425 × 680, fenêtre flottante, `UI-DIMENSIONS.md`) · la **fiche** (plein
+écran) · le **builder** (assistant plein écran). Le BRIEF §3.3 disait déjà que
+`UI-DIMENSIONS.md` ne gouverne pas le builder.
+
+### 🔎 LE CONSEILLER INTERFACE A RENDU DEUX RAPPORTS — les lire avant de dessiner
+
+Fil `EXPERT interface Builder`. Ses mesures ont été refaites par ce siège et
+elles tiennent. Le second rapport (enquête marché, demandée par Eric) :
+
+- **La forme décide du reste.** *Planificateur* (Pathbuilder, GCS) → fiche
+  permanente pendant la création. *Assistant* (Beyond, Demiplane) → fiche
+  différée. « Ce n'est pas le marché qui donne raison à Eric, c'est **la forme
+  qu'il a choisie**. »
+- ⭐ **« L'ÉCONOMIE d'Eric n'est implémentée nulle part — l'ÉCRAN qu'elle exige
+  l'est intégralement. »** Pathbuilder budgétise des *créneaux*, Eric des
+  *points* ; toutes les affordances d'affichage transfèrent. **Rien à inventer
+  côté écran.**
+- Mesuré chez Pathbuilder : le budget est le **titre du dialogue**
+  (`Remaining Skill Selections: 3`) **et** une pastille sur la carte ·
+  contrôle **segmenté à 4 crans** par ligne · le détail des termes **en ligne**
+  (colonnes nommées une fois), pas en infobulle · **imposés dans la même liste,
+  en couleur** · **paliers verrouillés MONTRÉS éteints** · catalogue ouvert
+  derrière un bouton · ⚠️ **son seul défaut : cliquer un imposé ne fait rien —
+  refus silencieux, à ne pas copier.**
+- **Monter de niveau n'est pas un flux : c'est le groupe de cartes suivant.**
+- **Le rappel vit sur la décision, jamais sur l'écran** : `Not Selected` sur la
+  carte, pastille chiffrée sur celle qui dépense. **Aucun compteur global.**
+- Trois trouvailles : la **pile de couches se choisit à l'étape ZÉRO** (=
+  `build.layers` avant le premier `choose`) · une commande de **migration**
+  quand la couche bouge (le dépôt en fait un refus dur — compatible) ·
+  **`Hide Plan`**, la colonne de décisions escamotable → *une troisième forme*,
+  posée devant Eric sans être recommandée.
+
+### CE QUI ATTEND ERIC — et rien d'autre
+
+1. **`Hide Plan` ou assistant pur ?** La seule bifurcation de forme restante.
+2. **L'ordre des huit étapes** — le conseiller propose de le revoir « par
+   taille de décision » plutôt que de garder celui de son outil.
+3. Les deux `git push` (voir le tableau ci-dessus), et la branche à supprimer.
+
+### LE PROCHAIN LOT, PROPOSÉ ET NON ÉCRIT
+
+**L'étape `skills` de l'assistant, seule, de bout en bout.** C'est la plus
+caractéristique (26 compétences × 4 paliers, pool 12-18, imposés déjà placés,
+expertise éteinte jusqu'au niveau 4) et la seule dont le moteur vient
+d'apprendre à nourrir chaque terme. Les sept autres étapes sont du travail
+connu. ⚠️ **Ne pas l'écrire avant qu'Eric ait tranché le point 1.**
+
+Restent aussi, prêts mais non écrits : `27-violations-clefs` (Eric a tranché
+**clef + paramètres**, pas message) et `28-attribution` (l'option C du
+conseiller — mesuré : `derive.mjs:1091-1096` calcule `base`, `dex` et
+`acBonus` puis les jette). ⚠️ **Les deux visent `block.mjs` : séquentiels.**
+
+### 🤝 UN ARCHITECTE ASSISTANT ENTRE EN JEU — `CODEX-ASSISTANT.md`
+
+Décision d'Eric le 2026-08-09, pour raison de quota (94 %, reset **mardi 11
+août 23:59**). **Codex est l'assistant ; ce siège reste le chef.** Codex
+exécute, délègue à ses propres lots, consulte les conseillers — **il ne décide
+pas l'architecture, ne démarre aucun codage sans aval, ne pousse ni ne
+déploie.** Son mandat porte tous les chemins et tous les pièges payés.
+
+---
+
+## 5-0. L'état antérieur (conservé pour le raisonnement)
 
 | Dépôt | `main` | Suites | Distant |
 |---|---|---|---|
