@@ -125,8 +125,8 @@
     {
       "name": "⭐ Lot 25 — builder, la COUCHE D'AFFICHAGE (première moitié du builder)",
       "repo": "fhpc",
-      "state": "en-cours",
-      "note": "[Opus · high] 🚀 LANCÉ par Eric le 2026-08-09 vers 03h59 (fil « 25 builder affichage ») — worktree ~/tools/fhpc-worktrees/25-builder-affichage, branche 25-builder-affichage sur 6afa930, npm install fait, 530 verts au départ. Commande : fh-phb/LOT-25-BUILDER-AFFICHAGE.md. CE QU'IL FAIT : l'écran qui affiche un personnage, sans les verbes — le moteur sait en fabriquer un depuis des mois et PERSONNE NE L'A JAMAIS REGARDÉ. ⛔ Ce n'est PAS une fiche de jeu : aucun dé, aucun PV, aucun repos (ça, c'est le M4). Renommé depuis `25-tranche-0-fiche` après une question d'Eric qui a touché juste. CE QUI SURVIT AU LOT : le rendu adressé par CHEMIN (le plus cher à rétrofiter), la place permanente des `underived`, et stats[] avec son détail. ⚠️ Son premier travail est de GÉNÉRER un document d'exemple anglais avec la couche FH : le seul du dépôt est un Magicien Elfe FRANÇAIS en SRD seul, avec stats: [] — il n'exercerait pas la rubrique la plus importante."
+      "state": "fini",
+      "note": "✅ FUSIONNÉ le 2026-08-09 — fhpc main = 0b09472, 550 tests verts APRÈS fusion, arbre propre, worktree retiré, branche conservée (23 branches avant et après). VÉRIFIÉ PAS CRU : 550/550 dans un CLONE INDÉPENDANT avec npm install refait (ajv 8.20.0), et DEUX GARDES ATTAQUÉS PAR L'ARCHITECTE — (A) un libellé de rubrique renommé → UN SEUL test rougit, nommément : la liste des 21 est bien LUE AU SCHÉMA, pas recopiée ; (B) le `data-path` retiré du rendu → SIX tests rougissent, l'adressage est gardé des deux bouts. Arbre restauré et vérifié entre chaque. LE LIVRABLE EST L'INVENTAIRE, pas la page : 7 rubriques lisibles, 9 avec réserve, 5 vides — et les cinq vides DISENT POURQUOI. SIX TROUS DE CONTRAT remontés (voir les entrées `problems`). ⚠️ POINT DE DISCIPLINE : le lot a POUSSÉ sa branche sur origin, ce que la règle de maison interdit. Mesuré immédiatement — `main` était intact des deux côtés, rien n'a été intégré en douce. La branche distante reste à supprimer : geste d'Eric."
     },
     {
       "name": "Lot 24 — un origin feat peut donner des points de compétence (Skilled = +6)",
@@ -171,6 +171,42 @@
     "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — le tray est fusionné, cette vérif reste due avant l'OUVERTURE DE LA PORTE."
   ],
   "problems": [
+    {
+      "id": "TROU-CHOIX-SANS-TRACE",
+      "statut": "ouvert",
+      "source": "lot 25, 2026-08-09",
+      "texte": "Trois choix du joueur sont déclarés `unconsumed` et ne laissent AUCUNE trace dans la fiche : `species.lineage`, `abilities.mode`, `languages[0]`. Ce ne sont pas des champs manquants — ce sont des DÉCISIONS PRISES ET PERDUES. Le joueur a choisi le draconique, `resolved.languages` est vide. L'écran les nomme désormais dans son bloc permanent, mais il ne peut que le DIRE : la place manque dans `resolved`."
+    },
+    {
+      "id": "TROU-CHARGE-TRANSPORTEE",
+      "statut": "ouvert — mineur, CONTENU",
+      "source": "lot 25, 2026-08-09",
+      "texte": "`gear[].weight` n'est jamais dérivé : le poids est une phrase dans la source (« 0,5 kg ») et aucun champ mécanique de masse n'existe. Un builder ne pourra pas dire à un joueur qu'il est surchargé."
+    },
+    {
+      "id": "TROU-LIGNAGE-CONTRADICTION",
+      "statut": "ouvert — ARBITRAGE ARCHITECTE",
+      "source": "lot 25, 2026-08-09",
+      "texte": "Deux règles vraies se contredisent. Le moteur déclare : « composer un mot affichable dans le moteur serait la loi §0.13 — la composition appartient à l'INTERFACE ». La commande du lot 25 dit : « l'écran ne calcule AUCUNE règle, il affiche ce que `resolved` porte ». Résultat : PERSONNE ne compose, et le personnage est un « Elf » à l'écran alors qu'il a choisi haut-elfe. Composer obligerait le rendu à lire `build.choices`, donc à sortir de `resolved`. Le lot n'a pas tranché, à raison."
+    },
+    {
+      "id": "TROU-PERCEPTION-PASSIVE",
+      "statut": "ouvert — CONTENU",
+      "source": "lot 25, 2026-08-09",
+      "texte": "`senses` ne porte que la Vision dans le noir. Le calcul de la Perception passive est connu (10 + bonus de la compétence) mais SON NOM ne vit dans aucune couche : ce n'est pas un sens d'espèce, c'est une ligne de fiche. Une fiche de niveau 1 sans Perception passive n'est pas utilisable à la table. Le lot a REFUSÉ de la fabriquer, à raison — calculable n'est pas « à calculer dans l'écran »."
+    },
+    {
+      "id": "TROU-62-CHEMINS-INADRESSABLES",
+      "statut": "ouvert — DÉCISION D'ARCHITECTE + ERIC, la plus coûteuse",
+      "source": "lot 25, 2026-08-09",
+      "texte": "HUIT formes du contrat sortent de la grammaire de `$defs/overridePath` — LU DANS LE SCHÉMA, donc vrai pour tous les personnages : identity.classes[], stats[].breakdown[], actions[].damage[], spellcasting.spells[].damage[] (pas d'`id`) ; vitals.conditions[], actions[].properties[] (listes de chaînes) ; spellcasting.slots.<1-9> (clefs numériques) ; derivation.stack[] (layerRef.id admet le point, l'ancre non). SUR L'EXEMPLE : 62 chemins sur 483 affichés et inadressables. LES QUATRE QUI COÛTENT : (1) slots.<n>.current — rendre un emplacement de sort est LE geste de MJ ; (2) stats[].breakdown[] — la règle d'Eric veut une Gloire motivée LIGNE À LIGNE, or corriger une ligne oblige à surcharger le breakdown ENTIER plus le value, en DEUX overrides, et entre les deux l'invariant « le total est la somme du détail » est VIOLÉ : la mécanique la plus revendiquée de la couche FH est celle que le contrat sait le moins tweaker ; (3) identity.classes[] — rien de tweakable sur un multiclassage ; (4) vitals.conditions[] — un état ne se RETIRE pas. ⚠️ RENFORCÉ LE MÊME JOUR par Eric, qui demande des badges d'état persistants au bandeau : qui veut des badges voudra en enlever un."
+    },
+    {
+      "id": "TROU-RAPPORT-NON-PERSISTE",
+      "statut": "ouvert — DÉCISION D'ARCHITECTE + ERIC",
+      "source": "lot 25, 2026-08-09",
+      "texte": "Le rapport de dérivation (`underived`, `warnings`, `unconsumed`) est le RENDU de `build.rebuild` et le document n'a AUCUNE place pour le garder : `resolved.derivation` porte `{at, stack}`, rien d'autre. CONSÉQUENCE : un document rouvert depuis le disque ne sait plus POURQUOI `actions`, `resources`, `languages`, `craft` et `notes` sont vides — la « dégradation bruyante » de l'architecture est tenue par le moteur EN MÉMOIRE et perdue par le fichier. C'est pour ça que la signature du rendu est `render(document, report)`. QUESTION : le rapport entre-t-il dans `resolved.derivation` ?"
+    },
     {
       "id": "POOL-IMPOSES-ESPECE",
       "statut": "✅ CLOS le 2026-08-09 — TRANCHÉ PAR ERIC",
