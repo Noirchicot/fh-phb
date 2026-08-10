@@ -11,6 +11,24 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 > chemin. **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** (125 Ko,
 > produit v1) — seulement les sections nommées.
 
+> 📌 **REPRISE APRÈS LE 2026-08-10 : lis `PASSATION-2026-08-10.md` juste après
+> ce mandat.** Elle porte ce qui s'est décidé ce jour-là — trois protocoles de
+> travail neufs, une erreur structurelle de ce siège à ne pas refaire, les
+> règles tranchées, et l'étape suivante déjà cadrée avec Eric.
+
+## 🥇 AVANT TOUTE RÈGLE DE JEU — la hiérarchie des sources
+
+**Ratifiée par Eric le 2026-08-10.** En cas de contradiction :
+
+**1. `vault Chantier FH & FHPC/FHV2 - ADDENDUMS (source n°1).md`
+→ 2. le moteur (`fhpc`) → 3. le site web → 4. le vault.**
+
+⛔ **Ne code JAMAIS une règle de jeu sans avoir lu la page ADDENDUMS.** Motif
+mesuré : les décisions d'Eric vivaient dans **cinq** endroits, une règle vieille
+de deux jours n'a pas été retrouvée, et l'étape Compétences a été codée à côté.
+La page ne porte que l'**état courant** — une règle qui change **remplace** sa
+ligne, on n'y empile pas d'entrée datée.
+
 ## Lire pour démarrer, dans cet ordre — et rien d'autre
 
 | Fichier | Ce qu'il porte |
@@ -118,8 +136,8 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `cec7291` | ⚠️ **3 commits d'avance, NON POUSSÉS** | **570 vertes** |
-| `~/tools/fh-phb` | `8bc1cf7`+ | à remesurer | — |
+| `~/tools/fhpc` | `856eb55` | ⚠️ **3 commits d'avance, NON POUSSÉS** | **579 vertes** |
+| `~/tools/fh-phb` | `520eb7f` | à remesurer | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
 ⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`) : ils ont une
@@ -132,9 +150,16 @@ git -C ~/tools/fhpc push origin main
 **CE QUI EST EN VOL** :
 
 - ✅ **Lot `27-violations-clefs` FUSIONNÉ le 2026-08-10** — `cec7291`,
-  570 verts. Worktree retiré, **branche conservée**. Détail complet dans
-  `CHANTIER-STATUS.json` et §« LE LOT 27 A REPRIS SON ARCHITECTE » ci-dessous.
-  **Rien d'autre en vol** dans `fhpc` : aucun worktree, aucun lot en cours.
+  570 verts. Détail dans `CHANTIER-STATUS.json` et §« LE LOT 27 A REPRIS SON
+  ARCHITECTE » ci-dessous.
+- ✅ **Lot `28-projection-decision` FUSIONNÉ le 2026-08-10** — `856eb55`,
+  579 verts. `rebuild` publie un septième carnet `decisions`, générique,
+  aucune étape gravée dans le moteur. **Un défaut trouvé en revue et corrigé
+  avant fusion** : deux implémentations de la légalité des compétences
+  (`derive.mjs` exigeait `ability_key`, le carnet non) — extraites en une
+  source unique, `src/build/skills.mjs`. Latent, zéro record réel touché,
+  mais le homebrew tiers l'aurait atteint. **Rien en vol** dans `fhpc` : aucun
+  worktree, aucun lot en cours.
 - ⚠️ **Le worktree de `fh-phb` existe toujours**, à `797163d` :
   `fh-phb/.claude/worktrees/youthful-taussig-bfa14e` — c'est celui des 76 lignes
   non commitées de `sync_from_vault.py`, **toujours en attente d'Eric**.
@@ -325,10 +350,10 @@ tranchés — voir la section « LA FORME DU BUILDER EST RATIFIÉE ».)*
 | | Lot | État |
 |---|---|---|
 | 1 | **`27-violations-clefs`** | ✅ **FUSIONNÉ** le 2026-08-10 (`cec7291`, 570 verts) |
-| 2 | **La projection de décision** | 📝 **C'EST LE PROCHAIN, et il est débloqué** — un septième carnet de `rebuild`, **générique** (une entrée par point de décision, indexée par son chemin), portant options / coûts / disponibilité / **clef de refus**. ⚠️ Ne pas le graver par étape. 📌 Sa clef de refus **existe maintenant** : les treize du lot 27, et le mécanisme partagé est `src/labels.mjs` |
-| 3 | **La coquille responsive** | assistant pur + plan escamotable, desktop et téléphone |
-| 4 | ⭐ **L'étape Compétences, de bout en bout** | Elle emporte les **trois trous rouges** ci-dessus : écrire `half`/`expertise`, ouvrir un canal de dépense par palier, opposer `expertise_from_level`. ⚠️ **Vise `derive.mjs`** |
-| — | **`28-attribution`** | prêt, non écrit. `derive.mjs:1091-1096` calcule `base`, `dex` et `acBonus` puis les jette. ⚠️ **Séquentiel avec le lot 4**, pas avec 27 |
+| 2 | **`28-projection-decision`** | ✅ **FUSIONNÉ** le 2026-08-10 (`856eb55`, 579 verts). `rebuild` rend `decisions`, générique, testé jusqu'à fermer la boucle `set → rebuild → entrée mise à jour` |
+| 3 | **La coquille responsive** | 📝 **PROCHAIN.** Assistant pur + plan escamotable, desktop et téléphone. Débloqué : la projection existe |
+| 4 | ⭐ **L'étape Compétences, de bout en bout** | Elle emporte les **trois trous rouges** : écrire `half`/`expertise`, ouvrir un canal de dépense par palier, opposer `expertise_from_level`. ⚠️ **Vise `derive.mjs`** |
+| — | **`29-attribution`** *(renuméroté depuis 28, plus rien devant lui)* | prêt, non écrit. `derive.mjs:1091-1096` calcule `base`, `dex` et `acBonus` puis les jette. ⚠️ **Séquentiel avec le lot 4** (`derive.mjs`), pas avec 27 ni 28 |
 
 ### 🤝 UN ARCHITECTE ASSISTANT ENTRE EN JEU — `CODEX-ASSISTANT.md`
 
