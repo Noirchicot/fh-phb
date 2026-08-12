@@ -22,24 +22,37 @@ Ne démarre pas avant que 35 soit **fusionné**.
 
 ---
 
-## 0. ⛔ CE QUI EST FAIT AVANT TOI — ne le refais pas
+## 0. ✅ CE QUI EST DÉJÀ FAIT — ne le refais pas
 
-**L'architecte ouvre le genre `training`.** Ouvrir un genre est du **contrat**,
-pas du travail de lot — précédent `arcana`, 2026-08-08. Les trois endroits, tous
-déjà traités quand tu commences :
+**Le genre `training` est OUVERT** — commit `56ea9d1` sur `main`, **614 verts**.
+Ouvrir un genre est du contrat, donc le travail de l'architecte (précédent
+`arcana`, 2026-08-08). Les trois endroits sont traités, **dans un seul commit**
+parce qu'un garde compare le code et le schéma mot pour mot :
 
-| Où | Quoi |
+| Où | État |
 |---|---|
-| `schemas/fh-char.schema.json` `$defs/kind` | l'énumération passe de **15** à **16** genres |
-| `schemas/fh-layer.schema.json` | la même liste, et **un garde compare les deux** — les modifier séparément est ce qu'il empêche |
-| `src/layers/document.mjs:51` `GENRES` | la liste exécutable, à tenir alignée sur le schéma |
+| `schemas/fh-char.schema.json` `$defs/kind` | ✅ **16** genres, `training` entre `tool` et `weapon` |
+| `schemas/fh-layer.schema.json` `records.properties` | ✅ la même liste, même ordre |
+| `src/layers/document.mjs` `GENRES` | ✅ alignée — `tests/layers-document.test.mjs` compare les deux |
+
+**Trois tests neufs le prouvent, et ils ont été attaqués** : un personnage peut
+DIRE quel training il a (`build.choices[].ref.kind`), la ligne de dépense du pool
+peut le CITER (`resolved.stats[].breakdown[].source.kind`), et `trainng` reste un
+rejet bruyant des deux côtés. Refermer le genre fait rougir l'acceptation ;
+désaligner les deux listes fait rougir la dérive.
 
 📌 `src/tools/gen-srd-layer.mjs` garde **sa propre liste de 14** et ne doit
 **jamais** recevoir `training` : un générateur SRD qui produirait un genre FH
-mélangerait les deux couches (loi §0.12).
+mélangerait les deux couches (loi §0.12). **Vérifié après l'ouverture** — il en
+a toujours 14.
 
-**Si l'énumération n'a pas 16 genres quand tu commences → STOP, préviens
-l'architecte.** Tu travaillerais sur un contrat qui n'existe pas.
+⚠️ **Autre chose a bougé après la rédaction de cette commande** : le
+`tool_choice` du **Soldier** est éteint (`d824599`). Plus **aucun** arrière-plan
+ne donne ni n'offre d'outil, et **aucune source d'outil ne subsiste au niveau 1
+hors du pool**. Si un de tes tests a besoin d'un outil possédé, il doit
+l'**acheter**.
+
+**Ligne de départ à remesurer** : `main` valait `56ea9d1` et **614 verts**.
 
 ---
 
