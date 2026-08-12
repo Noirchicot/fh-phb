@@ -605,5 +605,15 @@
   "display": "🟡 ERIC A DESSINÉ LE BUILDER ET LA FICHE — rangés en texte dans le vault, rien n'est en construction.",
   "ou": "vault `Chantier FH & FHPC/FHV2 - Schémas d'écran.md` (les images restent à déposer).",
   "trois_points_a_trancher": "(1) L'ordre des panneaux dessiné n'est pas celui ratifié le 2026-08-10 — caracs et Destinée passent AVANT espèce et classe. Le moteur s'en moque : sa seule contrainte est qu'aucun pool ne se publie sans record de classe, et Compétences vient bien après Classe. (2) ⭐ « Expert mode: you can see the sheet filling itself » — ce n'est PAS le plan escamotable, c'est la FICHE EN DIRECT à côté du builder. Troisième forme, coût réel. (3) `Story` est à la fin, séparé de l'Inheritance — cohérent avec « optimiser d'abord, raconter ensuite »."
+ },
+ "lots_prepares_2026_08_12": {
+  "date": "2026-08-12",
+  "statut": "📝 COMMANDES ÉCRITES, AUCUN LOT LANCÉ",
+  "display": "📝 DEUX COMMANDES DE LOT PRÊTES — `35-pool-complet` et `36-trainings`. Rien n’est en vol.",
+  "35-pool-complet": "`LOT-35-POOL-COMPLET.md`. Quatre morceaux qui régénèrent tous la même couche : les 36 outils au même barème · le rogue à `expertise_from_level: 1` (correctif de CONTENU, aucune ligne de moteur) · l’arrière-plan éteint (retirer `skill_ids` des 4 records et `tool_id` des 3 qui en portent — ⚠️ le Soldier n’en a pas, un retrait dans le vide doit crier) · le champ `category` à QUATRE valeurs. DÉBLOQUÉ, rien devant lui.",
+  "36-trainings": "`LOT-36-TRAININGS.md`. Séquentiel derrière 35 (même module, même couche régénérée). ⚠️ PRÉALABLE D’ARCHITECTE : ouvrir le genre `training` (15 → 16 genres) dans les DEUX schémas et `src/layers/document.mjs:51`, précédent `arcana` du 2026-08-08. Deux points laissés OUVERTS exprès dans la commande, à valider et non à deviner : la forme du canal (un training n’a pas de palier, il ne peut pas passer par `spend.<slug>`) et son emplacement dans `resolved`.",
+  "le_classement_a_valider": "⛔ La table des 4 catégories (knowledge 8 · social 7 · exploration 6 · physical 5 = 26) est PROPOSÉE par l’architecte et attend la validation d’Eric. Elle est déduite de son schéma de fiche, où `Investigation` apparaît sous Exploration et non sous Knowledge. Le lot 35 ne génère pas avant.",
+  "la_decouverte_de_forme": "⭐ `category` n’a que QUATRE valeurs, pas cinq. La cinquième colonne (`Tools & Trainings`) ne range pas des compétences, elle range un GENRE — poser `category: \"tools\"` sur un outil serait une donnée redondante qui peut diverger de son genre.",
+  "ordre": "35 → 36 → l’étape Compétences refaite. ⚠️ L’écran passe APRÈS les trainings, parce qu’il doit montrer la colonne `Tools & Trainings` complète, même éteinte. Et sa commande ne s’écrit PAS avant le passage étape par étape avec Eric (protocole 2b du 2026-08-10)."
  }
 }
