@@ -177,6 +177,33 @@ fausses **moins de douze heures** après avoir été écrites.
 ⚠️ **Le dépôt a un dépouilleur exprès — `tests/source-scan.mjs` — et ce siège ne
 s'en est pas servi une seule fois de la journée.**
 
+### ⭐ LE CHEMIN DU PERSONNAGE NEUF EXISTE DÉJÀ — trouvé le 2026-08-13
+
+**Le problème apparent** : `rebuild` **refuse** de dériver tant que le personnage
+n'est pas complet — trois portes qui jettent (`level`, puis `class`, puis **les six
+caracs**). D'où le personnage d'**exemple** chargé par `ui/builder/engine.mjs` :
+c'est la seule matière qui survit. Et comme le carnet alimente tous les écrans, ça
+avait l'air circulaire — lister les 12 classes exigerait un `rebuild`, qui exigerait
+déjà une classe.
+
+⭐ **La circularité n'existe pas.** `projectDecisions({ query, choices })`
+(`decisions.mjs:278`) ne demande **ni `resolved`, ni dérivation** — juste la pile et
+les choix — et **il est déjà exporté** (`index.mjs:22`). Vérifié : sur `choices: []`
+il publie `class` (12), `species` (12), `background` (4) ; on pose un Rogue seul et
+ses **4** créneaux apparaissent ; on pose un Araag et son choix suit.
+
+📌 **Ce que ça coûte : rien.** Aucune loi affaiblie, aucun verbe neuf. `rebuild`
+reste strict, il tourne quand les trois portes sont franchies.
+⛔ **Et ce n'est pas le travail du lot 42** — la *forme* du carnet est identique par
+les deux chemins.
+
+**Ce qui reste vraiment troué**, et c'est petit : aucun verbe ne **crée** un document
+vierge (le bloc `doc` a six verbes, pas de `create`), et aucun n'écrit
+`document.name` — ⚠️ et `set` n'est **pas** la réparation : la grammaire des chemins
+de choix est celle d'un *point de décision*, pas d'un champ de document.
+🔴 **Une question de PRODUIT attend Eric** : un brouillon se sauvegarde-t-il ? Le
+schéma exige `resolved` et `doc.save` valide contre lui — donc **non**, aujourd'hui.
+
 ### 👀 ET LA LEÇON NEUVE : REGARDER L'ÉCRAN TROUVE CE QUE LES SUITES NE VOIENT PAS
 
 Eric a demandé à voir le builder. Servi et parcouru, **trois défauts sont apparus
