@@ -737,5 +737,37 @@
   "commande": "fh-phb/LOT-42-ECRANS-RECORDS.md — SHA attendu remis à jour (e2cc7d5 → 8f53c20) avant lancement, et mention ajoutée que le worktree et la branche sont déjà créés par l'architecte.",
   "a_la_fusion": "⚠️ ROUTINE SANS RACCOURCI : lire le diff · rejouer les suites dans un CLONE INDÉPENDANT (avec npm install — piège linkedom) · rebaser · fusion à blanc avant la vraie · suites rejouées APRÈS la fusion · tableau de bord et vault mis à jour. Puis le lot 43 est débloqué.",
   "rappel_sequencement": "⛔ LE LOT 43 NE DÉMARRE QU'APRÈS LA FUSION DU 42 — raison mesurée, pas prudentielle : disabler les 4 arrière-plans SRD rend mort le ref du personnage d'exemple, et un ref mort fait jeter rebuild. C'est le document sur lequel le 42 teste ses deux écrans."
+ },
+ "autonomie_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "🛫 ERIC PASSE LA MAIN — l'architecte mène le builder jusqu'au bout",
+  "display": "🛫 AUTONOMIE ACCORDÉE (Eric, 2026-08-13) — l'architecte commande, lance, fusionne et pousse jusqu'à la fin du builder.",
+  "ce_qui_est_delegue": "Commander les lots, les lancer, les fusionner, et POUSSER main. ⚠️ Le geste de pousser reste celui d'Eric par principe (mandat §2) : il est délégué POUR CETTE TRAVERSÉE, et l'architecte l'annonce à chaque fois.",
+  "ce_qui_ne_l_est_pas": "⛔ LES RÈGLES DE JEU. Une question de règle se DÉCLARE et attend Eric — elle ne se devine pas. Deux sont ouvertes aujourd'hui : le plafond de 18 (voir ci-dessous) et rien d'autre.",
+  "la_correction_faite_a_eric": "Eric a dit « dès que tu vois que la mémoire flanche, tu passes le relais ». L'architecte a répondu qu'il NE PEUT PAS mesurer ça de l'intérieur : ce qui disparaît d'un contexte plein, ce sont les détails, et la confiance reste intacte. Parade adoptée à la place : ÉCRIRE APRÈS CHAQUE FUSION comme si la main se passait au commit suivant (mandat, tableau de bord, vault). La passation n'est jamais un événement, elle est toujours déjà écrite.",
+  "le_chemin_restant": [
+   "🔵 42 `ecrans-records` — EN VOL (Class + Species)",
+   "📄 45 `ecrans-hasard` — écrit, prêt (Caracs + Destinée)",
+   "📄 43 `inheritance-moteur` — écrit, attend la fusion du 42",
+   "→ 46 `ecran-inheritance` — après 43",
+   "→ 47 `document-neuf` — créer + nommer + le schéma de brouillon DÉRIVÉ ; débloque Concept ET Universe",
+   "→ 48 `ecrans-concept-univers` — après 47",
+   "⏸️ 44 `garde-des-copies` — écrit, RANGÉ (préventif, zéro écart mesuré)"
+  ]
+ },
+ "lot_du_hasard_dissous_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "⭐ LE « LOT MOTEUR DU HASARD » N'EXISTE PAS — quatre mesures l'ont dissous",
+  "display": "⭐ LE LOT DU HASARD EST DISSOUS — annoncé dans TROIS passations comme portant « la seule question de contrat de la liste ». Il n'y a pas une ligne de moteur à écrire.",
+  "decision_eric": "⛔ LE LOT DE DIX DÉS NE SURVIT PAS. Seul le résultat compte (Eric, 2026-08-13). Le builder tire, le joueur assigne, et seules les six valeurs finales sont gardées — elles le sont déjà, comme choix abilities.*. AUCUN champ de document pour mémoriser un tirage : pas de graine, pas d'historique.",
+  "les_quatre_mesures": [
+   "set({path:'abilities.str', value:17}) puis rebuild → le score passe de 8 à 17. Les six caracs sont déjà des choix qui marchent.",
+   "choose({path:'fh.destiny.arcana', ref}) puis rebuild → le Score de Destinée passe de 10 à 8 (the-hermit → the-tower). Poser une carte marche déjà de bout en bout.",
+   "AUCUN plan au carnet pour abilities ni fh.destiny — contrairement à Class et Species, ces écrans ne sont PAS servis par decisions[].",
+   "abilities.mode est `unconsumed` — le moteur se moque de la méthode qui a produit les nombres."
+  ],
+  "consequence": "La question de contrat annoncée (« la graine doit-elle être injectable comme l'horloge ? ») N'A PLUS D'OBJET : rien n'est reproduit, donc rien ne diverge. Le lot 45 est un lot d'ÉCRANS.",
+  "regle_ouverte_declaree": "🔴 LE PLAFOND DE 18 RESTE OUVERT, et le lot 45 le DÉCLARE au lieu de le deviner (loi §0.10). Mesuré : abilities.str = 20 passe avec ZÉRO refus. La règle existe (ADDENDUMS §5 n°1) mais porte une question non tranchée : un personnage créé au niveau 5 a des augmentations légitimes, donc « à la création » NE SE DÉDUIT PAS DU NIVEAU, et le moteur ne voit pas un instant — il voit un document. ⚠️ Ça deviendra visible dès que l'écran des caracs existera : un 17 tiré + un boost de +2 fait 19.",
+  "methodes_srd_plus_tard": "⭐ ERIC VEUT AUSSI LES TROIS MÉTHODES CLASSIQUES DU SRD (2026-08-13) : Standard Array, Point Buy, et 4d6 garder les 3 meilleurs × 6. ⛔ PAS MAINTENANT — « ça peut être implémenté plus tard ». MAIS la contrainte entre dans le lot 45 dès maintenant, parce qu'elle coûte zéro à l'écriture et cher à la reprise : LE MODE EST UNE LISTE, PAS UN INTERRUPTEUR. Un tableau de méthodes, chacune avec son nom affiché et sa façon de produire six nombres — pas de `if (mode === \"roll\") … else …`. Ajouter les trois SRD doit coûter une entrée chacune. 📌 Le document a déjà sa place : `abilities.mode` existe comme choix (l'exemple porte \"standard\"). Le lot 45 l'écrit. ⚠️ Il revient `unconsumed` — problème CONNU et suivi (TROU-CHOIX-SANS-TRACE), pas un défaut introduit par le lot."
  }
 }

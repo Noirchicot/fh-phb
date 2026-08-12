@@ -142,16 +142,64 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-13, clôture (relire ceci en premier)
+## 5. L'ÉTAT DU CHANTIER — 2026-08-13, SOIR (relire ceci en premier)
 
-| Dépôt | `main` local | Distant | Suites |
+### 🛫 ERIC A PASSÉ LA MAIN — l'architecte mène le builder jusqu'au bout
+
+**Délégué** : commander, lancer, fusionner, **et pousser `main`**. ⚠️ Pousser reste
+le geste d'Eric par principe (§2) — il est délégué **pour cette traversée**, et
+s'annonce à chaque fois.
+⛔ **PAS délégué : les RÈGLES DE JEU.** Une question de règle se **déclare** et
+attend Eric (loi §0.10). Elle ne se devine jamais, même sous autonomie.
+
+> 📌 **Et la chose qu'un siège ne peut PAS promettre.** Eric a demandé « dès que tu
+> vois que la mémoire flanche, tu passes le relais ». **Ça ne se mesure pas de
+> l'intérieur** : ce qui disparaît d'un contexte plein, ce sont les détails, et la
+> confiance, elle, reste intacte. **Parade adoptée à la place : écrire après chaque
+> fusion comme si la main se passait au commit suivant.** La passation n'est jamais
+> un événement — elle est toujours déjà écrite.
+
+| Dépôt | `main` | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `e2cc7d5` | ⚠️ **en avance — Eric pousse** | **685 vertes** |
-| `~/tools/fh-phb` | *(bouge à chaque entrée)* | ⚠️ **en avance** | — |
+| `~/tools/fhpc` | ⛔ **REMESURE** | à jour au 2026-08-13 soir | **685 vertes** |
+| `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
-✅ **RIEN N'EST EN VOL** — aucun worktree, aucun lot en cours. **Lots 36 à 41
-fusionnés.** L'étape Compétences existe, **et un personnage se regarde**.
+### 🔵 CE QUI EST EN VOL, ET LE CHEMIN JUSQU'AU BOUT
+
+| | Lot | État |
+|---|---|---|
+| 🔵 | **42 `ecrans-records`** | **EN VOL** — worktree `~/tools/fhpc-worktrees/42-ecrans-records`, base verte à 685 vérifiée dedans |
+| 📄 | **43 `inheritance-moteur`** | écrit — ⛔ **attend la FUSION du 42** *(raison mesurée : disabler les arrière-plans tue le `ref` du personnage d'exemple, sur lequel le 42 teste)* |
+| 📄 | **45 `ecrans-hasard`** | écrit — ⛔ **attend la FUSION du 42** : il écrit `shell.mjs`, que le 42 écrit |
+| → | **46 `ecran-inheritance`** | après 43 |
+| → | **47 `document-neuf`** | créer + nommer + le schéma de brouillon **dérivé** ; débloque **Concept ET Universe** |
+| → | **48 `ecrans-concept-univers`** | après 47 |
+| ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |
+
+⚠️ **Mesuré le 2026-08-13 : 7 étapes sur 9 sont encore du placeholder.** Seules
+`skills` et `review` sont branchées dans `shell.mjs`. Le 42 en amènera deux.
+
+### ⭐ LE « LOT MOTEUR DU HASARD » N'EXISTE PAS — dissous le 2026-08-13
+
+Annoncé dans **trois** passations comme portant *« la seule question de contrat de
+la liste »*. **Quatre mesures l'ont dissous** : `set` sur une carac marche déjà
+(8 → 17), `choose` sur une arcane marche déjà (Score 10 → 8), **aucun plan au
+carnet** ne sert ces deux écrans, et `abilities.mode` est **`unconsumed`** — le
+moteur se moque de la méthode qui produit les nombres.
+
+⛔ **Décision d'Eric qui rend ça vrai** : **le lot de dix dés ne survit pas, seul le
+résultat compte.** Donc rien n'est reproduit, donc **la question de la graine
+injectable n'a plus d'objet**.
+
+### 🔴 LA RÈGLE OUVERTE, DÉCLARÉE PLUTÔT QUE DEVINÉE
+
+**Le plafond de 18 en sortie de création.** Mesuré : `abilities.str = 20` passe avec
+**zéro refus**. La règle existe (ADDENDUMS §5 n°1) mais porte une question non
+tranchée : **un personnage créé au niveau 5 a des augmentations légitimes**, donc
+*« à la création »* **ne se déduit pas du niveau** — et le moteur ne voit pas un
+instant, il voit un document. ⚠️ **Ça devient visible dès que l'écran des caracs
+existe** : un 17 tiré + un boost de +2 fait **19**.
 
 ⭐ **UN SEUL SIÈGE D'ARCHITECTE À LA FOIS** *(Eric, 2026-08-13)* : les autres fils
 portent **(retired)**. Un commit que tu n'as pas fait n'est pas une collision —
