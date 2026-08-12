@@ -11,13 +11,17 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 > chemin. **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** (125 Ko,
 > produit v1) — seulement les sections nommées.
 
-> 📌 **REPRISE : lis `PASSATION-2026-08-12.md` juste après ce mandat** — c'est
-> la plus récente. Elle porte l'état à la clôture, **le lot 36 qui est EN VOL**,
-> les règles tranchées ce jour-là, et une erreur structurelle qu'Eric a dû
-> signaler lui-même : **deux de ses documents n'avaient jamais été ouverts.**
-> `PASSATION-2026-08-10.md` reste utile pour ses trois protocoles de travail
-> (règles jamais devinées · étape par étape avec Eric · reconstruire, pas
-> rafistoler) — ils tiennent tous.
+> 📌 **REPRISE : lis `PASSATION-2026-08-12-SOIR.md` juste après ce mandat** —
+> c'est la plus récente. **Rien n'est en vol**, les lots 36 et 37 sont fusionnés,
+> et elle porte la **bible esthétique** née ce soir-là, les quatre erreurs de ce
+> siège, et **la leçon la plus neuve du chantier** : une commande de lot se relit
+> **après chaque mesure**, pas seulement avant le lancement.
+>
+> ⚠️ **Il y a DEUX passations datées du 2026-08-12.** Celle du matin
+> (`PASSATION-2026-08-12.md`) garde son §8 (ce qui surprend dans le code) ; son
+> §7 est **consommé**. `PASSATION-2026-08-10.md` reste utile pour ses trois
+> protocoles de travail (règles jamais devinées · étape par étape avec Eric ·
+> reconstruire, pas rafistoler) — ils tiennent tous.
 
 ## 🥇 AVANT TOUTE RÈGLE DE JEU — la hiérarchie des sources
 
@@ -135,13 +139,16 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-12, soir (relire ceci en premier)
+## 5. L'ÉTAT DU CHANTIER — 2026-08-12, clôture de soirée (relire ceci en premier)
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `56ea9d1` | ✅ à jour | **614 vertes** |
-| `~/tools/fh-phb` | `3ed3119` | ⚠️ **2 commits d'avance** — `git -C ~/tools/fh-phb push origin main` | — |
+| `~/tools/fhpc` | `a423789` | ✅ à jour | **629 vertes** |
+| `~/tools/fh-phb` | `c5b2f93` | ✅ à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
+
+✅ **RIEN N'EST EN VOL** — aucun worktree sur `fhpc`, aucun lot en cours, aucune
+fusion à moitié, `origin` ne porte qu'une branche. **Lots 36 et 37 fusionnés.**
 
 ⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`) : ils ont une
 durée de vie de quelques minutes ici. **Trois lignes de la version précédente de
@@ -149,21 +156,17 @@ ce §5 étaient périmées à la reprise du 2026-08-12** — des commits annonc�
 poussés qui l'étaient, et une branche distante à supprimer déjà supprimée.
 📌 *Une ligne d'état non remesurée est une rumeur.*
 
-**CE QUI EST EN VOL** :
+**CE QUI RESTE OUVERT** :
 
-- 🔴 **Le lot `36-trainings` TRAVAILLE** — worktree
-  `~/tools/fhpc-worktrees/36-trainings`, 4 commits, arbre propre. Sa commande
-  porte **ses deux arbitrages déjà rendus** (§3a `fh.skills.train.<slug>`, §3d
-  `traits[]` + `category`). Ne les rouvre pas.
-- ✅ **Lot `35-pool-complet` FUSIONNÉ** (`ab926c7`) — les 36 outils au même
-  barème, le Rogue à `expertise_from_level: 1` **par une valeur de contenu**,
-  l'arrière-plan éteint, les 26 compétences catégorisées.
-- ✅ **Deux gestes d'architecte** : le `tool_choice` du Soldier éteint
-  (`d824599`) et le **genre `training` ouvert** (`56ea9d1`, seizième genre).
-- ⚠️ **Le worktree de `fh-phb`** existe toujours à `797163d` :
-  les **76 lignes non commitées** de `sync_from_vault.py`, ouvertes depuis le
-  **2026-07-27**, toujours en attente d'Eric.
+- ⚠️ **Le worktree de `fh-phb`** existe toujours à `797163d` : les **76 lignes
+  non commitées** de `sync_from_vault.py`, ouvertes depuis le **2026-07-27**,
+  toujours en attente d'Eric. **Ce n'est pas du ménage, c'est une décision.**
 - ✅ **Aucune branche distante à nettoyer** — `origin` ne porte que `main`.
+
+⛔ **ET AVANT DE TOUCHER UN WORKTREE, REGARDE `git status`.** Le 2026-08-12 au
+soir, ce siège a failli écraser **104 lignes non commitées** d'un lot qui
+travaillait — dernière écriture **51 secondes** plus tôt. Un worktree qui existe
+n'est pas un worktree vide.
 
 ### ✅ LE PASSAGE ÉTAPE PAR ÉTAPE A EU LIEU — 2026-08-12
 
@@ -176,19 +179,29 @@ qui construira l'écran. Ne les redemande pas.
 
 | | Lot | Pourquoi il est là |
 |---|---|---|
-| 1 | **fusionner `36-trainings`** | il est en vol, et il écrit les fichiers du 37 |
-| 2 | `37-pool-garde` | le pool négatif et le « 0 outil » refusés **dans `validate()`** |
-| 3 | `38-jetons-surfaces` | l'échelle et l'inventaire des surfaces, **avant** le gros CSS de l'écran (arbitré par Eric le 2026-08-12) |
-| 4 | `39-etape-competences` | l'écran, sur le §4 du vault |
+| ✅ | ~~`36-trainings`~~ | **fusionné** — la troisième dépense du pool |
+| ✅ | ~~`37-pool-garde`~~ | **fusionné** — le pool ne peut plus finir en dette, et `validate()` lit le carnet |
+| **1** | **`38-jetons-surfaces`** | l'échelle et l'inventaire des surfaces, les valeurs de `PALETTE-FHV2.json`, et les **trois bugs vivants** de la coquille. **Avant** le gros CSS de l'écran (arbitré par Eric) |
+| **2** | **`39-etape-competences`** | l'écran, sur le **§4** du vault `FHV2 - Schémas d'écran` |
 
 Puis : les sept étapes restantes → la fiche → M4.
 
 ⚠️ **Les dettes ENCORE dans le chemin critique** : les caracs `3d6 × 10 keep 6`
 et les cartes de Destinée **tirées** — des **étapes du builder déguisées en
-dettes de règles**. Le **pool négatif** en sort : son comportement est **tranché**
-(toléré pendant la répartition, refusé par `validate()`), il ne reste qu'à
-l'implémenter. ⚠️ Et il était **pire que la passation ne le disait** — remesuré
-le 2026-08-12 : huit dépenses sur un pool de 10 → **−6**, `validate()` `ok: true`.
+dettes de règles**. **Le pool négatif en est sorti** : payé par le lot 37.
+
+### 🐛 LES TROIS BUGS VIVANTS DE LA COQUILLE — pour le lot 38
+
+| Bug | Mesure |
+|---|---|
+| `shell.css:90` et `:110` | `color: #fff` **en dur** sur `var(--accent)` → **2,44:1** en sombre. **Le verbe principal échoue AA aujourd'hui** |
+| `shell.css:112` | lit `--decide`, **jamais défini nulle part** (repli à 3,49:1) |
+| La ceinture à 360 px | **7 places** pour **9 étapes**, et `shell.css:137` **efface les libellés** — de la compression, que le cadre d'Eric interdit |
+
+⚠️ **Et le défaut de fond** : `ui/builder/engine.mjs` monte le moteur **sans
+`modules:`** → `resolved.stats` revient **vide**, donc **l'écran ne voit pas le
+pool du tout**. Avec le module injecté, le même document rend
+`fh:skill-points = 10`.
 
 ### 📐 LA BIBLE ESTHÉTIQUE — chantier ouvert le 2026-08-12
 

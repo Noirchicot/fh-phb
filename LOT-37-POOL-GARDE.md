@@ -4,7 +4,7 @@
 > mécanisme de refus existe déjà et il est **mesuré** ; ce qui manque, ce sont
 > **trois contrôles** qui ne sont écrits nulle part.
 
-**En clair : aujourd'hui, un joueur peut dépenser des points qu'il n'a pas, et
+**En clair : aujourd’hui, un joueur peut dépenser des points qu’il n’a pas, et
 rien ne le lui dit.** Le moteur applique la dépense, le pool passe en négatif, et
 `validate()` répond `ok: true`. Ce lot ferme les trois fuites.
 
@@ -29,9 +29,15 @@ moduleViolations : [{"key":"skill-spend.option-unavailable", …}]
 validate.ok      : false
 ```
 
-→ **un refus keyé rendu par le module fait échouer `validate()`.** Tu n'as donc
-aucun canal à construire : `outcome.violations` → `derive.mjs` → `moduleViolations`
-→ `build.validate`. Tout est en place. Il manque **les trois contrôles**.
+→ **un refus keyé rendu par le MODULE fait échouer `validate()`.** Tu n'as donc
+aucun canal à construire pour les §3a et §3b : `outcome.violations` → `derive.mjs`
+→ `moduleViolations` → `build.validate`. Tout est en place.
+
+⚠️ **Mais l'AUTRE canal, lui, est coupé** — et c'est le §3c. Un refus posé dans le
+**carnet de décisions** (`decisions[].lock`) n'arrive **nulle part** : `validate()`
+ne le lit pas. Deux canaux, un seul branché.
+
+**Il manque donc les trois contrôles.**
 
 ---
 
@@ -58,14 +64,22 @@ chantier, sans exception.
 temps au-dessus avant de redescendre. Un refus dur au clic obligerait à **toujours
 baisser avant de monter**. ⛔ **N'implémente pas un refus au clic.**
 
-### 2b. Où le contrôle vit — ⚠️ ARBITRÉ par l'architecte
+### 2b. Où chaque contrôle vit — ⚠️ ARBITRÉ par l'architecte
 
-**Dans le module** (`src/modules/fh/skill-pool.mjs`), jamais dans `src/build/`.
+**Deux contrôles dans le module, un dans `src/build/`. La frontière n'est pas un
+goût, c'est la loi §0.12** — qui interdit le vocabulaire d'une mécanique de couche
+dans **tout** fichier de `src/build/`, commentaires compris, et que
+`tests/fh-skill-pool.test.mjs` garde **sur les octets**.
 
-Motif, et il n'est pas négociable : la loi **§0.12** interdit le vocabulaire d'une
-mécanique de couche dans **tout** fichier de `src/build/`, commentaires compris — et
-`tests/fh-skill-pool.test.mjs` la garde **sur les octets**. Juger un dépassement
-exige de lire `fh:skill-points` et `tier_costs` : `src/build/` n'a pas le droit.
+| Contrôle | Où | Pourquoi |
+|---|---|---|
+| **§3a** le pool négatif | `src/modules/fh/skill-pool.mjs` | juger un dépassement exige de lire `fh:skill-points` et `tier_costs` — du vocabulaire interdit à `src/build/` |
+| **§3b** au moins un outil | idem | idem |
+| **§3c** `validate()` lit les verrous | **`src/build/`** | un `lock` est un `{key, params, path}` **générique** (lot 27) : aucun nom de mécanique n'est prononcé, la loi n'est pas concernée |
+
+📌 **C'est le test à appliquer chaque fois** : le code doit-il **nommer** une
+mécanique de couche pour faire son travail ? Si oui → module. Si non → `src/build/`
+a le droit, et c'est même là que ça doit vivre quand c'est générique.
 
 ---
 
@@ -107,44 +121,54 @@ pas un moment, il voit un document.** Deux lectures possibles :
 **Applique la seconde**, et écris cet arbitrage en toutes lettres dans ton
 inventaire pour qu'Eric puisse le renverser d'un mot.
 
-### 3c. 🔴 LE BUDGET CAPTIF D'ESPÈCE N'A AUCUN PLAFOND — trouvé le 2026-08-12
+### 3c. 🔴 `validate()` NE VOIT PAS LES VERROUS DU CARNET DE DÉCISIONS
 
-**Ce troisième trou n'était connu de personne**, et il est de la même famille.
-Sonde réelle sur l'Elfe magicien, `Keen Senses` = **2 points captifs** :
+> ⚠️ **CETTE SECTION A ÉTÉ RÉÉCRITE LE 2026-08-12, APRÈS MESURE.** Sa première
+> version demandait d'**ajouter un plafond** au budget captif d'espèce. **C'était
+> faux : le plafond existe déjà.** L'architecte avait conclu d'un
+> `validate().ok === true` que le contrôle manquait, sans regarder le carnet.
+> Conserve cette note : elle dit exactement comment on se trompe ici.
 
-```
-trois paliers PLEINS sur survival, vigilance et delve  →  coût 6 pour un budget de 2
-moduleViolations : []
-validate.ok      : true
-```
-
-- Le total dépensé sur `species.skillBudget.*` ne peut pas dépasser les `points`
-  déclarés par `granted_skill_budget` du record d'espèce.
-- Clef proposée : `species-budget.overspent`, paramètres `{budgetId, points, spent}`.
-- ✅ **Vérifie et garde ce qui est déjà juste** : le budget captif **ne touche pas**
-  `fh:skill-points` (mesuré : le pool principal reste à 10 pendant le dépassement).
-  Ce comportement est **correct**, ne le change pas.
-
-#### ⚠️ Le point qui demande une pièce neuve — ARBITRÉ, mais lis le motif
-
-**Le module ne voit pas ces choix.** Ses `choices` sont bornés à son propre
-namespace (`fh.skills.*`) — il **refuse** bruyamment tout autre `tail`. Or seul le
-module a le droit de **chiffrer un palier** (`tier_costs`, §0.12).
-
-**Arbitrage** : `derive.mjs` assemble les choix `species.skillBudget.*` et les tend
-au module par une **entrée nommée de plus**, sur le modèle d'`imposedSkillSlugs`
-(lot 34) :
+**Le vrai défaut est plus large et se répare plus haut.** Sonde réelle sur l'Elfe
+magicien, `Keen Senses` = 2 points captifs, trois paliers pleins dépensés (coût 6) :
 
 ```
-capturedSpends: [ { slug, tier, path } ]
+decisions[] :
+  species.skillBudget   status=locked  answered=6/2
+    lock = {"key":"skill-budget.overspent","params":{"spent":6,"points":2}, "path":"species.skillBudget"}
+
+validate() : ok = true, violations = []
 ```
 
-`derive.mjs` ne fait que **transporter** — il ne chiffre rien, il ne nomme aucune
-mécanique, et `species.skillBudget` est un chemin qu'il connaît déjà
-(`decisions.mjs` le traite depuis le lot 34). La loi tient.
+**Le refus est produit, keyé, correctement chiffré — et personne ne le lit.**
+`decisions.mjs:251` le pose depuis le lot 34 ; `validate()` ne regarde que ses
+propres contrôles et `moduleViolations`.
 
-⛔ **Si cette forme ne suffit pas à ton implémentation, ARRÊTE et demande.** Ne
-l'élargis pas de ton propre chef : une entrée de module est du contrat.
+#### Ce que tu construis
+
+**`validate()` remonte les verrous du carnet de décisions.** Générique : un `lock`
+est déjà un `{key, params, path}` (lot 27) — **aucun vocabulaire de mécanique n'est
+en jeu**, la loi §0.12 n'est pas concernée, et c'est une poignée de lignes.
+
+⭐ **Et ça ferme bien plus que le budget captif.** Les mêmes verrous, aujourd'hui
+tous invisibles à `validate()` : `skill-budget.option-unavailable`,
+`skill-budget.tier-invalid`, et **tout verrou qu'un plan de décision posera à
+l'avenir**. Un lot qui ajoute un verrou n'aura plus à se demander s'il est lu.
+
+⚠️ **Deux choses à mesurer avant d'écrire, et à rapporter dans ton inventaire :**
+
+1. **Y a-t-il des verrous que `validate()` ne DOIT pas remonter ?** Un plan
+   simplement **incomplet** (une décision pas encore prise) n'est pas une faute —
+   un personnage en cours de construction n'est pas invalide. Distingue
+   `status === "locked"` (une **faute**) d'un simple `answered < expected`.
+   ⛔ **Si la distinction n'est pas nette dans le code, ARRÊTE et demande.**
+2. **Combien de tests existants basculent** quand `validate()` se met à voir ces
+   verrous ? S'il y en a, ce sont des cas qui passaient à tort : nomme-les un par
+   un dans ton inventaire plutôt que de les ajuster en silence.
+
+✅ **Ce qui est déjà juste, ne le change pas** : le budget captif **ne touche pas**
+`fh:skill-points` — mesuré, le pool principal reste à 10 pendant le dépassement.
+C'est le contrat §4e (« un choix accordé par l'espèce est supplémentaire »).
 
 ---
 
@@ -157,12 +181,19 @@ l'élargis pas de ton propre chef : une entrée de module est du contrat.
    bien appliqué dans `resolved` — c'est le comportement 2a, et il se teste.
 4. Un personnage avec **un** outil à ½ : `validate()` passe.
 5. **REJET** : aucun outil à un palier autre que `none` → refus keyé.
-6. Un budget captif dépensé **dans son plafond** : passe, et `fh:skill-points`
-   **ne bouge pas d'un point**.
-7. **REJET** : budget captif dépassé → refus keyé, et **le pool principal reste
-   intact** (les deux bourses ne se contaminent pas).
-8. Un personnage **SRD pur**, sans la couche FH : **rien ne change**, aucun de ces
-   trois refus ne peut apparaître.
+6. Un budget captif dépensé **dans son plafond** : `validate()` passe, et
+   `fh:skill-points` **ne bouge pas d'un point**.
+7. **REJET** : budget captif dépassé → **`validate()` remonte le verrou
+   `skill-budget.overspent` qui existait déjà dans le carnet**, et le pool
+   principal reste intact (les deux bourses ne se contaminent pas).
+8. **REJET, et c'est le test qui prouve la généralité** : un slug hors de la liste
+   captive pose `skill-budget.option-unavailable` dans le carnet → `validate()` le
+   voit aussi, **sans une ligne écrite pour ce cas-là**.
+9. Un plan simplement **incomplet** (une décision pas encore prise) **ne rend pas
+   le document invalide** — un personnage en cours de construction n'est pas une
+   faute.
+10. Un personnage **SRD pur**, sans la couche FH : **rien ne change**, aucun de ces
+    refus ne peut apparaître.
 
 **Deux attaques manuelles minimum**, routine du dépôt : neutralise chaque garde,
 vérifie que le test attendu **et lui seul** rougit, restaure, `diff` byte-à-byte,
@@ -173,10 +204,11 @@ suite complète rejouée.
 ## 5. Ce que tu livres
 
 - Commits réels, arbre propre, SHAs listés, verts au départ **et** à l'arrivée.
-- `INVENTAIRE-LOT-37.md` : tes trois clefs et leurs paramètres, le choix du
-  chemin (ou de son absence) pour `skill-pool.overspent`, **l'arbitrage §3b
-  répété en toutes lettres pour Eric**, et la forme exacte de `capturedSpends`
-  telle que tu l'as implémentée.
+- `INVENTAIRE-LOT-37.md` : tes deux clefs neuves et leurs paramètres, le choix du
+  chemin (ou de son absence) pour `skill-pool.overspent`, **l'arbitrage §3b répété
+  en toutes lettres pour Eric**, la règle exacte que tu as retenue pour distinguer
+  un verrou (**faute**) d'un plan incomplet (**pas une faute**), et **la liste
+  nommée des tests existants qui basculent** — s'il y en a.
 - `contracts/build.md` : les trois contrôles, chacun adossé à son test.
 - ⛔ Aucun `git push`, aucune fusion, et **rien dans `ui/builder/`**.
 
