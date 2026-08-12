@@ -1,0 +1,473 @@
+{
+ "bleu-gris": {
+  "nom": "Bleu gris",
+  "desc": "le chemin qu'Eric privilégie — fond froid, zone chaude libre",
+  "jour": "#E9EDF2",
+  "nuit": "#141A20",
+  "rows": [
+   {
+    "nom": "dalle",
+    "role": "le fond",
+    "jour": "#E9EDF2",
+    "rj": 1.0,
+    "nuit": "#141A20",
+    "rn": 1.0
+   },
+   {
+    "nom": "surface",
+    "role": "cartes, panneaux",
+    "jour": "#DEE2E7",
+    "rj": 1.11,
+    "nuit": "#1B232B",
+    "rn": 1.1
+   },
+   {
+    "nom": "creux",
+    "role": "champs, zones creusées",
+    "jour": "#D4D8DC",
+    "rj": 1.22,
+    "nuit": "#222C36",
+    "rn": 1.24
+   },
+   {
+    "nom": "texte",
+    "role": "le texte",
+    "jour": "#27282A",
+    "rj": 12.55,
+    "nuit": "#D3DBE2",
+    "rn": 12.52
+   },
+   {
+    "nom": "texte-doux",
+    "role": "descriptions",
+    "jour": "#545960",
+    "rj": 6.0,
+    "nuit": "#8F99A2",
+    "rn": 6.05
+   },
+   {
+    "nom": "texte-tenu",
+    "role": "mentions",
+    "jour": "#636A73",
+    "rj": 4.65,
+    "nuit": "#7A848E",
+    "rn": 4.61
+   },
+   {
+    "nom": "bordure-forte",
+    "role": "bordures de contrôle",
+    "jour": "#7E8896",
+    "rj": 3.05,
+    "nuit": "#5F6871",
+    "rn": 3.09
+   },
+   {
+    "nom": "bordure",
+    "role": "bordures de carte",
+    "jour": "#B3C4DA",
+    "rj": 1.51,
+    "nuit": "#33393F",
+    "rn": 1.5
+   },
+   {
+    "nom": "accent",
+    "role": "",
+    "jour": "#906037",
+    "rj": 4.56,
+    "nuit": "#B07643",
+    "rn": 4.61
+   },
+   {
+    "nom": "positive",
+    "role": "",
+    "jour": "#367751",
+    "rj": 4.56,
+    "nuit": "#419163",
+    "rn": 4.55
+   },
+   {
+    "nom": "caution",
+    "role": "",
+    "jour": "#7C690A",
+    "rj": 4.6,
+    "nuit": "#98810C",
+    "rn": 4.57
+   },
+   {
+    "nom": "critical",
+    "role": "",
+    "jour": "#B74533",
+    "rj": 4.56,
+    "nuit": "#DF543E",
+    "rn": 4.57
+   },
+   {
+    "nom": "info",
+    "role": "",
+    "jour": "#3E6DA3",
+    "rj": 4.55,
+    "nuit": "#4B85C6",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Destiny",
+    "role": "",
+    "jour": "#886514",
+    "rj": 4.56,
+    "nuit": "#A67B19",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Guidance",
+    "role": "",
+    "jour": "#406BA8",
+    "rj": 4.6,
+    "nuit": "#4E83CE",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Bardic",
+    "role": "",
+    "jour": "#8557A7",
+    "rj": 4.56,
+    "nuit": "#A26ACB",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Tactical",
+    "role": "",
+    "jour": "#BC4035",
+    "rj": 4.55,
+    "nuit": "#E44E40",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Bonus",
+    "role": "",
+    "jour": "#636A73",
+    "rj": 4.65,
+    "nuit": "#7A848E",
+    "rn": 4.61
+   }
+  ],
+  "on_accent_jour": "#FFFFFF",
+  "on_accent_nuit": "#141A20",
+  "r_on_jour": 5.37,
+  "r_on_nuit": 4.61,
+  "ecart_info_dalle": 1.3
+ },
+ "ardoise": {
+  "nom": "Bleu gris profond",
+  "desc": "même famille, nuit plus dense et jour plus tenu",
+  "jour": "#DFE5EC",
+  "nuit": "#0E1318",
+  "rows": [
+   {
+    "nom": "dalle",
+    "role": "le fond",
+    "jour": "#DFE5EC",
+    "rj": 1.0,
+    "nuit": "#0E1318",
+    "rn": 1.0
+   },
+   {
+    "nom": "surface",
+    "role": "cartes, panneaux",
+    "jour": "#D4DAE1",
+    "rj": 1.11,
+    "nuit": "#151C23",
+    "rn": 1.09
+   },
+   {
+    "nom": "creux",
+    "role": "champs, zones creusées",
+    "jour": "#CBD0D6",
+    "rj": 1.22,
+    "nuit": "#1B242E",
+    "rn": 1.19
+   },
+   {
+    "nom": "texte",
+    "role": "le texte",
+    "jour": "#212224",
+    "rj": 12.55,
+    "nuit": "#CDD5DC",
+    "rn": 12.57
+   },
+   {
+    "nom": "texte-doux",
+    "role": "descriptions",
+    "jour": "#4F545A",
+    "rj": 6.02,
+    "nuit": "#8A949D",
+    "rn": 6.05
+   },
+   {
+    "nom": "texte-tenu",
+    "role": "mentions",
+    "jour": "#5E656E",
+    "rj": 4.65,
+    "nuit": "#768089",
+    "rn": 4.64
+   },
+   {
+    "nom": "bordure-forte",
+    "role": "bordures de contrôle",
+    "jour": "#78828F",
+    "rj": 3.07,
+    "nuit": "#5A636B",
+    "rn": 3.05
+   },
+   {
+    "nom": "bordure",
+    "role": "bordures de carte",
+    "jour": "#ACBDD2",
+    "rj": 1.51,
+    "nuit": "#2F353A",
+    "rn": 1.5
+   },
+   {
+    "nom": "accent",
+    "role": "",
+    "jour": "#895B34",
+    "rj": 4.59,
+    "nuit": "#A97140",
+    "rn": 4.55
+   },
+   {
+    "nom": "positive",
+    "role": "",
+    "jour": "#33714D",
+    "rj": 4.59,
+    "nuit": "#3F8C5F",
+    "rn": 4.56
+   },
+   {
+    "nom": "caution",
+    "role": "",
+    "jour": "#776409",
+    "rj": 4.58,
+    "nuit": "#937C0C",
+    "rn": 4.56
+   },
+   {
+    "nom": "critical",
+    "role": "",
+    "jour": "#AE4231",
+    "rj": 4.57,
+    "nuit": "#D7513C",
+    "rn": 4.56
+   },
+   {
+    "nom": "info",
+    "role": "",
+    "jour": "#3B679B",
+    "rj": 4.6,
+    "nuit": "#4980BF",
+    "rn": 4.55
+   },
+   {
+    "nom": "dé · Destiny",
+    "role": "",
+    "jour": "#816013",
+    "rj": 4.58,
+    "nuit": "#9F7718",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Guidance",
+    "role": "",
+    "jour": "#3D66A0",
+    "rj": 4.59,
+    "nuit": "#4B7FC6",
+    "rn": 4.58
+   },
+   {
+    "nom": "dé · Bardic",
+    "role": "",
+    "jour": "#7F529F",
+    "rj": 4.59,
+    "nuit": "#9D66C4",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Tactical",
+    "role": "",
+    "jour": "#B33D32",
+    "rj": 4.56,
+    "nuit": "#DC4B3E",
+    "rn": 4.55
+   },
+   {
+    "nom": "dé · Bonus",
+    "role": "",
+    "jour": "#5E656E",
+    "rj": 4.65,
+    "nuit": "#768089",
+    "rn": 4.64
+   }
+  ],
+  "on_accent_jour": "#FFFFFF",
+  "on_accent_nuit": "#0E1318",
+  "r_on_jour": 5.82,
+  "r_on_nuit": 4.55,
+  "ecart_info_dalle": 0.2
+ },
+ "parchemin": {
+  "nom": "Parchemin",
+  "desc": "l'héritage du builder v1 — fond chaud, pour comparer",
+  "jour": "#F6F3EC",
+  "nuit": "#14120E",
+  "rows": [
+   {
+    "nom": "dalle",
+    "role": "le fond",
+    "jour": "#F6F3EC",
+    "rj": 1.0,
+    "nuit": "#14120E",
+    "rn": 1.0
+   },
+   {
+    "nom": "surface",
+    "role": "cartes, panneaux",
+    "jour": "#EBE8E1",
+    "rj": 1.1,
+    "nuit": "#1F1C16",
+    "rn": 1.1
+   },
+   {
+    "nom": "creux",
+    "role": "champs, zones creusées",
+    "jour": "#E0DED7",
+    "rj": 1.21,
+    "nuit": "#2A261D",
+    "rn": 1.24
+   },
+   {
+    "nom": "texte",
+    "role": "le texte",
+    "jour": "#2D2C2A",
+    "rj": 12.59,
+    "nuit": "#D8D3C9",
+    "rn": 12.54
+   },
+   {
+    "nom": "texte-doux",
+    "role": "descriptions",
+    "jour": "#605C54",
+    "rj": 6.0,
+    "nuit": "#989286",
+    "rn": 6.05
+   },
+   {
+    "nom": "texte-tenu",
+    "role": "mentions",
+    "jour": "#726D62",
+    "rj": 4.65,
+    "nuit": "#847E71",
+    "rn": 4.64
+   },
+   {
+    "nom": "bordure-forte",
+    "role": "bordures de contrôle",
+    "jour": "#928B7B",
+    "rj": 3.06,
+    "nuit": "#676257",
+    "rn": 3.08
+   },
+   {
+    "nom": "bordure",
+    "role": "bordures de carte",
+    "jour": "#D3C7AD",
+    "rj": 1.51,
+    "nuit": "#37342D",
+    "rn": 1.51
+   },
+   {
+    "nom": "accent",
+    "role": "",
+    "jour": "#956439",
+    "rj": 4.56,
+    "nuit": "#A97140",
+    "rn": 4.56
+   },
+   {
+    "nom": "positive",
+    "role": "",
+    "jour": "#387B54",
+    "rj": 4.59,
+    "nuit": "#3F8C5F",
+    "rn": 4.57
+   },
+   {
+    "nom": "caution",
+    "role": "",
+    "jour": "#816D0A",
+    "rj": 4.59,
+    "nuit": "#927C0C",
+    "rn": 4.55
+   },
+   {
+    "nom": "critical",
+    "role": "",
+    "jour": "#BE4735",
+    "rj": 4.57,
+    "nuit": "#D7513C",
+    "rn": 4.57
+   },
+   {
+    "nom": "info",
+    "role": "",
+    "jour": "#4071A9",
+    "rj": 4.56,
+    "nuit": "#4880BF",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Destiny",
+    "role": "",
+    "jour": "#8D6915",
+    "rj": 4.55,
+    "nuit": "#9F7718",
+    "rn": 4.57
+   },
+   {
+    "nom": "dé · Guidance",
+    "role": "",
+    "jour": "#426FAE",
+    "rj": 4.6,
+    "nuit": "#4B7FC6",
+    "rn": 4.59
+   },
+   {
+    "nom": "dé · Bardic",
+    "role": "",
+    "jour": "#8B5AAD",
+    "rj": 4.55,
+    "nuit": "#9C66C4",
+    "rn": 4.55
+   },
+   {
+    "nom": "dé · Tactical",
+    "role": "",
+    "jour": "#C34237",
+    "rj": 4.56,
+    "nuit": "#DC4B3D",
+    "rn": 4.56
+   },
+   {
+    "nom": "dé · Bonus",
+    "role": "",
+    "jour": "#726D62",
+    "rj": 4.65,
+    "nuit": "#847E71",
+    "rn": 4.64
+   }
+  ],
+  "on_accent_jour": "#FFFFFF",
+  "on_accent_nuit": "#14120E",
+  "r_on_jour": 5.05,
+  "r_on_nuit": 4.56,
+  "ecart_info_dalle": 170.0
+ }
+}
