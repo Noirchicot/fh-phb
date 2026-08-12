@@ -78,9 +78,32 @@ visuelle et d'habillage*.
 
 ⚠️ **360 et 720 sont de nature différente, ne pas les confondre** : **360 px** est
 une largeur de **dessin** ; **720 px** est le **seuil de bascule** de disposition
-(`shell.css:128`, `shell.mjs:66`). Et 360 n'officialise rien d'existant — remesuré :
-le builder v1 n'a **aucun** traitement téléphone, une seule requête média à
-`max-width: 1020px`, sous laquelle il empile ses colonnes. C'est du papier blanc.
+(`shell.css:128`, `shell.mjs:66`).
+
+### 🔴 CE QUI EXISTE DÉJÀ, ET QU'IL FAUT LIRE AVANT DE PROPOSER
+
+**Le dock v1 (produit gelé) porte deux autorités ratifiées qui répondent déjà à
+une partie de la question.**
+
+| Fichier | Ratifié | Ce qu'il porte |
+|---|---|---|
+| `~/tools/fh-phb/UI-DIMENSIONS.md` | 2026-08-02 | référence **425 × 680**, plancher de hauteur **620**, plancher de largeur **360** — les nombres d'une **fenêtre flottante quart d'écran** |
+| `~/tools/fh-phb/UI-TYPOGRAPHY.md` | 2026-08-06 | ⭐ **sept barreaux nommés** : **T1** 6,8 *micro* · **T2** 7,4 *mention* · **T3** 8,4 *libellé* · **T4** 9,6 *corps* · **T5** 11 *accent* · **T6** 13 *titre* · **T7** 30 *grand nombre* — nés de 43 tailles en pas de 0,1 px pour sept intentions |
+
+⛔ **La règle de reprise, écrite dans `CODEX-ASSISTANT.md` et qui fait autorité** :
+*« les **échelles et les noms** se reprennent (typographie, vocabulaire) ; le
+**canevas** ne se reprend pas (425 × 680 est la taille d'une fenêtre flottante,
+le builder est plein écran). En cas de doute, demande au chef. »*
+
+📌 Et `UI-TYPOGRAPHY.md` porte son propre mécanisme : *« The names are shared
+across the dock; the numbers are local to a zone. »* — **les noms voyagent, les
+valeurs sont locales.** Le builder est une zone de plus.
+
+⚠️ `UI-DIMENSIONS.md` dit aussi, ratifié le 2026-08-02 : *« Phones remain
+explicitly out of scope : the mobile interface is a separate project with a
+different logic, not a narrower version of this one. iPad is not "mobile" here. »*
+La base mobile de 360 px du builder v2 est donc une décision **neuve** d'Eric,
+qui reprend un nombre du dock — pas la reconduction de sa doctrine.
 
 ⛔ **La règle d'architecture de l'habillage** : le rendu nu/immersion et les thèmes
 relèvent du **FH overlay**, pas du contenu FH ni du socle SRD. L'overlay peut

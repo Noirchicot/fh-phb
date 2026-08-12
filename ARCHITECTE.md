@@ -211,9 +211,47 @@ et dans `shell.mjs`.
 ⭐ **Une contrainte ratifiée par Eric le 2026-08-12** : la **base mobile est
 360 px** — la largeur sur laquelle on dessine le téléphone. ⚠️ **À ne pas
 confondre avec les 720 px** de `shell.css:128` / `shell.mjs:66`, qui sont un
-**seuil de bascule**, pas une largeur de dessin. Et 360 n'officialise rien
-d'existant : remesuré, le builder v1 n'a **aucun** traitement téléphone (une
-seule requête média, `max-width: 1020px`, sous laquelle il empile ses colonnes).
+**seuil de bascule**, pas une largeur de dessin.
+
+### 🔴 ET LE DOCK v1 PORTE DÉJÀ LA MOITIÉ DE CETTE BIBLE — trouvé le 2026-08-12
+
+**Une affirmation de ce siège a été démentie par la mesure une heure après avoir
+été écrite** : « 360 n'officialise rien d'existant, c'est du papier blanc ».
+**Faux.** `UI-DIMENSIONS.md`, **ratifié le 2026-08-02**, porte les trois nombres
+du dock : référence **425 × 680**, plancher de hauteur **620**, plancher de
+largeur **360**. Les trois nombres qu'Eric « croyait se souvenir » sont exacts —
+ce sont **ceux d'une fenêtre flottante quart d'écran**, pas d'une tablette.
+
+⚠️ **Deux règles écrites encadrent leur reprise, et elles étaient là avant nous :**
+
+1. `CODEX-ASSISTANT.md` — *« les **échelles et les noms** se reprennent
+   (typographie, vocabulaire) ; le **canevas** ne se reprend pas (425 × 680 est
+   la taille d'une fenêtre flottante, le builder est plein écran). En cas de
+   doute, demande au chef. »*
+2. `UI-DIMENSIONS.md` — *« Phones remain explicitly out of scope (Eric,
+   2026-08-02) : the mobile interface is a separate project with a different
+   logic, not a narrower version of this one. iPad is not "mobile" here. »*
+
+⭐ **Et `UI-TYPOGRAPHY.md`, ratifié le 2026-08-06, EST déjà une bible de type** —
+sept barreaux avec leurs noms parlés : **T1** 6,8 *micro* · **T2** 7,4 *mention*
+· **T3** 8,4 *libellé* · **T4** 9,6 *corps* · **T5** 11 *accent* · **T6** 13
+*titre* · **T7** 30 *grand nombre*. Nés de **43 tailles en pas de 0,1 px pour
+sept intentions**. Son ouverture dit mot pour mot le diagnostic d'Eric du
+2026-08-12 : *« Because a size could not be named, it could not be discussed, and
+so it was re-decided every time. »* Et son mécanisme de reprise est écrit :
+*« The names are shared across the dock; the numbers are local to a zone. »* —
+**les noms voyagent, les valeurs sont locales.** Le builder est une zone de plus.
+
+📌 **Ce que ça retire à ce siège** : la recommandation « ratio 1,25, la meilleure
+par la mesure » est **retirée**. Remesurée en **six barreaux** sur la seule plage
+d'interface (≤ 22 px, 72 des 78 déclarations), toutes les valeurs tiennent dans
+**0,05 px** — 1,125 → 0,60 · 1,14 → 0,61 · 1,15 → 0,63 · 1,2 → 0,62 · 1,25 → 0,65.
+**La donnée ne choisit pas le ratio.** Ce qui structure, c'est la forme héritée du
+dock : six barreaux continus **plus un grand nombre à part**.
+
+🔴 **La leçon, et c'est la même que le §5 du 2026-08-12** : ce siège n'ouvre pas
+spontanément les documents d'Eric. `UI-TYPOGRAPHY.md` avait **six jours** et
+répondait déjà à la question posée le soir même.
 
 ### 🔴 CE QUE CE SIÈGE NE FAIT PAS SPONTANÉMENT, ET QU'IL DOIT FAIRE
 
