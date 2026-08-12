@@ -726,18 +726,6 @@
   ],
   "le_taux": "Sur NEUF dettes héritées : 3 déjà payées, 1 mal dite, 1 corrigée en trois mots. QUATRE seulement sont du travail réel. C'est la quatrième fois que ce mandat porte des dettes fausses (l'Épuisement et GAP-BUDGET le 2026-08-09, les imposés d'espèce ce matin)."
  },
- "lot_42_en_vol_2026_08_13": {
-  "date": "2026-08-13",
-  "statut": "🚀 LOT 42 LANCÉ — en vol",
-  "display": "🚀 LOT 42 `ecrans-records` EN VOL — Class + Species. Worktree créé, base verte à 685, agent Sonnet · high délégué.",
-  "worktree": "/Users/Eric/tools/fhpc-worktrees/42-ecrans-records",
-  "branche": "42-ecrans-records, coupée de main à 8f53c20",
-  "base_verifiee": "npm ci fait dans le worktree, npm test rejoué DEDANS : 685 tests, 685 pass, 0 fail. La base est verte avant que le lot touche quoi que ce soit.",
-  "perimetre": "ui/builder/ et tests/ SEULEMENT. Interdit : src/, layers/, schemas/, contracts/. Aucun push, aucune fusion, aucun checkout main.",
-  "commande": "fh-phb/LOT-42-ECRANS-RECORDS.md — SHA attendu remis à jour (e2cc7d5 → 8f53c20) avant lancement, et mention ajoutée que le worktree et la branche sont déjà créés par l'architecte.",
-  "a_la_fusion": "⚠️ ROUTINE SANS RACCOURCI : lire le diff · rejouer les suites dans un CLONE INDÉPENDANT (avec npm install — piège linkedom) · rebaser · fusion à blanc avant la vraie · suites rejouées APRÈS la fusion · tableau de bord et vault mis à jour. Puis le lot 43 est débloqué.",
-  "rappel_sequencement": "⛔ LE LOT 43 NE DÉMARRE QU'APRÈS LA FUSION DU 42 — raison mesurée, pas prudentielle : disabler les 4 arrière-plans SRD rend mort le ref du personnage d'exemple, et un ref mort fait jeter rebuild. C'est le document sur lequel le 42 teste ses deux écrans."
- },
  "autonomie_2026_08_13": {
   "date": "2026-08-13",
   "statut": "🛫 ERIC PASSE LA MAIN — l'architecte mène le builder jusqu'au bout",
@@ -779,5 +767,30 @@
   "3_plafond_de_18": "⭐ L'ÉCRAN PRÉVIENT, LE MOTEUR LAISSE. validate() ne prononce AUCUN refus. Motif : le moteur ne voit pas un instant, il voit un document — un perso créé au niveau 5 a des augmentations légitimes qu'un refus rendrait invalides. Faute de savoir reconnaître « la création », le moteur se tait et la seule surface qui connaît ce moment parle. ⚠️ CONSÉQUENCE ASSUMÉE : un personnage hors règle PEUT sortir du builder. Choix d'Eric, pas un oubli. Porté aux ADDENDUMS §4, et la dette §5 n°1 est CLOSE.",
   "4_le_transport_du_brouillon": "⭐ UN FICHIER EXPORT / IMPORT. Le bloc `doc` a DÉJÀ `export` et `import` — zéro mécanisme neuf. Le joueur télécharge son brouillon et le rouvre ailleurs (mail, iCloud, clé USB, Discord). ⛔ ÉCARTÉ : le code compact à copier-coller façon `FH1.` du builder v1 — Eric a déjà payé une leçon dessus (un code retranscrit à la main = corruption).",
   "consequence_sur_le_chemin": "Le chemin gagne UN LOT (l'Équipement) et en perd zéro. Story reste dehors. Le lot `document-neuf` sait maintenant ce qu'il doit livrer : créer + nommer + le schéma de brouillon DÉRIVÉ + export/import déjà existants."
+ },
+ "lot_42_fusionne_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "✅ LOT 42 FUSIONNÉ — on choisit enfin sa classe et son espèce",
+  "display": "✅ LOT 42 FUSIONNÉ (fhpc cf31ddb, 694 verts). Class + Species existent. 4 étapes sur 9 sont branchées.",
+  "revue": "Sans raccourci. Diff mesuré depuis la BASE COMMUNE (pas main..branche). AUCUN fichier interdit touché — src/, layers/, schemas/, contracts/ intacts. Suites rejouées dans un CLONE INDÉPENDANT avec npm install : 694/694. Fusion à blanc avant la vraie. Suites rejouées APRÈS : 694/694.",
+  "trois_attaques_de_l_architecte": "Sur ce que le lot n'avait PAS attaqué, les trois passent : (1) les noms d'espèces n'apparaissent QUE dans les commentaires — l'écran branche sur la PRÉSENCE du plan, jamais sur le nom (le piège nommé §0.2 de sa commande) ; (2) aucun nombre en dur dans le code des deux écrans ; (3) renderRecordChoice lit plan.options, et query ne sert qu'à traduire un id en nom d'affichage.",
+  "extension_acceptee": "carnet.mjs porte DIX exports au lieu des deux demandés — le lot y a mis les composants partagés (renderPicker, renderSlotQcm, renderRecordChoice). Acceptée : le nom tient (tout y est piloté par le carnet) et dupliquer les pickers aurait violé la loi anti-copie. L'extraction de planAt/violationAt est NEUTRE, vérifiée au diff.",
+  "corrige_par_l_architecte": "`.claude/launch.json` : la config s'appelait `fhpc-builder-lot42`. Renommée `fhpc-builder` — le fichier est permanent, le lot ne l'est pas. Elle reste, parce qu'elle sert la pratique la plus rentable du chantier.",
+  "trouve_par_le_lot_en_regardant": "Un bug CSS qu'aucun test ne voyait : le libellé « Skill 1 » s'écrasait lettre par lettre face au picker à 26 options du Barde. Corrigé par le lot."
+ },
+ "deux_defauts_multiplan_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "🔴 DEUX DÉFAUTS DE `multiPlan` — trouvés en REGARDANT, confiés au lot 43",
+  "display": "🔴 LE MOTEUR PUBLIE UN CRÉNEAU DE TROP ET LE MÊME REFUS DEUX FOIS. Aucun des 694 tests ne le voyait.",
+  "comment_trouve": "L'architecte a servi le builder après la fusion du 42, choisi Magicien (arcana + investigation), puis basculé sur Roublard. L'écran affichait « 1 of 4 chosen » surmonté de CINQ lignes Skill, et le refus « arcana isn't on the catalogue » DEUX fois, dont une au-dessus d'un créneau valide.",
+  "la_mesure_qui_retourne_l_accusation": "⭐ ET C'EST LA LEÇON : l'écran est FIDÈLE, la faute est au moteur. projectDecisions sur class=rogue + skills[0]=arcana + skills[1]=investigation publie : class.skills (expected 4, lock decision.option-unavailable) · class.skills[0] (LE MÊME lock, une 2e fois) · class.skills[1..4] → CINQ créneaux pour expected=4. Croire ses yeux aurait envoyé un lot réparer le mauvais fichier.",
+  "ou_c_est_reparé": "Ajouté au lot 43 (§3e-bis) : c'est son fichier (decisions.mjs), et ouvrir une 3e branche dessus coûterait plus cher. ⚠️ 3e refus émis en double de la semaine — voir aussi background.feat-mismatch."
+ },
+ "deux_lots_en_vol_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "🔵 43 ET 45 EN VOL, EN PARALLÈLE",
+  "display": "🔵 DEUX LOTS EN VOL — 43 (Inheritance moteur) et 45 (écrans Caracs + Destinée). Fichiers disjoints, vérifié.",
+  "disjonction": "43 : layers/, src/build/, examples/, contracts/, tests/. 45 : ui/builder/, tests/. Aucun fichier commun — c'est le test de séquencement d'Eric, appliqué. Les deux worktrees sont coupés de cf31ddb, npm ci fait, base verte à 694 vérifiée dedans.",
+  "apres": "Fusionner 43 puis 45 (ou l'inverse), rebaser le second. Restent ensuite : l'écran Inheritance, document-neuf (créer + nommer + brouillon export/import), les écrans Concept + Universe, et l'ÉQUIPEMENT qu'Eric a ajouté à la ligne d'arrivée."
  }
 }

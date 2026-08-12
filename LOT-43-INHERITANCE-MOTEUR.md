@@ -196,6 +196,44 @@ Destinée reste à 10 et son pool à 10** — les deux ont été mesurés avant 
 (`skill-pool.no-tool`, la règle du lot 37). **Ne le corrige pas sans demander** —
 c'est un arbitrage d'Eric, marqué révocable.
 
+### 3e-bis. 🔴 DEUX DÉFAUTS DE `multiPlan`, trouvés EN REGARDANT L'ÉCRAN
+
+**Ajoutés à ce lot le 2026-08-13**, après la fusion du lot 42 : ils vivent dans
+`decisions.mjs`, **ton fichier**, et ouvrir une troisième branche dessus coûterait
+plus cher que de les prendre au passage.
+
+**Comment ils ont été trouvés** : l'architecte a servi le builder, choisi Magicien
+(`arcana` + `investigation`), puis basculé sur **Roublard**. Aucun des **694** tests
+ne les voyait.
+
+**La mesure**, `projectDecisions` sur `class = rogue`, `class.skills[0] = arcana`,
+`class.skills[1] = investigation` :
+
+| Chemin publié | `expected` | `lock` |
+|---|---|---|
+| `class.skills` *(le groupe)* | **4** | `decision.option-unavailable` |
+| `class.skills[0]` | 1 | **`decision.option-unavailable`** ← le même, une 2ᵉ fois |
+| `class.skills[1]` | 1 | — |
+| `class.skills[2]` · `[3]` · **`[4]`** | 1 | — |
+
+1. 🔴 **CINQ créneaux pour `expected: 4`.** Le compte des créneaux suit les indices
+   déjà occupés au lieu d'être borné par `expected`. À l'écran : *« 1 of 4 chosen »*
+   surmonté de **cinq** lignes `Skill 1…5`.
+2. 🔴 **LE MÊME REFUS DEUX FOIS** — au groupe **et** au créneau fautif. L'écran
+   rend les deux, et le second **se pose au-dessus d'un créneau valide** : une
+   accusation portée contre le mauvais choix. *(C'est la troisième fois de la
+   semaine qu'un refus est émis en double — voir aussi `background.feat-mismatch`,
+   §1b.)*
+
+⛔ **Ne touche pas à l'écran** : il est fidèle, c'est mesuré. **La faute est au
+moteur, la réparation aussi.**
+
+⚔️ **Les deux attaques qui vont avec** :
+- un document dont une classe **plus étroite** succède à une plus large publie
+  **exactement `expected`** créneaux ;
+- un choix devenu invalide produit **un** refus, pas deux — et **aucun créneau
+  valide ne porte le refus d'un autre**.
+
 ### 3f. Le contrat
 
 `contracts/build.md` : la disparition de `background.feat`, l'arrivée de
