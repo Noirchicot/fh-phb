@@ -185,7 +185,7 @@ qui construira l'écran. Ne les redemande pas.
 | | Lot | Pourquoi il est là |
 |---|---|---|
 | ✅ | ~~`36` `37` `38` `39`~~ | **tous fusionnés.** Le pool, son garde, les jetons, l'écran |
-| ⭐ **1** | **`40-review`** | **`render-fiche.mjs` existe déjà avec 27 tests** — il n'y a qu'à le brancher. Premier moment où un personnage **se construit ET se regarde**. Le plus petit lot, celui qui prouve le plus |
+| ⭐ **1** | **`40-review`** | **`render-fiche.mjs` existe déjà avec 20 tests** — il n'y a qu'à le brancher. Premier moment où un personnage **se construit ET se regarde**. Le plus petit lot, celui qui prouve le plus |
 | **2** | les quatre étapes « choisir un record » | Concept · Class · Species · **Inheritance** *(à renommer — l'arrière-plan n'existe plus)* |
 | **3** | **le lot moteur du HASARD** | 🔴 rien ne tire les dés ni les cartes. ⚠️ **Il pose la seule question de contrat de la liste** — voir la passation §8 |
 | **4** | `Universe & Layers` | la seule qui touche la persistance ; elle peut attendre |

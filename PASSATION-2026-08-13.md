@@ -26,7 +26,7 @@
 
 | | |
 |---|---|
-| `fhpc` `main` | **`cbfd853`**, **662 verts**, arbre propre, ⚠️ **en avance sur le distant** |
+| `fhpc` `main` | **`7b8ecc1`**, **670 verts**, arbre propre, ⚠️ **en avance sur le distant** |
 | `fh-phb` `main` | voir `git rev-parse` — ⚠️ **en avance sur le distant** |
 | `fh-srd` | `20c6598`, à jour |
 | Échéance | **7 novembre 2026 — 86 jours** |
@@ -57,7 +57,7 @@ collision : va lire ce qu'il contient.
 
 ---
 
-## 3. 🔴 LES QUATRE ERREURS DE CE SIÈGE — et la première est la plus instructive
+## 3. 🔴 LES CINQ ERREURS DE CE SIÈGE — et trois sont la même
 
 **Toutes mesurées, toutes corrigées. Le taux est le vrai signal.**
 
@@ -73,8 +73,14 @@ collision : va lire ce qu'il contient.
    `git merge -F -` ne lit pas stdin, la fusion a échoué **en silence**. Seule la
    remesure l'a vue.
 4. **J'ai balayé le mauvais objet** en cherchant les jetons non définis : mon
-   `grep` comptait les occurrences **dans les commentaires**. Le dépôt a un
-   dépouilleur exprès pour ça (`tests/source-scan.mjs`) — je ne m'en suis pas servi.
+   `grep` comptait les occurrences **dans les commentaires**.
+5. **J'ai compté 27 tests là où il y en a 20** : mon `grep -c "test("` comptait
+   **sept appels de regex `.test(...)`**. Le lot 40 l'a démenti.
+
+🔴 **Les n° 4 et 5 sont la MÊME faute que la n° 1, sous un autre visage** :
+chercher une sous-chaîne **sans l'ancrer**, dans un domaine dont c'est justement
+le vocabulaire. **Le dépôt a un dépouilleur exprès — `tests/source-scan.mjs` — et
+ce siège ne s'en sert toujours pas.**
 
 📌 **La forme est toujours la même et elle se renouvelle indéfiniment : mesurer le
 mauvais objet.** La parade qui a marché à chaque fois : **remesurer quand le
@@ -121,8 +127,9 @@ d'**affichage** (loi §0.13) — **le record garde son nom SRD**.
 
 | | |
 |---|---|
-| **La teinte de la rampe des paliers** | le lot 38 l'a calculée en **28°**, soit **exactement la teinte de l'accent** : la pastille *expertise* et le bouton *Continue* porteraient la même couleur pour dire deux choses différentes. La bible §6b veut que la rampe ordinale ait **sa** teinte, ce qui libère vert/ambre/rouge pour le statut. **Un changement de valeur, donc une ligne.** |
-| **Le FH overlay** | objet du produit, ou simple jeu de valeurs ? S'il porte images, textures et identité de campagne, c'est un **conteneur** — et il ressemble alors au homebrew, dont la forme est déjà tranchée (une liste de pointeurs). **À trancher avant de dessiner l'immersion.** |
+| ~~**La teinte de la rampe**~~ | ✅ **TRANCHÉE — violet 270°**, Eric ayant délégué le choix. Critère : **la rampe ne doit porter aucune valence** (elle dit « plus », pas « mieux »). Appliquée, `fhpc` `7b8ecc1` |
+| ~~**Le FH overlay**~~ | ✅ **TRANCHÉ — c'est un JEU DE VALEURS** *(Eric : « Oui valeurs »)*. Il ne sort pas du dépôt, donc aucune question de cycle de vie ne se pose. **Et ça ne ferme rien** : les jetons SONT le mécanisme d'ouverture |
+| 🔴 **La fiche est BILINGUE** — question neuve du lot 40 | le chrome est anglais, mais les **raisons que le moteur écrit** (`underived[].reason`) restent en **français**, verbatim. La loi §0.13 tenue à la lettre produit une page en deux langues. **Acceptable pour le 7 novembre, ou faut-il un lot moteur ?** |
 | **La cible tactile à 360 px** | à 24 px de pastille, **61 libellés sur 62** passent ; à 44 px (la cible tactile), **43 sur 62** se coupent. Le seul arbitrage réel est **entre la taille de la cible et la longueur du libellé** — la troisième voie (la rampe sur sa propre ligne) ne renonce à ni l'un ni l'autre et paie en **hauteur**, la seule ressource qu'une page qui défile a sans limite |
 
 📌 **Le simulateur 360 px répond à la troisième sans arithmétique** : il rend les
@@ -162,7 +169,7 @@ d'**affichage** (loi §0.13) — **le record garde son nom SRD**.
 
 | | Étape | Ce qu'il lui faut |
 |---|---|---|
-| ⭐ **1** | **Review** | ⭐ **`render-fiche.mjs` existe déjà, avec 27 tests** — il n'y a qu'à le brancher. **Premier moment où un personnage se construit ET se regarde**. Le plus petit lot, celui qui prouve le plus |
+| ⭐ **1** | **Review** | ⭐ **`render-fiche.mjs` existe déjà, avec 20 tests** — il n'y a qu'à le brancher. **Premier moment où un personnage se construit ET se regarde**. Le plus petit lot, celui qui prouve le plus |
 | 2 | **Concept · Class · Species · Inheritance** | même forme : choisir un record, poser son QCM chez elle. ⚠️ **Inheritance** est à renommer — l'arrière-plan n'existe plus en FH |
 | 3 | **Le lot moteur du HASARD** | 🔴 **rien ne tire les dés ni les cartes.** `3d6 × 10 keep 6` et le tirage de Destinée n'existent nulle part |
 | 4 | **Universe & Layers** | la seule étape qui touche la persistance — elle peut attendre |

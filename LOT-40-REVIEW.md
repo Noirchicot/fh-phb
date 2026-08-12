@@ -6,7 +6,7 @@
 **En clair : aujourd'hui on peut construire un personnage, mais on ne peut pas le
 regarder.** L'étape *Review* est encore un texte de remplacement, alors que
 `src/tools/render-fiche.mjs` sait rendre la fiche complète depuis des mois et
-porte **27 tests**. Ce lot les met en présence. **Ce sera le premier moment où un
+porte **20 tests**. Ce lot les met en présence. **Ce sera le premier moment où un
 personnage se construit ET se regarde.**
 
 **Worktree** : `~/tools/fhpc-worktrees/40-review`
@@ -24,7 +24,7 @@ et seulement pour le §3b. Si tu crois devoir toucher autre chose : **STOP, dema
 
 | | |
 |---|---|
-| `src/tools/render-fiche.mjs` | `render(document, report)` — **27 tests verts** dans `tests/render-fiche.test.mjs` |
+| `src/tools/render-fiche.mjs` | `render(document, report)` — **20 tests verts** dans `tests/render-fiche.test.mjs` |
 | Ce qu'il rend | **les 21 rubriques obligatoires** de `resolved`, chaque valeur **avec son chemin**, chaque rubrique vide **avec la raison du moteur**, et `stats[]` **terme par terme** |
 | Sa loi, déjà gardée | ⚔️ *« un total mensonger s'affiche MENTEUR »* — **l'écran ne recalcule pas**, il montre ce que le moteur dit |
 | `ui/builder/engine.mjs` | monte les modules FH depuis le lot 38 : `resolved.stats` porte `fh:skill-points` **et** `fh:destiny` |
@@ -78,7 +78,7 @@ traduis pas en place** — le français reste, il sert au rendu d'outil.
 | | |
 |---|---|
 | **Zéro design sur cette étape** | une page qui défile, pas d'onglet. Le tri « ça reste visible / ça part derrière un onglet » est **un geste d'Eric**, plus tard, **devant la page** |
-| **L'écran ne recalcule rien** | c'est la loi que les 27 tests gardent déjà. ⛔ Ne l'affaiblis pas |
+| **L'écran ne recalcule rien** | c'est la loi que les 20 tests gardent déjà. ⛔ Ne l'affaiblis pas |
 | **Les mots d'interface sont en anglais** | Eric, 2026-08-10 |
 | **Rien ne se cache** | une rubrique vide **dit sa raison**. ⛔ Pas de rubrique masquée « parce que c'est plus joli » |
 
