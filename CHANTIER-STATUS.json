@@ -792,5 +792,46 @@
   "display": "🔵 DEUX LOTS EN VOL — 43 (Inheritance moteur) et 45 (écrans Caracs + Destinée). Fichiers disjoints, vérifié.",
   "disjonction": "43 : layers/, src/build/, examples/, contracts/, tests/. 45 : ui/builder/, tests/. Aucun fichier commun — c'est le test de séquencement d'Eric, appliqué. Les deux worktrees sont coupés de cf31ddb, npm ci fait, base verte à 694 vérifiée dedans.",
   "apres": "Fusionner 43 puis 45 (ou l'inverse), rebaser le second. Restent ensuite : l'écran Inheritance, document-neuf (créer + nommer + brouillon export/import), les écrans Concept + Universe, et l'ÉQUIPEMENT qu'Eric a ajouté à la ligne d'arrivée."
+ },
+ "huit_reponses_eric_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "✅ HUIT RÉPONSES D'ERIC — deux rounds, avant son départ. Plus rien ne l'attend.",
+  "display": "✅ ERIC A RÉPONDU À 8 QUESTIONS BLOQUANTES. La route dépasse maintenant le builder : déploiement, puis la fiche jouable, puis AboveVTT.",
+  "round_2": {
+   "5_surface_de_jeu": "⭐ LA FICHE V2 NEUVE — la décision Q1 du 2026-08-07 TIENT. La fiche du lot 40 (qui rend déjà les 21 rubriques) devient interactive, plus les jets et le tray. Le dock v1 reste gelé, en repli. ⚠️ GROS CHANTIER APRÈS LE BUILDER, et il est sur la route du 7 novembre.",
+   "6_acces_des_joueurs": "🔴 LE BUILDER V2 DOIT ÊTRE EN LIGNE SUR LE SITE PHB. Conséquence de « chaque joueur sur sa machine ». ⚠️ LE DÉPLOIEMENT EST LE GESTE D'ERIC, jamais celui de l'architecte (mandat §2, et deploy_pages.sh le porte dans son en-tête). 🔴 GAP MESURÉ : rien ne publie le builder v2 aujourd'hui — sync_from_vault.py vise les pages v1 (builder et roller). C'est un chantier à part, à prévoir AVANT que les joueurs puissent s'en servir, donc avec de la marge sur le 7 novembre.",
+   "7_la_bourse": "✅ 50 PO, arbitrage RATIFIÉ. Le nombre hérite de l'option B des quatre arrière-plans SRD supprimés.",
+   "8_ordre_apres_le_builder": "⭐ LA FICHE JOUABLE D'ABORD, AboveVTT ENSUITE. Motif d'Eric : sans surface de jeu, la table ne joue pas, même avec des persos parfaits."
+  },
+  "round_1_rappel": {
+   "1_ligne_arrivee": "Les 9 étapes + ÉQUIPEMENT. Story = 2 modes (narratif assisté par IA / texte libre optionnel), aucun ne bloque la fin du builder.",
+   "2_dons_origine": "Les CINQ de catégorie `origin`, Magic Initiate compris.",
+   "3_plafond_18": "L'écran prévient, le moteur laisse. Un perso hors règle PEUT sortir du builder — assumé.",
+   "4_transport_brouillon": "Un fichier export/import. Le code compact façon FH1. est écarté."
+  },
+  "consequence_sur_les_priorites": "🔴 « CHAQUE JOUEUR SUR SA MACHINE » CHANGE L'ORDRE DES PRIORITÉS : le 360 px, le brouillon qui voyage et les MESSAGES D'ERREUR LISIBLES PAR QUELQU'UN QUI NE CONNAÎT PAS LE SYSTÈME passent devant le confort. Cinq machines inconnues, cinq joueurs qui n'ont pas lu les ADDENDUMS.",
+  "universe_and_layers": "⭐ DEUX PILES AUJOURD'HUI (SRD pur / SRD + Fate's Hand), GESTION COMPLÈTE DES COUCHES APRÈS TOUT LE CHANTIER. L'étape n'est donc pas triviale, mais elle n'est pas non plus le chantier complet : un vrai petit lot.",
+  "round_3": {
+   "9_regle_bloquante_en_l_absence_d_eric": "⭐ POUVOIR D'ARBITRAGE ACCORDÉ (Eric, 2026-08-13) : si un lot bute sur une règle non tranchée, L'ARCHITECTE TRANCHE et MARQUE RÉVOCABLE. ⚠️ LE CADRE, que l'architecte s'impose pour ne pas en abuser : (1) la décision prend la valeur la PLUS PROCHE des règles déjà écrites d'Eric — on hérite, on n'invente pas (patron : la bourse à 50 PO hérite de l'option B des arrière-plans supprimés) ; (2) elle s'écrit dans la page ADDENDUMS avec la mention « ARBITRAGE D'ARCHITECTE, RÉVOCABLE D'UN MOT » et sa date ; (3) elle porte le MOTIF, pas seulement la valeur ; (4) elle est REMONTÉE à Eric au retour, jamais laissée à trouver. 📌 Précédents validés par Eric : le minimum outil (lot 37) et la bourse à 50 PO — les deux ont tenu.",
+   "10_changement_de_classe": "🔴 EFFACE, MAIS DEMANDE D'ABORD. Change ce que le lot 42 vient de livrer : aujourd'hui, changer de classe LAISSE les anciennes compétences verrouillées avec leur refus (choix de l'architecte à la revue, motivé par « le retour arrière sans perte »). Eric tranche autrement : les choix devenus invalides s'EFFACENT, APRÈS CONFIRMATION. ⚠️ CONSÉQUENCE : ce sera la PREMIÈRE boîte de dialogue du builder — il n'en a aucune. Elle doit donc être un COMPOSANT RÉUTILISABLE dès sa naissance (même leçon que « le mode est une liste, pas un interrupteur ») : d'autres écrans en auront besoin. ⛔ PAS pour le lot 45 (il est en vol sur ui/builder/, collision). À FOLDER DANS LE LOT 46 (écran Inheritance), qui est le prochain lot ui/."
+  }
+ },
+ "la_route_complete_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "🗺️ LA ROUTE COMPLÈTE VERS LE 7 NOVEMBRE — elle dépasse le builder",
+  "display": "🗺️ LA ROUTE : finir le builder → le DÉPLOYER (geste d'Eric) → la fiche v2 jouable → AboveVTT.",
+  "1_builder": [
+   "🔵 43 inheritance-moteur — EN VOL",
+   "🔵 45 ecrans-hasard — EN VOL",
+   "→ 46 ecran-inheritance (après 43) + LA CONFIRMATION D'EFFACEMENT au changement de classe (composant réutilisable)",
+   "→ 47 document-neuf : créer + nommer + brouillon export/import",
+   "→ 48 ecrans-concept-univers (Universe = choix entre DEUX piles)",
+   "→ 49 equipement : le paquet de la classe + 50 PO",
+   "⏸️ 44 garde-des-copies — rangé, préventif"
+  ],
+  "2_deploiement": "🔴 GESTE D'ERIC, jamais celui de l'architecte. GAP MESURÉ : rien ne publie le builder v2 aujourd'hui — sync_from_vault.py vise les pages v1 (builder et roller). L'architecte PRÉPARE le chemin de publication et tend la commande ; Eric l'exécute. À faire AVEC MARGE : cinq joueurs doivent pouvoir s'en servir avant le 7 novembre.",
+  "3_fiche_jouable": "La fiche v2 devient interactive (jets + tray) sur le moteur v2. Décision Q1, confirmée le 2026-08-13. Gros chantier.",
+  "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
+  "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne."
  }
 }
