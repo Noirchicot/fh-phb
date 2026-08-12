@@ -28,8 +28,49 @@ en anglais »**. Ce lot fait dire au moteur des **identifiants**, et laisse les 
 | **Le document est PROPRE** | ⭐ **zéro chaîne française** dans le `fh-char/1` rendu. Un personnage exporté n'emporte pas un mot de français — **c'est le point qui comptait le plus, et il est déjà bon** |
 | Où le français vit | **`underived[]` seul.** Sur le personnage d'exemple : **19 entrées, 19 en français** |
 | Les autres carnets | `unconsumed` 3 · `shadowed` 0 · `warnings` 0 · `diff` 1 · `decisions` 13 — **zéro français dans les cinq** |
-| Les producteurs | **56 appels de `underived.declare(`**, tous dans `src/build/derive.mjs` — compté **avec un motif ancré**, pas une sous-chaîne |
-| Le collecteur | `class Underived` — `derive.mjs:163`, `declare(field, reason)` pousse `{field, reason}` |
+| Les producteurs | 🔴 **77 sites sur QUATRE fichiers** — voir la correction ci-dessous |
+| Le collecteur | `class Underived` — `derive.mjs:163`. ⚠️ **Mais les modules FH n'y passent pas** : ils poussent dans le tableau directement |
+
+### 🔴 CORRECTION DU 2026-08-13 — le lot a démenti cette commande AVANT d'écrire
+
+**La première version disait « 56 appels, tous dans `src/build/derive.mjs` ». C'est
+faux.** Le lot a refusé de travailler et a remesuré ; l'architecte a vérifié :
+
+| Fichier | `declare` | `push` | relais local | Total |
+|---|---|---|---|---|
+| `src/build/derive.mjs` | 56 | — | 1 | **57** |
+| `src/build/skills.mjs` | 1 | — | 2 | **3** |
+| `src/modules/fh/destiny-stat.mjs` | — | **8** | — | **8** |
+| `src/modules/fh/skill-pool.mjs` | — | **11** | — | **11** |
+| | | | | **77** |
+
+📌 **La faute de l'architecte, et elle est plus fine que les précédentes** : le
+motif était **bien ancré** (`underived.declare(`) mais posé sur **une seule
+orthographe du producteur**. Les modules écrivent `underived.push({field, reason})`
+et `skills.mjs` passe par un relais local. **J'ai mesuré les ÉCRIVAINS au lieu du
+CARNET** — alors que la bonne mesure avait été faite en premier (balayer le carnet
+rendu) avant d'être abandonnée pour un `grep`.
+
+⚠️ **Et ce n'est pas cosmétique** : **6 des 19 entrées** du personnage d'exemple
+viennent des **modules FH**. S'arrêter aux 58 sites de `src/build/` livrerait un
+carnet **encore un tiers français** sur le personnage même que cette commande cite
+en référence — et les tests §4.4 et §4.5 ne pourraient pas passer.
+
+⭐ **DÉCISION D'ARCHITECTE : on étend aux 77 sites, les quatre fichiers.**
+
+### ✅ ET LA PROPOSITION DU LOT SUR LE §3d EST ACCEPTÉE
+
+**Un seul mécanisme, en deux étages** — c'est la stratification que le chantier
+utilise déjà, et elle respecte §0.12 sans exemption :
+
+| Étage | Où | Ce qu'il porte |
+|---|---|---|
+| **générique** | `src/labels.mjs` | les clefs de `derive.mjs` + `skills.mjs` (58 sites) |
+| **FH** | `src/modules/fh/labels.mjs` *(il existe déjà)* | les clefs des deux modules (19 sites) |
+
+⛔ **Jamais de compilation croisée vers `src/build/`** : les deux tables se
+**composent au point de lecture**, une par langue. `src/build/` ne doit importer
+aucun mot d'une mécanique de couche — c'est la loi §0.12, gardée sur les octets.
 
 ### ⚠️ ET `underived` EST AU CONTRAT, à deux endroits
 
@@ -81,11 +122,11 @@ gagner la compatibilité gratuitement ; si non, **dis pourquoi**.
 `Underived.declare(field, reason)` devient `declare(field, key, params)`, et une
 entrée devient `{field, key, params}`.
 
-⚠️ **Les 56 sites ne font pas 56 clefs.** **Mesure d'abord** : plusieurs disent la
+⚠️ **Les 77 sites ne font pas 77 clefs.** **Mesure d'abord** : plusieurs disent la
 même chose sur des champs différents (« aucun genre `X` dans la pile », « le
 record ne porte pas `Y` »). **Groupe-les par ce qu'elles DISENT, paramètre ce qui
 change**, et **écris le compte final dans ton inventaire** — clefs distinctes
-contre 56 sites.
+contre les 77 sites.
 
 **Nommage** : préfixe `underived.`, puis la nature du manque, jamais le champ —
 `underived.kind-absent`, `underived.record-field-missing`, … Le **champ** est déjà
@@ -144,7 +185,7 @@ attendu **et lui seul** rougit, restaure, `diff` byte-à-byte, suite rejouée.
 ## 5. Ce que tu livres
 
 - Commits réels, arbre propre, SHAs, verts au départ **et** à l'arrivée.
-- `INVENTAIRE-LOT-41.md` : **le compte des clefs distinctes contre les 56 sites**,
+- `INVENTAIRE-LOT-41.md` : **le compte des clefs distinctes contre les 77 sites**,
   et **comment tu as groupé** · le sort du `toString` du lot 27 (repris ou non,
   et pourquoi) · **la liste nommée des tests qui basculent** · ta réponse au §3d
   (un mécanisme de mots ou deux ?).
