@@ -725,5 +725,17 @@
    "🔴 La grandeur « moyenne » — 1140 : ZÉRO occurrence dans tout ui/ et src/. 720 n'existe qu'une fois, le @media de shell.css:187, et c'est voulu (lot 38)."
   ],
   "le_taux": "Sur NEUF dettes héritées : 3 déjà payées, 1 mal dite, 1 corrigée en trois mots. QUATRE seulement sont du travail réel. C'est la quatrième fois que ce mandat porte des dettes fausses (l'Épuisement et GAP-BUDGET le 2026-08-09, les imposés d'espèce ce matin)."
+ },
+ "lot_42_en_vol_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "🚀 LOT 42 LANCÉ — en vol",
+  "display": "🚀 LOT 42 `ecrans-records` EN VOL — Class + Species. Worktree créé, base verte à 685, agent Sonnet · high délégué.",
+  "worktree": "/Users/Eric/tools/fhpc-worktrees/42-ecrans-records",
+  "branche": "42-ecrans-records, coupée de main à 8f53c20",
+  "base_verifiee": "npm ci fait dans le worktree, npm test rejoué DEDANS : 685 tests, 685 pass, 0 fail. La base est verte avant que le lot touche quoi que ce soit.",
+  "perimetre": "ui/builder/ et tests/ SEULEMENT. Interdit : src/, layers/, schemas/, contracts/. Aucun push, aucune fusion, aucun checkout main.",
+  "commande": "fh-phb/LOT-42-ECRANS-RECORDS.md — SHA attendu remis à jour (e2cc7d5 → 8f53c20) avant lancement, et mention ajoutée que le worktree et la branche sont déjà créés par l'architecte.",
+  "a_la_fusion": "⚠️ ROUTINE SANS RACCOURCI : lire le diff · rejouer les suites dans un CLONE INDÉPENDANT (avec npm install — piège linkedom) · rebaser · fusion à blanc avant la vraie · suites rejouées APRÈS la fusion · tableau de bord et vault mis à jour. Puis le lot 43 est débloqué.",
+  "rappel_sequencement": "⛔ LE LOT 43 NE DÉMARRE QU'APRÈS LA FUSION DU 42 — raison mesurée, pas prudentielle : disabler les 4 arrière-plans SRD rend mort le ref du personnage d'exemple, et un ref mort fait jeter rebuild. C'est le document sur lequel le 42 teste ses deux écrans."
  }
 }

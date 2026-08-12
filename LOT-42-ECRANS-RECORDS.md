@@ -11,7 +11,9 @@ Compétences du lot 39 — **le carnet publie déjà la liste des 12 classes, ce
 
 **Worktree** : `~/tools/fhpc-worktrees/42-ecrans-records`
 **Branche** : `42-ecrans-records`, coupée de `main` — **remesure**
-(`git -C ~/tools/fhpc rev-parse --short main`, attendu ≈ `e2cc7d5`).
+(`git -C ~/tools/fhpc rev-parse --short main`, attendu ≈ `8f53c20`).
+⚠️ *Le worktree et la branche sont **déjà créés** par l'architecte : tu travailles
+dedans, tu ne les crées pas.*
 ⛔ **Jamais `main`, jamais de `git push`.**
 **Départ** : `npm ci` puis `npm test`, **écris le nombre** (attendu : **685**).
 
