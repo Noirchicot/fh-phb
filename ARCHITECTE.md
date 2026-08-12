@@ -225,8 +225,37 @@ les deux chemins.
 vierge (le bloc `doc` a six verbes, pas de `create`), et aucun n'écrit
 `document.name` — ⚠️ et `set` n'est **pas** la réparation : la grammaire des chemins
 de choix est celle d'un *point de décision*, pas d'un champ de document.
-🔴 **Une question de PRODUIT attend Eric** : un brouillon se sauvegarde-t-il ? Le
-schéma exige `resolved` et `doc.save` valide contre lui — donc **non**, aujourd'hui.
+
+#### ⭐ ET LE BROUILLON EST TRANCHÉ — Eric, 2026-08-13
+
+**Un personnage à moitié construit doit pouvoir VOYAGER d'un appareil à l'autre.**
+*(Question posée dans sa forme utile : ce n'était pas « peut-on sauvegarder un
+brouillon », c'était « où vit-il ».)*
+
+| Piste | Verdict |
+|---|---|
+| Le brouillon vit dans l'interface | ❌ **écartée par Eric** — il ne voyagerait pas |
+| Rendre `resolved` **facultatif** dans `fh-char/1` | ⛔ **refusée par l'architecte** : ça casse la loi la plus forte du format — *un personnage joue sans ses couches, et le dit* |
+| ⭐ **Un schéma de brouillon** | ✅ **RETENUE** — petit, séparé, `fh-char/1` intact |
+
+⚠️ **ET LA CONTRAINTE QUI VA AVEC, parce qu'un brouillon est `fh-char/1` MOINS
+`resolved`** : deux schémas presque identiques, donc **deux copies d'une règle**, et
+la loi du dépôt est qu'elles divergent sauf si quelque chose les compare.
+
+⛔ **Le schéma de brouillon se DÉRIVE de `fh-char/1`, il ne s'écrit pas à côté.** Le
+patron existe déjà dans le code, avec sa loi : `readFromSchema(schema, route)`
+(`src/doc/schema.mjs:312`) — *« ce bloc lit sa règle dans le schéma et n'en invente
+aucune (loi §0.10) »*, et `contracts/doc.md:45` dit la même chose du bloc `doc` :
+*« il GÉNÈRE sa liste blanche à partir de lui : aucune règle n'est recopiée en
+code »*.
+
+📌 **Et la graduation est gratuite** : dès que `rebuild` réussit, `resolved` apparaît
+et le document valide `fh-char/1` **sans conversion**. Un brouillon ne se
+« transforme » pas — il **franchit les trois portes**.
+
+⏳ **Pas encore commandé, et c'est voulu** : la persistance est le **dernier** des
+quatre chantiers de la liste. Le commander avant que 42 et 43 aient tourné, ce
+serait écrire une commande qui se périme.
 
 ### 👀 ET LA LEÇON NEUVE : REGARDER L'ÉCRAN TROUVE CE QUE LES SUITES NE VOIENT PAS
 
