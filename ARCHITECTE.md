@@ -12,9 +12,10 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 > produit v1) — seulement les sections nommées.
 
 > 📌 **REPRISE : lis `PASSATION-2026-08-13.md` juste après ce mandat** — c'est la
-> plus récente. **Rien n'est en vol**, les lots 38 et 39 sont fusionnés,
-> **l'étape Compétences existe**, et elle porte les **quatre erreurs de ce siège**
-> — dont la plus instructive : *un arrondi comparé à une limite*.
+> plus récente. **Rien n'est en vol**, les **lots 36 à 41 sont fusionnés**,
+> l'étape Compétences existe, **un personnage se construit ET se regarde**, et les
+> persos sont anglais jusque dans les refus du moteur. Elle porte les **sept
+> erreurs de ce siège** et les **deux règles de mesure** qui en sortent.
 >
 > ⭐ **Et sa leçon la plus rentable** : les deux meilleures pièces de conception de
 > la journée venaient des **artefacts d'Eric**, pas du raisonnement de l'architecte.
@@ -145,21 +146,44 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `cbfd853` | ⚠️ **en avance — Eric pousse** | **662 vertes** |
+| `~/tools/fhpc` | `e2cc7d5` | ⚠️ **en avance — Eric pousse** | **685 vertes** |
 | `~/tools/fh-phb` | *(bouge à chaque entrée)* | ⚠️ **en avance** | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
-✅ **RIEN N'EST EN VOL** — aucun worktree, aucun lot en cours, aucune fusion à
-moitié. **Lots 36, 37, 38 et 39 fusionnés. L'étape Compétences existe.**
+✅ **RIEN N'EST EN VOL** — aucun worktree, aucun lot en cours. **Lots 36 à 41
+fusionnés.** L'étape Compétences existe, **et un personnage se regarde**.
 
-⭐ **UN SEUL SIÈGE D'ARCHITECTE EST ACTIF À LA FOIS** *(Eric, 2026-08-13)* : tous
-les autres fils portent la mention **(retired)**. Si tu mesures un commit que tu
-n'as pas fait, ce n'est pas un siège concurrent — **va lire ce qu'il contient**.
+⭐ **UN SEUL SIÈGE D'ARCHITECTE À LA FOIS** *(Eric, 2026-08-13)* : les autres fils
+portent **(retired)**. Un commit que tu n'as pas fait n'est pas une collision —
+**va lire ce qu'il contient**.
 
-⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`). **Deux lignes de
-la version précédente de ce §5 étaient fausses moins de douze heures après avoir
-été écrites.** 📌 *Une ligne d'état non remesurée est une rumeur — y compris celle
-d'il y a une heure.*
+⛔ **REMESURE CES SHA.** Deux lignes de la version précédente de ce §5 étaient
+fausses **moins de douze heures** après avoir été écrites.
+
+### 🔴 LES DEUX RÈGLES DE MESURE QUE CE SIÈGE A PAYÉES LE 2026-08-13
+
+**Sept erreurs en une journée, dont SIX de la même famille.** Les deux règles :
+
+> **1. Arrondir est un geste d'AFFICHAGE, jamais de comparaison.**
+> *(Un contraste arrondi à 2 décimales : `2,9959` passait pour `3,00` — 14 valeurs
+> fausses dans la palette.)*
+>
+> **2. Quand on cherche « qui produit X », la mesure fiable est X LUI-MÊME, pas
+> ses écrivains.**
+> *(Un motif BIEN ANCRÉ mais sur une seule orthographe du producteur : 56 sites
+> annoncés, 77 réels. Et la bonne mesure avait été faite EN PREMIER avant d'être
+> abandonnée pour un `grep`.)*
+
+⚠️ **Le dépôt a un dépouilleur exprès — `tests/source-scan.mjs` — et ce siège ne
+s'en est pas servi une seule fois de la journée.**
+
+### 👀 ET LA LEÇON NEUVE : REGARDER L'ÉCRAN TROUVE CE QUE LES SUITES NE VOIENT PAS
+
+Eric a demandé à voir le builder. Servi et parcouru, **trois défauts sont apparus
+qu'aucune des 684 assertions ne voyait** — dont **une faute dans le garde lui-même**
+(son motif matchait `white` dans `white-space`) et **le titre de la fiche cassé
+sans qu'un seul test rougisse**. 📌 **Sers le builder et regarde-le** : trois lignes
+de config, et ça vaut une relecture complète.
 
 **CE QUI RESTE OUVERT** :
 
