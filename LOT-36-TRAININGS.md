@@ -84,17 +84,16 @@ sans toucher une ligne de code.
 
 ## 3. Ce que tu construis
 
-### 3a. Le canal
+### 3a. Le canal — ✅ ARBITRÉ le 2026-08-12
 
 Un training s'achète, il ne se « monte » pas. **N'essaie pas de le faire entrer
 dans `fh.skills.spend.<slug>`** : ce canal porte un **palier** en valeur, et un
 training n'en a pas. Un canal qui accepterait `"proficient"` sur un objet sans
 palier serait un mensonge de forme.
 
-**Propose ta forme et fais-la valider** avant de coder — c'est un point de
-contrat. La direction de l'architecte : un chemin propre au module,
-`fh.skills.train.<slug>`, valeur booléenne ou absente ; le refus est nommé pour
-tout le reste, comme `spend.*` le fait déjà.
+⭐ **ACCORDÉ : `fh.skills.train.<slug>`**, valeur booléenne ou absente. Tout
+autre chemin de ce namespace reste un refus qui le **nomme**, comme `spend.*` le
+fait déjà. Ce n'est plus une direction : c'est la forme retenue, tu peux coder.
 
 ### 3b. Le coût, dans le détail du pool
 
@@ -108,28 +107,71 @@ Avant le niveau autorisé : **refus keyé**, avec la raison et le niveau requis
 dans les `params` — l'interface doit pouvoir peindre un bouton éteint **et dire
 pourquoi**, sans analyser une phrase. Même famille que `skill-spend.tier-locked`.
 
-### 3d. Où un training vit dans `resolved`
+### 3d. Où un training vit dans `resolved` — ✅ ARBITRÉ le 2026-08-12
 
 ⛔ **Pas dans `resolved.skills[]` ni dans `resolved.tools[]`** — il n'a ni
 palier ni bonus, et l'y mettre forcerait tout lecteur à tester un champ pour
-savoir ce qu'il tient. **Propose l'emplacement à l'architecte** : c'est une
-rubrique de `resolved`, donc du contrat. Regarde d'abord si `resolved.traits[]`
-ou `resolved.resources[]` disent déjà ce qu'il faut, avant de demander une
-rubrique neuve — §0.6, pas de vocabulaire mort.
+savoir ce qu'il tient.
+
+⭐ **ACCORDÉ : `resolved.traits[]`, avec un champ neuf `category: "training"`.**
+Pas de rubrique neuve.
+
+**Les trois raisons, dans l'ordre de leur poids :**
+
+1. ⭐ **`resolved` est la fiche JOUABLE, pas l'historique des transactions.** Le
+   prix est déjà tracé **deux fois** — la décision dans `build.choices[]`, la
+   ligne de coût dans le `breakdown` du pool. Le remettre dans `traits[]` en
+   ferait une **troisième copie**.
+2. Une rubrique de plus ferait passer `resolved` de **21 à 22 clefs
+   obligatoires**, que toute interface, tout export et tout lecteur MCP
+   devraient désormais connaître.
+3. Le contrat de `traits[]` dit **déjà** « Aptitudes, dons, traits d'espèce ».
+   Un training rentre dans la phrase telle qu'elle est écrite.
+
+**La forme du champ, précisément :**
+
+| | |
+|---|---|
+| Nom | `category` |
+| Obligatoire ? | **non** — les traits d'espèce restent sans catégorie |
+| Valeurs | énumération **fermée**, **une seule** aujourd'hui : `training` |
+| Type | un **identifiant**, jamais un mot affichable (§0.13). L'écran affiche « Apprentissages » |
+
+⛔ **Ne catégorise PAS les traits existants.** Inventer une taxonomie qu'Eric n'a
+pas demandée serait improviser (§0.10). Une valeur inconnue est un **rejet
+bruyant** — `additionalProperties: false` gouverne déjà ces items.
+
+📌 **Acheté ou octroyé : aucun champ de plus.** `traits[]` porte déjà `source`
+(aujourd'hui « Elf » ; une maîtrise d'arme portera « Fighter »), et ce qui a été
+*payé* se lit dans le carnet `decisions` et dans la ligne de coût.
 
 ### 3e. Le contenu initial
 
-⛔ **La liste est à fournir par Eric, elle ne s'invente pas.** Ce qui est connu
-au moment de la rédaction : **une langue supplémentaire (1 pt)**, **les armes
-exotiques**, **le Garrot (1 pt)**.
+⛔ **La liste est à fournir par Eric, elle ne s'invente pas.**
 
-⚠️ Deux réserves mesurées, à porter à l'architecte plutôt qu'à trancher :
-- **il n'existe aucun genre `language`** dans la pile — une « langue
-  supplémentaire » ne se résout aujourd'hui contre rien, et `languages[]` du
-  document est un choix libre de slug ;
-- **le Garrot appartient à `Silent Blade`**, une sous-classe qui n'est pas
-  construite et dont le genre n'est pas ouvert. Le training peut exister sans
-  elle — mais la gratuité au niveau 3 attendra.
+✅ **Ce qu'Eric a tranché depuis la rédaction de cette commande** — la catégorie
+`training` ne dit pas « payé », elle dit **« su, sans chiffre »** :
+
+| Ce qui est un apprentissage | |
+|---|---|
+| armes exotiques · le Garrot (1 pt) | achetés |
+| **maîtrises d'armes et d'armures** | ⭐ **octroyées, jamais achetées** — et mesuré : le moteur n'en porte **aucune** aujourd'hui, ni rubrique ni champ. Les loger ici évite **deux** rubriques de plus |
+| Dark Rituals | achetés, barème par niveau — ⚠️ **hors périmètre de ce lot**, voir ci-dessous |
+
+⚠️ **LES LANGUES FONT EXCEPTION — ne les déplace pas.** `resolved.languages[]`
+existe déjà (`{id, name, note}`) et fonctionne. Le training est le **droit**
+acheté ; la langue choisie reste dans `languages[]`. Y toucher mettrait la même
+langue à deux endroits.
+
+📌 **La cinquième colonne assemble donc TROIS rubriques** — `tools[]`,
+`languages[]`, et les `traits[]` de catégorie `training`. C'est le travail de
+l'écran, pas le tien.
+
+⛔ **HORS PÉRIMÈTRE DE CE LOT** — tu poses le **mécanisme**, pas le contenu :
+- **les Dark Rituals** — leurs prérequis nomment des sous-classes (`Moonkeeper`,
+  `Land Druid`) et le genre `subclass` n'existe pas ; leur exécution est M4 ;
+- **le Garrot gratuit au niveau 3** — il appartient à `Silent Blade`, non
+  construite. Le training peut exister sans elle.
 
 ---
 
@@ -162,7 +204,11 @@ complète rejouée.
 - `contracts/build.md` : la troisième dépense du pool, sa forme, son verrou.
 - ⛔ Aucun `git push`, aucune fusion, **et ne touche pas `ui/builder/`**.
 
-**Deux points de cette commande sont explicitement ouverts** — la forme du canal
-(§3a) et l'emplacement dans `resolved` (§3d). **Fais-les valider, ne les
-tranche pas seul.** Trois lots de ce chantier ont corrigé leur architecte en
-refusant de deviner ; c'est le comportement attendu.
+✅ **LES DEUX POINTS OUVERTS SONT ARBITRÉS** (2026-08-12) — la forme du canal
+(§3a : `fh.skills.train.<slug>`, booléen) et l'emplacement dans `resolved`
+(§3d : `traits[]` + `category` fermée). **Tu peux coder les deux.**
+
+⛔ **Mais la règle ne change pas pour la suite** : toute décision que cette
+commande ne couvre pas → **STOP, question à l'architecte**. Trois lots de ce
+chantier ont corrigé leur architecte en refusant de deviner ; c'est le
+comportement attendu, pas un incident.
