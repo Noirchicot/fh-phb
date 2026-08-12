@@ -143,9 +143,14 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `a423789` | ✅ à jour | **629 vertes** *(recomptées)* |
-| `~/tools/fh-phb` | `91e8f01` | ✅ à jour | — |
+| `~/tools/fhpc` | `f556f6e` | ⚠️ **en avance** — Eric pousse | **650 vertes** *(rejouées après la fusion du lot 38)* |
+| `~/tools/fh-phb` | `7476fa5` + non commité | ⚠️ **en avance** | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
+
+⭐ **UN SEUL SIÈGE D'ARCHITECTE EST ACTIF À LA FOIS** *(Eric, 2026-08-13)* : tous les
+autres fils portent la mention **(retired)**. Si tu mesures un commit que tu n'as pas
+fait, ce n'est pas un siège concurrent — c'est un fil retiré ou Eric lui-même.
+**Ne déclenche pas d'alerte de collision ; regarde ce que le commit contient.**
 
 ✅ **RIEN N'EST EN VOL** — aucun worktree sur `fhpc`, aucun lot en cours, aucune
 fusion à moitié. **Lots 36 et 37 fusionnés.** **La commande du lot 38 est écrite et
@@ -168,6 +173,26 @@ durée de vie de quelques minutes ici. **Deux lignes de la version précédente 
    `fh-phb` porte **14 branches** (historiques du dock gelé, sans danger).
 
 📌 *Une ligne d'état non remesurée est une rumeur — y compris celle d'hier soir.*
+
+### 🟠 EN VOL — lot 39 `etape-competences`
+
+Worktree `~/tools/fhpc-worktrees/39-etape-competences`, branche coupée de `main` à
+`f556f6e`, base mesurée **650 vertes**. Commande : `LOT-39-ETAPE-COMPETENCES.md`.
+⛔ **`git status` avant tout geste sur ce worktree.**
+
+### 🔴 LA DETTE DES « 76 LIGNES » N'EXISTAIT PAS — mesuré le 2026-08-13
+
+**Trois passations l'ont recopiée comme une décision qui attendait Eric.** La
+mesure : la fonctionnalité est sur `main` depuis le **2026-08-02** (`106782f`,
+*« Inject the site shell into the two tool pages during sync »*, +76 −7), le bloc
+d'injection est **identique à l'octet**, et le worktree avait **0 ligne** que `main`
+n'a pas — il en avait **89 de moins**. C'était une copie **en retard**, pas en
+avance. Worktree retiré, branche conservée, **rien archivé** : une archive plus
+vieille que `main` est un faux document.
+
+📌 **C'est le troisième cas du jour où une ligne recopiée tombe à la mesure.**
+*Une dette recopiée n'est pas une dette vérifiée* — c'est écrit plus bas dans ce
+fichier depuis le 2026-08-09, et ça ne suffit pas : il faut le **faire**.
 
 **CE QUI RESTE OUVERT** :
 
@@ -194,8 +219,8 @@ qui construira l'écran. Ne les redemande pas.
 |---|---|---|
 | ✅ | ~~`36-trainings`~~ | **fusionné** — la troisième dépense du pool |
 | ✅ | ~~`37-pool-garde`~~ | **fusionné** — le pool ne peut plus finir en dette, et `validate()` lit le carnet |
-| **1** | **`38-jetons-surfaces`** | 📄 **commande écrite le 2026-08-13** : `LOT-38-JETONS-SURFACES.md`. L'échelle, l'inventaire des surfaces, les valeurs de `PALETTE-FHV2.json` **recalculées** (§5b de la bible), les **trois bugs vivants** et **le garde qui rougit** si un nombre en dur revient. **Avant** le gros CSS de l'écran (arbitré par Eric) |
-| **2** | **`39-etape-competences`** | l'écran, sur le **§4** du vault `FHV2 - Schémas d'écran` |
+| ✅ | ~~`38-jetons-surfaces`~~ | **fusionné le 2026-08-13** (`f556f6e`, 650 verts) — `tokens.css`, l'échelle T1–T7, les trois bugs vivants payés, et **un garde d'octets sur `shell.css`** attaqué 5 fois par le lot puis 3 fois par la revue |
+| 🟠 | **`39-etape-competences`** | **EN VOL** — l'écran, sur le **§4** du vault `FHV2 - Schémas d'écran`. Commande : `LOT-39-ETAPE-COMPETENCES.md` |
 
 Puis : les sept étapes restantes → la fiche → M4.
 
@@ -234,6 +259,19 @@ reste la même : remesurer sur l'objet réel.
 **sur `creux`** (celui qui est garanti) au lieu du contraste sur la dalle. Teinte
 inchangée à **2,1°** près, les trois séparations ratifiées tenues, `on-accent`
 passé de 5,05/4,56 à **6,07/5,62**. Chaque jeton porte maintenant **deux** ratios.
+
+### 🔴 ET LA CORRECTION ELLE-MÊME AVAIT UNE FAUTE — trouvée par le lot 38
+
+**La boucle de recalcul comparait un contraste ARRONDI À DEUX DÉCIMALES à son
+seuil**, donc `2,9959` passait pour `3,00`. Le lot 38 l'a mesuré sur deux jetons et
+— n'ayant pas autorité sur la palette — a **abaissé ses propres seuils en écrivant
+les chiffres en clair** plutôt que de les arrondir en silence. **C'était le bon
+geste.** Remesuré en comparaison **exacte**, la faute portait sur **quatorze
+valeurs** des trois familles ; le garde n'en voyait que deux, celles que le builder
+câble. Corrigé, et les deux seuils du garde sont **redevenus nominaux**.
+
+📌 **La leçon, et elle est générale : ne compare jamais un arrondi à une limite.**
+Arrondir est un geste d'**affichage**.
 
 📌 **La demande a été faite AVANT d'écrire**, pas après : un siège ne réécrit pas
 en silence un document qu'Eric a signé — même quand la correction honore le propre

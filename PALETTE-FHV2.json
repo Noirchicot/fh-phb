@@ -58,21 +58,21 @@
    {
     "nom": "texte-tenu",
     "role": "mentions",
-    "jour": "#595F67",
-    "rj": 5.48,
+    "jour": "#595E66",
+    "rj": 5.55,
     "nuit": "#8A939B",
     "rn": 5.61,
-    "rj_creux": 4.5,
+    "rj_creux": 4.55,
     "rn_creux": 4.54
    },
    {
     "nom": "bordure-forte",
     "role": "bordures de contrôle",
-    "jour": "#707B8A",
-    "rj": 3.65,
+    "jour": "#707A89",
+    "rj": 3.69,
     "nuit": "#6B757F",
     "rn": 3.74,
-    "rj_creux": 3.0,
+    "rj_creux": 3.03,
     "rn_creux": 3.02
    },
    {
@@ -150,20 +150,20 @@
     "role": "",
     "jour": "#395F96",
     "rj": 5.49,
-    "nuit": "#6493D4",
-    "rn": 5.56,
+    "nuit": "#6593D4",
+    "rn": 5.57,
     "rj_creux": 4.51,
-    "rn_creux": 4.5
+    "rn_creux": 4.51
    },
    {
     "nom": "dé · Bardic",
     "role": "",
-    "jour": "#764D94",
-    "rj": 5.48,
-    "nuit": "#AE7DD2",
-    "rn": 5.56,
+    "jour": "#764D93",
+    "rj": 5.49,
+    "nuit": "#AE7ED2",
+    "rn": 5.6,
     "rj_creux": 4.5,
-    "rn_creux": 4.5
+    "rn_creux": 4.53
    },
    {
     "nom": "dé · Tactical",
@@ -178,11 +178,11 @@
    {
     "nom": "dé · Bonus",
     "role": "",
-    "jour": "#595F67",
-    "rj": 5.48,
+    "jour": "#595E66",
+    "rj": 5.55,
     "nuit": "#8A939B",
     "rn": 5.61,
-    "rj_creux": 4.5,
+    "rj_creux": 4.55,
     "rn_creux": 4.54
    }
   ],
@@ -322,11 +322,11 @@
    {
     "nom": "info",
     "role": "",
-    "jour": "#345B8A",
-    "rj": 5.5,
+    "jour": "#345B89",
+    "rj": 5.51,
     "nuit": "#5B8DC5",
     "rn": 5.39,
-    "rj_creux": 4.5,
+    "rj_creux": 4.51,
     "rn_creux": 4.53
    },
    {
@@ -342,22 +342,22 @@
    {
     "nom": "dé · Guidance",
     "role": "",
-    "jour": "#365A8E",
-    "rj": 5.5,
-    "nuit": "#5C8BCC",
-    "rn": 5.35,
+    "jour": "#365A8D",
+    "rj": 5.51,
+    "nuit": "#5D8BCC",
+    "rn": 5.36,
     "rj_creux": 4.5,
-    "rn_creux": 4.5
+    "rn_creux": 4.51
    },
    {
     "nom": "dé · Bardic",
     "role": "",
     "jour": "#70488C",
     "rj": 5.53,
-    "nuit": "#A675CA",
-    "rn": 5.35,
+    "nuit": "#A676CA",
+    "rn": 5.39,
     "rj_creux": 4.52,
-    "rn_creux": 4.5
+    "rn_creux": 4.53
    },
    {
     "nom": "dé · Tactical",
@@ -456,11 +456,11 @@
    {
     "nom": "bordure-forte",
     "role": "bordures de contrôle",
-    "jour": "#857E6E",
-    "rj": 3.64,
+    "jour": "#847D6E",
+    "rj": 3.69,
     "nuit": "#746F62",
     "rn": 3.73,
-    "rj_creux": 3.0,
+    "rj_creux": 3.04,
     "rn_creux": 3.01
    },
    {
@@ -486,11 +486,11 @@
    {
     "nom": "positive",
     "role": "",
-    "jour": "#326E4B",
-    "rj": 5.46,
+    "jour": "#326D4B",
+    "rj": 5.53,
     "nuit": "#469D6A",
     "rn": 5.6,
-    "rj_creux": 4.5,
+    "rj_creux": 4.55,
     "rn_creux": 4.51
    },
    {
@@ -528,10 +528,10 @@
     "role": "",
     "jour": "#7D5D13",
     "rj": 5.5,
-    "nuit": "#B2851B",
-    "rn": 5.58,
+    "nuit": "#B3851B",
+    "rn": 5.6,
     "rj_creux": 4.53,
-    "rn_creux": 4.5
+    "rn_creux": 4.51
    },
    {
     "nom": "dé · Guidance",
@@ -556,11 +556,11 @@
    {
     "nom": "dé · Tactical",
     "role": "",
-    "jour": "#AE3B31",
-    "rj": 5.46,
+    "jour": "#AD3B31",
+    "rj": 5.5,
     "nuit": "#E1675B",
     "rn": 5.61,
-    "rj_creux": 4.5,
+    "rj_creux": 4.53,
     "rn_creux": 4.52
    },
    {
