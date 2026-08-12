@@ -177,6 +177,30 @@ fausses **moins de douze heures** après avoir été écrites.
 ⚠️ **Le dépôt a un dépouilleur exprès — `tests/source-scan.mjs` — et ce siège ne
 s'en est pas servi une seule fois de la journée.**
 
+### 🧾 L'AUDIT DES DETTES — les NEUF remesurées une par une le 2026-08-13
+
+⛔ **Ce tableau REMPLACE les listes de dettes du §5-0 et de la passation §7.** Elles
+avaient été recopiées sans remesure, et **quatre lignes sur neuf étaient fausses ou
+mal dites**. Chaque ligne ci-dessous porte la mesure qui la prouve — refais-la avant
+d'agir dessus.
+
+| Dette | Verdict | La mesure |
+|---|---|---|
+| Le verbe `clear{path}` | ✅ **PAYÉE** | `contracts/build.md:55` et `block.mjs:209`. `shell.mjs` s'en sert déjà (le *Reset* du lot 39) |
+| `violations` en clefs | ✅ **PAYÉE** | `buildViolation` / `buildViolationList` (`validate.mjs`), forme `{key, params, path}` |
+| Les imposés d'espèce | ✅ **RETIRÉE** | tranchée par Eric le **2026-08-09**, implémentée par le lot 24 — elle réclamait une décision déjà prise |
+| « les **vingt** clefs de `resolved` » | ✅ **CORRIGÉE ce jour** | le schéma en compte **21**. `contracts/build.md:202` et `:820` corrigés, 685 verts. ⚠️ *Ne touche pas au « vingt-six » de la ligne 522 : c'est le compte des compétences, et il est juste* |
+| **Le barème captif en dur** | 🔴 **VRAIE** | `{half:1, proficient:2}` à **`decisions.mjs:211`** et **`derive.mjs:670`** *(la passation disait 665 — la ligne a dérivé)*, alors que le contenu déclare déjà `tier_costs` **par classe** (`fh-skills-source.mjs:370`). Dormant tant que les 12 classes partagent le barème — **mesuré : c'est toujours le cas** |
+| **L'attribution hors document** | 🔴 **VRAIE, jamais construite** | `derive.mjs:1211`, `:1222`, `:1231` *(la passation disait 1091-1096)* : `base`, `dex` et `acBonus` sont nommés, puis jetés dans `resolved.ac`. Déclarée « prête » le 2026-08-09 |
+| **Le garde des copies** | 🔴 **VRAIE** | `grep -rln "fh-skill-builder" tests/ src/` → **rien**. Les 22 arcanes ne sont confrontées à aucune copie |
+| **`state.character` : document ou `resolved` ?** | 🔴 **VRAIE** | `session.mjs:203` et `:207` lisent `ch.savingProficiencies` et `ch.pb` ; `modules/fh/index.mjs:130-132` lit `destinyBuild.score`, puis `build.destinyFeats.score`, puis `ch.pb` — **trois noms de champs v1** |
+| **La grandeur « moyenne »** | 🔴 **VRAIE** | **`1140` : zéro occurrence** dans tout `ui/` et `src/`. `720` n'existe qu'**une** fois, le `@media` de `shell.css:187`, et c'est voulu (lot 38) |
+| **Le moment `mount`** | ⚠️ **MAL DITE** | « vocabulaire mort » est **faux** : `mount` est une **phase déclarée** dans 3 types de jet (`rolltypes.mjs:84`, `:95`, `:118`) et **posée comme état** (`session.mjs:829`). Ce qui est vrai, et rien de plus : **`run("mount")` n'est appelé nulle part** |
+
+📌 **Le taux, et c'est lui le signal** : sur neuf dettes héritées, **trois étaient
+déjà payées**, **une était mal dite**, **une s'est corrigée en trois mots**. Quatre
+seulement sont du travail réel. *Une dette recopiée n'est pas une dette vérifiée.*
+
 ### ⭐ LE CHEMIN DU PERSONNAGE NEUF EXISTE DÉJÀ — trouvé le 2026-08-13
 
 **Le problème apparent** : `rebuild` **refuse** de dériver tant que le personnage
