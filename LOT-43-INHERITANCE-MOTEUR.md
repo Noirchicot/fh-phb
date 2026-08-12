@@ -8,7 +8,7 @@
 parmi Acolyte / Criminal / Sage / Soldier. L'étape s'appelle **Inheritance** et
 elle pose deux choses, **toutes deux libres** : un **don d'origine** au choix, et
 **3 points de caractéristiques** sur n'importe quelles caractéristiques (+2/+1 ou
-+1/+1/+1). *(Eric, 2026-08-14.)*
++1/+1/+1). *(Eric, 2026-08-13.)*
 
 Aujourd'hui le moteur fait l'inverse : il **réclame** un arrière-plan, il **dicte**
 le don, et il **contraint** les caracs à trois clefs. Ce lot renverse ça.
@@ -25,7 +25,7 @@ le 42 aura ajouté).
 
 ---
 
-## 0. Ce qui EXISTE — mesuré le 2026-08-14, ne le refais pas
+## 0. Ce qui EXISTE — mesuré le 2026-08-13, ne le refais pas
 
 ### 0.1 Les trois plans, et d'où ils viennent
 
@@ -84,7 +84,7 @@ builder charge à chaque ouverture, et **celui sur lequel le lot 42 teste ses de
 
 ## 1. ⚖️ CE QUE L'ARCHITECTE A TRANCHÉ — et les pistes qu'il a écartées
 
-> **Ces quatre points sont des décisions de contrat, rendues le 2026-08-14. Tu peux
+> **Ces quatre points sont des décisions de contrat, rendues le 2026-08-13. Tu peux
 > les contredire par la mesure — mais pas par le goût.**
 
 ### 1a. La couche FH livre **UN** record d'Inheritance, non choisi
@@ -139,7 +139,7 @@ vérifie **à la fin**, pas sur les boosts seuls. Mesuré qu'un 24 passe aujourd
 
 | | |
 |---|---|
-| 🥇 La règle | vault `Chantier FH & FHPC/FHV2 - ADDENDUMS (source n°1).md` **§4** *(réécrit le 2026-08-14)* et **§5 n°8** |
+| 🥇 La règle | vault `Chantier FH & FHPC/FHV2 - ADDENDUMS (source n°1).md` **§4** *(réécrit le 2026-08-13)* et **§5 n°8** |
 | Le contrat | `contracts/build.md` — ⚠️ **à mettre à jour par ce lot** (§3f) |
 | Le patron de refus | le lot 37 : `src/modules/fh/skill-pool.mjs`, ses clefs et ses tests |
 | Le patron de `disable` | `layers/fh-skills-en.layer.json`, les 3 records désactivés |

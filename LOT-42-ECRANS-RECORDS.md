@@ -21,7 +21,7 @@ est entièrement dans `ui/builder/` et `tests/`. Si tu crois devoir sortir de l�
 
 ---
 
-## 0. ✅ CE QUI EXISTE DÉJÀ — mesuré le 2026-08-14, ne le refais pas
+## 0. ✅ CE QUI EXISTE DÉJÀ — mesuré le 2026-08-13, ne le refais pas
 
 **Le carnet `decisions[]` publie le choix du record LUI-MÊME comme un plan**, avec
 sa liste d'options. C'est la découverte qui rend ce lot petit : tu n'as aucune
@@ -106,7 +106,7 @@ afficherait un choix sans effet. **Si tu veux le montrer, montre-le comme le lot
 | **Les mots d'interface sont en anglais** | Eric, 2026-08-10 — jusque dans les refus |
 | **La base mobile est 360 px** | ⚠️ à ne pas confondre avec les 720 px de la coquille, qui sont un **seuil de bascule** |
 | **Rien ne se cache** | une espèce sans don n'affiche rien ; un plan sans réponse le **dit** |
-| **L'étape Inheritance n'est PAS dans ce lot** | elle change de nature (Eric, 2026-08-14 : plus de record d'arrière-plan du tout) et attend un lot moteur. ⛔ **N'y touche pas** |
+| **L'étape Inheritance n'est PAS dans ce lot** | elle change de nature (Eric, 2026-08-13 : plus de record d'arrière-plan du tout) et attend un lot moteur. ⛔ **N'y touche pas** |
 
 ---
 
