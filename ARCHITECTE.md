@@ -11,10 +11,13 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 > chemin. **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** (125 Ko,
 > produit v1) — seulement les sections nommées.
 
-> 📌 **REPRISE APRÈS LE 2026-08-10 : lis `PASSATION-2026-08-10.md` juste après
-> ce mandat.** Elle porte ce qui s'est décidé ce jour-là — trois protocoles de
-> travail neufs, une erreur structurelle de ce siège à ne pas refaire, les
-> règles tranchées, et l'étape suivante déjà cadrée avec Eric.
+> 📌 **REPRISE : lis `PASSATION-2026-08-12.md` juste après ce mandat** — c'est
+> la plus récente. Elle porte l'état à la clôture, **le lot 36 qui est EN VOL**,
+> les règles tranchées ce jour-là, et une erreur structurelle qu'Eric a dû
+> signaler lui-même : **deux de ses documents n'avaient jamais été ouverts.**
+> `PASSATION-2026-08-10.md` reste utile pour ses trois protocoles de travail
+> (règles jamais devinées · étape par étape avec Eric · reconstruire, pas
+> rafistoler) — ils tiennent tous.
 
 ## 🥇 AVANT TOUTE RÈGLE DE JEU — la hiérarchie des sources
 
@@ -132,236 +135,65 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-10 (relire ceci en premier)
+## 5. L'ÉTAT DU CHANTIER — 2026-08-12 (relire ceci en premier)
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `856eb55` | ⚠️ **3 commits d'avance, NON POUSSÉS** | **579 vertes** |
-| `~/tools/fh-phb` | `520eb7f` | à remesurer | — |
+| `~/tools/fhpc` | `56ea9d1` | ✅ à jour | **614 vertes** |
+| `~/tools/fh-phb` | `71f9bfa` | ✅ à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
 ⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`) : ils ont une
-durée de vie de quelques minutes ici.
-
-```bash
-git -C ~/tools/fhpc push origin main
-```
+durée de vie de quelques minutes ici. **Trois lignes de la version précédente de
+ce §5 étaient périmées à la reprise du 2026-08-12** — des commits annoncés non
+poussés qui l'étaient, et une branche distante à supprimer déjà supprimée.
+📌 *Une ligne d'état non remesurée est une rumeur.*
 
 **CE QUI EST EN VOL** :
 
-- ✅ **Lot `27-violations-clefs` FUSIONNÉ le 2026-08-10** — `cec7291`,
-  570 verts. Détail dans `CHANTIER-STATUS.json` et §« LE LOT 27 A REPRIS SON
-  ARCHITECTE » ci-dessous.
-- ✅ **Lot `28-projection-decision` FUSIONNÉ le 2026-08-10** — `856eb55`,
-  579 verts. `rebuild` publie un septième carnet `decisions`, générique,
-  aucune étape gravée dans le moteur. **Un défaut trouvé en revue et corrigé
-  avant fusion** : deux implémentations de la légalité des compétences
-  (`derive.mjs` exigeait `ability_key`, le carnet non) — extraites en une
-  source unique, `src/build/skills.mjs`. Latent, zéro record réel touché,
-  mais le homebrew tiers l'aurait atteint. **Rien en vol** dans `fhpc` : aucun
-  worktree, aucun lot en cours.
-- ⚠️ **Le worktree de `fh-phb` existe toujours**, à `797163d` :
-  `fh-phb/.claude/worktrees/youthful-taussig-bfa14e` — c'est celui des 76 lignes
-  non commitées de `sync_from_vault.py`, **toujours en attente d'Eric**.
-  📌 **Ce siège a écrit « aucun worktree » le 2026-08-09 en n'ayant mesuré que
-  `fhpc`. Codex l'a démenti par la mesure.** Onzième erreur de la série, même
-  forme que les dix autres : *mesurer le mauvais objet*.
+- 🔴 **Le lot `36-trainings` TRAVAILLE** — worktree
+  `~/tools/fhpc-worktrees/36-trainings`, 4 commits, arbre propre. Sa commande
+  porte **ses deux arbitrages déjà rendus** (§3a `fh.skills.train.<slug>`, §3d
+  `traits[]` + `category`). Ne les rouvre pas.
+- ✅ **Lot `35-pool-complet` FUSIONNÉ** (`ab926c7`) — les 36 outils au même
+  barème, le Rogue à `expertise_from_level: 1` **par une valeur de contenu**,
+  l'arrière-plan éteint, les 26 compétences catégorisées.
+- ✅ **Deux gestes d'architecte** : le `tool_choice` du Soldier éteint
+  (`d824599`) et le **genre `training` ouvert** (`56ea9d1`, seizième genre).
+- ⚠️ **Le worktree de `fh-phb`** existe toujours à `797163d` :
+  les **76 lignes non commitées** de `sync_from_vault.py`, ouvertes depuis le
+  **2026-07-27**, toujours en attente d'Eric.
+- ✅ **Aucune branche distante à nettoyer** — `origin` ne porte que `main`.
 
-⚠️ **Une branche distante à nettoyer, et ce n'est PLUS celle du mandat
-précédent** : `25-builder-affichage` est supprimée, mais `7-bloc-layers`
-survit sur `origin` :
-`git -C ~/tools/fhpc push origin --delete 7-bloc-layers`.
+### ⭐ LA PROCHAINE ÉTAPE N'EST PAS UN LOT
 
----
+**Le passage étape par étape avec Eric sur l'étape Compétences** (protocole 2b
+du 2026-08-10). Ce siège dit ce que LUI changerait, demande à Eric ce que LUI
+change, et on code sur cette base. Zéro ligne, zéro lot — et c'est exactement ce
+qui a manqué au lot 33, qui a coûté un écran entier.
 
-### ⭐⭐ LA FORME DU BUILDER EST RATIFIÉE — 2026-08-10
+Puis : `37-etape-competences` → les sept étapes restantes → la fiche → M4.
 
-Eric a mené la discussion avec Codex à partir des deux études de celui-ci
-(vault `Chantier FH & FHPC/FHPC — Étude builders du marché.md` et
-`FHPC — Assistant IA, connecteurs et fenêtre de chat.md`), puis a soumis le
-tout à l'arbitrage de ce siège. **Cinq points tranchés :**
+⚠️ **Trois dettes sont DANS le chemin critique, pas à côté** : les caracs
+`3d6 × 10 keep 6` et les cartes de Destinée **tirées** sont des **étapes du
+builder déguisées en dettes de règles** ; et le **pool peut passer en négatif
+sans que rien ne le refuse** (mesuré : 4 expertises sur un Rogue niveau 1 → −2,
+`validate()` muet — dette **préexistante** du lot 34, vérifiée sur `main`).
 
-| | Décision | Statut |
-|---|---|---|
-| **Forme** | **Assistant pur** + un **plan escamotable** (colonne desktop, surface temporaire sur téléphone), **fermé par défaut**. Même document, mêmes verbes, jamais un second builder | ✅ accordé sans réserve |
-| **Ordre** | `0 Univers/couches → 1 Concept → 2 Classe → 3 Espèce → 4 Historique → 5 Caractéristiques → 6 Destinée → 7 Compétences → 8 Revue`. L'écran `Save` disparaît : le document EST l'état | ✅ accordé — **et le moteur l'impose** : `skill-pool.mjs:574`, sans record de classe le module ne publie RIEN, même si l'espèce donne des points. Classe avant espèce est une contrainte, pas un goût |
-| **Projection de décision** | ⭐ **Un carnet de plus rendu par `rebuild`**, à côté des six qu'il rend déjà. **GÉNÉRIQUE** — une entrée par point de décision, indexée par son chemin — et **jamais « la projection de l'étape Compétences »** : une étape est un objet d'interface, huit étapes gravées dans le moteur violent §0.13 | ✅ arbitré par ce siège, **correction apportée à la proposition de Codex** |
-| **Séquencement** | **27 d'abord** (il est le prérequis : la projection a besoin d'une clef de refus), puis la projection, puis la coquille responsive, puis l'étape Compétences de bout en bout | ✅ ratifié par Eric |
-| **Lot 27, forme** | **clef + paramètres**, pas message | ✅ confirmé par Eric le 2026-08-10 |
+### 🔴 CE QUE CE SIÈGE NE FAIT PAS SPONTANÉMENT, ET QU'IL DOIT FAIRE
 
-**Les quatre arguments qui ont mis la projection dans `rebuild`** (à ne pas
-refaire) : le précédent des six carnets existants · `fh-char/1` n'a nulle part
-où garder un rapport et l'invariant 4 interdit d'écrire `build` ·
-`render-fiche.mjs` ne connaît le nom d'AUCUN champ et lui apprendre ce qu'est
-un palier casserait ses propriétés 1 et 4 · ⭐ **et le décisif : l'IA a besoin
-de la MÊME projection.** La note IA d'Eric pose que l'humain et l'IA emploient
-les mêmes opérations ; une projection qui vit dans l'écran ne peut pas être
-servie par le MCP, et un assistant devrait refaire les règles.
+**Il lit le code, les contrats et les passations. Il NE LIT PAS les chapitres
+d'Eric.** Le 2026-08-12, Eric a dû demander lui-même « on ne m'a posé aucune
+question dessus ? » : ses **quatre modifications de classes**, sa **sous-classe
+Moonkeeper** et sa **roadmap de sous-classes** n'avaient jamais été ouvertes par
+aucun architecte. La méthode §5b — *l'architecte lit les chapitres et rend ses
+doutes* — a le meilleur rendement du chantier et **doit être déclenchée exprès**,
+sur les chapitres qui touchent le lot en cours.
 
-### ⛔ LA « RÈGLE À GRAVER » N'AVAIT RIEN À GRAVER — mesuré le 2026-08-10
-
-Eric a ratifié : *« un choix de compétence accordé par l'espèce est
-supplémentaire et ne consomme aucun point du pool »*, et Codex l'a présenté
-comme une correction à porter avant l'interface. **Mesure, module lancé sur un
-Araag et sur une espèce sans grant :**
-
-```
-── Araag (grant)  → TOTAL = 7        ── sans grant → TOTAL = 7
-     12  Class Pool · Wizard              12  Class Pool · Wizard
-     -2  Wizard · 2 imposed                -2  Wizard · 2 imposed
-     -2  Sage · 2 imposed                  -2  Sage · 2 imposed
-     -1  Sage · 1 imposed                  -1  Sage · 1 imposed
-      1  Araag · 1 granted choice
-     -1  Araag · 1 imposed choice
-```
-
-**7 = 7.** Le net zéro du lot 24 délivrait **déjà exactement** la règle
-qu'Eric croyait devoir trancher. Rien à graver, aucun nombre ne bouge.
-📌 **Reste un geste, cosmétique** : les deux lignes qui s'annulent décrivent
-l'ancien modèle mental (le grant entre puis se place) ; le modèle d'Eric est
-« le grant est dehors ». Retirer la paire et publier le choix offert comme son
-propre terme — **même total** — peut voyager dans le lot builder.
-
-### 🔴 LE TROU QUE PERSONNE N'AVAIT VU — et c'est le cœur de l'étape témoin
-
-**Deux des quatre paliers d'Eric n'existent que sur le papier.**
-
-| Mesure | |
-|---|---|
-| Le schéma déclare quatre paliers | `resolved.skills[].proficiency` : `none · half · proficient · expertise` |
-| La dérivation n'en écrit que deux | `derive.mjs:689` → `isProficient ? "proficient" : "none"` ; `:736` → `"proficient"`. **`half` et `expertise` ne sont écrits par rien** |
-| Aucun canal pour dépenser à un palier | La sélection existe déjà pour les imposés/offerts (`set{path, value:slug}`, validée contre l'ensemble légal — `allowedSlugs()`, `derive.mjs:290`), mais elle ne pose que « maîtrisé » |
-| Le verrou d'expertise n'est opposé à rien | `expertise_from_level: 4` est lu par personne — zéro occurrence dans `block.mjs` |
-| `granted_skill_choice.from` n'est pas republié | `allowedSlugs()` le résout **déjà** en interne (`"any"` compris) et ne le sort pas. L'UI ne peut pas offrir les trois choix de l'Elestu |
-
-📌 **Ni le §5 de la veille, ni l'inventaire de l'artefact, ni le prompt de
-Codex ne nommaient ce trou.** Il est le vrai contenu du lot Compétences.
-
-### ⚠️ ET UNE TROISIÈME DETTE RECOPIÉE QUI TOMBE
-
-Le §5 disait : *« 27 et 28 visent tous deux `block.mjs` : séquentiels »*.
-**Faux.** Mesuré : **27** vise `block.mjs` (8 `push`, dont 1 `spread`) **et
-`validate.mjs`** (5) **et `src/mcp/tools.mjs`** ; **28** vise `derive.mjs`.
-Ils ne se croisent pas. **En revanche 28 croise le lot Compétences**, qui doit
-écrire les paliers dans `derive.mjs` — ces deux-là sont séquentiels.
-
-### 🤝 LE LOT 27 A REPRIS SON PROPRE ARCHITECTE, ET IL AVAIT RAISON
-
-Codex s'est **arrêté sans commiter** et a contesté deux points de la commande.
-Les deux tiennent, remesurés :
-
-1. **« Treize sites » était faux** — `block.mjs` porte 8 `violations.push` dont
-   **un `...spread`** (`:357`) : **7** producteurs de texte, + 5 dans
-   `statSumViolations` = **12**.
-2. **Deux consignes se contredisaient** — `block.mjs:347` **ensemence** le
-   tableau avec les chaînes de `charInvariantViolations` *avant* le premier
-   `push`, et elles sortent au `:445`. Interdire les chaînes publiques tout en
-   interdisant de toucher `invariants.mjs` était intenable.
-
-**Arbitrage rendu** : une **clef enveloppe** `document.invariant-violated`
-`{message}`, **sans `path`**, posée à la frontière de `build.validate` seule
-(`rebuild:316` passe les mêmes invariants dans un `fail()` — un `throw` n'est
-pas une sortie publique). C'est **le même arbitrage que `derive.threw`** pour
-la même raison : *une faute de structure n'est pas une décision de joueur
-invalide, aucune interface n'a de carte rouge à peindre pour ça*. **Deux
-entonnoirs, une seule forme.** → **12 producteurs, 13 clefs.**
-
-📌 **Le treize de la première rédaction était juste par accident et faux par
-raisonnement.** C'est le troisième lot de ce chantier à corriger son
-architecte ; **la revue marche dans les deux sens**, et un lot qui s'arrête
-plutôt que de choisir seul fait exactement son travail.
-
-### ⭐⭐ CE QUI A CHANGÉ, ET C'EST LA CHOSE À COMPRENDRE : LE MOTEUR EST FINI
-
-Quatre lots fusionnés le 2026-08-09 — **23** (pool de compétences), **24**
-(`Skilled` = +6 et les lignes « net zero »), **25** (la couche d'affichage
-d'une FICHE), **26** (le verbe `clear`). L'algorithme du skill pool d'Eric est
-**ratifié et gravé** dans `contracts/build.md` § *THE SKILL POOL*.
-
-### ⛔ ET LA CONFUSION QU'IL NE FAUT PAS REFAIRE : LE BUILDER N'EST PAS LA FICHE
-
-Ce siège a posé que « le builder EST la fiche plus des endroits où cliquer »,
-**déduit** de la loi « le document est l'état, il n'y a pas de brouillon ».
-**La déduction est invalide** : cette loi dit *où vivent les données*, pas
-*combien d'écrans il y a*. Eric a tranché, et sa mesure était sous nos yeux
-depuis deux jours — son propre `~/tools/fh-skills/fh-skill-builder.html`, que
-sa table utilise, est un **assistant en HUIT ÉTAPES** :
-`identity → abilities → species → class → background → destiny → skills → save`.
-
-| | **BUILDER** | **FICHE** |
-|---|---|---|
-| Quand | on **crée**, on **monte** | on **vit avec** |
-| Forme | suite d'étapes, une décision à la fois | un écran, tout visible |
-| Montre | **la matière de la décision en cours** | l'état courant |
-| Bandeau permanent | ⛔ **aucun** — « on s'en fout des permanents dans un builder » (Eric) | ✅ c'est tout l'intérêt |
-
-📌 Le tri permanent/onglets qu'Eric a rendu (7 onglets, 5 passives, carte de
-Destinée et portrait au bandeau, Skill Points dans le panneau) est **ratifié et
-vrai — mais il décrit LA FICHE.** Il est rangé sous ce nom dans
-`CHANTIER-STATUS.json` → `tri_ecran_ratifie_2026_08_09`.
-
-📌 **Trois canevas distincts, ne plus les confondre** : le **dock v1**
-(425 × 680, fenêtre flottante, `UI-DIMENSIONS.md`) · la **fiche** (plein
-écran) · le **builder** (assistant plein écran). Le BRIEF §3.3 disait déjà que
-`UI-DIMENSIONS.md` ne gouverne pas le builder.
-
-### 🔎 LE CONSEILLER INTERFACE A RENDU DEUX RAPPORTS — les lire avant de dessiner
-
-Fil `EXPERT interface Builder`. Ses mesures ont été refaites par ce siège et
-elles tiennent. Le second rapport (enquête marché, demandée par Eric) :
-
-- **La forme décide du reste.** *Planificateur* (Pathbuilder, GCS) → fiche
-  permanente pendant la création. *Assistant* (Beyond, Demiplane) → fiche
-  différée. « Ce n'est pas le marché qui donne raison à Eric, c'est **la forme
-  qu'il a choisie**. »
-- ⭐ **« L'ÉCONOMIE d'Eric n'est implémentée nulle part — l'ÉCRAN qu'elle exige
-  l'est intégralement. »** Pathbuilder budgétise des *créneaux*, Eric des
-  *points* ; toutes les affordances d'affichage transfèrent. **Rien à inventer
-  côté écran.**
-- Mesuré chez Pathbuilder : le budget est le **titre du dialogue**
-  (`Remaining Skill Selections: 3`) **et** une pastille sur la carte ·
-  contrôle **segmenté à 4 crans** par ligne · le détail des termes **en ligne**
-  (colonnes nommées une fois), pas en infobulle · **imposés dans la même liste,
-  en couleur** · **paliers verrouillés MONTRÉS éteints** · catalogue ouvert
-  derrière un bouton · ⚠️ **son seul défaut : cliquer un imposé ne fait rien —
-  refus silencieux, à ne pas copier.**
-- **Monter de niveau n'est pas un flux : c'est le groupe de cartes suivant.**
-- **Le rappel vit sur la décision, jamais sur l'écran** : `Not Selected` sur la
-  carte, pastille chiffrée sur celle qui dépense. **Aucun compteur global.**
-- Trois trouvailles : la **pile de couches se choisit à l'étape ZÉRO** (=
-  `build.layers` avant le premier `choose`) · une commande de **migration**
-  quand la couche bouge (le dépôt en fait un refus dur — compatible) ·
-  **`Hide Plan`**, la colonne de décisions escamotable → *une troisième forme*,
-  posée devant Eric sans être recommandée.
-
-### CE QUI ATTEND ERIC — et rien d'autre
-
-1. La branche distante `7-bloc-layers` à supprimer (commande ci-dessus).
-2. Les **76 lignes non commitées** de `sync_from_vault.py` dans le worktree
-   `fh-phb` : commiter ou jeter. Ouvert depuis le 2026-07-27.
-3. **`build.budgets` : on le garde ou on le retire ?** Toujours ouvert, et
-   désormais sans aucun consommateur connu.
-
-*(Les deux `git push` sont faits ; `Hide Plan` et l'ordre des étapes sont
-tranchés — voir la section « LA FORME DU BUILDER EST RATIFIÉE ».)*
-
-### LES LOTS — ordre ratifié le 2026-08-10
-
-| | Lot | État |
-|---|---|---|
-| 1 | **`27-violations-clefs`** | ✅ **FUSIONNÉ** le 2026-08-10 (`cec7291`, 570 verts) |
-| 2 | **`28-projection-decision`** | ✅ **FUSIONNÉ** le 2026-08-10 (`856eb55`, 579 verts). `rebuild` rend `decisions`, générique, testé jusqu'à fermer la boucle `set → rebuild → entrée mise à jour` |
-| 3 | **La coquille responsive** | 📝 **PROCHAIN.** Assistant pur + plan escamotable, desktop et téléphone. Débloqué : la projection existe |
-| 4 | ⭐ **L'étape Compétences, de bout en bout** | Elle emporte les **trois trous rouges** : écrire `half`/`expertise`, ouvrir un canal de dépense par palier, opposer `expertise_from_level`. ⚠️ **Vise `derive.mjs`** |
-| — | **`29-attribution`** *(renuméroté depuis 28, plus rien devant lui)* | prêt, non écrit. `derive.mjs:1091-1096` calcule `base`, `dex` et `acBonus` puis les jette. ⚠️ **Séquentiel avec le lot 4** (`derive.mjs`), pas avec 27 ni 28 |
-
-### 🤝 UN ARCHITECTE ASSISTANT ENTRE EN JEU — `CODEX-ASSISTANT.md`
-
-Décision d'Eric le 2026-08-09, pour raison de quota (94 %, reset **mardi 11
-août 23:59**). **Codex est l'assistant ; ce siège reste le chef.** Codex
-exécute, délègue à ses propres lots, consulte les conseillers — **il ne décide
-pas l'architecture, ne démarre aucun codage sans aval, ne pousse ni ne
-déploie.** Son mandat porte tous les chemins et tous les pièges payés.
+📌 **Trois documents à ouvrir au moins une fois** : `5.RPG/…/0. D&D 5+ Rules/7.
+Classes & Subclasses/` · `5.RPG/…/9. Miscellaneous/FH — Roadmap & Directions.md`
+· vault `Chantier FH & FHPC/FHPC — Étude builders du marché.md` (qui porte le
+**FH overlay**, un troisième objet que l'architecture canonique ne prévoit pas).
 
 ---
 
