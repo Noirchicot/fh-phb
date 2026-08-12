@@ -135,12 +135,12 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-12 (relire ceci en premier)
+## 5. L'ÉTAT DU CHANTIER — 2026-08-12, soir (relire ceci en premier)
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
 | `~/tools/fhpc` | `56ea9d1` | ✅ à jour | **614 vertes** |
-| `~/tools/fh-phb` | `71f9bfa` | ✅ à jour | — |
+| `~/tools/fh-phb` | `3ed3119` | ⚠️ **2 commits d'avance** — `git -C ~/tools/fh-phb push origin main` | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
 ⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`) : ils ont une
@@ -165,20 +165,48 @@ poussés qui l'étaient, et une branche distante à supprimer déjà supprimée.
   **2026-07-27**, toujours en attente d'Eric.
 - ✅ **Aucune branche distante à nettoyer** — `origin` ne porte que `main`.
 
-### ⭐ LA PROCHAINE ÉTAPE N'EST PAS UN LOT
+### ✅ LE PASSAGE ÉTAPE PAR ÉTAPE A EU LIEU — 2026-08-12
 
-**Le passage étape par étape avec Eric sur l'étape Compétences** (protocole 2b
-du 2026-08-10). Ce siège dit ce que LUI changerait, demande à Eric ce que LUI
-change, et on code sur cette base. Zéro ligne, zéro lot — et c'est exactement ce
-qui a manqué au lot 33, qui a coûté un écran entier.
+**L'étape Compétences est SPÉCIFIÉE, décision par décision** (protocole 2b),
+zéro ligne de code. **Sept décisions d'Eric**, écrites dans le vault
+`Chantier FH & FHPC/FHV2 - Schémas d'écran.md` **§4** — c'est la commande du lot
+qui construira l'écran. Ne les redemande pas.
 
-Puis : `37-etape-competences` → les sept étapes restantes → la fiche → M4.
+### ⭐ L'ORDRE DES LOTS, et il est contraint
 
-⚠️ **Trois dettes sont DANS le chemin critique, pas à côté** : les caracs
-`3d6 × 10 keep 6` et les cartes de Destinée **tirées** sont des **étapes du
-builder déguisées en dettes de règles** ; et le **pool peut passer en négatif
-sans que rien ne le refuse** (mesuré : 4 expertises sur un Rogue niveau 1 → −2,
-`validate()` muet — dette **préexistante** du lot 34, vérifiée sur `main`).
+| | Lot | Pourquoi il est là |
+|---|---|---|
+| 1 | **fusionner `36-trainings`** | il est en vol, et il écrit les fichiers du 37 |
+| 2 | `37-pool-garde` | le pool négatif et le « 0 outil » refusés **dans `validate()`** |
+| 3 | `38-jetons-surfaces` | l'échelle et l'inventaire des surfaces, **avant** le gros CSS de l'écran (arbitré par Eric le 2026-08-12) |
+| 4 | `39-etape-competences` | l'écran, sur le §4 du vault |
+
+Puis : les sept étapes restantes → la fiche → M4.
+
+⚠️ **Les dettes ENCORE dans le chemin critique** : les caracs `3d6 × 10 keep 6`
+et les cartes de Destinée **tirées** — des **étapes du builder déguisées en
+dettes de règles**. Le **pool négatif** en sort : son comportement est **tranché**
+(toléré pendant la répartition, refusé par `validate()`), il ne reste qu'à
+l'implémenter. ⚠️ Et il était **pire que la passation ne le disait** — remesuré
+le 2026-08-12 : huit dépenses sur un pool de 10 → **−6**, `validate()` `ok: true`.
+
+### 📐 LA BIBLE ESTHÉTIQUE — chantier ouvert le 2026-08-12
+
+Eric veut **un document de référence pour le design et les couleurs**, au lieu
+d'inventer une valeur par écran. Ce qui le motive, mesuré ce jour-là : le builder
+v1 porte **24 tailles de police pour 78 déclarations** (dont 7 tailles dans 3 px),
+**31 espacements**, et deux largeurs de colonne — **23,5 %** puis **51,3 %** —
+sans aucun rapport entre elles. La coquille v2 a ses couleurs tokenisées et
+**zéro jeton de taille** ; le nombre **720** y est écrit deux fois, dans le CSS
+et dans `shell.mjs`.
+
+- **La moitié mesurable** appartient à ce siège : échelle de type à ratio
+  constant (**1,25** — 8 marches, écart moyen 0,78 px contre les 78 déclarations
+  réelles ; le **nombre d'or est inutilisable pour le texte**, 3 marches et 18 px
+  d'écart max), espacements, correspondances de familles, inventaire des surfaces.
+  Page d'atelier publiée en artifact le 2026-08-12.
+- **La moitié décidable** appartient au **conseiller esthétique** (§6).
+- Destination : vault `Chantier FH & FHPC/FHV2 - Bible esthétique.md`, à créer.
 
 ### 🔴 CE QUE CE SIÈGE NE FAIT PAS SPONTANÉMENT, ET QU'IL DOIT FAIRE
 
@@ -190,10 +218,13 @@ aucun architecte. La méthode §5b — *l'architecte lit les chapitres et rend s
 doutes* — a le meilleur rendement du chantier et **doit être déclenchée exprès**,
 sur les chapitres qui touchent le lot en cours.
 
-📌 **Trois documents à ouvrir au moins une fois** : `5.RPG/…/0. D&D 5+ Rules/7.
-Classes & Subclasses/` · `5.RPG/…/9. Miscellaneous/FH — Roadmap & Directions.md`
-· vault `Chantier FH & FHPC/FHPC — Étude builders du marché.md` (qui porte le
-**FH overlay**, un troisième objet que l'architecture canonique ne prévoit pas).
+📌 **Les documents à ouvrir au moins une fois** :
+`5.RPG/…/0. D&D 5+ Rules/7. Classes & Subclasses/` · `5.RPG/…/9. Miscellaneous/FH
+— Roadmap & Directions.md`. ✅ **Le troisième est lu** — vault `Chantier FH &
+FHPC/FHPC — Étude builders du marché.md`, ouvert le 2026-08-12 : sa direction
+visuelle ratifiée est recopiée dans `CONSEILLER-ESTHETIQUE.md` §4, et le
+**FH overlay** qu'il introduit reste le troisième objet que l'architecture
+canonique ne prévoit pas — **toujours à trancher avec Eric**.
 
 ---
 
@@ -593,6 +624,20 @@ Retrouvables par leur titre, joignables par message.
 | SRD (règles + juridique) | `EXPERT conseiller SRD` |
 | Fate's Hand | `EXPERT Fate's Hand system advisor` |
 | VTT | `EXPERT  conseiller VTT` (deux espaces) |
+| Interface Builder | `EXPERT interface Builder` — a rendu trois trous de contrat, tous vérifiés justes |
+| **Esthétique** | ⭐ **créé le 2026-08-12, et il est d'une autre nature** : mandat `CONSEILLER-ESTHETIQUE.md`, **lancé comme sous-agent depuis le fil d'architecte** |
+
+### ⚠️ Ce que « joignable » veut dire, et ce que ça change
+
+**Mesuré le 2026-08-12 : les cinq premiers conseillers ne sont PAS joignables
+depuis un fil d'architecte** (`ListAgents` → aucun agent). Ce sont des fils
+d'Eric ; lui poser une question, c'est **le faire facteur** — ce que le §1 de ce
+mandat interdit pourtant.
+
+Le siège **esthétique** est le premier à casser ça : il se lance en sous-agent,
+il répond dans ce fil, et son mandat vit dans le dépôt pour survivre à la session.
+**C'est le patron à reprendre** quand un conseiller doit travailler avec
+l'architecte plutôt qu'avec Eric.
 
 ### ✍️ Et un cinquième siège, créé le 2026-08-08 : `GHOSTWRITER`
 

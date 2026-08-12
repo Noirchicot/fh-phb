@@ -1,8 +1,18 @@
-# Passation — fin de session du 2026-08-12
+# Passation — fin de session du 2026-08-12 (matin)
 
 > **Pour le siège suivant.** Ce fichier ne remplace pas `ARCHITECTE.md` (le
 > mandat, à lire en entier d'abord) : il porte **ce qui s'est décidé dans le fil
 > du 2026-08-12** et qui ne serait pas devinable autrement.
+>
+> ⚠️ **SON §7 EST CONSOMMÉ.** La « prochaine étape » qu'il annonce — le passage
+> étape par étape sur les Compétences — **a eu lieu le soir même**. L'étape est
+> spécifiée (vault `Chantier FH & FHPC/FHV2 - Schémas d'écran.md` §4), et la
+> numérotation des lots a changé : `37-pool-garde` → `38-jetons-surfaces` →
+> `39-etape-competences`. **L'ordre à jour vit dans `ARCHITECTE.md` §5**, pas ici.
+> ⚠️ Et son chiffre du pool négatif (**−2**) était optimiste : remesuré, c'est
+> **−6** avec `validate()` `ok: true`.
+>
+> Le reste du fichier — §1 à §6, §8, §9 — tient, et se lit tel quel.
 
 ---
 
