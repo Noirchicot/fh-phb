@@ -109,6 +109,31 @@ repli 4+3) · **le relief est une information** (barillet = on choisit une valeu
 plat = on navigue) · **trois régimes de verre** selon la **densité
 d'information** (voile 20 / 50 / 100) · la palette **parchemin**.
 
+### 🎨 LE CHOIX D'OVERLAY D'ERIC — à ne pas laisser tomber
+
+**Eric a choisi le PARCHEMIN pour la dalle** (`#F6F3EC` / `#14120E`) devant trois
+familles entièrement calculées. **Et il a explicitement demandé de garder les deux
+autres** : *« tu peux garder ça en tête pour des changements d'UI ».*
+
+**Elles ne sont donc pas écartées : elles changent de statut.** Ce sont les **deux
+premiers thèmes d'habillage du FH overlay**, et elles arrivent déjà **calculées et
+mesurées** — 18 jetons × 2 thèmes chacune.
+
+| Famille gardée | Dalle jour | Dalle nuit |
+|---|---|---|
+| **Bleu gris** | `#E9EDF2` | `#141A20` |
+| **Bleu gris profond** | `#DFE5EC` | `#0E1318` |
+
+⚠️ **Le défaut à réparer le jour où l'une est activée, et il est mesuré** : sur un
+fond bleu, `info` tombe à **1,3°** (et **0,2°** pour la profonde) de la teinte de la
+dalle. Le contraste tient, la **distinction de teinte** non — le bleu de provenance
+n'est plus une *autre* couleur, c'est la dalle en plus foncé. **Décaler `info` vers
+le turquoise (~190°)** dans ces deux thèmes.
+
+📌 **Et c'est précisément ce à quoi sert la règle des jetons** : changer de famille
+est un **changement de valeurs, pas de composants**. Les trois familles vivent dans
+**`fh-phb/PALETTE-FHV2.json`**, commitées.
+
 ### Les deux arbitrages d'architecte à SIGNALER À ERIC
 
 | | |
