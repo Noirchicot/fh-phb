@@ -11,17 +11,19 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 > chemin. **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** (125 Ko,
 > produit v1) — seulement les sections nommées.
 
-> 📌 **REPRISE : lis `PASSATION-2026-08-12-SOIR.md` juste après ce mandat** —
-> c'est la plus récente. **Rien n'est en vol**, les lots 36 et 37 sont fusionnés,
-> et elle porte la **bible esthétique** née ce soir-là, les quatre erreurs de ce
-> siège, et **la leçon la plus neuve du chantier** : une commande de lot se relit
-> **après chaque mesure**, pas seulement avant le lancement.
+> 📌 **REPRISE : lis `PASSATION-2026-08-13.md` juste après ce mandat** — c'est la
+> plus récente. **Rien n'est en vol**, les lots 38 et 39 sont fusionnés,
+> **l'étape Compétences existe**, et elle porte les **quatre erreurs de ce siège**
+> — dont la plus instructive : *un arrondi comparé à une limite*.
 >
-> ⚠️ **Il y a DEUX passations datées du 2026-08-12.** Celle du matin
-> (`PASSATION-2026-08-12.md`) garde son §8 (ce qui surprend dans le code) ; son
-> §7 est **consommé**. `PASSATION-2026-08-10.md` reste utile pour ses trois
-> protocoles de travail (règles jamais devinées · étape par étape avec Eric ·
-> reconstruire, pas rafistoler) — ils tiennent tous.
+> ⭐ **Et sa leçon la plus rentable** : les deux meilleures pièces de conception de
+> la journée venaient des **artefacts d'Eric**, pas du raisonnement de l'architecte.
+> `~/tools/fh-skills/fh-skill-builder.html` et le dock v1 sont des mines, et ce
+> siège ne les ouvre pas spontanément.
+>
+> ⚠️ Les passations du **2026-08-12** sont **consommées** ; ne garde de celle du
+> soir que son **§6** (ce qui surprend dans le code). `PASSATION-2026-08-10.md`
+> reste utile pour ses trois protocoles de travail — ils tiennent tous.
 
 ## 🥇 AVANT TOUTE RÈGLE DE JEU — la hiérarchie des sources
 
@@ -139,60 +141,25 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-13 (relire ceci en premier)
+## 5. L'ÉTAT DU CHANTIER — 2026-08-13, clôture (relire ceci en premier)
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `f556f6e` | ⚠️ **en avance** — Eric pousse | **650 vertes** *(rejouées après la fusion du lot 38)* |
-| `~/tools/fh-phb` | `7476fa5` + non commité | ⚠️ **en avance** | — |
+| `~/tools/fhpc` | `cbfd853` | ⚠️ **en avance — Eric pousse** | **662 vertes** |
+| `~/tools/fh-phb` | *(bouge à chaque entrée)* | ⚠️ **en avance** | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
-⭐ **UN SEUL SIÈGE D'ARCHITECTE EST ACTIF À LA FOIS** *(Eric, 2026-08-13)* : tous les
-autres fils portent la mention **(retired)**. Si tu mesures un commit que tu n'as pas
-fait, ce n'est pas un siège concurrent — c'est un fil retiré ou Eric lui-même.
-**Ne déclenche pas d'alerte de collision ; regarde ce que le commit contient.**
+✅ **RIEN N'EST EN VOL** — aucun worktree, aucun lot en cours, aucune fusion à
+moitié. **Lots 36, 37, 38 et 39 fusionnés. L'étape Compétences existe.**
 
-✅ **RIEN N'EST EN VOL** — aucun worktree sur `fhpc`, aucun lot en cours, aucune
-fusion à moitié. **Lots 36 et 37 fusionnés.** **La commande du lot 38 est écrite et
-PRÊTE À LANCER** (`LOT-38-JETONS-SURFACES.md`) : les deux décisions qu'elle
-attendait — la **correction de contraste** de la palette et l'**échelle de type** —
-sont **ratifiées par Eric le 2026-08-13** et déjà portées dans les fichiers.
+⭐ **UN SEUL SIÈGE D'ARCHITECTE EST ACTIF À LA FOIS** *(Eric, 2026-08-13)* : tous
+les autres fils portent la mention **(retired)**. Si tu mesures un commit que tu
+n'as pas fait, ce n'est pas un siège concurrent — **va lire ce qu'il contient**.
 
-⭐ **L'échelle du builder, ratifiée** : **T1 10 · T2 12 · T3 14 · T4 16 · T5 18 ·
-T6 22 · T7 44**, espacement en **grille de 4 avec un cran de 2**, rayons **4 · 8 ·
-999**. Détail et raisonnement : bible **§2b**. 📌 **T4 = 16 n'est pas un goût** :
-défaut du navigateur, seuil sous lequel iOS zoome de force un champ, et **déjà ce
-que le builder rend** — son corps n'est déclaré nulle part.
-
-⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`) : ils ont une
-durée de vie de quelques minutes ici. **Deux lignes de la version précédente de ce
-§5 étaient déjà fausses à la reprise du 2026-08-13, moins de douze heures après :**
-
-1. `fh-phb` était annoncé à `c5b2f93` — il était à `91e8f01`.
-2. « `origin` ne porte qu'une branche » : vrai de **`fhpc` seul**. `origin` de
-   `fh-phb` porte **14 branches** (historiques du dock gelé, sans danger).
-
-📌 *Une ligne d'état non remesurée est une rumeur — y compris celle d'hier soir.*
-
-### 🟠 EN VOL — lot 39 `etape-competences`
-
-Worktree `~/tools/fhpc-worktrees/39-etape-competences`, branche coupée de `main` à
-`f556f6e`, base mesurée **650 vertes**. Commande : `LOT-39-ETAPE-COMPETENCES.md`.
-⛔ **`git status` avant tout geste sur ce worktree.**
-
-### 🔴 LA DETTE DES « 76 LIGNES » N'EXISTAIT PAS — mesuré le 2026-08-13
-
-**Trois passations l'ont recopiée comme une décision qui attendait Eric.** La
-mesure : la fonctionnalité est sur `main` depuis le **2026-08-02** (`106782f`,
-*« Inject the site shell into the two tool pages during sync »*, +76 −7), le bloc
-d'injection est **identique à l'octet**, et le worktree avait **0 ligne** que `main`
-n'a pas — il en avait **89 de moins**. C'était une copie **en retard**, pas en
-avance. Worktree retiré, branche conservée, **rien archivé** : une archive plus
-vieille que `main` est un faux document.
-
-📌 **C'est le troisième cas du jour où une ligne recopiée tombe à la mesure.**
-*Une dette recopiée n'est pas une dette vérifiée* — c'est écrit plus bas dans ce
-fichier depuis le 2026-08-09, et ça ne suffit pas : il faut le **faire**.
+⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`). **Deux lignes de
+la version précédente de ce §5 étaient fausses moins de douze heures après avoir
+été écrites.** 📌 *Une ligne d'état non remesurée est une rumeur — y compris celle
+d'il y a une heure.*
 
 **CE QUI RESTE OUVERT** :
 
@@ -213,16 +180,18 @@ zéro ligne de code. **Sept décisions d'Eric**, écrites dans le vault
 `Chantier FH & FHPC/FHV2 - Schémas d'écran.md` **§4** — c'est la commande du lot
 qui construira l'écran. Ne les redemande pas.
 
-### ⭐ L'ORDRE DES LOTS, et il est contraint
+### ⭐ L'ORDRE DES LOTS — et le prochain est le plus petit
 
 | | Lot | Pourquoi il est là |
 |---|---|---|
-| ✅ | ~~`36-trainings`~~ | **fusionné** — la troisième dépense du pool |
-| ✅ | ~~`37-pool-garde`~~ | **fusionné** — le pool ne peut plus finir en dette, et `validate()` lit le carnet |
-| ✅ | ~~`38-jetons-surfaces`~~ | **fusionné le 2026-08-13** (`f556f6e`, 650 verts) — `tokens.css`, l'échelle T1–T7, les trois bugs vivants payés, et **un garde d'octets sur `shell.css`** attaqué 5 fois par le lot puis 3 fois par la revue |
-| 🟠 | **`39-etape-competences`** | **EN VOL** — l'écran, sur le **§4** du vault `FHV2 - Schémas d'écran`. Commande : `LOT-39-ETAPE-COMPETENCES.md` |
+| ✅ | ~~`36` `37` `38` `39`~~ | **tous fusionnés.** Le pool, son garde, les jetons, l'écran |
+| ⭐ **1** | **`40-review`** | **`render-fiche.mjs` existe déjà avec 27 tests** — il n'y a qu'à le brancher. Premier moment où un personnage **se construit ET se regarde**. Le plus petit lot, celui qui prouve le plus |
+| **2** | les quatre étapes « choisir un record » | Concept · Class · Species · **Inheritance** *(à renommer — l'arrière-plan n'existe plus)* |
+| **3** | **le lot moteur du HASARD** | 🔴 rien ne tire les dés ni les cartes. ⚠️ **Il pose la seule question de contrat de la liste** — voir la passation §8 |
+| **4** | `Universe & Layers` | la seule qui touche la persistance ; elle peut attendre |
 
-Puis : les sept étapes restantes → la fiche → M4.
+⚠️ **Mesuré : il reste HUIT étapes en placeholder**, pas sept comme ce fichier
+l'a longtemps annoncé (9 étapes, moins Compétences).
 
 ⚠️ **Les dettes ENCORE dans le chemin critique** : les caracs `3d6 × 10 keep 6`
 et les cartes de Destinée **tirées** — des **étapes du builder déguisées en
