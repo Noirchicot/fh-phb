@@ -170,8 +170,8 @@
   "CHAPITRE ZOOM — à rouvrir par la DÉCISION, jamais par le CSS : que veut dire zoomer dans un dock de hauteur fixe ? Trois options posées le 2026-08-06 (a) seuls les textes grossissent, (b) tout grossit et le dock scrolle, (c) le zoom ne s'applique qu'au tray. C3 (px fixes : tray 284, bandes, dés picker, ROLL, portrait) en dépend et rejoint la passe typo.",
   "Distribution de l'extension AboveVTT (packaging, installation MJ).",
   "Vérif live 5 min du rendu rollType 'skill' (campagne de TEST, jamais 6392226) : node table-server.mjs FH2 + un jet FHPC + regarder la ligne AboveVTT — le tray est fusionné, cette vérif reste due avant l'OUVERTURE DE LA PORTE.",
-  "🔴 LES OUTILS ET LE POOL (2026-08-12) — les 36 outils s'achètent-ils au MÊME barème de paliers que les 26 compétences (0/1/2/4), ou à un barème propre ? Et un outil peut-il porter « demi » et « expertise », ou seulement « plein » ? BLOQUANT : l'étape Compétences ne peut pas être refaite avant, sans répéter l'erreur du lot 33. Voir `trou_outils_hors_pool_2026_08_12`.",
-  "LES CINQ DETTES DE RÈGLES des ADDENDUMS §5, toutes décidées et aucune implémentée : (1) Rogue — expertise achetable dès le niveau 1, correctif de CONTENU, les 12 classes portent `expertise_from_level: 4` (mesuré le 2026-08-12, toujours vrai) ; (2) plafond de 18 par caractéristique en sortie de création ; (3) ≥ 1 point en outils à la création ; (4) caracs 3d6 × 10 jets keep 6, et l'option « choix » ; (5) cartes de Destinée TIRÉES, et l'option « choix »."
+  "LES CINQ DETTES DE RÈGLES des ADDENDUMS §5, toutes décidées et aucune implémentée : (1) Rogue — expertise achetable dès le niveau 1, correctif de CONTENU, les 12 classes portent `expertise_from_level: 4` (mesuré le 2026-08-12, toujours vrai) ; (2) plafond de 18 par caractéristique en sortie de création ; (3) ≥ 1 point en outils à la création ; (4) caracs 3d6 × 10 jets keep 6, et l'option « choix » ; (5) cartes de Destinée TIRÉES, et l'option « choix ».",
+  "🔴 LES TRAININGS, « tous les 4 niveaux » (2026-08-12) — est-ce aux niveaux 4, 8, 12, 16, 20 (comme les paliers universels), ou dès la création puis tous les 4 ? ⛔ DÉCIDE SI LES TRAININGS SONT DANS LE CHEMIN CRITIQUE : si c'est 4+, aucun n'est achetable au niveau 1, et le builder du 7 novembre n'a qu'à les montrer ÉTEINTS — comme l'expertise."
  ],
  "problems": [
   {
@@ -296,6 +296,18 @@
    "statut": "🔴 OUVERT — arbitrage Eric, puis lot de moteur",
    "source": "reprise d'architecte, 2026-08-12",
    "texte": "Le canal de dépense du pool (`fh.skills.spend.<slug>`) ne résout que le genre `skill` (26 records) ; le genre `tool` (36 records) est refusé par `skill-spend.option-unavailable`. Or ADDENDUMS §1 pose « un pool, deux dépenses » comme IMPLÉMENTÉE, la dette n°3 exige « ≥ 1 point en outils à la création », et l'écran ratifié mêle compétences et outils dans une seule grille. Mesuré par deux `rebuild()` (athletics : pool 7→5 ; calligrapher-s-supplies : pool inchangé + refus keyé). Détail : entrée `trou_outils_hors_pool_2026_08_12`."
+  },
+  {
+   "id": "GAP-KIND-SUBCLASS",
+   "statut": "🔴 OUVERT — contrat, donc travail d'architecte",
+   "source": "confrontation des chapitres de classes, 2026-08-12",
+   "texte": "Aucun genre `subclass` parmi les 12 genres de couche (mesuré). Le SRD décrit les sous-classes dans la PROSE du record de classe (le Rogue nomme « Thief » trois fois dans son texte de progression) — il n'y a pas de record. Or deux sous-classes FH sont désormais ratifiées : `Silent Hand` (Rogue, porte le Garrot) et `Moonkeeper` (Sorcerer, dont une lune donne `PB ×2` au Score de Destinée). Même forme exactement que GAP-KIND-ARCANA, payé le 2026-08-08 : ouvrir le genre précède tout lot de contenu."
+  },
+  {
+   "id": "POOL-TROISIEME-DEPENSE-TRAININGS",
+   "statut": "🔴 OUVERT — élargit le lot 35",
+   "source": "Eric, 2026-08-12",
+   "texte": "Le pool paie une TROISIÈME famille : les `training` (langues supplémentaires, armes exotiques, Garrot). Coût variable, sans palier ni bonus, achetables tous les 4 niveaux, affichés dans la liste des outils sans en être. Aucun genre `training` parmi les 12 ; le canal `fh.skills.spend.<slug>` ne résout que `skill`. La phrase « un pool, DEUX dépenses », répétée dans tout le chantier, est fausse : il y en a trois."
   }
  ],
  "trous_contenu_bouches": {
@@ -563,5 +575,31 @@
   "la_cause_lue_dans_le_code": "`src/modules/fh/skill-pool.mjs` résout la cible du canal de dépense dans `records(\"skill\")` SEUL — un outil n'y est pas, donc il est refusé (correctement, bruyamment, §0.5 respectée). Mesuré côté catalogue : genre `skill` = **26** records, genre `tool` = **36**. Les 62 lignes d'Eric existent bien dans les données ; 26 seulement sont achetables. Le seul canal d'outil existant est `background.tool` — un outil IMPOSÉ par l'arrière-plan (`mode: required`), pas une dépense.",
   "pourquoi_c_est_bloquant_maintenant": "Refaire l'étape Compétences avec une grille qui mêle compétences et outils AVANT de combler ce trou, ce serait REFAIRE EXACTEMENT l'erreur du lot 33 : habiller un écran sur ce que le moteur n'expose pas. La hiérarchie des sources tranche le sens de la réparation : addendums > moteur, donc c'est le MOTEUR qui doit changer, pas la règle.",
   "ce_qui_attend_eric": "Les outils s'achètent-ils au MÊME barème que les compétences (les quatre paliers, aucun/demi/plein/expertise à 0/1/2/4) ou à un barème propre ? Un outil peut-il porter demi et expertise, ou seulement « plein » ?"
+ },
+ "regles_tranchees_2026_08_12": {
+  "date": "2026-08-12",
+  "display": "⭐ CINQ RÈGLES TRANCHÉES PAR ERIC — dont une TROISIÈME dépense du pool que personne n'avait vue.",
+  "outils_au_pool": "Les 36 outils s'achètent au **même barème** que les compétences (0/1/2/4). Le canal ne connaît que le genre `skill` — dette n°6 des ADDENDUMS.",
+  "arriere_plan_eteint": "⭐ **Il n'y a plus d'arrière-plan en Fate's Hand.** L'étape ne pose qu'un don d'origine et les bonus de caracs, et peut s'appeler **Inheritance**. Plus de compétences ni d'outil imposés. MESURÉ : rien ne casse — pool 7 → 10 sur le magicien d'exemple, les boosts et le don d'origine survivent intacts, `underived` nomme proprement `identity.background`. 📌 Et l'outil imposé disparaît avec lui : SEUL le genre `background` portait un `tool_id` dans toute la pile (3 records SRD).",
+  "rogue": "Pas de plafond de compte sur l'expertise au niveau 1 : « il prend ces décisions dans le pool, il doit juste être NOTIFIÉ qu'il y a droit ». Le pool est la seule économie qui arbitre ; « 2 compétences » décrivait le SRD, pas une limite FH.",
+  "trainings": "⭐ **UNE TROISIÈME DÉPENSE DU POOL, ET ELLE N'ÉTAIT NULLE PART.** Coût variable (1 pt ou plus), AUCUN palier, AUCUN bonus — elles ajoutent quelque chose à une autre capacité, parfois derrière un prérequis, et ne s'achètent QUE TOUS LES 4 NIVEAUX. Exemples d'Eric : langues supplémentaires, armes exotiques, le Garrot (1 pt — remplace les 2 pts du chapitre). Elles s'AFFICHENT dans la liste des outils sans en être. Nom retenu : **`training`**, vérifié libre dans toute la pile (`aptitude` et `discipline` sont pris par le code). ⚠️ GENRE NEUF à ouvrir — aucun `training` parmi les 12 genres.",
+  "categories_de_competences": "**Knowledge · Social · Exploration · Physical · Tools**, tri alphabétique dans chaque. RANGEMENT SEULEMENT, aucun effet de règle. Un champ `category` est ajouté aux records de compétence, porté par la COUCHE FH (patch pour le SRD, natif pour les huit FH) — le SRD n'invente rien et un personnage SRD pur affiche une liste non rangée."
+ },
+ "classes_jamais_confrontees_2026_08_12": {
+  "date": "2026-08-12",
+  "statut": "🔴 TROU DE PROCESSUS — Eric a dû le signaler lui-même",
+  "display": "🔴 LES MODIFICATIONS DE CLASSES D'ERIC N'ONT JAMAIS ÉTÉ CONFRONTÉES AU MOTEUR — aucune question ne lui avait été posée dessus, en cinq jours de siège.",
+  "le_fait": "`0. D&D 5+ Rules/7. Classes & Subclasses/` porte quatre modifications (28 juin) et une sous-classe entière (11 juillet). Mesuré le 2026-08-12 : ZÉRO occurrence dans `layers/` et `src/` pour Sneak Critical, le Garrot et Moonkeeper ; seuls les Deflect et Great Weapon Fighting **SRD** existent.",
+  "les_cinq": "Rogue — Sneak Critical (niv. 2, +1 de portée de critique) · Monk — Deflect (dé à mains nues + niveau + DEX, dégâts reflétés si couverts) · Fighter/Ranger/Paladin — Great Weapon Fighting (bonus de maîtrise aux dégâts, « graze ») · Sorcerer — Moonkeeper, 6 lunes, tables de sorts, et ⚠️ Ono donne `PB ×2` au SCORE DE DESTINÉE · Rogue — la sous-classe qui donne le Garrot.",
+  "la_sous_classe": "⭐ **`Silent Hand` — nom ratifié par Eric le 2026-08-12**, à construire PLUS TARD. Elle donne le Garrot gratuitement au niveau 3 ; les autres l'achètent 1 point au pool. POURQUOI un nom neuf : mesuré, le SRD 5.2 ne donne au Rogue qu'une sous-classe, **Thief** (niveau 3) ; « Assassin » n'existe au SRD que comme MONSTRE (`srd:monster:en:assassin`). Reprendre le nom serait du contenu WotC hors SRD (loi §0.8).",
+  "ce_que_ca_ouvre": "⚠️ **AUCUN genre `subclass` parmi les 12 genres de couche** — mesuré. Construire Silent Hand ou Moonkeeper exigera d'ouvrir ce genre, exactement comme il a fallu ouvrir `arcana` (GAP-KIND, payé le 2026-08-08). C'est du CONTRAT, donc le travail de l'architecte, et il précède les lots de contenu.",
+  "la_lecon": "📌 Ce siège lit le code et les passations ; il n'avait jamais ouvert le chapitre des classes. La méthode §5b (l'architecte lit les chapitres d'Eric et rend ses doutes) a le meilleur rendement du chantier — et elle n'avait pas été appliquée aux classes."
+ },
+ "schemas_ecran_2026_08_12": {
+  "date": "2026-08-12",
+  "statut": "🟡 au chaud",
+  "display": "🟡 ERIC A DESSINÉ LE BUILDER ET LA FICHE — rangés en texte dans le vault, rien n'est en construction.",
+  "ou": "vault `Chantier FH & FHPC/FHV2 - Schémas d'écran.md` (les images restent à déposer).",
+  "trois_points_a_trancher": "(1) L'ordre des panneaux dessiné n'est pas celui ratifié le 2026-08-10 — caracs et Destinée passent AVANT espèce et classe. Le moteur s'en moque : sa seule contrainte est qu'aucun pool ne se publie sans record de classe, et Compétences vient bien après Classe. (2) ⭐ « Expert mode: you can see the sheet filling itself » — ce n'est PAS le plan escamotable, c'est la FICHE EN DIRECT à côté du builder. Troisième forme, coût réel. (3) `Story` est à la fin, séparé de l'Inheritance — cohérent avec « optimiser d'abord, raconter ensuite »."
  }
 }
