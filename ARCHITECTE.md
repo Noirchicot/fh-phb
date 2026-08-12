@@ -208,6 +208,13 @@ et dans `shell.mjs`.
 - **La moitié décidable** appartient au **conseiller esthétique** (§6).
 - Destination : vault `Chantier FH & FHPC/FHV2 - Bible esthétique.md`, à créer.
 
+⭐ **Une contrainte ratifiée par Eric le 2026-08-12** : la **base mobile est
+360 px** — la largeur sur laquelle on dessine le téléphone. ⚠️ **À ne pas
+confondre avec les 720 px** de `shell.css:128` / `shell.mjs:66`, qui sont un
+**seuil de bascule**, pas une largeur de dessin. Et 360 n'officialise rien
+d'existant : remesuré, le builder v1 n'a **aucun** traitement téléphone (une
+seule requête média, `max-width: 1020px`, sous laquelle il empile ses colonnes).
+
 ### 🔴 CE QUE CE SIÈGE NE FAIT PAS SPONTANÉMENT, ET QU'IL DOIT FAIRE
 
 **Il lit le code, les contrats et les passations. Il NE LIT PAS les chapitres

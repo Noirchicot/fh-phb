@@ -74,6 +74,13 @@ visuelle et d'habillage*.
 | Espace | une **grande zone** peut accueillir ambiance, illustration et texte narratif — **ou rester vide** |
 | Deux rendus | **nu** (calme, net, très lisible) et **immersion** (illustration, ambiance, identité de campagne) — **pas deux builders** |
 | Thèmes | palettes, fonds, textures, styles de boutons doivent être préparables ; musique opt-in, jamais nécessaire |
+| ⭐ **Base mobile** | **360 px** — la largeur sur laquelle on dessine le téléphone *(Eric, 2026-08-12)* |
+
+⚠️ **360 et 720 sont de nature différente, ne pas les confondre** : **360 px** est
+une largeur de **dessin** ; **720 px** est le **seuil de bascule** de disposition
+(`shell.css:128`, `shell.mjs:66`). Et 360 n'officialise rien d'existant — remesuré :
+le builder v1 n'a **aucun** traitement téléphone, une seule requête média à
+`max-width: 1020px`, sous laquelle il empile ses colonnes. C'est du papier blanc.
 
 ⛔ **La règle d'architecture de l'habillage** : le rendu nu/immersion et les thèmes
 relèvent du **FH overlay**, pas du contenu FH ni du socle SRD. L'overlay peut
