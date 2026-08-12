@@ -139,22 +139,35 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-12, clôture de soirée (relire ceci en premier)
+## 5. L'ÉTAT DU CHANTIER — 2026-08-13 (relire ceci en premier)
 
 | Dépôt | `main` local | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `a423789` | ✅ à jour | **629 vertes** |
-| `~/tools/fh-phb` | `c5b2f93` | ✅ à jour | — |
+| `~/tools/fhpc` | `a423789` | ✅ à jour | **629 vertes** *(recomptées)* |
+| `~/tools/fh-phb` | `91e8f01` | ✅ à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
 ✅ **RIEN N'EST EN VOL** — aucun worktree sur `fhpc`, aucun lot en cours, aucune
-fusion à moitié, `origin` ne porte qu'une branche. **Lots 36 et 37 fusionnés.**
+fusion à moitié. **Lots 36 et 37 fusionnés.** **La commande du lot 38 est écrite et
+PRÊTE À LANCER** (`LOT-38-JETONS-SURFACES.md`) : les deux décisions qu'elle
+attendait — la **correction de contraste** de la palette et l'**échelle de type** —
+sont **ratifiées par Eric le 2026-08-13** et déjà portées dans les fichiers.
+
+⭐ **L'échelle du builder, ratifiée** : **T1 10 · T2 12 · T3 14 · T4 16 · T5 18 ·
+T6 22 · T7 44**, espacement en **grille de 4 avec un cran de 2**, rayons **4 · 8 ·
+999**. Détail et raisonnement : bible **§2b**. 📌 **T4 = 16 n'est pas un goût** :
+défaut du navigateur, seuil sous lequel iOS zoome de force un champ, et **déjà ce
+que le builder rend** — son corps n'est déclaré nulle part.
 
 ⛔ **REMESURE CES SHA** (`git ls-remote origin refs/heads/main`) : ils ont une
-durée de vie de quelques minutes ici. **Trois lignes de la version précédente de
-ce §5 étaient périmées à la reprise du 2026-08-12** — des commits annoncés non
-poussés qui l'étaient, et une branche distante à supprimer déjà supprimée.
-📌 *Une ligne d'état non remesurée est une rumeur.*
+durée de vie de quelques minutes ici. **Deux lignes de la version précédente de ce
+§5 étaient déjà fausses à la reprise du 2026-08-13, moins de douze heures après :**
+
+1. `fh-phb` était annoncé à `c5b2f93` — il était à `91e8f01`.
+2. « `origin` ne porte qu'une branche » : vrai de **`fhpc` seul**. `origin` de
+   `fh-phb` porte **14 branches** (historiques du dock gelé, sans danger).
+
+📌 *Une ligne d'état non remesurée est une rumeur — y compris celle d'hier soir.*
 
 **CE QUI RESTE OUVERT** :
 
@@ -181,7 +194,7 @@ qui construira l'écran. Ne les redemande pas.
 |---|---|---|
 | ✅ | ~~`36-trainings`~~ | **fusionné** — la troisième dépense du pool |
 | ✅ | ~~`37-pool-garde`~~ | **fusionné** — le pool ne peut plus finir en dette, et `validate()` lit le carnet |
-| **1** | **`38-jetons-surfaces`** | l'échelle et l'inventaire des surfaces, les valeurs de `PALETTE-FHV2.json`, et les **trois bugs vivants** de la coquille. **Avant** le gros CSS de l'écran (arbitré par Eric) |
+| **1** | **`38-jetons-surfaces`** | 📄 **commande écrite le 2026-08-13** : `LOT-38-JETONS-SURFACES.md`. L'échelle, l'inventaire des surfaces, les valeurs de `PALETTE-FHV2.json` **recalculées** (§5b de la bible), les **trois bugs vivants** et **le garde qui rougit** si un nombre en dur revient. **Avant** le gros CSS de l'écran (arbitré par Eric) |
 | **2** | **`39-etape-competences`** | l'écran, sur le **§4** du vault `FHV2 - Schémas d'écran` |
 
 Puis : les sept étapes restantes → la fiche → M4.
@@ -200,8 +213,44 @@ dettes de règles**. **Le pool négatif en est sorti** : payé par le lot 37.
 
 ⚠️ **Et le défaut de fond** : `ui/builder/engine.mjs` monte le moteur **sans
 `modules:`** → `resolved.stats` revient **vide**, donc **l'écran ne voit pas le
-pool du tout**. Avec le module injecté, le même document rend
-`fh:skill-points = 10`.
+pool du tout**. **Resondé le 2026-08-13, et c'est plus large que rapporté** : avec
+les deux modules montés, le même document rend `fh:destiny = 10` **et**
+`fh:skill-points = 10`. L'écran perd donc **aussi le Score de Destinée**. Une
+ligne, confiée au lot 38 (§3h de sa commande).
+
+### 🔴 ET LA PALETTE RATIFIÉE ÉCHOUE AA — mesuré le 2026-08-13
+
+**Onze des dix-huit jetons de `PALETTE-FHV2.json` tombent sous AA sur la surface où
+ils s'affichent réellement.** Cause : chaque valeur est calée **exactement** sur
+4,5:1 **contre la dalle**, sans marge — or les encres s'affichent sur une **carte**
+(`surface`, 4,13–4,21) ou dans un **champ** (`creux`, 3,67–3,82).
+
+📌 **C'est la faute n°1 de ce siège — mesurer le mauvais objet — mais cette fois
+elle était dans un document RATIFIÉ, pas dans une commande de lot.** La parade
+reste la même : remesurer sur l'objet réel.
+
+✅ **CORRIGÉ le 2026-08-13, sur la parole d'Eric** — les **trois** familles de
+`PALETTE-FHV2.json`, et la bible §5b dont le tableau porte désormais le contraste
+**sur `creux`** (celui qui est garanti) au lieu du contraste sur la dalle. Teinte
+inchangée à **2,1°** près, les trois séparations ratifiées tenues, `on-accent`
+passé de 5,05/4,56 à **6,07/5,62**. Chaque jeton porte maintenant **deux** ratios.
+
+📌 **La demande a été faite AVANT d'écrire**, pas après : un siège ne réécrit pas
+en silence un document qu'Eric a signé — même quand la correction honore le propre
+critère d'Eric.
+
+⚠️ **Et une erreur d'application, rattrapée** : la première passe du script a
+**aussi** déplacé `texte` et `texte-doux`, qui **passaient déjà** (10,36 et 4,94).
+Leur clarté est un **choix esthétique**, pas un seuil. Restauré depuis la
+sauvegarde. 📌 *La forme de la faute : appliquer une règle à tout l'ensemble au lieu
+du sous-ensemble mesuré.*
+
+### 🔴 ET `ui/` N'A AUCUN TEST — mesuré le 2026-08-13
+
+`grep -rln "ui/builder\|shell.css" tests/` → **rien**. **538 lignes sans filet.**
+D'où la condition de sortie du lot 38 : un garde d'octets sur `shell.css`, attaqué
+cinq fois. Le patron existe déjà dans le dépôt (`tests/source-scan.mjs`, et
+`render-fiche.test.mjs` qui teste un rendu **sans DOM**).
 
 ### 📐 LA BIBLE ESTHÉTIQUE — chantier ouvert le 2026-08-12
 

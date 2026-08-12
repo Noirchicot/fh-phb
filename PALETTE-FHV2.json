@@ -11,7 +11,9 @@
     "jour": "#E9EDF2",
     "rj": 1.0,
     "nuit": "#141A20",
-    "rn": 1.0
+    "rn": 1.0,
+    "rj_creux": 1.22,
+    "rn_creux": 1.24
    },
    {
     "nom": "surface",
@@ -19,7 +21,9 @@
     "jour": "#DEE2E7",
     "rj": 1.11,
     "nuit": "#1B232B",
-    "rn": 1.1
+    "rn": 1.1,
+    "rj_creux": 1.1,
+    "rn_creux": 1.12
    },
    {
     "nom": "creux",
@@ -27,7 +31,9 @@
     "jour": "#D4D8DC",
     "rj": 1.22,
     "nuit": "#222C36",
-    "rn": 1.24
+    "rn": 1.24,
+    "rj_creux": 1.0,
+    "rn_creux": 1.0
    },
    {
     "nom": "texte",
@@ -35,7 +41,9 @@
     "jour": "#27282A",
     "rj": 12.55,
     "nuit": "#D3DBE2",
-    "rn": 12.52
+    "rn": 12.52,
+    "rj_creux": 10.3,
+    "rn_creux": 10.12
    },
    {
     "nom": "texte-doux",
@@ -43,23 +51,29 @@
     "jour": "#545960",
     "rj": 6.0,
     "nuit": "#8F99A2",
-    "rn": 6.05
+    "rn": 6.05,
+    "rj_creux": 4.93,
+    "rn_creux": 4.89
    },
    {
     "nom": "texte-tenu",
     "role": "mentions",
-    "jour": "#636A73",
-    "rj": 4.65,
-    "nuit": "#7A848E",
-    "rn": 4.61
+    "jour": "#595F67",
+    "rj": 5.48,
+    "nuit": "#8A939B",
+    "rn": 5.61,
+    "rj_creux": 4.5,
+    "rn_creux": 4.54
    },
    {
     "nom": "bordure-forte",
     "role": "bordures de contrôle",
-    "jour": "#7E8896",
-    "rj": 3.05,
-    "nuit": "#5F6871",
-    "rn": 3.09
+    "jour": "#707B8A",
+    "rj": 3.65,
+    "nuit": "#6B757F",
+    "rn": 3.74,
+    "rj_creux": 3.0,
+    "rn_creux": 3.02
    },
    {
     "nom": "bordure",
@@ -67,94 +81,117 @@
     "jour": "#B3C4DA",
     "rj": 1.51,
     "nuit": "#33393F",
-    "rn": 1.5
+    "rn": 1.5,
+    "rj_creux": 1.24,
+    "rn_creux": 1.21
    },
    {
     "nom": "accent",
     "role": "",
-    "jour": "#906037",
-    "rj": 4.56,
-    "nuit": "#B07643",
-    "rn": 4.61
+    "jour": "#7F5531",
+    "rj": 5.5,
+    "nuit": "#BE8553",
+    "rn": 5.57,
+    "rj_creux": 4.51,
+    "rn_creux": 4.5
    },
    {
     "nom": "positive",
     "role": "",
-    "jour": "#367751",
-    "rj": 4.56,
-    "nuit": "#419163",
-    "rn": 4.55
+    "jour": "#306948",
+    "rj": 5.51,
+    "nuit": "#48A26E",
+    "rn": 5.56,
+    "rj_creux": 4.52,
+    "rn_creux": 4.5
    },
    {
     "nom": "caution",
     "role": "",
-    "jour": "#7C690A",
-    "rj": 4.6,
-    "nuit": "#98810C",
-    "rn": 4.57
+    "jour": "#6E5D09",
+    "rj": 5.52,
+    "nuit": "#A9900D",
+    "rn": 5.58,
+    "rj_creux": 4.53,
+    "rn_creux": 4.51
    },
    {
     "nom": "critical",
     "role": "",
-    "jour": "#B74533",
-    "rj": 4.56,
-    "nuit": "#DF543E",
-    "rn": 4.57
+    "jour": "#A23D2D",
+    "rj": 5.51,
+    "nuit": "#E46E5B",
+    "rn": 5.57,
+    "rj_creux": 4.52,
+    "rn_creux": 4.51
    },
    {
     "nom": "info",
     "role": "",
-    "jour": "#3E6DA3",
-    "rj": 4.55,
-    "nuit": "#4B85C6",
-    "rn": 4.56
+    "jour": "#376090",
+    "rj": 5.52,
+    "nuit": "#6295CD",
+    "rn": 5.59,
+    "rj_creux": 4.53,
+    "rn_creux": 4.52
    },
    {
     "nom": "dé · Destiny",
     "role": "",
-    "jour": "#886514",
-    "rj": 4.56,
-    "nuit": "#A67B19",
-    "rn": 4.56
+    "jour": "#785912",
+    "rj": 5.52,
+    "nuit": "#BA891C",
+    "rn": 5.58,
+    "rj_creux": 4.53,
+    "rn_creux": 4.51
    },
    {
     "nom": "dé · Guidance",
     "role": "",
-    "jour": "#406BA8",
-    "rj": 4.6,
-    "nuit": "#4E83CE",
-    "rn": 4.56
+    "jour": "#395F96",
+    "rj": 5.49,
+    "nuit": "#6493D4",
+    "rn": 5.56,
+    "rj_creux": 4.51,
+    "rn_creux": 4.5
    },
    {
     "nom": "dé · Bardic",
     "role": "",
-    "jour": "#8557A7",
-    "rj": 4.56,
-    "nuit": "#A26ACB",
-    "rn": 4.56
+    "jour": "#764D94",
+    "rj": 5.48,
+    "nuit": "#AE7DD2",
+    "rn": 5.56,
+    "rj_creux": 4.5,
+    "rn_creux": 4.5
    },
    {
     "nom": "dé · Tactical",
     "role": "",
-    "jour": "#BC4035",
-    "rj": 4.55,
-    "nuit": "#E44E40",
-    "rn": 4.56
+    "jour": "#A6392F",
+    "rj": 5.5,
+    "nuit": "#E86B5F",
+    "rn": 5.59,
+    "rj_creux": 4.51,
+    "rn_creux": 4.52
    },
    {
     "nom": "dé · Bonus",
     "role": "",
-    "jour": "#636A73",
-    "rj": 4.65,
-    "nuit": "#7A848E",
-    "rn": 4.61
+    "jour": "#595F67",
+    "rj": 5.48,
+    "nuit": "#8A939B",
+    "rn": 5.61,
+    "rj_creux": 4.5,
+    "rn_creux": 4.54
    }
   ],
   "on_accent_jour": "#FFFFFF",
   "on_accent_nuit": "#141A20",
-  "r_on_jour": 5.37,
-  "r_on_nuit": 4.61,
-  "ecart_info_dalle": 1.3
+  "r_on_jour": 6.47,
+  "r_on_nuit": 5.57,
+  "ecart_info_dalle": 1.3,
+  "cible": "Chaque encre SÉMANTIQUE atteint son seuil contre `creux` — le PIRE fond qu'elle peut rencontrer — et non contre la dalle. Correction du 2026-08-13, ratifiée par Eric : les valeurs précédentes étaient calées exactement sur leur seuil CONTRE LA DALLE, sans marge, alors qu'aucune encre ne s'affiche sur la dalle : elles s'affichent sur `surface` (cartes) ou dans `creux` (champs), où ONZE des dix-huit jetons tombaient sous AA. ⚠️ `texte` et `texte-doux` NE SONT PAS CORRIGÉS : ils passaient déjà sur `creux` (10,36 et 4,94), et leur clarté est un choix d'Eric. Teinte et saturation inchangées partout. `rj`/`rn` = contraste sur la dalle ; `rj_creux`/`rn_creux` = contraste sur `creux`, celui qui est GARANTI."
  },
  "ardoise": {
   "nom": "Bleu gris profond",
@@ -168,7 +205,9 @@
     "jour": "#DFE5EC",
     "rj": 1.0,
     "nuit": "#0E1318",
-    "rn": 1.0
+    "rn": 1.0,
+    "rj_creux": 1.22,
+    "rn_creux": 1.19
    },
    {
     "nom": "surface",
@@ -176,7 +215,9 @@
     "jour": "#D4DAE1",
     "rj": 1.11,
     "nuit": "#151C23",
-    "rn": 1.09
+    "rn": 1.09,
+    "rj_creux": 1.1,
+    "rn_creux": 1.1
    },
    {
     "nom": "creux",
@@ -184,7 +225,9 @@
     "jour": "#CBD0D6",
     "rj": 1.22,
     "nuit": "#1B242E",
-    "rn": 1.19
+    "rn": 1.19,
+    "rj_creux": 1.0,
+    "rn_creux": 1.0
    },
    {
     "nom": "texte",
@@ -192,7 +235,9 @@
     "jour": "#212224",
     "rj": 12.55,
     "nuit": "#CDD5DC",
-    "rn": 12.57
+    "rn": 12.57,
+    "rj_creux": 10.26,
+    "rn_creux": 10.57
    },
    {
     "nom": "texte-doux",
@@ -200,23 +245,29 @@
     "jour": "#4F545A",
     "rj": 6.02,
     "nuit": "#8A949D",
-    "rn": 6.05
+    "rn": 6.05,
+    "rj_creux": 4.92,
+    "rn_creux": 5.08
    },
    {
     "nom": "texte-tenu",
     "role": "mentions",
-    "jour": "#5E656E",
-    "rj": 4.65,
-    "nuit": "#768089",
-    "rn": 4.64
+    "jour": "#535A62",
+    "rj": 5.51,
+    "nuit": "#828B93",
+    "rn": 5.39,
+    "rj_creux": 4.5,
+    "rn_creux": 4.53
    },
    {
     "nom": "bordure-forte",
     "role": "bordures de contrôle",
-    "jour": "#78828F",
-    "rj": 3.07,
-    "nuit": "#5A636B",
-    "rn": 3.05
+    "jour": "#6C7582",
+    "rj": 3.68,
+    "nuit": "#646E76",
+    "rn": 3.59,
+    "rj_creux": 3.0,
+    "rn_creux": 3.01
    },
    {
     "nom": "bordure",
@@ -224,94 +275,117 @@
     "jour": "#ACBDD2",
     "rj": 1.51,
     "nuit": "#2F353A",
-    "rn": 1.5
+    "rn": 1.5,
+    "rj_creux": 1.23,
+    "rn_creux": 1.26
    },
    {
     "nom": "accent",
     "role": "",
-    "jour": "#895B34",
-    "rj": 4.59,
-    "nuit": "#A97140",
-    "rn": 4.55
+    "jour": "#79502E",
+    "rj": 5.52,
+    "nuit": "#B97C46",
+    "rn": 5.36,
+    "rj_creux": 4.51,
+    "rn_creux": 4.51
    },
    {
     "nom": "positive",
     "role": "",
-    "jour": "#33714D",
-    "rj": 4.59,
-    "nuit": "#3F8C5F",
-    "rn": 4.56
+    "jour": "#2D6344",
+    "rj": 5.56,
+    "nuit": "#459A68",
+    "rn": 5.4,
+    "rj_creux": 4.54,
+    "rn_creux": 4.54
    },
    {
     "nom": "caution",
     "role": "",
-    "jour": "#776409",
-    "rj": 4.58,
-    "nuit": "#937C0C",
-    "rn": 4.56
+    "jour": "#695808",
+    "rj": 5.52,
+    "nuit": "#A1880D",
+    "rn": 5.37,
+    "rj_creux": 4.51,
+    "rn_creux": 4.51
    },
    {
     "nom": "critical",
     "role": "",
-    "jour": "#AE4231",
-    "rj": 4.57,
-    "nuit": "#D7513C",
-    "rn": 4.56
+    "jour": "#993A2B",
+    "rj": 5.53,
+    "nuit": "#DC6552",
+    "rn": 5.36,
+    "rj_creux": 4.52,
+    "rn_creux": 4.5
    },
    {
     "nom": "info",
     "role": "",
-    "jour": "#3B679B",
-    "rj": 4.6,
-    "nuit": "#4980BF",
-    "rn": 4.55
+    "jour": "#345B8A",
+    "rj": 5.5,
+    "nuit": "#5B8DC5",
+    "rn": 5.39,
+    "rj_creux": 4.5,
+    "rn_creux": 4.53
    },
    {
     "nom": "dé · Destiny",
     "role": "",
-    "jour": "#816013",
-    "rj": 4.58,
-    "nuit": "#9F7718",
-    "rn": 4.56
+    "jour": "#715411",
+    "rj": 5.56,
+    "nuit": "#AF831A",
+    "rn": 5.41,
+    "rj_creux": 4.54,
+    "rn_creux": 4.55
    },
    {
     "nom": "dé · Guidance",
     "role": "",
-    "jour": "#3D66A0",
-    "rj": 4.59,
-    "nuit": "#4B7FC6",
-    "rn": 4.58
+    "jour": "#365A8E",
+    "rj": 5.5,
+    "nuit": "#5C8BCC",
+    "rn": 5.35,
+    "rj_creux": 4.5,
+    "rn_creux": 4.5
    },
    {
     "nom": "dé · Bardic",
     "role": "",
-    "jour": "#7F529F",
-    "rj": 4.59,
-    "nuit": "#9D66C4",
-    "rn": 4.56
+    "jour": "#70488C",
+    "rj": 5.53,
+    "nuit": "#A675CA",
+    "rn": 5.35,
+    "rj_creux": 4.52,
+    "rn_creux": 4.5
    },
    {
     "nom": "dé · Tactical",
     "role": "",
-    "jour": "#B33D32",
-    "rj": 4.56,
-    "nuit": "#DC4B3E",
-    "rn": 4.55
+    "jour": "#9D362C",
+    "rj": 5.52,
+    "nuit": "#E06256",
+    "rn": 5.38,
+    "rj_creux": 4.51,
+    "rn_creux": 4.52
    },
    {
     "nom": "dé · Bonus",
     "role": "",
-    "jour": "#5E656E",
-    "rj": 4.65,
-    "nuit": "#768089",
-    "rn": 4.64
+    "jour": "#535A62",
+    "rj": 5.51,
+    "nuit": "#828B93",
+    "rn": 5.39,
+    "rj_creux": 4.5,
+    "rn_creux": 4.53
    }
   ],
   "on_accent_jour": "#FFFFFF",
   "on_accent_nuit": "#0E1318",
-  "r_on_jour": 5.82,
-  "r_on_nuit": 4.55,
-  "ecart_info_dalle": 0.2
+  "r_on_jour": 7.0,
+  "r_on_nuit": 5.36,
+  "ecart_info_dalle": 0.2,
+  "cible": "Chaque encre SÉMANTIQUE atteint son seuil contre `creux` — le PIRE fond qu'elle peut rencontrer — et non contre la dalle. Correction du 2026-08-13, ratifiée par Eric : les valeurs précédentes étaient calées exactement sur leur seuil CONTRE LA DALLE, sans marge, alors qu'aucune encre ne s'affiche sur la dalle : elles s'affichent sur `surface` (cartes) ou dans `creux` (champs), où ONZE des dix-huit jetons tombaient sous AA. ⚠️ `texte` et `texte-doux` NE SONT PAS CORRIGÉS : ils passaient déjà sur `creux` (10,36 et 4,94), et leur clarté est un choix d'Eric. Teinte et saturation inchangées partout. `rj`/`rn` = contraste sur la dalle ; `rj_creux`/`rn_creux` = contraste sur `creux`, celui qui est GARANTI."
  },
  "parchemin": {
   "nom": "Parchemin",
@@ -325,7 +399,9 @@
     "jour": "#F6F3EC",
     "rj": 1.0,
     "nuit": "#14120E",
-    "rn": 1.0
+    "rn": 1.0,
+    "rj_creux": 1.21,
+    "rn_creux": 1.24
    },
    {
     "nom": "surface",
@@ -333,7 +409,9 @@
     "jour": "#EBE8E1",
     "rj": 1.1,
     "nuit": "#1F1C16",
-    "rn": 1.1
+    "rn": 1.1,
+    "rj_creux": 1.1,
+    "rn_creux": 1.13
    },
    {
     "nom": "creux",
@@ -341,7 +419,9 @@
     "jour": "#E0DED7",
     "rj": 1.21,
     "nuit": "#2A261D",
-    "rn": 1.24
+    "rn": 1.24,
+    "rj_creux": 1.0,
+    "rn_creux": 1.0
    },
    {
     "nom": "texte",
@@ -349,7 +429,9 @@
     "jour": "#2D2C2A",
     "rj": 12.59,
     "nuit": "#D8D3C9",
-    "rn": 12.54
+    "rn": 12.54,
+    "rj_creux": 10.36,
+    "rn_creux": 10.11
    },
    {
     "nom": "texte-doux",
@@ -357,23 +439,29 @@
     "jour": "#605C54",
     "rj": 6.0,
     "nuit": "#989286",
-    "rn": 6.05
+    "rn": 6.05,
+    "rj_creux": 4.94,
+    "rn_creux": 4.87
    },
    {
     "nom": "texte-tenu",
     "role": "mentions",
-    "jour": "#726D62",
-    "rj": 4.65,
-    "nuit": "#847E71",
-    "rn": 4.64
+    "jour": "#676258",
+    "rj": 5.47,
+    "nuit": "#928C7F",
+    "rn": 5.59,
+    "rj_creux": 4.5,
+    "rn_creux": 4.51
    },
    {
     "nom": "bordure-forte",
     "role": "bordures de contrôle",
-    "jour": "#928B7B",
-    "rj": 3.06,
-    "nuit": "#676257",
-    "rn": 3.08
+    "jour": "#857E6E",
+    "rj": 3.64,
+    "nuit": "#746F62",
+    "rn": 3.73,
+    "rj_creux": 3.0,
+    "rn_creux": 3.01
    },
    {
     "nom": "bordure",
@@ -381,93 +469,116 @@
     "jour": "#D3C7AD",
     "rj": 1.51,
     "nuit": "#37342D",
-    "rn": 1.51
+    "rn": 1.51,
+    "rj_creux": 1.24,
+    "rn_creux": 1.21
    },
    {
     "nom": "accent",
     "role": "",
-    "jour": "#956439",
-    "rj": 4.56,
-    "nuit": "#A97140",
-    "rn": 4.56
+    "jour": "#845933",
+    "rj": 5.48,
+    "nuit": "#BB804C",
+    "rn": 5.62,
+    "rj_creux": 4.51,
+    "rn_creux": 4.52
    },
    {
     "nom": "positive",
     "role": "",
-    "jour": "#387B54",
-    "rj": 4.59,
-    "nuit": "#3F8C5F",
-    "rn": 4.57
+    "jour": "#326E4B",
+    "rj": 5.46,
+    "nuit": "#469D6A",
+    "rn": 5.6,
+    "rj_creux": 4.5,
+    "rn_creux": 4.51
    },
    {
     "nom": "caution",
     "role": "",
-    "jour": "#816D0A",
-    "rj": 4.59,
-    "nuit": "#927C0C",
-    "rn": 4.55
+    "jour": "#736109",
+    "rj": 5.5,
+    "nuit": "#A48B0D",
+    "rn": 5.59,
+    "rj_creux": 4.53,
+    "rn_creux": 4.5
    },
    {
     "nom": "critical",
     "role": "",
-    "jour": "#BE4735",
-    "rj": 4.57,
-    "nuit": "#D7513C",
-    "rn": 4.57
+    "jour": "#AA3F2F",
+    "rj": 5.47,
+    "nuit": "#DD6A58",
+    "rn": 5.59,
+    "rj_creux": 4.51,
+    "rn_creux": 4.5
    },
    {
     "nom": "info",
     "role": "",
-    "jour": "#4071A9",
-    "rj": 4.56,
-    "nuit": "#4880BF",
-    "rn": 4.56
+    "jour": "#396496",
+    "rj": 5.51,
+    "nuit": "#5F90C7",
+    "rn": 5.61,
+    "rj_creux": 4.54,
+    "rn_creux": 4.52
    },
    {
     "nom": "dé · Destiny",
     "role": "",
-    "jour": "#8D6915",
-    "rj": 4.55,
-    "nuit": "#9F7718",
-    "rn": 4.57
+    "jour": "#7D5D13",
+    "rj": 5.5,
+    "nuit": "#B2851B",
+    "rn": 5.58,
+    "rj_creux": 4.53,
+    "rn_creux": 4.5
    },
    {
     "nom": "dé · Guidance",
     "role": "",
-    "jour": "#426FAE",
-    "rj": 4.6,
-    "nuit": "#4B7FC6",
-    "rn": 4.59
+    "jour": "#3B639C",
+    "rj": 5.49,
+    "nuit": "#618FCD",
+    "rn": 5.63,
+    "rj_creux": 4.52,
+    "rn_creux": 4.53
    },
    {
     "nom": "dé · Bardic",
     "role": "",
-    "jour": "#8B5AAD",
-    "rj": 4.55,
-    "nuit": "#9C66C4",
-    "rn": 4.55
+    "jour": "#7D4E9E",
+    "rj": 5.48,
+    "nuit": "#A97ACC",
+    "rn": 5.65,
+    "rj_creux": 4.51,
+    "rn_creux": 4.55
    },
    {
     "nom": "dé · Tactical",
     "role": "",
-    "jour": "#C34237",
-    "rj": 4.56,
-    "nuit": "#DC4B3D",
-    "rn": 4.56
+    "jour": "#AE3B31",
+    "rj": 5.46,
+    "nuit": "#E1675B",
+    "rn": 5.61,
+    "rj_creux": 4.5,
+    "rn_creux": 4.52
    },
    {
     "nom": "dé · Bonus",
     "role": "",
-    "jour": "#726D62",
-    "rj": 4.65,
-    "nuit": "#847E71",
-    "rn": 4.64
+    "jour": "#676258",
+    "rj": 5.47,
+    "nuit": "#928C7F",
+    "rn": 5.59,
+    "rj_creux": 4.5,
+    "rn_creux": 4.51
    }
   ],
   "on_accent_jour": "#FFFFFF",
   "on_accent_nuit": "#14120E",
-  "r_on_jour": 5.05,
-  "r_on_nuit": 4.56,
-  "ecart_info_dalle": 170.0
+  "r_on_jour": 6.07,
+  "r_on_nuit": 5.62,
+  "ecart_info_dalle": 170.0,
+  "cible": "Chaque encre SÉMANTIQUE atteint son seuil contre `creux` — le PIRE fond qu'elle peut rencontrer — et non contre la dalle. Correction du 2026-08-13, ratifiée par Eric : les valeurs précédentes étaient calées exactement sur leur seuil CONTRE LA DALLE, sans marge, alors qu'aucune encre ne s'affiche sur la dalle : elles s'affichent sur `surface` (cartes) ou dans `creux` (champs), où ONZE des dix-huit jetons tombaient sous AA. ⚠️ `texte` et `texte-doux` NE SONT PAS CORRIGÉS : ils passaient déjà sur `creux` (10,36 et 4,94), et leur clarté est un choix d'Eric. Teinte et saturation inchangées partout. `rj`/`rn` = contraste sur la dalle ; `rj_creux`/`rn_creux` = contraste sur `creux`, celui qui est GARANTI."
  }
 }
