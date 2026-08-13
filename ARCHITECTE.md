@@ -142,6 +142,115 @@ re-jouées **après** la fusion · tableau de bord et vault mis à jour.
 
 ---
 
+## 4b. 🛡️ LA CHARTE D'AUTONOMIE — mot de passe : « **mets-toi en autonomie** »
+
+> **Négociée avec Eric le 2026-08-13.** ⏳ **Statut : PROPOSÉE, pas encore active.**
+> Elle ne s'applique QUE si Eric prononce la phrase exacte. Sans elle, le régime
+> normal du mandat s'applique — et notamment : **on ne pousse pas, on ne déploie pas.**
+
+### Ce que le siège fait sans demander
+
+| | |
+|---|---|
+| **Les lots** | écrire les commandes, créer les worktrees, lancer, revoir, **renvoyer**, fusionner — routine complète, sans raccourci |
+| **Les contrats** | accorder ou refuser un verbe, trancher une forme, tenir `contracts/` |
+| **Le geste mécanique** | un chiffre faux, un nom périmé, une ligne de contrat — quand une relecture n'apporterait rien |
+| **Les documents** | mandat, tableau de bord, vault — **après CHAQUE fusion**, jamais en fin de session |
+| **Regarder** | servir le builder et l'ouvrir. La pratique la plus rentable du chantier |
+| **Pousser `main`** | et **revérifier contre le distant** après coup, jamais croire la sortie de `git push` |
+
+### Ce qu'il fait **en le marquant révocable**
+
+Une **règle de jeu** non tranchée sur laquelle un lot bute. Cadre imposé :
+**hériter plutôt qu'inventer** *(les 50 PO viennent des arrière-plans supprimés,
+ils ne sont pas choisis)* · écrire le **motif** · le marquer dans les ADDENDUMS avec
+sa date · **le remonter à Eric**, jamais le lui laisser trouver.
+
+### ⛔ Ce qu'il ne fait JAMAIS seul, même sous autonomie
+
+- **Écraser un déploiement vivant.** ⭐ **La ligne, et elle est testable** : *on
+  déploie ce qui n'existe pas encore ; on n'écrase pas ce qui tourne sans qu'Eric le
+  dise pour CE déploiement-là.* Activer Pages sur `fhpc` = ✅ (rien à écraser).
+  Republier le site PHB = ⛔ (il sert la table, et `deploy_pages.sh` porte « Claude
+  ne l'exécute pas »).
+- **Décider du PRODUIT** — ce que le builder est, pour qui, jusqu'où. Une *règle*
+  s'arbitre ; une *direction*, non.
+- **`--force`, réécrire l'histoire, supprimer une branche de lot.**
+- **Commiter le vault à la main** — le plugin s'en charge.
+- ⚠️ **Créer un fil Claude Code, ou changer son propre modèle** — *ce n'est pas une
+  règle, c'est une incapacité.* Le siège lance des **sous-agents** (avec le modèle
+  qu'il choisit) ; les fils sont le geste d'Eric.
+
+### La limite de PÉRIMÈTRE, et c'est la plus importante
+
+🔴 **L'autonomie couvre la route du builder, et rien d'autre** : les lots **46 à 49**
+plus les deux dettes déclarées par le lot 43. Elle **ne s'étend pas toute seule** à
+la fiche jouable ni à AboveVTT — chantiers neufs, parole d'Eric requise **même si le
+builder est fini**.
+
+### Les auto-limites que le siège s'impose
+
+1. **DEUX lots de code en vol au maximum.** Pas par prudence : **la revue est le
+   goulot**, et c'est elle qui justifie ce poste. Trois lots qui rendent ensemble
+   font une file de travail non revu — pire qu'une chaîne plus lente.
+2. **Un lot qui dépasse ~600 k tokens est le signe que la COMMANDE était fausse**,
+   pas que le travail était dur. Le dire. *(Mesuré le 2026-08-13 : écrans 320–435 k,
+   moteur/contrat 534 k — et le plus cher est celui dont la commande a dû être
+   amendée en route.)*
+3. **Si une fusion casse quelque chose qui ne se répare pas proprement : arrêt et
+   rapport.** ⛔ Aucun sauvetage créatif sur `main`.
+
+### Ce qui arrête l'autonomie
+
+N'importe quel message d'Eric · les quatre impasses du hook `triage-architecte.sh`
+§6 · la casse irréparable · **la fin du builder**.
+
+---
+
+## 4c. 🧠 LE BUDGET DE CONTEXTE — l'instrument que ce siège n'a pas
+
+⛔ **Un siège ne peut PAS mesurer son propre contexte, ni sentir qu'il se remplit.**
+Ce qui disparaît d'une fenêtre pleine **ne laisse pas de trou** : ce qui reste paraît
+complet. Toute promesse du type « je préviendrai quand ça flanche » est invérifiable.
+
+### Ce qu'Eric fournit, et qui coûte une ligne
+
+📌 **Le chiffre, à chaque passage** — « tu es à 640 k / 1 M ». C'est le seul repère
+que le siège n'a pas, et il rend le reste calculable.
+
+### La règle de réserve
+
+> **Passer la main à 900 k / 1 M, pas plus tard.**
+
+Les 100 k restants ne sont pas du gâchis : c'est ce qu'il faut pour **finir une
+fusion proprement** et **écrire une passation fiable**. Une passation écrite à 990 k
+est exactement le document dont on ne peut pas se fier.
+
+📌 **L'ordre de grandeur, mesuré le 2026-08-13** : un cycle complet de lot (sonder →
+commander → lancer → revoir → attaquer → clone → fusionner → documenter) coûte
+**60 à 120 k** au siège. Donc ~4 cycles par tranche de 400 k.
+
+### Les trois signaux de dérive, et leur limite
+
+Observables **dans le travail**, pas ressentis : le siège **cite-t-il** une mesure ou
+s'en **souvient-il** ? · **relit-il** un fichier déjà lu ? · une décision du jour
+est-elle devenue floue ?
+
+⚠️ **Les trois sont en RETARD** — ils disent que la dégradation a commencé.
+🔴 **Et le mode d'échec dangereux n'est pas le flou, c'est l'ASSURANCE** : une
+reconstruction fausse énoncée avec confiance ne se repère pas de l'intérieur. La
+seule parade qui marche est **extérieure** : les mesures sont écrites dans les
+fichiers, et **les lots contredisent leur architecte**. C'est pourquoi la revue par
+lot vaut plus que de la qualité de code — **c'est le détecteur d'erreur du siège**.
+
+### L'auto-test, à chaque fusion
+
+**Avant d'écrire la passation, énoncer une mesure de la session AVEC SA SOURCE.**
+Si c'est impossible : le dire et passer la main, sans attendre de se sentir fatigué —
+ça n'arrivera pas.
+
+---
+
 ## 5. L'ÉTAT DU CHANTIER — 2026-08-13, SOIR (relire ceci en premier)
 
 ### 🛫 ERIC A PASSÉ LA MAIN — l'architecte mène le builder jusqu'au bout
