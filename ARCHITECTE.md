@@ -281,26 +281,61 @@ attend Eric (loi §0.10). Elle ne se devine jamais, même sous autonomie.
 > fusion comme si la main se passait au commit suivant.** La passation n'est jamais
 > un événement — elle est toujours déjà écrite.
 
+### ✅ LE BUILDER EST EN LIGNE — Eric a activé Pages le 2026-08-13
+
+**`https://noirchicot.github.io/fhpc/ui/builder/`** — Pages sur `main`, racine.
+Ouvert et vérifié depuis ce siège : la page charge, **zéro erreur console**, les
+9 étapes sont dans la ceinture, la navigation marche.
+
+⭐ **ET LE PARI « PUBLIER TÔT » S'EST PAYÉ DANS L'HEURE — deux défauts trouvés
+en la regardant**, dont **un qu'Eric a rencontré lui-même**. Aucun des 765 tests
+ne voyait ni l'un ni l'autre.
+
 | Dépôt | `main` | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | ⛔ **REMESURE** | à jour au 2026-08-13 soir | **685 vertes** |
+| `~/tools/fhpc` | `dd2b66e` | ✅ vérifié contre le distant | **767 vertes** |
 | `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
+
+⛔ **REMESURE CES SHA** — la ligne au-dessus a été écrite le 2026-08-13 au soir,
+et deux lignes de la version précédente étaient fausses en moins de douze heures.
 
 ### 🔵 CE QUI EST EN VOL, ET LE CHEMIN JUSQU'AU BOUT
 
 | | Lot | État |
 |---|---|---|
-| 🔵 | **42 `ecrans-records`** | **EN VOL** — worktree `~/tools/fhpc-worktrees/42-ecrans-records`, base verte à 685 vérifiée dedans |
-| 📄 | **43 `inheritance-moteur`** | écrit — ⛔ **attend la FUSION du 42** *(raison mesurée : disabler les arrière-plans tue le `ref` du personnage d'exemple, sur lequel le 42 teste)* |
-| 📄 | **45 `ecrans-hasard`** | écrit — ⛔ **attend la FUSION du 42** : il écrit `shell.mjs`, que le 42 écrit |
-| → | **46 `ecran-inheritance`** | après 43 |
-| → | **47 `document-neuf`** | créer + nommer + le schéma de brouillon **dérivé** ; débloque **Concept ET Universe** |
-| → | **48 `ecrans-concept-univers`** | après 47 |
+| ✅ | ~~`36`→`46`~~ | **tous fusionnés.** Sept étapes sur neuf branchées |
+| 🔵 | **47 `document-neuf`** | **EN VOL** — worktree `47-document-neuf`, base `9f747e5` (767 attendus au départ). Créer + nommer + le schéma de brouillon **dérivé** |
+| 🔵 | **50 `repartition-caracs`** | **EN VOL** — worktree `50-repartition-caracs`, base `dd2b66e`. ⭐ **Défaut rencontré par ERIC sur la page déployée** |
+| 📄 | **48 `ecrans-concept-univers`** | ⛔ **attend la FUSION du 47** : `gender` et `alignment` touchent `schemas/`, que le 47 écrit |
+| 📄 | **49 `equipement`** | ✅ **commande écrite** — ⛔ **attend la FUSION du 50** : il écrit `shell.mjs`, que le 50 écrit |
+| ⏳ | **dettes du lot 43** | 3ᵉ instance du refus en double (`block.mjs`) · défaut latent dans `skill-pool.mjs` |
 | ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |
 
-⚠️ **Mesuré le 2026-08-13 : 7 étapes sur 9 sont encore du placeholder.** Seules
-`skills` et `review` sont branchées dans `shell.mjs`. Le 42 en amènera deux.
+⛔ **DEUX LOTS EN VOL EST LE PLAFOND** *(auto-limite §4b)* — la revue est le
+goulot, pas la capacité. Les deux qui attendent le font pour une **collision de
+fichier mesurée**, pas par prudence.
+
+### 🔴 LE DÉFAUT QUE LE DÉPLOIEMENT A RENDU, ET SA LEÇON DE GARDE
+
+**`Back` et `Show plan` s'affichaient à 1,24:1** — `rgb(0,0,0)` sur
+`var(--surface)`. Invisibles. ✅ Corrigé et poussé (`dd2b66e`, 765 → 767).
+
+**La cause** : un `<button>` **n'hérite pas de `color`**, l'agent utilisateur lui
+impose `buttontext`. Le correctif du défaut n°1 (le `#fff` en dur) avait posé la
+couleur sur `:last-child` **seul** — il a mesuré le bouton **principal**, pas la
+paire. **La faute n°1 du mandat, encore.**
+
+⭐ **ET LA LEÇON EST STRUCTURELLE, PAS UN RÉGLAGE** : les cinq clauses du garde
+cherchent toutes une **valeur interdite** ; ce défaut-ci est une **déclaration
+manquante**. C'est pourquoi 765 tests étaient verts sur un bouton illisible.
+**Une sixième clause a été ajoutée, étroite à dessein** — la loi générale « tout
+fond s'accompagne d'une encre » serait **fausse** (mesuré : 13 blocs sur 145
+posent un fond sans encre, et ils ont **raison** d'hériter du `body`). Ce qui
+distingue le bouton, c'est qu'il **n'hérite pas**.
+
+📌 **La question à se poser sur tout garde** : cherche-t-il seulement ce qui est
+**écrit en trop**, ou aussi ce qui **manque** ?
 
 ### ⭐ LE « LOT MOTEUR DU HASARD » N'EXISTE PAS — dissous le 2026-08-13
 
@@ -314,14 +349,67 @@ moteur se moque de la méthode qui produit les nombres.
 résultat compte.** Donc rien n'est reproduit, donc **la question de la graine
 injectable n'a plus d'objet**.
 
-### 🔴 LA RÈGLE OUVERTE, DÉCLARÉE PLUTÔT QUE DEVINÉE
+### ✅ LA RÈGLE OUVERTE EST TRANCHÉE — et sa réponse en rouvre une autre
 
-**Le plafond de 18 en sortie de création.** Mesuré : `abilities.str = 20` passe avec
-**zéro refus**. La règle existe (ADDENDUMS §5 n°1) mais porte une question non
-tranchée : **un personnage créé au niveau 5 a des augmentations légitimes**, donc
-*« à la création »* **ne se déduit pas du niveau** — et le moteur ne voit pas un
-instant, il voit un document. ⚠️ **Ça devient visible dès que l'écran des caracs
-existe** : un 17 tiré + un boost de +2 fait **19**.
+**Le plafond de 18.** ✅ **Eric, 2026-08-13** : *« uniquement à la création au
+niveau 1 ; après, les règles SRD reprennent le pas »* (plafond 20). Gravé aux
+**ADDENDUMS §4**.
+
+⭐ **ET CETTE PRÉCISION DISSOUT LE MOTIF QUI FAISAIT TAIRE LE MOTEUR.** L'ancien
+arbitrage (*« l'écran prévient, le moteur laisse »*) tenait à un seul argument :
+un personnage créé au niveau 5 a des augmentations légitimes, donc « à la
+création » ne se déduit pas du niveau. **Au niveau 1, les deux se confondent** —
+la première augmentation SRD arrive au **niveau 4**, donc un score au-dessus de
+18 sur un niveau 1 n'a **aucune** origine légitime. Le moteur n'a pas besoin de
+reconnaître « la création » : il lui suffit de lire `level === 1`, **qu'il voit
+déjà**.
+
+⏳ **Statut : remonté à Eric, PAS appliqué.** Le moteur se tait toujours (mesuré :
+`abilities.str = 20` passe avec zéro refus). Faire opposer le plafond par
+`validate()` au niveau 1 **change une ligne ratifiée** — ça se demande.
+Effet immédiat confié au lot 50 : l'**alerte** se resserre au niveau 1.
+
+### ⚖️ LES DÉCISIONS D'ERIC DU 2026-08-13 (soir+1) — pour les lots 48 et 49
+
+| Étape | Ce qu'elle porte |
+|---|---|
+| **Concept** | **nom · gender · alignement** |
+| **Universe & Layers** | les couches · **`lang`** · `units` · **le nom de code de la campagne** · les couleurs de l'UI |
+
+🔴 **`gender`, `alignment` et `campaign` : ZÉRO occurrence** dans `schemas/`,
+`src/`, `contracts/`. Trois champs neufs — accordés comme **métadonnées de
+document en texte libre et facultatives**, à côté de `name`. Précédent ratifié :
+`identity.creatureType` est *« une chaîne libre EXPRÈS, un homebrew a le droit
+d'inventer un type »*. Une énumération fermée rendrait `Chaotic Good (mostly)`
+invalide.
+
+⛔ **ET LES COULEURS DE L'UI NE SONT PAS UN RÉGLAGE DE DOCUMENT.** Un personnage
+**s'exporte et s'importe** — s'il portait un thème, importer le personnage d'un
+autre joueur **repeindrait le builder de celui qui importe**. `localStorage`,
+jamais `fh-char/1`. *(Et mesuré : `tokens.css` n'a **aucun** sélecteur
+`[data-theme]` — le thème suit l'OS aujourd'hui, la bascule reste à construire.)*
+
+⚠️ **LE PIÈGE DES « LANGUES », à ne pas payer deux fois** : `document.lang` = la
+langue **de la fiche** (`fr|en`, *« un document ne mélange pas les deux »*) →
+étape Universe. `resolved.languages` = les langues **parlées** du personnage,
+**dérivées** — mesuré : aucun chemin de choix `language` n'existe, **rien ne les
+choisit**. Elles s'affichent, elles ne se cliquent pas.
+
+### 👀 ET LA LEÇON DU MANDAT S'EST VÉRIFIÉE, LE JOUR MÊME
+
+Le mandat prévient que ce siège **n'ouvre pas spontanément les fichiers d'Eric**.
+Sur la répartition des caracs, c'est **Eric qui a dit** *« le builder v1 y
+arrivait »* — et la réponse était à la **ligne 731** de
+`~/tools/fh-skills/fh-skill-builder.html` :
+
+```js
+assign: {STR:null,DEX:null,CON:null,INT:null,WIS:null,CHA:null},  // ability -> index into set.kept
+```
+
+**Une caractéristique pointe vers l'INDEX d'un dé, pas vers sa valeur.** Un index
+distingue les deux 14, et `null` dit *« pas encore distribué »* — **un état que
+l'écran v2 ne sait pas exprimer**, ce qui est exactement le défaut. 📌 **Va lire
+ces fichiers AVANT de concevoir, pas après qu'Eric t'y envoie.**
 
 ⭐ **UN SEUL SIÈGE D'ARCHITECTE À LA FOIS** *(Eric, 2026-08-13)* : les autres fils
 portent **(retired)**. Un commit que tu n'as pas fait n'est pas une collision —
