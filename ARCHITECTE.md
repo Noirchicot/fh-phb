@@ -226,9 +226,21 @@ Les 100 k restants ne sont pas du gâchis : c'est ce qu'il faut pour **finir une
 fusion proprement** et **écrire une passation fiable**. Une passation écrite à 990 k
 est exactement le document dont on ne peut pas se fier.
 
-📌 **L'ordre de grandeur, mesuré le 2026-08-13** : un cycle complet de lot (sonder →
-commander → lancer → revoir → attaquer → clone → fusionner → documenter) coûte
-**60 à 120 k** au siège. Donc ~4 cycles par tranche de 400 k.
+### 📏 Les trois nombres qui rendent tout calculable *(mesurés le 2026-08-13)*
+
+| | |
+|---|---|
+| **Un fil neuf démarre à ~200 k / 1 M** | le fixe : consigne système, `CLAUDE.md`, mémoire, hooks, définitions d'outils |
+| **Un cycle complet de lot coûte 60 à 80 k** | sonder → commander → lancer → revoir → attaquer → clone indépendant → fusionner → documenter |
+| **La réserve de passation est 100 k** | finir une fusion + écrire une passation fiable |
+
+**Le calcul, à faire au démarrage** : `1 M − 200 k de fixe − 100 k de réserve
+= 700 k utilisables ÷ ~70 k = **une dizaine de cycles**.` La route complète du
+builder en demande **six**.
+
+⚠️ **Ce qui fait déraper le compte n'est pas le travail, c'est la CONVERSATION.**
+Les 377 k de travail réel du 2026-08-13 contenaient une longue négociation de
+charte qui ne se répète pas. Un fil qui exécute coûte moins qu'un fil qui décide.
 
 ### Les trois signaux de dérive, et leur limite
 
