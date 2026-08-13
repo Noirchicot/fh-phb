@@ -823,7 +823,7 @@
     "3_fiche_jouable": "La fiche v2 devient interactive (jets + tray) sur le moteur v2. Décision Q1, confirmée le 2026-08-13. Gros chantier.",
     "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
     "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne.",
-    "etat": "fhpc main = 69af803, 816 verts, poussé et REVÉRIFIÉ. CINQ FUSIONS dans la soirée (47, 50, 48, 52, 51). DEUX LOTS EN VOL : 49-equipement et 53-aria-crochet."
+    "etat": "fhpc main = 1e86f8a, 818 verts, poussé et REVÉRIFIÉ. SIX FUSIONS (47, 50, 48, 52, 51, 53). UN LOT EN VOL : 49-equipement. Il ne reste que Concept & Universe pour finir les 9 étapes."
   },
   "contrainte_etat_non_derivable_2026_08_13": {
     "date": "2026-08-13",
@@ -1001,5 +1001,12 @@
     "49_equipement": "Le paquet de classe (affiché en PHRASE, choix d'Eric) + la bourse de 50 PO. Pièges écrits dans la commande : CURRENCY_KEYS = cp/sp/gp/pp (pas d'ep) et resolved.currency n'existe QUE si les quatre sont posées ; le Fighter a TROIS options.",
     "53_aria_crochet": "L'aria-label sert de crochet de test dans quatre fichiers — un attribut d'accessibilité réquisitionné comme identifiant machine. L'identifiant déménage dans `data-value`. ⛔ Les tests changent d'ATTRIBUT, jamais de VÉRITÉ."
   },
-  "instabilite_piste": "⚠️ Un `sleep 2` entre `git merge` et `npm test` a évité l'instabilité post-fusion sur les deux dernières fusions (52 et 51). Ça renforce l'hypothèse — les gardes d'octets lisent leurs fichiers au chargement du module — sans la prouver. NE PAS déclarer résolu."
+  "instabilite_piste": "⚠️ Un `sleep 2` entre `git merge` et `npm test` a évité l'instabilité post-fusion sur les deux dernières fusions (52 et 51). Ça renforce l'hypothèse — les gardes d'octets lisent leurs fichiers au chargement du module — sans la prouver. NE PAS déclarer résolu.",
+  "lot_53_fusionne": {
+    "statut": "✅ FUSIONNÉ — 816 → 818, plus un commit d'architecte pour la troisième instance",
+    "le_defaut": "`renderPicker` écrivait l'identifiant BRUT dans `aria-label` pendant que `textContent` portait le libellé humain. Un bouton affichant « Rogue » s'annonçait `srd:class:en:rogue`.",
+    "la_vraie_cause": "⚠️ PAS une étourderie : un CONFLIT D'USAGE. La valeur brute était là parce que les TESTS s'en servaient comme crochet — un attribut d'accessibilité réquisitionné en identifiant machine. C'est pour ça que ce n'était pas réparable en une ligne, contrairement à ce que l'architecte avait annoncé.",
+    "⭐_le_lot_a_contredit_sa_commande_avec_raison": "Ma §0.2 nommait QUATRE fichiers de tests dépendant de l'attribut. Faux : un seul dépend de `carnet.mjs`. Les deux autres assertent sur l'`aria-label` que posent LEURS PROPRES fichiers d'étape. J'avais grepé `aria-label` dans `tests/` sans vérifier QUELLE implémentation le posait — ma propre règle de mesure n°2. Vérifié indépendamment : carnet.mjs 5, skills-step.mjs 4, inheritance-step.mjs 1, trois implémentations distinctes.",
+    "la_troisieme_instance": "Payée par l'architecte après la fusion : `inheritance-step.mjs` fabrique ses cartes à la main et annonçait `fh:feat:en:auspicious`. Même patron, crochet de test repointé, assertion posée PUIS attaquée. Les autres sites mesurés sont légitimes (« Trained », « No proficiency », « Skill categories », « None ») — des mots pour l'oreille, pas des identifiants."
+  }
 }

@@ -293,7 +293,7 @@ ne voyait ni l'un ni l'autre.
 
 | Dépôt | `main` | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `69af803` | ✅ vérifié contre le distant | **816 vertes** |
+| `~/tools/fhpc` | `1e86f8a` | ✅ vérifié contre le distant | **818 vertes** |
 | `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
@@ -350,7 +350,7 @@ et deux lignes de la version précédente étaient fausses en moins de douze heu
 |---|---|---|
 | ✅ | ~~`36`→`52`~~ | **tous fusionnés.** Un personnage **commence**, **se nomme**, **se décrit**, ses **six dés se distribuent** et **s'échangent** |
 | 🔵 | **49 `equipement`** | **EN VOL** — le paquet de classe (en PHRASE, choix d'Eric) + la bourse de 50 PO |
-| 🔵 | **53 `aria-crochet`** | **EN VOL** — l'identifiant machine déménage dans `data-value` |
+| ✅ | ~~**53 `aria-crochet`**~~ | **fusionné** — l'identifiant machine vit dans `data-value`, et la 3ᵉ instance est payée |
 | 📄 | **`ecrans-concept-univers`** | à commander — les champs existent ; il écrit `shell.mjs`, donc **après le 49** |
 | ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |
 
