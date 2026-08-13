@@ -786,13 +786,6 @@
   "la_mesure_qui_retourne_l_accusation": "⭐ ET C'EST LA LEÇON : l'écran est FIDÈLE, la faute est au moteur. projectDecisions sur class=rogue + skills[0]=arcana + skills[1]=investigation publie : class.skills (expected 4, lock decision.option-unavailable) · class.skills[0] (LE MÊME lock, une 2e fois) · class.skills[1..4] → CINQ créneaux pour expected=4. Croire ses yeux aurait envoyé un lot réparer le mauvais fichier.",
   "ou_c_est_reparé": "Ajouté au lot 43 (§3e-bis) : c'est son fichier (decisions.mjs), et ouvrir une 3e branche dessus coûterait plus cher. ⚠️ 3e refus émis en double de la semaine — voir aussi background.feat-mismatch."
  },
- "deux_lots_en_vol_2026_08_13": {
-  "date": "2026-08-13",
-  "statut": "🔵 43 ET 45 EN VOL, EN PARALLÈLE",
-  "display": "🔵 DEUX LOTS EN VOL — 43 (Inheritance moteur) et 45 (écrans Caracs + Destinée). Fichiers disjoints, vérifié.",
-  "disjonction": "43 : layers/, src/build/, examples/, contracts/, tests/. 45 : ui/builder/, tests/. Aucun fichier commun — c'est le test de séquencement d'Eric, appliqué. Les deux worktrees sont coupés de cf31ddb, npm ci fait, base verte à 694 vérifiée dedans.",
-  "apres": "Fusionner 43 puis 45 (ou l'inverse), rebaser le second. Restent ensuite : l'écran Inheritance, document-neuf (créer + nommer + brouillon export/import), les écrans Concept + Universe, et l'ÉQUIPEMENT qu'Eric a ajouté à la ligne d'arrivée."
- },
  "huit_reponses_eric_2026_08_13": {
   "date": "2026-08-13",
   "statut": "✅ HUIT RÉPONSES D'ERIC — deux rounds, avant son départ. Plus rien ne l'attend.",
@@ -821,10 +814,12 @@
   "statut": "🗺️ LA ROUTE COMPLÈTE VERS LE 7 NOVEMBRE — elle dépasse le builder",
   "display": "🗺️ LA ROUTE : finir le builder → le DÉPLOYER (geste d'Eric) → la fiche v2 jouable → AboveVTT.",
   "1_builder": [
+   "✅ 42 ecrans-records — FUSIONNÉ (Class + Species)",
+   "✅ 45 ecrans-hasard — FUSIONNÉ (Abilities + Destiny)",
+   "🔁 45b-abilities-affichage — correction en cours (les deux colonnes qui se contredisent)",
    "🔵 43 inheritance-moteur — EN VOL",
-   "🔵 45 ecrans-hasard — EN VOL",
-   "→ 46 ecran-inheritance (après 43) + LA CONFIRMATION D'EFFACEMENT au changement de classe (composant réutilisable)",
-   "→ 47 document-neuf : créer + nommer + brouillon export/import",
+   "→ 46 ecran-inheritance (après 43) + LA CONFIRMATION D'EFFACEMENT au changement de classe",
+   "→ 47 document-neuf : créer + nommer + brouillon export/import ⚠️ doit vivre sur projectDecisions tant que les 3 portes ne sont pas franchies",
    "→ 48 ecrans-concept-univers (Universe = choix entre DEUX piles)",
    "→ 49 equipement : le paquet de la classe + 50 PO",
    "⏸️ 44 garde-des-copies — rangé, préventif"
@@ -834,15 +829,6 @@
   "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
   "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne."
  },
- "lot_45_revue_2026_08_13": {
-  "date": "2026-08-13",
-  "statut": "🔁 LOT 45 REVU ET RENVOYÉ — une correction avant fusion",
-  "display": "🔁 LOT 45 : 723/723 en clone indépendant, mais son en-tête affirme quelque chose de faux. Renvoyé pour une correction.",
-  "ce_qui_est_bon": "Aucun fichier interdit touché (src/, layers/, examples/, contracts/, schemas/ intacts). 694 → 723, 29 tests neufs, aucun test préexistant modifié. Suites rejouées dans un CLONE INDÉPENDANT avec npm install : 723/723. dice.mjs ne contient AUCUN Math.random — il n'apparaît qu'en défaut d'écran (destiny-step:148) et au point d'injection de la coquille (shell.mjs:100) : c'est la bonne frontière. drawArcana lit catalog.length, jamais un 22 en dur.",
-  "le_defaut": "🔴 L'en-tête d'abilities-step.mjs affirme « ce fichier ne branche JAMAIS sur l'id d'une méthode ailleurs que dans le tableau ». MESURÉ FAUX : lignes 266 et 274, `if (method.id === \"roll\") … else if (method.id === \"manual\")`. La boucle EST pilotée par la table (vérifié en LISANT, pas au grep — j'ai failli accuser sur un grep, faute n°1 de ce siège), mais son CORPS choisit le rendu en branchant sur l'id. Conséquence : ajouter Standard Array coûte une entrée ET un else if — exactement ce que la contrainte d'Eric interdisait mot pour mot.",
-  "ce_qui_est_demande": "Mettre le rendu DANS la table (chaque entrée porte son `render`), la boucle l'appelle sans regarder l'id. Le `method.id === mode.id` qui décide actif/inactif reste — c'est un état, pas un aiguillage. ⚔️ CONDITION DE SORTIE : prouver par un test qui ajoute une TROISIÈME méthode dans le test seul et la voit s'afficher SANS qu'une ligne du fichier change. Plus : corriger l'en-tête menteur — une affirmation fausse dans un commentaire coûte plus cher qu'un défaut visible, le prochain lot la croit.",
-  "ecart_accepte": "✅ fh.destiny.mode n'est PAS écrit au document, contrairement à abilities.mode : le namespace fh.destiny.* est strict (arcana / glory[n] / awakening[n] / other[n]) et un mode y fait JETER rebuild. Le lot l'a SONDÉ avant d'écrire une ligne. Le mode Destinée vit donc en état d'écran éphémère. Accepté : c'est une mesure, pas un contournement."
- },
  "contrainte_etat_non_derivable_2026_08_13": {
   "date": "2026-08-13",
   "statut": "🔴 CONTRAINTE D'ARCHITECTURE — l'interface ne peut traverser aucun état non dérivable",
@@ -850,5 +836,24 @@
   "la_mesure": "Le lot 45 a sondé avant d'écrire : effacer une carac rend le document non dérivable (les six scores sont obligatoires), et comme applyDecisionAction appelle rebuild() après CHAQUE verbe, le geste jette. Le lot a retiré le tiret d'effacement des lignes Abilities.",
   "pourquoi_c_est_plus_large": "⚠️ C'EST LA MÊME FAMILLE QUE « le builder ne peut pas partir d'un personnage vide » (trouvé le même jour) : le moteur est bâti pour dériver-ou-jeter, et l'interface appelle rebuild() à chaque clic. Donc TOUT geste qui rend le document transitoirement incomplet est interdit à l'écran — pas seulement l'effacement d'une carac.",
   "ou_ca_mordra": "🔴 LOT 47 `document-neuf` : il devra créer un personnage vierge, qui est par définition non dérivable. La sortie existe et elle est déjà mesurée — projectDecisions({query, choices}) publie le carnet SANS dérivation, et il est déjà exporté. L'interface doit donc pouvoir vivre sur projectDecisions seul tant que les trois portes (level, class, six caracs) ne sont pas franchies. À écrire dans la commande du 47."
+ },
+ "lot_45_fusionne_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "✅ LOT 45 FUSIONNÉ — les caracs se tirent, les cartes se tirent",
+  "display": "✅ LOT 45 FUSIONNÉ (fhpc 91cf64e, 724 verts). 6 étapes sur 9 sont branchées.",
+  "revue": "Diff depuis la BASE COMMUNE, aucun fichier interdit touché. Rebasé sur main, fusion à blanc, clone indépendant AVANT et APRÈS la correction : 724/724. Suites rejouées après la fusion : 724/724.",
+  "trois_attaques": "(1) dice.mjs ne contient AUCUN Math.random — il n'apparaît qu'en défaut d'écran et au point d'injection de la coquille : la bonne frontière. (2) drawArcana lit catalog.length, jamais 22 en dur. (3) ⚠️ CELLE QUI A MORDU : son en-tête affirmait ne jamais brancher sur l'id d'une méthode — FAUX, son corps aiguillait (lignes 266/274). Ajouter Standard Array aurait coûté une entrée ET un else if, ce que la contrainte d'Eric interdisait mot pour mot.",
+  "la_correction": "Renvoyé au lot, corrigé : chaque entrée d'ABILITY_METHODS porte son `render`, la boucle ne compare plus que l'état. PROUVÉ par un test qui pousse une TROISIÈME méthode depuis le test seul (restaurée en finally) et la voit s'afficher sans qu'une ligne du fichier change. Zéro ligne supprimée dans les 9 tests existants. 723 → 724.",
+  "📌_la_lecon": "J'ai failli l'accuser SUR UN GREP : sa boucle ÉTAIT bien pilotée par la table. Il a fallu LIRE le corps pour trouver où était vraiment le défaut. Deuxième fois de la journée que la lecture rattrape un grep — après les cinq créneaux de multiPlan, où le grep accusait l'écran alors que la faute était au moteur.",
+  "ecart_accepte": "fh.destiny.mode fait jeter rebuild (namespace strict : arcana / glory[n] / awakening[n] / other[n]). Le mode de Destinée vit en état d'écran éphémère. Sondé avant d'écrire — mesure, pas contournement."
+ },
+ "defaut_abilities_affichage_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "🔁 DÉFAUT VISIBLE SUR L'ÉCRAN ABILITIES — renvoyé au lot, branche 45b-abilities-affichage",
+  "display": "🔴 L'écran Abilities affiche « CON 13 → +2 » et « INT 15 → +3 ». Arithmétiquement impossible. Aucun des 724 tests ne le voit.",
+  "la_mesure": "Le champ montre le CHOIX BRUT (currentAbilityValue), la colonne de droite le MODIFICATEUR FINAL (resolved.abilities[key].mod). Entre les deux il y a les bonus de l'Inheritance (background.boost.con=1, background.boost.int=2) et RIEN à l'écran ne le dit. 🔴 Et le SCORE FINAL (14, 17) — le nombre qu'on lit à la table — n'apparaît NULLE PART.",
+  "ce_n_est_pas_un_bug_de_calcul": "Le moteur a raison sur les deux colonnes, chacune dans son registre. C'est un défaut d'AFFICHAGE : deux registres côte à côte sans le dire.",
+  "contraintes_posees": "(1) le champ éditable reste le CHOIX BRUT — c'est lui que set() écrit, un champ qui affiche un dérivé ne se saisit pas ; (2) ⛔ ne recalculer RIEN, le final et le mod se lisent dans resolved à l'octet (loi des 20 tests du lot 40 : un total menteur s'affiche menteur). La FORME est laissée au lot — c'est son écran, il l'a plus regardé que moi.",
+  "note_non_bloquante": "shell.css:89 met les boutons désactivés à opacity .4 — sur fond sombre, « Back » devient illisible à l'étape 0 (je l'ai d'abord pris pour un bouton vide). Convention admise pour un contrôle désactivé, donc signalé sans blocage."
  }
 }
