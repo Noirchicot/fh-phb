@@ -823,7 +823,7 @@
     "3_fiche_jouable": "La fiche v2 devient interactive (jets + tray) sur le moteur v2. Décision Q1, confirmée le 2026-08-13. Gros chantier.",
     "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
     "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne.",
-    "etat": "fhpc main = 33337a4, 801 verts, arbre propre, poussé et REVÉRIFIÉ. TROIS FUSIONS dans la soirée (47, 50, 48). DEUX LOTS EN VOL : 51-repartition-figee et 52-dettes-lot-43."
+    "etat": "fhpc main = 69af803, 816 verts, poussé et REVÉRIFIÉ. CINQ FUSIONS dans la soirée (47, 50, 48, 52, 51). DEUX LOTS EN VOL : 49-equipement et 53-aria-crochet."
   },
   "contrainte_etat_non_derivable_2026_08_13": {
     "date": "2026-08-13",
@@ -983,5 +983,23 @@
     "le_diagnostic_elargi_par_la_revue": "Ce n'est PAS une régression du lot 50. `carnet.mjs:108` peint le libellé avec `labelOf`, `:109` peint l'aria-label avec la valeur BRUTE — les deux divergent dès que `labelOf` existe, donc AVANT ce lot (le sélecteur de méthode annonçait déjà « roll » en affichant « Roll (3d6 × 10, keep 6) »). Le lot l'a rendu VISIBLE, il ne l'a pas causé.",
     "🔴_et_la_vraie_cause_mesuree": "L'aria-label sert de CROCHET DE TEST. Quatre fichiers de tests identifient les options par lui (`srd:class:en:rogue`, `fh:feat:en:auspicious`, `proficient`). Un attribut d'accessibilité a été réquisitionné comme identifiant machine — d'où le fait que chaque sélecteur du builder annonce un id interne au lecteur d'écran.",
     "la_reparation": "Déplacer l'identifiant machine vers `data-value` (sa vraie place), repointer les quatre fichiers de tests, libérer `aria-label` pour le libellé humain. ⛔ CE N'EST PAS UN GESTE MÉCANIQUE — c'est un lot. L'architecte avait annoncé « je corrige en une ligne » et la mesure l'a démenti."
-  }
+  },
+  "lot_52_fusionne": {
+    "statut": "✅ FUSIONNÉ — 801 → 811. Les deux dettes du lot 43, et l'une était plus grande que déclarée",
+    "dette_A": "Le `return` anticipé d'`imposedLines()` emportait la déclaration `class-tools-unmechanical` ET LES DEUX `fail()` du bloc espèce — un `granted_skill_choice` malformé ne jetait plus. Un garde qui ne peut plus mordre est pire que pas de garde. Réordonné, pas rayé.",
+    "dette_B": "Mesurée par la VIOLATION elle-même : un Magicien SRD (Sage + boost hors catalogue) rendait DEUX `background.boost-disallowed` identiques. Dédupliquée, `decisions.mjs` source unique. `ability-key-invalid` reste — c'est une faute de CONTENU, sans équivalent ailleurs.",
+    "verification_architecte": "⭐ MA PROPRE SONDE rejouée sur la branche : Elfe 10 et Araag 12 INCHANGÉS, et chez l'Araag la paire net-zéro apparaît enfin (+1 granted / −1 imposed). La ligne rouge tient. ⚔️ Attaque (retour anticipé remis à sa place) : NEUF tests rougissent, dont les deux du garde de contenu ressuscité.",
+    "⚠️_retrecissement_note": "Le code retiré matchait TOUT espace de noms (`^[a-z]\\w*\\.boost\\.`), le gardé ne connaît que `background.`. Vérifié : les seuls chemins `.boost.` du dépôt sont `background.*`, rien n'est perdu AUJOURD'HUI. Mais si un `inheritance.boost.*` naît, le refus disparaît en silence."
+  },
+  "lot_51_fusionne": {
+    "statut": "✅ FUSIONNÉ — 811 → 816. On peut enfin changer d'avis sur ses six dés",
+    "la_forme": "Une rangée offre TOUJOURS les six dés gardés ; cliquer un dé tenu ailleurs les ÉCHANGE (deux `set`, deux entrées d'`assign` permutées, aucun champ neuf). ⭐ Motif : libérer laisserait une rangée sans dé, or `rebuild` JETTE si l'une des six manque — l'échange est le seul geste qui ne traverse jamais un état indérivable. Un dé tenu ailleurs s'affiche « 16 (DEX) », rien ne se cache.",
+    "⭐_le_meilleur_geste_du_jour": "Le lot a attaqué SON PROPRE échange, vu que les 806 tests restaient verts (shell.mjs n'a ni export ni harnais), et posé son propre garde d'octets plutôt que de laisser le trou en silence. Personne ne le lui avait demandé.",
+    "attaque_architecte": "⚔️ J'ai fait que l'ancien tenant garde son index — deux rangées sur le même dé. Le garde que le lot venait de poser MORD, et lui seul."
+  },
+  "lots_en_vol_2026_08_13_nuit": {
+    "49_equipement": "Le paquet de classe (affiché en PHRASE, choix d'Eric) + la bourse de 50 PO. Pièges écrits dans la commande : CURRENCY_KEYS = cp/sp/gp/pp (pas d'ep) et resolved.currency n'existe QUE si les quatre sont posées ; le Fighter a TROIS options.",
+    "53_aria_crochet": "L'aria-label sert de crochet de test dans quatre fichiers — un attribut d'accessibilité réquisitionné comme identifiant machine. L'identifiant déménage dans `data-value`. ⛔ Les tests changent d'ATTRIBUT, jamais de VÉRITÉ."
+  },
+  "instabilite_piste": "⚠️ Un `sleep 2` entre `git merge` et `npm test` a évité l'instabilité post-fusion sur les deux dernières fusions (52 et 51). Ça renforce l'hypothèse — les gardes d'octets lisent leurs fichiers au chargement du module — sans la prouver. NE PAS déclarer résolu."
 }

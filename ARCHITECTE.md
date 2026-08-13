@@ -293,7 +293,7 @@ ne voyait ni l'un ni l'autre.
 
 | Dépôt | `main` | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `33337a4` | ✅ vérifié contre le distant | **801 vertes** |
+| `~/tools/fhpc` | `69af803` | ✅ vérifié contre le distant | **816 vertes** |
 | `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
@@ -348,13 +348,24 @@ et deux lignes de la version précédente étaient fausses en moins de douze heu
 
 | | Lot | État |
 |---|---|---|
-| ✅ | ~~`36`→`48`, `50`~~ | **tous fusionnés.** Un personnage **commence** (`doc.create`), **se nomme**, **se décrit** (genre·alignement·campagne), et **ses six dés se distribuent** |
-| 🔵 | **51 `repartition-figee`** | **EN VOL** — base `33337a4`. ⭐ **Trouvé en REGARDANT** : une fois les six dés posés, **zéro geste possible** |
-| 🔵 | **52 `dettes-lot-43`** | **EN VOL** — base `33337a4`. Les deux dettes, **remesurées**, et l'une est plus grande que déclarée |
-| 📄 | **49 `equipement`** | ✅ **commande écrite** — ⛔ **attend la FUSION du 51** : il écrit `shell.mjs`, que le 51 écrit |
-| 📄 | **`ecrans-concept-univers`** | à commander — les champs existent maintenant ; il écrit `shell.mjs` |
-| 📄 | **`aria-label`** | 🔴 diagnostic posé, lot à écrire — voir ci-dessous |
+| ✅ | ~~`36`→`52`~~ | **tous fusionnés.** Un personnage **commence**, **se nomme**, **se décrit**, ses **six dés se distribuent** et **s'échangent** |
+| 🔵 | **49 `equipement`** | **EN VOL** — le paquet de classe (en PHRASE, choix d'Eric) + la bourse de 50 PO |
+| 🔵 | **53 `aria-crochet`** | **EN VOL** — l'identifiant machine déménage dans `data-value` |
+| 📄 | **`ecrans-concept-univers`** | à commander — les champs existent ; il écrit `shell.mjs`, donc **après le 49** |
 | ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |
+
+⛔ **DEUX LOTS EN VOL EST LE PLAFOND** *(auto-limite §4b)* — la revue est le
+goulot, pas la capacité.
+
+### ⭐ LE MEILLEUR GESTE DE LA SOIRÉE, ET IL VIENT D'UN LOT
+
+**Le lot 51 a attaqué SON PROPRE travail**, vu que les 806 tests restaient
+verts, et **posé son propre garde** — personne ne le lui avait demandé. Le lot
+50 avait **déclaré** un trou qu'il ne pouvait pas boucher ; le lot 43 avait
+déclaré deux dettes hors de son mandat, **et sans lui le lot 52 n'existerait
+pas**. 📌 **Écris dans chaque commande qu'un lot a le DROIT de la contredire,
+avec un exemple daté** — c'est le seul détecteur d'erreur extérieur de ce siège,
+et il a rapporté quatre fois aujourd'hui.
 
 ### 🔴 L'`aria-label` EST UN CROCHET DE TEST — et c'est ça, le défaut
 
