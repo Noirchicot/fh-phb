@@ -778,14 +778,6 @@
   "corrige_par_l_architecte": "`.claude/launch.json` : la config s'appelait `fhpc-builder-lot42`. Renommée `fhpc-builder` — le fichier est permanent, le lot ne l'est pas. Elle reste, parce qu'elle sert la pratique la plus rentable du chantier.",
   "trouve_par_le_lot_en_regardant": "Un bug CSS qu'aucun test ne voyait : le libellé « Skill 1 » s'écrasait lettre par lettre face au picker à 26 options du Barde. Corrigé par le lot."
  },
- "deux_defauts_multiplan_2026_08_13": {
-  "date": "2026-08-13",
-  "statut": "🔴 DEUX DÉFAUTS DE `multiPlan` — trouvés en REGARDANT, confiés au lot 43",
-  "display": "🔴 LE MOTEUR PUBLIE UN CRÉNEAU DE TROP ET LE MÊME REFUS DEUX FOIS. Aucun des 694 tests ne le voyait.",
-  "comment_trouve": "L'architecte a servi le builder après la fusion du 42, choisi Magicien (arcana + investigation), puis basculé sur Roublard. L'écran affichait « 1 of 4 chosen » surmonté de CINQ lignes Skill, et le refus « arcana isn't on the catalogue » DEUX fois, dont une au-dessus d'un créneau valide.",
-  "la_mesure_qui_retourne_l_accusation": "⭐ ET C'EST LA LEÇON : l'écran est FIDÈLE, la faute est au moteur. projectDecisions sur class=rogue + skills[0]=arcana + skills[1]=investigation publie : class.skills (expected 4, lock decision.option-unavailable) · class.skills[0] (LE MÊME lock, une 2e fois) · class.skills[1..4] → CINQ créneaux pour expected=4. Croire ses yeux aurait envoyé un lot réparer le mauvais fichier.",
-  "ou_c_est_reparé": "Ajouté au lot 43 (§3e-bis) : c'est son fichier (decisions.mjs), et ouvrir une 3e branche dessus coûterait plus cher. ⚠️ 3e refus émis en double de la semaine — voir aussi background.feat-mismatch."
- },
  "huit_reponses_eric_2026_08_13": {
   "date": "2026-08-13",
   "statut": "✅ HUIT RÉPONSES D'ERIC — deux rounds, avant son départ. Plus rien ne l'attend.",
@@ -815,19 +807,20 @@
   "display": "🗺️ LA ROUTE : finir le builder → le DÉPLOYER (geste d'Eric) → la fiche v2 jouable → AboveVTT.",
   "1_builder": [
    "✅ 42 ecrans-records — FUSIONNÉ (Class + Species)",
-   "✅ 45 ecrans-hasard — FUSIONNÉ (Abilities + Destiny)",
-   "🔁 45b-abilities-affichage — correction en cours (les deux colonnes qui se contredisent)",
-   "🔵 43 inheritance-moteur — EN VOL",
-   "→ 46 ecran-inheritance (après 43) + LA CONFIRMATION D'EFFACEMENT au changement de classe",
+   "✅ 45 ecrans-hasard + 45b — FUSIONNÉS (Abilities + Destiny, colonnes corrigées)",
+   "✅ 43 inheritance-moteur — FUSIONNÉ",
+   "→ 46 ecran-inheritance : PROCHAIN. + la confirmation d'effacement au changement de classe (composant réutilisable) ⚠️ le plan `background` publie 1 option non répondue — l'écran décide s'il la pose ou la masque",
    "→ 47 document-neuf : créer + nommer + brouillon export/import ⚠️ doit vivre sur projectDecisions tant que les 3 portes ne sont pas franchies",
    "→ 48 ecrans-concept-univers (Universe = choix entre DEUX piles)",
    "→ 49 equipement : le paquet de la classe + 50 PO",
-   "⏸️ 44 garde-des-copies — rangé, préventif"
+   "⏸️ 44 garde-des-copies — rangé, préventif",
+   "⏳ dette reprise : la 3e instance du refus en double (block.mjs) + un défaut latent dans skill-pool.mjs, tous deux trouvés et déclarés par le lot 43"
   ],
   "2_deploiement": "📄 CHEMIN PRÉPARÉ — fh-phb/DEPLOIEMENT-BUILDER-V2.md. 🔴 LES DEUX COMMANDES SONT LE GESTE D'ERIC. MESURÉ : fhpc est PUBLIC et n'a AUCUN chemin de publication (pas de gh-pages, pas de script, pas d'action) ; fh-phb en a un (gh-pages, en ligne). Et le patron v1 ne marche pas : sync_from_vault.py copie des fichiers HTML AUTONOMES, or le builder v2 est un ARBRE (ui/builder importe ../../src/ et fetch ../../layers/ et ../../examples/). ⭐ CHEMIN RETENU : activer Pages sur fhpc LUI-MÊME, branche main, racine → https://noirchicot.github.io/fhpc/ui/builder/. Le dépôt EST le déploiement : rien n'est recopié, donc rien ne peut diverger (loi anti-copie appliquée à la publication). Les chemins du builder sont relatifs (../..), donc ils marchent sous n'importe quelle base — vérifié par lecture. ✅ FAIT PAR L'ARCHITECTE : .nojekyll commité à la racine de fhpc (d518bb0) — sans lui Pages passe par Jekyll, qui escamote les fichiers en souligné ; un seul des 30 modules manquant et le builder ne démarre pas. 📌 LA CHARGE N'EST PAS UN PROBLÈME, et la première réaction était mauvaise : 2,8 Mo bruts → 407 Ko GZIP pour les 5 couches, 30 modules atteints sur 56 présents, ≈36 requêtes. Une page web ordinaire. AUCUNE optimisation justifiée. ⏳ QUAND : avec de la marge, et RIEN N'OBLIGE À ATTENDRE QUE LE BUILDER SOIT FINI — publier tôt un builder incomplet vaut mieux que tard un complet : ça met le test « sur une machine qui n'est pas celle d'Eric » derrière nous.",
   "3_fiche_jouable": "La fiche v2 devient interactive (jets + tray) sur le moteur v2. Décision Q1, confirmée le 2026-08-13. Gros chantier.",
   "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
-  "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne."
+  "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne.",
+  "etat": "6 étapes sur 9 branchées (universe, concept, inheritance restent en placeholder). fhpc main = 2a9d711, 740 verts."
  },
  "contrainte_etat_non_derivable_2026_08_13": {
   "date": "2026-08-13",
@@ -847,13 +840,15 @@
   "📌_la_lecon": "J'ai failli l'accuser SUR UN GREP : sa boucle ÉTAIT bien pilotée par la table. Il a fallu LIRE le corps pour trouver où était vraiment le défaut. Deuxième fois de la journée que la lecture rattrape un grep — après les cinq créneaux de multiPlan, où le grep accusait l'écran alors que la faute était au moteur.",
   "ecart_accepte": "fh.destiny.mode fait jeter rebuild (namespace strict : arcana / glory[n] / awakening[n] / other[n]). Le mode de Destinée vit en état d'écran éphémère. Sondé avant d'écrire — mesure, pas contournement."
  },
- "defaut_abilities_affichage_2026_08_13": {
+ "lot_43_fusionne_2026_08_13": {
   "date": "2026-08-13",
-  "statut": "🔁 DÉFAUT VISIBLE SUR L'ÉCRAN ABILITIES — renvoyé au lot, branche 45b-abilities-affichage",
-  "display": "🔴 L'écran Abilities affiche « CON 13 → +2 » et « INT 15 → +3 ». Arithmétiquement impossible. Aucun des 724 tests ne le voit.",
-  "la_mesure": "Le champ montre le CHOIX BRUT (currentAbilityValue), la colonne de droite le MODIFICATEUR FINAL (resolved.abilities[key].mod). Entre les deux il y a les bonus de l'Inheritance (background.boost.con=1, background.boost.int=2) et RIEN à l'écran ne le dit. 🔴 Et le SCORE FINAL (14, 17) — le nombre qu'on lit à la table — n'apparaît NULLE PART.",
-  "ce_n_est_pas_un_bug_de_calcul": "Le moteur a raison sur les deux colonnes, chacune dans son registre. C'est un défaut d'AFFICHAGE : deux registres côte à côte sans le dire.",
-  "contraintes_posees": "(1) le champ éditable reste le CHOIX BRUT — c'est lui que set() écrit, un champ qui affiche un dérivé ne se saisit pas ; (2) ⛔ ne recalculer RIEN, le final et le mod se lisent dans resolved à l'octet (loi des 20 tests du lot 40 : un total menteur s'affiche menteur). La FORME est laissée au lot — c'est son écran, il l'a plus regardé que moi.",
-  "note_non_bloquante": "shell.css:89 met les boutons désactivés à opacity .4 — sur fond sombre, « Back » devient illisible à l'étape 0 (je l'ai d'abord pris pour un bouton vide). Convention admise pour un contrôle désactivé, donc signalé sans blocage."
+  "statut": "✅ LOT 43 FUSIONNÉ — l'arrière-plan n'existe plus en Fate's Hand",
+  "display": "✅ LOT 43 FUSIONNÉ (fhpc 2a9d711, 740 verts). Don d'origine libre parmi 5, 3 points sur les six caracs, et la répartition est enfin gardée.",
+  "revue": "Diff depuis la base commune, AUCUN fichier ui/ touché (le lot 45 y travaillait en parallèle). Rebasé, fusion à blanc, clone indépendant : 740/740. Rejoué après fusion : 740/740.",
+  "verifie_a_la_sonde": "Sur le scénario exact qui avait produit les défauts : background.boost publie SIX options (décision 1c tenue) ; background.originFeat[0] publie CINQ dons dont Auspicious ; background.feat RETIRÉ ; le perso migré garde Destinée 10 et pool 10 ; multiPlan publie QUATRE créneaux pour expected=4 au lieu de cinq.",
+  "les_25_assertions_retirees": "⚠️ POINT DE REVUE LE PLUS RISQUÉ, vérifié : fh-skills.test.mjs perd 25 assertions pour 11. Toutes justifiées — elles patchaient des records DÉSORMAIS ÉTEINTS. Et la loi générale qu'elles touchaient (« un retrait dans le vide fait jeter ») reste gardée par tests/layers-remove.test.mjs et 13 assert.throws subsistants. AUCUNE assertion commentée, sautée ou neutralisée.",
+  "sorties_de_terrain_acceptees": "Trois scripts de src/tools/ (exemple-fh-en, fh-skills-source, gen-fh-skills-layer) : ils GÉNÈRENT la couche et l'exemple, et ne pas les toucher aurait cassé deux gardes de reproductibilité déjà verts. Déclaré par le lot, accepté.",
+  "ce_qu_il_a_trouve_sans_corriger": "⭐ LE BON GESTE : une TROISIÈME instance du « même refus deux fois », dans block.mjs (~449-472), qui recalcule background.ability-key-invalid / boost-disallowed indépendamment de decisions.mjs. Sa déduplication ne porte que sur la boucle de validate() et ne l'atteint pas — il l'explique au lieu de bricoler. Plus un défaut latent dans skill-pool.mjs. ⏳ À REPRENDRE, hors mandat de ce lot.",
+  "les_quatre_decisions": "Aucune des quatre décisions d'architecte (§1a-d) ne s'est révélée fausse à la mesure."
  }
 }
