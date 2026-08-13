@@ -823,7 +823,7 @@
     "3_fiche_jouable": "La fiche v2 devient interactive (jets + tray) sur le moteur v2. Décision Q1, confirmée le 2026-08-13. Gros chantier.",
     "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
     "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne.",
-    "etat": "fhpc main = 7447f3a, 780 verts, arbre propre, poussé et REVÉRIFIÉ contre le distant. DEUX LOTS EN VOL (le plafond de la charte) : 50-repartition-caracs et 48-champs-identite."
+    "etat": "fhpc main = 33337a4, 801 verts, arbre propre, poussé et REVÉRIFIÉ. TROIS FUSIONS dans la soirée (47, 50, 48). DEUX LOTS EN VOL : 51-repartition-figee et 52-dettes-lot-43."
   },
   "contrainte_etat_non_derivable_2026_08_13": {
     "date": "2026-08-13",
@@ -933,5 +933,55 @@
     "preuve_exigee": "⚔️ Le test qui prouve le lot : ajouter une propriété racine facultative au schéma la rend AUSSITÔT écrivable, sans toucher au verbe. Même forme de preuve que le test 8 du lot 47.",
     "ou_ils_vivent": "À la RACINE du document. ⛔ PAS dans resolved.identity — mesuré : identity vit dans `resolved`, donc il est DÉRIVÉ, et rien ne dérive un genre. ⭐ Le précédent racine existe déjà : `generator` est une métadonnée racine facultative.",
     "forme": "Texte libre, facultatifs, avec une maxLength. ⛔ Aucune énumération fermée, pas même pour l'alignement — précédent ratifié : identity.creatureType est « une chaîne libre EXPRÈS, un homebrew a le droit d'inventer un type ». Une énumération des neuf rendrait `Chaotic Good (mostly)` invalide. La liste des neuf vit dans l'ÉCRAN."
+  },
+  "lot_50_fusionne_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "✅ FUSIONNÉ — 782 → 789 verts",
+    "ce_qu_il_repare": "Le défaut qu'ERIC a rencontré lui-même sur la page déployée : les six dés ne se distribuaient pas. Trois rangées sur six restaient bloquées sur les valeurs du personnage d'exemple, et le 14 que DEX portait depuis l'exemple — jamais tiré — VOLAIT sa place à l'un des deux 14 du lot.",
+    "la_cause": "Une PRÉMISSE, pas une faute de frappe : `optionsForRow` retirait les dés PAR LEUR VALEUR. Un nombre ne dit pas d'où il vient, donc l'écran n'avait aucune façon de dire « cette rangée a reçu un dé ».",
+    "⭐_la_reponse_venait_d_un_fichier_d_eric": "`~/tools/fh-skills/fh-skill-builder.html:731` — `assign: {STR:null, …} // ability -> index into set.kept`. Une caractéristique pointe vers l'INDEX d'un dé, jamais sa valeur : deux 14 deviennent distincts, et `null` dit « pas encore distribué », un état que la v2 ne savait pas exprimer. ⚠️ ET C'EST ERIC QUI A DÛ NOUS Y ENVOYER — le mandat prévient que ce siège n'ouvre pas spontanément ses fichiers, et la leçon s'est vérifiée le jour même.",
+    "🔴_le_trou_trouve_par_la_revue": "⚔️ L'architecte a cassé la remise à zéro de la carte (une relance gardait les index périmés) : LES 19 TESTS DU LOT SONT RESTÉS VERTS. Le lot l'avait DÉCLARÉ — « aucun test shell.mjs n'existe nulle part dans ce dépôt » — son test couvrait la fonction pure, pas le câblage. Garde 11 posé par l'architecte (ui-jetons.test.mjs), avec sa moitié qui mord : l'attaque laissait l'appel dans la ligne, derrière un `||`.",
+    "verification_en_ligne": "✅ Vérifié sur la page DÉPLOYÉE après fusion : six dés gardés (10·16·16·14·13·13), les six rangées offrent les six, le lot se vide 6→5→4→3→2→1 à mesure qu'on distribue, et les finals montrent les bonus d'Inheritance. Le défaut d'Eric est réparé."
+  },
+  "lot_48_fusionne_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "✅ FUSIONNÉ — 790 → 801 verts",
+    "ce_qu_il_ouvre": "`gender`, `alignment`, `campaign` : trois champs racine facultatifs en texte libre, et un neuvième verbe `doc.describe` qui les écrit.",
+    "⭐_ne_par_du_refus_d_un_autre_lot": "Le lot 47 avait écarté le nom `describe` (« un nom de verbe trop large invite à y accrocher autre chose plus tard »). L'architecte était ce « plus tard ». Sortie : un verbe est trop large quand LE CODE décide de ce qu'il accepte, plus quand LE SCHÉMA décide. `describableFields(schema)` lit les propriétés racine facultatives de type chaîne.",
+    "trouvaille_du_lot": "`tests/schemas.test.mjs` employait `campaign` comme TÉMOIN de « clef racine inconnue ». Le lot en fait un champ légitime — le témoin était consommé. Remplacé par `faction`, vérifié indéclaré nulle part.",
+    "🔴_l_arete_trouvee_par_la_revue": "⚔️ `describableFields` ne reconnaît qu'UNE des trois façons dont ce schéma déclare une chaîne. Mesuré : `type: \"string\"` → VU · `$ref` → INVISIBLE · `type: [\"string\",\"null\"]` → INVISIBLE. Et `lang` est déclaré par `$ref` dans ce schéma même : un auteur qui suit l'idiome dominant ajoutera un champ que `describe` refusera EN SILENCE. Non bloquant (les trois champs marchent), inscrit dans contracts/doc.md avec sa consigne : tout champ descriptif se déclare `type: \"string\"` en clair."
+  },
+  "grep_aveugle_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "🔴 LA TROUVAILLE LA PLUS UTILE DE LA SESSION — corrigée et gardée",
+    "la_mesure": "`src/build/block.mjs` portait DEUX octets NUL bruts (ligne 410, un séparateur de clef composite écrit en octets au lieu de sa séquence d'échappement). `file` le classait « data », donc GREP LE SAUTAIT EN SILENCE : `grep -c \"\"` dessus rendait ZÉRO, `grep -c \"export\"` aussi.",
+    "ce_que_ca_a_coute": "L'architecte a cherché au grep les producteurs de `background.boost-disallowed`, n'en a trouvé qu'UN, et a conclu qu'une dette du lot 43 était RETIRÉE. Faux : il y en a deux, et le second était dans le fichier illisible. C'est la LECTURE (`sed`) qui a démenti le grep — la contradiction entre les deux instruments est ce qui a mené au diagnostic.",
+    "⭐_pourquoi_c_est_pire_qu_un_faux_negatif": "Dans ce chantier, « zéro occurrence » se lit comme une PREUVE D'ABSENCE — c'est la forme de la moitié des mesures du mandat et de tout son audit des dettes. Un seul fichier illisible transforme chacune d'elles en mensonge silencieux, et rien ne le signale.",
+    "correction_et_garde": "Deux caractères (séquence d'échappement au lieu de l'octet), valeur d'exécution identique. Garde : `tests/guards-adversarial.test.mjs`, défaut n°6 — aucun fichier de `src/` ne porte un caractère de contrôle hors tab/LF/CR. Attaqué sur l'ARBRE RÉEL : il rougit, seul, et dit où.",
+    "📌_ironie_instructive": "Le premier jet de ce garde portait lui-même deux octets NUL bruts. On réintroduit un défaut en écrivant sa parade."
+  },
+  "suite_instable_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "⚠️ NON RÉSOLU — observé deux fois, jamais reproduit ensuite",
+    "observation": "Un test rouge sur la passe qui suit IMMÉDIATEMENT un `git merge`, deux fois (fusion du lot 50, puis du lot 48). Les 3 à 4 passes suivantes sont vertes à chaque fois, arbre propre.",
+    "cause_probable_non_prouvee": "Les gardes d'octets lisent leurs fichiers AU CHARGEMENT DU MODULE (`ui-jetons.test.mjs:72`, un readFileSync au niveau racine). Une suite lancée pendant que les écritures de la fusion — ou un formateur — se posent encore peut capturer un fichier partiel.",
+    "⛔_ce_qu_on_ne_fait_pas": "Le déclarer résolu. Le mandat porte déjà ce précédent : une instabilité rapportée par un lot avait été « non reproduite » parce que l'arbre était remis propre entre les passes, et le défaut était RÉEL. Non reproduit n'est pas inexistant.",
+    "📌_faute_de_methode_corrigee_au_passage": "`npm test | grep …` avant un push MASQUE le code de sortie — le `&&` voit réussir grep, pas les tests. Une poussée est partie sur une suite rouge (main était sain, mais par chance). La commande capture désormais le code de sortie."
+  },
+  "defaut_repartition_figee_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "🔵 EN VOL — lot 51",
+    "la_mesure": "Sur la page déployée, après avoir distribué les six dés : les six rangées offrent 1 option chacune, 0 cliquable. TOTAL : zéro geste possible. La répartition est FIGÉE — pour échanger FOR et DEX il faut relancer et perdre les six jets.",
+    "pourquoi_le_lot_50_ne_l_a_pas_vu": "Son test « réassigner une rangée déjà servie » avait TOUJOURS un dé libre sous la main. Le cas limite est la distribution COMPLÈTE — c'est-à-dire l'état normal en fin d'étape. Le lot n'a pas mal travaillé : son test ne visait pas cet état.",
+    "decision_architecte": "Une rangée offre TOUJOURS les six dés gardés, et cliquer un dé tenu par une autre rangée les ÉCHANGE. ⭐ Motif : libérer laisserait une rangée sans dé, or `rebuild` jette si l'une des six manque — l'échange est le SEUL geste qui ne traverse jamais un état indérivable.",
+    "📌_trouve_comment": "En regardant l'écran. Encore. C'est la troisième session de suite où cette pratique trouve ce que les tests ne voient pas."
+  },
+  "aria_label_crochet_de_test_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "📄 À COMMANDER — diagnostic posé, lot pas encore écrit",
+    "signale_par": "Le lot 50, qui l'a déclaré sans le corriger (hors de son périmètre).",
+    "le_diagnostic_elargi_par_la_revue": "Ce n'est PAS une régression du lot 50. `carnet.mjs:108` peint le libellé avec `labelOf`, `:109` peint l'aria-label avec la valeur BRUTE — les deux divergent dès que `labelOf` existe, donc AVANT ce lot (le sélecteur de méthode annonçait déjà « roll » en affichant « Roll (3d6 × 10, keep 6) »). Le lot l'a rendu VISIBLE, il ne l'a pas causé.",
+    "🔴_et_la_vraie_cause_mesuree": "L'aria-label sert de CROCHET DE TEST. Quatre fichiers de tests identifient les options par lui (`srd:class:en:rogue`, `fh:feat:en:auspicious`, `proficient`). Un attribut d'accessibilité a été réquisitionné comme identifiant machine — d'où le fait que chaque sélecteur du builder annonce un id interne au lecteur d'écran.",
+    "la_reparation": "Déplacer l'identifiant machine vers `data-value` (sa vraie place), repointer les quatre fichiers de tests, libérer `aria-label` pour le libellé humain. ⛔ CE N'EST PAS UN GESTE MÉCANIQUE — c'est un lot. L'architecte avait annoncé « je corrige en une ligne » et la mesure l'a démenti."
   }
 }

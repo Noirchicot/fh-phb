@@ -293,9 +293,53 @@ ne voyait ni l'un ni l'autre.
 
 | Dépôt | `main` | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `7447f3a` | ✅ vérifié contre le distant | **780 vertes** |
+| `~/tools/fhpc` | `33337a4` | ✅ vérifié contre le distant | **801 vertes** |
 | `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
+
+### 🔴 LA TROUVAILLE QUI VAUT PLUS QUE LES LOTS — `grep` était aveugle
+
+**`src/build/block.mjs` portait deux octets NUL bruts** (ligne 410, un
+séparateur de clef composite écrit en octets au lieu de sa séquence
+d'échappement). `file` le classait « data », donc **`grep` le sautait EN
+SILENCE** : `grep -c ""` dessus rendait **zéro**.
+
+**Ce que ça a coûté, le jour même** : ce siège a cherché au grep les
+producteurs d'une violation, n'en a trouvé **qu'un**, et a conclu qu'une dette
+du lot 43 était **retirée**. **Faux — il y en a deux**, et le second était dans
+le fichier illisible. C'est **`sed` qui a démenti `grep`**, et la contradiction
+entre les deux instruments est ce qui a mené au diagnostic.
+
+⭐ **Et c'est pire qu'un faux négatif ordinaire.** Dans ce chantier, *« zéro
+occurrence »* se lit comme une **preuve d'absence** — c'est la forme de la
+moitié des mesures de ce fichier, **et de tout son audit des dettes §5**. Un
+seul fichier illisible transforme chacune d'elles en mensonge silencieux.
+
+✅ Corrigé (deux caractères, valeur d'exécution identique) et **gardé** :
+`tests/guards-adversarial.test.mjs`, défaut n°6 — aucun fichier de `src/` ne
+porte un caractère de contrôle hors tab/LF/CR. Attaqué sur l'arbre réel.
+
+📌 **L'ironie qui porte la leçon** : le premier jet de ce garde portait
+lui-même deux octets NUL bruts. **On réintroduit un défaut en écrivant sa
+parade.**
+
+### ⚠️ UNE SUITE INSTABLE, NON RÉSOLUE — ne la déclare pas morte
+
+**Un test rouge sur la passe qui suit IMMÉDIATEMENT un `git merge`**, observé
+**deux fois** (lots 50 et 48). Les 3–4 passes suivantes sont vertes, arbre
+propre, chaque fois. **Cause probable, non prouvée** : les gardes d'octets
+lisent leurs fichiers **au chargement du module** (`ui-jetons.test.mjs:72`, un
+`readFileSync` au niveau racine) — une suite lancée pendant que les écritures
+de la fusion se posent encore peut capturer un fichier partiel.
+
+⛔ **Ne pas conclure.** Ce mandat porte déjà le précédent : une instabilité
+rapportée par un lot avait été « non reproduite » parce que l'arbre était remis
+propre entre les passes, **et le défaut était réel**.
+
+📌 **Et une faute de méthode corrigée au passage** : `npm test | grep …` avant
+un `push` **masque le code de sortie** — le `&&` voit réussir `grep`, pas les
+tests. Une poussée est partie sur une suite rouge (`main` était sain, mais par
+chance). **Capture le code de sortie, ne tuyaute pas.**
 
 ⛔ **REMESURE CES SHA** — la ligne au-dessus a été écrite le 2026-08-13 au soir,
 et deux lignes de la version précédente étaient fausses en moins de douze heures.
@@ -304,13 +348,31 @@ et deux lignes de la version précédente étaient fausses en moins de douze heu
 
 | | Lot | État |
 |---|---|---|
-| ✅ | ~~`36`→`47`~~ | **tous fusionnés.** ⭐ **Un personnage peut enfin COMMENCER** — `doc.create`, `doc.rename`, et le schéma de brouillon **dérivé** |
-| 🔵 | **50 `repartition-caracs`** | **EN VOL** — base `dd2b66e`. ⭐ **Défaut rencontré par ERIC sur la page déployée** |
-| 🔵 | **48 `champs-identite`** | **EN VOL** — base `7447f3a`. `gender` · `alignment` · `campaign`, et le verbe qui **lit sa liste blanche dans le schéma** |
-| 📄 | **49 `equipement`** | ✅ **commande écrite** — ⛔ **attend la FUSION du 50** : il écrit `shell.mjs`, que le 50 écrit |
-| 📄 | **51 `ecrans-concept-univers`** | ⛔ **attend 48 ET 50** — il a besoin des champs, et il écrit `shell.mjs` |
-| ⏳ | **dettes du lot 43** | 3ᵉ instance du refus en double (`block.mjs`) · défaut latent dans `skill-pool.mjs` |
+| ✅ | ~~`36`→`48`, `50`~~ | **tous fusionnés.** Un personnage **commence** (`doc.create`), **se nomme**, **se décrit** (genre·alignement·campagne), et **ses six dés se distribuent** |
+| 🔵 | **51 `repartition-figee`** | **EN VOL** — base `33337a4`. ⭐ **Trouvé en REGARDANT** : une fois les six dés posés, **zéro geste possible** |
+| 🔵 | **52 `dettes-lot-43`** | **EN VOL** — base `33337a4`. Les deux dettes, **remesurées**, et l'une est plus grande que déclarée |
+| 📄 | **49 `equipement`** | ✅ **commande écrite** — ⛔ **attend la FUSION du 51** : il écrit `shell.mjs`, que le 51 écrit |
+| 📄 | **`ecrans-concept-univers`** | à commander — les champs existent maintenant ; il écrit `shell.mjs` |
+| 📄 | **`aria-label`** | 🔴 diagnostic posé, lot à écrire — voir ci-dessous |
 | ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |
+
+### 🔴 L'`aria-label` EST UN CROCHET DE TEST — et c'est ça, le défaut
+
+Signalé par le lot 50, **et la revue élargit son diagnostic** : ce n'est pas sa
+régression. `carnet.mjs:108` peint le libellé avec `labelOf`, `:109` peint
+l'`aria-label` avec la **valeur brute** — les deux divergent **dès que `labelOf`
+existe**, donc bien avant ce lot.
+
+🔴 **La vraie cause, mesurée** : **quatre fichiers de tests identifient les
+options par leur `aria-label`** (`srd:class:en:rogue`, `proficient`…). Un
+attribut d'**accessibilité** a été réquisitionné comme **identifiant machine** —
+d'où le fait que chaque sélecteur du builder **annonce un id interne au lecteur
+d'écran**.
+
+⛔ **Et ce n'est PAS un geste mécanique** : déplacer l'id vers `data-value`,
+repointer quatre fichiers de tests, libérer `aria-label`. **Ce siège avait
+annoncé « je corrige en une ligne » et la mesure l'a démenti** — c'est pour ça
+qu'on mesure avant d'agir, même sur ce qu'on croit trivial.
 
 ⚠️ **`48` A ÉTÉ REDÉCOUPÉ, et nommé AVANT que quiconque travaille dessous.**
 L'ancien `48-ecrans-concept-univers` portait les deux écrans **et** les champs
