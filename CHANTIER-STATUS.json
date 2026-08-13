@@ -879,7 +879,25 @@
     "mesure_qui_compte": "🔴 `gender` et `alignment` : ZÉRO occurrence dans schemas/, src/ et contracts/. Ils n'existent pas. (349 occurrences d'`alignment` dans la couche SRD, mais ce sont les alignements des MONSTRES, pas un champ de personnage.) Et le builder v1 d'Eric n'a NI l'un NI l'autre — donc rien à hériter ici, contrairement à la répartition des caracs.",
     "decision_architecte": "Les deux entrent comme métadonnées de document en TEXTE LIBRE et FACULTATIVES, à côté de `name`. Elles ne dérivent rien. La liste des neuf alignements vit dans l'ÉCRAN, jamais dans le schéma — précédent ratifié de ce dépôt : `identity.creatureType` est « une chaîne libre EXPRÈS, un homebrew a le droit d'inventer un type ». Une énumération fermée au schéma rendrait `Chaotic Good (mostly)` invalide.",
     "piege_de_langue": "⚠️ DEUX CHOSES PORTENT LE NOM « LANGUE », et les confondre coûterait un lot. `document.lang` = la langue des chaînes affichables de `resolved` (fr|en, « un document ne mélange pas les deux ») → étape Universe. `resolved.languages` = les langues PARLÉES du personnage, DÉRIVÉES — mesuré : aucun chemin de choix `language` n'existe, rien ne les choisit. Elles s'affichent, elles ne se cliquent pas.",
-    "sequencement": "⛔ LE LOT 48 ATTEND LA FUSION DU 47 : `gender` et `alignment` touchent schemas/, que le lot 47 écrit en ce moment. C'est exactement le test d'Eric — le prompt du lot cite-t-il un fichier qu'un autre lot est en train d'écrire ?"
+    "sequencement": "⛔ LE LOT 48 ATTEND LA FUSION DU 47 : `gender` et `alignment` touchent schemas/, que le lot 47 écrit en ce moment. C'est exactement le test d'Eric — le prompt du lot cite-t-il un fichier qu'un autre lot est en train d'écrire ?",
+    "universe_et_layers_detaille": {
+      "date": "2026-08-13",
+      "statut": "⚖️ CONTENU DE L'ÉTAPE DONNÉ PAR ERIC — « pour le moment ; plus tard on verra »",
+      "les_quatre_reglages": [
+        "UI : couleurs",
+        "Langues : FR | EN",
+        "Campagne : le nom de code de la campagne",
+        "Règles : SRD | SRD+FH"
+      ],
+      "🔴_le_piege": "LES QUATRE NE SONT PAS DE LA MÊME NATURE, et les écrire au même endroit serait la faute. TROIS sont des réglages du DOCUMENT (langue, campagne, pile de règles) ; UN est une préférence de l'APPAREIL (les couleurs).",
+      "pourquoi_les_couleurs_restent_dehors": "⛔ Un personnage s'EXPORTE et s'IMPORTE (décision d'Eric : le brouillon voyage par fichier). S'il portait un thème, importer le personnage d'un autre joueur REPEINDRAIT le builder de celui qui importe. La préférence suit l'appareil → localStorage, jamais fh-char/1. C'est la même loi que celle qui garde les octets d'images hors du document : un document qu'on s'échange ne transporte pas l'état de la machine qui l'a écrit.",
+      "langue": "✅ `document.lang`, EXISTE et est REQUIS. fr|en. « Un document ne mélange pas les deux. » ⚠️ À ne pas confondre avec `resolved.languages`, les langues PARLÉES du personnage, qui sont dérivées de l'espèce et ne se cliquent pas.",
+      "regles": "✅ `build.layers`, EXISTE. Le schéma dit : « L'ORDRE EST LA PILE : première entrée = base (SRD), dernière = la plus forte avant overrides. » Donc SRD = une pile d'UNE entrée, SRD+FH = une pile de DEUX. L'écran choisit entre deux piles NOMMÉES — il ne compose pas une pile à la main.",
+      "campagne": "🔴 N'EXISTE PAS comme champ de document — mesuré : zéro occurrence de `campaign` dans schemas/ et contracts/. ⭐ MAIS le nom est DÉJÀ dans le vocabulaire du dépôt : `src/play/export.mjs:41` émet un champ `campaign` sur chaque jet exporté, et `src/play/session.mjs:133` le tient dans l'état de séance. Un personnage qui porte son nom de code ALIMENTE cette sortie au lieu de la laisser vide. C'est un raccordement, pas une invention.",
+      "decision_architecte": "`campaign` entre comme métadonnée de document en TEXTE LIBRE et FACULTATIVE, à côté de `name`, `gender` et `alignment` — même famille, même motif (elle ne dérive rien, et une énumération fermée interdirait une campagne neuve).",
+      "ce_qui_manque_vraiment": "🔴 LA BASCULE DE THÈME N'EXISTE PAS. Mesuré : tokens.css n'a AUCUN sélecteur [data-theme] — seulement :root et @media (prefers-color-scheme: dark) à la ligne 106. Le thème SUIT L'OS aujourd'hui. Offrir « UI : couleurs » demande donc d'ajouter la bascule ET sa persistance, ce n'est pas un branchement. Son en-tête (ligne 8) DÉCRIT pourtant [data-theme] et « préférence enregistrée » — le commentaire décrit une intention, pas le code.",
+      "quand": "⛔ LE LOT 48 ATTEND LA FUSION DU 47. Sa commande ne s'écrit pas maintenant : elle dépend de la forme que le 47 donne à doc.create et au verbe du nom. Une commande écrite trop tôt se périme — faute déjà payée par ce chantier."
+    }
   },
   "plafond_18_precise_2026_08_13": {
     "date": "2026-08-13",
