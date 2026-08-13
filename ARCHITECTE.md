@@ -11,7 +11,9 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 > chemin. **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** (125 Ko,
 > produit v1) — seulement les sections nommées.
 
-> 📌 **REPRISE : lis `PASSATION-2026-08-13-SOIR.md` juste après ce mandat** — c'est la
+> 📌 **REPRISE : lis `PASSATION-2026-08-14.md` juste après ce mandat** — 🎉 **LE BUILDER EST FINI, ses neuf étapes sont branchées, 876 verts.** ⚠️ Celle du 13 au SOIR est CONSOMMÉE.
+>
+> *(ancienne consigne, conservée pour l'historique : lis `PASSATION-2026-08-13-SOIR.md`* — c'est la
 > plus récente. ⚠️ Celle sans `-SOIR` est CONSOMMÉE (elle décrit un chantier à 685
 > tests et sept étapes vides). **Rien n'est en vol**, les **lots 36 à 41 sont fusionnés**,
 > l'étape Compétences existe, **un personnage se construit ET se regarde**, et les
@@ -293,7 +295,7 @@ ne voyait ni l'un ni l'autre.
 
 | Dépôt | `main` | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `e32daf3` | ✅ vérifié contre le distant | **837 vertes** |
+| `~/tools/fhpc` | `b596408` | ✅ vérifié contre le distant | **876 vertes** |
 | `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
@@ -350,7 +352,7 @@ et deux lignes de la version précédente étaient fausses en moins de douze heu
 |---|---|---|
 | ✅ | ~~`36`→`52`~~ | **tous fusionnés.** Un personnage **commence**, **se nomme**, **se décrit**, ses **six dés se distribuent** et **s'échangent** |
 | ✅ | ~~**49 `equipement`**~~ | **fusionné** — le sac et la bourse |
-| 🔵 | **54 `ecrans-concept-univers`** | **EN VOL — LE DERNIER LOT DU BUILDER.** À sa fusion, les 9 étapes sont branchées |
+| 🎉 | ~~**54 `ecrans-concept-univers`**~~ | **FUSIONNÉ — LE BUILDER EST COMPLET.** Les neuf étapes sont branchées, plus aucun placeholder |
 | 📄 | **bascule de thème** | à commander — mesuré : `tokens.css` n'a **aucun** `[data-theme]`, le thème suit l'OS |
 | ✅ | ~~**53 `aria-crochet`**~~ | **fusionné** — l'identifiant machine vit dans `data-value`, et la 3ᵉ instance est payée |
 | ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |

@@ -8,7 +8,7 @@
     "(règle gravée dans ARCHITECT-HANDOFF.md). states: fini | en-cours | en-attente | probleme.",
     "Couleurs côté widget : fini=vert, en-cours=orange, en-attente=blanc, probleme=rouge."
   ],
-  "as_of": "2026-08-13 (soir+1 — reprise du siège, autonomie active)",
+  "as_of": "2026-08-14 — LE BUILDER EST FINI",
   "virage": {
     "date": "2026-08-07",
     "display": "🔀 VIRAGE PRODUIT — FHPC devient un CONSTRUCTEUR DE PERSONNAGE indépendant",
@@ -811,19 +811,13 @@
     "statut": "🗺️ LA ROUTE COMPLÈTE VERS LE 7 NOVEMBRE — elle dépasse le builder",
     "display": "🗺️ LA ROUTE : finir le builder → le DÉPLOYER (geste d'Eric) → la fiche v2 jouable → AboveVTT.",
     "1_builder": [
-      "✅ 42 · 45 · 45b · 43 · 46 — TOUS FUSIONNÉS. 685 → 765 tests. Sept étapes sur neuf.",
-      "→ 47 document-neuf — ⭐ COMMANDE DÉJÀ ÉCRITE (fh-phb/LOT-47-DOCUMENT-NEUF.md)",
-      "→ 48 ecrans-concept-univers (Universe = choix entre DEUX piles)",
-      "→ 49 equipement : le paquet de la classe + 50 PO",
-      "⏳ dettes déclarées par le lot 43 : 3e instance du refus en double (block.mjs) + défaut latent dans skill-pool.mjs",
-      "⏸️ 44 garde-des-copies — rangé, préventif",
-      "🔵 50 repartition-caracs — EN VOL. Défaut rencontré par ERIC sur la page déployée : on ne peut pas distribuer ses six dés sur ses six caractéristiques. Commande fh-phb/LOT-50-REPARTITION-CARACS.md"
+      "🎉 TERMINÉ le 2026-08-14. Lots 47·50·48·52·51·53·49·54 fusionnés, 765 → 876 tests."
     ],
     "2_deploiement": "✅ FAIT — ERIC A ACTIVÉ PAGES le 2026-08-13 : https://noirchicot.github.io/fhpc/ui/builder/ répond. Le pari « publier tôt un builder incomplet vaut mieux que tard un complet » est VÉRIFIÉ, et vite : deux défauts trouvés dans l'heure en regardant la page, dont un (la répartition des caracs) qu'Eric a rencontré lui-même et qu'aucun des 765 tests ne voyait. Le reste de la note historique de cette clef tient toujours (chemin retenu, .nojekyll, charge non problématique à 407 Ko gzip).",
     "3_fiche_jouable": "La fiche v2 devient interactive (jets + tray) sur le moteur v2. Décision Q1, confirmée le 2026-08-13. Gros chantier.",
     "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
     "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne.",
-    "etat": "fhpc main = e32daf3, 837 verts, poussé et REVÉRIFIÉ. SEPT FUSIONS (47,50,48,52,51,53,49). UN LOT EN VOL : 54-ecrans-concept-univers, LE DERNIER DU BUILDER."
+    "etat": "🎉 fhpc main = b596408, 876 verts, poussé et REVÉRIFIÉ. HUIT FUSIONS. LES NEUF ÉTAPES DU BUILDER SONT BRANCHÉES — plus aucun placeholder. RIEN EN VOL."
   },
   "contrainte_etat_non_derivable_2026_08_13": {
     "date": "2026-08-13",
@@ -1021,5 +1015,15 @@
     "contenu": "Concept (nom · genre · alignement) et Universe (couches · lang · units · campagne). Hors périmètre et c'est voulu : « UI · couleurs » — mesuré, tokens.css n'a AUCUN sélecteur [data-theme], la bascule n'existe pas, c'est un chantier à part.",
     "🔴_le_trou_mesuré_avant_de_commander": "Les verbes qui écrivent ces champs (`doc.rename`, `doc.describe`) vivent dans un bloc QUI N'EST PAS MONTÉ dans le builder, et dont la construction EXIGE un magasin que le navigateur n'a pas (seul `src/storage/fs.mjs` existe, c'est du Node).",
     "⚖️_l_arbitrage": "⛔ PAS de faux magasin en mémoire — ça publierait `doc.save` dans une page où enregistrer ne garde rien. Précédent DE CE DÉPÔT : « publier doc.save sans pouvoir enregistrer promettrait une porte qui n'ouvre sur rien ». ⭐ Sortie : `rename` et `describe` sont PURS (le lot 47 l'écrit) — ils n'ont aucun besoin du magasin, ils sont seulement enfermés dans la fermeture de `createDoc`. Les rendre atteignables SANS DUPLIQUER : le verbe et la fonction importable doivent être le MÊME code."
+  },
+  "builder_fini_2026_08_14": {
+    "statut": "🎉 LES NEUF ÉTAPES SONT BRANCHÉES",
+    "verifie_en_ligne": "Les dix entrées de la ceinture rendent leur écran. ⚠️ PIÈGE MESURÉ EN DIRECT : j'ai d'abord vu deux placeholders — c'était le CACHE de mon onglet, pas le code. Le `shell.mjs` DÉPLOYÉ cite bien `universe-step` et `concept-step`. 🔴 Mais ça nomme une dette réelle : un joueur qui revient avec un shell.mjs en cache voit L'ANCIEN BUILDER, il n'y a aucun cache-busting sur les imports.",
+    "ce_qui_manque_encore_et_qu_eric_doit_savoir": "🔴 La LANGUE de la fiche n'est pas choisissable. `lang` et `units` sont des champs racine REQUIS, donc structurellement hors de `describableFields` — aucun verbe ne peut les réécrire après création. Le lot 54 les a mis en lecture seule plutôt que d'inventer un dixième verbe sans mandat. Eric avait demandé « Langues : FR / EN » dans Universe : le manque est réel."
+  },
+  "rendement_des_lots_2026_08_14": {
+    "constat": "⭐ SIX LOTS SUR HUIT ont corrigé, complété ou démenti leur commande. C'est le meilleur rendement du chantier.",
+    "le_detail": "43 a déclaré deux dettes hors mandat (sans lui, pas de lot 52) · 47 a refusé un nom de verbe, son refus est devenu la loi du 48 · 50 a déclaré un trou de test qu'il ne pouvait pas boucher · 51 et 49 ont attaqué leur PROPRE travail et réparé leur garde creux sans qu'on le leur demande · 53 a démenti la liste de fichiers de sa commande, et il avait raison.",
+    "consigne": "📌 Écris dans CHAQUE commande qu'un lot a le droit de la contredire, AVEC DES EXEMPLES DATÉS. C'est ce qui produit ce comportement, et c'est le seul détecteur d'erreur extérieur du siège."
   }
 }
