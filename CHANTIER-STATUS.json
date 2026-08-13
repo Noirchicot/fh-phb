@@ -806,21 +806,18 @@
   "statut": "🗺️ LA ROUTE COMPLÈTE VERS LE 7 NOVEMBRE — elle dépasse le builder",
   "display": "🗺️ LA ROUTE : finir le builder → le DÉPLOYER (geste d'Eric) → la fiche v2 jouable → AboveVTT.",
   "1_builder": [
-   "✅ 42 ecrans-records — FUSIONNÉ (Class + Species)",
-   "✅ 45 ecrans-hasard + 45b — FUSIONNÉS (Abilities + Destiny, colonnes corrigées)",
-   "✅ 43 inheritance-moteur — FUSIONNÉ",
-   "→ 46 ecran-inheritance : PROCHAIN. + la confirmation d'effacement au changement de classe (composant réutilisable) ⚠️ le plan `background` publie 1 option non répondue — l'écran décide s'il la pose ou la masque",
-   "→ 47 document-neuf : créer + nommer + brouillon export/import ⚠️ doit vivre sur projectDecisions tant que les 3 portes ne sont pas franchies",
+   "✅ 42 · 45 · 45b · 43 · 46 — TOUS FUSIONNÉS. 685 → 765 tests. Sept étapes sur neuf.",
+   "→ 47 document-neuf — ⭐ COMMANDE DÉJÀ ÉCRITE (fh-phb/LOT-47-DOCUMENT-NEUF.md)",
    "→ 48 ecrans-concept-univers (Universe = choix entre DEUX piles)",
    "→ 49 equipement : le paquet de la classe + 50 PO",
-   "⏸️ 44 garde-des-copies — rangé, préventif",
-   "⏳ dette reprise : la 3e instance du refus en double (block.mjs) + un défaut latent dans skill-pool.mjs, tous deux trouvés et déclarés par le lot 43"
+   "⏳ dettes déclarées par le lot 43 : 3e instance du refus en double (block.mjs) + défaut latent dans skill-pool.mjs",
+   "⏸️ 44 garde-des-copies — rangé, préventif"
   ],
   "2_deploiement": "📄 CHEMIN PRÉPARÉ — fh-phb/DEPLOIEMENT-BUILDER-V2.md. 🔴 LES DEUX COMMANDES SONT LE GESTE D'ERIC. MESURÉ : fhpc est PUBLIC et n'a AUCUN chemin de publication (pas de gh-pages, pas de script, pas d'action) ; fh-phb en a un (gh-pages, en ligne). Et le patron v1 ne marche pas : sync_from_vault.py copie des fichiers HTML AUTONOMES, or le builder v2 est un ARBRE (ui/builder importe ../../src/ et fetch ../../layers/ et ../../examples/). ⭐ CHEMIN RETENU : activer Pages sur fhpc LUI-MÊME, branche main, racine → https://noirchicot.github.io/fhpc/ui/builder/. Le dépôt EST le déploiement : rien n'est recopié, donc rien ne peut diverger (loi anti-copie appliquée à la publication). Les chemins du builder sont relatifs (../..), donc ils marchent sous n'importe quelle base — vérifié par lecture. ✅ FAIT PAR L'ARCHITECTE : .nojekyll commité à la racine de fhpc (d518bb0) — sans lui Pages passe par Jekyll, qui escamote les fichiers en souligné ; un seul des 30 modules manquant et le builder ne démarre pas. 📌 LA CHARGE N'EST PAS UN PROBLÈME, et la première réaction était mauvaise : 2,8 Mo bruts → 407 Ko GZIP pour les 5 couches, 30 modules atteints sur 56 présents, ≈36 requêtes. Une page web ordinaire. AUCUNE optimisation justifiée. ⏳ QUAND : avec de la marge, et RIEN N'OBLIGE À ATTENDRE QUE LE BUILDER SOIT FINI — publier tôt un builder incomplet vaut mieux que tard un complet : ça met le test « sur une machine qui n'est pas celle d'Eric » derrière nous.",
   "3_fiche_jouable": "La fiche v2 devient interactive (jets + tray) sur le moteur v2. Décision Q1, confirmée le 2026-08-13. Gros chantier.",
   "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
   "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne.",
-  "etat": "6 étapes sur 9 branchées (universe, concept, inheritance restent en placeholder). fhpc main = 2a9d711, 740 verts."
+  "etat": "fhpc main = 9f747e5, 765 verts, RIEN EN VOL, arbre propre, poussé. Sept étapes sur neuf branchées : restent Concept et Universe."
  },
  "contrainte_etat_non_derivable_2026_08_13": {
   "date": "2026-08-13",
@@ -850,5 +847,15 @@
   "sorties_de_terrain_acceptees": "Trois scripts de src/tools/ (exemple-fh-en, fh-skills-source, gen-fh-skills-layer) : ils GÉNÈRENT la couche et l'exemple, et ne pas les toucher aurait cassé deux gardes de reproductibilité déjà verts. Déclaré par le lot, accepté.",
   "ce_qu_il_a_trouve_sans_corriger": "⭐ LE BON GESTE : une TROISIÈME instance du « même refus deux fois », dans block.mjs (~449-472), qui recalcule background.ability-key-invalid / boost-disallowed indépendamment de decisions.mjs. Sa déduplication ne porte que sur la boucle de validate() et ne l'atteint pas — il l'explique au lieu de bricoler. Plus un défaut latent dans skill-pool.mjs. ⏳ À REPRENDRE, hors mandat de ce lot.",
   "les_quatre_decisions": "Aucune des quatre décisions d'architecte (§1a-d) ne s'est révélée fausse à la mesure."
+ },
+ "lot_46_fusionne_2026_08_13": {
+  "date": "2026-08-13",
+  "statut": "✅ LOT 46 FUSIONNÉ — l'Inheritance existe, et le builder a sa première confirmation",
+  "display": "✅ LOT 46 FUSIONNÉ (fhpc 9f747e5, 765 verts). SEPT ÉTAPES SUR NEUF branchées — il ne reste que Concept et Universe.",
+  "revue": "Rien hors de ui/ et tests/. ZÉRO assertion supprimée. Clone indépendant 765/765, fusion à blanc, rejoué après. Poussé.",
+  "attaque": "Le lot avait neutralisé onCancel ; l'architecte a attaqué la PRÉCISION de l'effacement. Vérifié par lecture : le filtre est slot.lock.key === 'decision.option-unavailable' — c'est le CARNET qui désigne, pas une comparaison maison. L'effacement ne peut pas déborder par construction.",
+  "la_piece_qui_depasse_le_lot": "⭐ confirm.mjs est un composant GÉNÉRIQUE, testé seul hors de tout écran. Le builder n'en avait aucun ; les suivants le copieront.",
+  "declare_sans_corriger": "(1) background.boost s'affiche verrouillé avant tout clic — comportement moteur, affiché tel quel ; (2) skillLabel rend des slugs bruts (« arcana » au lieu d'« Arcana »), hérité des lots 39/42 — la confirmation en hérite ; (3) la description SRD de Skilled colle « General Feats » sans séparateur — défaut de DONNÉES.",
+  "ecart_accepte": "Le plan `background` à une option n'écrit rien au document. Poser un choix pendant le rendu serait un effet de bord dans une fonction de rendu : le lot a préféré signaler l'écart decisions.mjs / derive.mjs que le commettre."
  }
 }

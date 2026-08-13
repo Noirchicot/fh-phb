@@ -11,8 +11,9 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 > chemin. **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** (125 Ko,
 > produit v1) — seulement les sections nommées.
 
-> 📌 **REPRISE : lis `PASSATION-2026-08-13.md` juste après ce mandat** — c'est la
-> plus récente. **Rien n'est en vol**, les **lots 36 à 41 sont fusionnés**,
+> 📌 **REPRISE : lis `PASSATION-2026-08-13-SOIR.md` juste après ce mandat** — c'est la
+> plus récente. ⚠️ Celle sans `-SOIR` est CONSOMMÉE (elle décrit un chantier à 685
+> tests et sept étapes vides). **Rien n'est en vol**, les **lots 36 à 41 sont fusionnés**,
 > l'étape Compétences existe, **un personnage se construit ET se regarde**, et les
 > persos sont anglais jusque dans les refus du moteur. Elle porte les **sept
 > erreurs de ce siège** et les **deux règles de mesure** qui en sortent.
