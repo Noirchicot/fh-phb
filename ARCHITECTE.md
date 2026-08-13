@@ -293,7 +293,7 @@ ne voyait ni l'un ni l'autre.
 
 | Dépôt | `main` | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `dd2b66e` | ✅ vérifié contre le distant | **767 vertes** |
+| `~/tools/fhpc` | `7447f3a` | ✅ vérifié contre le distant | **780 vertes** |
 | `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
 
@@ -304,13 +304,20 @@ et deux lignes de la version précédente étaient fausses en moins de douze heu
 
 | | Lot | État |
 |---|---|---|
-| ✅ | ~~`36`→`46`~~ | **tous fusionnés.** Sept étapes sur neuf branchées |
-| 🔵 | **47 `document-neuf`** | **EN VOL** — worktree `47-document-neuf`, base `9f747e5` (767 attendus au départ). Créer + nommer + le schéma de brouillon **dérivé** |
-| 🔵 | **50 `repartition-caracs`** | **EN VOL** — worktree `50-repartition-caracs`, base `dd2b66e`. ⭐ **Défaut rencontré par ERIC sur la page déployée** |
-| 📄 | **48 `ecrans-concept-univers`** | ⛔ **attend la FUSION du 47** : `gender` et `alignment` touchent `schemas/`, que le 47 écrit |
+| ✅ | ~~`36`→`47`~~ | **tous fusionnés.** ⭐ **Un personnage peut enfin COMMENCER** — `doc.create`, `doc.rename`, et le schéma de brouillon **dérivé** |
+| 🔵 | **50 `repartition-caracs`** | **EN VOL** — base `dd2b66e`. ⭐ **Défaut rencontré par ERIC sur la page déployée** |
+| 🔵 | **48 `champs-identite`** | **EN VOL** — base `7447f3a`. `gender` · `alignment` · `campaign`, et le verbe qui **lit sa liste blanche dans le schéma** |
 | 📄 | **49 `equipement`** | ✅ **commande écrite** — ⛔ **attend la FUSION du 50** : il écrit `shell.mjs`, que le 50 écrit |
+| 📄 | **51 `ecrans-concept-univers`** | ⛔ **attend 48 ET 50** — il a besoin des champs, et il écrit `shell.mjs` |
 | ⏳ | **dettes du lot 43** | 3ᵉ instance du refus en double (`block.mjs`) · défaut latent dans `skill-pool.mjs` |
 | ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |
+
+⚠️ **`48` A ÉTÉ REDÉCOUPÉ, et nommé AVANT que quiconque travaille dessous.**
+L'ancien `48-ecrans-concept-univers` portait les deux écrans **et** les champs
+qu'ils écrivent — or les écrans touchent `shell.mjs`, que le 50 écrit. Coupé en
+**48 `champs-identite`** (schéma, zéro `ui/`, part tout de suite) et
+**51 `ecrans-concept-univers`** (après les deux). ⭐ **Ce que le découpage gagne :
+le chantier ne s'arrête pas pour attendre.**
 
 ⛔ **DEUX LOTS EN VOL EST LE PLAFOND** *(auto-limite §4b)* — la revue est le
 goulot, pas la capacité. Les deux qui attendent le font pour une **collision de

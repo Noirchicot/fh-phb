@@ -823,7 +823,7 @@
     "3_fiche_jouable": "La fiche v2 devient interactive (jets + tray) sur le moteur v2. Décision Q1, confirmée le 2026-08-13. Gros chantier.",
     "4_abovevtt": "La connexion. Après la fiche. Un pont AboveVTT et un serveur de table existent déjà côté v1 — rien ne les relie au v2.",
     "⚠️_a_ne_pas_oublier": "« C'est le builder, et rien d'autre, qui décide du 7 novembre » N'EST PLUS VRAI depuis le 2026-08-13. Le builder ne suffit plus : il faut aussi qu'il soit EN LIGNE et qu'une surface de jeu tourne.",
-    "etat": "fhpc main = dd2b66e, 767 verts, arbre propre, poussé et REVÉRIFIÉ contre le distant. DEUX LOTS EN VOL (le plafond de la charte) : 47-document-neuf (base 9f747e5) et 50-repartition-caracs (base dd2b66e). Sept étapes sur neuf branchées."
+    "etat": "fhpc main = 7447f3a, 780 verts, arbre propre, poussé et REVÉRIFIÉ contre le distant. DEUX LOTS EN VOL (le plafond de la charte) : 50-repartition-caracs et 48-champs-identite."
   },
   "contrainte_etat_non_derivable_2026_08_13": {
     "date": "2026-08-13",
@@ -906,5 +906,32 @@
     "ce_que_la_precision_change": "⭐ ELLE DISSOUT L'OBJECTION QUI EMPÊCHAIT LE MOTEUR DE PARLER. L'arbitrage précédent (« l'écran prévient, le moteur laisse ») tenait à un seul motif : le moteur ne voit pas un instant, il voit un document, et un personnage créé au niveau 5 a des augmentations légitimes. Au NIVEAU 1 les deux se confondent — la première augmentation SRD arrive au niveau 4, donc un score au-dessus de 18 sur un niveau 1 n'a AUCUNE origine légitime. Le moteur n'a pas besoin de reconnaître « la création » : il lui suffit de lire level === 1, qu'il voit déjà.",
     "statut_de_cette_conséquence": "⏳ QUESTION OUVERTE À ERIC, PAS APPLIQUÉE. Le moteur se tait toujours (mesuré : abilities.str = 20 passe avec zéro refus). Faire opposer le plafond par validate() au niveau 1 change une ligne ratifiée — ça se demande, ça ne se décide pas depuis ce siège.",
     "effet_immediat": "Le lot 50 resserre l'ALERTE de renderCapWarning au niveau 1 seulement (elle parle à tout niveau aujourd'hui). L'alerte reste une alerte : rien n'est bloqué."
+  },
+  "lot_47_fusionne_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "✅ FUSIONNÉ — fhpc 7447f3a, 767 → 780 verts, poussé et revérifié",
+    "ce_qu_il_ouvre": "Un personnage peut enfin COMMENCER. `doc.create` (7e verbe) rend un fh-char/1 neuf et vide que projectDecisions sait déjà lire — il ne dérive pas et n'enregistre pas, créer et sauvegarder restent deux gestes. `doc.rename` (8e) écrit `name` à la racine sans jamais poser de choix dans build.choices.",
+    "⭐_le_schema_de_brouillon_est_vraiment_derive": "`deriveDraftSchema` FILTRE le `required` réel de fh-char/1 au moment de l'appel — il ne recopie pas une liste amputée. Propriété vérifiée : ajouter demain une clef requise au format la rend AUSSITÔT requise au brouillon, sans qu'une ligne ne bouge. fh-char/1 lui-même est intact, `resolved` y reste requis.",
+    "id": "UUID v4 tiré du CSPRNG (node:crypto/randomUUID), produit par le bloc — contrairement à `duplicate` qui exige `as` de l'appelant. Le motif du lot : duplicate copie un document que son joueur a déjà nommé ; create n'a rien à copier, il n'y a encore personne à qui laisser le choix.",
+    "revue_de_l_architecte": "Diff mesuré depuis la BASE COMMUNE, jamais depuis main. Les deux tests préexistants modifiés RENFORCENT au lieu d'affaiblir (liste des verbes 6 → 8, un deepEqual gagne une clef `draft`) — rien de commenté, aucune assertion retirée. ⚔️ ATTAQUE DE L'ARCHITECTE sur ce que le lot n'avait PAS attaqué : la dérivation elle-même, remplacée par une liste recopiée en dur — le test 8 rougit, et LUI SEUL (12/13). Restauré byte-à-byte. 780 verts dans un CLONE INDÉPENDANT avec npm install, sous l'ajv 8.20.0 que le dépôt DÉCLARE.",
+    "📌_le_piege_du_mandat_repaye": "`git merge -F -` NE LIT PAS STDIN — la fusion échoue avec `could not read file '-'`. Le mandat le note déjà (§5, erreurs du 2026-08-08) et le siège l'a refait quand même. Vérifié que main n'avait pas bougé, puis message passé par un fichier. La leçon tient : un piège écrit n'est pas un piège évité."
+  },
+  "renommage_48_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "⚠️ LE LOT 48 A ÉTÉ REDÉCOUPÉ — nommé AVANT que quiconque travaille dessous",
+    "avant": "48 `ecrans-concept-univers` — un seul lot portant les deux écrans ET les champs qu'ils écrivent.",
+    "apres": "48 `champs-identite` (schéma + contrat + verbe, ZÉRO ui/) puis 51 `ecrans-concept-univers` (les deux écrans).",
+    "pourquoi": "⛔ COLLISION DE FICHIER MESURÉE : les écrans écrivent ui/builder/shell.mjs, que le lot 50 écrit en ce moment. Le test d'Eric — « le prompt du lot cite-t-il un fichier qu'un autre lot est en train d'écrire ? » — répondait oui. La moitié schéma, elle, ne touche rien de ce que le 50 touche : elle part tout de suite.",
+    "⭐_ce_que_le_decoupage_gagne": "Le chantier ne s'arrête pas pour attendre. Sans lui, un seul lot aurait tourné pendant que l'autre moitié dormait."
+  },
+  "verbe_des_champs_facultatifs_2026_08_13": {
+    "date": "2026-08-13 (soir+1)",
+    "statut": "⚖️ DÉCISION D'ARCHITECTE — commandée au lot 48",
+    "la_question": "gender, alignment et campaign n'existent nulle part. Qui les écrit ? `rename` (le verbe du lot 47) ne fait QUE `name`.",
+    "⛔_ce_qui_est_refusé": "Généraliser `rename`. Le lot 47 avait REFUSÉ le nom `describe` avec cet argument, mot pour mot : « un nom de verbe trop large invite à y accrocher autre chose plus tard ». Son argument tient, et il DÉCRIT la situation — l'architecte était ce « plus tard ».",
+    "⭐_la_sortie": "Un verbe est « trop large » quand LE CODE décide de ce qu'il accepte ; il ne l'est plus quand LE SCHÉMA décide, parce qu'alors il ne peut pas dériver. Le verbe neuf LIT SA LISTE BLANCHE DANS LE SCHÉMA. Patron déjà présent trois fois : readFromSchema (schema.mjs:312), contracts/doc.md:45 (« il GÉNÈRE sa liste blanche à partir de lui »), et deriveDraftSchema que le lot 47 vient d'écrire.",
+    "preuve_exigee": "⚔️ Le test qui prouve le lot : ajouter une propriété racine facultative au schéma la rend AUSSITÔT écrivable, sans toucher au verbe. Même forme de preuve que le test 8 du lot 47.",
+    "ou_ils_vivent": "À la RACINE du document. ⛔ PAS dans resolved.identity — mesuré : identity vit dans `resolved`, donc il est DÉRIVÉ, et rien ne dérive un genre. ⭐ Le précédent racine existe déjà : `generator` est une métadonnée racine facultative.",
+    "forme": "Texte libre, facultatifs, avec une maxLength. ⛔ Aucune énumération fermée, pas même pour l'alignement — précédent ratifié : identity.creatureType est « une chaîne libre EXPRÈS, un homebrew a le droit d'inventer un type ». Une énumération des neuf rendrait `Chaotic Good (mostly)` invalide. La liste des neuf vit dans l'ÉCRAN."
   }
 }
