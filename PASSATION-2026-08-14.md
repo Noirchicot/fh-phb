@@ -91,8 +91,8 @@ parade.**
 | | |
 |---|---|
 | **La langue de la fiche n'est pas choisissable** | Il a demandé « Langues : FR / EN » dans Universe. Mesuré : `lang` et `units` sont des champs racine **REQUIS**, donc structurellement hors de `describableFields` — **aucun verbe ne peut les réécrire** après création. Le lot 54 les a mis en **lecture seule** plutôt que d'inventer un dixième verbe sans mandat. **Le manque est réel.** Un dixième verbe est un changement de contrat : ça se demande |
-| **La bascule de couleurs n'existe pas** | Mesuré : `tokens.css` n'a **aucun sélecteur `[data-theme]`**, le thème suit l'OS. C'est un petit chantier, pas un branchement |
-| **Les 76 lignes non commitées** | `sync_from_vault.py`, worktree `fh-phb`, ouvertes depuis le **2026-07-27**. Ni commitées ni jetées. **C'est une décision, pas du ménage** |
+| **La bascule de couleurs n'existe pas** | Mesuré : `tokens.css` n'a **aucun sélecteur `[data-theme]`**, le thème suit l'OS. ⚠️ **Nuance mesurée le 2026-08-14 : l'absence de sélecteur est exacte, mais ce n'est pas un oubli — c'est un REFUS motivé du lot 38** (commentaire en tête de `tokens.css` : *« un troisième bloc pour un thème qui n'existe pas encore serait du code mort derrière un interrupteur, loi §0.6 »*). Une commande qui l'ignore se fera refuser à raison. Ce qui lève l'objection : Eric a demandé les **couleurs de l'UI** dans Universe. Voir `PASSATION-2026-08-14-SOIR.md` §8. |
+| ~~**Les 76 lignes non commitées**~~ | ❌ **CETTE LIGNE ÉTAIT FAUSSE, et le siège suivant l'a mesurée le 2026-08-14** : `fh-phb` `106782f` (**2026-08-02**) porte les **+76/−7**, et son message dit *« recovered and rebased onto main »*. Le worktree n'existe plus. **Recopiée douze jours durant sans remesure** — je l'ai reprise du mandat au lieu de la vérifier |
 | **Et après le builder** | ⛔ **la fiche v2 jouable** et **AboveVTT** demandent sa parole, même le builder fini — la charte ne s'étend pas toute seule |
 
 ---
@@ -102,7 +102,7 @@ parade.**
 | Dette | La mesure |
 |---|---|
 | **`lang`/`units` non réécrivables** | `describableFields` → `[alignment, campaign, gender]`. Les deux sont `required`, donc exclus **par construction** |
-| **Le cache du navigateur** | Un joueur qui revient avec un `shell.mjs` en cache voit **l'ancien builder**. Aucun cache-busting sur les imports. *(Mesuré en direct : j'ai cru voir deux placeholders qui n'existaient plus.)* |
+| **Le cache du navigateur** | Un joueur qui revient avec un `shell.mjs` en cache voit **l'ancien builder**. Aucun cache-busting sur les imports. *(Mesuré en direct : j'ai cru voir deux placeholders qui n'existaient plus.)* ⚠️ **BORNÉE, mesuré le 2026-08-14 en production** : GitHub Pages sert `cache-control: max-age=600` **avec un ETag** — la fenêtre est de **dix minutes**, pas indéfinie, et la revalidation ramène la bonne version ensuite. L'absence de cache-busting reste vraie ; son effet est plus petit qu'écrit. 📌 **Et un piège d'instrument trouvé au passage : `last-modified` n'est PAS fiable sur Pages** (il affichait le 13 août sur un fichier réécrit le 14, alors que le CONTENU servi était à jour). **Mesure le corps, jamais l'en-tête.** |
 | **`dice.mjs:66`** | un `while` **sans plafond** nourri par une fonction RNG **injectée**. Avec `Math.random` il termine ; avec un RNG scripté qui ne rend jamais 15+, **il tourne à l'infini** |
 | **`describableFields` ne lit qu'une orthographe** | `type: "string"` → vu · `$ref` → **invisible** · `["string","null"]` → **invisible**. Et `lang` est un `$ref` **dans ce schéma même**. Inscrit dans `contracts/doc.md` |
 | **`aria-label`, sites restants** | mesurés et **légitimes** : « Trained », « No proficiency », « Skill categories », « None ». Des mots pour l'oreille |
@@ -110,7 +110,25 @@ parade.**
 
 ---
 
-## 7. 🔴 L'INSTABILITÉ DE SUITE — inconnu NOMMÉ, et mes deux hypothèses sont tombées
+## 7. ✅ L'INSTABILITÉ DE SUITE — **RÉSOLUE LE 2026-08-14**
+
+> 🔴 **LA RÉPONSE, avant tout ce qui suit** : `tests/dice.test.mjs` exigeait que
+> les deux bornes de 3d6 sortent **sur mille jets de `Math.random` réel**.
+> `1/216` chacune → **1,96 % d'échec**, simulé sur 200 000 répétitions : **une
+> passe rouge toutes les 51 exécutions**. Corrigé (`3a69116`), 150 passes sans
+> échec.
+>
+> ⭐ **Et ton refus de conclure était JUSTE** : le voisinage du `git merge`
+> était bien une **coïncidence**, et le `sleep 2` n'y était pour rien. Tu as
+> écrit *« coïncidence n'est pas cause, et je refuse de l'écrire comme si c'en
+> était une »* — c'est exactement ce qui a permis de chercher ailleurs.
+>
+> 📌 **La leçon** : *un test dont la réussite est PROBABILISTE ment de temps en
+> temps.* Cherche d'abord la malchance, avant l'ordonnancement ou le cache.
+
+<details><summary>L'enquête, conservée — deux hypothèses tombées et une fenêtre réelle mais hors sujet</summary>
+
+### L'inconnu NOMMÉ, et mes deux hypothèses sont tombées
 
 **Trois observations** : deux échecs isolés sur la passe suivant immédiatement
 un `git merge` (lots 50 et 48), et un `dice.test.mjs` rouge vu par le lot 49.
@@ -127,6 +145,66 @@ instabilité rapportée par un lot avait été « non reproduite » parce que l'
 était remis propre entre les passes, **et le défaut était réel**.
 📌 Un `sleep 2` après le merge a coïncidé avec quatre fusions sans échec —
 **coïncidence n'est pas cause**, et je refuse de l'écrire comme si c'en était une.
+
+### 🔬 TROISIÈME HYPOTHÈSE — 2026-08-14. Sa FENÊTRE est prouvée, sa CAUSALITÉ non
+
+**Ce qui est mesuré, et c'est un fait, pas une idée** — `npm test` est
+`node --test`, qui lance les fichiers **EN PARALLÈLE**. Or **trois** fichiers de
+tests écrivent un fichier piège **DANS L'ARBRE `src/` DU DÉPÔT**, pas dans
+`tmpdir` :
+
+| Test | Ce qu'il crée puis retire |
+|---|---|
+| `tests/doc-block.test.mjs:270` | `src/doc/sous/porte-de-sortie.mjs` |
+| `tests/layers-block.test.mjs:273` | `src/layers/sous/porte-de-sortie.mjs` |
+| `tests/mcp-block.test.mjs:576` | `src/mcp/sous/porte-de-sortie.mjs` |
+
+C'est **délibéré et bien motivé** — les trois vérifient que l'arpenteur marche
+un **vrai** sous-répertoire au lieu de croire `loadSources` sur parole, et le
+commentaire de `layers-block` rappelle qu'une violation a réellement laissé huit
+tests verts avant ce correctif. **Ne les casse pas sans réfléchir.**
+
+**La fenêtre existe, et elle a été SONDÉE pendant que la suite tournait** — 19,9
+millions de sondes sur 30 s :
+
+| Répertoire piège | Vu exister |
+|---|---|
+| `src/doc/sous` | **1 437** fois |
+| `src/layers/sous` | **723** fois |
+| `src/mcp/sous` | **3 824** fois |
+
+Et **dix-huit** fichiers de tests scannent l'arbre (`grep -rln "readdirSync\|
+loadSources\|source-scan" tests/*.test.mjs`). Le piège de `layers-block`
+contient `import fs` — **exactement la violation que l'arpenteur §0.12
+cherche**.
+
+⚠️ **CE QUE ÇA N'ÉTABLIT PAS, et c'est la moitié du rapport** :
+
+- ❌ **je n'ai PAS fait rougir la suite par cette voie.** 20 passes ciblées :
+  0 échec. 2 passes concurrentes pendant la suite complète : 0 échec — et
+  **deux passes ne prouvent rien**, l'échantillon est trop petit ;
+- ❌ **ça n'explique toujours pas `dice.test.mjs`** (lot 49). Mesuré :
+  `tests/dice.test.mjs` ne lit **aucun** fichier — `grep -nE "readFileSync|
+  readdirSync|import .*fs"` → **vide**. Il ne peut pas être victime de cette
+  course-ci ;
+- ⚠️ **et ça reste cohérent avec le `sleep 2`** *(un merge sature l'I/O, donc
+  décale l'ordonnancement)* — ce qui rend l'hypothèse séduisante, **et c'est
+  précisément pour ça qu'il faut s'en méfier**.
+
+📌 **Deux fautes de protocole payées en la mesurant, toutes deux attrapées
+parce que le résultat surprenait** : (1) une boucle de 20 passes a rendu
+**20/20 rouge** — zsh ne découpe pas les variables non quotées, `node` recevait
+un seul argument inexistant ; (2) une première sonde a rendu **0 apparition** —
+elle finissait avant les tests écrivains. **La version corrigée en rend 5 984.**
+*Suspecte ton protocole avant ta conclusion : les deux fois, le protocole avait
+tort.*
+
+⚠️ **ET CETTE FENÊTRE N'ÉTAIT PAS LA CAUSE.** Elle est réelle et mesurée — elle
+reste à connaître — mais l'instabilité venait d'ailleurs (voir la réponse en
+tête de ce §7). 📌 **Une hypothèse peut être vraie ET hors sujet** ; c'est
+pourquoi on ne clôt pas une enquête sur une explication plausible non prouvée.
+
+</details>
 
 ---
 

@@ -11,7 +11,18 @@ aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
 > chemin. **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** (125 Ko,
 > produit v1) — seulement les sections nommées.
 
-> 📌 **REPRISE : lis `PASSATION-2026-08-14.md` juste après ce mandat** — 🎉 **LE BUILDER EST FINI, ses neuf étapes sont branchées, 876 verts.** ⚠️ Celle du 13 au SOIR est CONSOMMÉE.
+> 📌 **REPRISE : lis `PASSATION-2026-08-14-SOIR.md` juste après ce mandat** —
+> c'est la plus récente. 🎉 **LE BUILDER EST FINI**, et la session du 14 au jour
+> a trouvé **cinq défauts à l'œil** dont **le dernier bouton du produit qui ne
+> faisait rien**. ⚠️ **`PASSATION-2026-08-14.md` (la nuit) reste utile pour ses
+> §3, §4, §7 et §10** — mais **son §5 est faux sur un point** *(les 76 lignes
+> étaient commitées depuis le 2 août)* et **son §6 sur deux**.
+>
+> 🔴 **ET LA LEÇON DE CETTE REPRISE, parce qu'elle est neuve** : l'entrée
+> `reprise_2026_08_12` du tableau de bord s'intitule *« ce qui reste vrai »*
+> après avoir démenti **trois** lignes du mandat — et **la seule ligne qu'elle a
+> gardée sans la remesurer est celle qui était fausse. Une remesure PARTIELLE
+> donne la confiance d'une remesure complète.**
 >
 > *(ancienne consigne, conservée pour l'historique : lis `PASSATION-2026-08-13-SOIR.md`* — c'est la
 > plus récente. ⚠️ Celle sans `-SOIR` est CONSOMMÉE (elle décrit un chantier à 685
@@ -295,9 +306,14 @@ ne voyait ni l'un ni l'autre.
 
 | Dépôt | `main` | Distant | Suites |
 |---|---|---|---|
-| `~/tools/fhpc` | `b596408` | ✅ vérifié contre le distant | **876 vertes** |
+| `~/tools/fhpc` | `8d846f6` *(2026-08-14)* | ⚠️ **2 commits d'avance, NON poussés** | **882 vertes** |
 | `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
 | `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
+
+> 📌 **2026-08-14** : `bc1bd40` *(la fuite de chantier affichée au joueur)* et
+> `8d846f6` *(fusion du lot 56 — le garde d'octets couvre `ui/`)*. Le lot 55 est
+> en vol. **REMESURE plutôt que de recopier cette ligne** : c'est exactement ce
+> qui a laissé une dette morte douze jours dans ce fichier.
 
 ### 🔴 LA TROUVAILLE QUI VAUT PLUS QUE LES LOTS — `grep` était aveugle
 
@@ -325,6 +341,37 @@ porte un caractère de contrôle hors tab/LF/CR. Attaqué sur l'arbre réel.
 lui-même deux octets NUL bruts. **On réintroduit un défaut en écrivant sa
 parade.**
 
+### ✅ L'INSTABILITÉ DE SUITE EST RÉSOLUE — 2026-08-14, et ce n'était rien de ce qu'on croyait
+
+**`tests/dice.test.mjs` portait un test STATISTIQUEMENT FAUX.** Il tirait mille
+jets de 3d6 avec `Math.random` **réel** et **exigeait** que les deux bornes
+sortent. `P(3d6 = 3) = P(3d6 = 18) = 1/216` → **1,96 % d'échec**, mesuré par
+simulation sur **200 000 répétitions** : **une passe rouge toutes les 51
+exécutions.**
+
+⭐ **Pris sur le fait** sur la passe qui a suivi la fusion du lot 57 — la
+quatrième observation, et la première mesurable à chaud.
+
+**Ça explique les trois observations d'un coup** : c'est bien `dice.test.mjs`
+que le lot 49 avait vu rouge ; c'est rare et non reproductible à la demande ;
+et **le voisinage du `git merge` était une coïncidence**. 📌 **La passation du
+14 refusait d'écrire que le `sleep 2` était une cause — elle avait raison, et
+ce refus vaut d'être imité.**
+
+✅ Corrigé (`3a69116`, poussé) : les bornes se prouvent avec le `scriptedRng`
+que ce fichier emploie partout ailleurs, l'intervalle reste sur du hasard réel.
+**150 passes, 0 échec** contre ~3 attendus. **906 verts.**
+⛔ **La réparation n'était PAS « plus de jets »** — augmenter N rend l'échec
+plus rare sans jamais l'éliminer.
+
+> 🔴 **ET LA LEÇON GÉNÉRALE, parce qu'elle se reproduira** : *un test dont la
+> réussite est PROBABILISTE est un test qui ment de temps en temps.* Celui-ci a
+> coûté **trois passations d'enquête** et deux hypothèses savantes. Cherche
+> d'abord si l'assertion peut échouer **par malchance**, avant de soupçonner
+> l'ordonnancement, le cache ou le système de fichiers.
+
+<details><summary>L'ancienne section, conservée pour le raisonnement (elle était fausse)</summary>
+
 ### ⚠️ UNE SUITE INSTABLE, NON RÉSOLUE — ne la déclare pas morte
 
 **Un test rouge sur la passe qui suit IMMÉDIATEMENT un `git merge`**, observé
@@ -343,6 +390,8 @@ un `push` **masque le code de sortie** — le `&&` voit réussir `grep`, pas les
 tests. Une poussée est partie sur une suite rouge (`main` était sain, mais par
 chance). **Capture le code de sortie, ne tuyaute pas.**
 
+</details>
+
 ⛔ **REMESURE CES SHA** — la ligne au-dessus a été écrite le 2026-08-13 au soir,
 et deux lignes de la version précédente étaient fausses en moins de douze heures.
 
@@ -353,7 +402,7 @@ et deux lignes de la version précédente étaient fausses en moins de douze heu
 | ✅ | ~~`36`→`52`~~ | **tous fusionnés.** Un personnage **commence**, **se nomme**, **se décrit**, ses **six dés se distribuent** et **s'échangent** |
 | ✅ | ~~**49 `equipement`**~~ | **fusionné** — le sac et la bourse |
 | 🎉 | ~~**54 `ecrans-concept-univers`**~~ | **FUSIONNÉ — LE BUILDER EST COMPLET.** Les neuf étapes sont branchées, plus aucun placeholder |
-| 📄 | **bascule de thème** | à commander — mesuré : `tokens.css` n'a **aucun** `[data-theme]`, le thème suit l'OS |
+| 📄 | **bascule de thème** | à commander — mesuré : `tokens.css` n'a **aucun** `[data-theme]`, le thème suit l'OS. ⚠️ **Nuance mesurée le 2026-08-14 : l'absence de sélecteur est exacte, mais ce n'est pas un oubli — c'est un REFUS motivé du lot 38** (commentaire en tête de `tokens.css` : *« un troisième bloc pour un thème qui n'existe pas encore serait du code mort derrière un interrupteur, loi §0.6 »*). Une commande qui l'ignore se fera refuser à raison. Ce qui lève l'objection : Eric a demandé les **couleurs de l'UI** dans Universe. Voir `PASSATION-2026-08-14-SOIR.md` §8. |
 | ✅ | ~~**53 `aria-crochet`**~~ | **fusionné** — l'identifiant machine vit dans `data-value`, et la 3ᵉ instance est payée |
 | ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |
 
@@ -531,7 +580,7 @@ d'agir dessus.
 | `violations` en clefs | ✅ **PAYÉE** | `buildViolation` / `buildViolationList` (`validate.mjs`), forme `{key, params, path}` |
 | Les imposés d'espèce | ✅ **RETIRÉE** | tranchée par Eric le **2026-08-09**, implémentée par le lot 24 — elle réclamait une décision déjà prise |
 | « les **vingt** clefs de `resolved` » | ✅ **CORRIGÉE ce jour** | le schéma en compte **21**. `contracts/build.md:202` et `:820` corrigés, 685 verts. ⚠️ *Ne touche pas au « vingt-six » de la ligne 522 : c'est le compte des compétences, et il est juste* |
-| **Le barème captif en dur** | 🔴 **VRAIE** | `{half:1, proficient:2}` à **`decisions.mjs:211`** et **`derive.mjs:670`** *(la passation disait 665 — la ligne a dérivé)*, alors que le contenu déclare déjà `tier_costs` **par classe** (`fh-skills-source.mjs:370`). Dormant tant que les 12 classes partagent le barème — **mesuré : c'est toujours le cas** |
+| **Le barème captif en dur** | 🔴 **VRAIE, dormante** | `{half:1, proficient:2}` à **`decisions.mjs:288`** *(⚠️ remesuré le 2026-08-14 : ce fichier disait **211**, la ligne a dérivé UNE FOIS DE PLUS — c'est la deuxième dérive consignée pour cette même dette)* et **`derive.mjs:670`** *(exact)*. **Pourquoi dormante, remesuré** : chaque record de classe porte bien son `tier_costs`, mais les douze copies sont écrites par `gen-fh-skills-layer.mjs:361` en `tier_costs: { ...TIER_COSTS }` — **identiques par construction**, depuis l'unique `TIER_COSTS` de `fh-skills-source.mjs:370`. Elles ne peuvent diverger que si quelqu'un change le générateur |
 | **L'attribution hors document** | 🔴 **VRAIE, jamais construite** | `derive.mjs:1211`, `:1222`, `:1231` *(la passation disait 1091-1096)* : `base`, `dex` et `acBonus` sont nommés, puis jetés dans `resolved.ac`. Déclarée « prête » le 2026-08-09 |
 | **Le garde des copies** | 🔴 **VRAIE** | `grep -rln "fh-skill-builder" tests/ src/` → **rien**. Les 22 arcanes ne sont confrontées à aucune copie |
 | **`state.character` : document ou `resolved` ?** | 🔴 **VRAIE** | `session.mjs:203` et `:207` lisent `ch.savingProficiencies` et `ch.pb` ; `modules/fh/index.mjs:130-132` lit `destinyBuild.score`, puis `build.destinyFeats.score`, puis `ch.pb` — **trois noms de champs v1** |
@@ -608,9 +657,17 @@ de config, et ça vaut une relecture complète.
 
 **CE QUI RESTE OUVERT** :
 
-- ⚠️ **Le worktree de `fh-phb`** existe toujours à `797163d` : les **76 lignes
-  non commitées** de `sync_from_vault.py`, ouvertes depuis le **2026-07-27**,
-  toujours en attente d'Eric. **Ce n'est pas du ménage, c'est une décision.**
+- ✅ ~~**Le worktree de `fh-phb`** et ses 76 lignes non commitées~~ — **MORTE
+  DEPUIS LE 2026-08-02, découvert le 2026-08-14.** Mesuré : `fh-phb` `106782f`,
+  *« Inject the site shell into the two tool pages during sync »*, **+76/−7**,
+  et son message dit lui-même *« recovered and rebased onto main »*. Le worktree
+  `youthful-taussig-bfa14e` n'existe plus (`.claude/worktrees/` vide,
+  `git worktree list` → le principal seul).
+  🔴 **Cette ligne a été recopiée comme « décision en attente » pendant DOUZE
+  JOURS, dans ce mandat et dans trois passations.** C'est la loi du dépôt
+  vérifiée sur ce fichier même : *une dette recopiée n'est pas une dette
+  vérifiée*, et **un mandat n'est pas plus fiable qu'une passation** — il est
+  seulement plus vieux, donc il accumule.
 - ✅ **Aucune branche distante à nettoyer** — `origin` ne porte que `main`.
 
 ⛔ **ET AVANT DE TOUCHER UN WORKTREE, REGARDE `git status`.** Le 2026-08-12 au
@@ -906,7 +963,7 @@ danger — vérifié que le garde **lit le schéma**
 
 | Sujet | |
 |---|---|
-| ⚠️ **76 lignes non commitées, retrouvées au ménage** | `sync_from_vault.py` est **modifié et non commité** depuis le 2026-07-27 dans `fh-phb/.claude/worktrees/youthful-taussig-bfa14e` : une fonctionnalité complète qui injecte le shell du site (feuille de style + barre de nav) sur les pages **builder** et **roller** publiées. **Ni commité, ni jeté — Eric décide.** Le worktree est laissé en place exprès, et le diff est sauvegardé en double dans le scratchpad de la session du 2026-08-09 |
+| ~~**76 lignes non commitées, retrouvées au ménage**~~ | ✅ **RÉSOLUE LE 2026-08-02, remesurée le 2026-08-14** : `fh-phb` `106782f` porte les **+76/−7** de `sync_from_vault.py` (injection du shell du site sur les pages builder et roller). Le worktree a disparu, la fonctionnalité est sur `main`. **Elle n'a jamais attendu Eric passé le 2 août** |
 | ~~Les imposés d'ESPÈCE se déduisent-ils du pool ?~~ | ✅ **TRANCHÉ PAR ERIC LE 2026-08-09, ET IMPLÉMENTÉ** *(lot 24)* — **dette périmée, recopiée de passation en passation, retirée le 2026-08-13.** Remesuré : `skill-pool.mjs:474-507` pose **deux** lignes, `+count × cost` puis `−count × cost`, avec le **même** `cost` (`tier_costs.imposed`, lu sur le record — `imposedCost()`, jamais en dur). **Net zéro par construction**, quel que soit le barème. ⭐ **L'argument, et il est bon** : convertir le don en points libres lui ferait **perdre sa restriction** — les 2 points de Keen Senses ne tirent que dans `{survival, delve, vigilance}`. Carnet vérifié sur 4 espèces : Human et Araag sont à **12** contre **10** pour Elf et Loroka, et l'écart vient **entièrement** d'`Educated` / `Fast Learner` (+2 au niveau 1), **pas** du don d'espèce |
 | **`build.budgets` : on le garde ou on le retire ?** | Plus **aucun** consommateur connu depuis que le pool est parti dans `resolved.stats[]`. Champ `required` d'un **schéma public** : le retirer n'est pas le geste d'un lot. La loi §0.6 (pas de vocabulaire mort) dit de le retirer ; la prudence dit qu'un schéma public ne se rétrécit pas à la légère |
 | **Le découpage du builder** | « Builder desktop complet » est un jalon, pas un lot. Recommandation de ce siège, **confirmée par le conseiller interface** : une première tranche qui fait **un personnage niveau 1 de bout en bout à l'écran**, et rien d'autre |
