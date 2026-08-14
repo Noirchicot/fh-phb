@@ -936,6 +936,26 @@ mais pas du tout ergonomiques ».**
 | **B6.1b** | **Une seule carte, GRAND FORMAT**, qui prend **un maximum d'espace**, **de dos**, **flottant sur une dalle MAJEURE**. ⛔ **Rien d'autre à l'écran que la carte** |
 | **B6.1c** | 🔴 **ON TAPE LA CARTE POUR QU'ELLE SE RETOURNE** *(Eric)* |
 | **B6.1d** | **Le texte apparaît UNE SECONDE APRÈS** le retournement, dans une **fenêtre SIMPLE**, en dessous : ce que fait la carte |
+
+> ### ⚠️ RÉVISÉ PAR ERIC — 2026-08-15 : **3 SECONDES, PAS UNE**
+>
+> *« On doit avoir le temps de la voir entière avant qu'elle rapetisse. »*
+> Puis, à la question « combien ? » : ***« 3 secondes »***.
+>
+> **Le chiffre disait pourquoi une seconde ratait sa cible** : le retournement
+> dure **0,45 s**, le texte arrivait à **1 s** — il restait **550 ms** de carte
+> entière. Et à cet instant la fiche **rétrécit d'un coup** pour faire place au
+> texte : la transition du CSS porte sur `transform`, pas sur la taille.
+>
+> 📌 **Deux remèdes lui ont été proposés** — retarder le texte, ou adoucir le
+> rétrécissement. **Il a choisi le délai.** Le rétrécissement reste donc
+> brutal, et c'est un choix, pas un oubli.
+>
+> ⭐ **La condition est gardée, pas commentée** (`tests/destiny-delai.test.mjs`) :
+> le garde ne protège pas « 3000 », il protège *« le texte arrive après le
+> retournement, et laisse au moins 2 s de contemplation »*. Les deux nombres
+> vivaient dans deux fichiers sans se connaître — rallonger l'animation CSS
+> rognait le temps de pose sans qu'une ligne de JS bouge.
 | **B6.1e** | **Valid s'illumine** |
 | **B6.1f** | **Deux petits boutons**, chacun dans une **fenêtre simple** : **`Draw again`** et **`Choose yourself`** |
 | **B6.1g** | **`Choose yourself`** fait **défiler les cartes** comme `B2`/`B3` *(défilement aimanté + scrollspy)*, **texte explicatif inclus** |
