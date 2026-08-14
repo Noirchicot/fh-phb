@@ -844,38 +844,46 @@ l'affectation ».**
 le lot entier** si aucun des dix n'atteint 15 *(règle d'Eric, ADDENDUMS §4)*.
 **Ce n'est donc pas à réinventer, seulement à présenter.**
 
-> ### 🔴 TRANCHÉ PAR ERIC — 2026-08-15 : « MOLETTE » VEUT DIRE **BARILLET iOS**
+> ### 🔴 TRANCHÉ PAR ERIC — 2026-08-15 : LE VOCABULAIRE DES ORGANES DE CHOIX
 >
-> **Eric, devant le builder déployé : *« toujours pas de molettes de choix type
-> iOS »*.** Il a raison, et c'est une erreur de lecture **systématique** de
-> l'architecte : partout où cette spec écrit « molette », le builder a livré
-> une **rangée de boutons**.
+> **Le mot « molette » désignait QUATRE organes différents dans cette spec.**
+> C'est pour ça que le builder a livré des rangées de boutons partout : Eric,
+> devant le déployé, *« toujours pas de molettes de choix type iOS »*. Il a
+> montré cinq captures, l'architecte les a nommées, il a validé :
 >
-> ⭐ **La spec le disait pourtant en toutes lettres** — `B2.1g` : *« la molette
-> de gauche montre environ 4 icônes d'un coup, **une fenêtre glissante** sur
-> les 12 »*. Une fenêtre glissante, c'est un barillet.
+> | Le nom | Ce qui le définit | Où |
+> |---|---|---|
+> | **Barillet** *(picker iOS)* | fenêtre verticale de 5-7 valeurs, sélection dans une **bande centrale fixe**, voisines estompées ; **plusieurs colonnes indépendantes** | B4.2 · B5.5 · `Choose yourself` |
+> | **Carrousel horizontal** | file aimantée qui **déborde** de l'écran ; des **sections**, pas des valeurs | B7.1 · B8.1 |
+> | **Carrousel vertical** | idem, en colonne — *« 4 icônes d'un coup, une fenêtre glissante sur les 12 »* | B2.1g |
+> | **Ceinture** | la barre des dix étapes. Elle **navigue**, elle ne choisit pas | B0 — ⛔ **exclue, ne pas y toucher** |
+> | **Rangée** | tout visible, rien ne défile | ce que le builder fait **partout** aujourd'hui |
 >
-> ⚠️ **Et l'architecte a aggravé le malentendu au lot 63** : six valeurs
-> empilées faisaient 370 px de haut, alors il a converti la molette
-> **verticale** de `B5.5` en **défilement horizontal**. Une optimisation de
-> hauteur qui s'éloignait de ce qu'Eric avait décrit, décidée sans le lui
-> demander.
+> ## ⭐ LA RÈGLE D'ERIC, QUI REMPLACE L'ÉNUMÉRATION
 >
-> **Ce qu'Eric a tranché** :
+> > ***« Globalement, dès qu'il y a des chiffres. »***
 >
-> | | |
-> |---|---|
-> | **Partout où cette spec dit « molette »** | un vrai barillet : fenêtre de 3-4 valeurs, **sélection au centre**, défilement aimanté |
-> | ⛔ **SAUF la ceinture d'étapes** (`B0`) | elle **navigue**, elle ne choisit pas une valeur — elle reste la barre horizontale |
-> | **La hauteur est assumée** | ~130 px pour trois valeurs visibles contre 52 px aujourd'hui. *« Le barillet vaut la hauteur »* — la fiche défile déjà |
+> **Des chiffres → barillet. Des mots → carrousel.** Une règle qu'on peut
+> appliquer à un écran qui n'existe pas encore, là où une liste d'emplacements
+> aurait vieilli au premier écran neuf.
 >
-> **Les six emplois** : les six colonnes d'`B4.2` (`0`/`+1`/`+2`) · les six
-> d'`B5.5` (les valeurs du tirage) · la méthode de `B5.2a` (`FH 3D6`/`4D6`) ·
-> les catégories de `B7.1` · celles de `B8.1` · et le rail de `B2.1g`, en
-> fenêtre glissante de 4 sur 12.
+> ⭐ **Et elle attrape un cas que l'énumération avait raté** : `Choose yourself`
+> (B5.1b) offre **seize valeurs, 3 à 18** — aujourd'hui seize boutons en
+> rangée. C'est l'emploi le plus évident d'un barillet, et il ne figurait dans
+> aucune liste.
 >
-> 📌 **Un seul composant, six emplois** — c'est le patron du dépôt. Aujourd'hui
-> six contrôles différents font le même geste.
+> ⚠️ **Le cas limite, tranché par l'architecte faute d'instruction** : la
+> méthode de jet (B5.2a, `FH 3D6` / `4D6`) porte des chiffres, mais ce sont des
+> **noms de méthode**, pas des valeurs — et il n'y en a que deux. **Elle reste
+> une paire de tuiles.** Eric peut renverser d'un mot.
+>
+> ⚠️ **ET L'ARCHITECTE A AGGRAVÉ LE MALENTENDU AU LOT 63** : six valeurs
+> empilées faisaient 370 px de haut, alors la molette **verticale** de B5.5 est
+> devenue un **défilement horizontal**. Une optimisation de hauteur qui
+> s'éloignait de ce qu'Eric avait décrit, décidée sans le lui demander.
+>
+> **La hauteur est tranchée** : ~130 px pour trois valeurs visibles contre
+> 52 px aujourd'hui. *« Le barillet vaut la hauteur »* — la fiche défile déjà.
 
 ### B5.5 — La répartition
 
