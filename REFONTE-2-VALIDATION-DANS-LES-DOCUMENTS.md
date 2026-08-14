@@ -261,3 +261,47 @@ hypothèse produirait du travail à jeter.
 4. **Abilities** — bouton en bas, une fois le barillet tranché.
 5. ⛔ **Species et Class** — **seulement après la réponse à la question 1**.
 6. ⛔ **Les deux bouts de la ceinture** — après les questions 2 et 3.
+
+---
+
+## 6. ✅ LES ARBITRAGES DU 2026-08-15, FIN DE SÉANCE — tous tranchés par Eric
+
+| Sujet | Sa parole |
+|---|---|
+| **Le mot de validation** | ⭐ **`Done`**. Partout où un écran de choix se referme. *(Destiny garde `This is my calling` : c'est de la scène, pas du réglage.)* |
+| **La ceinture** | **elle est bien telle quelle** — les deux tuiles du croquis étaient une abstraction. Elle serait **mieux en tuiles transparentes** |
+| **La colonne de gauche** | **non cliquable**, confirmé une seconde fois |
+| **Les sous-espèces** | **oui**, certaines espèces ont des lignages à choisir — ils vivent dans `choose` |
+| **`lore`** | **pleine page, recouvre tout, un `X` pour sortir** |
+| **`choose`** | **ne recouvre que la grosse dalle** |
+| **`Choose yourself`** | ✍️ **on écrit la valeur** — pas de barillet. Le glisser-déposer règle `Roll dice` **et** `Standard array` |
+
+### 6a. Comment on comble les trous de contenu — sa méthode
+
+> ***« Au moins c'est rempli rapidement, on comblera les trous plus tard. »***
+
+| Trou | Sa consigne |
+|---|---|
+| **Le lore** | un agent cherche **dans le vault** ; sinon **sur le net** ; s'il ne trouve rien, **il écrit un poème de sa création** pour remplir le vide |
+| **Les traits** | un **résumé du SRD ou de FH** — *« peu de place et factuel »*. ⭐ **Déterminer le nombre de caractères max par ligne**, et **l'appliquer à toutes les espèces ET toutes les classes** |
+| **Les images** | la majorité sont **sur le site web FH**. Pour les autres : **une image de cafard** *(bouche-trou assumé)*. PNG **à transparence, visage et haut du corps**. Eric les produit lui-même, « facile avec iOS » |
+
+### 6b. 🔴 DEUX GARDE-FOUS QUE L'ARCHITECTE POSE SUR CETTE MÉTHODE
+
+Eric a dit « va sur le net ». **La loi §0.8 du dépôt ne change pas pour autant**, et le dépôt est **public** :
+
+1. ⛔ **AUCUN TEXTE RECOPIÉ DEPUIS LE WEB.** Le lore de WotC, des wikis et des
+   sites de fans est **sous copyright**. L'agent peut **lire pour se
+   documenter** ; ce qu'il **écrit** doit être **original**. Un paragraphe
+   copié d'un wiki dans un dépôt public est le seul risque juridique de tout
+   ce chantier.
+2. ⚠️ **UN TEXTE INVENTÉ DOIT SE DIRE INVENTÉ.** Le poème bouche-trou et le
+   résumé de circonstance doivent porter une marque lisible par une machine
+   *(un champ `provenance: "placeholder"`, pas un commentaire)* — sinon,
+   dans six mois, personne ne saura distinguer le lore d'Eric de celui qu'une
+   IA a improvisé un vendredi. **C'est la même faute que les trois
+   `tarot-major-png-cleaned`**, en pire : là il s'agirait du canon.
+
+📌 Idem pour l'image de cafard : elle doit être **identifiable comme
+bouche-trou**, pour qu'on puisse lister ce qui reste à produire par une
+requête plutôt qu'à l'œil.
