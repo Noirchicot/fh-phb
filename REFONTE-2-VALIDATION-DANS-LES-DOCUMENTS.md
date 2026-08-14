@@ -165,6 +165,80 @@ celle du formulaire. *(Et ça règle au passage le `Validate` fixe de cet
 
 ---
 
+## 3bis. LES DEUX CROQUIS DU 2026-08-15 — *« un bon dessin vaut mieux qu'un long discours »*
+
+### Croquis A — Species, et il RÉPOND à la question 1
+
+⭐ **`II.1` TIENT. Le défilement reste le choix.** Le rail des espèces reste à
+gauche (`elf`, `orc`, `human`, `halfling`, `dwarf`, en **tuiles
+transparentes**), et c'est toujours en défilant qu'on change d'espèce. La note
+d'Eric le dit sans ambiguïté : *« scrolling to another species **negates** this
+screen »*.
+
+⛔ **Le titre ne devient donc PAS la porte** — c'était ma lecture de sa dictée,
+et le dessin la corrige. **La fiche gagne deux boutons en bas.**
+
+**La fiche, par zones :**
+
+| Zone | Contenu |
+|---|---|
+| **Quart haut-gauche** | Creature Type · Size · Speed · Lineages *(masqués s'il n'y en a pas)* |
+| **Quart haut-droit** | **l'image** |
+| **Moitié basse** | les Traits, en liste `nom — effet` |
+| **Tout en bas** | `lore` · `choose` |
+
+**Deux sorties, deux profondeurs :**
+
+- **`lore`** → une **page pleine**, description **FH ou SRD**, avec *« return
+  to character creation »* en haut. On quitte la création, on lit, on revient.
+- **`choose`** → un **écran de choix qui RECOUVRE la fiche**, avec **`Finish`**
+  en bas. Défiler vers une autre espèce **l'annule**.
+
+⭐ **Et ça règle la question 4 sans y répondre** : `Finish` n'est pas au bas
+d'un document de 4 300 px, il est au bas d'un **écran de choix**, court par
+construction. Le problème soulevé n'existe pas dans cette forme.
+
+### Croquis B — Abilities / `Roll dice` : 🔴 GLISSER-DÉPOSER, pas barillet
+
+**Quatre dalles empilées, avec leurs opacités dictées :**
+
+| Dalle | Opacité | Contenu |
+|---|---|---|
+| 1 | **50 %** | `BACK TO ROLL CHOICES` · titre `FH 3D6` · l'explication |
+| 2 | 🔴 **opaque** | `ROLL` / `ROLL 10` · **dés 3D** · `CLEAR` · les **dix résultats numérotés**, dont **quatre barrés** (les écartés) |
+| 3 | **50 %** | les **six gardés**, chacun avec **son numéro d'origine** et le détail du jet dessous (`5+5+6`) |
+| 4 | **50 %** | `STR DEX CON INT WIS CHA`, **cases vides** |
+
+**Entre la 3 et la 4 : `DRAG AND DROP`, flèche à double sens.**
+
+⭐ **UN ORGANE DE PLUS DANS LE VOCABULAIRE, et il manquait** : le
+**glisser-déposer**. La règle « dès qu'il y a des chiffres → barillet » ne
+s'applique pas quand les chiffres sont **des objets qu'on déplace** plutôt que
+des valeurs qu'on saisit.
+
+| Mode | Organe |
+|---|---|
+| `Roll dice` | plateau de dés + **glisser-déposer** |
+| `Standard array` | même glisser-déposer, `15 14 13 12 10 8` en dalle 3 |
+| `Choose yourself` | *(un nombre libre — aucun objet à déplacer)* |
+
+📌 **Les dés 3D existent déjà** — chantier `Static Dice Tray` (`Gpt in FH/`),
+avec sa spec visuelle et son audio. **À rebrancher, pas à réinventer.**
+
+✅ **TRANCHÉ — le glisser-déposer à 360 px n'est pas un problème.**
+L'architecte l'avait signalé comme le geste tactile le plus difficile et
+proposait un second chemin sur mobile. Eric : *« je ne pense pas que c'est un
+problème avec 6 valeurs pleine largeur — j'ai de la pratique même sur mon petit
+mobile, totalement faisable »*. **Sa mesure d'usage l'emporte sur ma crainte
+théorique. Pas de second chemin.**
+
+### 🗄️ Le barillet est remisé
+
+Le lot 76 a construit un barillet (branche `76-barillet`, **jamais fusionné**).
+Eric l'a essayé : *« le barillet ne marchait pas, mais oui il servira peut-être
+ailleurs »*. **Il reste sur sa branche**, avec son inventaire — ni fusionné, ni
+jeté. Abilities passe au glisser-déposer.
+
 ## 4. 🔴 CE QUI DOIT ÊTRE TRANCHÉ AVANT QU'UN LOT PARTE
 
 Ces quatre-là **changent la forme du travail**, pas son détail. Avancer sous
@@ -172,10 +246,10 @@ hypothèse produirait du travail à jeter.
 
 | # | La question | Pourquoi elle bloque |
 |---|---|---|
-| **1** | **Le défilement reste-t-il le choix ?** Si le titre ouvre les choix, les douze fiches à faire défiler n'ont plus de rôle de sélecteur. Le catalogue partagé (lots 58/60, Class + Species) est bâti sur `II.1` | C'est **l'invariant fondateur** de la refonte 1. Le retirer est légitime — mais c'est un renversement, pas un ajustement |
-| **2** | **« Expert » : c'est quoi, exactement ?** Monter en niveaux et tweaker, c'est **un autre produit** que construire un niveau 1 — le moteur ne sait pas monter un personnage | Ça peut être un chantier de plusieurs lots, ou un bouton vers l'export. Pas la même chose |
-| **3** | **« Sauvegarder » sauve où ?** Il n'y a **aucun serveur** (§0.9). Aujourd'hui la seule sortie est `Export JSON` | Un popup qui demande « voulez-vous sauvegarder ? » sans endroit où sauver est un faux magasin |
-| **4** | **Un `Validate` en bas d'un écran de 4 300 px se cherche.** Sur Compétences, il serait à quatre écrans de défilement | Ton propre argument pour `Reset` en B7.8 : *« il reste toujours atteignable, sans remonter »* |
+| ~~1~~ | ✅ **RÉPONDU par le croquis A** : `II.1` tient, le rail reste, le défilement choisit toujours. La fiche gagne `lore` et `choose` | — |
+| ~~2~~ | ✅ **TRANCHÉ** : *« un chantier à cadrer séparément »*. La place reste vide dans la ceinture en attendant | — |
+| ~~3~~ | ✅ **TRANCHÉ** : *« sauvegarder » = télécharger le fichier*, `Export JSON`, qui existe et qui marche | — |
+| ~~4~~ | ✅ **DISSOUTE par le croquis A** : `Finish` vit au bas de l'**écran de choix**, court par construction — pas au bas d'un document de 4 300 px | — |
 
 ## 5. Ce que je ferais si je devais découper — proposition, non ratifiée
 
