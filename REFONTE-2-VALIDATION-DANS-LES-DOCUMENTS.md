@@ -284,7 +284,8 @@ hypothèse produirait du travail à jeter.
 |---|---|
 | **Le lore** | un agent cherche **dans le vault** ; sinon **sur le net** ; s'il ne trouve rien, **il écrit un poème de sa création** pour remplir le vide |
 | **Les traits** | un **résumé du SRD ou de FH** — *« peu de place et factuel »*. ⭐ **Déterminer le nombre de caractères max par ligne**, et **l'appliquer à toutes les espèces ET toutes les classes** |
-| **Les images** | la majorité sont **sur le site web FH**. Pour les autres : **une image de cafard** *(bouche-trou assumé)*. PNG **à transparence, visage et haut du corps**. Eric les produit lui-même, « facile avec iOS » |
+| **Les images** | la majorité sont **sur le site web FH**. PNG **à transparence, visage et haut du corps** — Eric les produit lui-même, « facile avec iOS » |
+| **Le bouche-trou** | ⭐ **un personnage du tarot de Marseille** *(Eric, 2026-08-15, révisant son « image de cafard »)*. **« Là y'a pas de risque »** — domaine public, et **les 22 faces sont DÉJÀ dans le dépôt** (`ui/builder/assets/arcana/`). Zéro actif nouveau, zéro question de droits. Son motif : *« c'est pour savoir que les espaces doivent être remplis »* — le bouche-trou doit **se voir comme tel** |
 
 ### 6b. 🔴 DEUX GARDE-FOUS QUE L'ARCHITECTE POSE SUR CETTE MÉTHODE
 
@@ -305,3 +306,26 @@ Eric a dit « va sur le net ». **La loi §0.8 du dépôt ne change pas pour aut
 📌 Idem pour l'image de cafard : elle doit être **identifiable comme
 bouche-trou**, pour qu'on puisse lister ce qui reste à produire par une
 requête plutôt qu'à l'œil.
+
+---
+
+## 7. 🗄️ LE BARILLET — remisé, PAS jeté
+
+> ***« Non, pour le moment on ne l'utilise pas. Garde ton script de barillet,
+> il pourra peut-être servir plus tard, mais il ne marchait pas sur le
+> site. »*** — Eric, 2026-08-15
+
+**La branche `76-barillet` reste.** ⛔ Ne pas la supprimer.
+
+- Elle porte `ui/builder/barillet.mjs`, son CSS, et `INVENTAIRE-LOT-76.md`.
+- **1 101 tests verts** au moment du commit, mais **Eric l'a essayé sur le site
+  et ça ne marchait pas** — le défaut n'est pas diagnostiqué, l'architecte
+  n'avait plus d'instrument fiable *(volet de navigateur qui servait une page
+  périmée)*.
+- ⚠️ **Il n'a plus d'emploi aujourd'hui** : `Roll dice` et `Standard array`
+  passent au glisser-déposer, et `Choose yourself` **se saisit au clavier**.
+
+📌 **Ce qu'il faudra reprendre si on le ressort** : ce qui « ne marchait pas »
+n'a jamais été nommé. Deux propriétés étaient déjà invérifiées au moment du
+commit — **la largeur rendue** et **la position d'ouverture** (le barillet doit
+s'ouvrir DEVANT la valeur retenue). Commencer par là.
