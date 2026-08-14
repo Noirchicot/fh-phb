@@ -844,6 +844,39 @@ l'affectation ».**
 le lot entier** si aucun des dix n'atteint 15 *(règle d'Eric, ADDENDUMS §4)*.
 **Ce n'est donc pas à réinventer, seulement à présenter.**
 
+> ### 🔴 TRANCHÉ PAR ERIC — 2026-08-15 : « MOLETTE » VEUT DIRE **BARILLET iOS**
+>
+> **Eric, devant le builder déployé : *« toujours pas de molettes de choix type
+> iOS »*.** Il a raison, et c'est une erreur de lecture **systématique** de
+> l'architecte : partout où cette spec écrit « molette », le builder a livré
+> une **rangée de boutons**.
+>
+> ⭐ **La spec le disait pourtant en toutes lettres** — `B2.1g` : *« la molette
+> de gauche montre environ 4 icônes d'un coup, **une fenêtre glissante** sur
+> les 12 »*. Une fenêtre glissante, c'est un barillet.
+>
+> ⚠️ **Et l'architecte a aggravé le malentendu au lot 63** : six valeurs
+> empilées faisaient 370 px de haut, alors il a converti la molette
+> **verticale** de `B5.5` en **défilement horizontal**. Une optimisation de
+> hauteur qui s'éloignait de ce qu'Eric avait décrit, décidée sans le lui
+> demander.
+>
+> **Ce qu'Eric a tranché** :
+>
+> | | |
+> |---|---|
+> | **Partout où cette spec dit « molette »** | un vrai barillet : fenêtre de 3-4 valeurs, **sélection au centre**, défilement aimanté |
+> | ⛔ **SAUF la ceinture d'étapes** (`B0`) | elle **navigue**, elle ne choisit pas une valeur — elle reste la barre horizontale |
+> | **La hauteur est assumée** | ~130 px pour trois valeurs visibles contre 52 px aujourd'hui. *« Le barillet vaut la hauteur »* — la fiche défile déjà |
+>
+> **Les six emplois** : les six colonnes d'`B4.2` (`0`/`+1`/`+2`) · les six
+> d'`B5.5` (les valeurs du tirage) · la méthode de `B5.2a` (`FH 3D6`/`4D6`) ·
+> les catégories de `B7.1` · celles de `B8.1` · et le rail de `B2.1g`, en
+> fenêtre glissante de 4 sur 12.
+>
+> 📌 **Un seul composant, six emplois** — c'est le patron du dépôt. Aujourd'hui
+> six contrôles différents font le même geste.
+
 ### B5.5 — La répartition
 
 - des dalles avec les **6 caractéristiques**, chacune portant une **molette** ;
