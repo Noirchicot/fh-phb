@@ -677,6 +677,53 @@ premier jet doit suivre un geste du joueur, jamais partir à l'ouverture.
 
 ---
 
+## 4septies. LA CEINTURE À ZONE FIXE — croquis E, mesuré le 2026-08-15
+
+📐 `croquis/2026-08-15-ceinture-zone-fixe.jpg`
+
+> ***« Zone fixe dans le carrousel. Le highlight rapetisse et passe dans le
+> cadre. Au-dessus et en dessous du cadre 2 petits boutons. ON NE PERD PAS DE
+> HAUTEUR. »*** — Eric
+
+L'idée répond à un vrai manque : `Show plan` et `Menu` n'ont plus d'endroit une
+fois la ligne de commande supprimée. **Mesuré au navigateur, à 360 × 640 :**
+
+| | Hauteur figée |
+|---|---|
+| Aujourd'hui — ceinture **61** + ligne de commande **45** | **106 px** |
+| Après le lot B *(la ligne part, chaque écran valide chez lui)* | **61 px** |
+| **+ zone fixe VERTICALE** — boutons empilés dans le cadre | **~92–100 px** |
+| **+ mêmes boutons AUX DEUX BOUTS**, horizontalement | **61 px** |
+
+### 🔴 « ON NE PERD PAS DE HAUTEUR » EST VRAI CONTRE L'ÉTAT ACTUEL, PAS CONTRE B
+
+Empilés, `PLAN` et `MENU` demandent 28 px chacun autour d'un libellé rapetissé
+à 28 : **92 px de ceinture**, plus le rembourrage. C'est bien moins que les
+106 px d'aujourd'hui — donc Eric a raison **contre l'existant**. Mais le lot B
+ramène la ceinture à **61 px** toute seule : y rempiler des boutons **rend 30 à
+40 px** que B venait de gagner. ⚠️ Et 28 px est **sous le seuil tactile** de 44.
+
+### ✅ LA VERSION QUI NE COÛTE RIEN, ET ERIC L'AVAIT DÉJÀ TRANCHÉE
+
+**Aux deux bouts de la ceinture, horizontalement** — exactement ce que la
+refonte 2 §2 ratifie : *« tout à gauche : retour menu · tout à droite :
+Expert »*.
+
+```
+360 ─ 44 (bouton gauche) ─ 44 (bouton droit) = 272 px pour la piste
+un cran de ceinture = 194 px  →  ✅ il reste 78 px
+```
+
+**Coût en hauteur : zéro.** Les boutons gardent leurs 44 px de cible tactile,
+et la piste garde de quoi montrer un cran entier.
+
+⭐ **Le croquis E redécouvre donc un besoin réel** — il faut bien un endroit
+pour ces deux boutons — **et sa réponse verticale est plus chère que la réponse
+horizontale qu'Eric avait déjà écrite.** ⏳ *« À décider plus tard »* (Eric) :
+rien n'est construit sur ce point.
+
+---
+
 ## 5. Le récapitulatif, pour la commande du lot
 
 | | Valeur |
