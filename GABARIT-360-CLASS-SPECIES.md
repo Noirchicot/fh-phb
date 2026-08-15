@@ -242,7 +242,27 @@ C'est exactement la consigne d'Eric — *« 30 1st level spells scrollable, must
 the same height as cantrips »* — obtenue sans qu'aucun nombre ait été arrangé
 pour ça.
 
-### 🔴 LA BOÎTE DU DESSOUS : 4 SLOTS SUR **UNE** RANGÉE
+### ⚠️ LA BOÎTE DU DESSOUS : LE 2×2 D'ERIC EST LE BON — correction du 2026-08-15
+
+> ***« Les 4 choice tiennent-ils de gauche à droite ? »*** — Eric
+
+**Non.** Et sa question a rattrapé une faute de ce fichier : la version d'avant
+dimensionnait le slot pour l'ÉTIQUETTE `CHOICE 1`, **pas pour ce qu'il porte une
+fois rempli**.
+
+| Disposition | Slot | `CHOICE 1` vide | Un nom de sort dedans |
+|---|---|---|---|
+| 4 de front | 72 px *(60 utiles)* | 57 px ✅ | ❌ **5 mots insécables débordent** à T2 — `Comprehend`, `Languages`, `Expeditious`, `Longstrider`, `Thunderwave`. À T1 il en reste 2 |
+| 4 de front, gouttière 4 | 75 px *(63)* | ✅ | ❌ 4 débordent |
+| **2 × 2** *(le dessin d'Eric)* | **152 px** *(140 utiles)* | ✅ | ✅ **aucun ne déborde**, ni à T2 ni à T1 |
+
+📌 **La forme de la faute** : avoir mesuré l'état VIDE d'un réceptacle et conclu
+sur sa capacité. C'est la même famille que « pixels opaques = 0 » — mesurer la
+mauvaise chose, proprement.
+
+**Retenu : le 2×2, tel qu'Eric l'avait dessiné.**
+
+### ~~🔴 LA BOÎTE DU DESSOUS : 4 SLOTS SUR UNE RANGÉE~~ *(périmé — voir ci-dessus)*
 
 Eric : *« the box under it can be made smaller »*, et son annotation dit *« is
 the same size as cantrips »*. Les deux ne tiennent ensemble qu'à une condition :
@@ -385,8 +405,10 @@ trois d'avant : **35 · 50 · 67,5 · 100**.
 | Fiche | **242 px** — image 104 · écart 8 · stats 114 |
 | Blurb | **T2**, boîte de **10 lignes** (160 px), **≤ 340 caractères** |
 | Grille de sorts | 3 colonnes de **98 px**, cases de **44 px**, gouttière **8 px** |
-| Fenêtre de grille | **304 px** = **6 rangées** *(après l'optimisation du 2026-08-15)* — cantrips 5 rangées, sorts 6 sur 10, ils ne sont plus tenus d'être identiques |
-| Dalle de choix | **80 px**, slots sur **une** rangée, consigne sur **une** ligne |
+| Fenêtre de grille — **cantrips** | **304 px** = **6 rangées** ; les 15 n'en occupent que 5 ✅ |
+| Fenêtre de grille — **sorts niv. 1** | **252 px** = **5 rangées** — le 2×2 reprend les 52 px que l'optimisation avait gagnés. ⭐ C'est la dérogation d'Eric qui rend ces deux lignes possibles : les dalles n'ont plus à être identiques |
+| Dalle de choix — **cantrips** | **80 px** — 3 slots de front (98 px, `Prestidigitation` passe), consigne sur une ligne |
+| Dalle de choix — **sorts niv. 1** | **132 px** — 4 slots en **2×2** (152 px chacun) : quatre noms de sorts de front n'existent pas à 360 |
 | `Back` / `Done` | **52 px** — 44 de cible tactile + 8 |
 | Ligne de titre | titre **T6** + **loupe 44** + **flèche 44** — la flèche pagine, elle ne défile pas, et n'apparaît que s'il y a une suite |
 | Voiles de la grille | dalle **intermédiaire 50 %**, tuiles **simples 35 %** — ⚠️ composite réel de la tuile : **67,5 %** |
