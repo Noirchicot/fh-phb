@@ -496,6 +496,130 @@ no-op. »*
 
 ---
 
+## 4quinquies. LES SIX ARBITRAGES D'ERIC — 2026-08-15, fin de séance
+
+### 1. ✅ LA RÈGLE PERCEPTION — tranchée, et calculée sur les 12 classes
+
+> ***« Pour toutes les classes, quand il y a perception : tu dégages perception,
+> tu remplaces par delve, vigilence, survival. Si elles sont déjà présentes tu
+> ne les rajoutes pas deux fois. Les autres compétences FH peuvent être prises
+> au moment du pool. »***
+
+**Appliquée aux 12 classes** *(mesuré, pas supposé)* :
+
+| Classe | Avant → Après | Ajouté |
+|---|---|---|
+| barbarian | 6 → 7 | delve, vigilance |
+| druid | 8 → 9 | delve, vigilance |
+| **fighter** | 9 → **10** | delve, vigilance |
+| ranger | 8 → 9 | delve, vigilance |
+| **rogue** | 10 → **12** | delve, vigilance, survival |
+| bard · cleric · monk · paladin · sorcerer · warlock · wizard | inchangées | — |
+
+⭐ **Le fighter tombe sur 10 — exactement le compte de son croquis**, retrouvé
+sans l'avoir visé. La règle et le dessin se confirment l'un l'autre.
+
+📌 **La clause « pas deux fois » sert 4 fois sur 5** : `survival` était déjà
+présente partout sauf chez le rogue. Sans elle, cinq listes porteraient un
+doublon.
+
+🔴 **CE QUI DIMENSIONNE LA GRILLE DES COMPÉTENCES : LE ROGUE, PAS LE FIGHTER.**
+12 options = 4 rangées de 3. C'est le maximum des 12 classes.
+
+⛔ **Où ça s'écrit** : dans `fh-skills-en.layer.json`, en patchant le
+`skill_choice` des **cinq** classes concernées. Pas dans l'écran — une règle du
+jeu ne vit jamais dans l'interface (loi du dépôt).
+
+### 2. ⏳ LES CARROUSELS D'ARMES ET D'ARMURES POUR L'INVENTAIRE
+
+> ***« Le carrousel d'armes peut être intéressant pour l'inventaire. Il pourrait
+> y avoir un carrousel d'armures aussi. Ça rajoute de la navigabilité. »***
+
+📌 **Noté pour `B8` (Equipment)**, qui prévoyait déjà *« une molette horizontale
+qui catégorise les équipements »*. **C'est le même organe**, et il en gagne un
+second emploi. ⏳ Hors périmètre de ce fichier — Equipment est explicitement
+*« on voit après »*.
+
+### 3. ✅ LE BLOC DE STATS SE REDIMENSIONNE
+
+Confirmé par Eric. Sur **le maximum des 12 classes**, pas sur la première
+rencontrée *(cf. §4quater : 7 lignes au Wizard, 8 au Fighter)*.
+
+### 4. 🆕 ✅ TOUT PANNEAU `lore` OU `info` PORTE UN **COPIER**
+
+> ***« Chaque fois qu'il y a une possibilité lore ou info, il faut un copy to
+> clipboard dedans. »***
+
+**Règle universelle, pas une option d'écran.** Les trois portes connues à ce
+jour ouvrent le même panneau *(cf. §4quater)*, donc **le copier se construit une
+fois** :
+
+| Porte | Où |
+|---|---|
+| `lore` sous une fiche | Class, Species |
+| un terme cliquable dans une phrase | *« You gain [second wind] »* |
+| `info` d'un sort / d'une arme | *« Tap on cantrip for info »* |
+
+⭐ **Ça donne enfin une raison d'être au panneau au-delà de la lecture** : le
+joueur emporte le texte vers sa feuille, son carnet, son Discord. 📌 Et ça
+rejoint la loi §0.8 : ce qui se copie doit être du texte qu'on a le droit de
+diffuser — **le panneau doit donc savoir ce qu'il porte** (`provenance`, cf. la
+couche `fh-lore-en`).
+
+### 5. ✅ LA GRILLE D'ARMES SE DIMENSIONNE SUR LES **MARTIALES DE MÊLÉE**
+
+> ***« Ne mettre 18 cases dans la sélection d'armes que pour les armes martiales
+> de mêlée. »***
+
+**La partition du SRD (p.91), et elle tombe juste :**
+
+| Sous-table | Nombre |
+|---|---|
+| Simple Melee | 10 |
+| Simple Ranged | 4 |
+| **Martial Melee** | **18** |
+| Martial Ranged | 6 |
+| | **38** ✅ = le compte du dépôt |
+
+**18 = 3 colonnes × 6 rangées**, la plus grande des quatre. Les trois autres
+onglets ne remplissent pas la fenêtre — et c'est là que la règle 6 s'applique.
+
+#### 🔴 ET VOICI LA PREUVE QUE LA CATÉGORIE NE SE DÉDUIT PAS
+
+Tentative de déduction depuis `properties` : `Ammunition` trouve **9** armes à
+distance sur les **10** attendues. **`Dart` échappe** — elle est *Thrown*, pas
+*Ammunition*. Un seul raté, et il suffit : une classification approximative
+mettrait une arme dans le mauvais onglet, en silence.
+
+⛔ **La catégorie se RÉIMPORTE** *(corriger `~/tools/fh-srd`, réexporter,
+resynchroniser)*, elle ne se dérive pas et elle ne se saisit pas à la main.
+
+### 6. 🆕 ✅ UNE DERNIÈRE RANGÉE INCOMPLÈTE SE **CENTRE**
+
+> ***« J'essaie toujours de centrer la dernière boîte de choix pour faire joli,
+> si tu as remarqué. »***
+
+**Remarqué sur le croquis D** : les 4 fighting styles sont dessinés 3 + **1
+centré**, pas 3 + 1 aligné à gauche.
+
+**La règle : quand la dernière rangée d'une grille est incomplète, ses cases se
+centrent.** Elle s'applique partout où une grille a un reste :
+
+| Grille | Cases | Reste |
+|---|---|---|
+| Fighting styles | 4 | 3 + **1 centrée** |
+| Compétences du rogue | 12 | plein, rien à centrer |
+| Compétences du fighter | 10 | 3+3+3 + **1 centrée** |
+| Cantrips du wizard | 15 | plein |
+| Armes martiales de mêlée | 18 | plein |
+| Armes simples de mêlée | 10 | 3+3+3 + **1 centrée** |
+
+📌 **Et ça vaut aussi pour les slots `CHOICE`** — c'est de là que vient la
+phrase d'Eric. Trois slots sur une dalle de 312 px se centrent naturellement ;
+un slot seul *(fighting style)* se centre aussi.
+
+---
+
 ## 5. Le récapitulatif, pour la commande du lot
 
 | | Valeur |
