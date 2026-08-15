@@ -395,6 +395,107 @@ trois d'avant : **35 · 50 · 67,5 · 100**.
 
 ---
 
+## 4quater. LE FIGHTER — croquis D, 2026-08-15, et ce qu'il révèle
+
+📐 `croquis/2026-08-15-class-fighter-choix.jpg`. Quatre écrans : fiche →
+compétences → fighting styles → spécialisations d'armes.
+
+### ✅ Ce que le dessin dit juste — confronté aux données, pas cru sur parole
+
+| Ce qu'Eric a dessiné | Ce que les données disent |
+|---|---|
+| **4 fighting styles** (3 + 1) | **exactement 4** feats de catégorie `fighting-style` : `Archery`, `Defense`, `Great Weapon Fighting`, `Two-Weapon Fighting` ✅ |
+| *« Choose three weapon spécialisations »* | `Weapon Mastery` : *« three kinds of Simple or Martial weapons »* ✅ |
+| `Skill pool : 12 pts` | `fh_skill_pool.base = 12` dans `fh-skills-en` ✅ |
+| **`delve` et `vigilence` dans la liste**, **pas `Perception`** | la couche FH fait `op: disable` sur `perception` et `op: add` sur `delve` + `vigilance` ✅ **la règle FH est déjà dans les données** |
+| Blurb | **338 caractères** — passe la limite de 340 **de 2 caractères**. ⭐ Eric a écrit au plafond calculé sans le connaître |
+
+### 🔴 CE QUI CHANGE LE GABARIT : LA FICHE A HUIT LIGNES, PAS SEPT
+
+Le Fighter porte une ligne que le Wizard n'a pas — **`W. Proficiencies : 2`** —
+et c'est **elle** la plus large de tout le bloc :
+
+| | Mesuré à T2, étiquette en gras |
+|---|---|
+| `W. Proficiencies : 2` | **116 px** |
+| Colonne de stats du §1 | 114 px |
+| | **❌ déborde de 2 px** |
+
+**Correction : image 104 → 100 px, colonne de stats 114 → 118 px.** Les 4 px
+retirés à l'image ne se voient pas ; 2 px de débordement, si.
+
+⚠️ **ET LE BLOC DE STATS N'EST DONC PAS DE HAUTEUR FIXE** : 7 lignes au Wizard,
+8 au Fighter. La zone haute doit être dimensionnée sur **le maximum des 12
+classes**, pas sur la première rencontrée. 📌 **À mesurer quand les 12 existent**
+— ce fichier n'en connaît que deux.
+
+### ✅ L'écran des armes est le plus facile des quatre
+
+Tous les noms d'armes tiennent, sans exception : le plus large est
+**`Quarterstaff` = 70 px** à T2, contre 86 utiles dans un slot `CHOICE` de front
+et 90 dans une case de grille. **Trois slots de front passent** ici — là où les
+sorts imposaient le 2×2. *(La différence : « Quarterstaff » contre
+« Thunderwave » et « Comprehend ».)*
+
+### ⭐ UN ORGANE DE PLUS, ET IL EST DÉJÀ CONSTRUIT AILLEURS
+
+> *« You gain [second wind] »* — annoté **« clickable info panel, full size
+> overlay with X »**.
+
+C'est **exactement la forme du bouton `lore`** du croquis A : page pleine,
+recouvre tout, un `X` pour sortir. ⛔ **Ne pas en faire deux choses.** Un terme
+cliquable dans une phrase et un bouton `lore` sous une fiche ouvrent le même
+panneau ; seule la source du texte change.
+
+### 🔴 DEUX TROUS DE DONNÉES, ET AUCUN NE SE COMBLE DANS L'ÉCRAN
+
+#### Trou 1 — `delve` et `vigilance` n'ont AUCUN chemin vers la liste du Fighter
+
+La couche FH **désactive** `perception` et **ajoute** `delve` + `vigilance`.
+Mais **aucune classe n'a son `skill_choice` patché** *(vérifié sur les 12)*. Le
+`skill_choice.from` du Fighter reste celui du SRD : 9 entrées dont
+`perception`, désormais désactivée → **8 utilisables**, et les deux compétences
+FH sont absentes.
+
+**Le croquis en montre 10.** L'écart n'est pas un défaut d'affichage : la donnée
+n'existe pas.
+
+⚖️ **DÉCISION D'ERIC, PAS DE L'ARCHITECTE** : quelles classes reçoivent quelles
+compétences FH ? Trois formes possibles — patcher le `skill_choice` de chaque
+classe dans `fh-skills-en` · déclarer les compétences FH offertes à toutes ·
+ou les rattacher à une catégorie. **Aucune ne se devine.**
+
+#### Trou 2 — le carrousel d'armes n'a pas ses catégories, et l'importateur en est la cause
+
+Le croquis porte quatre onglets : `Simple` · `Simple ranged` · `Martial` ·
+`Martial ranged`. **Les 38 armes ne portent ni l'un ni l'autre** :
+
+```
+Club       → cost, damage, mastery, properties "Light", weight
+Greatsword → cost, damage, mastery, properties "Heavy, Two-Handed", weight
+```
+
+Rien ne distingue une arme simple d'une arme martiale. *(« Ranged » se
+déduirait de `Ammunition` dans `properties` ; « Simple / Martial », non.)*
+
+⭐ **ET CE N'EST PAS UNE DONNÉE À INVENTER — ELLE A ÉTÉ PERDUE EN ROUTE.**
+Remonté jusqu'à la source : `~/tools/fh-srd/exports/srd/en/weapon.json` ne la
+porte pas non plus, et les 38 armes y pointent toutes vers **`p.91`** — la page
+où le SRD présente sa table d'armes en **quatre sous-tables : Simple Melee,
+Simple Ranged, Martial Melee, Martial Ranged**.
+
+🔴 **Les quatre onglets d'Eric SONT les quatre sous-tables du SRD.** Ce n'est
+pas une invention d'interface : c'est la forme de la source. **L'importateur les
+a aplaties en une seule liste et a perdu la provenance.**
+
+⛔ **Le remède est en amont, pas au clavier** : corriger l'importateur
+(`~/tools/fh-srd`), réexporter, resynchroniser. Saisir 38 catégories à la main
+serait recopier une donnée qu'on possède déjà — et le fichier d'export le dit
+lui-même : *« GENERATED FILE — DO NOT EDIT. Editing this copy is a silent
+no-op. »*
+
+---
+
 ## 5. Le récapitulatif, pour la commande du lot
 
 | | Valeur |
@@ -402,7 +503,7 @@ trois d'avant : **35 · 50 · 67,5 · 100**.
 | Marge de page | **16 px** |
 | Rembourrage de dalle | **8 px** *(et non 16 — c'est ce qui débloque les grilles)* |
 | Rail | **78 px**, noms à T3, `SEARCH` seul cliquable |
-| Fiche | **242 px** — image 104 · écart 8 · stats 114 |
+| Fiche | **242 px** — image **100** · écart 8 · stats **118** *(corrigé au croquis D : `W. Proficiencies : 2` fait 116 px)* |
 | Blurb | **T2**, boîte de **10 lignes** (160 px), **≤ 340 caractères** |
 | Grille de sorts | 3 colonnes de **98 px**, cases de **44 px**, gouttière **8 px** |
 | Fenêtre de grille — **cantrips** | **304 px** = **6 rangées** ; les 15 n'en occupent que 5 ✅ |
