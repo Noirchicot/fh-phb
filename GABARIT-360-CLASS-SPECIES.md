@@ -176,6 +176,58 @@ Budget sur iPhone SE (**579 px réellement vus** : 667 moins les barres de Safar
 À 44 px la case (le seuil tactile d'Apple) + 8 px de gouttière :
 **5 rangées = 252 px** ✅ · 6 rangées = 304 px ❌
 
+### ⛔ « LES 30 SANS PAGINATION » — CHERCHÉ, IMPOSSIBLE À 360
+
+> ***« Si on arrive à optimiser 30 spells sans pagination, je veux bien déroger
+> au "is the same size as cantrips". »*** — Eric, 2026-08-15
+
+**Balayage de toutes les combinaisons** (3/4/5 colonnes × gouttières 4/6/8 ×
+T1/T2), largeurs mesurées, hauteur de case déduite du nombre de lignes réel de
+chacun des 30 noms :
+
+| La plus compacte qui existe | 3 col × 10 rangées · T1 (10 px) · gouttière 4 · cases **36 px** |
+|---|---|
+| **Hauteur demandée** | **396 px** |
+| **Budget maximum**, tout écrasé au plancher | **328 px** |
+| | **❌ il manque 68 px** |
+
+⚠️ Et ce « meilleur cas » est déjà **sous le seuil tactile** (36 < 44) et **au
+plus petit barreau** de l'échelle (T1).
+
+**Les 4 et 5 colonnes tombent avant la hauteur** : `Thunderwave` est le mot
+**insécable** le plus large des 30 — **77 px** à T2, **65 px** à T1 — et ne
+tient pas dans une colonne de 5 (51 px utiles).
+
+#### La seule sortie, et ce qu'elle coûte
+
+Supprimer **la dalle de choix** porte le budget à 404 px : les 396 passent.
+⛔ **Mais la dalle de choix EST la cible du glisser-déposer.** Sans destination,
+`CHOICE 1..4` disparaît et la sélection redevient un tap — on perdrait l'organe
+que le croquis B a fait entrer dans le vocabulaire *(« un dé est un objet qu'on
+déplace, pas une valeur qu'on saisit »)*.
+
+📌 **Recommandation de l'architecte : garder le défilement.** L'intuition
+première d'Eric était la bonne. Trente cases de 36 px en texte de 10 px, c'est
+un mur sur un téléphone.
+
+### ✅ CE QUE L'OPTIMISATION AUTORISÉE ACHÈTE VRAIMENT — 2026-08-15
+
+> ***« Optimiser la taille de back, choose, done : oui. »***
+
+| | Avant | Après | Gain |
+|---|---|---|---|
+| Dalle de choix | 108 px *(2 lignes de consigne, slots en 2×2)* | **80 px** *(1 ligne, slots sur une rangée)* | **28** |
+| `Back` / `Choose your spells` / `Done` | 58 px | **52 px** (44 de cible + 8) | **6** |
+
+**+34 px → la fenêtre de grille passe de 5 à 6 rangées** (6 × 44 + 5 × 8 =
+304 px). **18 sorts visibles d'un coup au lieu de 15**, sans rien céder : cases
+toujours à 44, texte toujours à T2, glisser-déposer intact.
+
+⭐ **Et la dérogation d'Eric sert enfin à quelque chose** : les 15 cantrips
+n'occupent que 5 rangées, leur dalle **peut donc être plus courte** que celle
+des sorts. Les deux ne sont plus tenues d'être identiques — c'est exactement ce
+qu'il vient d'autoriser, appliqué là où ça rapporte.
+
 ### ⭐ CE QUI TOMBE JUSTE, ET QUI N'A PAS ÉTÉ FORCÉ
 
 **Mesuré dans `srd-5.2.1-en.layer.json`** *(le chiffre d'Eric, « 30 1st level
@@ -333,8 +385,9 @@ trois d'avant : **35 · 50 · 67,5 · 100**.
 | Fiche | **242 px** — image 104 · écart 8 · stats 114 |
 | Blurb | **T2**, boîte de **10 lignes** (160 px), **≤ 340 caractères** |
 | Grille de sorts | 3 colonnes de **98 px**, cases de **44 px**, gouttière **8 px** |
-| Fenêtre de grille | **252 px** = 5 rangées, la même pour cantrips et sorts |
-| Dalle de choix | **108 px**, slots sur **une** rangée |
+| Fenêtre de grille | **304 px** = **6 rangées** *(après l'optimisation du 2026-08-15)* — cantrips 5 rangées, sorts 6 sur 10, ils ne sont plus tenus d'être identiques |
+| Dalle de choix | **80 px**, slots sur **une** rangée, consigne sur **une** ligne |
+| `Back` / `Done` | **52 px** — 44 de cible tactile + 8 |
 | Ligne de titre | titre **T6** + **loupe 44** + **flèche 44** — la flèche pagine, elle ne défile pas, et n'apparaît que s'il y a une suite |
 | Voiles de la grille | dalle **intermédiaire 50 %**, tuiles **simples 35 %** — ⚠️ composite réel de la tuile : **67,5 %** |
 
