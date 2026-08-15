@@ -251,6 +251,78 @@ aucun à la dernière)*.
 
 ---
 
+## 4ter. LES VOILES DE LA GRILLE ✅ *Eric, 2026-08-15* — et le piège de l'empilement
+
+> ***« Je serais tenté de mettre la transparence dalle sorts à 50 %, et les
+> petites dalles à 35 %. »***
+
+Sa lecture suit `B0.23` sans qu'on ait eu à la lui rappeler : la grille est une
+**intermédiaire** (*« un peu plus de texte, pas de couleur »*), les tuiles sont
+des **simples** (*« elle contient les choix »*).
+
+### 🔴 MAIS DEUX VOILES S'EMPILENT, ET LE VOCABULAIRE NE L'AVAIT JAMAIS DÉCRIT
+
+```
+fond visible = (1 − 0,50) × (1 − 0,35) = 0,325
+              →  voile COMPOSITE de la tuile = 67,5 %
+```
+
+**Une tuile à « 35 % » posée sur une dalle à 50 % est donc PLUS opaque que sa
+dalle, pas moins.** C'est visuellement juste — une tuile qu'on saisit doit lire
+comme posée *devant* son support — mais **le nombre dit le contraire de ce qui
+se passe**.
+
+### ⛔ LA RÈGLE À RETENIR
+
+> **Un régime de voile ne décrit pas une apparence : il décrit ce qu'une couche
+> ajoute à ce qu'il y a DESSOUS.** Une `dalle-simple` seule sur le fond rend à
+> 35 % ; la même posée sur une intermédiaire rend à 67,5 %.
+
+📌 **C'est la faute des deux échelles typographiques sous les mêmes noms**, qui
+a coûté huit jours *(cf. l'en-tête d'`ERGONOMIE-BUILDER.md`)*. On la nomme avant
+qu'elle morde, pas après.
+
+### Le contraste — les chiffres qui font foi sont ceux de la BIBLE
+
+⚠️ **CORRECTION DE CE FICHIER, LE JOUR MÊME.** Une première version calculait
+ses propres ratios et concluait que l'accent devenait légal sur une tuile
+imbriquée. **C'était faux, deux fois** : le calcul ne reproduisait pas la
+méthode de la bible *(fonds réellement servis, pire pixel, SOUS le flou de
+5 px)*, et surtout il prenait **3,0** pour cible alors que la bible tient
+l'accent à **4,5** — parce que là il porterait **un mot**, pas une forme.
+
+**Les chiffres de la bible** *(§« SEUL `--text` SURVIT SUR LE VERRE », lot 59,
+jour · nuit)* :
+
+| Encre | 35 % | 50 % | 100 % | Cible |
+|---|---|---|---|---|
+| **`--text`** | 6,3 · 7,4 ✅ | 7,5 · 8,5 ✅ | 12,6 · 12,5 ✅ | 4,5 |
+| `--text-soft` | 3,0 · 3,6 ❌ | 3,6 · 4,1 ❌ | 6,0 · 6,1 ✅ | 4,5 |
+| `--accent` | 2,7 · 3,3 ❌ | 3,3 · 3,8 ❌ | 5,5 · 5,6 ✅ | 4,5 |
+
+**Interpolé à 67,5 %** : `--text` ~9 · ~10 ✅ · `--accent` ~4,0 · ~4,4 ❌
+
+### ⛔ CE QUE ÇA DONNE, ET QUI EST PLUS SÉVÈRE QU'IL N'Y PARAÎT
+
+✅ **Le choix d'Eric est le plus lisible des quatre régimes pour `--text`** — la
+tuile est la surface la plus sûre de l'écran, ce qui est exactement ce qu'on
+veut d'une case qui porte un nom de sort qu'on doit lire et saisir.
+
+⛔ **MAIS L'INTERDICTION DE L'ACCENT TIENT.** Même à 67,5 %, il reste sous 4,5.
+Dans les grilles : le nom d'un sort s'écrit en **`--text`**, et l'accent ne sert
+qu'à **remplir une forme** — le liseré d'une tuile retenue, une pastille de
+compte. ⛔ Jamais le nom lui-même, jamais un libellé en `--text-soft`.
+
+📌 **La leçon, et c'est la deuxième fois de la journée** : un ratio calculé
+autrement que la mesure de référence n'est pas une mesure, c'est une opinion
+chiffrée. *(La première fois : « pixels opaques = 0 » sur un canvas WebGL déjà
+composité.)*
+
+📌 Les quatre régimes forment au passage une échelle plus régulière que les
+trois d'avant : **35 · 50 · 67,5 · 100**.
+
+---
+
 ## 5. Le récapitulatif, pour la commande du lot
 
 | | Valeur |
@@ -264,6 +336,7 @@ aucun à la dernière)*.
 | Fenêtre de grille | **252 px** = 5 rangées, la même pour cantrips et sorts |
 | Dalle de choix | **108 px**, slots sur **une** rangée |
 | Ligne de titre | titre **T6** + **loupe 44** + **flèche 44** — la flèche pagine, elle ne défile pas, et n'apparaît que s'il y a une suite |
+| Voiles de la grille | dalle **intermédiaire 50 %**, tuiles **simples 35 %** — ⚠️ composite réel de la tuile : **67,5 %** |
 
 ⚠️ **Ce qui reste à mesurer et que ce fichier n'a pas fait** : les 11 autres
 classes et les 12 espèces. `Prestidigitation` et `Weapons : Simple` sont les pires
