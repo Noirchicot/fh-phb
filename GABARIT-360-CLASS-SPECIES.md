@@ -686,6 +686,8 @@ premier jet doit suivre un geste du joueur, jamais partir à l'ouverture.
 | Rail | **78 px**, noms à T3, `SEARCH` seul cliquable |
 | Fiche | **242 px** — image **100** · écart 8 · stats **118** *(corrigé au croquis D : `W. Proficiencies : 2` fait 116 px)* |
 | Blurb | **T2**, boîte de **10 lignes** (160 px), **≤ 340 caractères** |
+| **Échelle de taille** | **`T / S / M / L / H / G`** *(Eric, 2026-08-15)* — les six tailles du SRD, abrégées à une lettre. `Sz : M 7-8 ft. tall`. ⚠️ Une première version de ce fichier disait « VL » et l'annonçait comme un barème FH distinct du SRD : **faux, Eric a rectifié**, c'est bien l'échelle du SRD abrégée |
+| Étiquettes de la fiche d'espèce | **`Type`** *(et non `Creature Type`)* · **`Sz`** *(et non `Size`)* — 154 px devenaient 98 |
 | Grille de sorts | 3 colonnes de **98 px**, cases de **44 px**, gouttière **8 px** |
 | Fenêtre de grille — **cantrips** | **304 px** = **6 rangées** ; les 15 n'en occupent que 5 ✅ |
 | Fenêtre de grille — **sorts niv. 1** | **252 px** = **5 rangées** — le 2×2 reprend les 52 px que l'optimisation avait gagnés. ⭐ C'est la dérogation d'Eric qui rend ces deux lignes possibles : les dalles n'ont plus à être identiques |
