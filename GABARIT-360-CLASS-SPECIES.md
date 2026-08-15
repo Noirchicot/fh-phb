@@ -620,6 +620,63 @@ un slot seul *(fighting style)* se centre aussi.
 
 ---
 
+## 4sexies. LE PLATEAU DE DÉS À 360 — les réglages d'Eric, et la contrainte qu'ils révèlent
+
+> ***« 72 avec 4 px d'écart sur mobile, si ça ne gêne pas les boutons sur les
+> côtés, sinon tu passes à 60/4. 82 avec 4 px d'écart sur PC. Pause 2500 ms. »***
+> — Eric, 2026-08-15, après avoir essayé le banc sur son iPhone SE
+
+### 🔴 SA CONDITION SE DÉCLENCHE — ET SON REPLI NE SUFFIT PAS NON PLUS
+
+**Ce qui contraint le plateau n'est pas la fenêtre, ce sont les boutons.**
+
+| | Mesuré |
+|---|---|
+| Colonne `ROLL` / `ROLL 10` *(empilés)* | **80 px** |
+| `CLEAR` | **70 px** |
+| Dalle utile à 360 *(360 − 32 marge − 16 rembourrage)* | **312 px** |
+| Reste pour les dés, boutons de part et d'autre | **146 px** → des dés de **46 px** |
+
+| Taille | Plateau | Ligne complète | Verdict |
+|---|---|---|---|
+| **72** / 4 | 224 | 390 | ❌ il manque **78** |
+| 66 / 4 | 206 | 372 | ❌ il manque 60 |
+| **60** / 4 *(son repli)* | 188 | 354 | ❌ **il manque encore 42** |
+
+📌 **Le problème n'est donc pas la taille des dés, c'est la disposition** : deux
+boutons mangent **150 px sur 312**. Aucune taille acceptable ne tient tant
+qu'ils encadrent le plateau.
+
+### ✅ TRANCHÉ PAR ERIC — **A** : LES BOUTONS PRENNENT LEUR PROPRE RANGÉE
+
+| | Effet | Coût |
+|---|---|---|
+| **A — boutons sur leur propre rangée** ✅ | le plateau a les 312 px : **72 px tient avec 88 px de reste** | **+52 px de hauteur** |
+| ~~B — `CLEAR` monte sur la ligne du titre~~ | 72 px tient **à 0 px près** | écarté : zéro marge n'est pas une marge |
+
+⚠️ **Ça s'écarte du croquis B**, qui dessinait `ROLL`/`ROLL 10` à gauche et
+`CLEAR` en haut à droite, le plateau entre les deux. **La mesure a montré que
+cette disposition ne tient pas à 360**, et Eric a tranché pour la rangée.
+
+### Les valeurs retenues
+
+| | Mobile *(< 768)* | Bureau *(≥ 768)* |
+|---|---|---|
+| Taille d'un dé | **72 px** | **82 px** |
+| Écart entre dés | **4 px** | **4 px** |
+| Pause entre deux jets | **2 500 ms** | **2 500 ms** |
+
+📌 **`ROLL 10` dure donc ~25 s** *(10 × 2 500, l'animation de 960 ms courant
+dedans)*. Eric a essayé les 20 s à 2 000 et a préféré plus lent — c'est du
+théâtre, pas de l'attente.
+
+⭐ **Et le son marche** *(Eric : « son ok »)*. Le silence du premier essai était
+bien le blocage d'autoplay d'iOS : la page jetait toute seule au chargement,
+sans geste. Le bouton `ROLL` l'a levé. ⚠️ **À retenir pour l'écran réel** : le
+premier jet doit suivre un geste du joueur, jamais partir à l'ouverture.
+
+---
+
 ## 5. Le récapitulatif, pour la commande du lot
 
 | | Valeur |
