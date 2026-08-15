@@ -1,0 +1,272 @@
+# Le gabarit à 360 px — Class, Species, et les écrans de choix
+
+> **Calculé le 2026-08-15**, sur la demande d'Eric : *« je te laisse faire les
+> calculs »*. Toutes les largeurs de texte sont **MESURÉES** dans la police réelle
+> du builder (`-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`), au
+> `measureText` du navigateur — pas estimées.
+>
+> 📐 Source du dessin : croquis C d'Eric (flux Wizard, 4 écrans), 2026-08-15.
+> ⚠️ Il **fait foi** ; ce fichier ne fait qu'en tirer les nombres.
+
+---
+
+## 0. Les deux zones qu'Eric a nommées
+
+| Zone | Quand | Largeur |
+|---|---|---|
+| **avec rail** (*« with spyscroll »*) | la fiche de Class / Species | rail + fiche |
+| **pleine largeur** (*« full width »*) | tous les écrans de choix | 360 |
+
+✅ **TRANCHÉ PAR ERIC, 2026-08-15** : `CHOOSE` **s'élargit et recouvre le rail**
+— *« ici choose recouvre toute la largeur »*.
+
+⭐ **ET ÇA VAUT AUSSI POUR SPECIES** *(sa décision 2.2)* : *« on pourrait
+effectivement faire un choose élargi à toute la largeur pour species, et mettre
+un bouton back et done sur la deuxième page. On gagne de la place et de la
+cohérence. »*
+
+⛔ **Ça REMPLACE l'arbitrage du croquis A** — *« choose ne recouvre que la grosse
+dalle »*. Les deux écrans convergent au lieu de diverger. C'est postérieur, c'est
+ce qui vaut.
+
+📌 **Et le rail garde un `SEARCH`** *(Eric : « oui on a un search, c'est pratique
+si beaucoup de classes »)*. **Il est le SEUL élément cliquable du rail** — la
+colonne reste non cliquable, l'invariant `II.1` tient : le défilement choisit.
+
+---
+
+## 1. La fiche — la répartition horizontale, et ce qui l'a décidée
+
+```
+360 ─┬─ 16 marge
+     ├─ 78  RAIL          Barbarian à T3 = 62 px + 8 de rembourrage × 2
+     ├─  8  écart
+     ├─ 242 FICHE         ├─ 8 rembourrage
+     │                    ├─ 104 IMAGE
+     │                    ├─ 8 écart
+     │                    ├─ 114 STATS
+     │                    └─ 8 rembourrage
+     └─ 16 marge
+```
+
+### 🔴 LE NOMBRE QUI A TRANCHÉ : `Weapons : Simple` en **gras + normal**
+
+| | Mesuré |
+|---|---|
+| `Weapons : Simple`, tout en normal, T2 | 101 px |
+| **`Weapons :` en gras + ` Simple` en normal, T2** | **105 px** |
+
+**Le gras de l'étiquette coûte 4 px**, et c'est ce qui a écarté la première
+disposition :
+
+| Disposition | Colonne de stats | Verdict |
+|---|---|---|
+| rail T3 (78) + image **110** | 108 px | ❌ **3 px de marge** — pas une marge |
+| **rail T3 (78) + image 104** | **114 px** | ✅ **9 px de marge** |
+| rail T2 (71) + image 110 | 114 px | ✅ équivalent, mais le rail devient moins lisible |
+
+**Retenu : rail à T3, image à 104.** Le rail porte le repère de position
+(scrollspy) — c'est le mauvais endroit où rogner de la lisibilité, et les 6 px
+retirés à l'image ne se voient pas.
+
+---
+
+## 2. Le blurb de 60 mots — la limite de caractères, calculée
+
+Le texte du Wizard, dicté par Eric le 2026-08-15 :
+
+> *Weavers of arcane grammar, wizards bend reality through study, not birth.
+> Spellbooks hold their power—lost pages mean lost magic. They shape fire, bend
+> time, pierce minds, all through relentless intellect. Fragile in armor, mighty
+> in will, they trade brute strength for the universe's deepest secrets, one
+> spell slot at a time.*
+
+| | |
+|---|---|
+| Caractères | **327** |
+| Mots | **51** |
+| Rendu à T2 dans 226 px | **9 lignes**, 144 px de haut |
+| À T3 dans 226 px | 11 lignes, 209 px — ❌ trop haut |
+
+### ⭐ LA RÈGLE : **340 caractères**, et c'est un GARDE, pas un conseil
+
+La boîte du blurb est **fixée à 10 lignes** (160 px). À 226 px de large en T2,
+une ligne porte ~36 caractères → **~365 caractères** avant débordement. On pose
+la limite à **340** : les 327 d'Eric passent, et il reste de quoi encaisser un
+mot qui casse mal.
+
+⛔ **Pourquoi une boîte FIXE et pas « ce qui rentre »** : `B0.23` dit *« choix
+identique ⇒ dalle de taille identique »*. Douze blurbs de longueurs libres
+feraient douze fiches de hauteurs différentes, et le défilement aimanté
+(`B2.1h`) perdrait son cran.
+
+📌 **Le garde à écrire** : aucun blurb des 12 classes ni des 12 espèces ne
+dépasse 340 caractères. Une phrase de trop rougit au lieu de déborder en
+silence.
+
+---
+
+## 3. LA TRADUCTION EN T1–T7 — ce qu'Eric a demandé
+
+> *« Tu peux faire tes calculs et traduire tout ça en T1 T2 T3 T4 etc. »*
+
+### La fiche
+
+| Élément | Barreau | px | Pourquoi celui-là |
+|---|---|---|---|
+| Nom de la classe / de l'espèce | **T5** | 18 | `Barbarian` à T6 ferait 103 px dans une colonne de 114 — il tient, mais sans air. T5 le pose sans le serrer |
+| Les 7 lignes de stats | **T2** | 12 | la plus longue fait 105 px sur 114 disponibles. **T3 la porterait à 122 px : elle déborde** |
+| L'étiquette (`Weapons :`) | T2 **gras** | 12 | c'est elle qui coûte les 4 px ci-dessus, et elle les mérite : c'est ce qui rend le bloc lisible en diagonale |
+| Le blurb de 60 mots | **T2** | 12 | T3 le fait passer de 9 à 11 lignes, soit +65 px |
+| Les noms du rail | **T3** | 14 | le repère de position se lit d'un coup d'œil ou ne sert à rien |
+| `LORE` · `CHOOSE` | **T3** | 14 | ce sont des actions ; cible 44 px de haut |
+
+### Les écrans de choix
+
+| Élément | Barreau | px | Pourquoi |
+|---|---|---|---|
+| Titre (`cantrips`, `1st level spells`) | **T6** | 22 | seul titre de l'écran, pleine largeur, rien ne le contraint |
+| Nom d'un sort dans la grille | **T2** | 12 | contraint par `Prestidigitation` — voir §4 |
+| `CHOICE 1..4` | **T2** | 12 | 55 px dans un slot de 72 |
+| La consigne (*« Tap on cantrip for info… »*) | **T2** | 12 | deux lignes, elle ne doit pas concurrencer la grille |
+| `Back` · `Done` | **T3** | 14 | actions, 44 px |
+
+⛔ **T1 (10 px) et T4–T7 ne servent nulle part dans ces écrans**, sauf le titre.
+Ce n'est pas un oubli : à 360 px, l'écart utile se joue entre **T2 et T3**, et le
+reste de l'échelle appartient à d'autres zones.
+
+---
+
+## 4. Les grilles de sorts — et le calcul tombe juste
+
+### Horizontal : le coupable est le rembourrage, encore
+
+`Prestidigitation` est le **mot le plus large des 45 sorts**, et il est
+**insécable** :
+
+| Taille | `Prestidigitation` |
+|---|---|
+| T3 · 14 px | 99 px |
+| **T2 · 12 px** | **85 px** |
+| T1 · 10 px | 72 px |
+
+```
+360 ─ 32 (marge) ─ 16 (rembourrage de dalle, 8×2) ─ 16 (gouttières) = 296
+296 / 3 colonnes = 98 px  →  90 px utiles (4 de rembourrage × 2)
+85 ≤ 90 ✅   marge : 5 px
+```
+
+⚠️ **C'est le rembourrage de dalle à 8 px qui rend ça possible.** À 16 px
+(l'actuel), la colonne tombe à 93 et **T2 ne passe plus** — il faudrait descendre
+à 11 px, **hors de l'échelle T1–T7**. 📌 Troisième fois que le rembourrage
+hérité du desktop est le vrai coupable *(cf. `B4.3`, `B7.5`)*.
+
+### Vertical : 5 rangées, et 5 rangées = exactement les cantrips
+
+Budget sur iPhone SE (**579 px réellement vus** : 667 moins les barres de Safari) :
+
+| | px |
+|---|---|
+| Ceinture | 55 |
+| Dalle de choix (`CHOICE` + 2 lignes de consigne) | 108 |
+| Boutons `Back` / `Choose your spells` | 58 |
+| Titre, marges, écarts | 76 |
+| **Reste pour la grille** | **282** |
+
+À 44 px la case (le seuil tactile d'Apple) + 8 px de gouttière :
+**5 rangées = 252 px** ✅ · 6 rangées = 304 px ❌
+
+### ⭐ CE QUI TOMBE JUSTE, ET QUI N'A PAS ÉTÉ FORCÉ
+
+**Mesuré dans `srd-5.2.1-en.layer.json`** *(le chiffre d'Eric, « 30 1st level
+spells », est exact au sort près)* :
+
+| | Nombre | Rangées | Dans une fenêtre de 5 rangées |
+|---|---|---|---|
+| **Cantrips du Wizard** | **15** | **5** | ✅ **entrent pile, aucun défilement** |
+| **Sorts de niveau 1** | **30** | 10 | **défilent**, la moitié visible |
+
+C'est exactement la consigne d'Eric — *« 30 1st level spells scrollable, must be
+the same height as cantrips »* — obtenue sans qu'aucun nombre ait été arrangé
+pour ça.
+
+### 🔴 LA BOÎTE DU DESSOUS : 4 SLOTS SUR **UNE** RANGÉE
+
+Eric : *« the box under it can be made smaller »*, et son annotation dit *« is
+the same size as cantrips »*. Les deux ne tiennent ensemble qu'à une condition :
+
+| Disposition des 4 `CHOICE` | Hauteur de la dalle | Identique à celle des cantrips ? |
+|---|---|---|
+| **2 × 2**, comme sur le croquis | 160 px | ❌ **+52 px** |
+| **1 × 4** (slots de 72 px) | 108 px | ✅ **identique** |
+
+**Retenu : une rangée de quatre.** `CHOICE 1` fait 55 px dans un slot de 72.
+⚠️ *C'est le seul endroit où ce fichier s'écarte du dessin d'Eric, et c'est pour
+tenir son autre annotation. À confirmer par lui.*
+
+---
+
+## 4bis. LA LIGNE DE TITRE : une loupe et une flèche ✅ *Eric, 2026-08-15*
+
+> ***« On pourrait mettre un search dans les spells tout en haut, sous forme de
+> loupe à côté du texte. Et une petite flèche permettant d'aller vers la droite
+> pour voir les sorts suivants si un jour y'en a plus. »***
+
+⭐ **La loupe n'est pas une idée neuve, et c'est une bonne nouvelle** : `B8.1`
+la prévoyait déjà pour Equipment — *« si on a la place pour poser une loupe dans
+les flottants pour invoquer la barre de recherche, ce serait pas mal »*. **Le
+même organe sert deux écrans**, au lieu de deux inventions séparées. Et elle
+rejoint le `SEARCH` du rail (§0) : trois endroits, une seule mécanique.
+
+### Ça tient, mesuré
+
+```
+312 utiles ─ 44 loupe ─ 44 flèche ─ 16 (deux écarts de 8) = 208 px pour le titre
+```
+
+| Titre | à T6 (22 px) | Verdict |
+|---|---|---|
+| `cantrips` | 82 px | ✅ |
+| `1st level spells` | **144 px** | ✅ **64 px de marge** |
+| `2nd level spells` | 153 px | ✅ tient déjà pour la suite |
+
+**Le titre reste donc à T6** — la loupe et la flèche ne coûtent aucun barreau.
+
+### 🔴 LA FLÈCHE EST UN PAGINATEUR, PAS UN DÉFILEMENT — et c'est ce qui la sauve
+
+La grille défile **verticalement** (30 sorts dans une fenêtre de 5 rangées). Si
+la flèche défilait aussi, on retomberait dans le piège nommé en `B4.3bis` : un
+défilement imbriqué dans un défilement rend le geste ambigu.
+
+**Elle ne défile pas : elle REMPLACE le contenu de la grille** — page suivante
+de sorts, ou niveau suivant. Le geste est un **tap**, pas un glissement, donc il
+n'entre en concurrence avec rien.
+
+📌 **C'est exactement l'issue (c) que `B4.3bis` proposait sans trancher** —
+*« rendre le second axe orthogonal au premier »* —, et le besoin qui la
+justifie arrive enfin. Elle n'est pas construite d'avance : Eric la demande
+pour *« si un jour y'en a plus »*, donc **elle s'affiche seulement quand il y a
+une page suivante** *(comme les chevrons de `B0.3` : aucun à la première étape,
+aucun à la dernière)*.
+
+---
+
+## 5. Le récapitulatif, pour la commande du lot
+
+| | Valeur |
+|---|---|
+| Marge de page | **16 px** |
+| Rembourrage de dalle | **8 px** *(et non 16 — c'est ce qui débloque les grilles)* |
+| Rail | **78 px**, noms à T3, `SEARCH` seul cliquable |
+| Fiche | **242 px** — image 104 · écart 8 · stats 114 |
+| Blurb | **T2**, boîte de **10 lignes** (160 px), **≤ 340 caractères** |
+| Grille de sorts | 3 colonnes de **98 px**, cases de **44 px**, gouttière **8 px** |
+| Fenêtre de grille | **252 px** = 5 rangées, la même pour cantrips et sorts |
+| Dalle de choix | **108 px**, slots sur **une** rangée |
+| Ligne de titre | titre **T6** + **loupe 44** + **flèche 44** — la flèche pagine, elle ne défile pas, et n'apparaît que s'il y a une suite |
+
+⚠️ **Ce qui reste à mesurer et que ce fichier n'a pas fait** : les 11 autres
+classes et les 12 espèces. `Prestidigitation` et `Weapons : Simple` sont les pires
+cas **du Wizard** ; un autre écran peut porter pire. **Le garde des 340
+caractères et une vérification de la plus longue ligne de stats doivent tourner
+sur les 24 fiches**, pas sur celle-ci seule.
