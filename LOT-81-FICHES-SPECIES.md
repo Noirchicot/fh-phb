@@ -168,36 +168,39 @@ La boîte tient **10 lignes** ; la fiche la plus chargée en employait **8**.
 | images | **celles déjà en ligne**, sans recadrage |
 | **The Mole People** | Darkvision **120 ft** + **Meticulous** *(avantage aux jets d'Investigation)* + **1 pt (½ maîtrise) en tinker's tools** |
 
-## 5. ⏳ LA RÉSERVE OUVERTE — le cumul de dons de compétence
+## 5. ✅ LA RÉSERVE EST FERMÉE — 2026-08-17
 
-🔴 **Mesuré le 2026-08-17, non corrigé, en attente d'Eric.** L'Humain ET
-l'Araag portent **deux dons de compétence libres** en même temps :
+🔴 **Le défaut mesuré** : l'Humain ET l'Araag portaient **deux dons de
+compétence libres** — une maîtrise SRD (`granted_skill_choice`) *et* un barème
+de points — soit l'équivalent de **4 points au niveau 1** là où le chapitre en
+annonce 2. Invisible parce que les deux dons ont des **formes** différentes et
+qu'aucun total ne les additionnait.
 
-| | |
-|---|---|
-| **Humain** | `Skillful` (`granted_skill_choice`, une maîtrise pleine) **+** `Educated` (+2 pts) |
-| **Araag** | le même `Skillful`, hérité de l'Humain **+** `Fast Learner` (+2 aux niveaux 1/3/6) |
+**Eric a tranché en deux temps**, et la seconde phrase a levé la dernière
+ambiguïté :
 
-Eric l'a vu sur le site (*« je vois skillful + fast learner »*) et tranché
-*« Fast Learner qui recouvre tout »*.
+> *« Fast Learner qui recouvre tout. Statué et corrigé partout. »*
+> puis, sur le nom à afficher : *« Non, SRD de base si possible. »*
 
-⛔ **LE RETRAIT A ÉTÉ FAIT, MESURÉ, PUIS ANNULÉ.** Motif : il coûte aux deux
-espèces leur **2ᵉ palier de choix d'espèce**, et l'Araag est le **seul**
-exemple de l'état « choix imposé » de `species-step.mjs`. Retirer un écran du
-parcours est une décision de **produit**, que la charte d'autonomie exclut.
+| Espèce | don unique | valeur |
+|---|---|---|
+| **Humain** | `Skillful` *(nom du SRD)* | +2 au niveau 1 |
+| **Araag** · **Elestu** | `Fast Learner` | +2 aux niveaux 1, 3 et 6 |
+| les neuf autres | — | 0 |
 
-📏 **Et les deux lectures ne donnent pas le même total** — contre le garde
-« LIGNE ROUGE : Human et Araag 12 » :
+`Educated` **n'existe plus** ; `Skillful` a quitté l'Araag. Aucun nom neuf :
+les deux survivants sont ceux du SRD.
 
-- retirer `Educated`, garder la maîtrise → **10**. La maîtrise est NET-ZÉRO
-  (elle ajoute 2 et les dépense), elle ne remplace pas les +2. **Casse la ligne rouge.**
-- convertir `Skillful` en +2 points libres et retirer `granted_skill_choice` →
-  **12**, ligne rouge tenue, phrase d'Eric tenue au chiffre près. **Mais c'est
-  celle qui supprime les paliers.**
+📏 **Les deux totaux sont INCHANGÉS — 14 et 12.** La paire net-zéro s'annulait,
+la retirer ne retranche rien : c'est la meilleure preuve qu'elle faisait ce
+qu'elle annonçait. La ligne rouge du lot 52 tient.
 
-**La seconde est la bonne réponse mécanique.** Elle demande une phrase d'Eric
-sur ce que devient le palier.
+⛔ **LE PRIX, REMONTÉ AVANT D'ÊTRE PAYÉ** : les deux espèces perdent leur **2ᵉ
+palier de choix d'espèce**, et l'état « choix imposé » de `species-step.mjs`
+n'a plus **aucun** utilisateur. Le mécanisme reste — les classes l'emploient —
+et une espèce peut le reprendre.
 
-🔴 **C'est GARDÉ en attendant** : `tests/fh-species.test.mjs` porte un garde de
-caractérisation qui liste les **deux** cumuls à l'unité près — il vire au rouge
-si un troisième apparaît, ET le jour où ces deux-là sont réparés.
+🔴 **Gardé** : `tests/fh-species.test.mjs` refuse tout second don libre. Deux
+attaques ont dû être **repointées sur un témoin qui existe encore** — l'une
+visait le `fh_traits` de l'Humain, qui n'est plus jamais lu : elle serait restée
+**verte en ne prouvant plus rien**.
