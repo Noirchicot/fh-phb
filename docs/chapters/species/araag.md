@@ -17,7 +17,6 @@ So the young leave. They go for work, for the Front, for a city where a Sira nam
 **Creature type** Humanoid · **Size** Medium · **Speed** 30 feet
 
 - **Darkvision** <span class="fh-tag">FH</span> — 60 feet.
-- **Skillful** <span class="fh-tag">FH</span> — proficiency in one skill of your choice.
 - **Fast Learner** <span class="fh-tag">FH</span> — +2 [skill points](../skills-and-tools.md) at levels 1, 3 and 6.
 - **Necrotic Resistance** <span class="fh-tag">FH</span> — resistance to necrotic damage.
 - **Soulforged Affinity** <span class="fh-tag">FH</span> — you may Body Forge a Soulgem into your own flesh at no cost in hit points *(cf. [Soulforge Crafting](../soulforge-crafting.md))*.
