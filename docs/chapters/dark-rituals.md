@@ -5,11 +5,11 @@
 
 > [!abstract] Rituals in this chapter
 > - [Create Major Sealed Prison](#create-major-sealed-prison) *(Lvl 30)*
-> - [Create Minor Sealed Prison](#create-minor-sealed-prison) *(Lvl 10)*
+> - [Create Sealed Prison](#create-sealed-prison) *(Lvl 10)*
 > - [Repair Seal](#repair-seal) *(Lvl 10)*
 > - [Conjure Minor Crimson Shroud](#conjure-minor-crimson-shroud) *(Lvl 5)*
 > - [Conjure Major Crimson Shroud](#conjure-major-crimson-shroud) *(Lvl 10)*
-> - [Create Minor Harvest Chalice](#create-minor-harvest-chalice) *(Lvl 10)*
+> - [Create Harvest Chalice](#create-harvest-chalice) *(Lvl 10)*
 > - [Create Major Harvest Chalice](#create-major-harvest-chalice) *(Lvl 30)*
 > - [Forest Walking, Minor](#forest-walking-minor) *(Lvl 5)*
 > - [Forest Walking, Major](#forest-walking-major) *(Lvl 15)*
@@ -52,7 +52,7 @@ The sacrifices rise as **ghosts** that guard access to the seals on the material
 
 **Endurance & degradation.** So long as its seals take no structural damage, a Major Sealed Prison is **all but eternal**. Break one or more seals and it begins to **degrade** — and the more seals are broken, the faster it decays. If every seal (or every guardian ghost) is destroyed, the demiplane collapses and its contents are pushed back out onto the material plane.
 
-### Create Minor Sealed Prison
+### Create Sealed Prison
 *Level 10 ritual*
 
 - **Main caster(s):** Moonkeeper *or* Land Druid — **Arcana DC 18**
@@ -64,10 +64,10 @@ The sacrifices rise as **ghosts** that guard access to the seals on the material
 
 **Effect.** As *Create Major Sealed Prison*, but smaller in every dimension — a cube **30 feet on a side** per sacrifice, a smaller force-gate, and silver-and-ruby seals to match. Because the sacrifices are **not sentient, they leave no ghosts**; the seals are instead watched by **gargoyle guardians** — one per seal, within a 50-foot radius.
 
-**Endurance & degradation.** A Minor Sealed Prison is **not** eternal: even with its seals intact, it **decays over a span of weeks** and must be renewed (see *Repair Seal*) or it collapses on its own. Broken seals hasten the end, as above.
+**Endurance & degradation.** A Sealed Prison is **not** eternal: even with its seals intact, it **decays over a span of weeks** and must be renewed (see *Repair Seal*) or it collapses on its own. Broken seals hasten the end, as above.
 
 ### Repair Seal
-*Level 10 ritual — repairs the seals of a Major **or** Minor Sealed Prison*
+*Level 10 ritual — repairs the seals of a Sealed Prison, **Major** or not*
 
 - **Main caster(s):** of the prison's own tradition — check vs the **prison's Main DC** (Arcana 22 for a Major prison, 18 for a Minor)
 - **Support caster(s):** as the prison required
@@ -106,7 +106,7 @@ The sacrifices rise as **ghosts** that guard access to the seals on the material
 
 **Effect.** As *Conjure Minor Crimson Shroud*, but raised as a **larger bank** and placed under the casters' **control**, steered across the field rather than left to wander. See **[Effect of the Crimson Shroud](primordial-forces.md#part-2-the-crimson-shroud)**.
 
-### Create Minor Harvest Chalice
+### Create Harvest Chalice
 *Level 10 ritual*
 
 - **Main caster(s):** Necromancer Wizard, or a Cleric of Karagall — **Religion DC 16**
@@ -116,7 +116,7 @@ The sacrifices rise as **ghosts** that guard access to the seals on the material
 - **Prerequisites:** **1 sentient sacrifice**; a silver-and-gold vessel worth **1,000 gp**
 - **Failure:** varies
 
-**Effect.** Forges a **Minor [Harvest Chalice](magic-items.md#harvest-chalice)** *(Calice de Moisson)* with a capacity of **10 souls**. What the chalice *does* is on the [item](magic-items.md#harvest-chalice).
+**Effect.** Forges a **[Harvest Chalice](magic-items.md#harvest-chalice)** *(Calice de Moisson)* with a capacity of **10 souls**. What the chalice *does* is on the [item](magic-items.md#harvest-chalice).
 
 ### Create Major Harvest Chalice
 *Level 30 ritual*
@@ -155,7 +155,7 @@ The sacrifices rise as **ghosts** that guard access to the seals on the material
 **Effect.** As *Forest Walking, Minor*, but raises **4 zombies** and clears a **50-foot radius** — a road wide enough for a column, not just a single file.
 
 ### Soulforge an Item
-*Level scales with the item's tier — ≈ Uncommon 5 · Rare 10 · Very Rare 15 · Legendary 30*
+*Level scales with the item's tier — Common 0 · Uncommon 5 · Rare 10 · Very Rare 16 · Legendary 30*
 
 The rite that **binds power into a crafted body** — the ritual face of **[Soulforge Crafting](soulforge-crafting.md)**. A lone **Soulforger** can attempt the lower tiers; run as a Dark Ritual, a **circle pools its levels** to reach the higher ones. The full system (Structure crafted, Essence infused, Catalyst slotted in as-is — plus costs, times, mishaps and boons) lives on the [Soulforge Crafting](soulforge-crafting.md) page; this is its ritual frame.
 

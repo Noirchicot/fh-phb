@@ -14,13 +14,13 @@ A vessel of **silver and gold** that banks the souls of the dying. The small one
 
 **Form & size.** A chalice's **diameter is 1 foot per 100 souls of capacity** — from a palm-sized cup (10 souls) to a 100-foot sphere (10,000 souls, the hard maximum).
 
-**Capacity** is fixed when the chalice is made: a **Minor** holds **10 souls**; a **Major** holds **25 souls per sentient sacrifice** used in its forging, up to the hard cap of **10,000**.
+**Capacity** is fixed when the chalice is made: a **standard** chalice holds **10 souls**; a **Major** holds **25 souls per sentient sacrifice** used in its forging, up to the hard cap of **10,000**.
 
 **Value (silver & gold).**
 
 | Capacity | Diameter | Value |
 |---|---|---|
-| 10 souls *(Minor)* | ~1.2 in | 1,000 gp |
+| 10 souls *(standard)* | ~1.2 in | 1,000 gp |
 | 100 souls | 1 ft | 10,000 gp |
 | 1,000 souls | 10 ft | 100,000 gp |
 | 10,000 souls *(max)* | 100 ft | 1,000,000 gp |

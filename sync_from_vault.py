@@ -87,6 +87,31 @@ def convert_wikilinks(s: str) -> str:
     return s
 
 
+# ══ LES DOUZE ESPÈCES — une seule liste, deux usages ═══════════════════════
+# Elle sert à la fois aux portraits injectés dans le chapitre ET au découpage
+# en page-menu + 12 pages (voir `split_species`). Écrite une fois : le jour où
+# une espèce est ajoutée ou renommée, les deux suivent ensemble.
+#
+#   (slug de page, début de la ligne de titre dans le vault, nom affiché)
+#
+# ⚠️ Le début de titre n'est PAS le nom : neuf espèces portent un lien D&D
+#    Beyond sur leur titre (`## [Elf](https://…)`) et trois n'en ont pas —
+#    ce sont celles que Fate's Hand a inventées.
+SPECIES = [
+    ("araag",      "## Araag",       "Araag"),
+    ("dragonborn", "## [Dragonborn", "Dragonborn"),
+    ("dwarf",      "## [Dwarf",      "Dwarf"),
+    ("elestu",     "## Elestu",      "Elestu"),
+    ("elf",        "## [Elf",        "Elf"),
+    ("goliath",    "## [Goliath",    "Goliath"),
+    ("halfling",   "## [Halfling",   "Halfling"),
+    ("hoddon",     "## Hoddon",      "Hoddon"),
+    ("human",      "## Human",       "Human"),
+    ("loroka",     "## Loroka",      "Loroka"),
+    ("orc",        "## [Orc",        "Orc"),
+    ("tiefling",   "## Tiefling",    "Tiefling"),
+]
+
 # site-only inserts: dest chapter -> [(heading line prefix, markdown block)]
 # inserted after the heading (and its italic subtitle line, if any) on sync,
 # so the vault files stay free of site-specific images/tool links.
@@ -98,21 +123,9 @@ CHAPTER_IMAGES = {
          "![The Crimson Shroud](../assets/img/world-crimson-shroud.jpg){ .fh-illus }"),
     ],
     # species banner + portraits (art masters in ~/Pictures/FH PHB art masters/Species/)
-    "species.md": [
-        ("# Species",       "![The peoples of Nymedes](../assets/img/species-banner.jpg){ .fh-illus .fh-banner }"),
-        ("## Araag",        "![Araag](../assets/img/species-araag.jpg){ .fh-portrait }"),
-        ("## [Dragonborn",  "![Dragonborn](../assets/img/species-dragonborn.jpg){ .fh-portrait }"),
-        ("## [Dwarf",       "![Dwarf](../assets/img/species-dwarf.jpg){ .fh-portrait }"),
-        ("## Elestu",       "![Elestu](../assets/img/species-elestu.jpg){ .fh-portrait }"),
-        ("## [Elf",         "![Elf](../assets/img/species-elf.jpg){ .fh-portrait }"),
-        ("## [Goliath",     "![Goliath](../assets/img/species-goliath.jpg){ .fh-portrait }"),
-        ("## [Halfling",    "![Halfling](../assets/img/species-halfling.jpg){ .fh-portrait }"),
-        ("## Hoddon",       "![Hoddon](../assets/img/species-hoddon.jpg){ .fh-portrait }"),
-        ("## Human",        "![Human](../assets/img/species-human.jpg){ .fh-portrait }"),
-        ("## Loroka",       "![Loroka](../assets/img/species-loroka.jpg){ .fh-portrait }"),
-        ("## [Orc",         "![Orc](../assets/img/species-orc.jpg){ .fh-portrait }"),
-        ("## Tiefling",     "![Tiefling](../assets/img/species-tiefling.jpg){ .fh-portrait }"),
-    ],
+    # ⭐ The twelve entries are generated from SPECIES below, so the portrait
+    #    list and the page split can never disagree about which H2s are species.
+    "species.md": None,   # filled in just after SPECIES is declared
     "ability-scores.md": [
         ("## The 3d6 × 10 method",
          '!!! tip "Try it live"\n'
@@ -121,6 +134,14 @@ CHAPTER_IMAGES = {
          "    [Open the Ability Score Roller ↗](../stat-roller.html){ .md-button target=_blank }"),
     ],
 }
+
+
+CHAPTER_IMAGES["species.md"] = (
+    [("# Species",
+      "![The peoples of Nymedes](../assets/img/species-banner.jpg){ .fh-illus .fh-banner }")]
+    + [(head, f"![{name}](../assets/img/species-{slug_}.jpg){{ .fh-portrait }}")
+       for slug_, head, name in SPECIES]
+)
 
 
 def insert_images(text: str, dest: str) -> str:
@@ -361,6 +382,138 @@ def add_tool_chrome(html: str, body_class: str, self_link) -> str:
             + sep + toolbar(*self_link) + sep + html[m.end():])
 
 
+# ══ LE CHAPITRE SPECIES SE PUBLIE DEUX FOIS ════════════════════════════════
+# Eric, 2026-08-17 : *« une page de menu résumé identique au blurb (rien de
+# plus, pas de stats) plus petite image png et lien vers page complète »*.
+#
+# ⭐ ET LE VAULT N'EN GARDE QU'UNE SEULE NOTE. C'est le point : le lore fait
+#    maintenant 400 à 500 mots par espèce, et douze notes séparées seraient
+#    douze fichiers à tenir d'accord — alors qu'Eric édite dans Obsidian, à la
+#    main, souvent sur iPad. La note reste une ; le découpage est mécanique et
+#    se refait à chaque sync.
+#
+# ⛔ `species.md` RESTE LA PAGE-MENU, il ne devient pas `species/index.md`.
+#    Le reste du site pointe vers `species.md` (nav, `NOTE_TO_CHAPTER`, les
+#    renvois d'autres chapitres) et les ancres `species.md#elf` sont dans la
+#    nature. La page-menu garde donc ses douze titres H2 : les vieux liens
+#    continuent d'arriver quelque part de sensé.
+SPECIES_DIR = DOCS / "species"
+# La phrase qui explique le marquage n'a de sens que sur une page complète —
+# la page-menu ne porte aucun trait.
+MENU_DROP_PREFIX = "Each entry below carries its lore first"
+
+
+def descendre_dun_cran(text: str) -> str:
+    """Repointer les liens d'une section descendue dans `chapters/species/`.
+
+    🔴 CE QUE LE BUILD MKDOCS A TROUVÉ, ET QU'UNE RELECTURE N'AURAIT PAS VU :
+    la première version ne corrigeait que les IMAGES (`../assets/`), et six
+    pages sont sorties avec des renvois de chapitre cassés — `skills-and-tools.md`
+    cherché dans `chapters/species/`. Un lien mort ne lève aucune erreur au
+    sync : il faut construire le site pour le voir.
+
+    Deux familles, une seule cause — la page a gagné un niveau de dossier :
+      · les actifs     `](../assets/…`  ->  `](../../assets/…`
+      · les chapitres  `](feats.md…`    ->  `](../feats.md…`
+    ⛔ On ne touche pas à ce qui est déjà relatif (`../`, `./`) ni aux URL
+    absolues : seul un nom de fichier nu a besoin du cran."""
+    text = text.replace("](../assets/", "](../../assets/")
+    return re.sub(r"\]\((?!\.{1,2}/|[a-z]+:|#)([^)/#]+\.md)", r"](../\1", text)
+
+
+def mark_fh_tags(text: str) -> str:
+    """`*(FH)*` dans la note du vault -> la pastille dorée du site.
+
+    ⭐ POURQUOI PAS ÉCRIRE LE `<span>` DANS LE VAULT : la note se lit dans
+    Obsidian, sur iPad, et s'édite à la main. Du HTML inline y serait du bruit
+    à chaque ligne de trait. Le vault garde `*(FH)*` — lisible partout — et le
+    site fabrique l'habillage, exactement comme il fabrique les portraits."""
+    return text.replace("*(FH)*", '<span class="fh-tag">FH</span>')
+
+
+def _lead_paragraph(block: list) -> str:
+    """Le premier vrai paragraphe d'une section — le blurb. On saute le titre,
+    les lignes vides et le portrait injuste au-dessus."""
+    out, started = [], False
+    for ln in block[1:]:
+        if not ln.strip():
+            if started:
+                break
+            continue
+        if ln.lstrip().startswith("!["):   # le portrait injecté
+            continue
+        started = True
+        out.append(ln)
+    return "\n".join(out)
+
+
+def split_species():
+    src = DOCS / "species.md"
+    if not src.exists():
+        print("  !! MISSING species.md — species pages not split")
+        return
+    lines = src.read_text(encoding="utf-8").splitlines()
+
+    starts = []
+    for i, ln in enumerate(lines):
+        for slug_, head, name in SPECIES:
+            if ln.startswith(head):
+                starts.append((i, slug_, name))
+                break
+
+    # 🔴 UN GARDE, PAS UNE SUPPOSITION : si le vault renomme une espèce, on
+    #    n'écrit rien plutôt que de publier un chapitre amputé en silence.
+    if len(starts) != len(SPECIES):
+        trouve = {s[1] for s in starts}
+        manque = [s for s, _, _ in SPECIES if s not in trouve]
+        print(f"  !! species split ABORTED: {len(starts)}/{len(SPECIES)} headings"
+              f" found, missing {manque} — species.md left whole")
+        return
+
+    # Le pied de licence CC-BY : la dernière règle horizontale et ce qui suit.
+    # Il part sur CHACUNE des treize pages — chacune porte du texte SRD.
+    end = len(lines)
+    for i in range(len(lines) - 1, starts[-1][0], -1):
+        if lines[i].strip() == "---":
+            end = i
+            break
+    tail = "\n".join(lines[end:]).strip()
+
+    bornes = [s[0] for s in starts] + [end]
+    preamble = [ln for ln in lines[:starts[0][0]]
+                if not ln.startswith(MENU_DROP_PREFIX)]
+
+    SPECIES_DIR.mkdir(parents=True, exist_ok=True)
+    menu = "\n".join(preamble).rstrip().splitlines()
+
+    for n, (i, slug_, name) in enumerate(starts):
+        block = lines[i:bornes[n + 1]]
+        # ── la page complète ───────────────────────────────────────────────
+        titre = block[0][3:].strip()          # `## [Elf](…)` -> `[Elf](…)`
+        corps = "\n".join(block[1:]).strip()
+        # Une page d'espèce vit un cran plus profond : ../assets -> ../../assets
+        corps = descendre_dun_cran(corps)
+        corps = mark_fh_tags(corps)
+        # `tail` porte DÉJÀ sa règle horizontale — en rajouter une en produisait
+        # deux à la suite (mesuré sur la première passe).
+        page = f"# {titre}\n\n{corps}\n\n{tail}\n"
+        (SPECIES_DIR / f"{slug_}.md").write_text(page, encoding="utf-8")
+
+        # ── son entrée au menu : le titre, la vignette, le blurb, le lien ──
+        menu.append("")
+        menu.append(block[0])
+        menu.append("")
+        menu.append(f"![{name}](../assets/img/species-{slug_}.jpg){{ .fh-thumb }}")
+        menu.append("")
+        menu.append(_lead_paragraph(block))
+        menu.append("")
+        menu.append(f"[Read the full entry →](species/{slug_}.md)")
+
+    menu += ["", tail, ""]
+    src.write_text("\n".join(menu), encoding="utf-8")
+    print(f"  ok  species.md            -> menu + {len(starts)} pages in chapters/species/")
+
+
 def main():
     DOCS.mkdir(parents=True, exist_ok=True)
     for dest, (rel, title) in MAP.items():
@@ -392,6 +545,7 @@ def main():
             continue
         dst.write_text(page, encoding="utf-8")
         print(f"  ok  {dst.name:24s} <- {src.name}")
+    split_species()
     build_soulforge_data()
 
 

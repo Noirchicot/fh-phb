@@ -79,6 +79,16 @@ plugins:
   - callouts
   - search
 
+# ── Les douze pages d'espèce ne sont PAS dans la nav, et c'est voulu ────────
+# `chapters/species.md` EST leur menu : douze entrées de plus dans la barre
+# latérale (déjà en `navigation.expand`) doubleraient la section « Creating a
+# Character » pour un chemin que la page-menu offre déjà, avec le portrait et
+# le blurb en prime. On le DÉCLARE ici plutôt que de laisser mkdocs le
+# signaler à chaque build — un avertissement permanent est un avertissement
+# qu'on cesse de lire.
+not_in_nav: |
+  chapters/species/*.md
+
 nav:
   - Welcome: index.md
   - Creating a Character:

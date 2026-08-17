@@ -424,6 +424,37 @@ body.fh-home-page .md-header { display: none; }
 }
 .md-typeset h2 { clear: both; }
 
+/* --- species menu: the same portrait, small, beside its blurb ---
+   Eric, 2026-08-17 : « une page de menu résumé identique au blurb (rien de
+   plus, pas de stats) plus petite image + lien vers page complète ». */
+.md-typeset .fh-thumb {
+  float: right;
+  width: min(128px, 30%);
+  margin: .2rem 0 .6rem .9rem;
+  border-radius: 6px;
+  border: 1px solid var(--fh-rule);
+  height: auto;
+  box-shadow: 0 4px 14px rgba(0,0,0,.26);
+}
+
+/* --- le marqueur d'écart FH ---
+   Sur une page fusionnée, le texte NON marqué est du SRD mot pour mot ; la
+   pastille ne signale que ce que Fate's Hand ajoute ou change. Elle est posée
+   par `sync_from_vault.py`, qui convertit le `*(FH)*` de la note du vault —
+   la note reste du markdown propre, lisible dans Obsidian. */
+.md-typeset .fh-tag {
+  display: inline-block;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: .68em; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .05em .4em; margin-left: .15em;
+  vertical-align: .12em;
+  color: var(--fh-gold);
+  border: 1px solid var(--fh-gold);
+  border-radius: 2px;
+  line-height: 1.5;
+}
+
 /* --- species chapter banner: full-bleed under the H1 --- */
 .md-typeset img.fh-banner {
   margin: .4rem 0 1.4rem;

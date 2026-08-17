@@ -13,169 +13,99 @@ Species grant no ability modifiers — ability score increases come from your **
 
 ## Araag
 
-![Araag](../assets/img/species-araag.jpg){ .fh-portrait }
+![Araag](../assets/img/species-araag.jpg){ .fh-thumb }
 
 Marked by the Harvest that unmade the last free humans, the Araags were once mistaken for tieflings — a resemblance that never sat easy with either people. They are common as dust within the Empire that shares their name, and stared at everywhere else: soul-touched, unmistakably other, and never quite trusted to explain why.
 
-**Abilities**
-
-- **Skillful** — proficiency in one skill of your choice
-- **Fast Learner** — +2 [skill points](skills-and-tools.md) at levels 3 and 6
-- **Soulforged Affinity** — you may Body Forge a Soulgem into your own flesh at no cost in hit points *(cf. [Soulforge Crafting](soulforge-crafting.md))*
-- **Necrotic Resistance** — resistance to necrotic damage
-- **Darkvision** — 60 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/araag.md)
 
 ## [Dragonborn](https://www.dndbeyond.com/species/1751435-dragonborn)
 
-![Dragonborn](../assets/img/species-dragonborn.jpg){ .fh-portrait }
+![Dragonborn](../assets/img/species-dragonborn.jpg){ .fh-thumb }
 
 Dragon-blooded wanderers whose scales mark them from birth as heirs to something older than any empire on Nymedes. Most trace their line to no living dragon at all — only to the breath that still wakes in their chest when they are cornered.
 
-**Abilities**
-
-- **Draconic Ancestry** — choose a dragon type; it sets your breath and resistance
-- **Breath Weapon** — exhale your ancestry's element in place of an attack
-- **Damage Resistance** — to your ancestry's damage type
-- **Draconic Flight** — at level 5, conjure spectral wings for short flights
-- **Darkvision** — 60 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/dragonborn.md)
 
 ## [Dwarf](https://www.dndbeyond.com/species/1751436-dwarf)
 
-![Dwarf](../assets/img/species-dwarf.jpg){ .fh-portrait }
+![Dwarf](../assets/img/species-dwarf.jpg){ .fh-thumb }
 
 Stone-patient and clannish, the dwarves of Nymedes measure history in seams of ore rather than reigns of kings. Their halls survived the ages the surface did not; what they found down there, they rarely discuss with outsiders.
 
-**Abilities**
-
-- **Dwarven Resilience** — poison resistance, advantage against being Poisoned
-- **Dwarven Toughness** — +1 HP per level
-- **Stonecunning** — Tremorsense 60 ft on stone, a few times per day
-- **Darkvision** — 120 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/dwarf.md)
 
 ## Elestu
 
-![Elestu](../assets/img/species-elestu.jpg){ .fh-portrait }
+![Elestu](../assets/img/species-elestu.jpg){ .fh-thumb }
 
 Children of scattered pairings between elves and humans — or elves and Araags — the Elestu are what an elven union actually bears: too mortal for the elves, too strange for everyone else. In Theymoron they gravitate to the university quarter and the Moonkeeper circles, and built their own quiet place between both worlds. Most end up bards, scholars, or both at once.
 
-**Abilities**
-
-- **Fey Ancestry** — advantage against being charmed; magic can't put you to sleep
-- **Trance** — 4 hours of light meditation replace a long rest's sleep
-- **Keen Senses** — proficiency in Survival, Delve, or Vigilance
-- **Fast Learner** — +2 [skill points](skills-and-tools.md) at levels 3 and 6
-- **Darkvision** — 60 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/elestu.md)
 
 ## [Elf](https://www.dndbeyond.com/species/1751437-elf)
 
-![Elf](../assets/img/species-elf.jpg){ .fh-portrait }
+![Elf](../assets/img/species-elf.jpg){ .fh-thumb }
 
-Elves are truly immortal — and vanishingly rare, for elves cannot conceive with one another. Only a union with a human or an Araag quickens an elven womb, and what is born is Elestu, not elf. The oldest among them eventually withdraw from the world: some slip into centuries-long sleep, others into a quiet madness no healer's art can touch. A dying elf's soulgem is said to be the finest a soulforger will ever hold — old traditions name the elves the children of a sleeping god, and whisper that such a gem still carries a splinter of his memory, sealed away since the First Age. Scholars, as ever, disagree.
+Elves are the only people of Nymedes who do not die of time. What they die of instead is everything else — a blade, a fall, a war — and so the elven number only ever falls. No elf has been born of two elves in living memory, nor in any memory an archive holds: elven unions bear nothing. Only a human or an Araag quickens an elven womb, and what comes of it is **Elestu** — a child who will grow old, and whose own children will be something else again. Every elf alive today was alive in the First Age.
 
-**Abilities**
-
-- **Elven Lineage** — Drow, High Elf or Wood Elf; each grants its own thread of magic
-- **Fey Ancestry** — advantage against being charmed; magic can't put you to sleep
-- **Trance** — 4 hours of light meditation replace a long rest's sleep
-- **Keen Senses** — proficiency in Survival, Delve, or Vigilance
-- **Darkvision** — 60 ft
-- **Destiny** — Base 2 · **elf chosen:** +2 to your Destiny pool
+[Read the full entry →](species/elf.md)
 
 ## [Goliath](https://www.dndbeyond.com/species/1751439-goliath)
 
-![Goliath](../assets/img/species-goliath.jpg){ .fh-portrait }
+![Goliath](../assets/img/species-goliath.jpg){ .fh-thumb }
 
-The goliaths of Nymedes are a people without a hearth. In the giant-ruled forests of the far north, the fire giants of Jaar hunt them for slaves and the hill giant hordes burn what little they build — so the Ghost Tribe sleeps in dug-out caches and forgotten ruins, moves like fog between the trees, and carries its history as scars and murmured songs rather than stone. Stone giant prophets are said to guide them; the forest's spirits sometimes hide their tracks. Every goliath met abroad is a survivor of that long hunt, and carries its patience — and its dream of one day building a house in the light.
+The goliaths of Nymedes are a people without a hearth. In the giant-ruled forests of the far north, the fire giants of Jaar hunt them for slaves and the hill giant hordes burn what little they build — so the Ghost Tribe sleeps in dug-out caches and forgotten ruins, moves like fog between the trees, and carries its history as scars and murmured songs rather than stone.
 
-**Abilities**
-
-- **Giant Ancestry** — choose a giant's boon, a once-per-turn combat knack
-- **Large Form** — at level 5, grow Large for a minute and shove the world aside
-- **Powerful Build** — advantage against grapples; carry like a creature a size larger
-- **Speed** — 35 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/goliath.md)
 
 ## [Halfling](https://www.dndbeyond.com/species/1751440-halfling)
 
-![Halfling](../assets/img/species-halfling.jpg){ .fh-portrait }
+![Halfling](../assets/img/species-halfling.jpg){ .fh-thumb }
 
 Small, unhurried, and hard to rattle — halfling communities tend to outlast the empires around them, quietly farming the same valley for a thousand years while dynasties rise and fall on the other side of the ridge. Luck, they'll tell you, is just what patience looks like from the outside.
 
-**Abilities**
-
-- **Brave** — advantage on saves against being Frightened
-- **Halfling Nimbleness** — move through the space of any larger creature
-- **Luck** — reroll any 1 on a d20 test
-- **Naturally Stealthy** — hide behind anything bigger than you, including people
-- **Destiny** — Base 2 · **halfling chosen:** advantage on [Chaos rolls](chaos-tables.md)
+[Read the full entry →](species/halfling.md)
 
 ## Hoddon
 
-![Hoddon](../assets/img/species-hoddon.jpg){ .fh-portrait }
+![Hoddon](../assets/img/species-hoddon.jpg){ .fh-thumb }
 
 Most people on Nymedes have never seen a Hoddon, and plenty insist nobody has. The little folk keep to hidden family-holds deep in the old forests, guarding what remains of the banned craft of the vanished humans — remnants the Empire of Huitzlika has hunted for centuries, and the Hoddon along with them. A Hoddon on the road is a rare thing: quiet, watchful, and carrying more forbidden knowledge than any imperial archive.
 
-**Abilities**
-
-- **Hoddon Cunning** — advantage on Intelligence, Wisdom and Charisma saves
-- **Hoddon Lineage** — Forest or Rock; a knack of small illusions or small machines
-- **Darkvision** — 60 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/hoddon.md)
 
 ## Human
 
-![Human](../assets/img/species-human.jpg){ .fh-portrait }
+![Human](../assets/img/species-human.jpg){ .fh-thumb }
 
 Humanity vanished from Nymedes at the end of the First Age — and a century ago, ten thousand souls walked back out of the White Void, refusing to vanish a second time. They are few, and everywhere talked about: their young cities rise fast and argue loudly — Theymoron's terraces, Dreideldorf's workshops, Atalante's harbors — as if noise could make up for numbers.
 
-**Abilities**
-
-- **Skillful** — proficiency in one skill of your choice
-- **Versatile** — gain an Origin feat of your choice
-- **Destiny** — Base 2 · **human chosen:** +1 Destiny Point per day *(unique to Human)*
+[Read the full entry →](species/human.md)
 
 ## Loroka
 
-![Loroka](../assets/img/species-loroka.jpg){ .fh-portrait }
+![Loroka](../assets/img/species-loroka.jpg){ .fh-thumb }
 
 The old blood of the Theymoron highlands — farmers, drovers and terrace-workers who worked these valleys long before the Marche had a name. Once the plurality of a conquered people, drawn heavily from the Sira low caste of the Empire, they are now the plurality of a free city: soldiers when the Front calls for it, but merchants, roofers and rice-growers the rest of the year.
 
-**Abilities**
-
-- **Relentless Endurance** — once per long rest, drop to 1 HP instead of 0
-- **Versatile** — gain an Origin feat of your choice
-- **Darkvision** — 120 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/loroka.md)
 
 ## [Orc](https://www.dndbeyond.com/species/1751442-orc)
 
-![Orc](../assets/img/species-orc.jpg){ .fh-portrait }
+![Orc](../assets/img/species-orc.jpg){ .fh-thumb }
 
 The full-blooded kin of the Loroka, orcs endure where the land gives nothing back — hard plains, cold passes, borders nobody else wants. Their reputation for ferocity is mostly other people's word for stamina: an orc simply does not stop first.
 
-**Abilities**
-
-- **Adrenaline Rush** — Dash as a bonus action and gain a few temporary HP
-- **Relentless Endurance** — once per long rest, drop to 1 HP instead of 0
-- **Darkvision** — 120 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/orc.md)
 
 ## Tiefling
 
-![Tiefling](../assets/img/species-tiefling.jpg){ .fh-portrait }
+![Tiefling](../assets/img/species-tiefling.jpg){ .fh-thumb }
 
 Fiend-touched by pact, curse or ancestry, tieflings are forever being mistaken for Araags — and correcting people, wearily, that their mark is older and came by a different road. Most learn young to be twice as charming as anyone expects, because they'll be trusted half as much.
 
-**Abilities**
-
-- **Fiendish Legacy** — Abyssal, Chthonic or Infernal; a resistance and a thread of spells
-- **Otherworldly Presence** — you know the Thaumaturgy cantrip
-- **Darkvision** — 60 ft
-- **Destiny** — Base 2
+[Read the full entry →](species/tiefling.md)
 
 ---
 
