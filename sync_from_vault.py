@@ -658,9 +658,108 @@ def build_arcana():
     print(f"  ok  arcana.js              <- major-arcana.md ({len(cards)} cards)")
 
 
+
+# ══ LA PROSE D'ESPÈCE REDESCEND DANS LE BUILDER ════════════════════════════
+# Eric, 2026-08-17, en ratifiant la chaîne des sources : *« la page PHB est la
+# source, le builder l'IMPORTE »*.
+#
+# 🔴 LE DÉFAUT QUE ÇA FERME. `fhpc/layers/fh-lore-en.layer.json` portait sa
+#    propre prose d'espèce, écrite à la main — deux cents mots par espèce, qui
+#    racontaient la MÊME chose que le chapitre, dans d'autres phrases. Deux
+#    écritures d'un seul lore : exactement la divergence que la chaîne des
+#    sources existe pour empêcher.
+#
+# ⭐ CE QU'ON IMPORTE, ET CE QU'ON LAISSE. Seule l'AMBIANCE descend : les
+#    paragraphes entre le portrait et le `**Traits**`. Les traits eux-mêmes
+#    restent au chapitre et sur la fiche du builder — le panneau de lore n'a
+#    pas à répéter ce que la carte affiche déjà à côté.
+#
+# ⛔ LES CLASSES NE SONT PAS TOUCHÉES. Leur lore reste écrit à la main dans la
+#    couche : le chapitre `classes.md` n'a pas la forme « une section, une
+#    prose d'ambiance » qu'on découpe ici, et inventer un second extracteur
+#    pour une forme qui n'existe pas serait du code écrit d'avance.
+LORE_LAYER = pathlib.Path("/Users/Eric/tools/fhpc/layers/fh-lore-en.layer.json")
+# Les ids de la couche : le slug du site, sauf le Hoddon, qui est le gnome SRD.
+LORE_IDS = {
+    "araag":   "fh:species:en:araag",
+    "elestu":  "fh:species:en:elestu",
+    "loroka":  "fh:species:en:loroka",
+    "hoddon":  "srd:species:en:gnome",
+}
+
+
+def _plain(md: str) -> str:
+    """Le markdown d'une page redevient du texte nu.
+
+    ⛔ La couche porte du TEXTE, pas du balisage : `lore.mjs` le découpe en
+    paragraphes et le pose en nœuds texte — aucun `innerHTML` ne traverse ce
+    dépôt. Laisser les `**` et les `[lien](…)` les ferait lire tels quels."""
+    md = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", md)   # [texte](url) -> texte
+    md = re.sub(r"\*\*(.+?)\*\*", r"\1", md)             # gras
+    md = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"\1", md)  # italique
+    md = md.replace("`", "")
+    return md.strip()
+
+
+def build_species_lore():
+    import json
+    if not LORE_LAYER.exists():
+        print(f"  !! MISSING {LORE_LAYER} — lore d'espèce non importé")
+        return
+    couche = json.loads(LORE_LAYER.read_text(encoding="utf-8"))
+    especes = couche.get("records", {}).get("species")
+    if not isinstance(especes, dict):
+        print("  !! fh-lore-en n'a pas de records.species — lore non importé")
+        return
+
+    faits, manques = 0, []
+    for slug, _head, _name in SPECIES:
+        page = SPECIES_DIR / f"{slug}.md"
+        if not page.exists():
+            manques.append(slug)
+            continue
+        lignes = page.read_text(encoding="utf-8").splitlines()
+        paras, courant = [], []
+        for ln in lignes[1:]:                      # on saute le H1
+            if ln.startswith("**Traits**"):
+                break
+            if ln.lstrip().startswith("!["):       # le portrait
+                continue
+            if ln.strip() == "":
+                if courant:
+                    paras.append(" ".join(courant)); courant = []
+                continue
+            courant.append(ln.strip())
+        if courant:
+            paras.append(" ".join(courant))
+        texte = "\n\n".join(_plain(p) for p in paras if _plain(p))
+
+        rid = LORE_IDS.get(slug, f"srd:species:en:{slug}")
+        entree = especes.get(rid)
+        if entree is None or texte == "":
+            manques.append(slug)
+            continue
+        entree.setdefault("changes", {})["data.lore"] = {
+            "text": texte,
+            # La provenance dit D'OÙ, pas QUI : c'est ce que le garde des
+            # provenances de `fiche-360` sait déjà lire.
+            "provenance": "fh-original"
+        }
+        faits += 1
+
+    # 🔴 UN GARDE, PAS UNE SUPPOSITION : on n'écrit rien plutôt que de publier
+    #    une couche à moitié importée, dont la moitié restante daterait d'avant.
+    if faits != len(SPECIES):
+        print(f"  !! lore d'espèce ABORTED : {faits}/{len(SPECIES)} importés, manque {manques}")
+        return
+    LORE_LAYER.write_text(json.dumps(couche, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"  ok  fh-lore-en.layer.json  <- chapters/species/ ({faits} espèces)")
+
+
 if __name__ == "__main__":
     print("Syncing FH PHB chapters from vault…")
     main()
     build_chaos_tables()
     build_arcana()
+    build_species_lore()
     print("Done.")
