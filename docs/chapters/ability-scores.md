@@ -27,11 +27,13 @@ In Fate's Hand you **roll** your ability scores rather than using Point Buy or t
 > At creation, an ability can reach at most **18, all bonuses included** — the bonuses are in, not
 > on top. In play the ceiling is **20** — only **boons** can push a score beyond it.
 
-> [!tip] Prodigy — when the floor had to catch you
+> [!tip] Prodigy ⏳ *(name under review)* — when the floor had to catch you
 > If **no natural roll reached 14** — so the high floor had to step in, which happens to about
 > **17 %** of characters — you gain **Prodigy**: **Expertise on one skill of your choice at level
 > 1**, free, and it does not touch your free point pool. The dice were unkind; the character is
 > gifted somewhere else.
+>
+> ⏳ **The name is provisional.** *Prodigy* is a feat in the 5.0 edition, so this trait will probably be renamed — Eric, 2026-08-18. The rule below is settled; only its label is not.
 
 ## Why roll?
 
