@@ -342,8 +342,10 @@ footer {
 
   <div class="card">
     <p class="rules">
-      Roll <strong>3d6</strong>, ten times. Keep your <strong>six highest</strong> sums — valid only if
-      at least one of them is <strong>15 or higher</strong>. If not, the whole set rerolls.
+      Roll <strong>3d6</strong>, ten times. Keep your <strong>six highest</strong> sums.
+      Then two floors apply, and <strong>there is no reroll</strong>: if your highest kept roll
+      falls short of <strong>14</strong> it becomes 14, and your lowest kept roll
+      <strong>always becomes 8</strong>.
     </p>
     <button class="roll-btn" id="rollBtn">Roll the Set</button>
     <div class="status idle" id="status">No roll yet — press Roll the Set.</div>
@@ -394,25 +396,29 @@ footer {
     }
     const sorted = [...rolls].sort((a, b) => b.sum - a.sum);
     const keptSet = new Set(sorted.slice(0, 6));
-    const hasHigh = sorted.slice(0, 6).some(r => r.sum >= 15);
 
     renderGrid(rolls, keptSet);
 
-    if (hasHigh) {
-      status.textContent = "✓ Valid set — a score of 15 or higher is among your six kept.";
-      status.className = "status ok";
-      rollBtn.classList.remove("invalid");
-      rollBtn.textContent = "Roll the Set";
-      kept = sorted.slice(0, 6).map(r => r.sum).sort((a, b) => b - a);
-      setupAssignment();
-    } else {
-      status.textContent = "✗ No score of 15+ among the six highest — the whole set rerolls.";
-      status.className = "status bad";
-      rollBtn.classList.add("invalid");
-      rollBtn.textContent = "Reroll the Set";
-      kept = [];
-      assignCard.hidden = true;
-    }
+    /* LES DEUX PLANCHERS — règle d'Eric du 2026-08-16, et il n'y a PLUS DE RELANCE.
+       L'ancienne version jetait le lot entier quand aucun des six n'atteignait 15 ;
+       les planchers font le même travail sans rien jeter. */
+    const bruts = sorted.slice(0, 6).map(r => r.sum).sort((a, b) => b - a);
+    kept = bruts.slice();
+    const notes = [];
+    if (kept[0] < 14) { notes.push(`highest ${kept[0]} → 14`); kept[0] = 14; }
+    if (kept[5] !== 8) { notes.push(`lowest ${kept[5]} → 8`); kept[5] = 8; }
+    kept.sort((a, b) => b - a);
+
+    /* PRODIGY — si le plancher haut a dû intervenir, aucun jet naturel n'atteignait 14. */
+    const prodigy = bruts[0] < 14;
+
+    status.textContent = notes.length
+      ? `✓ Floors applied — ${notes.join(" · ")}.` + (prodigy ? "  ⭐ Prodigy: free Expertise on one skill." : "")
+      : "✓ Set kept as rolled — no floor needed.";
+    status.className = "status ok";
+    rollBtn.classList.remove("invalid");
+    rollBtn.textContent = "Roll the Set";
+    setupAssignment();
   }
 
   function renderGrid(rolls, keptSet) {

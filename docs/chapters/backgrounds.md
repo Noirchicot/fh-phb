@@ -21,6 +21,14 @@ the first session is yours to write; the sheet only asks you where the training 
 > added on top. In play the ceiling is 20, and only **boons** push past it.
 > *(See [D&D 5+ Character stat generation](ability-scores.md).)*
 
+## Starting equipment
+
+You take your **class kit exactly as the SRD gives it**, and a **purse of 50 gp** on top. The
+purse replaces what a background used to hand out.
+
+> 📌 **The 50 gp ADD to the gold already in your kit.** A Barbarian taking option A ends up with
+> **65 gp**, not 50.
+
 ## What it does **not** give
 
 - **No imposed skills, no imposed tools.** The old "2 skills + 1 tool picked for you" is gone —

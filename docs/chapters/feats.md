@@ -2,6 +2,21 @@
 
 Fate's Hand tweaks a handful of feats. Each entry shows its FH5+ rules; unfold *view older version* for the original. Anything not shown here works exactly as printed.
 
+## Origin feats
+
+Your **Inheritance** grants one origin feat, **your choice**, from these five:
+
+| Origin feat | What it does in Fate's Hand |
+|---|---|
+| **Alert** | as printed |
+| **Magic Initiate** | as printed |
+| **Savage Attacker** | as printed |
+| **Skilled** | ⭐ **+6 free skill points** — the SRD grants 3 proficiencies, and a proficiency is worth 2 points in Fate's Hand (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
+| **Lucky** *(FH)* | **+2 to your Destiny Score** — see below |
+
+> ⛔ **No background record grants a feat.** There are no backgrounds in Fate's Hand; the step is
+> called **Inheritance** and the feat is always chosen freely. See [Inheritance](backgrounds.md).
+
 ## Skill feats
 
 ### [Observant](https://www.dndbeyond.com/sources/dnd/phb-2024/feats#Observant)
