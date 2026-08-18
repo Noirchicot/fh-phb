@@ -11,6 +11,7 @@
 | **6 free points** | 4 from skills + 2 from tools, and they are **interchangeable** — spend them on skills *or* tools, wherever you like (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
 | **An Origin Feat** | **your choice** — the four SRD origin feats (*Alert · Magic Initiate · Savage Attacker · Skilled*) plus the Fate's Hand one that grants **+2 Destiny** (see [Feats](feats.md)). No record dictates it |
 | **Ability score increases** | **+2/+1** on two abilities, **or** **+1/+1/+1** on three — **any abilities you choose** |
+| **Two languages** | **your choice**, from the Fate's Hand languages below — nothing is imposed, not even a common tongue |
 | **A purse of 50 gp** | it replaces what a background used to hand out, and it **adds to** the gold in your class kit |
 
 You are trusted to keep the story coherent with where you spend. What your character did before
@@ -20,6 +21,35 @@ the first session is yours to write; the sheet only asks you where the training 
 > At creation no ability passes **18, all bonuses included** — the bonuses are counted **in**, not
 > added on top. In play the ceiling is 20, and only **boons** push past it.
 > *(See [D&D 5+ Character stat generation](ability-scores.md).)*
+
+## Languages
+
+Your languages are part of what you were **given**, not what you trained for — so they are handed
+out here, with the rest of your Inheritance. **You choose two.** *(Eric, 2026-08-18.)*
+
+| The Fate's Hand languages |
+|---|
+| **Araag** · **Dragonborn** · **Dwarf** · **Elestu** · **Elf** · **Goliath** · **Halfling** · **Hoddon** · **Human** · **Loroka** · **Orc** · **Tiefling** |
+
+⭐ **A language carries the name of its people, and nothing else.** No *Elvish*, no *Dwarvish*, no
+*Draconic* — Fate's Hand drops the adjectival forms the SRD uses. One people, one tongue, one name.
+
+⛔ **And no tongue is automatic.** The old rule read *« Common plus one of your choice »*; the
+count is the same, the imposition is gone. That is the whole of Inheritance: **nothing is
+imposed, everything is chosen** — a character who speaks neither the imperial tongue nor their
+own people's is allowed, and is a character worth playing.
+
+> ⏳ **Araag is the imperial tongue** and will be the one most tables pick first. It is **an
+> option, not a floor** — if a later ruling makes it automatic, that ruling belongs here, and this
+> paragraph is where it goes.
+
+**Languages are [trainings](skills-and-tools.md)**, and these two are *granted* — handed
+over, not paid for. A **third** language, bought later, costs **1 free point** and follows the
+training rule (level 4 and later, unless a feature says otherwise).
+
+📌 **Some classes and traits grant languages too**, and those are granted as well: the Rogue's
+*Thieves' Cant* plus one language at level 1, the Ranger's two from *Deft Explorer* at level 2,
+the Druid's *Druidic*. They come on top of your Inheritance's two.
 
 ## Starting equipment
 
@@ -53,3 +83,6 @@ for what a point buys.)*
 - **No ability bonus from your species.** Species grant traits, never ability modifiers.
 - **No background record to look up.** If a rule elsewhere still says *background*, it means
   Inheritance.
+
+- **No language from your species.** Species grant traits; your tongues come from here. *(This
+  moved on 2026-08-18 — the Species chapter used to hand them out.)*

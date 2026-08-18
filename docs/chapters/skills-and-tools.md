@@ -134,9 +134,42 @@ line is written where it is true rather than where it was convenient.
 
 ### Buying, and the level gate
 - **Expertise** may be bought from **level 4** — earlier only if a feature grants permission.
-- **Trainings** (languages, the Garrot, dark rituals, some exotic weapons) may be bought from
-  **level 4**, for **1 point or more**, unless a feature says otherwise. A new language costs
-  **1 point**. The **Garrot costs 1 point** — it is a training, not a tool: no tier, no ability.
+- **Trainings** may be bought from **level 4**, for **1 point or more**, unless a feature says
+  otherwise. A new language costs **1 point**. The **Garrot costs 1 point** — it is a training,
+  not a tool: no tier, no ability.
+
+### Trainings — granted and bought
+
+A **training** is something you *learn*, not a skill you *practise*: it has **no tier and no
+ability** behind it. You either know it or you don't. *(Eric, 2026-08-18.)*
+
+| | Where it comes from | What it costs you |
+|---|---|---|
+| **Granted training** | your Inheritance, a species trait, a class feature | **nothing** — it is handed over, at the level the feature says |
+| **Bought training** | your free point pool | **1 point or more**, from **level 4**, unless a record says otherwise |
+
+⭐ **It is the same distinction as bound and free, one floor up.** A granted training is already
+placed when you get the sheet; a bought one comes out of the pool you spend. Nothing else about a
+training changes between the two.
+
+**Granted at level 1 or 2, and they are the whole list today:**
+
+| Granted | From | Level |
+|---|---|---|
+| **two languages of your choice** | your [Inheritance](inheritance.md) | creation |
+| ***Druidic*** | Druid | 1 |
+| ***Thieves' Cant*** **+ one language** | Rogue | 1 |
+| **two languages** | Ranger — *Deft Explorer* | 2 |
+
+**What can be bought:** a further **language** (1 point) · the **Garrot** (1 point) · some
+**exotic weapons** *(⏳ not inventoried yet)*.
+
+> ⚠️ **Dark rituals are NOT trainings, and this line used to say they were.** Corrected
+> 2026-08-18, on measurement: [Dark Rituals](dark-rituals.md) gates a rite by the **combined level of its
+> casters** and by their **spellcasting class**, and prices it in **Destiny points and necrotic
+> damage** — never in free points, and nowhere does it say a character *learns* one. A rite is
+> performed, not known. If a later ruling makes some of them learnable, that is a rule the
+> [Dark Rituals](dark-rituals.md) chapter states first, and this table follows it.
 
 ### Retraining — swapping points
 - A swap moves **one free point**: take it out of one skill or tool, put it in another.
