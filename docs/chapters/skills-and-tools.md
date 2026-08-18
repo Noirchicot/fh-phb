@@ -1,71 +1,163 @@
 # Fate's Hand 5+ — Skills & Tools: Player Guide
 
-A plain-language guide to how skill points work and what every skill and tool does.
+A plain-language guide to how skill and tool points work, and what every skill and tool does.
+
+> 🥇 **This chapter is the source of truth for skill and tool points.** It is what the site
+> publishes. Nothing is a rule until it is here.
+> *Derivation and design record (how these numbers were built from the SRD, and why):*
+> Skill & Tool Points — Canon (SRD to FH).md. *Distribution tool:* [the skill builder](../builder.md).
 
 ---
 
 ## 1. The quick version
 
-- Fate's Hand replaces the 17-skill list with **26 skills**, and folds tools into the same point pool.
-- You spend points to raise skills and tools to one of four tiers.
-- **Tiers & cost:** None 0 · Half 1 pt · Proficient 2 pts · Expertise 4 pts.
-- *(Half = half your proficiency bonus, rounded down. Expertise = double proficiency.)*
+- Fate's Hand replaces the 18-skill list with **26 skills**, and folds tools into the same points.
+  **There is no such thing as an artisan tool** — instruments, kits, thieves' tools, gaming sets
+  are all simply **tools**, bought with the same points.
+
+- **Three tiers, and no fourth:**
+
+| Tier | Cost | What it does |
+|---|---|---|
+| **Novice** | 1 pt | half your proficiency bonus, rounded down |
+| **Adept** | 2 pts | your proficiency bonus |
+| **Expert** | 4 pts | double your proficiency bonus |
+
+- Your sheet carries **three totals**, and you only ever spend the third:
+
+| | |
+|---|---|
+| **Bound skill points** | already placed on skills your class fixed |
+| **Bound tool points** | already placed on tools your class fixed |
+| **Free point pool** | **yours** — spend on skills *or* tools, freely |
 
 ---
 
 ## 2. Building at character creation
 
-### Your starting pool
+### Your three totals
 
-One number per class — your **background is already included** (its 2 skills + 1 tool are imposed picks inside the pool). Add only species bumps and feats (e.g. Skilled +6) on top.
+| Class | Bound skill | Bound tool | **Free point pool** |
+|---|---|---|---|
+| Barbarian, Cleric, Fighter, Paladin, Sorcerer, Warlock, Wizard | 2 | 0 | **10** |
+| Bard | 3 | 2 | **12** |
+| Druid | 2 | 1 | **12** |
+| Monk | 2 | 0 | **10** |
+| Ranger | 3 | 0 | **12** |
+| Rogue | 6 | 1 | **14** |
 
-| Class | Level-1 pool |
+**Your background gives 6 free points** (4 skill + 2 tool, all interchangeable), and Fate's Hand
+adds **+2 free** on top because there are 26 skills to fill. Both are already counted in the table.
+
+⛔ Species, origin feat and talents are **not** in the table — they add on top.
+
+### What the bound points buy
+
+You place them yourself, but only **inside your class list** and only at **Novice**:
+
+| Class | Bound placements |
 |---|---|
-| Rogue | **18** |
-| Bard | **16** |
-| Druid, Monk, Ranger | **14** |
-| Barbarian, Cleric, Fighter, Paladin, Sorcerer, Warlock, Wizard, Artificer | **12** |
+| Barbarian, Cleric, Fighter, Paladin, Sorcerer, Warlock, Wizard | 2 Novice skills |
+| Bard | 3 Novice skills + 2 Novice instruments |
+| Druid | 2 Novice skills + 1 Novice herbalism kit |
+| Monk | 2 Novice skills |
+| Ranger | 3 Novice skills |
+| Rogue | 2 Novice skills + **1 Expert skill** + 1 Novice thieves' tools |
 
-*Classes whose 5e kit carries native tools (Rogue's thieves' tools, Bard's instrument, Druid's herbalism kit, Monk's artisan tool or instrument) have that compensation baked into their pool.*
+### Your species
 
-**Species bumps** — only two species give points:
+| Species | What it gives |
+|---|---|
+| **Human** — *Skillful* | **+2 free points** at creation |
+| **Araag, Elestu** — *Fast Learner* | **+2 free points** at creation, and again at levels **3** and **6** |
+| **Elf** — *Keen Senses* | one **Novice** skill among Insight, Perception, Survival — **bound**, not free |
+| All others | — |
 
-| Species | At creation | Later |
-|---|---|---|
-| Araag, Human | +2 | +2 at levels **3** and **6** |
-| All others (Elf and Dwarf included) | 0 | — |
+> **Free or bound? The wording decides.** A grant that names *what* it applies to — a skill, or a
+> short list to pick from — is **bound**. A grant that simply hands you points is **free**.
 
 ### Your background
 
-Your background is **made to measure**: pick its **2 skills and 1 tool** (they are imposed picks inside your pool), **choose your Origin Feat**, and take its ability score increases (+2/+1 or +1/+1/+1 on three abilities of your choice). You are trusted to keep the story coherent with your picks.
+Made to measure: **6 free points**, your **Origin Feat**, and its ability score increases
+(+2/+1 or +1/+1/+1 on three abilities of your choice). No imposed picks — you are trusted to keep
+the story coherent with where you spend.
 
-### Rules at creation
-- At least **1 point** must go into a tool.
-- Languages are free at creation — they cost nothing.
-- Once everything is placed, you must keep **at least 1 point (Half)** in every **imposed** skill and tool (class specials, background picks) — see the conservation rule (§3).
+### At creation
+- **Languages are chosen within your species** — they cost nothing at level 1.
+- There is **no obligation to buy a tool**. Everything is interchangeable.
 
-> *Examples:* Talia (Human Ranger, lvl 1) = 14 + 2 = **16 pts** · Kai (Orc Fighter, lvl 1) = **12 pts** · an Araag Rogue lvl 1 = 18 + 2 = **20 pts**.
+> *Examples:* Talia (Human Ranger) = 12 + 2 = **14 free** (plus 3 bound skill) ·
+> Kai (Orc Fighter) = **10 free** (plus 2 bound skill) ·
+> an Araag Rogue = 14 + 2 = **16 free** (plus 6 bound skill, 1 bound tool).
 
 ---
 
 ## 3. Levelling up & evolution
 
-- **+2 points every 4 levels** for all classes (levels **4** and **8**).
-- **Bard** — Jack of All Trades is replaced: the Bard gains **+1 point at every level from level 2**.
-- Class features keep their normal 5e progression on top of the pool (Rogue and Bard **Expertises**, Ranger's Deft Explorer, etc.) — nothing to convert, they apply as written.
-- **Buying Expertise with points** (4 pts total) is available to everyone **from level 4**.
-- **Buying languages later:** after creation, a new language costs **1 point**.
-- **Moving a point:** each time you gain points (a level-up), you may **shift a point from one skill/tool to another** — as long as you respect the conservation rule below.
+### The points you gain
 
-> [!note] Conservation rule — the only hard constraint
-> You must keep at least **Half (1 point)** on every **imposed** skill and tool — your background picks, your class specials and anything your species imposes. You may drop one from **Proficient** to **Half** to free a point — but never below **Half**.
+| Gain | Who | Counted on |
+|---|---|---|
+| **+2 free points** | everyone | levels **4 · 8 · 12 · 16 · 20** of your **character** |
+| **+1 free point** | Bard only | each **Bard level**, from Bard level 2 |
+
+⛔ **You never gain bound points by levelling** — the only exception is a feature that names a
+list, like the Barbarian's *Primal Knowledge*.
+
+### Class features that grant Expertise
+
+They do **not** hand you an expertise. They hand you **free points, plus permission to buy
+Expertise before level 4**:
+
+| Feature | Level | Free points | |
+|---|---|---|---|
+| **Bard — Expertise** | 2 | **+4** | *(and the +1 of the ladder — two separate gains)* |
+| **Ranger — Deft Explorer** | 2 | **+2**, plus 2 languages | |
+| **Ranger — Expertise** | 9 | **+4** | |
+| **Rogue — Expertise** | 1 | — *(already inside his bound placements)* | may buy Expertise from level 1 |
+| **Bard — Bonus Proficiencies** | 3 | **+6** | |
+| **Barbarian — Primal Knowledge** | 3 | one **bound** Novice skill from the Barbarian list | |
+
+> **One Expertise costs 2 free points**, on top of an Adept. A skill still at Novice therefore
+> needs **1 more point** of your own to reach Expert — the grant pays 2 of the 3.
+
+### Buying, and the level gate
+- **Expertise** may be bought from **level 4** — earlier only if a feature grants permission.
+- **Trainings** (languages, the Garrot, dark rituals, some exotic weapons) may be bought from
+  **level 4**, for **1 point or more**, unless a feature says otherwise. A new language costs
+  **1 point**. The **Garrot costs 1 point** — it is a training, not a tool: no tier, no ability.
+
+### Retraining — swapping points
+- A swap moves **one free point**: take it out of one skill or tool, put it in another.
+- **A skill you have trained never falls below Novice.** You may bring an Expert down, an Adept
+  down to Novice — you may not empty it. *You train less, so you are a little less good.*
+
+- ⛔ **Bound points never move.** They are the floor your class set.
+- A point may sit **between tiers** if you want it to — 3 points reads as Adept with one point
+  banked, and one more makes it Expert. That is your choice; the rules never impose it.
 
 ### Multiclassing
-- Your **pool** comes from your **starting class only** (no second pool).
-- **Level bonuses stack per class**, by the thresholds you actually reach in each.
-  > *Akbal (Warlock 5 / Monk 4): pool 12 + Warlock@4 (+2) + Monk@4 (+2) = **16 pts**.*
+- Your **free point pool** and your **background 6** come from your **first class only** — they
+  belong to the character, not to each class.
 
-> *Older characters built on the pre-2026-07 pools (class base + separate background 6 + skill-class bumps at 3/5/7): see the archived rules.*
+- A **second class** gives what the SRD's *"As a Multiclass Character"* line gives, and nothing
+  more:
+
+| 2nd class | What it grants |
+|---|---|
+| **Bard** | 1 skill + 1 instrument |
+| **Ranger** | 1 skill from the Ranger's list |
+| **Rogue** | 1 skill from the Rogue's list + thieves' tools |
+| **the other nine** | nothing |
+
+  Those grants are **bound**, and they are spent **up to the next tier** — whatever cannot reach
+  the next tier becomes **free points** instead.
+
+- The **+2 ladder** counts on your **total character level**; the Bard's **+1** counts only on
+  your **Bard levels**.
+
+> *Older characters built on the pre-2026-08 pools: see the
+> archived rules.*
 
 ---
 
@@ -126,7 +218,6 @@ Tools use the same tiers and point costs as skills. (* = Fate's Hand additions �
 | Disguise Kit | CHA | Alter identity |
 | Dragonchess Set | WIS | Strategic board play |
 | Forgery Kit | DEX | False documents & seals |
-| [Garrot](#the-garrot) * 📖 | DEX | Finesse weapon that boosts **Strangling** (no damage, only exhaustion); needs a surprised target. Bought for 2 pts; free for Assassins at lvl 3. |
 | Glassblower's | INT | Glass crafting — bottles, lenses |
 | Herbalism Kit | INT | Plant remedies & salves |
 | Instrument (Other) | CHA | Percussion / keyed music |
@@ -241,7 +332,7 @@ Affected allies gain a reaction to perform the directed action. Both parties mus
 On a success, each sub-leader gains a synergy bonus on their Leadership rolls, applied to their group for one minute.
 
 ### The Garrot
-A finesse weapon (DEX) that improves Strangling (see ../8. Adventuring/Battlefield Rules). Bought through the skill pool for 2 points; the Assassin gets it free at level 3.
+A finesse weapon (DEX) that improves Strangling (see ../8. Adventuring/Battlefield Rules). It is a **training**, bought for **1 free point** — not a tool: it has no tier and no ability score behind it. The Assassin gets it free at level 3.
 
 - Deals no damage (unless you have the Grappler feat) — only exhaustion.
 - Usable only against a surprised target.
