@@ -70,7 +70,8 @@ You place them yourself, but only **inside your class list** and only at **Novic
 |---|---|
 | **Human** — *Skillful* | **+2 free points** at creation |
 | **Araag, Elestu** — *Fast Learner* | **+2 free points** at creation, and again at levels **3** and **6** |
-| **Elf** — *Keen Senses* | one **Novice** skill among Insight, Perception, Survival — **bound**, not free |
+| **Elf, Elestu** — *Keen Senses* | **2 points, bound to Survival · Delve · Vigilance** — Novice on two of the three, or Adept on one. Never convertible to free points |
+| **Hoddon** — *The Mole People* | **1 bound point** in tinker's tools *(plus Darkvision 120 ft and Meticulous)* |
 | All others | — |
 
 > **Free or bound? The wording decides.** A grant that names *what* it applies to — a skill, or a
@@ -99,7 +100,7 @@ the story coherent with where you spend.
 | Gain | Who | Counted on |
 |---|---|---|
 | **+2 free points** | everyone | levels **4 · 8 · 12 · 16 · 20** of your **character** |
-| **+1 free point** | Bard only | each **Bard level**, from Bard level 2 |
+| **+1 free point** | Bard only | each **Bard level**, from Bard level 2 — **this replaces Jack of All Trades**, which Fate's Hand removes |
 
 ⛔ **You never gain bound points by levelling** — the only exception is a feature that names a
 list, like the Barbarian's *Primal Knowledge*.
@@ -332,7 +333,7 @@ Affected allies gain a reaction to perform the directed action. Both parties mus
 On a success, each sub-leader gains a synergy bonus on their Leadership rolls, applied to their group for one minute.
 
 ### The Garrot
-A finesse weapon (DEX) that improves Strangling (see ../8. Adventuring/Battlefield Rules). It is a **training**, bought for **1 free point** — not a tool: it has no tier and no ability score behind it. The Assassin gets it free at level 3.
+A finesse weapon (DEX) that improves Strangling (see ../8. Adventuring/Battlefield Rules). It is a **training**, bought for **1 free point** — not a tool: it has no tier and no ability score behind it. The **Silent Blade** gets it free at level 3.
 
 - Deals no damage (unless you have the Grappler feat) — only exhaustion.
 - Usable only against a surprised target.

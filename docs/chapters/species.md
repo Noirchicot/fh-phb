@@ -9,7 +9,7 @@ Nymedes carries the familiar peoples of fantasy — and three of its own, born o
 > *"The continent is Araag — count the millions, then stop counting. The Loroka bend the terraces beside us; the dwarves keep their seams, the halflings their valleys; dragonborn, orcs and tieflings drift through our roads and our wars. Goliaths? A rumor of the far forests. The Hoddon? A rumor beneath the leaves — one the Empire still hunts. Humans are rare: a twice-born people the White Void handed back. And the elves and their Elestu children are so few that an archivist may serve three lifetimes and never see one."*
 > — a census-keeper of Huitzlika
 
-Species grant no ability modifiers — ability score increases come from your **background**. Every species speaks two languages (Common plus one of your choice) and keeps its standard speed.
+Species grant no ability modifiers — ability score increases come from your **Inheritance**. Every species speaks two languages (Common plus one of your choice) and keeps its standard speed.
 
 ## Araag
 

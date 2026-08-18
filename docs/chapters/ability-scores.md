@@ -11,21 +11,36 @@ In Fate's Hand you **roll** your ability scores rather than using Point Buy or t
     [Open the Ability Score Roller ↗](../stat-roller.html){ .md-button target=_blank }
 
 1. Roll **3d6**, ten times.
-2. Keep your **six highest** results — but only if at least one of them is **15 or higher**. If not, reroll the whole set.
-3. That set averages about **11** per ability.
-4. Add your **+4 to +6** background and racial points across your six scores. This brings the average to roughly **11.7–12** — on par with the Standard Array.
+2. Keep your **six highest** results.
+3. **Two floors then apply, and there is no reroll:**
+   - if your **highest** kept roll falls short of **14**, it **becomes 14**;
+   - your **lowest** kept roll **always becomes 8**.
+4. Add your **Inheritance** points — **+2/+1** or **+1/+1/+1** on any abilities of your choice.
+   Species grant no ability bonuses.
+
+> [!note] ⛔ There is no reroll
+> The old rule — *"keep only if one of the six is 15 or higher, otherwise reroll the whole set"* —
+> is **gone**. Nothing is ever thrown away: the two floors do the work a reroll used to do, and
+> they do it without asking you to abandon a set you have already rolled.
 
 > [!note] Caps
-> At creation, an ability can reach at most **18, all bonuses included**. In play the ceiling is **20** — only **boons** can push a score beyond it.
+> At creation, an ability can reach at most **18, all bonuses included** — the bonuses are in, not
+> on top. In play the ceiling is **20** — only **boons** can push a score beyond it.
+
+> [!tip] Prodigy — when the floor had to catch you
+> If **no natural roll reached 14** — so the high floor had to step in, which happens to about
+> **17 %** of characters — you gain **Prodigy**: **Expertise on one skill of your choice at level
+> 1**, free, and it does not touch your free point pool. The dice were unkind; the character is
+> gifted somewhere else.
 
 ## Why roll?
 
 | Method | Average per ability |
 |---|---|
-| D&D 2024 Point Buy / Standard Array (+3 background) | ~**12.5** |
-| Fate's Hand 3d6 × 10 (+4–6 points) | ~**11.7–12** |
+| D&D 2024 Point Buy / Standard Array (+3 points) | ~**12.5** |
+| Fate's Hand 3d6 × 10 (+3 Inheritance points) | ~**11.7–12** |
 
-The two land in the same ballpark — but rolling can spike high (or low), which static methods can't. The "keep only if a 15+" rule guards against an all-low set, so you get fairness *and* the excitement of a standout score.
+The two land in the same ballpark — but rolling can spike high (or low), which static methods can't. **The two floors** guard against an all-low set — your best is never under 14, your worst is always 8 — so you get fairness *and* the excitement of a standout score.
 
 ## 3d6 probability
 

@@ -94,7 +94,7 @@ If you hit with an **unarmed strike**, you may inflict **Damage**, a **Shove**, 
   - **Locked** : **speed 0**, **disadvantage on attacks** and **attacks on you have advantage**. 
 
 ### The Garrot *(new)*
-A **finesse** weapon that improves **Strangling**. Bought through the **skill pool for 2 points**; the **Assassin** gains it free at level 3. The garrot deals **no damage** (unless you have the Grappler feat) — **only exhaustion**.
+A **finesse** weapon that improves **Strangling**. Bought through the **skill pool for 1 free point**; the **Silent Blade** gains it free at level 3. The garrot deals **no damage** (unless you have the Grappler feat) — **only exhaustion**.
 
 - Usable **only if the target is surprised**.
 - The attacker does **not** take the **−2 Strangling penalty** to hit.

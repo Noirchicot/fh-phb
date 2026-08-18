@@ -11,5 +11,5 @@ Only the **changes** are listed here — everything else works as printed in the
 ## Monk
 - **Deflect** — roll *unarmed die + Monk level + DEX*. If this covers all the incoming damage, that damage is **reflected**.
 
-## Assassin *(Rogue)*
-- Gains the **Garrot** free at level 3 (otherwise bought from the skill pool for **2 points**). See [Battlefield Rules](battlefield.md).
+## Silent Blade *(Rogue)*
+- Gains the **Garrot** free at level 3 (otherwise bought for **1 free point** — it is a *training*, not a tool). See [Battlefield Rules](battlefield.md).
