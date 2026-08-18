@@ -5,6 +5,49 @@
 > du builder (`-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`), au
 > `measureText` du navigateur — pas estimées.
 >
+> ## 🔴 À QUEL RENDU CES NOMBRES SE RAPPORTENT — ajouté le 2026-08-15 (lot 77)
+>
+> **Ce fichier ne le disait pas, et deux séries de mesures JUSTES peuvent se
+> contredire de 4 px.** Mesuré : les relevés du lot 77 sortent **~3 % plus
+> étroits** que ceux de ce fichier — même famille de police, navigateur
+> différent (`Weapons : Simple` = 103,0 contre 105 ici).
+>
+> ⛔ **Une largeur sans son rendu n'est pas une mesure, c'est une opinion
+> chiffrée.** Désormais, toute cote ajoutée ici dit d'où elle vient.
+>
+> ⭐ **Et il existe un instrument reproductible** : `fhpc/tests/fixtures/avances-t2.json`
+> — les avances PAR CARACTÈRE mesurées au `measureText`, avec l'erreur du
+> modèle mesurée contre la mise en page réelle sur 130 lignes (sous-estimation
+> maximale **0,09 px**). C'est ce qui permet à un garde Node de tenir une cote
+> en pixels sans navigateur. **Une cote qui doit devenir un garde passe par
+> là.**
+>
+> ⚠️ **Ce que ça implique pour les marges serrées** : ramenée à l'échelle de ce
+> fichier, la ligne la plus large des 24 fiches (§4quater) vaudrait ~118,1 px
+> pour une colonne de 118. **Zéro marge.** Ce fichier a écarté une disposition
+> qui n'avait que 3 px — le même critère s'applique ici.
+>
+> ## 🔴 ET L'APPAREIL D'ERIC EST MESURÉ — 2026-08-15
+>
+> | | Ce que ce fichier supposait | **Mesuré** |
+> |---|---|---|
+> | Largeur CSS | 360 *(la cible)* | **375** ✅ — 15 px de marge |
+> | Hauteur CSS | 579 *(déduit de « 667 − les barres »)* | **553** ❌ — 26 px de moins |
+>
+> ⛔ **Une largeur CSS ne se déduit NI d'un numéro de modèle, NI d'une capture
+> regardée de loin.** Les deux ont été tentés le 2026-08-15 et les deux ont
+> menti : le SE d'Eric (A2783, donc 375) rendait en **320** parce que le
+> **Display Zoom** était actif — un réglage d'accessibilité qui change la
+> largeur CSS sans changer le téléphone, et qu'aucune fiche technique ne
+> mentionne.
+>
+> ⭐ **L'outil existe maintenant** : `fhpc/ui/builder/diag.html`, déployée,
+> autonome. Largeur, hauteur, rapport de pixels, verdict contre 360, et un
+> cadre de 360 en dur qui déborde visiblement s'il ne tient pas.
+> 📌 **Une cote d'appareil se relève sur l'appareil, avant de calculer sur
+> elle.** La verticale de ce fichier a été bâtie une journée entière sur un
+> nombre que personne n'avait relevé.
+>
 > 📐 Source du dessin : croquis C d'Eric (flux Wizard, 4 écrans), 2026-08-15.
 > ⚠️ Il **fait foi** ; ce fichier ne fait qu'en tirer les nombres.
 
@@ -69,6 +112,51 @@ disposition :
 (scrollspy) — c'est le mauvais endroit où rogner de la lisibilité, et les 6 px
 retirés à l'image ne se voient pas.
 
+### 🔴 LE RAIL A ÉTÉ COTÉ SUR LES CLASSES. IL N'A JAMAIS REGARDÉ LES ESPÈCES.
+
+⚖️ **ARBITRAGE EN ATTENTE D'ERIC — 2026-08-15 (lot 77).** Le nom **est tronqué
+à l'écran**, vérifié à la capture. Mesuré à T3, deux fois indépendamment :
+
+| | Largeur |
+|---|---|
+| `Barbarian` gras — *le mot sur lequel ce fichier a coté le rail* | **65,5 px** ✅ |
+| **`Dragonborn` gras** *(le cran courant est en gras)* | **80,7 px** ❌ |
+| **`Dragonborn` normal** | **77,2 px** ❌ |
+| `Dragonborn` **à T2**, gras | **70,4 px** |
+
+⛔ **AUCUNE DES TROIS SORTIES N'EST GRATUITE, ET AUCUNE N'EST À L'ARCHITECTE :**
+
+| Sortie | Ce qu'elle coûte |
+|---|---|
+| **Élargir le rail** | la fiche n'a pas 6 px à rendre — le §4quater vient de montrer qu'elle est à ~118 sur 118 |
+| **Descendre le rail à T2** | c'est précisément ce que ce fichier a écarté *(« le repère de position se lit d'un coup d'œil ou ne sert à rien »)*. Et à 70,4 dans 70 utiles, **ça ne passe même pas** — la marge est négative |
+| **Abréger le nom affiché** | un rail qui ment sur un nom est un mauvais repère |
+
+⚠️ **ET LES DEUX FICHIERS NE S'ACCORDENT PAS SUR LA LARGEUR UTILE** : ce
+fichier dit *« 62 px + 8 de rembourrage × 2 »* (donc **62 utiles**), le lot 77
+a mesuré **70**. À trancher aussi — mais `Dragonborn` déborde des deux.
+
+### ✅ TRANCHÉ PAR ERIC, 2026-08-15 : **LE RAIL DESCEND À T2**
+
+Il a choisi T2 **en connaissance de la mesure** — 70,4 dans 70 utiles ne passe
+pas. La sortie ne touche donc pas la fiche, **qui n'a rien à rendre** : la ligne
+du rogue est à 115,1 sur 118, et à l'échelle de ce fichier elle vaut ~118,1.
+
+| Rail | Rembourrage | Utile | `Dragonborn` T2 gras (70,4) |
+|---|---|---|---|
+| 78 | 8 × 2 *(ce fichier)* | 62 | ❌ −8,4 |
+| 78 | 4 × 2 *(mesuré au lot 77)* | 70 | ❌ **−0,4** |
+| **78** | **2 × 2** ⭐ | **74** | ✅ **3,6 px** |
+
+🔴 **RETENU : rail 78, rembourrage interne 2 px, noms à T2.** Le rembourrage
+est le seul terme qui pouvait céder, et `--sp-2` est sur l'échelle du dépôt.
+
+⚠️ **Et 3,6 px n'est pas une marge confortable** — ce fichier a écarté une
+disposition qui n'en avait que 3. C'est **le pire cas des 24 noms**, pas une
+moyenne : les 23 autres ont au moins 22 px de reste (`Halfling`, le suivant,
+fait 45,8). ⛔ Si un jour un nom plus long entre, il **rougit** au lieu de se
+tronquer : c'est le garde qui doit tenir cette ligne, pas la chance.
+
 ---
 
 ## 2. Le blurb de 60 mots — la limite de caractères, calculée
@@ -103,6 +191,243 @@ feraient douze fiches de hauteurs différentes, et le défilement aimanté
 📌 **Le garde à écrire** : aucun blurb des 12 classes ni des 12 espèces ne
 dépasse 340 caractères. Une phrase de trop rougit au lieu de déborder en
 silence.
+
+### 🔴 ET LE GARDE EXISTE — MAIS IL NE PROTÈGE PAS CE QU'ON CROYAIT
+
+⚖️ **ARBITRAGE EN ATTENTE D'ERIC — 2026-08-15 (lot 77).** Le garde tourne sur
+les 24 fiches et passe 24/24. **Mesurées dans la boîte réelle de 226 px à T2,
+trois d'entre elles remplissent déjà les dix lignes :**
+
+| Fiche | Caractères | Lignes rendues |
+|---|---|---|
+| **druid** | 337 | **10 / 10** |
+| **monk** | 333 | **10 / 10** |
+| **bard** | 332 | **10 / 10** |
+| fighter *(texte d'Eric)* | **338** — le plus long | 9 / 10 |
+
+⛔ **LE COMPTE DE CARACTÈRES N'ORDONNE PAS LES HAUTEURS.** Le plus long des
+24 tient en 9 lignes ; trois plus courts en prennent 10. Une césure malheureuse
+coûte une ligne entière. **Un appareil dont la police résout un poil plus large
+fait déborder druid, monk et bard — en silence, garde vert.**
+
+📌 Le calcul d'origine (*« ~36 caractères par ligne × 10 »*) est confirmé à
+un caractère près : **37 caractères** tiennent dans 226 px à T2, mesuré aux
+avances réelles. C'est la MOYENNE qui est juste ; c'est la variance qui manque.
+
+### ✅ TRANCHÉ PAR ERIC, 2026-08-15 : **LA LIMITE DESCEND À 320**
+
+Il a préféré rendre la marge réelle plutôt que de garder trois textes au
+plafond. ⛔ **Le garde ne peut pas passer à 320 avant que les textes soient
+réécrits** — quatre dépassent :
+
+| Fiche | Aujourd'hui | À retirer |
+|---|---|---|
+| fighter *(texte d'Eric)* | 338 | **−18** |
+| druid | 337 | −17 |
+| monk | 333 | −13 |
+| bard | 332 | −12 |
+
+⚠️ **Le fighter est de la main d'Eric** *(`provenance: "eric"`)* : le
+raccourcir est une réécriture de SON texte, pas d'un texte de remplissage. À
+lui soumettre, pas à décider.
+
+📌 **La piste des LIGNES RENDUES reste ouverte, et reste la plus juste** —
+c'est la vraie propriété, 320 n'en est qu'un proxy plus prudent. Elle demande
+une casse de ligne dans le garde, pas une somme d'avances. ⭐ À prendre le jour
+où un blurb rougira à 320 alors qu'il tenait en 9 lignes : ce jour-là le proxy
+aura menti dans l'autre sens, et il faudra la vraie mesure.
+
+---
+
+## 1bis. 📐 **F1** — LE FORMAT DE FICHE, NOMMÉ ✅ *Eric, 2026-08-15*
+
+> ***« Si on décide que c'est une taille F1 (taille de fiche) : fiche dont la
+> dimension peut accueillir un scrollspy que tout le monde voit, sur un
+> affichage à 360. »***
+
+⭐ **F1 est un NOM, pas un nouveau calcul.** Il désigne les cotes du §1 une
+fois qu'on leur ajoute la règle verticale. Un écran qui dit « F1 » n'a plus à
+répéter sept nombres — et surtout, il ne peut plus en inventer un huitième.
+
+| | Valeur | D'où elle sort |
+|---|---|---|
+| **Largeur de la fiche** | **242 px** | 360 − 16 marge − **78 rail** − 8 écart − 16 marge |
+| **Le rail EST le scrollspy** | **78 px**, toujours visible à gauche | c'est lui que *« tout le monde voit »* désigne : la fiche laisse la place au repère de position, elle ne le recouvre pas |
+| **Hauteur de la fiche** | **une scène moins la gouttière** | pas de nombre en dur : `100 % − 8` |
+| **Gouttière** | **8 px**, en demi-marges (4 en haut, 4 en bas) | `B0.23b`, *« des dalles qui FLOTTENT »* |
+| **Le pas du défilement** | **exactement une scène** | marges comprises : 4 + (100 % − 8) + 4 |
+
+### 🔴 CE QUE LA DERNIÈRE LIGNE GARANTIT, ET POURQUOI ERIC L'A DEMANDÉE
+
+> ***« ne pas voir la fiche du dessus et du dessous serait bien »*** — après
+> avoir demandé l'inverse *(« je veux voir un jour au-dessus et en dessous »)*
+> et l'avoir **regardé**. Sa seconde lecture vaut : c'est celle qui a vu.
+
+⛔ **Les deux ne tiennent pas ensemble, et c'est de la géométrie** : montrer un
+jour EXIGE une dalle plus courte que la scène ; ne rien montrer EXIGE qu'elle
+la remplisse. **On ne choisit pas une valeur intermédiaire, on choisit un
+camp.**
+
+⭐ **La sortie : la BOÎTE remplit la scène, la PEINTURE non.** Marges comprises
+la fiche vaut une scène — donc jamais un pixel de la voisine — pendant que 4 px
+de fond respirent à chaque bord. **Mesuré à 375 × 553** : scène 492, fiche
+**484**, marges 4/4, **pas 492**, écart peint **8**, douze hauteurs identiques.
+
+⛔ **NE PAS REMPLACER LES MARGES PAR UN `gap` SUR LE CONTENEUR** : un `gap`
+s'ajoute au pas sans s'ajouter au champ, et là la vieille mise en garde de la
+feuille *(« les crans dériveraient »)* aurait raison.
+
+### ⚠️ « Centrage auto » n'est pas un organe à écrire
+
+Eric : *« il faudrait un centrage auto je suppose »*, puis *« c'est centré »*.
+**Quand la fiche vaut la scène, se coller en haut et être centrée sont la même
+position.** `scroll-snap-align: start` + `scroll-snap-type: y mandatory`
+suffisent : on relâche, ça se pose. Aucun calcul à écrire, aucun minuteur.
+
+---
+
+## 2bis. ⚖️ LA MOITIÉ BASSE DE LA FICHE D'ESPÈCE — les deux croquis divergent
+
+**ARBITRAGE EN ATTENTE D'ERIC — 2026-08-15 (lot 77).** Ce fichier a tiré sa
+boîte de 10 lignes du **croquis C (Wizard)** et l'a appliquée aux deux écrans.
+Mais les deux dessins d'Eric ne disent pas la même chose de cette moitié-là :
+
+| Croquis | Ce qu'il met dans la moitié basse |
+|---|---|
+| **C — Wizard** | le **blurb** |
+| **A — Species** | la **liste des traits**, `nom — effet`, `Destiny` en dernière ligne |
+
+Résultat livré : la fiche d'espèce a perdu **ses traits, sa Destinée et ses
+points de compétence**. `fh-fiche-en` ne porte pour une espèce que
+`Type · Sz · Speed · Lineages`.
+
+📌 **La vraie question sous celle-là** : *« B3 = B2 »* vaut-il jusqu'au
+**CONTENU** de la moitié basse, ou seulement jusqu'à sa **GÉOMÉTRIE** ? Si
+c'est la seconde, la boîte reste fixe à 160 px et chaque écran y met ce qui lui
+appartient.
+
+### 📏 LA COTE DE LA LISTE DE TRAITS — mesurée le 2026-08-15
+
+*(aux avances réelles de `avances-t2.json`, boîte de 226 px à T2)*
+
+| | |
+|---|---|
+| Une ligne de 226 px porte | **37 caractères** |
+| La boîte fixe de 160 px | **10 lignes** de 16 px |
+| **Le maximum de traits** | **5** — Dragonborn, Elf, Araag, Elestu |
+| **+ `Destiny`** *(le croquis A en fait une ligne de la liste)* | **6 entrées** au pire |
+
+**Les deux lignes de trait qu'Eric a lui-même écrites sur le croquis A :**
+
+| Sa ligne | Caractères | Rendu |
+|---|---|---|
+| `Brave — advantage on saves against being Frightened` | 51 | **2 lignes** |
+| `Destiny — Base 2 · halfling chosen: advantage on Chaos rolls` | 60 | **2 lignes** |
+
+```
+6 entrées × 2 lignes = 12 lignes   ❌  la boîte en tient 10 — il manque 32 px
+5 entrées × 2 lignes = 10 lignes   ✅  halfling, dwarf
+```
+
+🔴 **DONC : à la longueur où Eric écrit lui-même ses traits, les quatre espèces
+à 5 traits DÉBORDENT la boîte fixe de deux lignes.** Le budget réel est de
+**10 lignes pour 6 entrées** — soit au plus quatre entrées sur deux lignes, ou
+un plafond de ~340 caractères pour **toute la liste**, comme le blurb.
+
+⛔ **ET LE TEXTE N'EXISTE PAS.** Le croquis dit *« nom — effet, une ligne
+courte, RÉÉCRITE »* ; les données ne portent que la prose SRD complète
+*(`Brave` = « You have Advantage on saving throws you make to avoid or end the
+Frightened condition », 78 caractères)*. Choisir le croquis A, c'est **commander
+un corpus de plus** : ~50 lignes de trait à écrire, du même travail que les
+24 blurbs. **Ça se chiffre avant de se décider, pas après.**
+
+⭐ **La place, elle, existe** : mesuré à 360 × 640, une fiche d'espèce laisse
+**240 px de vide** entre le blurb et les boutons (185 px sur une classe).
+
+### ✅ TRANCHÉ PAR ERIC, 2026-08-15 : **LES TRAITS, COMME LE CROQUIS A**
+
+*« B3 = B2 » ne vaut donc que pour la **GÉOMÉTRIE**.* La boîte reste fixe à
+160 px et **chaque écran y met ce qui lui appartient** : le blurb sur une
+classe, la liste des traits sur une espèce.
+
+⛔ **CE QUE ÇA COMMANDE, ET QUI N'EXISTE PAS ENCORE** : ~50 lignes de trait
+`nom — effet`, réécrites court. Les données ne portent que la prose SRD
+complète. **C'est un corpus, du même travail que les 24 blurbs.**
+
+🔴 **ET LA CONTRAINTE EST PLUS DURE QUE POUR LE BLURB** : à la longueur où Eric
+écrit lui-même ses traits (51 et 60 caractères, **2 lignes chacun**), les quatre
+espèces à 5 traits + `Destiny` demandent **12 lignes pour une boîte qui en tient
+10**.
+
+| Le budget, par espèce | |
+|---|---|
+| **10 lignes** de 16 px, **37 caractères** par ligne | soit **≤ 320 caractères pour TOUTE la liste** *(la même limite que le blurb, et pour la même raison)* |
+| 6 entrées *(5 traits + Destiny)* | **au plus 4 sur deux lignes** |
+| 5 entrées *(halfling, dwarf)* | toutes peuvent prendre deux lignes |
+
+📌 **Donc la ligne d'Eric au croquis A ne passe pas telle quelle sur un Elf** :
+`Brave — advantage on saves against being Frightened` fait 51 caractères ; il
+en faut **~40 en moyenne** pour tenir six entrées. ⚠️ **Ça se dit avant
+d'écrire le corpus, pas après** — c'est exactement la faute que le blurb vient
+de coûter.
+
+---
+
+## 2ter. ⏳ LES SOUS-ESPÈCES ET LES SOUS-CLASSES — noté par Eric, 2026-08-15
+
+> ***« Certaines Species ont des subspecies : il faudra les nommer, à un autre
+> chantier. Quand il y a des sub, dans la première page après `choose`, on
+> choisit la subspecie. Certaines classes ont des sub aussi, même format sauf
+> qu'on ne choisit pas de subclass au 1er lvl. »***
+
+⏳ **Rien n'est construit. Ceci garde la forme et la règle, pas plus.**
+
+### La forme qu'il a dictée
+
+```
+Subspecies          ← en gras
+  Sub1              ← en italique, et plus petit
+  Sub2
+  Sub3
+```
+
+### La règle, et elle diffère entre les deux écrans
+
+| | Où l'on choisit |
+|---|---|
+| **Espèce** | **dans la première page après `choose`** — le choix se fait à la création |
+| **Classe** | **même forme, mais AUCUN choix au niveau 1** — la liste ne fait qu'annoncer ce qui viendra |
+
+⛔ **La différence n'est pas cosmétique** : côté classe, le bloc est un
+**panneau d'information**, pas un organe de décision. Un écran de choix qui
+n'accepte aucun choix serait le « faux magasin » que ce dépôt interdit.
+
+### 🔴 CE QUI EXISTE DÉJÀ ET QU'IL NE FAUT PAS CONSTRUIRE DEUX FOIS
+
+**La mécanique est déjà dans les données, sous quatre noms différents** :
+`Elven Lineage` *(3 options)* · `Hoddon Lineage` *(2)* · `Fiendish Legacy`
+*(3)* · `Draconic Ancestry` · `Giant Ancestry`. Et la fiche d'espèce **en
+porte déjà le compte** dans son bloc de stats : `Lineages : 3 types`.
+
+⭐ **« Subspecies » est très probablement le nom qu'Eric donne à ce que le SRD
+appelle lignage/héritage.** À vérifier avant d'inventer un second organe — la
+leçon du panneau `lore` *(trois portes, un seul panneau)* s'applique
+directement.
+
+### ⚠️ LA PLACE — mesurée, et elle n'est pas dans la boîte
+
+La boîte fixe de 160 px est **pleine** : les traits chez l'espèce, le blurb
+chez la classe. Le bloc `Subspecies` doit donc vivre **sous** elle :
+
+| | Vide sous la boîte, mesuré à 360 × 640 |
+|---|---|
+| Fiche d'**espèce** | **240 px** |
+| Fiche de **classe** | **185 px** |
+
+📌 **Ça tient — mais ça n'a pas été coté.** Une liste de 3 sous-espèces à T1
+en italique demande sa propre mesure, et le nombre maximum d'options n'a
+jamais été compté sur les 24 fiches. ⛔ **Ne pas le déduire de trois exemples
+— c'est exactement la faute que ce fichier a payée trois fois le 15 août.**
 
 ---
 
@@ -163,7 +488,44 @@ hérité du desktop est le vrai coupable *(cf. `B4.3`, `B7.5`)*.
 
 ### Vertical : 5 rangées, et 5 rangées = exactement les cantrips
 
-Budget sur iPhone SE (**579 px réellement vus** : 667 moins les barres de Safari) :
+> ## 🔴 LE 579 EST FAUX — MESURÉ SUR L'APPAREIL D'ERIC, 2026-08-15
+>
+> Ce fichier a déduit *« 667 moins les barres de Safari »* ≈ **579**. Relevé
+> **sur son iPhone SE (A2783), en Default, Safari** *(page `diag.html`)* :
+>
+> | | |
+> |---|---|
+> | Largeur CSS | **375** ✅ *(≥ 360 : le gabarit tient, 15 px de marge)* |
+> | **Hauteur CSS** | **553** — et non 579 |
+> | Barres de Safari | **114 px**, et non 88 |
+>
+> ⛔ **CE QUE ÇA CASSE.** Le budget vertical perd **26 px**, et l'optimisation
+> du §4 *(« +34 px → la fenêtre passe de 5 à 6 rangées »)* **ne tient plus** :
+>
+> ```
+> 553 − 297 (ceinture, dalle, boutons, marges) = 256   au lieu de 282
+> 256 + 34 (optimisation)                      = 290
+> 6 rangées demandent 6×44 + 5×8               = 304   ❌ il manque 14 px
+> 5 rangées demandent 5×44 + 4×8               = 252   ✅
+> ```
+>
+> **On reste donc à 5 rangées, soit 15 sorts visibles — pas 18.** ⭐ Et
+> l'arithmétique des cantrips tient toujours : les 15 du Wizard entrent pile.
+>
+> 📌 **La forme de la faute, pour la sixième fois de la journée** : une
+> soustraction plausible *(« 667 moins les barres »)* servie comme une
+> mesure. Les barres de Safari ne sont pas une constante — elles dépendent de
+> la version d'iOS, de l'orientation et du défilement. **Elles se mesurent sur
+> l'appareil**, et il y a maintenant une page pour ça :
+> `ui/builder/diag.html`, déployée.
+>
+> ⚠️ **Toute cote verticale de ce fichier est donc à reprendre sur 553**, pas
+> seulement celle-ci.
+
+~~Budget sur iPhone SE (**579 px réellement vus** : 667 moins les barres de Safari) :~~
+Budget **corrigé sur 553 px réellement vus** *(les chiffres du tableau
+ci-dessous sont ceux d'origine, sur 579 : leur somme reste juste, c'est le
+RESTE qui tombe de 282 à 256)* :
 
 | | px |
 |---|---|
@@ -420,6 +782,31 @@ et c'est **elle** la plus large de tout le bloc :
 | `W. Proficiencies : 2` | **116 px** |
 | Colonne de stats du §1 | 114 px |
 | | **❌ déborde de 2 px** |
+
+#### ⚠️ CORRECTION DU 2026-08-15 (lot 77) — LE PIRE CAS N'ÉTAIT PAS CELUI-LÀ
+
+Ce fichier prévenait honnêtement : *« `Prestidigitation` et `Weapons : Simple`
+sont les pires cas DU WIZARD ; un autre écran peut porter pire »*. **Il en
+portait un.** Passé sur les **130 lignes des 24 fiches** *(et non les deux que
+ce fichier connaissait)* :
+
+| Ligne | Fiche | Largeur |
+|---|---|---|
+| **`Weapons : Smpl+FL`** | **rogue** | **~114–115 px** ← le maximum réel |
+| `Weapons : Smpl+Lt` | monk | ~112,6 |
+| `Lineages : 10 types` | dragonborn | ~111,4 |
+
+✅ **La cote de 118 tient.** C'est la JUSTIFICATION qui nommait le mauvais
+coupable, pas le nombre.
+
+📌 **Et `W. Proficiencies` a été ABRÉGÉ en `W. Prof.`** par le lot — d'où
+l'écart avec les 116 px ci-dessus, qui mesuraient la forme longue. La ligne
+qui avait fixé la colonne n'existe plus telle quelle.
+
+⛔ **La leçon, et elle vaut au-delà de cette ligne** : un pire cas tiré de
+DEUX fiches sur vingt-quatre n'est pas un pire cas, c'est un premier
+échantillon. Ce fichier le savait et l'écrivait ; il a quand même servi de
+cote pendant une journée.
 
 **Correction : image 104 → 100 px, colonne de stats 114 → 118 px.** Les 4 px
 retirés à l'image ne se voient pas ; 2 px de débordement, si.
@@ -744,8 +1131,27 @@ rien n'est construit sur ce point.
 | Ligne de titre | titre **T6** + **loupe 44** + **flèche 44** — la flèche pagine, elle ne défile pas, et n'apparaît que s'il y a une suite |
 | Voiles de la grille | dalle **intermédiaire 50 %**, tuiles **simples 35 %** — ⚠️ composite réel de la tuile : **67,5 %** |
 
-⚠️ **Ce qui reste à mesurer et que ce fichier n'a pas fait** : les 11 autres
-classes et les 12 espèces. `Prestidigitation` et `Weapons : Simple` sont les pires
-cas **du Wizard** ; un autre écran peut porter pire. **Le garde des 340
-caractères et une vérification de la plus longue ligne de stats doivent tourner
-sur les 24 fiches**, pas sur celle-ci seule.
+## ✅ CE QUI A ÉTÉ MESURÉ DEPUIS — lot 77, 2026-08-15
+
+~~⚠️ Ce qui reste à mesurer : les 11 autres classes et les 12 espèces.~~
+**Fait.** Les deux gardes tournent sur les **24 fiches** et les **130 lignes**
+(`fhpc/tests/fiche-360.test.mjs`). Ce que ça a rapporté :
+
+| | |
+|---|---|
+| ✅ **La cote de 118 tient** | mais le pire cas est le **rogue**, pas le fighter — §4quater |
+| ✅ **Les 340 caractères passent 24/24** | **et ne protégeaient rien** : trois blurbs à 10/10. → **Eric tranche : 320** — §2 |
+| ✅ **`Dragonborn` ne tient dans aucun rail** | ni à 62 utiles, ni à 70. → **Eric tranche : T2, rembourrage du rail à 2** — §1 |
+| ✅ **La fiche d'espèce a perdu ses traits** | les deux croquis divergent. → **Eric tranche : les traits (croquis A)** ; « B3 = B2 » ne vaut que pour la géométrie — §2bis |
+| 🔴 **Ce fichier ne disait pas à quel RENDU ses nombres se rapportent** | ~3 % d'écart entre deux séries justes — en-tête |
+
+⚖️ **Les trois arbitrages ont été posés à Eric le 2026-08-15 et tranchés le
+jour même.** Deux d'entre eux commandent un CORPUS avant du code : quatre
+blurbs à raccourcir, et ~50 lignes de trait à écrire. → mandat
+`LOT-78-CORPUS-ET-RAIL.md`.
+
+📌 **La forme qui revient trois fois** : une cote juste, tirée d'un échantillon
+trop petit ou d'un rendu non nommé, puis servie comme une vérité. Ce fichier
+l'avait écrit lui-même — *« un autre écran peut porter pire »* — et a quand
+même servi de référence pendant une journée. **Une cote se date, se source, et
+dit sur combien de cas elle a tourné.**

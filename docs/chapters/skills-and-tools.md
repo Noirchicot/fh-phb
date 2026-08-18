@@ -116,8 +116,18 @@ Expertise before level 4**:
 | **Ranger — Deft Explorer** | 2 | **+2**, plus 2 languages | |
 | **Ranger — Expertise** | 9 | **+4** | |
 | **Rogue — Expertise** | 1 | — *(already inside his bound placements)* | may buy Expertise from level 1 |
-| **Bard — Bonus Proficiencies** | 3 | **+6** | |
 | **Barbarian — Primal Knowledge** | 3 | one **bound** Novice skill from the Barbarian list | |
+
+⚠️ **A correction, measured 2026-08-18.** This table used to list **Bard — Bonus Proficiencies
+(level 3, +6)** among class features. It is not one: it is a **subclass** feature — College of
+Lore. It belongs to the bard who takes that college, not to every bard. The distinction costs
+nothing today (one college is published) and everything the day a second one appears, so the
+line is written where it is true rather than where it was convenient.
+
+> **Subclass features that grant proficiencies are converted by the same rule** (§ *How anything
+> converts*): count what they grant, and sort it by the constraint. *Bonus Proficiencies* —
+> *"three skills of your choice"* — constrains nothing, so it is **+6 free points**, to the
+> College of Lore bard at level 3.
 
 > **One Expertise costs 2 free points**, on top of an Adept. A skill still at Novice therefore
 > needs **1 more point** of your own to reach Expert — the grant pays 2 of the 3.
