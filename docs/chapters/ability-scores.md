@@ -27,9 +27,9 @@ In Fate's Hand you **roll** your ability scores rather than using Point Buy or t
 > At creation, an ability can reach at most **18, all bonuses included** — the bonuses are in, not
 > on top. In play the ceiling is **20** — only **boons** can push a score beyond it.
 
-> [!tip] Prodigy ⏳ *(name under review)* — when the floor had to catch you
+> [!tip] Late Bloomer — when the floor had to catch you
 > If **no natural roll reached 14** — so the high floor had to step in, which happens to
-> **17 %** of characters — you gain the **Prodigy** trait. It is an **Inheritance trait**, and it
+> **17 %** of characters — you gain the **Late Bloomer** trait. It is an **Inheritance trait**, and it
 > gives two things:
 > - **+2 free points**, straight into your free point pool;
 > - **the option to buy Expertise at level 1** — an option, never an obligation.
@@ -37,11 +37,9 @@ In Fate's Hand you **roll** your ability scores rather than using Point Buy or t
 > The dice were unkind; the character learned faster somewhere else.
 >
 > 📌 Two points is exactly what one Expertise costs (see [Skills & Tools — Player Guide](skills-and-tools.md)), so
-> Prodigy pays for an Expertise **if you already hold the skill at Adept**. Spend them elsewhere
+> Late Bloomer pays for an Expertise **if you already hold the skill at Adept**. Spend them elsewhere
 > and stay Adept everywhere — that is yours to decide.
 >
-> ⏳ **The name is provisional.** *Prodigy* is a feat in the 5.0 edition, so this trait will
-> probably be renamed — Eric, 2026-08-18.
 
 ## Why roll?
 
