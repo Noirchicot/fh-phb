@@ -35,7 +35,7 @@ TOOL_PAGES = [
 # dest filename : (source relative to VAULT, H1 title to guarantee)
 MAP = {
     "ability-scores.md":      ("1. Character Creation Rolls/D&D 5+ Character stat generation.md", "Ability Scores"),
-    "backgrounds.md":         ("1. Character Creation Rolls/Backgrounds.md",                      "Backgrounds"),
+    "inheritance.md":         ("1. Character Creation Rolls/Inheritance.md",                     "Inheritance"),
     "moonkeeper.md":          ("7. Classes & Subclasses/Lunar Sorcery revised.md",                "Moonkeeper"),
     "species.md":             ("2. Species Modifications/D&D 5+ Races & Species.md",              "Species"),
     "skills-and-tools.md":    ("4. Skills/Skills & Tools — Player Guide.md",                       "Skills & Tools"),

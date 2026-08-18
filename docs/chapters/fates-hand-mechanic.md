@@ -16,11 +16,11 @@ Glimmers of true power flicker beyond mortal sight, revealing a grand tapestry o
 
 ### Calculating your Destiny Score
 - **Proficiency** — add your proficiency bonus.
-- **Innate** — species base (table below), background, feats (e.g. *Lucky*), and your Major Arcana.
+- **Innate** — species base (table below), your Inheritance, feats (e.g. *Auspicious*), and your Major Arcana.
 - **Glory / Damnation** — deeds that shift your standing among hidden powers (honor raises it, villainy taints it).
-- **Other** — a feat (e.g. *Skilled*), a magic item, a boon, or some subclasses may also influence the score.
+- **Other** — a magic item, a boon, or some subclasses may also influence the score.
 
-> *Example — Sir Gawain (5th-level Human Knight): proficiency +3, Human birthright +3, Lucky +2, Arcana boon +1, chivalric deed +1 → **Destiny Score 10**.*
+> *Example — Sir Gawain (5th-level Human Knight): proficiency +3, Human birthright +3, Auspicious +2, Arcana boon +1, chivalric deed +1 → **Destiny Score 10**.*
 
 ### Destiny Dice — slots & stacking
 Each time your **Destiny Points** reach an **even** total, you gain a Destiny Die in the **lowest slot available** — d4 first, then d6, d8, d10, d12. Only once **all slots up to d12 are full** does the next even total start a **second round**: a 2nd d4, then a 2nd d6, and so on — so you can hold **several dice of the same size**.

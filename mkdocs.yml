@@ -94,6 +94,7 @@ nav:
   - Creating a Character:
     - Create a Character: builder.md
     - Rolling Ability Scores: chapters/ability-scores.md
+    - Inheritance: chapters/inheritance.md
     - Species: chapters/species.md
     - Skills & Tools: chapters/skills-and-tools.md
     - Feats: chapters/feats.md

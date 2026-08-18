@@ -12,10 +12,10 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 | **Magic Initiate** | as printed |
 | **Savage Attacker** | as printed |
 | **Skilled** | ⭐ **+6 free skill points** — the SRD grants 3 proficiencies, and a proficiency is worth 2 points in Fate's Hand (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
-| **Lucky** *(FH)* | **+2 to your Destiny Score** — see below |
+| **Auspicious** *(FH)* | **+2 to your Destiny Score** — see below |
 
 > ⛔ **No background record grants a feat.** There are no backgrounds in Fate's Hand; the step is
-> called **Inheritance** and the feat is always chosen freely. See [Inheritance](backgrounds.md).
+> called **Inheritance** and the feat is always chosen freely. See Inheritance.
 
 ## Skill feats
 
@@ -45,7 +45,7 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 <div>Quick Study: take the Study action as a Bonus Action.</div>
 </details>
 
-### Lucky
+### Auspicious *(FH)*
 <span class="fh-edition">FH5+ — Origin feat.</span>
 
 - +2 to your Destiny Score.

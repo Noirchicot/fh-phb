@@ -28,12 +28,20 @@ In Fate's Hand you **roll** your ability scores rather than using Point Buy or t
 > on top. In play the ceiling is **20** — only **boons** can push a score beyond it.
 
 > [!tip] Prodigy ⏳ *(name under review)* — when the floor had to catch you
-> If **no natural roll reached 14** — so the high floor had to step in, which happens to about
-> **17 %** of characters — you gain **Prodigy**: **Expertise on one skill of your choice at level
-> 1**, free, and it does not touch your free point pool. The dice were unkind; the character is
-> gifted somewhere else.
+> If **no natural roll reached 14** — so the high floor had to step in, which happens to
+> **17 %** of characters — you gain the **Prodigy** trait. It is an **Inheritance trait**, and it
+> gives two things:
+> - **+2 free points**, straight into your free point pool;
+> - **the option to buy Expertise at level 1** — an option, never an obligation.
 >
-> ⏳ **The name is provisional.** *Prodigy* is a feat in the 5.0 edition, so this trait will probably be renamed — Eric, 2026-08-18. The rule below is settled; only its label is not.
+> The dice were unkind; the character learned faster somewhere else.
+>
+> 📌 Two points is exactly what one Expertise costs (see [Skills & Tools — Player Guide](skills-and-tools.md)), so
+> Prodigy pays for an Expertise **if you already hold the skill at Adept**. Spend them elsewhere
+> and stay Adept everywhere — that is yours to decide.
+>
+> ⏳ **The name is provisional.** *Prodigy* is a feat in the 5.0 edition, so this trait will
+> probably be renamed — Eric, 2026-08-18.
 
 ## Why roll?
 

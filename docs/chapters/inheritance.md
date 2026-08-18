@@ -29,6 +29,22 @@ purse replaces what a background used to hand out.
 > 📌 **The 50 gp ADD to the gold already in your kit.** A Barbarian taking option A ends up with
 > **65 gp**, not 50.
 
+## Prodigy — the trait the dice can grant you ⏳ *(name under review)*
+
+If **no natural roll reached 14** when you generated your abilities — the high floor had to step
+in, which happens to **17 %** of characters — your Inheritance carries **Prodigy**:
+
+| | |
+|---|---|
+| **+2 free points** | straight into your free point pool |
+| **An option** | you may **buy Expertise at level 1**, instead of waiting for level 4 |
+
+The option is an option. Two points is exactly what one Expertise costs, so Prodigy pays for one
+**if you already hold that skill at Adept** — otherwise spend them wherever you like.
+
+*(See [D&D 5+ Character stat generation](ability-scores.md) for the roll, and [Skills & Tools — Player Guide](skills-and-tools.md)
+for what a point buys.)*
+
 ## What it does **not** give
 
 - **No imposed skills, no imposed tools.** The old "2 skills + 1 tool picked for you" is gone —
