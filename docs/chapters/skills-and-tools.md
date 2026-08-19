@@ -342,7 +342,7 @@ To acquire knowledge on creatures through a Study action:
 ### Leadership
 A CHA skill to coordinate and command allies.
 
-**Prerequisite:** the leader and the target must each be at least Half-proficient in the skill, attack, or spell being directed — otherwise the order has no effect.
+**Prerequisite:** the leader and the target must each be at least **Novice** in the skill, attack, or spell being directed — otherwise the order has no effect.
 
 - **Cost:** a Utilize action — a bonus action if you have the [Battlefield Tactician](feats.md#battlefield-tactician) feat, or have Expertise in the required skill.
 - **Destiny:** affecting more than one person costs 1 Destiny Point per use.
