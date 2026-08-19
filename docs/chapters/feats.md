@@ -125,7 +125,7 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 - Help, Study, tactical, and Leadership actions take a bonus action instead of an action.
 - **Issue Orders:** a CHA [Leadership](skills-and-tools.md#leadership) order — DC 12, affecting all willing targets within 30 ft.
     - You affect +1 person per 2 points over the DC (12 = 1, 14 = 2, 16 = 3…).
-    - Affecting more than 1 person costs 1 Destiny Point. Both leader and target must be at least Half-proficient in the directed skill, attack or spell.
+    - Affecting more than 1 person costs 1 Destiny Point. Both leader and target must be at least **Novice** in the directed skill, attack or spell.
 
 ### Battlefield Master
 <span class="fh-edition">FH5+ — General feat (level 4+, CHA 13+). Prerequisite: Battlefield Tactician — improves it.</span>

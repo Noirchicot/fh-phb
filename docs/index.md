@@ -89,7 +89,6 @@ hide:
 
     - [New Spells](chapters/spells.md)
     - [Dark Rituals](chapters/dark-rituals.md)
-    - [Circle Magic](chapters/circle-magic.md)
     - [Soulforging Rules](chapters/soulforge-crafting.md)
     - [Magic Items](chapters/magic-items.md)
 
