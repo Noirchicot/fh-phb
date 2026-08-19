@@ -137,7 +137,7 @@ One **Soulforging Tools (CHA)** check against the Soulforge DC finishes a piece 
 **Who forges.** Soulforging is a **dark ritual**. A lone forger handles the lower tiers; the higher ones call for a **circle pooling its levels**. Unlike other Dark Rituals it resolves on **a single roll**: the **Soulforger** who leads the rite makes the check — **Soulforging Tools (CHA) vs the Soulforge DC**.
 
 - The **attunee** is the one the finished item binds to. They lend their level to the pool and **may be the Soulforger themselves** — a forger is free to keep what they make.
-- Everyone else in the circle must be **proficient with Soulforging Tools**. The **attunee alone may be exempt**: they are there to receive the bind, not to work it. If the attunee is not the one rolling and *is* proficient, they may **Help** for **advantage**.
+- Everyone else in the circle must be **at least Novice with Soulforging Tools**. The **attunee alone may be exempt**: they are there to receive the bind, not to work it. If the attunee is not the one rolling and *is* at least Novice, they may **Help** for **advantage**.
 - The **Soulsmith** — the forge's owner — may lead the rite, assist it, or stay **outside it entirely** if the parties agree.
 
 See **[Soulforge an Item](dark-rituals.md#soulforge-an-item)** for the ritual frame (Life cost, casting time).

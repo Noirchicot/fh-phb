@@ -7,7 +7,7 @@ At levels **1–4**, the base **DC** for most challenging skill checks is **16**
 | Synergy | Granted when… |
 | --- | --- |
 | **Individual** | two of your own skills or tools support each other in the situation. |
-| **Cooperative** | another proficient ally (or their tool) meaningfully assists. |
+| **Cooperative** | an ally who is **at least Novice** in the skill (or their tool) meaningfully assists. |
 | **Situational** | the environment or story context directly favors you. |
 
 > [!note] One synergy or two
@@ -24,7 +24,7 @@ At levels **1–4**, the base **DC** for most challenging skill checks is **16**
 ## Examples
 
 - **Individual** — a scout uses **Survival** to read the terrain while **Investigation** picks out the safest path: the two skills reinforce each other for **+2**.
-- **Cooperative** — a rogue picks a lock (DC 16) while an ally proficient in Thieves' Tools steadies and guides them: **+2** to the check.
+- **Cooperative** — a rogue picks a lock (DC 16) while an ally **at least Novice** in Thieves' Tools steadies and guides them: **+2** to the check.
 - **Situational** — a bard negotiates peace (DC 16) in a calm, neutral inn over warm drinks: the relaxed atmosphere grants **+2**.
 - **Two factors → Advantage** — a ranger scales a cliff (DC 16) while a druid clears loose rocks (Situational) *and* a fighter holds a rope (Cooperative): the ranger climbs with **Advantage**.
 
