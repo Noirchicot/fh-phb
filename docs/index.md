@@ -61,22 +61,23 @@ hide:
 -   <span class="fh-card-hero"><img src="assets/img/card-creating.jpg" alt="Creating a Character"><span class="fh-card-title">Build a Character</span></span>
 
     - [**Guided Character Builder**](skill-builder.html){ .fh-hot }
-    - [Rolling Ability Scores](chapters/ability-scores.md)
-    - [Species](chapters/species.md)
-    - [Backgrounds](chapters/backgrounds.md)
-    - [Skills & Tools](chapters/skills-and-tools.md)
-    - [Feats](chapters/feats.md)
-    - [Class Modifications](chapters/classes.md)
-    - [Moonkeeper](chapters/moonkeeper.md)
+    - [1 · Identity](chapters/identity.md)
+    - [2 · Species](chapters/species.md)
+    - [3 · Inheritance](chapters/inheritance.md)
+    - [4 · Destiny](chapters/fates-hand-mechanic.md)
+    - [5 · Class](chapters/classes.md)
+    - [6 · Abilities](chapters/ability-scores.md)
+    - [7 · Skills](chapters/skills-and-tools.md)
+    - [8 · Equipment](chapters/equipment.md)
 
 -   <span class="fh-card-hero"><img src="assets/img/card-tools.jpg" alt="Player tools"><span class="fh-card-title">At the Table</span></span>
 
     - [**Player Companion**](player.md){ .fh-hot }
+    - [Leveling up](chapters/leveling-up.md)
+    - [Feats](chapters/feats.md)
+    - [Trainings](chapters/trainings.md)
     - [Party Inventory](inventory.md)
     - [Soulforge Workshop](soulforge.md)
-    - [Skills & Synergies](chapters/skills-synergies.md)
-    - [Battlefield](chapters/battlefield.md)
-    - [Dungeoneering](chapters/dungeoneering.md)
 
 -   <span class="fh-card-hero"><img src="assets/img/card-destiny.jpg" alt="Destiny Mechanics"><span class="fh-card-title">Destiny &amp; Chaos</span></span>
 

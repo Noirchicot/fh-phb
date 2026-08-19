@@ -90,35 +90,44 @@ not_in_nav: |
   chapters/species/*.md
 
 nav:
+  # ══ REFONTE 2026-08-19 — un seul ordre, parcouru deux fois ═════════════
+  # Les huit étapes qu'on FAIT dans le builder sont les huit chapitres qu'on
+  # LIT ici, dans le même ordre et sous le même nom. Les chapitres cessent
+  # d'avoir un ordre à eux. Plan : `FH-WEB/FHPHB/FHPHB arborescence.md`.
   - Welcome: index.md
-  - Creating a Character:
+  - Create a Character:
     - Create a Character: builder.md
-    - Rolling Ability Scores: chapters/ability-scores.md
-    - Inheritance: chapters/inheritance.md
-    - Species: chapters/species.md
-    - Skills & Tools: chapters/skills-and-tools.md
+    - 1 · Identity: chapters/identity.md
+    - 2 · Species: chapters/species.md
+    - 3 · Inheritance: chapters/inheritance.md
+    - 4 · Destiny: chapters/fates-hand-mechanic.md
+    - 5 · Class: chapters/classes.md
+    - "5b · Moonkeeper": chapters/moonkeeper.md
+    - 6 · Abilities: chapters/ability-scores.md
+    - 7 · Skills: chapters/skills-and-tools.md
+    - 8 · Equipment: chapters/equipment.md
+    - Character: player.md
+  - Making Progress:
+    - Leveling up: chapters/leveling-up.md
     - Feats: chapters/feats.md
-    - Class Modifications: chapters/classes.md
-    - Moonkeeper: chapters/moonkeeper.md
-    - Ability Score Roller: dice-roller.md
-  - My Character:
-    - Player Companion: player.md
-    - Party Inventory: inventory.md
-  - The Destiny System:
-    - Destiny System: chapters/fates-hand-mechanic.md
-    - Arcana: chapters/major-arcana.md
-    - Chaos Tables: chapters/chaos-tables.md
-  - Playing the Game:
-    - Synergies: chapters/skills-synergies.md
-    - Battlefield: chapters/battlefield.md
-    - Dungeoneering: chapters/dungeoneering.md
-  - Spells & Magic:
-    - New Spells: chapters/spells.md
+    - Trainings: chapters/trainings.md
+  - Magic & Crafting:
+    - Magic: chapters/magic.md
+    - Spells: chapters/spells.md
     - Dark Rituals: chapters/dark-rituals.md
-    - Circle Magic: chapters/circle-magic.md
+    - Crafting: chapters/crafting.md
     - Soulforging: chapters/soulforge-crafting.md
+  - Adventuring:
+    - The Battlefield: chapters/battlefield.md
+    - Skills & Synergies: chapters/skills-synergies.md
+    - Dungeoneering: chapters/dungeoneering.md
+  - Dungeon Master Vault:
+    - Chaos Tables: chapters/chaos-tables.md
+    - The Arcana Explained: chapters/major-arcana.md
     - Magic Items: chapters/magic-items.md
-    - Soulforge Workshop: soulforge.md
-  - World:
     - Primordial Forces: chapters/primordial-forces.md
+  - Tools:
+    - Party Inventory: inventory.md
+    - Soulforge Workshop: soulforge.md
+    - Ability Score Roller: dice-roller.md
   - SRD 5.2.1: https://noirchicot.github.io/fh-srd/

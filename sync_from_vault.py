@@ -34,6 +34,17 @@ TOOL_PAGES = [
 
 # dest filename : (source relative to VAULT, H1 title to guarantee)
 MAP = {
+    # ── REFONTE 2026-08-19 — les six chapitres neufs. Ils sont VIDES de règle
+    #    (des emplacements), mais ils passent par ICI comme tous les autres :
+    #    une page publiée sans source dans le vault serait une page que
+    #    personne ne pourrait plus corriger à la source. Une seule vérité.
+    "identity.md":            ("1. Character Creation Rolls/Identity.md",                          "Identity"),
+    "trainings.md":           ("4. Skills/Trainings.md",                                            "Trainings"),
+    "magic.md":               ("6. Spells & Magic/Magic.md",                                        "Magic"),
+    "crafting.md":            ("6. Spells & Magic/Crafting.md",                                     "Crafting"),
+    "equipment.md":           ("8. Adventuring/Equipment.md",                                       "Equipment"),
+    "leveling-up.md":         ("8. Adventuring/Leveling Up.md",                                     "Leveling Up"),
+
     "ability-scores.md":      ("1. Character Creation Rolls/D&D 5+ Character stat generation.md", "Ability Scores"),
     "inheritance.md":         ("1. Character Creation Rolls/Inheritance.md",                     "Inheritance"),
     "moonkeeper.md":          ("7. Classes & Subclasses/Lunar Sorcery revised.md",                "Moonkeeper"),
@@ -48,7 +59,10 @@ MAP = {
     "spells.md":              ("6. Spells & Magic/Fate’s Hand Spells.md",                          "New Spells"),
     "soulforge-crafting.md":  ("6. Spells & Magic/Soulforge Crafting.md",                          "Soulforge Crafting"),
     "dark-rituals.md":        ("6. Spells & Magic/Dark Rituals.md",                                "Dark Rituals"),
-    "circle-magic.md":        ("6. Spells & Magic/Circle Magic.md",                                "Circle Magic"),
+    # ⛔ CIRCLE MAGIC NE PUBLIE PLUS — Eric, 2026-08-18 : « Circle Magic dégage,
+    #    ça vient de Faerûn ». Le chapitre reste dans le vault, intact : c'est
+    #    son contenu, et le retirer du site ne le détruit pas.
+    # "circle-magic.md":      ("6. Spells & Magic/Circle Magic.md",                                "Circle Magic"),
     "magic-items.md":         ("6. Spells & Magic/Magic Items.md",                                 "Magic Items"),
     "primordial-forces.md":   ("6. Spells & Magic/Nymedes's Primordial Forces.md",                 "Nymedes's Primordial Forces"),
     "major-arcana.md":        ("3. Arcane Destinies/The Major Arcana.md",                          "Arcana"),
