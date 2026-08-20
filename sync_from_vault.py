@@ -1346,10 +1346,21 @@ def normalize_headings(text: str) -> str:
 #    survit dans la sortie. Un secret ne doit pas dépendre de la mémoire de
 #    celui qui écrit le callout.
 # ⚠️ Ajouter une formule ici est sans risque ; en retirer une ne l'est pas.
+# ⭐ ERIC A DÉFINI LE MOT LE 2026-08-20 : *« secret = t'as le droit de regarder,
+#    mais faut pas le mettre dans les infos générales »*. Ce n'est donc PAS une
+#    interdiction de publication — c'est une interdiction de DESTINATION.
+#      face joueur / chapitres généraux → retiré
+#      The Dungeon Masters' Secrets     → c'est LÀ qu'il va
+#    La première version de cette garde supprimait partout : elle aurait empêché
+#    le bloc d'arriver à l'endroit où il est demandé, et cassé la passe si
+#    quelqu'un l'écrivait hors callout pour contourner. Une garde qui réclame
+#    qu'on cache ce qu'on veut montrer.
 MARQUEURS_SECRET = (
     "NE JAMAIS PUBLIER", "NE PAS PUBLIER", "VAULT ONLY", "VAULT-ONLY",
     "NE SORT JAMAIS DU VAULT", "NE DOIT PAS ÊTRE SUR LE SITE",
     "SECRET DE TABLE", "LE SECRET", "DM ONLY", "NEVER PUBLISH",
+    "SPOILER",           # 2 occurrences mesurées dans le vault
+    "CÔTÉ MJ",           # 3 — ⚠️ marqueur de ROUTAGE, pas de suppression
 )
 
 
@@ -1358,7 +1369,10 @@ def _est_secret(ligne: str) -> bool:
     return any(m in haut for m in MARQUEURS_SECRET)
 
 
-def strip_callouts(text: str) -> str:
+_SECRETS = {}
+
+
+def strip_callouts(text: str, dest=None) -> str:
     """Drop the editorial CANONICAL callouts and anything marked as a secret;
     pass every other Obsidian callout through verbatim so the mkdocs-callouts
     plugin renders it."""
@@ -1366,9 +1380,30 @@ def strip_callouts(text: str) -> str:
     head = re.compile(r"^>\s*\[!\w+\]")
     while i < len(lines):
         if head.match(lines[i]) and ("CANONICAL" in lines[i].upper() or _est_secret(lines[i])):
+            # ⭐ Un callout SECRET est mis de côté pour le DM vault ; un callout
+            #    CANONICAL est une note d'atelier et disparaît pour de bon. Les
+            #    deux se ressemblent et ne vont pas au même endroit.
+            # ⚠️ LE MARQUEUR DE SECRET PRIME SUR « CANONICAL ». Le bloc du héron
+            #    porte les deux : Eric a écrit CANONICAL parce que c'est le mot
+            #    qui empêche de publier, pas parce que c'est une note d'atelier.
+            #    Exiger l'absence de CANONICAL jetait précisément le seul bloc
+            #    qu'il fallait router. Mesuré : ça donnait zéro secret collecté.
+            # 🔴 « VAULT ONLY » N'EST PAS LE SIGNAL DE ROUTAGE. Mesuré le
+            #    2026-08-20 : species.md porte 13 callouts marqués vault only,
+            #    et ONZE sont des notes d'atelier — « sources », « à ratifier »,
+            #    « décisions & réserves », « notes d'édition ». Router sur cette
+            #    formule aurait publié les brouillons non ratifiés d'Eric sur une
+            #    page ouverte. **Le signal est le mot SECRET dans l'en-tête**, ou
+            #    une marque MJ explicite. Le reste reste une note d'atelier et
+            #    disparaît pour de bon.
+            haut = lines[i].upper()
+            secret = ("SECRET" in haut) or ("DM ONLY" in haut) or ("CÔTÉ MJ" in haut)
+            bloc = [lines[i]]
             i += 1
             while i < len(lines) and lines[i].lstrip().startswith(">"):
-                i += 1
+                bloc.append(lines[i]); i += 1
+            if secret and dest:
+                _SECRETS.setdefault(dest, []).append("\n".join(bloc))
         else:
             out.append(lines[i]); i += 1
     return "\n".join(out)
@@ -1656,7 +1691,7 @@ def main():
             continue
         body = src.read_text(encoding="utf-8")
         body = strip_frontmatter(body)
-        body = strip_callouts(body)
+        body = strip_callouts(body, dest)
         body = strip_liens(body)
         body = fix_path_refs(body)
         body = convert_wikilinks(body)

@@ -1,0 +1,16 @@
+# Fate's Hand — Player's Handbook
+#
+# La sous-page du MJ et ses chapitres ne sont PAS protégés par un mot de passe
+# (Eric, 2026-08-20 : « c'est pas grave personne va sur le site, on sécurisera
+# bientôt »). Ce fichier ne les protège donc pas non plus — il les sort
+# seulement des moteurs de recherche.
+#
+# ⭐ Ce que ça change, et c'est la moitié gratuite du mur : on passe de
+#    « quelqu'un qui cherche autre chose tombe dessus » à « il faut vouloir y
+#    aller ». L'autre moitié attendra les clés (voir FHPHB acces par cle.md).
+User-agent: *
+Disallow: /dm/
+Disallow: /chapters/dm-secrets/
+Disallow: /chapters/chaos-tables/
+Disallow: /gm.html
+Allow: /
