@@ -53,7 +53,8 @@ adds **+2 free** on top because there are 26 skills to fill. Both are already co
 
 ### What the bound points buy
 
-You place them yourself, but only **inside your class list** and only at **Novice**:
+You place them yourself, **inside your class list**. Most classes place theirs at **Novice**;
+the Rogue's six buy him one real specialty, and the table below shows how.
 
 | Class | Bound placements |
 |---|---|
@@ -63,6 +64,27 @@ You place them yourself, but only **inside your class list** and only at **Novic
 | Monk | 2 Novice skills |
 | Ranger | 3 Novice skills |
 | Rogue | 2 Novice skills + **1 Expert skill** + 1 Novice thieves' tools |
+
+#### Reading the Rogue's line
+
+A point and a tier are the same thing seen from two sides: **1 point buys Novice · 2 buys
+Adept · 4 buys Expert.** So *spending 4* and *placing an Expert* are one move, not two — and
+the Rogue's line is simply his six points laid out:
+
+> **4** on one skill *(Expert)* **+ 1 + 1** on two more *(Novice)* **= 6.**
+
+That is why the Rogue is the only class whose bound points reach past Novice: **six points is
+the first budget large enough to afford an Expert and still have something left.**
+
+**Any other split of those six is equally legal** — three Adept, one Adept and four Novice,
+one Expert and one Adept, six Novice. None is better on paper; they trade **reach** against
+**depth**, and which one wins depends on the table you sit at, not on the maths. The printed
+layout is the one that reads truest to what a Rogue is: **one thing he is famous for, and a
+couple he can attempt.**
+
+📌 **And this is not where you decide your character.** The bound points are only the part your
+class hands you already placed. **Your free point pool comes on top** — 14 for a Rogue, more
+with your species — so anything you leave out here is a purchase away, not a door closed.
 
 ### Your species
 
