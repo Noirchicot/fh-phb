@@ -17,15 +17,7 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 > ⛔ **No background record grants a feat.** There are no backgrounds in Fate's Hand; the step is
 > called **Inheritance** and the feat is always chosen freely. See [Inheritance](inheritance.md).
 
-## Skill feats
-
-### Feats we used to change here
-
-> 🗄️ **Nothing here for now.** *Observant* and *Keen Mind* played by a Fate's Hand version
-> until 2026-08-20. They no longer do — they work exactly as the 2024 rules print them. New
-> versions may be written on top of this slot.
-
-### Auspicious *(FH)*
+## Auspicious *(FH)*
 <span class="fh-edition">FH5+ — Origin feat.</span>
 
 - +2 to your Destiny Score.
@@ -35,12 +27,6 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 <div>Luck Points equal to your proficiency bonus (regained on a long rest).</div>
 <div>Spend 1: Advantage on a d20 roll, or impose Disadvantage on an attack roll against you.</div>
 </details>
-
-## Combat feats
-
-> 🗄️ **Nothing here for now.** Fate's Hand no longer changes *Spell Sniper*, *Great Weapon
-> Fighting*, *Great Weapon Master* or *Sharpshooter* — those four play exactly as the 2024
-> rules print them. New versions will be written on top of this slot.
 
 ## Command feats
 
