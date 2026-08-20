@@ -1334,13 +1334,38 @@ def normalize_headings(text: str) -> str:
     return "\n".join(lines)
 
 
+# ── LES MARQUEURS DE SECRET ─────────────────────────────────────────────────
+# 🔴 Le 2026-08-20, un secret de table a tenu à UN SEUL MOT. Le chapitre Hoddon
+#    porte « un enfant hoddon sur deux naît GOBELIN », qu'Eric a explicitement
+#    interdit de publier. Il n'était protégé que parce que son callout portait
+#    aussi le mot CANONICAL — un mot qu'on écrit pour dire « note d'atelier »,
+#    pas pour dire « secret ». **Le même secret, écrit dans un blockquote sans
+#    ce mot, partait en ligne.**
+# ⭐ D'où deux gardes, et la seconde est la vraie : on retire aussi les callouts
+#    marqués comme secrets, ET on REFUSE DE CONSTRUIRE si une de ces phrases
+#    survit dans la sortie. Un secret ne doit pas dépendre de la mémoire de
+#    celui qui écrit le callout.
+# ⚠️ Ajouter une formule ici est sans risque ; en retirer une ne l'est pas.
+MARQUEURS_SECRET = (
+    "NE JAMAIS PUBLIER", "NE PAS PUBLIER", "VAULT ONLY", "VAULT-ONLY",
+    "NE SORT JAMAIS DU VAULT", "NE DOIT PAS ÊTRE SUR LE SITE",
+    "SECRET DE TABLE", "LE SECRET", "DM ONLY", "NEVER PUBLISH",
+)
+
+
+def _est_secret(ligne: str) -> bool:
+    haut = ligne.upper()
+    return any(m in haut for m in MARQUEURS_SECRET)
+
+
 def strip_callouts(text: str) -> str:
-    """Drop only the editorial CANONICAL callout blocks; pass every other
-    Obsidian callout through verbatim so the mkdocs-callouts plugin renders it."""
+    """Drop the editorial CANONICAL callouts and anything marked as a secret;
+    pass every other Obsidian callout through verbatim so the mkdocs-callouts
+    plugin renders it."""
     out, i, lines = [], 0, text.splitlines()
     head = re.compile(r"^>\s*\[!\w+\]")
     while i < len(lines):
-        if head.match(lines[i]) and "CANONICAL" in lines[i].upper():
+        if head.match(lines[i]) and ("CANONICAL" in lines[i].upper() or _est_secret(lines[i])):
             i += 1
             while i < len(lines) and lines[i].lstrip().startswith(">"):
                 i += 1
@@ -1645,6 +1670,14 @@ def main():
         body = insert_images(body, dest)
         body = space_before_lists(body)
         body = collapse_blanks(body)
+        fuite = [l for l in body.splitlines() if _est_secret(l)]
+        if fuite:
+            raise SystemExit(
+                "\n🔴 REFUS DE PUBLIER — %s porte un marqueur de secret dans le texte\n"
+                "   qui SORT vers le site :\n     %s\n"
+                "   Un secret ne se publie pas. Mets-le dans un callout marqué "
+                "(> [!info]+ CANONICAL — … ne jamais publier), ou retire-le de la source.\n"
+                % (dest, "\n     ".join(l[:150] for l in fuite[:3])))
         (DOCS / dest).write_text(body, encoding="utf-8")
         print(f"  ok  {dest:24s} <- {rel}")
     for src, dst, body_class, self_link in TOOL_PAGES:
