@@ -53,38 +53,61 @@ adds **+2 free** on top because there are 26 skills to fill. Both are already co
 
 ### What the bound points buy
 
-You place them yourself, **inside your class list**. Most classes place theirs at **Novice**;
-the Rogue's six buy him one real specialty, and the table below shows how.
+Your class hands you a **number of points**, not a shape. You place them yourself, **inside
+your class list**, and **you choose the tiers**.
 
-| Class | Bound placements |
+| Class | Bound skill points | Bound tool points | The layout we print |
+|---|---|---|---|
+| Barbarian, Cleric, Fighter, Paladin, Sorcerer, Warlock, Wizard | **2** | — | 2 Novice skills |
+| Bard | **3** | **2** | 3 Novice skills + 2 Novice instruments |
+| Druid | **2** | **1** | 2 Novice skills + 1 Novice herbalism kit |
+| Monk | **2** | — | 2 Novice skills |
+| Ranger | **3** | — | 3 Novice skills |
+| Rogue | **6** | **1** | 2 Novice skills + **1 Expert skill** + 1 Novice thieves' tools |
+
+⚠️ **Skill points and tool points are two purses.** A bound tool point buys a tier on a tool;
+it never crosses over to a skill. Only your **free** points cross freely.
+
+#### A point and a tier are the same thing
+
+Seen from two sides:
+
+| Spend | and you have placed |
 |---|---|
-| Barbarian, Cleric, Fighter, Paladin, Sorcerer, Warlock, Wizard | 2 Novice skills |
-| Bard | 3 Novice skills + 2 Novice instruments |
-| Druid | 2 Novice skills + 1 Novice herbalism kit |
-| Monk | 2 Novice skills |
-| Ranger | 3 Novice skills |
-| Rogue | 2 Novice skills + **1 Expert skill** + 1 Novice thieves' tools |
+| **+1** | **Novice** |
+| **+2** | **Adept** |
+| **+4** | **Expert** |
 
-#### Reading the Rogue's line
+So *spending +4* and *placing an Expert* are one move, not two. Every printed layout above is
+just its budget laid out — the Rogue's line reads:
 
-A point and a tier are the same thing seen from two sides: **1 point buys Novice · 2 buys
-Adept · 4 buys Expert.** So *spending 4* and *placing an Expert* are one move, not two — and
-the Rogue's line is simply his six points laid out:
+> **+4** *(Expert)* on one skill **· +1** *(Novice)* **· +1** *(Novice)* on two more
+> **= 6 points.**
 
-> **4** on one skill *(Expert)* **+ 1 + 1** on two more *(Novice)* **= 6.**
+That also explains a difference the chapter used to state without a reason: the Rogue is the
+only class whose printed layout reaches past Novice, because **six is the first budget large
+enough to afford an Expert and still have something left.**
 
-That is why the Rogue is the only class whose bound points reach past Novice: **six points is
-the first budget large enough to afford an Expert and still have something left.**
+#### Spending it your own way
 
-**Any other split of those six is equally legal** — three Adept, one Adept and four Novice,
-one Expert and one Adept, six Novice. None is better on paper; they trade **reach** against
-**depth**, and which one wins depends on the table you sit at, not on the maths. The printed
-layout is the one that reads truest to what a Rogue is: **one thing he is famous for, and a
-couple he can attempt.**
+**The printed layout is a recommendation, not a rule.** Any split that spends the same points
+inside your class list is legal:
+
+| Budget | What it can become |
+|---|---|
+| **2 points** | **+1 +1** — two Novice · or **+2** — one Adept |
+| **3 points** | **+1 +1 +1** — three Novice · or **+2 +1** — one Adept and one Novice |
+| **6 points** *(Rogue)* | **+4 +1 +1** — Expert and two Novice · **+2 +2 +2** — three Adept · **+4 +2** — Expert and Adept · **+2 +1 +1 +1 +1** — Adept and four Novice · **+1 ×6** — six Novice |
+
+**None of these is better on paper.** They trade **reach** against **depth** — more skills you
+can attempt, or fewer you are trusted with — and which one wins depends on the table you sit
+at, not on the maths. The layouts we print are simply the ones that read truest to each class:
+a Rogue with **one thing he is famous for**, a Bard with **fingers in everything**.
 
 📌 **And this is not where you decide your character.** The bound points are only the part your
-class hands you already placed. **Your free point pool comes on top** — 14 for a Rogue, more
-with your species — so anything you leave out here is a purchase away, not a door closed.
+class hands you already placed. **Your free point pool comes on top** — 10 to 14 depending on
+your class, more with your species — so anything you leave out here is a purchase away, not a
+door closed.
 
 ### Your species
 
