@@ -1,9 +1,5 @@
 # Leveling Up
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 Levelling in Fate's Hand does what it does in the 2024 rules — you gain what your class gives
 you at that level. What follows is only **what Fate's Hand adds on top**, and it is all about
 points.
@@ -37,3 +33,9 @@ grow, do not move, and do not turn into free points.
 
 ⛔ **Your weapon mastery pool does not change.** Levelling lets some classes know **more** kinds
 of weapon, never *different* ones. See **Equipment**.
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>

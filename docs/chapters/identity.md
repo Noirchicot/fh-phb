@@ -1,9 +1,5 @@
 # Identity
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 **Step 1, and nothing here costs a point.** Before a species grants you anything, before a
 class binds a skill, before an Inheritance hands you two languages — there is what is simply
 yours. Fate's Hand asks for three things, and none of them is rolled.
@@ -40,3 +36,9 @@ your people have a word for and ours does not. No score, no bonus, no restrictio
 Fate's Hand reads this field.
 
 ⛔ **No species, class, feat or item in Fate's Hand is gated on gender**, and none will be.
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>

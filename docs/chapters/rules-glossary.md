@@ -1,13 +1,5 @@
 # Rules Glossary
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">glossary</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
-</nav>
-
 <aside class="fh-translate">
 <p class="fh-translate__label">Reading the quotations on this page</p>
 <ul>
@@ -38,6 +30,8 @@ Everything else on this page is the SRD's, quoted word for word.
 
 ## The glossary
 
+<details class="fh-fold">
+<summary><strong>145 glossary entries</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd (kind=glossary, lang=en, run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->
 <div class="fh-srd-cite">
 <p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.176 et p.177 et p.178 et p.179 et p.180 et p.181 et p.182 et p.183 et p.184 et p.185 et p.186 et p.187 et p.188 et p.189 et p.190 et p.191 — the official wording, unaltered</p>
@@ -785,3 +779,14 @@ Unaware. You’re unaware of your surroundings.</dd>
 </dl>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+</details>
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">glossary</span> <span class="fh-layer__same">no record differs</span></li>
+</ul>
+<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+</nav>

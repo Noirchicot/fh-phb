@@ -1,9 +1,5 @@
 # Destiny System
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 ---
 
 Glimmers of true power flicker beyond mortal sight, revealing a grand tapestry of fate. Your **Destiny Score** is both compass and conduit. Every hero begins with a **Major Arcana**—an echo of cosmic authority. Wield these gifts wisely: the greater your strength grows, the more the universe may demand in return.
@@ -152,3 +148,9 @@ fusion — in Les Forces Primordiales de Nymedes.)*
 Your Destiny Score and the Arcana are the wellspring of power in a world where heroic inspiration wanes. Draw carefully on your dice, lest you tumble into Chaos. A Major Arcana may raise you among the lords of reality — but tread softly.
 
 > "Gaze upon the shifting reflections. Each choice, each destiny, can ripple across a thousand worlds — if you dare."
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>

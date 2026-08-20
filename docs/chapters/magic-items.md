@@ -1,13 +1,5 @@
 # Magic Items
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">item</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
-</nav>
-
 <aside class="fh-translate">
 <p class="fh-translate__label">Reading the quotations on this page</p>
 <ul>
@@ -73,6 +65,8 @@ printed, attunement included: that string is the SRD's own wording and it is not
 because a rarity that reads *« Uncommon (+1), Rare (+2), or Very Rare (+3) »* means something
 a single word would lose.
 
+<details class="fh-fold">
+<summary><strong>253 magic items</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd item.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
 <p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.209–p.253 — all 253, as printed</p>
@@ -2127,3 +2121,14 @@ Once the Well of Many Worlds has opened a portal, it can’t do so again for 1d8
 </dl>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+</details>
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">item</span> <span class="fh-layer__same">no record differs</span></li>
+</ul>
+<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+</nav>

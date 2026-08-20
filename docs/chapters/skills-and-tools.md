@@ -1,15 +1,5 @@
 # Fate's Hand 5+ — Skills & Tools: Player Guide
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">skill</span> <span class="fh-layer__added">adds 9</span> — Academics, Appraise, Delve, Hunting, Leadership, Might… · <span class="fh-layer__patched">changes 17</span> — Acrobatics, Animal Handling, Arcana, Athletics, Deception, History… · <span class="fh-layer__removed">removes 1</span> — Perception</li>
-<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 13</span> — Card Set, Dice Set, Dragonchess Set, Mount (Air), Mount (Land), Mount (Water)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
-<li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
-</ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
 A plain-language guide to how skill and tool points work, and what every skill and tool does.
 
 > 🥇 **This chapter is the source of truth for skill and tool points.** It is what the site
@@ -441,3 +431,15 @@ A finesse weapon (DEX) that improves [Strangling](battlefield.md#strangle-new) (
 - Usable only against a surprised target.
 - You don't take the −2 Strangling penalty to hit.
 - **Escape DC:** 10 + STR + PB (DEX for Rogues) — higher than a bare-handed strangle (8 + STR + PB), so the garrot makes the hold harder to break.
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">skill</span> <span class="fh-layer__added">adds 9</span> — Academics, Appraise, Delve, Hunting, Leadership, Might… · <span class="fh-layer__patched">changes 17</span> — Acrobatics, Animal Handling, Arcana, Athletics, Deception, History… · <span class="fh-layer__removed">removes 1</span> — Perception</li>
+<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 13</span> — Card Set, Dice Set, Dragonchess Set, Mount (Air), Mount (Land), Mount (Water)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
+<li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>

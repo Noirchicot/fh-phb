@@ -1,13 +1,5 @@
 # Arcana
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">arcana</span> <span class="fh-layer__added">adds 22</span> — Death, Judgement, Justice, Strength, Temperance, The Chariot…</li>
-</ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
 ## Drawing a Major Arcana at character creation
 
 At character creation, draw **among the 22 Major Arcana** to determine its influence on the character's fate: [Random Tarot Card Generator](https://randomtarotcard.com/Death.html).
@@ -180,3 +172,13 @@ On an **Arcane Awakening** (your Destiny Points reach 0 after a Natural 20), you
   You pay the price rolled by your die.
 
 - **Vibration** — versatile beneficial effect (small global buff).
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">arcana</span> <span class="fh-layer__added">adds 22</span> — Death, Judgement, Justice, Strength, Temperance, The Chariot…</li>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>

@@ -1,9 +1,5 @@
 # Battlefield Rules
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 Fate's Hand combat house-rules. *(new)* marks a Fate's Hand addition to the 2024 rule.
 
 ---
@@ -107,3 +103,9 @@ A **finesse** weapon that improves **Strangling**. Bought through the **skill po
 - Usable **only if the target is surprised**.
 - The attacker does **not** take the **−2 Strangling penalty** to hit.
 - The target's DC is **10 + STR + PB** (**DEX for Rogues**).
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>

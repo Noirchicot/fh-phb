@@ -1,14 +1,5 @@
 # Classes — Fate's Hand modifications
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
 <aside class="fh-translate">
 <p class="fh-translate__label">Reading the quotations on this page</p>
 <ul>
@@ -49,6 +40,8 @@ it starts with, and the features it gains.
 > **Its weapon mastery pool.** That one is real, and it is quoted in **Equipment** instead. A
 > rule printed twice is a rule that will drift.
 
+<details class="fh-fold">
+<summary><strong>12 class entries</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd class.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
 <p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> — all 12 classes, as printed, minus their skill lines</p>
@@ -178,3 +171,15 @@ it starts with, and the features it gains.
 </dl>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+</details>
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
+<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>

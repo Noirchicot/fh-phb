@@ -1,13 +1,5 @@
 # New Spells
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">spell</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
-</nav>
-
 <aside class="fh-translate">
 <p class="fh-translate__label">Reading the quotations on this page</p>
 <ul>
@@ -122,6 +114,8 @@ leave this page to check a range or a casting time.
 Each entry opens with the shape of the spell — school, casting time, range, components,
 duration, and whether it is a **ritual** or needs **concentration** — then the text itself.
 
+<details class="fh-fold">
+<summary><strong>339 spells</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd spell.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
 <p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.107–p.175 — 339 spells, as printed</p>
@@ -2343,3 +2337,14 @@ The stress of casting Wish to produce any effect other than duplicating another 
 </dl>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+</details>
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">spell</span> <span class="fh-layer__same">no record differs</span></li>
+</ul>
+<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+</nav>

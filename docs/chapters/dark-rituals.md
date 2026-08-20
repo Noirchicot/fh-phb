@@ -1,9 +1,4 @@
 # Dark Rituals
-
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 *(Rituels Noirs — la magie impériale)*
 
 **Dark Rituals** are large, collaborative magical workings that reach past the spell list — multi-caster ceremonies that bend the world's deep structure at a terrible price, paid in pooled **[Destiny](fates-hand-mechanic.md)**, in life, and often in blood. They are the province of **Imperial magic**, rooted in the **Moisson** of Karagall — the trade of souls and lives for power. Each is gated by **skill checks**, and they bite back when they fail.
@@ -173,3 +168,9 @@ The rite that **binds power into a crafted body** — the ritual face of **[Soul
 - **Failure:** roll on the **[Soulforge mishaps](soulforge-crafting.md#soulforge-mishaps-boons)** table.
 
 **Effect.** Completes — or **grows, never replaces** — a **soulforged item**: the crafted **body** (Structure) receives the **Soulgems** (its Power Supply) and the **catalysts** slotted in raw, each granting a property within the [three laws of equilibrium](soulforge-crafting.md#the-three-laws-of-equilibrium). A check that **beats the DC by 5+** (or a natural 20) also rolls a **boon**. Full rules: [Soulforge Crafting](soulforge-crafting.md).
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>

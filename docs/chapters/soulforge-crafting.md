@@ -1,9 +1,4 @@
 # Soulforge Crafting
-
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 *(La Forge des Esprits — système de craft itératif)*
 
 The **Soulforge** presses power into matter, binding monster parts to the **soul-stuff of the slain**. What it produces is always a **soulforged item**.
@@ -273,3 +268,9 @@ Each **creature type** gives **one signature Essence organ** (the soul-carrier y
 - The **signature organ** is the part you infuse (phase 3). Fail to recover it and that kill yields **no essence**.
 - A **Celestial or Fiend** slain off its home plane (and outside a *magic circle*) collapses to a **pouch of dust** — no soul, no essence.
 - **Ingredient inventory** (210 entries — 14 types × {Essence · Structure · Catalyst} × 5 tiers; Soulgems are catalog gems by value, not homebrew): [Soulforge Crafting](soulforge-crafting.md).
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>

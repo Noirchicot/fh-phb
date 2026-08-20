@@ -1,13 +1,5 @@
 # Feats
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">feat</span> <span class="fh-layer__added">adds 1</span> — Auspicious (fh) · <span class="fh-layer__patched">changes 2</span> — Magic Initiate, Skilled</li>
-</ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
 Fate's Hand adds a few feats of its own and leaves the rest alone. Everything the 2024 rules print works as printed, unless an entry below says otherwise — and where an entry does say otherwise, unfold *view older version* to see what it replaced.
 
 ## Origin feats
@@ -182,3 +174,13 @@ Shadowy Form. While within Dim Light or Darkness, you have Resistance to all dam
 </dl>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">feat</span> <span class="fh-layer__added">adds 1</span> — Auspicious (fh) · <span class="fh-layer__patched">changes 2</span> — Magic Initiate, Skilled</li>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>

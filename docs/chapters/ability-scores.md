@@ -1,9 +1,5 @@
 # Ability Scores
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 In Fate's Hand you **roll** your ability scores rather than using Point Buy or the Standard Array — kept fair by a floor rule, but with the thrill of a possible **17 or 18** at level 1.
 
 ## The 3d6 × 10 method
@@ -76,3 +72,9 @@ A single 3d6 roll lands a **17** about **1.39 %** of the time and an **18** abou
 | 16 | 6 / 216 | 2.78 % |
 | 17 | 3 / 216 | 1.39 % |
 | 18 | 1 / 216 | 0.46 % |
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>

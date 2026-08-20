@@ -1,18 +1,5 @@
 # Equipment
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">weapon</span> <span class="fh-layer__same">no record differs</span></li>
-<li><span class="fh-layer__genre">weapon property</span> <span class="fh-layer__same">no record differs</span></li>
-<li><span class="fh-layer__genre">weapon mastery</span> <span class="fh-layer__same">no record differs</span></li>
-<li><span class="fh-layer__genre">armor</span> <span class="fh-layer__same">no record differs</span></li>
-<li><span class="fh-layer__genre">gear</span> <span class="fh-layer__same">no record differs</span></li>
-<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 13</span> — Card Set, Dice Set, Dragonchess Set, Mount (Air), Mount (Land), Mount (Water)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
-</ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
 ## Ce que ce chapitre doit porter
 
 Deux profondeurs dans un seul chapitre :
@@ -85,6 +72,8 @@ to go looking for one.
 
 All thirty-eight, with what each one does, what it asks, and the trick it carries.
 
+<details class="fh-fold">
+<summary><strong>38 weapons</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd weapon.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">
 <p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.91 — all 38, every value as printed</p>
@@ -136,6 +125,7 @@ All thirty-eight, with what each one does, what it asks, and the trick it carrie
 </tbody></table>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+</details>
 
 ## Armour, and what it asks in return
 
@@ -301,6 +291,8 @@ background hands you follows that chapter, not the SRD's list of packages.
 Eighty-two entries, prices as printed. Nothing here is a Fate's Hand decision — it is the
 list, brought onto this page so you never have to go and find it.
 
+<details class="fh-fold">
+<summary><strong>82 pieces of gear</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd gear.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">
 <p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.95 — every price as printed</p>
@@ -392,6 +384,7 @@ list, brought onto this page so you never have to go and find it.
 </tbody></table>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+</details>
 
 ## Tools
 
@@ -444,3 +437,18 @@ That is why it gets a wider table than the rest.
 </tbody></table>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">weapon</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">weapon property</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">weapon mastery</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">armor</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">gear</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 13</span> — Card Set, Dice Set, Dragonchess Set, Mount (Air), Mount (Land), Mount (Water)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>

@@ -875,23 +875,32 @@ def insert_banner_note(text, dest):
     note = note_de_traduction(dest)
     if not note:
         return text
-    marque = "</nav>"
-    i = text.find(marque)
-    if i == -1:
-        return note + "\n" + text
-    j = i + len(marque)
-    return text[:j] + "\n\n" + note + text[j:]
-
-
-def insert_banner(text, dest):
-    banniere = chapter_banner(dest)
-    if not banniere:
-        return text
     lignes = text.split("\n")
     for i, l in enumerate(lignes):
         if l.startswith("# "):
-            return "\n".join(lignes[: i + 1] + ["", banniere] + lignes[i + 1 :])
-    return banniere + "\n" + text
+            return "\n".join(lignes[: i + 1] + ["", note] + lignes[i + 1 :])
+    return note + "\n" + text
+
+
+def insert_banner(text, dest):
+    """Le rappel des écarts va EN FIN de chapitre.
+
+    🔴 CORRIGÉ LE 2026-08-20, LE SOIR, PAR ERIC LUI-MÊME, après avoir lu le
+    livre publié : *« le rappel de ce qui diffère EN FIN de chaque chapitre, là
+    où quelques initiés veulent en savoir plus »*. Le matin il l'avait demandé
+    en tête ; sa raison de le déplacer est dans sa phrase — le rappel s'adresse
+    à **quelques initiés**, pas au joueur qui ouvre la page pour jouer. En tête,
+    il imposait à tout le monde une comparaison qui n'intéresse presque
+    personne, et il retardait sa voix d'un écran. **C'était le noyage qu'il
+    craignait, commis par l'outil bâti contre lui.**
+
+    ⚠️ Ne concerne QUE ce rappel. L'encadré « Reading the quotations on this
+    page » s'adresse à qui va lire les citations : il reste AVANT elles.
+    """
+    banniere = chapter_banner(dest)
+    if not banniere:
+        return text
+    return text.rstrip() + "\n\n---\n\n" + banniere
 
 
 # Ce qu'il faut LIRE à la place d'un terme retiré, quand il survit dans une
@@ -957,6 +966,46 @@ def _scanner_fuites(bloc, dest):
                 _FUITES.setdefault(dest, set()).add("%s (%s)" % (nom, genre))
 
 
+SEUIL_REPLI = 25          # entrées
+SEUIL_POIDS = 8000        # caractères
+
+
+def _replier(bloc, quoi):
+    """Replie une citation longue.
+
+    🔴 Eric, 2026-08-20, après avoir lu le livre publié : *« je vois un
+    composite SRD plus autre chose assez compliqué et chiant à lire […] pour un
+    lecteur c'est moche et chiant à lire »*. La cause est mesurable : le bloc
+    cité et sa prose avaient **le même poids visuel**, et sur `spells` 339
+    entrées citées écrasaient 732 mots de lui.
+
+    ⭐ LE PRINCIPE : **sa voix reste la page, le SRD devient la référence
+    dessous.** Une citation courte se lit dans le fil ; une longue se replie et
+    annonce ce qu'elle contient. Rien n'est retiré — tout reste à un clic, et
+    la recherche du site continue de l'indexer.
+    """
+    # ⚠️ Une fiche de classe porte sept <dt> : compter les lignes annoncerait
+    #    « 88 class entries » pour douze classes. On compte ce que le lecteur
+    #    compte, pas ce que le HTML compte.
+    if quoi == "class-cards":
+        n = bloc.count('class="fh-srd-cite__group"')
+    else:
+        n = bloc.count("<dt>") + bloc.count("<tr><td>")
+    # ⚠️ Deux critères, parce qu'un seul ment. Douze fiches de classe font
+    #    douze « entrées » mais huit mille caractères : compter les entrées les
+    #    laissait dépliées. On replie sur le NOMBRE ou sur la LONGUEUR — c'est
+    #    la charge de lecture qui décide, pas la façon dont le bloc est découpé.
+    if n <= SEUIL_REPLI and len(bloc) <= SEUIL_POIDS:
+        return bloc
+    quoi_lisible = {
+        "spell-list": "spells", "item-list": "magic items", "glossary": "glossary entries",
+        "weapon-table": "weapons", "gear-table": "pieces of gear", "tool-table": "tools",
+        "feat-list": "feats", "class-cards": "class entries",
+    }.get(quoi, "entries")
+    return ('<details class="fh-fold">\n<summary><strong>%d %s</strong>, quoted from the SRD '
+            "— open to read them</summary>\n%s\n</details>" % (n, quoi_lisible, bloc))
+
+
 def inject_srd_citations(text, dest):
     def one(m):
         try:
@@ -965,12 +1014,12 @@ def inject_srd_citations(text, dest):
                     "{{srd:%s}} : une vue calculée ne prend pas d'exclusion — "
                     "elle dérive d'une relation, pas d'une liste." % m.group(1))
             if m.group(1) == "feat-list":
-                b = _srd_feats(sauf=m.group(3)); _scanner_fuites(b, dest); return b
+                b = _srd_feats(sauf=m.group(3)); _scanner_fuites(b, dest); return _replier(b, 'feat-list')
             if m.group(1) in SRD_TABLES:
                 if m.group(2):
                     raise SrdCiteError(
                         "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1))
-                b = _srd_table(m.group(1), sauf=m.group(3)); _scanner_fuites(b, dest); return b
+                b = _srd_table(m.group(1), sauf=m.group(3)); _scanner_fuites(b, dest); return _replier(b, m.group(1))
             if m.group(1) in SRD_TABLES:
                 if m.group(2):
                     raise SrdCiteError(
@@ -978,11 +1027,11 @@ def inject_srd_citations(text, dest):
                     )
                 return _srd_table(m.group(1))
             if m.group(1) == "class-cards":
-                b = _srd_classes(); _scanner_fuites(b, dest); return b
+                b = _srd_classes(); _scanner_fuites(b, dest); return _replier(b, 'class-cards')
             if m.group(1) == "item-list":
-                b = _srd_items(); _scanner_fuites(b, dest); return b
+                b = _srd_items(); _scanner_fuites(b, dest); return _replier(b, 'item-list')
             if m.group(1) == "spell-list":
-                b = _srd_spells(niveaux=m.group(2)); _scanner_fuites(b, dest); return b
+                b = _srd_spells(niveaux=m.group(2)); _scanner_fuites(b, dest); return _replier(b, 'spell-list')
             if m.group(1) == "feat-list":
                 return _srd_feats()
             if m.group(1) == "mastery-by-class":
@@ -995,7 +1044,7 @@ def inject_srd_citations(text, dest):
                 return _srd_weapons_by_mastery()
             bloc = _srd_block(m.group(1), m.group(2), sauf=m.group(3))
             _scanner_fuites(bloc, dest)
-            return bloc
+            return _replier(bloc, m.group(1))
         except SrdCiteError as err:
             raise SrdCiteError("%s : %s" % (dest, err)) from None
 
@@ -1540,8 +1589,8 @@ def main():
         body = normalize_headings(body)
         body = ensure_h1(body, title)
         body = inject_srd_citations(body, dest)
-        body = insert_banner(body, dest)
         body = insert_banner_note(body, dest)
+        body = insert_banner(body, dest)
         body = insert_images(body, dest)
         body = space_before_lists(body)
         body = collapse_blanks(body)

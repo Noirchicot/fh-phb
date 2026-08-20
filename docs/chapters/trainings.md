@@ -1,13 +1,5 @@
 # Trainings
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
-</ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
 A **training** is something you **know**. Not something you practise, and not something you
 are more or less good at — so unlike a skill or a tool, **a training has no tier and no
 ability**. You either have it or you don't. A language is the clearest case: you speak Dwarvish
@@ -55,3 +47,13 @@ paid for in Destiny, in necrotic damage and in components — never in points. S
 ⛔ **And there is no such thing as an artisan training.** Fate's Hand makes no distinction
 between artisan's tools, instruments, gaming sets and kits: **they are all tools**, and none of
 them is a training. See **Skills & Tools**.
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>

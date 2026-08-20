@@ -1,9 +1,5 @@
 # Magic
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 Three kinds of magic are practised in Nymedes, and only one of them belongs to Fate's Hand.
 This page says which is which, and sends you to the chapter that holds it.
 
@@ -38,3 +34,9 @@ perform it.
 Not a school and not a spell list: a craft. It has its own chapter, and its own workshop.
 
 → **Soulforge Crafting** · **Magic Items** for what a party can find rather than forge.
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>

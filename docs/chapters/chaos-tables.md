@@ -1,13 +1,5 @@
 # Chaos Tables
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">monster</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
-</nav>
-
 **Rule:** when a character suffers an ability-based consequence (STR, DEX, CON, WIS, INT, CHA), roll **1d6 + Overreach** and compare the total to the relevant table (1–12). The higher the result, the worse — at the top end the effect is potentially **fatal**. Durations and effects are indicative; the GM may adjust to the situation. Magical healing or an extended rest may be needed to remove the most severe effects.
 
 ## The Chaos Tables
@@ -125,3 +117,13 @@
 | 10 | Psychological shock: **permanent −2 CHA**, social isolation. |
 | 11 | Permanent vocal damage: hoarse voice, −4 CHA without rare healing. |
 | 12 | Social ruin (**fatal**): total loss of credibility — exile or social death. |
+
+---
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">monster</span> <span class="fh-layer__same">no record differs</span></li>
+</ul>
+<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+</nav>

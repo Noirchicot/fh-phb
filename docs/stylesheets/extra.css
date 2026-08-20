@@ -1288,3 +1288,50 @@ body.fh-home-page .md-header { display: none; }
 .md-typeset .fh-translate ul { margin: 0 0 .5em; padding-left: 1.1em; }
 .md-typeset .fh-translate li { margin: .18em 0; line-height: 1.55; }
 .md-typeset .fh-translate > p:last-child { margin: 0; opacity: .75; font-size: .95em; }
+
+/* ── SUBORDINATION VISUELLE DU BLOC CITÉ ────────────────────────────────────
+   Eric, 2026-08-20, après lecture du livre publié : « je vois un composite SRD
+   plus autre chose assez compliqué et chiant à lire […] pour un lecteur c'est
+   moche et chiant à lire ». La cause était mesurable : le bloc cité et sa prose
+   avaient le MÊME poids visuel, et 339 sorts cités écrasaient ses 732 mots.
+   ⭐ Le principe : SA VOIX RESTE LA PAGE, le SRD devient la référence dessous. */
+.md-typeset .fh-srd-cite { font-size: .92em; }
+.md-typeset .fh-srd-cite__list dd { opacity: .88; }
+
+/* Le repli. Rien n'est retiré — tout est à un clic, et la recherche du site
+   continue d'indexer le contenu fermé. */
+.md-typeset details.fh-fold {
+  margin: 1.6em 0;
+  padding: 0;
+  border: 1px solid var(--fh-cite-rule);
+  border-radius: 5px;
+  background: transparent;
+  box-shadow: none;
+}
+.md-typeset details.fh-fold > summary {
+  padding: .6em .95em;
+  background: var(--fh-cite-bg);
+  border-radius: 4px;
+  font-size: .84em;
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+  list-style: none;
+}
+.md-typeset details.fh-fold > summary strong { color: var(--fh-gold); }
+.md-typeset details.fh-fold[open] > summary {
+  border-bottom: 1px solid var(--fh-cite-rule);
+  border-radius: 4px 4px 0 0;
+}
+.md-typeset details.fh-fold > .fh-srd-cite {
+  margin: 0;
+  border-left: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.md-typeset details.fh-fold > summary::after {
+  content: "▸"; float: right; opacity: .5; transition: transform .15s;
+}
+.md-typeset details.fh-fold[open] > summary::after { content: "▾"; }
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset details.fh-fold > summary::after { transition: none; }
+}

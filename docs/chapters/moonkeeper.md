@@ -1,9 +1,5 @@
 # Moonkeeper
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
-</nav>
-
 *A Fate's Hand Sorcerer subclass — the Lunar Sorcery tradition.* Your magic waxes and wanes with the moons' phases, drawing unique power from their changing faces. You gain subclass features at **3rd, 6th, 14th** and **18th level**.
 
 ## Level 3 — Lunar Embodiment
@@ -82,3 +78,9 @@ You can now use **Lunar Shift** once per **short rest**.
 - Gain **all five moons' embodiments**, excluding boons and ascendancies.
 - You may cast **one spell from each moon** without using a spell slot.
 - **Metamagic costs −1.**
+
+---
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>
