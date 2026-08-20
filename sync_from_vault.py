@@ -443,10 +443,197 @@ def _srd_mastery_by_class(lang="en"):
     return "\n".join(out)
 
 
+def _srd_feats(lang="en"):
+    """Les dons du SRD, groupés par catégorie et cités.
+
+    Une table ne convient pas : la description d'un don est un paragraphe, pas
+    une cellule. On garde donc la forme d'une citation — terme puis texte — et
+    on ajoute le prérequis, qui vit dans son propre champ et se perdrait sinon.
+    ⚠️ Le prérequis peut être ABSENT (un don d'origine n'en a pas) : « absent »
+    se teste explicitement, il ne se déduit pas d'une chaîne vide.
+    """
+    doc = _srd_load("feat", lang)
+    libelles = {"origin": "Origin feats", "general": "General feats",
+                "fighting-style": "Fighting Style feats", "epic-boon": "Epic Boons"}
+    groupes = {}
+    for r in doc["records"]:
+        groupes.setdefault(r["data"].get("category") or "other", []).append(r)
+    inconnus = [c for c in groupes if c not in libelles]
+    if inconnus:
+        raise SrdCiteError(
+            "{{srd:feat-list}} : catégorie inattendue %s — la source a changé de "
+            "forme, le groupement mentirait." % ", ".join(sorted(inconnus)))
+    pages = sorted({r.get("source_locator", "") for r in doc["records"]} - {""})
+    out = [
+        "<!-- GENERATED — cité depuis fh-srd feat.json (run=%s). Ne pas éditer. -->"
+        % doc.get("import_run", "?"),
+        '<div class="fh-srd-cite">',
+        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — all %d, '
+        "as printed</p>"
+        % (html.escape(doc.get("layer_label", "SRD")),
+           (" · " + html.escape(" et ".join(pages))) if pages else "",
+           doc.get("count", len(doc["records"]))),
+    ]
+    for cle in ("origin", "general", "fighting-style", "epic-boon"):
+        if cle not in groupes:
+            continue
+        out.append('<p class="fh-srd-cite__group">%s</p>' % html.escape(libelles[cle]))
+        out.append('<dl class="fh-srd-cite__list">')
+        for r in sorted(groupes[cle], key=lambda x: x["name"]):
+            d = r["data"]
+            prereq = d.get("prerequisite")
+            out.append("<dt>%s%s</dt>" % (
+                html.escape(r["name"]),
+                (' <span>· %s</span>' % html.escape(prereq)) if prereq else ""))
+            out.append("<dd>%s</dd>" % html.escape(d.get("description") or "—"))
+        out.append("</dl>")
+    attr = doc["records"][0].get("attribution", "")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
+def _srd_spells(lang="en", niveaux=None):
+    """Les sorts du SRD, groupés par niveau.
+
+    Un sort n'est pas qu'un nom et un texte : il porte huit champs de forme
+    (école, temps d'incantation, portée, composantes, durée, concentration,
+    rituel, classes) qu'un joueur lit AVANT la description. On les rend donc
+    sur une ligne de tête, et la description en dessous.
+    ⚠️ `level` vaut ZÉRO pour un cantrip. « Absent » se teste explicitement —
+    c'est le piège du jour, sous sa sixième forme.
+    """
+    doc = _srd_load("spell", lang)
+    voulus = None
+    if niveaux:
+        voulus = set()
+        for n in niveaux.split(","):
+            n = n.strip()
+            if not n.isdigit() or not 0 <= int(n) <= 9:
+                raise SrdCiteError(
+                    "{{srd:spell-list:%s}} : « %s » n'est pas un niveau de sort "
+                    "(0 à 9)." % (niveaux, n))
+            voulus.add(int(n))
+    par_niveau = {}
+    for r in doc["records"]:
+        lvl = r["data"].get("level")
+        if lvl is None:
+            raise SrdCiteError(
+                "{{srd:spell-list}} : %s n'a pas de niveau — la source a changé "
+                "de forme." % r["name"])
+        if voulus is None or lvl in voulus:
+            par_niveau.setdefault(lvl, []).append(r)
+    if not par_niveau:
+        raise SrdCiteError("{{srd:spell-list}} : aucun sort à ce niveau.")
+
+    def titre(lvl):
+        return "Cantrips" if lvl == 0 else "Level %d" % lvl
+
+    pages = sorted({r.get("source_locator", "") for r in doc["records"]} - {""})
+    total = sum(len(v) for v in par_niveau.values())
+    out = [
+        "<!-- GENERATED — cité depuis fh-srd spell.json (run=%s). Ne pas éditer. -->"
+        % doc.get("import_run", "?"),
+        '<div class="fh-srd-cite fh-srd-cite--spells">',
+        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — %d spells, '
+        "as printed</p>"
+        % (html.escape(doc.get("layer_label", "SRD")),
+           (" · " + html.escape(pages[0] + "–" + pages[-1])) if len(pages) > 1
+           else (" · " + html.escape(pages[0]) if pages else ""),
+           total),
+    ]
+    for lvl in sorted(par_niveau):
+        out.append('<p class="fh-srd-cite__group">%s</p>' % titre(lvl))
+        out.append('<dl class="fh-srd-cite__list">')
+        for r in sorted(par_niveau[lvl], key=lambda x: x["name"]):
+            d = r["data"]
+            forme = [d.get("school") or ""]
+            if d.get("ritual"):
+                forme.append("ritual")
+            if d.get("concentration"):
+                forme.append("concentration")
+            meta = " · ".join(x for x in [
+                ", ".join(f for f in forme if f),
+                d.get("casting_time"), d.get("range"),
+                d.get("components"), d.get("duration"),
+            ] if x)
+            classes = d.get("classes")
+            out.append("<dt>%s</dt>" % html.escape(r["name"]))
+            out.append('<dd><span class="fh-spell-meta">%s</span>%s%s</dd>' % (
+                html.escape(meta),
+                ('<span class="fh-spell-classes">%s</span>' % html.escape(
+                    ", ".join(classes) if isinstance(classes, list) else str(classes))
+                 ) if classes else "",
+                html.escape(d.get("description") or "—")))
+        out.append("</dl>")
+    attr = doc["records"][0].get("attribution", "")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
+ITEM_LABELS = {
+    "weapon": "Weapons", "armor": "Armor", "potion": "Potions", "ring": "Rings",
+    "rod": "Rods", "scroll": "Scrolls", "staff": "Staves", "wand": "Wands",
+    "wondrous-item": "Wondrous items",
+}
+
+
+def _srd_items(lang="en"):
+    """Les objets magiques du SRD, groupés par catégorie.
+
+    ⚠️ On groupe sur `category` (9 valeurs propres) et NON sur `rarity` : ce
+    dernier est du texte libre — 30 valeurs distinctes, dont
+    « Uncommon (+1), Rare (+2), or Very Rare (+3) (Requires Attunement by a
+    Spellcaster) ». Grouper dessus produirait trente sections d'un objet.
+    La rareté reste affichée telle quelle sur la ligne de tête : c'est une
+    citation, on ne la normalise pas.
+    """
+    doc = _srd_load("item", lang)
+    groupes = {}
+    for r in doc["records"]:
+        groupes.setdefault(r["data"].get("category") or "other", []).append(r)
+    inconnus = [c for c in groupes if c not in ITEM_LABELS]
+    if inconnus:
+        raise SrdCiteError(
+            "{{srd:item-list}} : catégorie inattendue %s — la source a changé de "
+            "forme, le groupement mentirait." % ", ".join(sorted(inconnus)))
+    pages = sorted({r.get("source_locator", "") for r in doc["records"]} - {""})
+    out = [
+        "<!-- GENERATED — cité depuis fh-srd item.json (run=%s). Ne pas éditer. -->"
+        % doc.get("import_run", "?"),
+        '<div class="fh-srd-cite fh-srd-cite--spells">',
+        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — all %d, '
+        "as printed</p>"
+        % (html.escape(doc.get("layer_label", "SRD")),
+           (" · " + html.escape(pages[0] + "–" + pages[-1])) if len(pages) > 1
+           else (" · " + html.escape(pages[0]) if pages else ""),
+           doc.get("count", len(doc["records"]))),
+    ]
+    for cle in sorted(groupes, key=lambda c: ITEM_LABELS[c]):
+        out.append('<p class="fh-srd-cite__group">%s <span>· %d</span></p>'
+                   % (html.escape(ITEM_LABELS[cle]), len(groupes[cle])))
+        out.append('<dl class="fh-srd-cite__list">')
+        for r in sorted(groupes[cle], key=lambda x: x["name"]):
+            d = r["data"]
+            tete = [x for x in (d.get("rarity"), d.get("subtype")) if x]
+            out.append("<dt>%s</dt>" % html.escape(r["name"]))
+            out.append('<dd><span class="fh-spell-meta">%s</span>%s</dd>' % (
+                html.escape(" · ".join(tete)), html.escape(d.get("description") or "—")))
+        out.append("</dl>")
+    attr = doc["records"][0].get("attribution", "")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
 def inject_srd_citations(text, dest):
     def one(m):
         try:
-            if m.group(1) in SRD_TABLES or m.group(1) in ("weapons-by-mastery", "mastery-by-class"):
+            if m.group(1) in SRD_TABLES or m.group(1) in ("weapons-by-mastery", "mastery-by-class", "feat-list", "spell-list", "item-list"):
                 if m.group(3):
                     raise SrdCiteError(
                         "{{srd:%s}} : une vue dérivée ne prend pas d'exclusion."
@@ -457,6 +644,12 @@ def inject_srd_citations(text, dest):
                         "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1)
                     )
                 return _srd_table(m.group(1))
+            if m.group(1) == "item-list":
+                return _srd_items()
+            if m.group(1) == "spell-list":
+                return _srd_spells(niveaux=m.group(2))
+            if m.group(1) == "feat-list":
+                return _srd_feats()
             if m.group(1) == "mastery-by-class":
                 return _srd_mastery_by_class()
             if m.group(1) == "weapons-by-mastery":

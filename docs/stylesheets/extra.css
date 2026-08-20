@@ -1169,3 +1169,30 @@ body.fh-home-page .md-header { display: none; }
   .md-typeset .fh-srd-table th,
   .md-typeset .fh-srd-table td { padding: .34em .45em; }
 }
+
+/* Un sous-titre à l'intérieur d'un bloc cité : il groupe la citation sans
+   prétendre être un titre de la page — la table des matières l'ignore. */
+.md-typeset .fh-srd-cite__group {
+  margin: 1.4em 0 .5em;
+  font-size: .74rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--fh-gold);
+  border-bottom: 1px solid var(--fh-cite-rule);
+  padding-bottom: .3em;
+}
+.md-typeset .fh-srd-cite__group:first-of-type { margin-top: .4em; }
+
+/* La ligne de forme d'un sort : ce qu'un joueur lit AVANT la description —
+   école, incantation, portée, composantes, durée. Elle doit se distinguer du
+   texte sans lui voler l'œil. */
+.md-typeset .fh-spell-meta,
+.md-typeset .fh-spell-classes {
+  display: block;
+  font-size: .78em;
+  line-height: 1.5;
+  opacity: .72;
+}
+.md-typeset .fh-spell-meta { color: var(--fh-gold); opacity: .9; }
+.md-typeset .fh-spell-classes { font-style: italic; margin-bottom: .35em; }
+.md-typeset .fh-srd-cite--spells dd { margin-bottom: .9em; }
