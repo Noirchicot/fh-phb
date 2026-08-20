@@ -346,7 +346,7 @@
         <div class="note" id="abNote"></div>
         <div class="fld" style="margin-top:14px"><label>Origin feat</label>
           <div class="featpick" id="featPick"></div>
-          <p class="note" style="color:var(--muted)">Lucky (2024) does not exist in Fate's Hand — it is replaced by <b>Destiny Touched (fh)</b>. Destiny Touched and Skilled feed directly into character creation (Destiny score / skill points).</p>
+          <p class="note" style="color:var(--muted)"><b>Destiny Touched (fh)</b> and Skilled feed directly into character creation (Destiny score / skill points).</p>
         </div>
         <div class="fld" id="featPick2Wrap" style="display:none;margin-top:10px"><label>Species bonus — extra Origin feat</label>
           <div class="featpick" id="featPick2"></div>
@@ -576,10 +576,10 @@ const DESTINY_FEATS = {
     {name:"Destiny Dice - d12", id:1927928}
   ]
 };
-// Lucky (2024) does NOT exist in FH — replaced by Destiny Touched (fh). Old saves with
-// origin "lucky" fall back to destinyTouched on load.
+// Destiny Touched (fh) is a Fate's Hand feat. A legacy origin key from an older
+// save format falls back to it on load — see mapOrigin below.
 const ORIGIN_FEATS = {
-  destinyTouched: {label:"Destiny Touched (fh)", id:2383104, destiny:2, skillPts:0, desc:"+2 Destiny · fate leans toward you (replaces Lucky)"},
+  destinyTouched: {label:"Destiny Touched (fh)", id:2383104, destiny:2, skillPts:0, desc:"+2 Destiny · fate leans toward you"},
   skilled:        {label:"Skilled (fh)", id:2383105, destiny:0, skillPts:6, desc:"+6 skill points to spend in the pool"}
 };
 // Species perks around feats & points (Eric 2026-07-17):
@@ -1380,8 +1380,10 @@ function applyState(s){
   }
   setAbilityBoosts(s.boosts||{});
   arcanaSel.value = s.arcana||"";
-  // "lucky" no longer exists in FH — old saves fall back to Destiny Touched (same +2 Destiny).
-  const mapOrigin = k => ORIGIN_FEATS[k] ? k : (k==="lucky" ? "destinyTouched" : "");
+  // Un don d'origine inconnu de la table courante vient d'un format de sauvegarde
+  // plus ancien : on retombe sur Destiny Touched, seul don d'origine FH qui donne
+  // +2 Destinée. Le joueur peut le changer — mieux que perdre son choix en silence.
+  const mapOrigin = k => (!k ? "" : (ORIGIN_FEATS[k] ? k : "destinyTouched"));
   $('originFeat').value = mapOrigin(s.origin||"");
   $('originFeat2').value = mapOrigin(s.origin2||"");
   $('originOther').value = s.originOther||"";

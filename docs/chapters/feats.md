@@ -22,12 +22,6 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 
 - +2 to your Destiny Score.
 
-<details class="fh-removed">
-<summary>view older version</summary>
-<div>Luck Points equal to your proficiency bonus (regained on a long rest).</div>
-<div>Spend 1: Advantage on a d20 roll, or impose Disadvantage on an attack roll against you.</div>
-</details>
-
 ## Command feats
 
 ### Battlefield Tactician
