@@ -129,7 +129,11 @@ Made to measure: **6 free points**, your **Origin Feat**, and its ability score 
 the story coherent with where you spend.
 
 ### At creation
-- **Languages are chosen within your species** — they cost nothing at level 1.
+- **Languages come from your [Inheritance](inheritance.md)**, not from your species — two of them, both
+  **your choice**, and they cost nothing at level 1. *(Moved out of the species on
+  2026-08-20 in this line, which had been left behind when the rule moved on the 18th —
+  the same chapter already said so correctly seventy lines below.)*
+
 - There is **no obligation to buy a tool**. Everything is interchangeable.
 
 > *Examples:* Talia (Human Ranger) = 12 + 2 = **14 free** (plus 3 bound skill) ·
