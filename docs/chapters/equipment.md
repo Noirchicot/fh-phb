@@ -81,13 +81,14 @@ written. Where a mastery already meets a house rule, it is said in place.
 
 **Cleave** — *Greataxe, Halberd.* When you hit a creature with a melee attack, you may make
 one more attack roll against a second creature within 5 feet of the first and within your
-reach. On a hit, it takes the weapon's damage — but you add no ability modifier to it. Once
-per turn.
+reach. On a hit, it takes the weapon's damage — but you add no ability modifier to it, unless that
+modifier is negative, in which case it still applies. Once per turn.
 
-**Graze** — *Glaive, Greatsword.* When your attack roll misses, the target still takes damage
-equal to the ability modifier you used to attack, of the weapon's type. Nothing else is added
-to it by default — and this is the one mastery a Fate's Hand rule already leans on:
-**Great Weapon Fighting** adds your proficiency bonus to that damage.
+**Graze** — *Glaive, Greatsword.* When your attack roll misses, you may deal the target damage
+equal to the ability modifier you used to attack, of the weapon's type. In the SRD that damage
+is sealed: it grows only if the ability modifier grows, and nothing else may be poured into it.
+**Fate's Hand opens it once** — the *Great Weapon Fighting* style adds your proficiency bonus
+to graze damage. That is a fighting style's doing, not the weapon's.
 
 **Nick** — *Dagger, Light Hammer, Scimitar, Sickle.* The extra attack granted by the Light
 property can be made as part of the Attack action instead of costing your Bonus Action. Once
@@ -100,12 +101,12 @@ to 10 feet straight away from you, if it is Large or smaller.
 Disadvantage on its next attack roll, made before the start of your next turn.
 
 **Slow** — *Club, Javelin, Light Crossbow, Longbow, Musket, Sling, Whip.* On a hit that deals
-damage, the target's Speed drops by 10 feet until the start of your next turn. Hitting the
-same creature twice in one turn does not slow it twice.
+damage, you may reduce the target's Speed by 10 feet until the start of your next turn. The
+reduction never exceeds 10 feet, however many Slow weapons land on the same creature.
 
-**Topple** — *Battleaxe, Lance, Maul, Quarterstaff, Trident.* On a hit, the target makes a
-Constitution saving throw against your **mastery save DC** — 8 + your proficiency bonus + the
-ability modifier you used for the attack — or falls Prone.
+**Topple** — *Battleaxe, Lance, Maul, Quarterstaff, Trident.* On a hit, you may force the target
+into a Constitution saving throw — DC 8 + your Proficiency Bonus + the ability modifier you used
+for the attack. On a failure, it gains the Prone condition.
 
 **Vex** — *Blowgun, Dart, Hand Crossbow, Handaxe, Pistol, Rapier, Shortbow, Shortsword.* On a
 hit that deals damage, you have Advantage on your next attack roll against that same
@@ -118,10 +119,12 @@ for standing between two enemies, Nick pays you for carrying two blades. Three *
 next exchange**: Sap weakens their swing, Vex sharpens yours, Slow takes their ground.
 Two **move the body itself** — Push sends it back, Topple puts it down.
 
-> ⚠️ **Ouvert — combien en connaît-on ?** Le nombre de maîtrises qu'un personnage possède
-> vient d'une aptitude de classe, et le chapitre *Classes* de Fate's Hand n'en dit rien
-> aujourd'hui. Tant que ce n'est pas tranché, un joueur sait ce que fait *Topple* mais pas
-> s'il y a droit. **À décider par Eric** — relevé le 2026-08-20.
+### Who gets to use them
+
+Mastery is granted by a class feature, and **Fate's Hand grants it exactly as the SRD does** —
+which classes open it, how many weapons each one covers at a time, and how that number grows
+with level are the SRD's answers, unchanged. Read them in your class entry; this chapter only
+tells you what the eight properties do.
 
 ## What you start with
 
