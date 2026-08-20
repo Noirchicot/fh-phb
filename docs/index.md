@@ -4,8 +4,6 @@ hide:
   - toc
 ---
 
-<a class="fh-dm-button" href="gm.html" title="Open DM Control">DM</a>
-
 <div class="fh-cover" markdown>
 
 ![Fate's Hand — a hand of fate over the Demon Forest](assets/img/cover-fates-hand.jpg){ .fh-banner }
@@ -34,9 +32,9 @@ hide:
   <span><b>Open Player Companion</b><small>Character · inventory · Soulforge</small></span>
 </a>
 
-<a class="fh-home-action" href="#rules-reference">
-  <span class="fh-home-action__icon">⌕</span>
-  <span><b>Browse the rules</b><small>Short chapters, searchable</small></span>
+<a class="fh-home-action fh-home-action--lock" href="dm/">
+  <span class="fh-home-action__icon">🔒</span>
+  <span><b>The Dungeon Masters' Secrets</b><small>The vault behind the lock</small></span>
 </a>
 
 </div>
@@ -58,51 +56,46 @@ hide:
 
 <div class="grid cards fh-toc fh-rules-grid" markdown>
 
--   <span class="fh-card-hero"><img src="assets/img/card-creating.jpg" alt="Creating a Character"><span class="fh-card-title">Build a Character</span></span>
+-   <span class="fh-card-hero"><img src="assets/img/card-playing.jpg" alt="Build a Character"><span class="fh-card-title">Build a Character</span></span>
 
     - [**Guided Character Builder**](skill-builder.html){ .fh-hot }
     - [1 · Identity](chapters/identity.md)
     - [2 · Species](chapters/species.md)
     - [3 · Inheritance](chapters/inheritance.md)
     - [4 · Destiny](chapters/fates-hand-mechanic.md)
+        - [The Arcana Explained](chapters/major-arcana.md)
     - [5 · Class](chapters/classes.md)
+        - [Moonkeeper](chapters/moonkeeper.md)
     - [6 · Abilities](chapters/ability-scores.md)
     - [7 · Skills](chapters/skills-and-tools.md)
     - [8 · Equipment](chapters/equipment.md)
 
--   <span class="fh-card-hero"><img src="assets/img/card-tools.jpg" alt="Player tools"><span class="fh-card-title">At the Table</span></span>
+-   <span class="fh-card-hero"><img src="assets/img/card-tools.jpg" alt="At the Table"><span class="fh-card-title">At the Table</span></span>
 
     - [**Player Companion**](player.md){ .fh-hot }
     - [Leveling up](chapters/leveling-up.md)
     - [Feats](chapters/feats.md)
     - [Trainings](chapters/trainings.md)
-    - [Party Inventory](inventory.md)
-    - [Soulforge Workshop](soulforge.md)
-
--   <span class="fh-card-hero"><img src="assets/img/card-destiny.jpg" alt="Destiny Mechanics"><span class="fh-card-title">Destiny &amp; Chaos</span></span>
-
-    - [Destiny System](chapters/fates-hand-mechanic.md)
-    - [Major Arcana](chapters/major-arcana.md)
-    - [Chaos Tables](chapters/chaos-tables.md)
-
--   <span class="fh-card-hero"><img src="assets/img/card-magic.jpg" alt="Spells and magic"><span class="fh-card-title">Magic &amp; Soulforging</span></span>
-
-    - [New Spells](chapters/spells.md)
-    - [Dark Rituals](chapters/dark-rituals.md)
-    - [Soulforging Rules](chapters/soulforge-crafting.md)
-    - [Magic Items](chapters/magic-items.md)
-
--   <span class="fh-card-hero"><img src="assets/img/card-playing.jpg" alt="Core rules"><span class="fh-card-title">Core Rule Changes</span></span>
-
-    - [Skills & Tools](chapters/skills-and-tools.md)
+    - [Ability Score Roller](dice-roller.md)
     - [Synergies](chapters/skills-synergies.md)
     - [Combat & Battlefield](chapters/battlefield.md)
     - [Exploration](chapters/dungeoneering.md)
+
+-   <span class="fh-card-hero"><img src="assets/img/card-magic.jpg" alt="Magic and Soulforging"><span class="fh-card-title">Magic &amp; Soulforging</span></span>
+
+    - [Magic](chapters/magic.md)
+    - [Spells](chapters/spells.md)
+    - [Dark Rituals](chapters/dark-rituals.md)
+    - [Crafting](chapters/crafting.md)
+    - [Soulforging Rules](chapters/soulforge-crafting.md)
+        - [Party Inventory](inventory.md)
+        - [Soulforge Workshop](soulforge.md)
+    - [Magic Items](chapters/magic-items.md)
 
 -   <span class="fh-card-hero"><img src="assets/img/card-world.jpg" alt="World"><span class="fh-card-title">World</span></span>
 
     - [Primordial Forces](chapters/primordial-forces.md)
 
-    *More to come — the lands, moons and powers of Fate's Hand.*
+    *Cosmology · Maps & Places · NPCs & Monsters · Factions & History — to come.*
 
 </div>

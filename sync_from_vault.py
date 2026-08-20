@@ -140,6 +140,12 @@ CHAPTER_IMAGES = {
     # ⭐ The twelve entries are generated from SPECIES below, so the portrait
     #    list and the page split can never disagree about which H2s are species.
     "species.md": None,   # filled in just after SPECIES is declared
+    # L'illustration libérée par la carte Destiny (elle a fondu dans Build a
+    # Character) descend ICI, dans le chapitre — Eric, 2026-08-20.
+    "chaos-tables.md": [
+        ("## The Chaos Tables",
+         "![When fate turns](../assets/img/card-destiny.jpg){ .fh-illus }"),
+    ],
     "ability-scores.md": [
         ("## The 3d6 × 10 method",
          '!!! tip "Try it live"\n'
