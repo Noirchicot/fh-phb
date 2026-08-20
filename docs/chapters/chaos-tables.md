@@ -4,6 +4,8 @@
 
 ## The Chaos Tables
 
+![When fate turns](../assets/img/card-destiny.jpg){ .fh-illus }
+
 ### Strength (STR)
 
 | Result | Consequence |

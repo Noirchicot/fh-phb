@@ -552,15 +552,10 @@ body.fh-home-page .md-header { display: none; }
   .fh-mc-modal-grid { grid-template-columns:1fr; gap:0; }
 }
 
-/* ---- landing grid: fixed 3 columns on desktop so the card positions hold
-   (My Character top middle · World bottom right) ---- */
-@media screen and (min-width: 60em) {
-  .md-typeset .fh-toc.grid.cards,
-  .md-typeset .fh-toc.grid.cards > ul {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-@media screen and (min-width: 45em) and (max-width: 59.9843em) {
+/* ---- landing grid: LE CARRÉ — deux colonnes, deux rangées (Eric, 2026-08-20).
+   Quatre cartes : Build a Character · At the Table / Magic & Soulforging · World.
+   C'était 3 colonnes du temps où il y en avait six. ---- */
+@media screen and (min-width: 45em) {
   .md-typeset .fh-toc.grid.cards,
   .md-typeset .fh-toc.grid.cards > ul {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -988,4 +983,28 @@ body.fh-home-page .md-header { display: none; }
   .fh-mychar--player .fh-mc-skill { grid-template-columns: .55rem 1fr auto 2rem; }
   .fh-mychar--player .fh-mc-result { grid-column: 2 / -1; text-align: right; }
   .fh-builder-frame { width: calc(100vw - .75rem); }
+}
+
+/* ========================================================================== */
+/* REFONTE 2026-08-20 — le carré, la serrure, l'emboîtement                    */
+/* ========================================================================== */
+
+/* Une page qui vit DANS une autre (Arcana sous Destiny, les deux outils sous
+   Soulforging Rules) : elle s'indente et change de puce. */
+.md-typeset .fh-toc.grid.cards > ul > li ul ul {
+  margin: 0 0 0 1.15em;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul ul li::before {
+  content: "↳"; color: var(--fh-rule); font-size: .8rem;
+  margin-right: .4em; vertical-align: 0;
+}
+
+/* Le troisième bouton : la serrure du MJ, à la place de « Browse the rules ». */
+.md-typeset .fh-home-action--lock {
+  border-top-color: var(--fh-red);
+  border-color: #6d3a2c;
+  background: linear-gradient(145deg, #2a1a15, #1b1210);
+}
+.md-typeset .fh-home-action--lock .fh-home-action__icon {
+  color: #d99b84; border-style: dashed;
 }

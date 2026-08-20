@@ -7,27 +7,20 @@
   /* Each entry is one nav group: its pages' H1s + their key H2s, so the TOC
      of any page lets you jump to every H1/H2 in the group. */
   var GROUPS = [
-    [ /* Creating a Character */
-      { slug: "ability-scores", title: "Rolling Ability Scores", items: [
-        ["The 3d6 × 10 method", "the-3d6-10-method"],
-        ["Why roll?", "why-roll"],
-        ["3d6 probability", "3d6-probability"]
-      ]},
+    [ /* Build a Character */
+      { slug: "identity", title: "Identity", items: [] },
       { slug: "species", title: "Species", items: [] },
-      { slug: "skills-and-tools", title: "Skills & Tools", items: [
-        ["1. The quick version", "1-the-quick-version"],
-        ["2. Building at character creation", "2-building-at-character-creation"],
-        ["3. Levelling up & evolution", "3-levelling-up-evolution"],
-        ["4. The 26 Skills", "4-the-26-skills"],
-        ["5. The Tools", "5-the-tools"],
-        ["6. Key reminders", "6-key-reminders"],
-        ["7. Detailed notes on complex skills", "7-detailed-notes-on-complex-skills"]
+      { slug: "inheritance", title: "Inheritance", items: [] },
+      { slug: "fates-hand-mechanic", title: "Destiny System", items: [
+        ["1. Destiny Score, Points & Dice", "1-destiny-score-points-dice"],
+        ["2. Recovery & Erosion", "2-recovery-erosion"],
+        ["3. Using Destiny Dice", "3-using-destiny-dice"],
+        ["4. The Chaos Effect", "4-the-chaos-effect"],
+        ["5. Arcane Awakening", "5-arcane-awakening"]
       ]},
-      { slug: "feats", title: "Feats", items: [
-        ["Skill feats", "skill-feats"],
-        ["Combat feats", "combat-feats"],
-        ["Command feats", "command-feats"],
-        ["Soulforge feats", "soulforge-feats"]
+      { slug: "major-arcana", title: "Arcana", items: [
+        ["Drawing a Major Arcana at character creation", "drawing-a-major-arcana-at-character-creation"],
+        ["Drawing in the whole tarot deck", "drawing-in-the-whole-tarot-deck"]
       ]},
       { slug: "classes", title: "Class Modifications", items: [
         ["Rogue", "rogue"],
@@ -40,25 +33,32 @@
         ["Level 6", "level-6"],
         ["Level 14", "level-14"],
         ["Level 18", "level-18"]
-      ]}
-    ],
-    [ /* The Destiny System */
-      { slug: "fates-hand-mechanic", title: "Destiny System", items: [
-        ["1. Destiny Score, Points & Dice", "1-destiny-score-points-dice"],
-        ["2. Recovery & Erosion", "2-recovery-erosion"],
-        ["3. Using Destiny Dice", "3-using-destiny-dice"],
-        ["4. The Chaos Effect", "4-the-chaos-effect"],
-        ["5. Arcane Awakening", "5-arcane-awakening"]
       ]},
-      { slug: "major-arcana", title: "Arcana", items: [
-        ["Drawing a Major Arcana at character creation", "drawing-a-major-arcana-at-character-creation"],
-        ["Drawing in the whole tarot deck", "drawing-in-the-whole-tarot-deck"]
+      { slug: "ability-scores", title: "Rolling Ability Scores", items: [
+        ["The 3d6 × 10 method", "the-3d6-10-method"],
+        ["Why roll?", "why-roll"],
+        ["3d6 probability", "3d6-probability"]
       ]},
-      { slug: "chaos-tables", title: "Chaos Tables", items: [
-        ["The Chaos Tables", "the-chaos-tables"]
-      ]}
+      { slug: "skills-and-tools", title: "Skills & Tools", items: [
+        ["1. The quick version", "1-the-quick-version"],
+        ["2. Building at character creation", "2-building-at-character-creation"],
+        ["3. Levelling up & evolution", "3-levelling-up-evolution"],
+        ["4. The 26 Skills", "4-the-26-skills"],
+        ["5. The Tools", "5-the-tools"],
+        ["6. Key reminders", "6-key-reminders"],
+        ["7. Detailed notes on complex skills", "7-detailed-notes-on-complex-skills"]
+      ]},
+      { slug: "equipment", title: "Equipment", items: [] }
     ],
-    [ /* Playing the Game */
+    [ /* At the Table */
+      { slug: "leveling-up", title: "Leveling up", items: [] },
+      { slug: "feats", title: "Feats", items: [
+        ["Skill feats", "skill-feats"],
+        ["Combat feats", "combat-feats"],
+        ["Command feats", "command-feats"],
+        ["Soulforge feats", "soulforge-feats"]
+      ]},
+      { slug: "trainings", title: "Trainings", items: [] },
       { slug: "skills-synergies", title: "Synergies", items: [
         ["Overview", "overview"],
         ["How Much You Get", "how-much-you-get"],
@@ -75,7 +75,8 @@
       ]},
       { slug: "dungeoneering", title: "Dungeoneering", items: [] }
     ],
-    [ /* Spells & Magic */
+    [ /* Magic & Soulforging */
+      { slug: "magic", title: "Magic", items: [] },
       { slug: "spells", title: "New Spells", items: [
         ["Bless", "bless"],
         ["Guidance", "guidance"],
@@ -90,10 +91,7 @@
         ["How a ritual resolves", "1-how-a-ritual-resolves-the-template"],
         ["The Rituals", "2-the-rituals"]
       ]},
-      { slug: "circle-magic", title: "Circle Magic", items: [
-        ["How a Circle Spell is cast", "how-a-circle-spell-is-cast"],
-        ["Circle Casting Options", "circle-casting-options-choose-one"]
-      ]},
+      { slug: "crafting", title: "Crafting", items: [] },
       { slug: "soulforge-crafting", title: "Soulforging", items: [
         ["Power Budget & Item Equilibrium", "power-budget-item-equilibrium"],
         ["The four phases", "the-four-phases"],
@@ -112,14 +110,19 @@
         ["Part 1 — The White Void", "part-1-the-white-void"],
         ["Part 2 — The Crimson Shroud", "part-2-the-crimson-shroud"]
       ]}
+    ],
+    [ /* The Dungeon Masters' Secrets */
+      { slug: "chaos-tables", title: "Chaos Tables", items: [
+        ["The Chaos Tables", "the-chaos-tables"]
+      ]}
     ]
   ];
   /* landing-card title for each group (shown under the TOC) */
-  GROUPS[0].name = "Creating a Character";
-  GROUPS[1].name = "Destiny Mechanics";
-  GROUPS[2].name = "Playing the Game";
-  GROUPS[3].name = "Spells & Magic";
-  GROUPS[4].name = "World";
+  GROUPS[0].name = "Build a Character";
+  GROUPS[1].name = "At the Table";
+  GROUPS[2].name = "Magic & Soulforging";
+  GROUPS[3].name = "World";
+  GROUPS[4].name = "The Dungeon Masters' Secrets";
 
   document.addEventListener("DOMContentLoaded", function () {
     /* landing page (has the contents cartouche) → hide the header bar */

@@ -34,6 +34,17 @@ TOOL_PAGES = [
 
 # dest filename : (source relative to VAULT, H1 title to guarantee)
 MAP = {
+    # ── REFONTE 2026-08-19 — les six chapitres neufs. Ils sont VIDES de règle
+    #    (des emplacements), mais ils passent par ICI comme tous les autres :
+    #    une page publiée sans source dans le vault serait une page que
+    #    personne ne pourrait plus corriger à la source. Une seule vérité.
+    "identity.md":            ("1. Character Creation Rolls/Identity.md",                          "Identity"),
+    "trainings.md":           ("4. Skills/Trainings.md",                                            "Trainings"),
+    "magic.md":               ("6. Spells & Magic/Magic.md",                                        "Magic"),
+    "crafting.md":            ("6. Spells & Magic/Crafting.md",                                     "Crafting"),
+    "equipment.md":           ("8. Adventuring/Equipment.md",                                       "Equipment"),
+    "leveling-up.md":         ("8. Adventuring/Leveling Up.md",                                     "Leveling Up"),
+
     "ability-scores.md":      ("1. Character Creation Rolls/D&D 5+ Character stat generation.md", "Ability Scores"),
     "inheritance.md":         ("1. Character Creation Rolls/Inheritance.md",                     "Inheritance"),
     "moonkeeper.md":          ("7. Classes & Subclasses/Lunar Sorcery revised.md",                "Moonkeeper"),
@@ -48,7 +59,10 @@ MAP = {
     "spells.md":              ("6. Spells & Magic/Fate’s Hand Spells.md",                          "New Spells"),
     "soulforge-crafting.md":  ("6. Spells & Magic/Soulforge Crafting.md",                          "Soulforge Crafting"),
     "dark-rituals.md":        ("6. Spells & Magic/Dark Rituals.md",                                "Dark Rituals"),
-    "circle-magic.md":        ("6. Spells & Magic/Circle Magic.md",                                "Circle Magic"),
+    # ⛔ CIRCLE MAGIC NE PUBLIE PLUS — Eric, 2026-08-18 : « Circle Magic dégage,
+    #    ça vient de Faerûn ». Le chapitre reste dans le vault, intact : c'est
+    #    son contenu, et le retirer du site ne le détruit pas.
+    # "circle-magic.md":      ("6. Spells & Magic/Circle Magic.md",                                "Circle Magic"),
     "magic-items.md":         ("6. Spells & Magic/Magic Items.md",                                 "Magic Items"),
     "primordial-forces.md":   ("6. Spells & Magic/Nymedes's Primordial Forces.md",                 "Nymedes's Primordial Forces"),
     "major-arcana.md":        ("3. Arcane Destinies/The Major Arcana.md",                          "Arcana"),
@@ -126,6 +140,12 @@ CHAPTER_IMAGES = {
     # ⭐ The twelve entries are generated from SPECIES below, so the portrait
     #    list and the page split can never disagree about which H2s are species.
     "species.md": None,   # filled in just after SPECIES is declared
+    # L'illustration libérée par la carte Destiny (elle a fondu dans Build a
+    # Character) descend ICI, dans le chapitre — Eric, 2026-08-20.
+    "chaos-tables.md": [
+        ("## The Chaos Tables",
+         "![When fate turns](../assets/img/card-destiny.jpg){ .fh-illus }"),
+    ],
     "ability-scores.md": [
         ("## The 3d6 × 10 method",
          '!!! tip "Try it live"\n'
@@ -701,6 +721,209 @@ def _plain(md: str) -> str:
     return md.strip()
 
 
+# ══ ET MAINTENANT LE CHAPITRE ENTIER, PAS SEULEMENT SON AMBIANCE ═══════════
+# Eric, 2026-08-18 : le builder n'affichait qu'un blurb de prose par espèce.
+# Il lui faut LE CHAPITRE — les traits, les tables de lignage, tout.
+#
+# ⭐ ADDITIF, ET C'EST LA CONDITION DU LOT. `data.lore.text` NE BOUGE PAS :
+#    c'est l'intro en prose, `lore.mjs` la découpe en nœuds texte et des
+#    gardes en dépendent. Ce qui suit s'AJOUTE À CÔTÉ, dans
+#    `data.lore.sections`, et ne relit jamais ce que `text` porte déjà.
+#
+# 📐 LA FORME EST ARRÊTÉE PAR ERIC, PAS DEVINÉE ICI :
+#      sections = [ {heading, text} | {heading, table:{columns, rows}} , … ]
+#    · l'ordre est celui du chapitre, de haut en bas — une LISTE, pas un
+#      objet : deux sections peuvent porter le même titre, l'ordre non ;
+#    · un bloc porte SOIT `text` SOIT `table`, jamais les deux ;
+#    · pas de section vide, et pas de `sections: []` — un chapitre qui n'a
+#      rien de plus que sa prose n'a PAS le champ.
+#
+# ⚠️ ICI LE BALISAGE INLINE RESTE, contrairement à `_plain()` juste au-dessus.
+#    Ce n'est pas une incohérence, c'est une décision d'Eric : `*Faerie Fire*`
+#    et `**Drow**` sont ce qu'une cellule de lignage DIT, et c'est son écran
+#    qui les rend. Les aplatir ici déciderait à sa place, et un balisage
+#    aplati ne se remet pas.
+_TITRE_RE = re.compile(r"^\*\*([^*]+)\*\*$")        # `**Traits**`, seul sur sa ligne
+_SEP_RE = re.compile(r"^\|[\s:|-]+\|$")             # `|---|---|`
+_ITALIQUE_SEULE_RE = re.compile(r"^\*[^*].*\*$")    # la ligne d'attribution, en pied
+_FH_TAG = '<span class="fh-tag">FH</span>'
+
+
+def _inline(md: str) -> str:
+    """Le balisage inline du chapitre, GARDÉ — sauf ce qui n'existe que sur le site.
+
+    ⛔ LA PASTILLE REDEVIENT DU MARKDOWN. `mark_fh_tags()` fabrique le
+    `<span class="fh-tag">` pour la PAGE ; le vault, lui, écrit `*(FH)*`. La
+    couche n'est pas la page : y laisser du HTML obligerait le builder à un
+    `innerHTML`, et aucun `innerHTML` ne traverse ce dépôt-là. On rend donc au
+    marqueur la forme que la source lui donne — rien n'est perdu.
+
+    ⛔ ET UN LIEN TOMBE SUR SON TEXTE. `[skill points](../skills-and-tools.md)`
+    est un chemin RELATIF AU SITE : dans le builder il ne mène nulle part. On
+    garde ce qu'il dit, on jette où il pointe. C'est le SEUL balisage aplati."""
+    md = md.replace(_FH_TAG, "*(FH)*")
+    md = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", md)   # [texte](url) -> texte
+    return md.strip()
+
+
+def _cellules(ligne: str) -> list:
+    ligne = ligne.strip()
+    if ligne.startswith("|"):
+        ligne = ligne[1:]
+    if ligne.endswith("|"):
+        ligne = ligne[:-1]
+    return [_inline(c) for c in ligne.split("|")]
+
+
+def _table(lignes: list) -> dict:
+    """Une table Markdown -> `{columns, rows}`, cellules balisées comprises.
+
+    ⭐ LA TABLE « EN DEUX COLONNES DE JOURNAL » SE REMET À PLAT. Le Dragonborn
+    imprime `| Dragon | Damage | Dragon | Damage |` : dix dragons rangés en
+    cinq lignes de deux paires. C'est une MISE EN PAGE, pas une donnée à
+    quatre colonnes — un écran qui la reprendrait telle quelle afficherait
+    deux fois la même colonne. On la relit donc demi par demi, de haut en bas :
+    le demi gauche d'abord, le demi droit ensuite. C'est l'ordre où les dix
+    dragons ressortent alphabétiques, Black → White, celui qu'on lit à l'œil.
+
+    ⛔ ET SEULEMENT SI L'EN-TÊTE SE RÉPÈTE À L'IDENTIQUE. Une vraie table à
+    quatre colonnes distinctes (les lignages de l'elfe) n'y touche pas."""
+    entete = _cellules(lignes[0])
+    corps = [_cellules(l) for l in lignes[2:]]      # lignes[1] = le séparateur
+    n = len(entete)
+    base = n
+    for taille in range(1, n):
+        if n % taille == 0 and entete == entete[:taille] * (n // taille):
+            base = taille
+            break
+    if base == n:
+        return {"columns": entete, "rows": corps}
+    rangs = []
+    for demi in range(n // base):
+        for r in corps:
+            tranche = r[demi * base:(demi + 1) * base]
+            if any(c for c in tranche):
+                rangs.append(tranche)
+    return {"columns": entete[:base], "rows": rangs}
+
+
+def _paragraphes(lignes: list) -> list:
+    """Les lignes de prose d'une section -> des paragraphes.
+
+    ⭐ UNE PUCE EST UN PARAGRAPHE, ET ELLE GARDE SON TIRET. Les traits sont
+    une liste (`- **Darkvision** — 60 feet.`) : les recoller en un pavé
+    rendrait dix traits en une phrase. Chacun sort séparément — le champ dit
+    « paragraphes séparés par une ligne vide », et c'est ce qu'un rendu naïf
+    saura poser — et le tiret reste, parce que c'est lui qui dit « liste » à
+    l'écran qui voudra en faire des puces.
+
+    Une suite de lignes qui ne sont PAS des puces se recolle, elle : c'est un
+    paragraphe replié par l'éditeur, pas plusieurs."""
+    paras, groupe = [], []
+
+    def vider():
+        if not groupe:
+            return
+        if all(l.lstrip().startswith("- ") for l in groupe):
+            paras.extend(_inline(l.strip()) for l in groupe)
+        else:
+            paras.append(_inline(" ".join(l.strip() for l in groupe)))
+        groupe.clear()
+
+    for ln in lignes:
+        if ln.strip() == "":
+            vider()
+            continue
+        groupe.append(ln)
+    vider()
+    return [p for p in paras if p]
+
+
+def _sans_bords_vides(lignes: list) -> list:
+    while lignes and lignes[0].strip() == "":
+        lignes = lignes[1:]
+    while lignes and lignes[-1].strip() == "":
+        lignes = lignes[:-1]
+    return lignes
+
+
+def _runs(lignes: list) -> list:
+    """Le corps d'une section, coupé entre ce qui est une table et ce qui ne
+    l'est pas — parce qu'un bloc porte SOIT `text` SOIT `table`.
+
+    Sur les douze chapitres d'aujourd'hui, chaque section n'en donne qu'un
+    seul. Le jour où l'une mêlera prose et table, elle sortira en DEUX blocs
+    sous le même titre — dans l'ordre — plutôt que d'en perdre la moitié en
+    silence."""
+    runs, courant, table = [], [], None
+    for ln in lignes:
+        if ln.strip() == "":
+            courant.append(ln)
+            continue
+        est = ln.strip().startswith("|")
+        if table is not None and est != table:
+            runs.append(_sans_bords_vides(courant))
+            courant = []
+        table = est
+        courant.append(ln)
+    if courant:
+        runs.append(_sans_bords_vides(courant))
+    return [r for r in runs if r]
+
+
+def _sections_du_chapitre(lignes: list) -> list:
+    """La page d'une espèce -> ses sections, de `**Traits**` au pied de page.
+
+    ⭐ CE QUI OUVRE LES SECTIONS EST CE QUI FERME LA PROSE : le premier titre
+    en gras seul sur sa ligne. Au-dessus c'est `data.lore.text`, et il ne
+    bouge pas ; au-dessous, tout descend. Un seul point de coupe pour les
+    deux champs — ils ne peuvent donc ni se chevaucher ni laisser un trou.
+
+    ⛔ LE PIED NE DESCEND PAS. Les douze pages finissent, avant la règle
+    horizontale, sur UNE ligne en italique qui dit d'où vient le texte
+    (`*Base SRD text: …*`, `*Les Araag … no SRD counterpart.*`). C'est de la
+    PROVENANCE, et la couche la porte déjà — champ `provenance` du record,
+    `attribution` de la couche. La règle horizontale qui suit ouvre la licence
+    CC-BY que `split_species()` recopie sur chaque page : elle non plus."""
+    blocs, titre, corps = [], None, []
+
+    def fermer():
+        nonlocal corps
+        if titre is not None:
+            for run in _runs(corps):
+                if len(run) >= 2 and run[0].strip().startswith("|") \
+                        and _SEP_RE.match(run[1].strip()):
+                    blocs.append({"heading": titre, "table": _table(run)})
+                    continue
+                paras = _paragraphes(run)
+                if paras:
+                    blocs.append({"heading": titre, "text": "\n\n".join(paras)})
+        corps = []
+
+    for ln in lignes:
+        if ln.strip() == "---":
+            break
+        t = _TITRE_RE.match(ln.strip())
+        if t:
+            fermer()
+            titre = t.group(1).strip()
+            continue
+        if titre is None:
+            continue          # au-dessus du premier titre : c'est `lore.text`
+        corps.append(ln)
+    fermer()
+
+    if blocs and "text" in blocs[-1]:
+        paras = blocs[-1]["text"].split("\n\n")
+        if paras and _ITALIQUE_SEULE_RE.match(paras[-1]):
+            paras.pop()
+            if paras:
+                blocs[-1]["text"] = "\n\n".join(paras)
+            else:
+                blocs.pop()
+    return blocs
+
+
 def build_species_lore():
     import json
     if not LORE_LAYER.exists():
@@ -712,7 +935,7 @@ def build_species_lore():
         print("  !! fh-lore-en n'a pas de records.species — lore non importé")
         return
 
-    faits, manques = 0, []
+    faits, manques, blocs_total = 0, [], 0
     for slug, _head, _name in SPECIES:
         page = SPECIES_DIR / f"{slug}.md"
         if not page.exists():
@@ -739,12 +962,21 @@ def build_species_lore():
         if entree is None or texte == "":
             manques.append(slug)
             continue
-        entree.setdefault("changes", {})["data.lore"] = {
+        lore = {
             "text": texte,
             # La provenance dit D'OÙ, pas QUI : c'est ce que le garde des
             # provenances de `fiche-360` sait déjà lire.
             "provenance": "fh-original"
         }
+        # ⛔ `sections` N'APPARAÎT QUE S'IL Y A QUELQUE CHOSE DEDANS. Un
+        #    `sections: []` obligerait chaque lecteur à distinguer « pas de
+        #    sections » de « une liste vide » — deux façons de dire la même
+        #    chose, donc une de trop (loi §0.5, un état illisible se refuse).
+        sections = _sections_du_chapitre(lignes[1:])   # on saute le H1
+        if sections:
+            lore["sections"] = sections
+        entree.setdefault("changes", {})["data.lore"] = lore
+        blocs_total += len(sections)
         faits += 1
 
     # 🔴 UN GARDE, PAS UNE SUPPOSITION : on n'écrit rien plutôt que de publier
@@ -753,7 +985,8 @@ def build_species_lore():
         print(f"  !! lore d'espèce ABORTED : {faits}/{len(SPECIES)} importés, manque {manques}")
         return
     LORE_LAYER.write_text(json.dumps(couche, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"  ok  fh-lore-en.layer.json  <- chapters/species/ ({faits} espèces)")
+    print(f"  ok  fh-lore-en.layer.json  <- chapters/species/ "
+          f"({faits} espèces, {blocs_total} sections)")
 
 
 if __name__ == "__main__":
