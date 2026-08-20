@@ -1,19 +1,35 @@
 # Leveling Up
 
-> 🚧 **Chapitre à écrire.** Cette page existe pour que l'arborescence de la refonte se tienne
-> debout et se parcoure — son texte reste à écrire. *Emplacement posé le 2026-08-19.*
+Levelling in Fate's Hand does what it does in the 2024 rules — you gain what your class gives
+you at that level. What follows is only **what Fate's Hand adds on top**, and it is all about
+points.
 
-## Ce que ce chapitre doit porter
+## What every character gains
 
-- Comment on monte de niveau
-- L'**XP**
-- La **table de progression**
-- Le **multiclassage**
+| When | What | |
+|---|---|---|
+| Levels **4 · 8 · 12 · 16 · 20** | **+2 free points** | Character level, not class level. |
+| From level **4** | **the right to buy Expertise** | Costs 2 free points on top of an Adept. Some class features grant it earlier. |
+| From level **4** | **the right to buy a training** | 1 point or more. A feat or trait may lift the gate. See **Trainings**. |
 
-⭐ Le multiclassage a déjà sa donnée dans le moteur — deux échelles séparées depuis le lot 82
-(le +2 sur le niveau du personnage, le +1 sur les niveaux de barde). C'est le **pli** du builder
-qui ne dérive encore qu'une classe.
+📌 **Level 4 is the hinge of the whole system.** Below it you are filling out what you already
+do; from it, you begin to buy **depth** — Expertise — and **knowledge** — trainings. That is
+deliberate: a level-1 character should look like someone with a trade, not like someone with a
+library.
 
----
+## What some characters gain
 
-*Plan de la refonte : FH-WEB/FHPHB/FHPHB arborescence.md.*
+| Who | What | |
+|---|---|---|
+| **Bard** | **+1 free point per Bard level, from Bard level 2** | This *replaces* Jack of All Trades, which Fate's Hand removes. It counts **Bard levels**, not character levels — the one place the two must not be confused. |
+| **Araag · Elestu** — *Fast Learner* | **+2 free points at levels 3 and 6** | On top of the +2 everyone gets at 4. |
+
+## What does not change when you level
+
+⛔ **Your bound points stay bound.** They were placed by your class at level 1 and they do not
+grow, do not move, and do not turn into free points.
+
+⛔ **A bound tool point never becomes a skill point**, at any level. Only free points cross.
+
+⛔ **Your weapon mastery pool does not change.** Levelling lets some classes know **more** kinds
+of weapon, never *different* ones. See **Equipment**.
