@@ -1,6 +1,6 @@
 # Feats
 
-Fate's Hand tweaks a handful of feats. Each entry shows its FH5+ rules; unfold *view older version* for the original. Anything not shown here works exactly as printed.
+Fate's Hand adds a few feats of its own and leaves the rest alone. Everything the 2024 rules print works as printed, unless an entry below says otherwise — and where an entry does say otherwise, unfold *view older version* to see what it replaced.
 
 ## Origin feats
 
@@ -19,31 +19,11 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 
 ## Skill feats
 
-### [Observant](https://www.dndbeyond.com/sources/dnd/phb-2024/feats#Observant)
-<span class="fh-edition">FH5+ — General feat (level 4+, INT or WIS 13+).</span>
+### Feats we used to change here
 
-- Increase your Intelligence or Wisdom by 1, to a maximum of 20.
-- Take the Search action as a Bonus Action.
-- Add your Intelligence or Wisdom modifier to Survival, Delve and Vigilance checks.
-
-<details class="fh-removed">
-<summary>view older version</summary>
-<div>Ability Score Increase: +1 Intelligence or Wisdom (max 20).</div>
-<div>Quick Search: take the Search action as a Bonus Action.</div>
-</details>
-
-### [Keen Mind](https://www.dndbeyond.com/sources/dnd/phb-2024/feats#KeenMind)
-<span class="fh-edition">FH5+ — General feat (level 4+, INT 13+).</span>
-
-- Increase your Intelligence by 1, to a maximum of 20.
-- Take the Study action as a Bonus Action.
-- Add your Intelligence or Wisdom modifier to Insight and Investigation checks.
-
-<details class="fh-removed">
-<summary>view older version</summary>
-<div>Ability Score Increase: +1 Intelligence (max 20).</div>
-<div>Quick Study: take the Study action as a Bonus Action.</div>
-</details>
+> 🗄️ **Nothing here for now.** *Observant* and *Keen Mind* played by a Fate's Hand version
+> until 2026-08-20. They no longer do — they work exactly as the 2024 rules print them. New
+> versions may be written on top of this slot.
 
 ### Auspicious *(FH)*
 <span class="fh-edition">FH5+ — Origin feat.</span>

@@ -41,6 +41,53 @@ class SrdCiteError(RuntimeError):
 
 
 _SRD_CACHE = {}
+_SRD_ETAT = {}
+
+
+def _srd_etat_fichier(rel):
+    """Ce fichier d'export est-il publiable, ou bien un lot le tient-il ?
+
+    🔴 LE DÉFAUT QUE CECI FERME. `SRD_ROOT` pointe vers un dépôt VOISIN, et on y
+    lit l'ARBRE DE TRAVAIL — pas un état commité. Si un lot tourne dans `fh-srd`
+    (branche non fusionnée, fichiers modifiés), une construction du site
+    embarquerait du travail non revu dans un livre publié, **sans que rien ne le
+    dise**. Repéré par l'archi FHPC le 2026-08-20, alors que `20-vivier-maitrises`
+    tenait `class.json` dans les deux langues.
+
+    ⭐ La question posée est plus fine que « l'arbre est-il sale » : c'est
+    « CE fichier dit-il autre chose que `main` ? ». Un lot qui travaille sur
+    `class.json` n'a aucune raison d'interdire de citer `weapon.json`. On compare
+    donc au vrai référentiel de publication, et la réponse couvre les deux cas
+    d'un coup — modification non commitée ET branche divergente.
+
+    Retourne None si le fichier est publiable, sinon la raison, en clair.
+    """
+    if rel in _SRD_ETAT:
+        return _SRD_ETAT[rel]
+    raison = None
+    try:
+        import subprocess
+        base = subprocess.run(
+            ["git", "-C", str(SRD_ROOT), "rev-parse", "--abbrev-ref", "HEAD"],
+            capture_output=True, text=True, timeout=10)
+        if base.returncode == 0:
+            branche = base.stdout.strip()
+            diff = subprocess.run(
+                ["git", "-C", str(SRD_ROOT), "diff", "--quiet", "main", "--", rel],
+                capture_output=True, timeout=10)
+            if diff.returncode == 1:
+                raison = (
+                    "%s diffère de `main` dans %s (branche courante : %s). Un lot le "
+                    "tient : citer maintenant publierait du travail non fusionné. "
+                    "Attendre la fusion, ou passer FH_SRD_ALLOW_UNMERGED=1 en sachant "
+                    "ce qu'on fait." % (rel, SRD_ROOT, branche)
+                )
+    except Exception:
+        # git absent ou dépôt illisible : on ne bloque pas le tirage pour ça,
+        # mais on ne fait pas semblant d'avoir vérifié.
+        print("  ?? fh-srd : état git non vérifiable — citations non contrôlées")
+    _SRD_ETAT[rel] = raison
+    return raison
 
 
 def _srd_load(kind, lang="en"):
@@ -52,6 +99,11 @@ def _srd_load(kind, lang="en"):
                 "{{srd:%s}} : %s est introuvable. Le dépôt fh-srd est attendu "
                 "en %s (surchargeable par la variable FH_SRD)." % (kind, f, SRD_ROOT)
             )
+        rel = "exports/srd/%s/%s.json" % (lang, kind)
+        if not os.environ.get("FH_SRD_ALLOW_UNMERGED"):
+            raison = _srd_etat_fichier(rel)
+            if raison:
+                raise SrdCiteError("{{srd:%s}} : %s" % (kind, raison))
         _SRD_CACHE[key] = json.loads(f.read_text(encoding="utf-8"))
     return _SRD_CACHE[key]
 
