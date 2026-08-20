@@ -16,7 +16,7 @@ Everything is classified by the **distance to your target** — the baseline rem
     - *(new)* **Shooting into a grapple** — a ranged attack at one of two grappling combatants has an **equal 50% chance of hitting either**: resolve the attack, then **roll randomly** for which one it lands on.
 - **5 ft — Melee range**
     - Melee weapons reach **5 ft** (reach weapons **10 ft**); a **ranged** attack while a hostile is within 5 ft is at **disadvantage** (RAW).
-    - *(new)* **Shooting into a melee** — a ranged shot that **misses by 2** hits the **closest individual** instead *(Sharpshooter cancels this)*.
+    - *(new)* **Shooting into a melee** — a ranged shot that **misses by 2** hits the **closest individual** instead.
     - *(new)* **Flanking** — **+2 to hit** when two or more attackers focus one target.
 - **Beyond 5 ft — Ranged**
     - **Normal range**; beyond it, out to **long range**, at **disadvantage**; past long range, not at all.

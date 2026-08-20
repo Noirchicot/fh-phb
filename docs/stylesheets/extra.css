@@ -1052,3 +1052,64 @@ body.fh-home-page .md-header { display: none; }
   color: color-mix(in srgb, var(--md-default-fg-color) 62%, transparent);
   font-size: .82rem; font-style: italic;
 }
+
+/* ── Le SRD cité — une troisième voix sur la page ────────────────────────────
+   La page porte désormais trois voix : la prose de Fate's Hand (le corps du
+   texte), ce que FH change (`.fh-edition`, `.fh-removed`), et ICI la règle
+   officielle citée mot pour mot. Il faut donc qu'on VOIE qu'on change de
+   bouche : le bloc est en retrait, sur un fond plus froid que le parchemin,
+   et il ne crie pas — c'est une citation, pas un encadré d'attention.
+   🔴 Ce bloc est GÉNÉRÉ par sync_from_vault.py depuis les exports de fh-srd.
+      Le styler ici est sans risque ; l'éditer dans docs/ est un no-op. */
+:root {
+  --fh-cite-bg:   rgba(92,67,38,.055);
+  --fh-cite-rule: rgba(92,67,38,.22);
+}
+[data-md-color-scheme="slate"] {
+  --fh-cite-bg:   rgba(216,182,90,.055);
+  --fh-cite-rule: rgba(216,182,90,.22);
+}
+
+.md-typeset .fh-srd-cite {
+  margin: 1.6em 0;
+  padding: 1em 1.2em .9em;
+  background: var(--fh-cite-bg);
+  border-left: 3px solid var(--fh-cite-rule);
+  border-radius: 0 5px 5px 0;
+}
+
+.md-typeset .fh-srd-cite__label {
+  margin: 0 0 .8em;
+  font-size: .72rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--fh-gold);
+  opacity: .95;
+}
+.md-typeset .fh-srd-cite__label strong { letter-spacing: .04em; }
+
+.md-typeset .fh-srd-cite__list { margin: 0; }
+.md-typeset .fh-srd-cite__list dt {
+  font-weight: 700;
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+  margin-top: .85em;
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-srd-cite__list dt { color: var(--fh-gold); }
+.md-typeset .fh-srd-cite__list dt:first-child { margin-top: 0; }
+.md-typeset .fh-srd-cite__list dd {
+  margin: .2em 0 0;
+  padding: 0;
+  font-size: .93em;
+  line-height: 1.65;
+}
+
+/* L'attribution CC-BY. Elle est générée AVEC le bloc, donc elle ne peut pas
+   être oubliée — mais elle n'a pas à disputer la lecture au texte cité. */
+.md-typeset .fh-srd-cite__attr {
+  margin: 1.1em 0 0;
+  padding-top: .7em;
+  border-top: 1px solid var(--fh-cite-rule);
+  font-size: .68rem;
+  line-height: 1.5;
+  opacity: .62;
+}

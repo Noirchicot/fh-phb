@@ -14,7 +14,99 @@ The two standalone tool pages (builder, roller) are copied over as well, with
 the site's tool shell — stylesheet and nav bar — injected on the way in; the
 sources stay standalone, so nothing here should ever be patched by hand.
 """
-import re, pathlib
+import re, os, json, html, pathlib
+
+# ── CITER LE SRD, JAMAIS LE COPIER ──────────────────────────────────────────
+# Un chapitre peut porter une ligne `{{srd:weapon-mastery}}`. Elle n'est PAS du
+# texte : c'est une citation, résolue ICI, à la construction, depuis les exports
+# de `fh-srd`. Ce que ça achète, et pourquoi ça vaut la dépendance :
+#   - le joueur lit la règle officielle sur la page FH, sans quitter le livre ;
+#   - il n'existe toujours qu'UN exemplaire du texte SRD — celui de `fh-srd` ;
+#   - une correction de l'extraction (il y en a eu deux le 2026-08-20) se
+#     propage à la construction suivante, sans que personne ait à s'en souvenir ;
+#   - l'attribution CC-BY est générée AVEC le bloc, donc elle ne peut pas être
+#     oubliée ;
+#   - citer une règle qui a disparu CASSE la construction au lieu de mentir.
+# 🔴 Le bloc produit vit dans `docs/`, réécrit à chaque passe : il n'y a donc
+#    rien à éditer à la main qui survivrait. La garde est structurelle, pas
+#    disciplinaire — c'est ce qui la fait tenir dans deux mois.
+SRD_ROOT = pathlib.Path(os.environ.get("FH_SRD", "/Users/Eric/tools/fh-srd"))
+SRD_EXPORTS = SRD_ROOT / "exports" / "srd"
+CITE_RE = re.compile(r"^\{\{srd:([a-z0-9-]+)(?::([a-z0-9,\- ]+))?\}\}[ \t]*$", re.M)
+
+
+class SrdCiteError(RuntimeError):
+    """Une citation qui ne résout pas. On s'arrête : une page qui cite une règle
+    absente est pire qu'une page qui ne la cite pas."""
+
+
+_SRD_CACHE = {}
+
+
+def _srd_load(kind, lang="en"):
+    key = (kind, lang)
+    if key not in _SRD_CACHE:
+        f = SRD_EXPORTS / lang / (kind + ".json")
+        if not f.exists():
+            raise SrdCiteError(
+                "{{srd:%s}} : %s est introuvable. Le dépôt fh-srd est attendu "
+                "en %s (surchargeable par la variable FH_SRD)." % (kind, f, SRD_ROOT)
+            )
+        _SRD_CACHE[key] = json.loads(f.read_text(encoding="utf-8"))
+    return _SRD_CACHE[key]
+
+
+def _srd_block(kind, slugs, lang="en"):
+    doc = _srd_load(kind, lang)
+    by_slug = {r["slug"]: r for r in doc["records"]}
+    if slugs:
+        wanted = [s.strip() for s in slugs.split(",") if s.strip()]
+        missing = [s for s in wanted if s not in by_slug]
+        if missing:
+            raise SrdCiteError(
+                "{{srd:%s:%s}} : %s n'existe pas dans %s.json (disponibles : %s)."
+                % (kind, slugs, ", ".join(missing), kind, ", ".join(sorted(by_slug)))
+            )
+        records = [by_slug[s] for s in wanted]
+    else:
+        records = doc["records"]
+    if not records:
+        raise SrdCiteError("{{srd:%s}} : aucun enregistrement à citer." % kind)
+
+    pages = sorted({r.get("source_locator", "") for r in records} - {""})
+    where = " et ".join(pages)
+    label = doc.get("layer_label", "SRD")
+    attr = records[0].get("attribution", "")
+
+    out = [
+        "<!-- GENERATED — cité depuis fh-srd (kind=%s, lang=%s, run=%s). "
+        "Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->"
+        % (kind, lang, doc.get("import_run", "?")),
+        '<div class="fh-srd-cite">',
+        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — the '
+        'official wording, unaltered</p>'
+        % (html.escape(label), (" · " + html.escape(where)) if where else ""),
+        '<dl class="fh-srd-cite__list">',
+    ]
+    for r in records:
+        out.append("<dt>%s</dt>" % html.escape(r["name"]))
+        out.append("<dd>%s</dd>" % html.escape(r["data"]["description"]))
+    out.append("</dl>")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
+def inject_srd_citations(text, dest):
+    def one(m):
+        try:
+            return _srd_block(m.group(1), m.group(2))
+        except SrdCiteError as err:
+            raise SrdCiteError("%s : %s" % (dest, err)) from None
+
+    return CITE_RE.sub(one, text)
+
 
 VAULT = pathlib.Path(
     "/Users/Eric/obsidian-vault/5.RPG/Fate's Hand/0. D&D 5+ Rules"
@@ -549,6 +641,7 @@ def main():
         body = convert_wikilinks(body)
         body = normalize_headings(body)
         body = ensure_h1(body, title)
+        body = inject_srd_citations(body, dest)
         body = insert_images(body, dest)
         body = space_before_lists(body)
         body = collapse_blanks(body)
