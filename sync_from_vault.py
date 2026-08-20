@@ -47,7 +47,7 @@ MAP = {
 
     "ability-scores.md":      ("1. Build a Character/D&D 5+ Character stat generation.md", "Ability Scores"),
     "inheritance.md":         ("1. Build a Character/Inheritance.md",                     "Inheritance"),
-    "moonkeeper.md":          ("1. Build a Character/Lunar Sorcery revised.md",                "Moonkeeper"),
+    "moonkeeper.md":          ("1. Build a Character/Moonkeeper.md",                "Moonkeeper"),
     "species.md":             ("1. Build a Character/D&D 5+ Races & Species.md",              "Species"),
     "skills-and-tools.md":    ("1. Build a Character/Skills & Tools — Player Guide.md",                       "Skills & Tools"),
     "feats.md":               ("2. At the Table/Feats.md",                                                "Feats"),

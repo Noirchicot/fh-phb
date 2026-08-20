@@ -15,7 +15,7 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 | **Auspicious** *(FH)* | **+2 to your Destiny Score** — see below |
 
 > ⛔ **No background record grants a feat.** There are no backgrounds in Fate's Hand; the step is
-> called **Inheritance** and the feat is always chosen freely. See Inheritance.
+> called **Inheritance** and the feat is always chosen freely. See [Inheritance](inheritance.md).
 
 ## Skill feats
 
