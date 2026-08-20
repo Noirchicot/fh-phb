@@ -9,6 +9,14 @@
 <p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
 
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Musical Instrument</strong> does not exist in Fate’s Hand — read one of <strong>Instrument (Strings)</strong>, <strong>(Wind)</strong> or <strong>(Other)</strong> — Fate’s Hand splits it in three, and each is bought separately.</li>
+</ul>
+<p>The quotations below are the SRD’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>
+
 Only the **changes** are listed here — everything else works as printed in the 2024 rules.
 
 ## Rogue

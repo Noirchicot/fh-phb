@@ -8,6 +8,14 @@
 <p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
 </nav>
 
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
+</ul>
+<p>The quotations below are the SRD’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>
+
 *(Sorts — révisions & nouveaux sorts Fate's Hand)*
 
 Fate's Hand revisions and new spells. Only the **changes** to existing spells are listed; everything else works as printed.

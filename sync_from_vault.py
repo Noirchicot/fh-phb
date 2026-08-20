@@ -144,6 +144,7 @@ def _srd_block(kind, slugs, lang="en", sauf=None):
         ecarte = set(retires)
         records = [r for r in records if r["slug"] not in ecarte]
 
+    records = _ecarter(records, kind, None, kind)
     if not records:
         raise SrdCiteError("{{srd:%s}} : aucun enregistrement à citer." % kind)
 
@@ -310,6 +311,28 @@ SRD_TABLES = {
 }
 
 
+def _fh_retires(kind):
+    """Les records que Fate's Hand a RETIRÉS pour ce genre.
+
+    ⭐ Dérivé de `fh-changes.json`, jamais tenu à la main. Une liste d'exclusions
+    écrite à la main est exactement la forme qui pourrit — celle qu'on venait de
+    retirer du menu de tête. Ici la règle est mécanique et sans jugement :
+    **un record que FH a retiré n'existe pas dans le jeu, donc le citer publie
+    une règle que personne ne peut jouer.** Aucune exception à peser.
+
+    ⛔ ET LA FRONTIÈRE EST NETTE : `patched` ne se dérive PAS de la même façon.
+       Un record patché existe toujours ; c'est son contenu qui diverge, et
+       décider s'il entre en concurrence demande un œil. `Skilled` en est le cas
+       d'école — le don existe, c'est son PRIX qui change — d'où une exclusion
+       manuelle qui reste manuelle, et qui sait pourquoi.
+    """
+    changes = _fh_changes() or {}
+    return {n for n in ((changes.get(kind) or {}).get("removed") or [])}
+
+
+_RETIRES_VUS = {}
+
+
 def _ecarter(records, kind, sauf, quoi):
     """Retire d'une citation les entrées que Fate's Hand REMPLACE.
 
@@ -320,6 +343,16 @@ def _ecarter(records, kind, sauf, quoi):
     🔴 Un slug inconnu CASSE : une exclusion qui ne mord sur rien laisserait
        réapparaître le concurrent le jour où l'amont le renomme, en silence.
     """
+    # ① D'abord la règle dérivée : ce que FH a retiré ne se cite pas.
+    retires = _fh_retires(kind)
+    if retires:
+        avant = len(records)
+        records = [r for r in records if r["name"] not in retires]
+        if len(records) != avant:
+            _RETIRES_VUS.setdefault(quoi, []).extend(
+                sorted(retires & {r["name"] for r in []} or
+                       {n for n in retires}))
+    # ② Puis les exclusions à la main, réservées aux cas de jugement.
     if not sauf:
         return records
     par_slug = {r["slug"] for r in records}
@@ -529,6 +562,7 @@ def _srd_spells(lang="en", niveaux=None):
     c'est le piège du jour, sous sa sixième forme.
     """
     doc = _srd_load("spell", lang)
+    doc = dict(doc, records=_ecarter(doc["records"], "spell", None, "spell-list"))
     voulus = None
     if niveaux:
         voulus = set()
@@ -616,6 +650,7 @@ def _srd_items(lang="en"):
     citation, on ne la normalise pas.
     """
     doc = _srd_load("item", lang)
+    doc = dict(doc, records=_ecarter(doc["records"], "item", None, "item-list"))
     groupes = {}
     for r in doc["records"]:
         groupes.setdefault(r["data"].get("category") or "other", []).append(r)
@@ -835,6 +870,19 @@ def chapter_banner(dest):
     return "\n".join(out) + "\n"
 
 
+def insert_banner_note(text, dest):
+    """Pose la note de traduction juste sous le bandeau du chapitre."""
+    note = note_de_traduction(dest)
+    if not note:
+        return text
+    marque = "</nav>"
+    i = text.find(marque)
+    if i == -1:
+        return note + "\n" + text
+    j = i + len(marque)
+    return text[:j] + "\n\n" + note + text[j:]
+
+
 def insert_banner(text, dest):
     banniere = chapter_banner(dest)
     if not banniere:
@@ -846,6 +894,69 @@ def insert_banner(text, dest):
     return banniere + "\n" + text
 
 
+# Ce qu'il faut LIRE à la place d'un terme retiré, quand il survit dans une
+# citation. ⛔ On ne rature pas un mot dans un texte cité — on le traduit.
+# 📌 Seuls les termes SANS AMBIGUÏTÉ sont ici. « Sage » est un arrière-plan
+#    retiré, mais c'est aussi une carte du Deck of Many Things : traduire
+#    aveuglément dirait au lecteur qu'une carte est un arrière-plan. Le
+#    détecteur le signale quand même à l'écran — c'est un œil qu'il faut, pas
+#    une règle.
+TRADUCTIONS = {
+    "Perception": "read <strong>Vigilance</strong>, <strong>Delve</strong> or "
+                  "<strong>Survival</strong> — Fate\u2019s Hand split it in three, "
+                  "and which one applies depends on what you are looking at",
+    "Musical Instrument": "read one of <strong>Instrument (Strings)</strong>, "
+                          "<strong>(Wind)</strong> or <strong>(Other)</strong> — "
+                          "Fate\u2019s Hand splits it in three, and each is bought separately",
+    "Gaming Set": "read one of <strong>Card Set</strong>, <strong>Dice Set</strong>, "
+                  "<strong>Dragonchess Set</strong> or <strong>Three-Dragon Ante</strong>",
+}
+
+
+def note_de_traduction(dest):
+    """Le bloc « ce mot ne veut pas dire ça ici », posé sous le bandeau.
+
+    🔴 Il est GÉNÉRÉ depuis ce que le détecteur a réellement trouvé dans les
+    citations de CE chapitre. Écrit à la main dans quatre chapitres, il aurait
+    pourri au premier terme qui bouge — et il en resterait un cinquième qu'on
+    aurait oublié.
+    """
+    trouves = sorted({f.split(" (")[0] for f in _FUITES.get(dest, set())}
+                     & set(TRADUCTIONS))
+    if not trouves:
+        return ""
+    out = ['<aside class="fh-translate">',
+           '<p class="fh-translate__label">Reading the quotations on this page</p>', "<ul>"]
+    for nom in trouves:
+        out.append("<li><strong>%s</strong> does not exist in Fate\u2019s Hand — %s.</li>"
+                   % (html.escape(nom), TRADUCTIONS[nom]))
+    out.append("</ul>")
+    out.append("<p>The quotations below are the SRD\u2019s, word for word. We do not edit a "
+               "quotation to fit our rules — we tell you how to read it.</p>")
+    out.append("</aside>")
+    return "\n".join(out) + "\n"
+
+
+_FUITES = {}
+
+
+def _scanner_fuites(bloc, dest):
+    """Un record retiré peut survivre DANS LE TEXTE d'un autre record.
+
+    🔴 Le filtre par record ne l'attrape pas : la fiche du Barde porte
+    « Tools: Choose 3 Musical Instruments », et *Musical Instrument* n'existe
+    pas dans Fate's Hand. On ne peut pas raturer un mot à l'intérieur d'une
+    citation sans la falsifier — donc on ne corrige pas, **on signale**, et la
+    passe le dit à l'écran. C'est la moitié qui ne s'automatise pas, et elle
+    doit se voir plutôt que de se deviner.
+    """
+    changes = _fh_changes() or {}
+    for genre, info in changes.items():
+        for nom in info.get("removed") or []:
+            if nom in bloc:
+                _FUITES.setdefault(dest, set()).add("%s (%s)" % (nom, genre))
+
+
 def inject_srd_citations(text, dest):
     def one(m):
         try:
@@ -854,12 +965,12 @@ def inject_srd_citations(text, dest):
                     "{{srd:%s}} : une vue calculée ne prend pas d'exclusion — "
                     "elle dérive d'une relation, pas d'une liste." % m.group(1))
             if m.group(1) == "feat-list":
-                return _srd_feats(sauf=m.group(3))
+                b = _srd_feats(sauf=m.group(3)); _scanner_fuites(b, dest); return b
             if m.group(1) in SRD_TABLES:
                 if m.group(2):
                     raise SrdCiteError(
                         "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1))
-                return _srd_table(m.group(1), sauf=m.group(3))
+                b = _srd_table(m.group(1), sauf=m.group(3)); _scanner_fuites(b, dest); return b
             if m.group(1) in SRD_TABLES:
                 if m.group(2):
                     raise SrdCiteError(
@@ -867,11 +978,11 @@ def inject_srd_citations(text, dest):
                     )
                 return _srd_table(m.group(1))
             if m.group(1) == "class-cards":
-                return _srd_classes()
+                b = _srd_classes(); _scanner_fuites(b, dest); return b
             if m.group(1) == "item-list":
-                return _srd_items()
+                b = _srd_items(); _scanner_fuites(b, dest); return b
             if m.group(1) == "spell-list":
-                return _srd_spells(niveaux=m.group(2))
+                b = _srd_spells(niveaux=m.group(2)); _scanner_fuites(b, dest); return b
             if m.group(1) == "feat-list":
                 return _srd_feats()
             if m.group(1) == "mastery-by-class":
@@ -882,7 +993,9 @@ def inject_srd_citations(text, dest):
                         "{{srd:weapons-by-mastery}} ne prend pas de sous-sélection."
                     )
                 return _srd_weapons_by_mastery()
-            return _srd_block(m.group(1), m.group(2), sauf=m.group(3))
+            bloc = _srd_block(m.group(1), m.group(2), sauf=m.group(3))
+            _scanner_fuites(bloc, dest)
+            return bloc
         except SrdCiteError as err:
             raise SrdCiteError("%s : %s" % (dest, err)) from None
 
@@ -1428,6 +1541,7 @@ def main():
         body = ensure_h1(body, title)
         body = inject_srd_citations(body, dest)
         body = insert_banner(body, dest)
+        body = insert_banner_note(body, dest)
         body = insert_images(body, dest)
         body = space_before_lists(body)
         body = collapse_blanks(body)
@@ -1444,6 +1558,12 @@ def main():
             continue
         dst.write_text(page, encoding="utf-8")
         print(f"  ok  {dst.name:24s} <- {src.name}")
+    if _FUITES:
+        print("  !! records retirés par FH, survivants DANS du texte cité :")
+        for d, noms in sorted(_FUITES.items()):
+            print("     %-22s %s" % (d, " · ".join(sorted(noms))))
+        print("     (on ne rature pas un mot dans une citation — le chapitre doit "
+              "traduire, voir Class Modifications)")
     if _fh_changes() is None:
         print("  ?? fh-changes.json absent (%s) — le menu de tête ne dit "
               "encore RIEN de ce que FH change" % FH_CHANGES)

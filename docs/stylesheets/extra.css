@@ -1264,3 +1264,27 @@ body.fh-home-page .md-header { display: none; }
   line-height: 1.55;
   opacity: .8;
 }
+
+/* « Ce mot ne veut pas dire ça ici. » Posé sous le bandeau, sur les chapitres
+   où un terme retiré par Fate's Hand survit DANS un texte cité. On ne rature
+   pas un mot dans une citation : on dit comment la lire. Généré. */
+.md-typeset .fh-translate {
+  margin: -1.2em 0 1.8em;
+  padding: .75em 1em;
+  border-left: 3px solid var(--fh-red);
+  background: color-mix(in srgb, var(--fh-red) 6%, transparent);
+  border-radius: 0 5px 5px 0;
+  font-size: .86em;
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-translate {
+  background: color-mix(in srgb, var(--fh-red) 13%, transparent);
+}
+.md-typeset .fh-translate__label {
+  margin: 0 0 .45em;
+  font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fh-red);
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-translate__label { color: #e0a08a; }
+.md-typeset .fh-translate ul { margin: 0 0 .5em; padding-left: 1.1em; }
+.md-typeset .fh-translate li { margin: .18em 0; line-height: 1.55; }
+.md-typeset .fh-translate > p:last-child { margin: 0; opacity: .75; font-size: .95em; }
