@@ -3,6 +3,10 @@
 Fate's Hand combat house-rules. *(new)* marks a Fate's Hand addition to the 2024 rule.
 
 ---
+> 📌 **Weapon Mastery** — la petite propriété que chaque arme porte (*Graze*, *Topple*,
+> *Vex*…) est décrite dans le chapitre **Equipment**, avec l'arme. Elle s'applique en combat
+> mais appartient à l'objet, pas au combattant.
+
 ## Combat ranges
 
 Everything is classified by the **distance to your target** — the baseline reminder first, then the Fate's Hand additions *(new)*.

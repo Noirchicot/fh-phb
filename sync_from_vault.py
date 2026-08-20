@@ -38,35 +38,35 @@ MAP = {
     #    (des emplacements), mais ils passent par ICI comme tous les autres :
     #    une page publiée sans source dans le vault serait une page que
     #    personne ne pourrait plus corriger à la source. Une seule vérité.
-    "identity.md":            ("1. Character Creation Rolls/Identity.md",                          "Identity"),
-    "trainings.md":           ("4. Skills/Trainings.md",                                            "Trainings"),
-    "magic.md":               ("6. Spells & Magic/Magic.md",                                        "Magic"),
-    "crafting.md":            ("6. Spells & Magic/Crafting.md",                                     "Crafting"),
-    "equipment.md":           ("8. Adventuring/Equipment.md",                                       "Equipment"),
-    "leveling-up.md":         ("8. Adventuring/Leveling Up.md",                                     "Leveling Up"),
+    "identity.md":            ("1. Build a Character/Identity.md",                          "Identity"),
+    "trainings.md":           ("2. At the Table/Trainings.md",                                            "Trainings"),
+    "magic.md":               ("3. Magic & Soulforging/Magic.md",                                        "Magic"),
+    "crafting.md":            ("3. Magic & Soulforging/Crafting.md",                                     "Crafting"),
+    "equipment.md":           ("1. Build a Character/Equipment.md",                                       "Equipment"),
+    "leveling-up.md":         ("2. At the Table/Leveling Up.md",                                     "Leveling Up"),
 
-    "ability-scores.md":      ("1. Character Creation Rolls/D&D 5+ Character stat generation.md", "Ability Scores"),
-    "inheritance.md":         ("1. Character Creation Rolls/Inheritance.md",                     "Inheritance"),
-    "moonkeeper.md":          ("7. Classes & Subclasses/Lunar Sorcery revised.md",                "Moonkeeper"),
-    "species.md":             ("2. Species Modifications/D&D 5+ Races & Species.md",              "Species"),
-    "skills-and-tools.md":    ("4. Skills/Skills & Tools — Player Guide.md",                       "Skills & Tools"),
-    "feats.md":               ("5. Feats/Feats.md",                                                "Feats"),
-    "skills-synergies.md":    ("4. Skills/Skill chapters/4. Skills and synergies.md",              "Skills, Synergies & DCs"),
-    "fates-hand-mechanic.md": ("3. Arcane Destinies/D&D 5+ Fate’s Hand Mechanic.md",               "Destiny System"),
-    "battlefield.md":         ("8. Adventuring/Battlefield Rules.md",                              "Battlefield Rules"),
-    "dungeoneering.md":       ("8. Adventuring/Dungeoneering.md",                                  "Dungeoneering"),
-    "classes.md":             ("7. Classes & Subclasses/Class Modifications.md",                   "Classes"),
-    "spells.md":              ("6. Spells & Magic/Fate’s Hand Spells.md",                          "New Spells"),
-    "soulforge-crafting.md":  ("6. Spells & Magic/Soulforge Crafting.md",                          "Soulforge Crafting"),
-    "dark-rituals.md":        ("6. Spells & Magic/Dark Rituals.md",                                "Dark Rituals"),
+    "ability-scores.md":      ("1. Build a Character/D&D 5+ Character stat generation.md", "Ability Scores"),
+    "inheritance.md":         ("1. Build a Character/Inheritance.md",                     "Inheritance"),
+    "moonkeeper.md":          ("1. Build a Character/Lunar Sorcery revised.md",                "Moonkeeper"),
+    "species.md":             ("1. Build a Character/D&D 5+ Races & Species.md",              "Species"),
+    "skills-and-tools.md":    ("1. Build a Character/Skills & Tools — Player Guide.md",                       "Skills & Tools"),
+    "feats.md":               ("2. At the Table/Feats.md",                                                "Feats"),
+    "skills-synergies.md":    ("2. At the Table/4. Skills and synergies.md",              "Skills, Synergies & DCs"),
+    "fates-hand-mechanic.md": ("1. Build a Character/D&D 5+ Fate’s Hand Mechanic.md",               "Destiny System"),
+    "battlefield.md":         ("2. At the Table/Battlefield Rules.md",                              "Battlefield Rules"),
+    "dungeoneering.md":       ("2. At the Table/Dungeoneering.md",                                  "Dungeoneering"),
+    "classes.md":             ("1. Build a Character/Class Modifications.md",                   "Classes"),
+    "spells.md":              ("3. Magic & Soulforging/Fate’s Hand Spells.md",                          "New Spells"),
+    "soulforge-crafting.md":  ("3. Magic & Soulforging/Soulforge Crafting.md",                          "Soulforge Crafting"),
+    "dark-rituals.md":        ("3. Magic & Soulforging/Dark Rituals.md",                                "Dark Rituals"),
     # ⛔ CIRCLE MAGIC NE PUBLIE PLUS — Eric, 2026-08-18 : « Circle Magic dégage,
     #    ça vient de Faerûn ». Le chapitre reste dans le vault, intact : c'est
     #    son contenu, et le retirer du site ne le détruit pas.
     # "circle-magic.md":      ("6. Spells & Magic/Circle Magic.md",                                "Circle Magic"),
-    "magic-items.md":         ("6. Spells & Magic/Magic Items.md",                                 "Magic Items"),
-    "primordial-forces.md":   ("6. Spells & Magic/Nymedes's Primordial Forces.md",                 "Nymedes's Primordial Forces"),
-    "major-arcana.md":        ("3. Arcane Destinies/The Major Arcana.md",                          "Arcana"),
-    "chaos-tables.md":        ("3. Arcane Destinies/Tables de Fatalité par Attribut.md",           "Chaos Tables"),
+    "magic-items.md":         ("3. Magic & Soulforging/Magic Items.md",                                 "Magic Items"),
+    "primordial-forces.md":   ("4. World/Nymedes's Primordial Forces.md",                 "Nymedes's Primordial Forces"),
+    "major-arcana.md":        ("1. Build a Character/The Major Arcana.md",                          "Arcana"),
+    "chaos-tables.md":        ("5. Dungeon Master Vault/Tables de Fatalité par Attribut.md",           "Chaos Tables"),
 }
 
 # vault note name (stem) -> published chapter file, for cross-note wikilinks
@@ -149,7 +149,7 @@ CHAPTER_IMAGES = {
     "ability-scores.md": [
         ("## The 3d6 × 10 method",
          '!!! tip "Try it live"\n'
-         "    Real crypto-RNG rolls, the reroll rule enforced automatically, and a spot to assign your\n"
+         "    Real crypto-RNG rolls, the two floors applied for you — no reroll — and a spot to assign your\n"
          "    six kept scores before you open the D&D Beyond builder.\n\n"
          "    [Open the Ability Score Roller ↗](../stat-roller.html){ .md-button target=_blank }"),
     ],
@@ -189,16 +189,16 @@ def insert_images(text: str, dest: str) -> str:
 
 # vault path (as it appears in a `code span`) -> (dest chapter file, label)
 PATH_TO_CHAPTER = {
-    "5. Feats/Feats.md":                 ("feats.md",            "Feats"),
+    "2. At the Table/Feats.md":                 ("feats.md",            "Feats"),
     "8. Other rules/Battlefield Rules.md": ("battlefield.md",     "Battlefield Rules"),
     "8. Other rules/Dungeoneering.md":   ("dungeoneering.md",    "Dungeoneering"),
-    "8. Adventuring/Battlefield Rules.md": ("battlefield.md",     "Battlefield Rules"),
-    "8. Adventuring/Dungeoneering.md":   ("dungeoneering.md",    "Dungeoneering"),
+    "2. At the Table/Battlefield Rules.md": ("battlefield.md",     "Battlefield Rules"),
+    "2. At the Table/Dungeoneering.md":   ("dungeoneering.md",    "Dungeoneering"),
     "7. Classes/Class Modifications.md": ("classes.md",          "Classes"),
-    "7. Classes & Subclasses/Class Modifications.md": ("classes.md", "Classes"),
+    "1. Build a Character/Class Modifications.md": ("classes.md", "Classes"),
     "6. Spells/Fate's Hand Spells.md":   ("spells.md",           "Spells"),
     "6. Spells & Magic/Fate's Hand Spells.md": ("spells.md",     "Spells"),
-    "6. Spells & Magic/Soulforge Crafting.md": ("soulforge-crafting.md", "Soulforge Crafting"),
+    "3. Magic & Soulforging/Soulforge Crafting.md": ("soulforge-crafting.md", "Soulforge Crafting"),
     "8. Tools/Soulforge Ingredients (FH).json": ("soulforge-crafting.md", "Soulforge Crafting"),
 }
 

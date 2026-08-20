@@ -99,3 +99,14 @@ hide:
     *Cosmology · Maps & Places · NPCs & Monsters · Factions & History — to come.*
 
 </div>
+
+<section class="fh-base-layer" aria-labelledby="fh-base-layer-title">
+  <p class="fh-base-layer__kicker">THE BASE LAYER</p>
+  <h2 id="fh-base-layer-title">The rules Fate's Hand stands on</h2>
+  <p>Fate's Hand is played on its own terms — the chapters above are the game, not a list of
+  amendments. Below them sits the ground both share: the SRD 5.2.1, with every weapon, spell,
+  species, background and monster of the base rules, on its own site, in English and in French.</p>
+  <p class="fh-base-layer__aside">Building a character by the base rules alone? That side has
+  its own builder. Curious where the two part ways? That belongs on a page of its own.</p>
+  <p><a class="fh-base-layer__go" href="https://noirchicot.github.io/fh-srd/" target="_blank" rel="noopener">Open the SRD 5.2.1 ↗</a></p>
+</section>

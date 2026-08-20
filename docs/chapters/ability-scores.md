@@ -5,7 +5,7 @@ In Fate's Hand you **roll** your ability scores rather than using Point Buy or t
 ## The 3d6 × 10 method
 
 !!! tip "Try it live"
-    Real crypto-RNG rolls, the reroll rule enforced automatically, and a spot to assign your
+    Real crypto-RNG rolls, the two floors applied for you — no reroll — and a spot to assign your
     six kept scores before you open the D&D Beyond builder.
 
     [Open the Ability Score Roller ↗](../stat-roller.html){ .md-button target=_blank }

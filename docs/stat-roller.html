@@ -409,11 +409,13 @@ footer {
     if (kept[5] !== 8) { notes.push(`lowest ${kept[5]} → 8`); kept[5] = 8; }
     kept.sort((a, b) => b - a);
 
-    /* PRODIGY — si le plancher haut a dû intervenir, aucun jet naturel n'atteignait 14. */
-    const prodigy = bruts[0] < 14;
+    /* LATE BLOOMER — si le plancher haut a dû intervenir, aucun jet naturel n'atteignait 14.
+   Renommé le 2026-08-17 (ex-PRODIGY) ; effet corrigé le 2026-08-20 : +2 points libres
+   et l'OPTION d'acheter Expertise au niveau 1 — jamais une Expertise offerte. */
+    const lateBloomer = bruts[0] < 14;
 
     status.textContent = notes.length
-      ? `✓ Floors applied — ${notes.join(" · ")}.` + (prodigy ? "  ⭐ Prodigy: free Expertise on one skill." : "")
+      ? `✓ Floors applied — ${notes.join(" · ")}.` + (lateBloomer ? " ⭐ Late Bloomer: +2 free points, and Expertise buyable at level 1." : "")
       : "✓ Set kept as rolled — no floor needed.";
     status.className = "status ok";
     rollBtn.classList.remove("invalid");

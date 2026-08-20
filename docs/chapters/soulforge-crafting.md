@@ -96,7 +96,7 @@ One window: **1d4 minutes from death.** After it closes, the magic fades and not
 
 **The check** — one **salvage attempt = 1 minute of work**: a **Hunting check, DC 12 + CR**. Each attempt recovers **one part** (plus **one more per 5** you beat the DC); the creature-type skill (above) synergises. **One failed check and the body yields nothing more** — salvage on that creature is over. *(Several kills at once force hard choices: a minute each, and the windows all run down together.)*
 
-**Strike to not kill.** To drop a creature **alive and intact**, declare a non-lethal blow at 0 HP — it makes **no CON save** (cf. ../8. Adventuring/Battlefield Rules). **Unarmed** is guaranteed; a **weapon** works at **disadvantage**. The creature then lies unconscious for an hour, and the 1d4-minute window opens only when harvesting begins.
+**Strike to not kill.** To drop a creature **alive and intact**, declare a non-lethal blow at 0 HP — it makes **no CON save** (cf. [Battlefield Rules](battlefield.md)). **Unarmed** is guaranteed; a **weapon** works at **disadvantage**. The creature then lies unconscious for an hour, and the 1d4-minute window opens only when harvesting begins.
 
 **The deeper the kill, the worse the salvage** — **−1 per HP below 0.**
 

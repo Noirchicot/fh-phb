@@ -1008,3 +1008,47 @@ body.fh-home-page .md-header { display: none; }
 .md-typeset .fh-home-action--lock .fh-home-action__icon {
   color: #d99b84; border-style: dashed;
 }
+
+/* ---- La couche de base : le lien vers le site SRD, VISIBLE.
+   L'entrée `SRD 5.2.1` de mkdocs.yml vit dans la barre latérale, qui est
+   masquée depuis juin — elle était donc injoignable comme les six autres
+   orphelines réparées le 2026-08-20. ---- */
+.md-typeset .fh-base-layer {
+  margin: 2.6rem 0 .6rem;
+  padding: 1.1rem 1.25rem 1.2rem;
+  border: 1px solid var(--fh-rule);
+  border-left: 3px solid var(--fh-gold);
+  border-radius: 6px;
+  background: rgba(156,107,22,.045);
+}
+.md-typeset .fh-base-layer__kicker {
+  margin: 0 0 .15em;
+  color: var(--fh-gold);
+  font: 700 .62rem/1 "Mr Eaves Small Caps", "Cinzel", serif;
+  letter-spacing: .18em;
+}
+.md-typeset .fh-base-layer h2 {
+  margin: 0 0 .35em;
+  border: 0;
+  font-size: 1.15rem;
+}
+.md-typeset .fh-base-layer p { margin: .35em 0; }
+.md-typeset .fh-base-layer__go {
+  display: inline-block;
+  margin-top: .35rem;
+  padding: .42rem .85rem;
+  color: var(--fh-gold);
+  border: 1px solid var(--fh-gold);
+  border-radius: 3px;
+  font: 700 .72rem/1 "Mr Eaves Small Caps", serif;
+  letter-spacing: .06em;
+  text-decoration: none;
+}
+.md-typeset .fh-base-layer__go:hover {
+  color: #1b1510;
+  background: var(--fh-gold);
+}
+.md-typeset .fh-base-layer__aside {
+  color: color-mix(in srgb, var(--md-default-fg-color) 62%, transparent);
+  font-size: .82rem; font-style: italic;
+}
