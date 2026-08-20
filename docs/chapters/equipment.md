@@ -71,6 +71,62 @@ to go looking for one.
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
+### Every weapon
+
+All thirty-eight, with what each one does, what it asks, and the trick it carries.
+
+<!-- GENERATED — cité depuis fh-srd weapon.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
+<div class="fh-srd-cite fh-srd-cite--table">
+<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.91 — all 38, every value as printed</p>
+<table class="fh-srd-table">
+<thead><tr><th>Weapon</th><th>Damage</th><th>Properties</th><th>Mastery</th><th>Cost</th><th>Weight</th></tr></thead>
+<tbody>
+<tr class="fh-srd-table__group"><th colspan="6">Simple Melee</th></tr>
+<tr><td>Club</td><td>1d4 Bludgeoning</td><td>Light</td><td>Slow</td><td>1 SP</td><td>2 lb.</td></tr>
+<tr><td>Dagger</td><td>1d4 Piercing</td><td>Finesse, Light, Thrown (Range 20/60)</td><td>Nick</td><td>2 GP</td><td>1 lb.</td></tr>
+<tr><td>Greatclub</td><td>1d8 Bludgeoning</td><td>Two-Handed</td><td>Push</td><td>2 SP</td><td>10 lb.</td></tr>
+<tr><td>Handaxe</td><td>1d6 Slashing</td><td>Light, Thrown (Range 20/60)</td><td>Vex</td><td>5 GP</td><td>2 lb.</td></tr>
+<tr><td>Javelin</td><td>1d6 Piercing</td><td>Thrown (Range 30/120)</td><td>Slow</td><td>5 SP</td><td>2 lb.</td></tr>
+<tr><td>Light Hammer</td><td>1d4 Bludgeoning</td><td>Light, Thrown (Range 20/60)</td><td>Nick</td><td>2 GP</td><td>2 lb.</td></tr>
+<tr><td>Mace</td><td>1d6 Bludgeoning</td><td>—</td><td>Sap</td><td>5 GP</td><td>4 lb.</td></tr>
+<tr><td>Quarterstaff</td><td>1d6 Bludgeoning</td><td>Versatile (1d8)</td><td>Topple</td><td>2 SP</td><td>4 lb.</td></tr>
+<tr><td>Sickle</td><td>1d4 Slashing</td><td>Light</td><td>Nick</td><td>1 GP</td><td>2 lb.</td></tr>
+<tr><td>Spear</td><td>1d6 Piercing</td><td>Thrown (Range 20/60), Versatile (1d8)</td><td>Sap</td><td>1 GP</td><td>3 lb.</td></tr>
+<tr class="fh-srd-table__group"><th colspan="6">Simple Ranged</th></tr>
+<tr><td>Dart</td><td>1d4 Piercing</td><td>Finesse, Thrown (Range 20/60)</td><td>Vex</td><td>5 CP</td><td>1/4 lb.</td></tr>
+<tr><td>Light Crossbow</td><td>1d8 Piercing</td><td>Ammunition (Range 80/320; Bolt), Loading, Two-Handed</td><td>Slow</td><td>25 GP</td><td>5 lb.</td></tr>
+<tr><td>Shortbow</td><td>1d6 Piercing</td><td>Ammunition (Range 80/320; Arrow), Two-Handed</td><td>Vex</td><td>25 GP</td><td>2 lb.</td></tr>
+<tr><td>Sling</td><td>1d4 Bludgeoning</td><td>Ammunition (Range 30/120; Bullet)</td><td>Slow</td><td>1 SP</td><td>—</td></tr>
+<tr class="fh-srd-table__group"><th colspan="6">Martial Melee</th></tr>
+<tr><td>Battleaxe</td><td>1d8 Slashing</td><td>Versatile (1d10)</td><td>Topple</td><td>10 GP</td><td>4 lb.</td></tr>
+<tr><td>Flail</td><td>1d8 Bludgeoning</td><td>—</td><td>Sap</td><td>10 GP</td><td>2 lb.</td></tr>
+<tr><td>Glaive</td><td>1d10 Slashing</td><td>Heavy, Reach, Two-Handed</td><td>Graze</td><td>20 GP</td><td>6 lb.</td></tr>
+<tr><td>Greataxe</td><td>1d12 Slashing</td><td>Heavy, Two-Handed</td><td>Cleave</td><td>30 GP</td><td>7 lb.</td></tr>
+<tr><td>Greatsword</td><td>2d6 Slashing</td><td>Heavy, Two-Handed</td><td>Graze</td><td>50 GP</td><td>6 lb.</td></tr>
+<tr><td>Halberd</td><td>1d10 Slashing</td><td>Heavy, Reach, Two-Handed</td><td>Cleave</td><td>20 GP</td><td>6 lb.</td></tr>
+<tr><td>Lance</td><td>1d10 Piercing</td><td>Heavy, Reach, Two-Handed (unless mounted)</td><td>Topple</td><td>10 GP</td><td>6 lb.</td></tr>
+<tr><td>Longsword</td><td>1d8 Slashing</td><td>Versatile (1d10)</td><td>Sap</td><td>15 GP</td><td>3 lb.</td></tr>
+<tr><td>Maul</td><td>2d6 Bludgeoning</td><td>Heavy, Two-Handed</td><td>Topple</td><td>10 GP</td><td>10 lb.</td></tr>
+<tr><td>Morningstar</td><td>1d8 Piercing</td><td>—</td><td>Sap</td><td>15 GP</td><td>4 lb.</td></tr>
+<tr><td>Pike</td><td>1d10 Piercing</td><td>Heavy, Reach, Two-Handed</td><td>Push</td><td>5 GP</td><td>18 lb.</td></tr>
+<tr><td>Rapier</td><td>1d8 Piercing</td><td>Finesse</td><td>Vex</td><td>25 GP</td><td>2 lb.</td></tr>
+<tr><td>Scimitar</td><td>1d6 Slashing</td><td>Finesse, Light</td><td>Nick</td><td>25 GP</td><td>3 lb.</td></tr>
+<tr><td>Shortsword</td><td>1d6 Piercing</td><td>Finesse, Light</td><td>Vex</td><td>10 GP</td><td>2 lb.</td></tr>
+<tr><td>Trident</td><td>1d8 Piercing</td><td>Thrown (Range 20/60), Versatile (1d10)</td><td>Topple</td><td>5 GP</td><td>4 lb.</td></tr>
+<tr><td>War Pick</td><td>1d8 Piercing</td><td>Versatile (1d10)</td><td>Sap</td><td>5 GP</td><td>2 lb.</td></tr>
+<tr><td>Warhammer</td><td>1d8 Bludgeoning</td><td>Versatile (1d10)</td><td>Push</td><td>15 GP</td><td>5 lb.</td></tr>
+<tr><td>Whip</td><td>1d4 Slashing</td><td>Finesse, Reach</td><td>Slow</td><td>2 GP</td><td>3 lb.</td></tr>
+<tr class="fh-srd-table__group"><th colspan="6">Martial Ranged</th></tr>
+<tr><td>Blowgun</td><td>1 Piercing</td><td>Ammunition (Range 25/100; Needle), Loading</td><td>Vex</td><td>10 GP</td><td>1 lb.</td></tr>
+<tr><td>Hand Crossbow</td><td>1d6 Piercing</td><td>Ammunition (Range 30/120; Bolt), Light, Loading</td><td>Vex</td><td>75 GP</td><td>3 lb.</td></tr>
+<tr><td>Heavy Crossbow</td><td>1d10 Piercing</td><td>Ammunition (Range 100/400; Bolt), Heavy, Loading, Two-Handed</td><td>Push</td><td>50 GP</td><td>18 lb.</td></tr>
+<tr><td>Longbow</td><td>1d8 Piercing</td><td>Ammunition (Range 150/600; Arrow), Heavy, Two-Handed</td><td>Slow</td><td>50 GP</td><td>2 lb.</td></tr>
+<tr><td>Musket</td><td>1d12 Piercing</td><td>Ammunition (Range 40/120; Bullet), Loading, Two-Handed</td><td>Slow</td><td>500 GP</td><td>10 lb.</td></tr>
+<tr><td>Pistol</td><td>1d10 Piercing</td><td>Ammunition (Range 30/90; Bullet), Loading</td><td>Vex</td><td>250 GP</td><td>3 lb.</td></tr>
+</tbody></table>
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
+</div>
+
 ## Armour, and what it asks in return
 
 Thirteen entries, quoted below exactly as the SRD prints them — every number, every price.
@@ -206,3 +262,140 @@ background hands you follows that chapter, not the SRD's list of packages.
 ---
 
 *Plan de la refonte : FH-WEB/FHPHB/FHPHB arborescence.md.*
+
+## Adventuring gear
+
+Eighty-two entries, prices as printed. Nothing here is a Fate's Hand decision — it is the
+list, brought onto this page so you never have to go and find it.
+
+<!-- GENERATED — cité depuis fh-srd gear.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
+<div class="fh-srd-cite fh-srd-cite--table">
+<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.95 — every price as printed</p>
+<table class="fh-srd-table">
+<thead><tr><th>Item</th><th>Cost</th><th>Weight</th></tr></thead>
+<tbody>
+<tr><td>Acid</td><td>25 GP</td><td>1 lb.</td></tr>
+<tr><td>Alchemist’s Fire</td><td>50 GP</td><td>1 lb.</td></tr>
+<tr><td>Ammunition</td><td>Varies</td><td>Varies</td></tr>
+<tr><td>Antitoxin</td><td>50 GP</td><td>—</td></tr>
+<tr><td>Arcane Focus</td><td>Varies</td><td>Varies</td></tr>
+<tr><td>Backpack</td><td>2 GP</td><td>5 lb.</td></tr>
+<tr><td>Ball Bearings</td><td>1 GP</td><td>2 lb.</td></tr>
+<tr><td>Barrel</td><td>2 GP</td><td>70 lb.</td></tr>
+<tr><td>Basket</td><td>4 SP</td><td>2 lb.</td></tr>
+<tr><td>Bedroll</td><td>1 GP</td><td>7 lb.</td></tr>
+<tr><td>Bell</td><td>1 GP</td><td>—</td></tr>
+<tr><td>Blanket</td><td>5 SP</td><td>3 lb.</td></tr>
+<tr><td>Block and Tackle</td><td>1 GP</td><td>5 lb.</td></tr>
+<tr><td>Book</td><td>25 GP</td><td>5 lb.</td></tr>
+<tr><td>Bottle, Glass</td><td>2 GP</td><td>2 lb.</td></tr>
+<tr><td>Bucket</td><td>5 CP</td><td>2 lb.</td></tr>
+<tr><td>Burglar’s Pack</td><td>16 GP</td><td>42 lb.</td></tr>
+<tr><td>Caltrops</td><td>1 GP</td><td>2 lb.</td></tr>
+<tr><td>Candle</td><td>1 CP</td><td>—</td></tr>
+<tr><td>Case, Crossbow Bolt</td><td>1 GP</td><td>1 lb.</td></tr>
+<tr><td>Case, Map or Scroll</td><td>1 GP</td><td>1 lb.</td></tr>
+<tr><td>Chain</td><td>5 GP</td><td>10 lb.</td></tr>
+<tr><td>Chest</td><td>5 GP</td><td>25 lb.</td></tr>
+<tr><td>Climber’s Kit</td><td>25 GP</td><td>12 lb.</td></tr>
+<tr><td>Clothes, Fine</td><td>15 GP</td><td>6 lb.</td></tr>
+<tr><td>Clothes, Traveler’s</td><td>2 GP</td><td>4 lb.</td></tr>
+<tr><td>Component Pouch</td><td>25 GP</td><td>2 lb.</td></tr>
+<tr><td>Costume</td><td>5 GP</td><td>4 lb.</td></tr>
+<tr><td>Crowbar</td><td>2 GP</td><td>5 lb.</td></tr>
+<tr><td>Diplomat’s Pack</td><td>39 GP</td><td>39 lb.</td></tr>
+<tr><td>Druidic Focus</td><td>Varies</td><td>Varies</td></tr>
+<tr><td>Dungeoneer’s Pack</td><td>12 GP</td><td>55 lb.</td></tr>
+<tr><td>Entertainer’s Pack</td><td>40 GP</td><td>58½ lb.</td></tr>
+<tr><td>Explorer’s Pack</td><td>10 GP</td><td>55 lb.</td></tr>
+<tr><td>Flask</td><td>2 CP</td><td>1 lb.</td></tr>
+<tr><td>Grappling Hook</td><td>2 GP</td><td>4 lb.</td></tr>
+<tr><td>Healer’s Kit</td><td>5 GP</td><td>3 lb.</td></tr>
+<tr><td>Holy Symbol</td><td>Varies</td><td>Varies</td></tr>
+<tr><td>Holy Water</td><td>25 GP</td><td>1 lb.</td></tr>
+<tr><td>Hunting Trap</td><td>5 GP</td><td>25 lb.</td></tr>
+<tr><td>Ink</td><td>10 GP</td><td>—</td></tr>
+<tr><td>Ink Pen</td><td>2 CP</td><td>—</td></tr>
+<tr><td>Jug</td><td>2 CP</td><td>4 lb.</td></tr>
+<tr><td>Ladder</td><td>1 SP</td><td>25 lb.</td></tr>
+<tr><td>Lamp</td><td>5 SP</td><td>1 lb.</td></tr>
+<tr><td>Lantern, Bullseye</td><td>10 GP</td><td>2 lb.</td></tr>
+<tr><td>Lantern, Hooded</td><td>5 GP</td><td>2 lb.</td></tr>
+<tr><td>Lock</td><td>10 GP</td><td>1 lb.</td></tr>
+<tr><td>Magnifying Glass</td><td>100 GP</td><td>—</td></tr>
+<tr><td>Manacles</td><td>2 GP</td><td>6 lb.</td></tr>
+<tr><td>Map</td><td>1 GP</td><td>—</td></tr>
+<tr><td>Mirror</td><td>5 GP</td><td>1/2 lb.</td></tr>
+<tr><td>Net</td><td>1 GP</td><td>3 lb.</td></tr>
+<tr><td>Oil</td><td>1 SP</td><td>1 lb.</td></tr>
+<tr><td>Paper</td><td>2 SP</td><td>—</td></tr>
+<tr><td>Parchment</td><td>1 SP</td><td>—</td></tr>
+<tr><td>Perfume</td><td>5 GP</td><td>—</td></tr>
+<tr><td>Poison, Basic</td><td>100 GP</td><td>—</td></tr>
+<tr><td>Pole</td><td>5 CP</td><td>7 lb.</td></tr>
+<tr><td>Pot, Iron</td><td>2 GP</td><td>10 lb.</td></tr>
+<tr><td>Potion of Healing</td><td>50 GP</td><td>1/2 lb.</td></tr>
+<tr><td>Pouch</td><td>5 SP</td><td>1 lb.</td></tr>
+<tr><td>Priest’s Pack</td><td>33 GP</td><td>29 lb.</td></tr>
+<tr><td>Quiver</td><td>1 GP</td><td>1 lb.</td></tr>
+<tr><td>Ram, Portable</td><td>4 GP</td><td>35 lb.</td></tr>
+<tr><td>Rations</td><td>5 SP</td><td>2 lb.</td></tr>
+<tr><td>Robe</td><td>1 GP</td><td>4 lb.</td></tr>
+<tr><td>Rope</td><td>1 GP</td><td>5 lb.</td></tr>
+<tr><td>Sack</td><td>1 CP</td><td>1/2 lb.</td></tr>
+<tr><td>Scholar’s Pack</td><td>40 GP</td><td>22 lb.</td></tr>
+<tr><td>Shovel</td><td>2 GP</td><td>5 lb.</td></tr>
+<tr><td>Signal Whistle</td><td>5 CP</td><td>—</td></tr>
+<tr><td>Spell Scroll (Cantrip)</td><td>30 GP</td><td>—</td></tr>
+<tr><td>Spell Scroll (Level 1)</td><td>50 GP</td><td>—</td></tr>
+<tr><td>Spikes, Iron</td><td>1 GP</td><td>5 lb.</td></tr>
+<tr><td>Spyglass</td><td>1,000 GP</td><td>1 lb.</td></tr>
+<tr><td>String</td><td>1 SP</td><td>—</td></tr>
+<tr><td>Tent</td><td>2 GP</td><td>20 lb.</td></tr>
+<tr><td>Tinderbox</td><td>5 SP</td><td>1 lb.</td></tr>
+<tr><td>Torch</td><td>1 CP</td><td>1 lb.</td></tr>
+<tr><td>Vial</td><td>1 GP</td><td>—</td></tr>
+<tr><td>Waterskin</td><td>2 SP</td><td>5 lb. (full)</td></tr>
+</tbody></table>
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
+</div>
+
+## Tools
+
+A tool is not gear: it names an ability, a thing it lets you do, and a list of what it makes.
+That is why it gets a wider table than the rest.
+
+<!-- GENERATED — cité depuis fh-srd tool.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
+<div class="fh-srd-cite fh-srd-cite--table">
+<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.93 et p.94 — what each one asks, and what it makes</p>
+<table class="fh-srd-table">
+<thead><tr><th>Tool</th><th>Ability</th><th>Utilize</th><th>Craft</th><th>Cost</th><th>Weight</th></tr></thead>
+<tbody>
+<tr><td>Alchemist’s Supplies</td><td>Intelligence</td><td>Identify a substance (DC 15), or start a fire (DC 15)</td><td>Acid, Alchemist’s Fire, Component Pouch, Oil, Paper, Perfume</td><td>50 GP</td><td>8 lb.</td></tr>
+<tr><td>Brewer’s Supplies</td><td>Intelligence</td><td>Detect poisoned drink (DC 15), or identify alcohol (DC 10)</td><td>Antitoxin</td><td>20 GP</td><td>9 lb.</td></tr>
+<tr><td>Calligrapher’s Supplies</td><td>Dexterity</td><td>Write text with impressive flourishes that guard against forgery (DC 15)</td><td>Ink, Spell Scroll</td><td>10 GP</td><td>5 lb.</td></tr>
+<tr><td>Carpenter’s Tools</td><td>Strength</td><td>Seal or pry open a door or container (DC 20)</td><td>Club, Greatclub, Quarterstaff, Barrel, Chest, Ladder, Pole, Portable Ram, Torch</td><td>8 GP</td><td>6 lb.</td></tr>
+<tr><td>Cartographer’s Tools</td><td>Wisdom</td><td>Draft a map of a small area (DC 15)</td><td>Map</td><td>15 GP</td><td>6 lb.</td></tr>
+<tr><td>Cobbler’s Tools</td><td>Dexterity</td><td>Modify footwear to give Advantage on the wearer’s next Dexterity (Acrobatics) check (DC 10)</td><td>Climber’s Kit</td><td>5 GP</td><td>5 lb.</td></tr>
+<tr><td>Cook’s Utensils</td><td>Wisdom</td><td>Improve food’s flavor (DC 10), or detect spoiled or poisoned food (DC 15)</td><td>Rations</td><td>1 GP</td><td>8 lb.</td></tr>
+<tr><td>Disguise Kit</td><td>Charisma</td><td>Apply makeup (DC 10)</td><td>Costume</td><td>25 GP</td><td>3 lb.</td></tr>
+<tr><td>Forgery Kit</td><td>Dexterity</td><td>Mimic 10 or fewer words of someone else’s handwriting (DC 15), or duplicate a wax seal (DC 20)</td><td>—</td><td>15 GP</td><td>5 lb.</td></tr>
+<tr><td>Gaming Set</td><td>Wisdom</td><td>Discern whether someone is cheating (DC 10), or win the game (DC 20)</td><td>—</td><td>Varies</td><td>—</td></tr>
+<tr><td>Glassblower’s Tools</td><td>Intelligence</td><td>Discern what a glass object held in the past 24 hours (DC 15)</td><td>Glass Bottle, Magnifying Glass, Spyglass, Vial</td><td>30 GP</td><td>5 lb.</td></tr>
+<tr><td>Herbalism Kit</td><td>Intelligence</td><td>Identify a plant (DC 10)</td><td>Antitoxin, Candle, Healer’s Kit, Potion of Healing</td><td>5 GP</td><td>3 lb.</td></tr>
+<tr><td>Jeweler’s Tools</td><td>Intelligence</td><td>Discern a gem’s value (DC 15)</td><td>Arcane Focus, Holy Symbol</td><td>25 GP</td><td>2 lb.</td></tr>
+<tr><td>Leatherworker’s Tools</td><td>Dexterity</td><td>Add a design to a leather item (DC 10)</td><td>Sling, Whip, Hide Armor, Leather Armor, Studded Leather Armor, Backpack, Crossbow Bolt Case, Map or Scroll Case, Parchment, Pouch, Quiver, Waterskin</td><td>5 GP</td><td>5 lb.</td></tr>
+<tr><td>Mason’s Tools</td><td>Strength</td><td>Chisel a symbol or hole in stone (DC 10)</td><td>Block and Tackle</td><td>10 GP</td><td>8 lb.</td></tr>
+<tr><td>Musical Instrument</td><td>Charisma</td><td>Play a known tune (DC 10), or improvise a song (DC 15)</td><td>—</td><td>Varies</td><td>Varies</td></tr>
+<tr><td>Navigator’s Tools</td><td>Wisdom</td><td>Plot a course (DC 10), or determine position by stargazing (DC 15)</td><td>—</td><td>25 GP</td><td>2 lb.</td></tr>
+<tr><td>Painter’s Supplies</td><td>Wisdom</td><td>Paint a recognizable image of something you’ve seen (DC 10)</td><td>Druidic Focus, Holy Symbol</td><td>10 GP</td><td>5 lb.</td></tr>
+<tr><td>Poisoner’s Kit</td><td>Intelligence</td><td>Detect a poisoned object (DC 10)</td><td>Basic Poison</td><td>50 GP</td><td>2 lb.</td></tr>
+<tr><td>Potter’s Tools</td><td>Intelligence</td><td>Discern what a ceramic object held in the past 24 hours (DC 15)</td><td>Jug, Lamp</td><td>10 GP</td><td>3 lb.</td></tr>
+<tr><td>Smith’s Tools</td><td>Strength</td><td>Pry open a door or container (DC 20)</td><td>Any Melee weapon (except Club, Greatclub, Quarterstaff, and Whip), Medium armor (except Hide), Heavy armor, Ball Bearings, Bucket, Caltrops, Chain, Crowbar, Firearm Bullets, Grappling Hook, Iron Pot, Iron Spikes, Sling Bullets</td><td>20 GP</td><td>8 lb.</td></tr>
+<tr><td>Thieves’ Tools</td><td>Dexterity</td><td>Pick a lock (DC 15), or disarm a trap (DC 15)</td><td>—</td><td>25 GP</td><td>1 lb.</td></tr>
+<tr><td>Tinker’s Tools</td><td>Dexterity</td><td>Assemble a Tiny item composed of scrap, which falls apart in 1 minute (DC 20)</td><td>Musket, Pistol, Bell, Bullseye Lantern, Flask, Hooded Lantern, Hunting Trap, Lock, Manacles, Mirror, Shovel, Signal Whistle, Tinderbox</td><td>50 GP</td><td>10 lb.</td></tr>
+<tr><td>Weaver’s Tools</td><td>Dexterity</td><td>Mend a tear in clothing (DC 10), or sew a Tiny design (DC 10)</td><td>Padded Armor, Basket, Bedroll, Blanket, Fine Clothes, Net, Robe, Rope, Sack, String, Tent, Traveler’s Clothes</td><td>1 GP</td><td>5 lb.</td></tr>
+<tr><td>Woodcarver’s Tools</td><td>Dexterity</td><td>Carve a pattern in wood (DC 10)</td><td>Club, Greatclub, Quarterstaff, Ranged weapons (except Pistol, Musket, and Sling), Arcane Focus, Arrows, Bolts, Druidic Focus, Ink Pen, Needles Other Tools</td><td>1 GP</td><td>5 lb.</td></tr>
+</tbody></table>
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
+</div>

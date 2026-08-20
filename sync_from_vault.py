@@ -137,67 +137,149 @@ def _srd_weapons_by_mastery(lang="en"):
     return "\n".join(out)
 
 
-def _srd_armor_table(lang="en"):
-    """La table d'armures du SRD, rendue à la façon de Fate's Hand.
+# ── Les tables citées ───────────────────────────────────────────────────────
+# ⭐ La distinction qui autorise ceci (Eric, 2026-08-20) : citer contraint les
+#    MOTS, pas la PRÉSENTATION. Aucune valeur n'est retapée — tout sort des
+#    exports. Ce qui est à nous, c'est la mise en page et le regroupement ; ce
+#    qui est au SRD, ce sont les nombres, et ils viennent de la source.
+#    Et c'est ce qui tient sa contrainte : « un joueur doit trouver tous les
+#    éléments au même endroit sans naviguer à droite à gauche. »
+#
+# ⚠️ Deux règles apprises en construisant la première, à ne pas réapprendre :
+#    - un champ mécanique peut valoir ZÉRO. Les armures lourdes portent
+#      `ac_dex_cap: 0`, pas `None` : « absent » se teste explicitement, jamais
+#      par véracité booléenne. Le même piège existe côté fhpc (`points: 0`).
+#    - un champ porte sa propre forme. `strength` vaut déjà « Str 13 » ; on le
+#      LIT, on ne le re-préfixe pas. Et `properties` est une chaîne dont les
+#      parenthèses portent des valeurs (« Ammunition (Range 80/320; Bolt) ») :
+#      on l'affiche telle quelle plutôt que de la découper.
 
-    ⭐ La distinction qui autorise ceci (Eric, 2026-08-20) : citer contraint les
-    MOTS, pas la PRÉSENTATION. Aucune valeur n'est retapée — tout sort de
-    `armor.json`. Le regroupement légère/moyenne/lourde est déduit du plafond de
-    Dextérité, donc lui aussi dérivé. Ce qui est à nous, c'est la mise en page ;
-    ce qui est au SRD, ce sont les nombres, et ils viennent de la source.
 
-    Et ça sert la contrainte d'Eric : « un joueur doit trouver tous les éléments
-    au même endroit sans naviguer à droite à gauche. »"""
-    doc = _srd_load("armor", lang)
-    familles = {"Light armor": [], "Medium armor": [], "Heavy armor": [], "Shield": []}
-    for r in doc["records"]:
-        d = r["data"]
-        if r["slug"] == "shield" or d["name"] == "Shield":
-            familles["Shield"].append(r)
-        elif d.get("ac_dex_cap") is None and "Dex" in (d.get("armor_class") or ""):
-            familles["Light armor"].append(r)
-        elif d.get("ac_dex_cap"):
-            familles["Medium armor"].append(r)
-        else:
-            familles["Heavy armor"].append(r)
-    if not any(familles.values()):
-        raise SrdCiteError("{{srd:armor-table}} : armor.json n'a rendu aucune armure.")
+def _txt(v):
+    return "—" if v is None or v == "" else str(v)
 
-    pages = sorted({r.get("source_locator", "") for r in doc["records"]} - {""})
+
+def _armor_family(d):
+    if d.get("name") == "Shield":
+        return "Shield"
+    if d.get("ac_dex_cap"):            # un plafond réel : armure moyenne
+        return "Medium armor"
+    if "Dex" in (d.get("armor_class") or ""):
+        return "Light armor"           # pas de plafond, mais la Dex compte
+    return "Heavy armor"               # cap 0 : la Dex ne compte pas
+
+
+def _weapon_family(d):
+    cat = (d.get("weapon_category") or "").capitalize()
+    portee = (d.get("weapon_range") or "").capitalize()
+    return ("%s %s" % (cat, portee)).strip() or "Weapons"
+
+
+SRD_TABLES = {
+    "armor-table": {
+        "kind": "armor",
+        "note": "every value as printed",
+        "columns": [
+            ("Armor",       lambda d: d["name"]),
+            ("Armor Class", lambda d: _txt(d.get("armor_class"))),
+            ("Strength",    lambda d: _txt(d.get("strength"))),
+            ("Stealth",     lambda d: "Disadvantage" if d.get("stealth_disadvantage") else "—"),
+            ("Cost",        lambda d: _txt(d.get("cost"))),
+            ("Weight",      lambda d: _txt(d.get("weight"))),
+        ],
+        "group": _armor_family,
+        "group_order": ["Light armor", "Medium armor", "Heavy armor", "Shield"],
+        "sort": lambda d: (d.get("ac_base") or 0, d["name"]),
+    },
+    "weapon-table": {
+        "kind": "weapon",
+        "note": "all 38, every value as printed",
+        "columns": [
+            ("Weapon",     lambda d: d["name"]),
+            ("Damage",     lambda d: _txt(d.get("damage"))),
+            ("Properties", lambda d: _txt(d.get("properties"))),
+            ("Mastery",    lambda d: _txt(d.get("mastery"))),
+            ("Cost",       lambda d: _txt(d.get("cost"))),
+            ("Weight",     lambda d: _txt(d.get("weight"))),
+        ],
+        "group": _weapon_family,
+        "group_order": ["Simple Melee", "Simple Ranged", "Martial Melee", "Martial Ranged"],
+        "sort": lambda d: d["name"],
+    },
+    "gear-table": {
+        "kind": "gear",
+        "note": "every price as printed",
+        "columns": [
+            ("Item",   lambda d: d["name"]),
+            ("Cost",   lambda d: _txt(d.get("cost"))),
+            ("Weight", lambda d: _txt(d.get("weight"))),
+        ],
+        "group": None,
+        "group_order": [],
+        "sort": lambda d: d["name"],
+    },
+    "tool-table": {
+        "kind": "tool",
+        "note": "what each one asks, and what it makes",
+        "columns": [
+            ("Tool",    lambda d: d["name"]),
+            ("Ability", lambda d: _txt(d.get("ability"))),
+            ("Utilize", lambda d: _txt(d.get("utilize"))),
+            ("Craft",   lambda d: _txt(d.get("craft"))),
+            ("Cost",    lambda d: _txt(d.get("cost"))),
+            ("Weight",  lambda d: _txt(d.get("weight"))),
+        ],
+        "group": None,
+        "group_order": [],
+        "sort": lambda d: d["name"],
+    },
+}
+
+
+def _srd_table(nom, lang="en"):
+    spec = SRD_TABLES[nom]
+    doc = _srd_load(spec["kind"], lang)
+    records = doc["records"]
+    if not records:
+        raise SrdCiteError("{{srd:%s}} : %s.json est vide." % (nom, spec["kind"]))
+
+    familles = {}
+    for r in records:
+        cle = spec["group"](r["data"]) if spec["group"] else ""
+        familles.setdefault(cle, []).append(r)
+    ordre = [g for g in spec["group_order"] if g in familles]
+    ordre += [g for g in familles if g not in ordre]
+    inconnus = [g for g in familles if g and g not in spec["group_order"]]
+    if inconnus and spec["group_order"]:
+        raise SrdCiteError(
+            "{{srd:%s}} : groupe inattendu %s — la forme de la source a changé, "
+            "la table mentirait sur l'ordre." % (nom, ", ".join(sorted(inconnus)))
+        )
+
+    pages = sorted({r.get("source_locator", "") for r in records} - {""})
     out = [
-        "<!-- GENERATED — cité depuis fh-srd armor.json (run=%s). Ne pas éditer : "
-        "réécrit par sync_from_vault.py. -->" % doc.get("import_run", "?"),
+        "<!-- GENERATED — cité depuis fh-srd %s.json (run=%s). Ne pas éditer : "
+        "réécrit par sync_from_vault.py. -->" % (spec["kind"], doc.get("import_run", "?")),
         '<div class="fh-srd-cite fh-srd-cite--table">',
-        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — every value '
-        "as printed</p>"
+        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — %s</p>'
         % (html.escape(doc.get("layer_label", "SRD")),
-           (" · " + html.escape(" et ".join(pages))) if pages else ""),
+           (" · " + html.escape(" et ".join(pages))) if pages else "",
+           html.escape(spec["note"])),
         '<table class="fh-srd-table">',
-        "<thead><tr><th>Armor</th><th>Armor Class</th><th>Strength</th>"
-        "<th>Stealth</th><th>Cost</th><th>Weight</th></tr></thead>",
+        "<thead><tr>%s</tr></thead>"
+        % "".join("<th>%s</th>" % html.escape(c[0]) for c in spec["columns"]),
         "<tbody>",
     ]
-    for famille, lignes in familles.items():
-        if not lignes:
-            continue
-        out.append('<tr class="fh-srd-table__group"><th colspan="6">%s</th></tr>'
-                   % html.escape(famille))
-        for r in sorted(lignes, key=lambda x: x["data"].get("ac_base") or 0):
+    for famille in ordre:
+        if famille:
+            out.append('<tr class="fh-srd-table__group"><th colspan="%d">%s</th></tr>'
+                       % (len(spec["columns"]), html.escape(famille)))
+        for r in sorted(familles[famille], key=lambda x: spec["sort"](x["data"])):
             d = r["data"]
-            force = d.get("strength")
-            out.append(
-                "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
-                % (
-                    html.escape(d["name"]),
-                    html.escape(str(d.get("armor_class") or "—")),
-                    html.escape(str(force)) if force else "—",
-                    "Disadvantage" if d.get("stealth_disadvantage") else "—",
-                    html.escape(str(d.get("cost") or "—")),
-                    html.escape(str(d.get("weight") or "—")),
-                )
-            )
+            out.append("<tr>%s</tr>" % "".join(
+                "<td>%s</td>" % html.escape(str(fn(d))) for _, fn in spec["columns"]))
     out.append("</tbody></table>")
-    attr = doc["records"][0].get("attribution", "")
+    attr = records[0].get("attribution", "")
     if attr:
         out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
@@ -207,8 +289,12 @@ def _srd_armor_table(lang="en"):
 def inject_srd_citations(text, dest):
     def one(m):
         try:
-            if m.group(1) == "armor-table":
-                return _srd_armor_table()
+            if m.group(1) in SRD_TABLES:
+                if m.group(2):
+                    raise SrdCiteError(
+                        "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1)
+                    )
+                return _srd_table(m.group(1))
             if m.group(1) == "weapons-by-mastery":
                 if m.group(2):
                     raise SrdCiteError(
