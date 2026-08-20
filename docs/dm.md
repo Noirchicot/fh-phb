@@ -33,6 +33,7 @@ that decide, the secrets that explain, and the console that runs the campaign.</
 -   <span class="fh-card-title">Chaos &amp; Fate</span>
 
     - [Chaos Tables](chapters/chaos-tables.md)
+    - [The Arcana Explained](chapters/major-arcana.md)
 
 -   <span class="fh-card-title">Secrets</span>
 

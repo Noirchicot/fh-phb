@@ -12,5 +12,6 @@ User-agent: *
 Disallow: /dm/
 Disallow: /chapters/dm-secrets/
 Disallow: /chapters/chaos-tables/
+Disallow: /chapters/major-arcana/
 Disallow: /gm.html
 Allow: /

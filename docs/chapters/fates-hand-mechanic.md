@@ -100,6 +100,50 @@ When your Destiny **Points reach 0 after a Natural 20**, draw a card from the ta
 
 > *Example — Alysandra (Points 1) lands a final strike with a Nat 20, draining her to 0 and sparking an Awakening. She draws **The Emperor**: her Score climbs and she gains command over lesser minds.*
 
+### 5.2 What a Major Arcana is
+
+Twenty-two cards, and each one is a **person your fate could turn out to be**.
+A card is never just a bonus: it carries a **meaning**, it moves your Destiny
+Score, it grants a **power** you may use, and it leaves a **vibration** — a way
+the world answers you.
+
+⭐ **You meet them one at a time.** There is no list to study before you play:
+you learn a card by **drawing** it, and what you draw is yours for good. Three
+are shown below so you know what a card looks like — the other nineteen are
+waiting.
+
+<div class="fh-arcana-teaser">
+<figure class="fh-arcana-card">
+<img src="../../assets/img/tarot/major/0.jpg" alt="The Fool" loading="lazy">
+<figcaption><span class="fh-arcana-num">0</span> The Fool</figcaption>
+<dl>
+<dt>Meaning</dt><dd>innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.</dd>
+<dt>Impact</dt><dd>+2</dd>
+<dt>Power</dt><dd>once per long rest, you may roll 2 Destiny dice at once, take the total of both as a bonus, and pay only the price of the highest.</dd>
+<dt>Vibration</dt><dd>luck effect (Bless or Guidance depending on level).</dd>
+</dl></figure>
+<figure class="fh-arcana-card">
+<img src="../../assets/img/tarot/major/VII.jpg" alt="The Chariot" loading="lazy">
+<figcaption><span class="fh-arcana-num">VII</span> The Chariot</figcaption>
+<dl>
+<dt>Meaning</dt><dd>victory, determination, triumph. Active control, moving toward success.</dd>
+<dt>Impact</dt><dd>+1</dd>
+<dt>Power</dt><dd>once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.</dd>
+<dt>Vibration</dt><dd>acceleration (Longstrider, Expeditious Retreat).</dd>
+</dl></figure>
+<figure class="fh-arcana-card">
+<img src="../../assets/img/tarot/major/XIX.jpg" alt="The Sun" loading="lazy">
+<figcaption><span class="fh-arcana-num">XIX</span> The Sun</figcaption>
+<dl>
+<dt>Meaning</dt><dd>success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.</dd>
+<dt>Impact</dt><dd>+1</dd>
+<dt>Power</dt><dd>once per short rest, add +2 to the result of a Destiny die without any additional cost.</dd>
+<dt>Vibration</dt><dd>minor light and healing (e.g. Light + small heal).</dd>
+</dl></figure>
+</div>
+
+*The reading of all twenty-two belongs to your Game Master.*
+
 ---
 
 ### 5.1 The Brick — dreaming something into being

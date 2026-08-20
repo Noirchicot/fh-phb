@@ -63,7 +63,6 @@ hide:
     - [2 · Species](chapters/species.md)
     - [3 · Inheritance](chapters/inheritance.md)
     - [4 · Destiny](chapters/fates-hand-mechanic.md)
-        - [The Arcana Explained](chapters/major-arcana.md)
     - [5 · Class](chapters/classes.md)
         - [Moonkeeper](chapters/moonkeeper.md)
     - [6 · Abilities](chapters/ability-scores.md)

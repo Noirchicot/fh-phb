@@ -101,7 +101,6 @@ nav:
     - 2 · Species: chapters/species.md
     - 3 · Inheritance: chapters/inheritance.md
     - 4 · Destiny: chapters/fates-hand-mechanic.md
-    - The Arcana Explained: chapters/major-arcana.md
     - 5 · Class: chapters/classes.md
     - Moonkeeper: chapters/moonkeeper.md
     - 6 · Abilities: chapters/ability-scores.md
@@ -131,4 +130,9 @@ nav:
   - The Dungeon Masters' Secrets:
     - The Vault: dm.md
     - Chaos Tables: chapters/chaos-tables.md
+    # Déplacé du parcours joueur le 2026-08-20 sur ordre d'Eric : « déplace le
+    # chapitre — dans le DM vault ». La lecture des 22 est au MJ ; le joueur
+    # découvre une carte en la tirant. ⏳ Un teaser de 3 cartes est prévu côté
+    # joueur — lesquelles n'est pas tranché, donc il n'est pas posé.
+    - The Arcana Explained: chapters/major-arcana.md
   - SRD 5.2.1: https://noirchicot.github.io/fh-srd/

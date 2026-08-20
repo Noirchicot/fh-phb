@@ -18,10 +18,6 @@
         ["4. The Chaos Effect", "4-the-chaos-effect"],
         ["5. Arcane Awakening", "5-arcane-awakening"]
       ]},
-      { slug: "major-arcana", title: "Arcana", items: [
-        ["Drawing a Major Arcana at character creation", "drawing-a-major-arcana-at-character-creation"],
-        ["Drawing in the whole tarot deck", "drawing-in-the-whole-tarot-deck"]
-      ]},
       { slug: "classes", title: "Class Modifications", items: [
         ["Rogue", "rogue"],
         ["Fighter, Ranger & Paladin", "fighter-ranger-paladin"],

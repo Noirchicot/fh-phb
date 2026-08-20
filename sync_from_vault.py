@@ -1006,6 +1006,79 @@ def _replier(bloc, quoi):
             "— open to read them</summary>\n%s\n</details>" % (n, quoi_lisible, bloc))
 
 
+def _lire_arcanes():
+    """Les 22 arcanes, lues depuis le chapitre — la même source qu'arcana.js.
+
+    ⭐ Le teaser du chapitre *Destiny* est GÉNÉRÉ d'ici. Recopier trois cartes
+    à la main dans un second chapitre en ferait une seconde version : le jour
+    où Eric règle un pouvoir, l'exemple mentirait sans que rien ne le dise.
+    """
+    cartes, cur = [], None
+    for line in ARCANA_SRC.read_text(encoding="utf-8").splitlines():
+        h = re.match(r"^#{2,4}\s+([0IVXL]+)\.\s+(.+?)\s*$", line.strip())
+        if h:
+            cur = {"numeral": h.group(1), "name": h.group(2).strip(),
+                   "meaning": "", "impact": "", "power": "", "vibration": ""}
+            cartes.append(cur)
+            continue
+        if cur is None:
+            continue
+        f = re.match(r"^-\s+\*\*(.+?)\*\*\s+[—-]\s+(.+?)\s*$", line.strip())
+        if f:
+            k = ARCANA_FIELDS.get(f.group(1).strip().lower())
+            if k:
+                cur[k] = re.sub(r"\*{1,2}(.+?)\*{1,2}", r"\1", f.group(2)).strip()
+    return cartes
+
+
+def arcana_teaser(noms):
+    """Trois cartes montrées en exemple, côté joueur.
+
+    ⚠️ Eric, 2026-08-20 : *« le joueur les découvre au fur et à mesure qu'il les
+    tire »*, ET *« dans Destiny pour les joueurs il peut y avoir une explication
+    sur les arcanes, et justement 3 exemples »*. Les deux tiennent ensemble : on
+    montre **trois** cartes pour dire ce qu'est une carte, et les dix-neuf autres
+    se découvrent en les tirant. C'est un échange assumé — trois sur vingt-deux.
+    🔴 Une carte nommée ici et absente du chapitre CASSE la construction : un
+       exemple qui pointe vers rien est pire que pas d'exemple.
+    """
+    par_nom = {c["name"].lower(): c for c in _lire_arcanes()}
+    voulus = [n.strip() for n in noms.split(",") if n.strip()]
+    manquants = [n for n in voulus if n.lower() not in par_nom]
+    if manquants:
+        raise SrdCiteError(
+            "{{arcana:%s}} : %s n'est pas une carte du chapitre (disponibles : %s)."
+            % (noms, ", ".join(manquants), ", ".join(sorted(par_nom))))
+    out = ['<div class="fh-arcana-teaser">']
+    for n in voulus:
+        c = par_nom[n.lower()]
+        out.append('<figure class="fh-arcana-card">')
+        out.append('<img src="../../assets/img/tarot/major/%s.jpg" alt="%s" loading="lazy">'
+                   % (html.escape(c["numeral"]), html.escape(c["name"])))
+        out.append('<figcaption><span class="fh-arcana-num">%s</span> %s</figcaption>'
+                   % (html.escape(c["numeral"]), html.escape(c["name"])))
+        out.append("<dl>")
+        for libelle, cle in (("Meaning", "meaning"), ("Impact", "impact"),
+                             ("Power", "power"), ("Vibration", "vibration")):
+            if c.get(cle):
+                out.append("<dt>%s</dt><dd>%s</dd>" % (libelle, html.escape(c[cle])))
+        out.append("</dl></figure>")
+    out.append("</div>")
+    return "\n".join(out)
+
+
+ARCANA_RE = re.compile(r"^\{\{arcana:([^}]+)\}\}[ \t]*$", re.M)
+
+
+def inject_arcana(text, dest):
+    def one(m):
+        try:
+            return arcana_teaser(m.group(1))
+        except SrdCiteError as err:
+            raise SrdCiteError("%s : %s" % (dest, err)) from None
+    return ARCANA_RE.sub(one, text)
+
+
 def inject_srd_citations(text, dest):
     def one(m):
         try:
@@ -1699,6 +1772,7 @@ def main():
         body = ensure_h1(body, title)
         avant_citations = body
         body = inject_srd_citations(body, dest)
+        body = inject_arcana(body, dest)
         mesurer_proportion(dest, avant_citations, body)
         body = insert_banner_note(body, dest)
         body = insert_banner(body, dest)
