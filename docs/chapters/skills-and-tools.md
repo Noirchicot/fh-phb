@@ -151,8 +151,13 @@ the story coherent with where you spend.
 | **+2 free points** | everyone | levels **4 · 8 · 12 · 16 · 20** of your **character** |
 | **+1 free point** | Bard only | each **Bard level**, from Bard level 2 — **this replaces Jack of All Trades**, which Fate's Hand removes |
 
-⛔ **You never gain bound points by levelling** — the only exception is a feature that names a
-list, like the Barbarian's *Primal Knowledge*.
+⛔ **You never gain bound points by levelling** — the only exception is a feature that **names
+a list**, and there is exactly one: the Barbarian's *Primal Knowledge* at level 3, which hands
+2 points bound to **Survival · Hunting · Vigilance**. A feature that names no list hands **free**
+points, always.
+
+*(Ruled 2026-08-20. It used to grant one bound Novice skill from the whole Barbarian list; Eric
+tightened it to the Keen Senses shape once that mechanic had proved itself.)*
 
 ### Class features that grant Expertise
 
@@ -165,7 +170,7 @@ Expertise before level 4**:
 | **Ranger — Deft Explorer** | 2 | **+2**, plus 2 languages | |
 | **Ranger — Expertise** | 9 | **+4** | |
 | **Rogue — Expertise** | 1 | — *(already inside his bound placements)* | may buy Expertise from level 1 |
-| **Barbarian — Primal Knowledge** | 3 | one **bound** Novice skill from the Barbarian list | |
+| **Barbarian — Primal Knowledge** | 3 | **2 points, bound to Survival · Hunting · Vigilance** — Novice on two of the three, or Adept on one. Never convertible to free points | *Same shape as the elf's Keen Senses, **not the same list**: the barbarian has **Hunting** where the elf has **Delve**. Delve reads built and urban spaces, and a primal knowledge is not a knowledge of cities.* |
 
 ⚠️ **A correction, measured 2026-08-18.** This table used to list **Bard — Bonus Proficiencies
 (level 3, +6)** among class features. It is not one: it is a **subclass** feature — College of
@@ -438,7 +443,7 @@ A finesse weapon (DEX) that improves [Strangling](battlefield.md#strangle-new) (
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
 <li><span class="fh-layer__genre">skill</span> <span class="fh-layer__added">adds 9</span> — Academics, Appraise, Delve, Hunting, Leadership, Might… · <span class="fh-layer__patched">changes 17</span> — Acrobatics, Animal Handling, Arcana, Athletics, Deception, History… · <span class="fh-layer__removed">removes 1</span> — Perception</li>
-<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 13</span> — Card Set, Dice Set, Dragonchess Set, Mount (Air), Mount (Land), Mount (Water)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
+<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 14</span> — Card Set, Dice Set, Dragonchess Set, Instrument (Other), Instrument (Strings), Instrument (Wind)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
 <li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
 </ul>
 <p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>

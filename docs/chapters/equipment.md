@@ -448,7 +448,7 @@ That is why it gets a wider table than the rest.
 <li><span class="fh-layer__genre">weapon mastery</span> <span class="fh-layer__same">no record differs</span></li>
 <li><span class="fh-layer__genre">armor</span> <span class="fh-layer__same">no record differs</span></li>
 <li><span class="fh-layer__genre">gear</span> <span class="fh-layer__same">no record differs</span></li>
-<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 13</span> — Card Set, Dice Set, Dragonchess Set, Mount (Air), Mount (Land), Mount (Water)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
+<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 14</span> — Card Set, Dice Set, Dragonchess Set, Instrument (Other), Instrument (Strings), Instrument (Wind)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
 </ul>
 <p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
