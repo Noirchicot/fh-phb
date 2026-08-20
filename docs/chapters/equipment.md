@@ -14,14 +14,15 @@ Deux profondeurs dans un seul chapitre :
 
 ## What this chapter is — and what it is not
 
-**It is not the shop.** The full lists — every weapon, every armour, every piece of gear with
-its price and its weight — live in the SRD, published and searchable, and the nav links
-straight to it. Copying them here would create a second version that drifts from the first,
-and a table that disagrees with itself is worse than no table.
+**Everything is here.** You should not have to leave this page to look a rule up, so the
+tables and the rule text are on it — **quoted** from the SRD, never retold. They are pulled
+from the published source each time this book is built, which is why they cannot drift: there
+is still only one copy of them anywhere, and it is not this one.
 
-**It is how to read them.** A weapon tells you four things, and only one of them is the
-damage die. This chapter teaches the other three, says what Fate's Hand changes, and hands
-the rest to the SRD.
+**What Fate's Hand adds is the reading.** A weapon tells you four things, and only one of them
+is the damage die. Where you see us talking rather than quoting, we are sorting, grouping or
+warning — never restating a rule in our own words. And where Fate's Hand *changes* a rule, it
+says so, in as many words.
 
 ## Reading a weapon
 
@@ -30,23 +31,15 @@ Past its cost and its weight, a weapon carries three things that decide how it p
 **Its damage** — a die and a type. The die is the smallest part of a weapon's character; two
 weapons that both roll 1d8 can play nothing alike.
 
-**Its properties** — what it demands of you, or allows you. Ten of them exist, and they come
-in two families. Five are **demands**: *Two-Handed* takes both your hands to attack; *Heavy*
-hands you Disadvantage unless you have the body for it — Strength 13 in melee, Dexterity 13
-at range; *Loading* limits you to one shot per action however many attacks you have;
-*Ammunition* means you carry the shot and spend it; *Range* sets the distance past which you
-shoot at Disadvantage, and the distance past which you cannot shoot at all. Five are
-**permissions**: *Finesse* lets you choose Strength or Dexterity — for the attack and the
-damage, but the same one for both; *Light* opens a second attack with a *different* Light
-weapon, and that one carries no ability modifier on its damage; *Thrown* lets you throw it
-with the same ability you'd swing it; *Versatile* gives a bigger die when you take it in both
-hands; *Reach* adds 5 feet to your reach, Opportunity Attacks included.
+**Its properties** — what it demands of you, or allows you. Ten of them, and Fate's Hand
+sorts them in two families rather than one alphabet. Five are **demands**: *Two-Handed*,
+*Heavy*, *Loading*, *Ammunition*, *Range*. Five are **permissions**: *Finesse*, *Light*,
+*Thrown*, *Versatile*, *Reach*.
 
 **Its mastery** — the trick below.
 
-That was Fate's Hand telling you how to read them. Here is the SRD saying it in its own
-words — every property, plus its note on improvised weapons, so you never have to leave this
-page to check one.
+That sorting is ours. The rules themselves are the SRD's, quoted here whole so you never have
+to go looking for one.
 
 <!-- GENERATED — cité depuis fh-srd (kind=weapon-property, lang=en, run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->
 <div class="fh-srd-cite">
@@ -80,28 +73,46 @@ page to check one.
 
 ## Armour, and what it asks in return
 
-Thirteen entries, and they sort themselves by what they cost you in movement and stealth
-rather than by a label.
+Thirteen entries, quoted below exactly as the SRD prints them — every number, every price.
+What follows the table is ours: not the rule, but the trade it asks you to make.
 
-**The light ones** — Padded, Leather, Studded Leather — set a low floor (11 or 12) and then
-add **all** your Dexterity, uncapped. They reward a character who was already nimble. Padded
-armour is the odd one: it is the cheapest thing you can wear, and the only light armour that
-gives away your position.
+<!-- GENERATED — cité depuis fh-srd armor.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
+<div class="fh-srd-cite fh-srd-cite--table">
+<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.92 — every value as printed</p>
+<table class="fh-srd-table">
+<thead><tr><th>Armor</th><th>Armor Class</th><th>Strength</th><th>Stealth</th><th>Cost</th><th>Weight</th></tr></thead>
+<tbody>
+<tr class="fh-srd-table__group"><th colspan="6">Light armor</th></tr>
+<tr><td>Leather Armor</td><td>11 + Dex modifier</td><td>—</td><td>—</td><td>10 GP</td><td>10 lb.</td></tr>
+<tr><td>Padded Armor</td><td>11 + Dex modifier</td><td>—</td><td>Disadvantage</td><td>5 GP</td><td>8 lb.</td></tr>
+<tr><td>Studded Leather Armor</td><td>12 + Dex modifier</td><td>—</td><td>—</td><td>45 GP</td><td>13 lb.</td></tr>
+<tr class="fh-srd-table__group"><th colspan="6">Medium armor</th></tr>
+<tr><td>Hide Armor</td><td>12 + Dex modifier (max 2)</td><td>—</td><td>—</td><td>10 GP</td><td>12 lb.</td></tr>
+<tr><td>Chain Shirt</td><td>13 + Dex modifier (max 2)</td><td>—</td><td>—</td><td>50 GP</td><td>20 lb.</td></tr>
+<tr><td>Breastplate</td><td>14 + Dex modifier (max 2)</td><td>—</td><td>—</td><td>400 GP</td><td>20 lb.</td></tr>
+<tr><td>Scale Mail</td><td>14 + Dex modifier (max 2)</td><td>—</td><td>Disadvantage</td><td>50 GP</td><td>45 lb.</td></tr>
+<tr><td>Half Plate Armor</td><td>15 + Dex modifier (max 2)</td><td>—</td><td>Disadvantage</td><td>750 GP</td><td>40 lb.</td></tr>
+<tr class="fh-srd-table__group"><th colspan="6">Heavy armor</th></tr>
+<tr><td>Ring Mail</td><td>14</td><td>—</td><td>Disadvantage</td><td>30 GP</td><td>40 lb.</td></tr>
+<tr><td>Chain Mail</td><td>16</td><td>Str 13</td><td>Disadvantage</td><td>75 GP</td><td>55 lb.</td></tr>
+<tr><td>Splint Armor</td><td>17</td><td>Str 15</td><td>Disadvantage</td><td>200 GP</td><td>60 lb.</td></tr>
+<tr><td>Plate Armor</td><td>18</td><td>Str 15</td><td>Disadvantage</td><td>1,500 GP</td><td>65 lb.</td></tr>
+<tr class="fh-srd-table__group"><th colspan="6">Shield</th></tr>
+<tr><td>Shield</td><td>+2</td><td>—</td><td>—</td><td>10 GP</td><td>6 lb.</td></tr>
+</tbody></table>
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
+</div>
 
-**The middle ones** — Hide, Chain Shirt, Scale Mail, Breastplate, Half Plate — set a higher
-floor (12 to 15) but **cap Dexterity at +2**. Past a +2 modifier, more agility buys you
-nothing, and that is the real decision: a character with +4 Dex is worse off in a Breastplate
-than in Studded Leather.
+*Fate's Hand talking.* **The light ones** take all your Dexterity, uncapped — they reward a
+character who was already nimble. **The middle ones** set a higher floor but cap Dexterity,
+and that cap is the real decision: past a +2 modifier, more agility buys you nothing, so a
+very nimble character is worse off in a Breastplate than in Studded Leather. **The heavy
+ones** ignore Dexterity and hand you a flat number instead, three of them demanding Strength
+you may not have. **The shield is not armour** — it is one hand traded for two points, and it
+stacks with anything.
 
-**The heavy ones** — Ring Mail, Chain Mail, Splint, Plate — ignore Dexterity entirely and
-hand you a flat number, 14 to 18. Three of them **demand Strength** (13 for Chain Mail, 15
-for Splint and Plate); wear one without it and you are slowed. All four give away your
-position, and Plate costs 1,500 GP — it is not a level-1 purchase, it is a story.
-
-**The shield** is not armour. It is +2 AC for one hand, 10 GP, and it stacks with anything.
-
-📌 **Stealth** is the quiet tax: seven of the thirteen give Disadvantage on Dexterity
-(Stealth) checks. Look for it before you look at the AC.
+📌 **Stealth is the quiet tax**: seven of the thirteen give Disadvantage. Look for that column
+before you look at the Armor Class one.
 
 ## Weapon Mastery
 
@@ -113,50 +124,9 @@ only if a class feature has granted you mastery with that kind of weapon**, and 
 change which weapons you have mastery with when you finish a Long Rest. A fighter who
 trained on axes all winter can wake up a spear fighter.
 
-Fate's Hand changes nothing here — the eight properties below are the 2024 rules, kept as
-written. Where a mastery already meets a house rule, it is said in place.
-
-**Cleave** — *Greataxe, Halberd.* When you hit a creature with a melee attack, you may make
-one more attack roll against a second creature within 5 feet of the first and within your
-reach. On a hit, it takes the weapon's damage — but you add no ability modifier to it, unless that
-modifier is negative, in which case it still applies. Once per turn.
-
-**Graze** — *Glaive, Greatsword.* When your attack roll misses, you may deal the target damage
-equal to the ability modifier you used to attack, of the weapon's type. That damage is sealed:
-it grows only if the ability modifier grows, and nothing else may be poured into it — no
-fighting style, no feat, no bonus.
-
-**Nick** — *Dagger, Light Hammer, Scimitar, Sickle.* The extra attack granted by the Light
-property can be made as part of the Attack action instead of costing your Bonus Action. Once
-per turn. It doesn't give you an attack — it gives you back your Bonus Action.
-
-**Push** — *Greatclub, Heavy Crossbow, Pike, Warhammer.* On a hit, you may push the target up
-to 10 feet straight away from you, if it is Large or smaller.
-
-**Sap** — *Flail, Longsword, Mace, Morningstar, Spear, War Pick.* On a hit, the target has
-Disadvantage on its next attack roll, made before the start of your next turn.
-
-**Slow** — *Club, Javelin, Light Crossbow, Longbow, Musket, Sling, Whip.* On a hit that deals
-damage, you may reduce the target's Speed by 10 feet until the start of your next turn. The
-reduction never exceeds 10 feet, however many Slow weapons land on the same creature.
-
-**Topple** — *Battleaxe, Lance, Maul, Quarterstaff, Trident.* On a hit, you may force the target
-into a Constitution saving throw — DC 8 + your Proficiency Bonus + the ability modifier you used
-for the attack. On a failure, it gains the Prone condition.
-
-**Vex** — *Blowgun, Dart, Hand Crossbow, Handaxe, Pistol, Rapier, Shortbow, Shortsword.* On a
-hit that deals damage, you have Advantage on your next attack roll against that same
-creature, made before the end of your next turn.
-
-### Reading the eight at a glance
-
-Three of them **punish the miss or the crowd** — Graze pays you for missing, Cleave pays you
-for standing between two enemies, Nick pays you for carrying two blades. Three **bend the
-next exchange**: Sap weakens their swing, Vex sharpens yours, Slow takes their ground.
-Two **move the body itself** — Push sends it back, Topple puts it down.
-
-Everything above is Fate's Hand's wording, written to be read. Below is the SRD's, quoted
-whole — that is the text a rules argument is settled against.
+**Fate's Hand changes nothing here.** The eight are the 2024 rules, and they are quoted
+below word for word rather than retold — a retelling is a second version, and a second
+version drifts.
 
 <!-- GENERATED — cité depuis fh-srd (kind=weapon-mastery, lang=en, run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->
 <div class="fh-srd-cite">
@@ -182,12 +152,45 @@ whole — that is the text a rules argument is settled against.
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
+### Which weapons carry which
+
+<!-- GENERATED — dérivé de fh-srd weapon.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
+<div class="fh-srd-cite fh-srd-cite--index">
+<p class="fh-srd-cite__label">Derived from <strong>SRD 5.2.1</strong> — which weapons carry which mastery</p>
+<dl class="fh-srd-cite__list">
+<dt>Cleave <span>· 2</span></dt>
+<dd>Greataxe, Halberd</dd>
+<dt>Graze <span>· 2</span></dt>
+<dd>Glaive, Greatsword</dd>
+<dt>Nick <span>· 4</span></dt>
+<dd>Dagger, Light Hammer, Scimitar, Sickle</dd>
+<dt>Push <span>· 4</span></dt>
+<dd>Greatclub, Heavy Crossbow, Pike, Warhammer</dd>
+<dt>Sap <span>· 6</span></dt>
+<dd>Flail, Longsword, Mace, Morningstar, Spear, War Pick</dd>
+<dt>Slow <span>· 7</span></dt>
+<dd>Club, Javelin, Light Crossbow, Longbow, Musket, Sling, Whip</dd>
+<dt>Topple <span>· 5</span></dt>
+<dd>Battleaxe, Lance, Maul, Quarterstaff, Trident</dd>
+<dt>Vex <span>· 8</span></dt>
+<dd>Blowgun, Dart, Hand Crossbow, Handaxe, Pistol, Rapier, Shortbow, Shortsword</dd>
+</dl>
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
+</div>
+
+### Reading the eight at a glance
+
+*This part is Fate's Hand talking, not the SRD — it adds no rule, it only says how we group
+them.* Three **punish the miss or the crowd**: Graze pays you for missing, Cleave for standing
+between two enemies, Nick for carrying two blades. Three **bend the next exchange**: Sap
+weakens their swing, Vex sharpens yours, Slow takes their ground. Two **move the body
+itself** — Push sends it back, Topple puts it down.
+
 ### Who gets to use them
 
 Mastery is granted by a class feature, and **Fate's Hand grants it exactly as the SRD does** —
 which classes open it, how many weapons each one covers at a time, and how that number grows
-with level are the SRD's answers, unchanged. Read them in your class entry; this chapter only
-tells you what the eight properties do.
+with level are the SRD's answers, unchanged. Read them in your class entry.
 
 ## What you start with
 

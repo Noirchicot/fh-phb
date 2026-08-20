@@ -98,9 +98,123 @@ def _srd_block(kind, slugs, lang="en"):
     return "\n".join(out)
 
 
+def _srd_weapons_by_mastery(lang="en"):
+    """L'index « quelle arme porte quelle maîtrise ».
+
+    Il n'existe dans AUCUN export : c'est une vue, dérivée de `weapon.json` au
+    moment de la construction. On la génère plutôt que de la retaper, pour la
+    même raison que le reste — une liste tapée à la main dérive dès qu'une arme
+    change de maîtrise en amont, et personne ne s'en aperçoit."""
+    doc = _srd_load("weapon", lang)
+    groupes = {}
+    for r in doc["records"]:
+        m = r["data"].get("mastery")
+        if m:
+            groupes.setdefault(m, []).append(r["name"])
+    if not groupes:
+        raise SrdCiteError(
+            "{{srd:weapons-by-mastery}} : aucune arme ne porte de maîtrise dans "
+            "weapon.json — la colonne a disparu de l'extraction."
+        )
+    out = [
+        "<!-- GENERATED — dérivé de fh-srd weapon.json (run=%s). Ne pas éditer. -->"
+        % doc.get("import_run", "?"),
+        '<div class="fh-srd-cite fh-srd-cite--index">',
+        '<p class="fh-srd-cite__label">Derived from <strong>%s</strong> — which weapons '
+        "carry which mastery</p>" % html.escape(doc.get("layer_label", "SRD")),
+        '<dl class="fh-srd-cite__list">',
+    ]
+    for m in sorted(groupes):
+        armes = sorted(groupes[m])
+        out.append("<dt>%s <span>· %d</span></dt>" % (html.escape(m), len(armes)))
+        out.append("<dd>%s</dd>" % html.escape(", ".join(armes)))
+    out.append("</dl>")
+    # Dérivé ou cité, ça reste du SRD affiché : l'attribution suit la donnée.
+    attr = doc["records"][0].get("attribution", "")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
+def _srd_armor_table(lang="en"):
+    """La table d'armures du SRD, rendue à la façon de Fate's Hand.
+
+    ⭐ La distinction qui autorise ceci (Eric, 2026-08-20) : citer contraint les
+    MOTS, pas la PRÉSENTATION. Aucune valeur n'est retapée — tout sort de
+    `armor.json`. Le regroupement légère/moyenne/lourde est déduit du plafond de
+    Dextérité, donc lui aussi dérivé. Ce qui est à nous, c'est la mise en page ;
+    ce qui est au SRD, ce sont les nombres, et ils viennent de la source.
+
+    Et ça sert la contrainte d'Eric : « un joueur doit trouver tous les éléments
+    au même endroit sans naviguer à droite à gauche. »"""
+    doc = _srd_load("armor", lang)
+    familles = {"Light armor": [], "Medium armor": [], "Heavy armor": [], "Shield": []}
+    for r in doc["records"]:
+        d = r["data"]
+        if r["slug"] == "shield" or d["name"] == "Shield":
+            familles["Shield"].append(r)
+        elif d.get("ac_dex_cap") is None and "Dex" in (d.get("armor_class") or ""):
+            familles["Light armor"].append(r)
+        elif d.get("ac_dex_cap"):
+            familles["Medium armor"].append(r)
+        else:
+            familles["Heavy armor"].append(r)
+    if not any(familles.values()):
+        raise SrdCiteError("{{srd:armor-table}} : armor.json n'a rendu aucune armure.")
+
+    pages = sorted({r.get("source_locator", "") for r in doc["records"]} - {""})
+    out = [
+        "<!-- GENERATED — cité depuis fh-srd armor.json (run=%s). Ne pas éditer : "
+        "réécrit par sync_from_vault.py. -->" % doc.get("import_run", "?"),
+        '<div class="fh-srd-cite fh-srd-cite--table">',
+        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — every value '
+        "as printed</p>"
+        % (html.escape(doc.get("layer_label", "SRD")),
+           (" · " + html.escape(" et ".join(pages))) if pages else ""),
+        '<table class="fh-srd-table">',
+        "<thead><tr><th>Armor</th><th>Armor Class</th><th>Strength</th>"
+        "<th>Stealth</th><th>Cost</th><th>Weight</th></tr></thead>",
+        "<tbody>",
+    ]
+    for famille, lignes in familles.items():
+        if not lignes:
+            continue
+        out.append('<tr class="fh-srd-table__group"><th colspan="6">%s</th></tr>'
+                   % html.escape(famille))
+        for r in sorted(lignes, key=lambda x: x["data"].get("ac_base") or 0):
+            d = r["data"]
+            force = d.get("strength")
+            out.append(
+                "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
+                % (
+                    html.escape(d["name"]),
+                    html.escape(str(d.get("armor_class") or "—")),
+                    html.escape(str(force)) if force else "—",
+                    "Disadvantage" if d.get("stealth_disadvantage") else "—",
+                    html.escape(str(d.get("cost") or "—")),
+                    html.escape(str(d.get("weight") or "—")),
+                )
+            )
+    out.append("</tbody></table>")
+    attr = doc["records"][0].get("attribution", "")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
 def inject_srd_citations(text, dest):
     def one(m):
         try:
+            if m.group(1) == "armor-table":
+                return _srd_armor_table()
+            if m.group(1) == "weapons-by-mastery":
+                if m.group(2):
+                    raise SrdCiteError(
+                        "{{srd:weapons-by-mastery}} ne prend pas de sous-sélection."
+                    )
+                return _srd_weapons_by_mastery()
             return _srd_block(m.group(1), m.group(2))
         except SrdCiteError as err:
             raise SrdCiteError("%s : %s" % (dest, err)) from None

@@ -1113,3 +1113,59 @@ body.fh-home-page .md-header { display: none; }
   line-height: 1.5;
   opacity: .62;
 }
+
+/* ── La table citée ─────────────────────────────────────────────────────────
+   Eric, 2026-08-20 : « la mise en forme plus jolie peut rester de la citation ».
+   Citer contraint les MOTS, pas la PRÉSENTATION — donc la table du SRD peut
+   avoir l'allure de Fate's Hand tant qu'aucune valeur n'est retapée. C'est ce
+   qui permet au joueur de tout trouver au même endroit sans naviguer. */
+.md-typeset .fh-srd-cite--table,
+.md-typeset .fh-srd-cite--index { padding-bottom: 1em; }
+
+.md-typeset .fh-srd-table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: .86em;
+  font-variant-numeric: tabular-nums;
+}
+.md-typeset .fh-srd-table th,
+.md-typeset .fh-srd-table td {
+  padding: .38em .7em;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--fh-cite-rule);
+}
+.md-typeset .fh-srd-table thead th {
+  font-size: .72rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--fh-gold);
+  border-bottom-width: 2px;
+  white-space: nowrap;
+}
+/* Les quatre familles ne sont pas dans les données : elles sont DÉDUITES du
+   plafond de Dextérité. C'est de la mise en page, pas de la règle. */
+.md-typeset .fh-srd-table__group th {
+  padding-top: 1em;
+  font-size: .78rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+  border-bottom-color: var(--fh-cite-rule);
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-srd-table__group th { color: var(--fh-gold); }
+.md-typeset .fh-srd-table tbody tr:last-child td { border-bottom: 0; }
+.md-typeset .fh-srd-table td:first-child { font-weight: 600; }
+
+/* L'index dérivé : le terme, son compte, puis ses armes. */
+.md-typeset .fh-srd-cite--index dt span { opacity: .5; font-weight: 400; font-size: .85em; }
+
+/* Une table large ne fait jamais défiler la page elle-même. */
+.md-typeset .fh-srd-cite--table { overflow-x: auto; }
+
+@media screen and (max-width: 44em) {
+  .md-typeset .fh-srd-table { font-size: .8em; }
+  .md-typeset .fh-srd-table th,
+  .md-typeset .fh-srd-table td { padding: .34em .45em; }
+}
