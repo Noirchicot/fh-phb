@@ -3,7 +3,7 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">training</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
 </ul></nav>
 
 A **training** is something you **know**. Not something you practise, and not something you

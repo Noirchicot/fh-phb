@@ -3,7 +3,7 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">item</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">item</span> <span class="fh-layer__same">unchanged</span></li>
 </ul></nav>
 
 *(Objets Magiques)*

@@ -3,12 +3,12 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">weapon</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
-<li><span class="fh-layer__genre">weapon property</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
-<li><span class="fh-layer__genre">weapon mastery</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
-<li><span class="fh-layer__genre">armor</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
-<li><span class="fh-layer__genre">gear</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
-<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">weapon</span> <span class="fh-layer__same">unchanged</span></li>
+<li><span class="fh-layer__genre">weapon property</span> <span class="fh-layer__same">unchanged</span></li>
+<li><span class="fh-layer__genre">weapon mastery</span> <span class="fh-layer__same">unchanged</span></li>
+<li><span class="fh-layer__genre">armor</span> <span class="fh-layer__same">unchanged</span></li>
+<li><span class="fh-layer__genre">gear</span> <span class="fh-layer__same">unchanged</span></li>
+<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 13</span> — Card Set, Dice Set, Dragonchess Set, Mount (Air), Mount (Land), Mount (Water)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
 </ul></nav>
 
 ## Ce que ce chapitre doit porter
@@ -395,6 +395,20 @@ list, brought onto this page so you never have to go and find it.
 
 A tool is not gear: it names an ability, a thing it lets you do, and a list of what it makes.
 That is why it gets a wider table than the rest.
+
+> 🔴 **The table below is the SRD's, and it is NOT Fate's Hand's tool list.** Twenty-five
+> against **thirty-seven**. Buy your tools from **Skills & Tools**, not from here — this table
+> is the reference for what each one *does*, not for what you may take.
+>
+> | What Fate's Hand does | |
+> |---|---|
+> | **Adds Soulforging** *(CHA)* | It is in no SRD list at all. **Soulforge Crafting** and the soulforging rite both require **at least Novice** in it — so a character who picks tools from the table below cannot legally join a forge circle. |
+> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. |
+> | **Splits the Musical Instrument** into three | *Strings · Wind · Other*. A bard's two bound instrument points buy two of these, not two of anything. |
+> | **Makes mounts and vehicles tools** | *Mount (Air · Land · Water)* and *Vehicles (Air · Land · Water)* — six tools the SRD does not treat as tools at all. Riding is rolled here. |
+>
+> ⛔ **And the Garrot is on neither list**: it is a **training**, not a tool — no tier, no
+> ability. See **Trainings**.
 
 <!-- GENERATED — cité depuis fh-srd tool.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">

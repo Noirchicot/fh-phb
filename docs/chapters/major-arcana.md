@@ -3,7 +3,7 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">arcana</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">arcana</span> <span class="fh-layer__added">adds 22</span> — Death, Judgement, Justice, Strength, Temperance, The Chariot…</li>
 </ul></nav>
 
 ## Drawing a Major Arcana at character creation

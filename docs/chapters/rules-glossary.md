@@ -3,7 +3,7 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">glossary</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">glossary</span> <span class="fh-layer__same">unchanged</span></li>
 </ul></nav>
 
 Every capitalised term the rules lean on, defined once, on this page. **Look a word up here

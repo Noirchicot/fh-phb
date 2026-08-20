@@ -3,7 +3,7 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">skill</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">skill</span> <span class="fh-layer__added">adds 9</span> — Academics, Appraise, Delve, Hunting, Leadership, Might… · <span class="fh-layer__patched">changes 17</span> — Acrobatics, Animal Handling, Arcana, Athletics, Deception, History… · <span class="fh-layer__removed">removes 1</span> — Perception</li>
 </ul></nav>
 
 ## Overview

@@ -3,8 +3,8 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">background</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
-<li><span class="fh-layer__genre">training</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">background</span> <span class="fh-layer__added">adds 1</span> — Inheritance · <span class="fh-layer__removed">removes 4</span> — Acolyte, Criminal, Sage, Soldier</li>
+<li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
 </ul></nav>
 
 > 🔴 **There are no backgrounds in Fate's Hand.** You do not pick Acolyte, Criminal, Sage or
