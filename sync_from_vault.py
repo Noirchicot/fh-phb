@@ -1573,6 +1573,55 @@ def split_species():
     print(f"  ok  species.md            -> menu + {len(starts)} pages in chapters/species/")
 
 
+_PROPORTIONS = []
+
+
+def mesurer_proportion(dest, avant, apres):
+    """Combien de mots sont d'Eric, combien viennent du SRD.
+
+    ⭐ Idée de l'archi FHPC, 2026-08-20, et elle vaut mieux qu'un « test de
+    lisibilité ». Ses deux corrections du soir — *« moche et chiant à lire »*,
+    *« le rappel en fin de chapitre »* — avaient une cause MÉCANIQUE une fois
+    nommée. Ce n'est pas le jugement qui manquait : **c'est la mesure qui
+    n'avait jamais été prise.** 339 entrées citées contre 732 mots de lui,
+    personne ne l'avait compté avant de le compter.
+
+    ⛔ Ça ne rougit pas et ça ne bloque rien : ça se LIT. Un humain interprète.
+    C'est la différence entre une garde et un instrument.
+
+    📌 Et mon propre piège de ce soir est l'argument : j'ai replié sur le NOMBRE
+    d'entrées, et douze fiches de classe sont passées à travers avec huit mille
+    caractères. Un tableau de proportions me l'aurait donné sans que je me fasse
+    avoir.
+    """
+    cite = len(re.sub(r"<[^>]+>", " ", "".join(re.findall(
+        r'<div class="fh-srd-cite.*?</div>', apres, re.S))).split())
+    propre = len(re.sub(r"<[^>]+>", " ", avant).split())
+    replie = apres.count('<details class="fh-fold">')
+    if cite or propre:
+        _PROPORTIONS.append((dest, propre, cite, replie))
+
+
+def afficher_proportions():
+    if not _PROPORTIONS:
+        return
+    print()
+    print("  ── proportions : mots d'Eric contre mots cités ──────────────────")
+    print("  %-24s %7s %8s %7s  %s" % ("chapitre", "à lui", "cités", "replis", "part citée"))
+    tot_p = tot_c = 0
+    for dest, propre, cite, replie in sorted(_PROPORTIONS, key=lambda x: -x[2]):
+        tot_p += propre; tot_c += cite
+        if not cite:
+            continue
+        part = cite / (propre + cite) * 100
+        alerte = " ⚠️" if part > 80 and not replie else ""
+        print("  %-24s %7d %8d %7s  %5.1f %%%s"
+              % (dest, propre, cite, replie or "—", part, alerte))
+    part = tot_c / (tot_p + tot_c) * 100 if (tot_p + tot_c) else 0
+    print("  %-24s %7d %8d %7s  %5.1f %%" % ("TOTAL", tot_p, tot_c, "", part))
+    print("  ⚠️ = plus de 80 % de la page est cité ET rien n'est replié.")
+
+
 def main():
     DOCS.mkdir(parents=True, exist_ok=True)
     for dest, (rel, title) in MAP.items():
@@ -1588,7 +1637,9 @@ def main():
         body = convert_wikilinks(body)
         body = normalize_headings(body)
         body = ensure_h1(body, title)
+        avant_citations = body
         body = inject_srd_citations(body, dest)
+        mesurer_proportion(dest, avant_citations, body)
         body = insert_banner_note(body, dest)
         body = insert_banner(body, dest)
         body = insert_images(body, dest)
@@ -1607,6 +1658,7 @@ def main():
             continue
         dst.write_text(page, encoding="utf-8")
         print(f"  ok  {dst.name:24s} <- {src.name}")
+    afficher_proportions()
     if _FUITES:
         print("  !! records retirés par FH, survivants DANS du texte cité :")
         for d, noms in sorted(_FUITES.items()):
