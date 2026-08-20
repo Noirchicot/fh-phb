@@ -310,10 +310,34 @@ SRD_TABLES = {
 }
 
 
-def _srd_table(nom, lang="en"):
+def _ecarter(records, kind, sauf, quoi):
+    """Retire d'une citation les entrées que Fate's Hand REMPLACE.
+
+    ⭐ Eric, 2026-08-20 : « dégager les concurrents SRD ». Une entrée du SRD que
+    FH a remplacée, citée à côté de la version FH, est un concurrent : le
+    lecteur voit deux règles et ne sait pas laquelle vaut. C'est la même
+    précaution que les sept exclusions du glossaire, généralisée aux tables.
+    🔴 Un slug inconnu CASSE : une exclusion qui ne mord sur rien laisserait
+       réapparaître le concurrent le jour où l'amont le renomme, en silence.
+    """
+    if not sauf:
+        return records
+    par_slug = {r["slug"] for r in records}
+    retires = [s.strip() for s in sauf.split(",") if s.strip()]
+    inconnus = [s for s in retires if s not in par_slug]
+    if inconnus:
+        raise SrdCiteError(
+            "{{srd:%s!%s}} : %s n'existe pas dans %s — une exclusion qui ne mord "
+            "sur rien laisserait passer ce qu'elle devait retirer."
+            % (quoi, sauf, ", ".join(inconnus), kind))
+    ecarte = set(retires)
+    return [r for r in records if r["slug"] not in ecarte]
+
+
+def _srd_table(nom, lang="en", sauf=None):
     spec = SRD_TABLES[nom]
     doc = _srd_load(spec["kind"], lang)
-    records = doc["records"]
+    records = _ecarter(doc["records"], spec["kind"], sauf, nom)
     if not records:
         raise SrdCiteError("{{srd:%s}} : %s.json est vide." % (nom, spec["kind"]))
 
@@ -443,7 +467,7 @@ def _srd_mastery_by_class(lang="en"):
     return "\n".join(out)
 
 
-def _srd_feats(lang="en"):
+def _srd_feats(lang="en", sauf=None):
     """Les dons du SRD, groupés par catégorie et cités.
 
     Une table ne convient pas : la description d'un don est un paragraphe, pas
@@ -456,7 +480,7 @@ def _srd_feats(lang="en"):
     libelles = {"origin": "Origin feats", "general": "General feats",
                 "fighting-style": "Fighting Style feats", "epic-boon": "Epic Boons"}
     groupes = {}
-    for r in doc["records"]:
+    for r in _ecarter(doc["records"], "feat", sauf, "feat-list"):
         groupes.setdefault(r["data"].get("category") or "other", []).append(r)
     inconnus = [c for c in groupes if c not in libelles]
     if inconnus:
@@ -786,11 +810,17 @@ def insert_banner(text, dest):
 def inject_srd_citations(text, dest):
     def one(m):
         try:
-            if m.group(1) in SRD_TABLES or m.group(1) in ("weapons-by-mastery", "mastery-by-class", "feat-list", "spell-list", "item-list", "class-cards"):
-                if m.group(3):
+            if m.group(3) and m.group(1) in ("weapons-by-mastery", "mastery-by-class", "class-cards"):
+                raise SrdCiteError(
+                    "{{srd:%s}} : une vue calculée ne prend pas d'exclusion — "
+                    "elle dérive d'une relation, pas d'une liste." % m.group(1))
+            if m.group(1) == "feat-list":
+                return _srd_feats(sauf=m.group(3))
+            if m.group(1) in SRD_TABLES:
+                if m.group(2):
                     raise SrdCiteError(
-                        "{{srd:%s}} : une vue dérivée ne prend pas d'exclusion."
-                        % m.group(1))
+                        "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1))
+                return _srd_table(m.group(1), sauf=m.group(3))
             if m.group(1) in SRD_TABLES:
                 if m.group(2):
                     raise SrdCiteError(

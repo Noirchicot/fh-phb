@@ -403,8 +403,8 @@ That is why it gets a wider table than the rest.
 > | What Fate's Hand does | |
 > |---|---|
 > | **Adds Soulforging** *(CHA)* | It is in no SRD list at all. **Soulforge Crafting** and the soulforging rite both require **at least Novice** in it — so a character who picks tools from the table below cannot legally join a forge circle. |
-> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. |
-> | **Splits the Musical Instrument** into three | *Strings · Wind · Other*. A bard's two bound instrument points buy two of these, not two of anything. |
+> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. **The SRD's single entry is not quoted below**: it would compete with the four that replace it. |
+> | **Splits the Musical Instrument** into three | *Strings · Wind · Other*. A bard's two bound instrument points buy two of these, not two of anything. **Not quoted below either**, for the same reason. |
 > | **Makes mounts and vehicles tools** | *Mount (Air · Land · Water)* and *Vehicles (Air · Land · Water)* — six tools the SRD does not treat as tools at all. Riding is rolled here. |
 >
 > ⛔ **And the Garrot is on neither list**: it is a **training**, not a tool — no tier, no
@@ -425,13 +425,11 @@ That is why it gets a wider table than the rest.
 <tr><td>Cook’s Utensils</td><td>Wisdom</td><td>Improve food’s flavor (DC 10), or detect spoiled or poisoned food (DC 15)</td><td>Rations</td><td>1 GP</td><td>8 lb.</td></tr>
 <tr><td>Disguise Kit</td><td>Charisma</td><td>Apply makeup (DC 10)</td><td>Costume</td><td>25 GP</td><td>3 lb.</td></tr>
 <tr><td>Forgery Kit</td><td>Dexterity</td><td>Mimic 10 or fewer words of someone else’s handwriting (DC 15), or duplicate a wax seal (DC 20)</td><td>—</td><td>15 GP</td><td>5 lb.</td></tr>
-<tr><td>Gaming Set</td><td>Wisdom</td><td>Discern whether someone is cheating (DC 10), or win the game (DC 20)</td><td>—</td><td>Varies</td><td>—</td></tr>
 <tr><td>Glassblower’s Tools</td><td>Intelligence</td><td>Discern what a glass object held in the past 24 hours (DC 15)</td><td>Glass Bottle, Magnifying Glass, Spyglass, Vial</td><td>30 GP</td><td>5 lb.</td></tr>
 <tr><td>Herbalism Kit</td><td>Intelligence</td><td>Identify a plant (DC 10)</td><td>Antitoxin, Candle, Healer’s Kit, Potion of Healing</td><td>5 GP</td><td>3 lb.</td></tr>
 <tr><td>Jeweler’s Tools</td><td>Intelligence</td><td>Discern a gem’s value (DC 15)</td><td>Arcane Focus, Holy Symbol</td><td>25 GP</td><td>2 lb.</td></tr>
 <tr><td>Leatherworker’s Tools</td><td>Dexterity</td><td>Add a design to a leather item (DC 10)</td><td>Sling, Whip, Hide Armor, Leather Armor, Studded Leather Armor, Backpack, Crossbow Bolt Case, Map or Scroll Case, Parchment, Pouch, Quiver, Waterskin</td><td>5 GP</td><td>5 lb.</td></tr>
 <tr><td>Mason’s Tools</td><td>Strength</td><td>Chisel a symbol or hole in stone (DC 10)</td><td>Block and Tackle</td><td>10 GP</td><td>8 lb.</td></tr>
-<tr><td>Musical Instrument</td><td>Charisma</td><td>Play a known tune (DC 10), or improvise a song (DC 15)</td><td>—</td><td>Varies</td><td>Varies</td></tr>
 <tr><td>Navigator’s Tools</td><td>Wisdom</td><td>Plot a course (DC 10), or determine position by stargazing (DC 15)</td><td>—</td><td>25 GP</td><td>2 lb.</td></tr>
 <tr><td>Painter’s Supplies</td><td>Wisdom</td><td>Paint a recognizable image of something you’ve seen (DC 10)</td><td>Druidic Focus, Holy Symbol</td><td>10 GP</td><td>5 lb.</td></tr>
 <tr><td>Poisoner’s Kit</td><td>Intelligence</td><td>Detect a poisoned object (DC 10)</td><td>Basic Poison</td><td>50 GP</td><td>2 lb.</td></tr>

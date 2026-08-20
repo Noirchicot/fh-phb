@@ -69,6 +69,12 @@ Fate's Hand adds the ones above and changes nothing else, so the rest of the lis
 for a feat**: most General feats need level 4 and a score of 13 in the right ability, and an
 Epic Boon needs level 19.
 
+> ⛔ **One feat is missing from the list below, on purpose.** The SRD's **Skilled** grants
+> *« proficiency in any combination of three skills or tools »* — and Fate's Hand converts that
+> into **+6 free points**, because a proficiency is worth 2 points here. Quoting the SRD's
+> wording beside ours would put two different prices on the same feat. **Ours is in the Origin
+> feats table above**, and it is the one that applies.
+
 <!-- GENERATED — cité depuis fh-srd feat.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite">
 <p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.87 et p.88 — all 17, as printed</p>
@@ -92,10 +98,6 @@ Spell Change. Whenever you gain a new level, you can replace one of the spells y
 Repeatable. You can take this feat more than once, but you must choose a different spell list each time.</dd>
 <dt>Savage Attacker</dt>
 <dd>You’ve trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the weapon’s damage dice twice and use either roll against the target.</dd>
-<dt>Skilled</dt>
-<dd>You gain proficiency in any combination of three skills or tools of your choice.
-
-Repeatable. You can take this feat more than once. General Feats</dd>
 </dl>
 <p class="fh-srd-cite__group">General feats</p>
 <dl class="fh-srd-cite__list">
