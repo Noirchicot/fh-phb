@@ -1756,6 +1756,17 @@ def afficher_proportions():
 
 
 def main():
+    try:
+        _construire()
+    except SrdCiteError as err:
+        # Une citation qui ne résout pas est une erreur d'AUTEUR, pas un bug :
+        # elle mérite une phrase, pas une pile d'appels. La trace n'apprend rien
+        # que le message ne dise déjà, et elle cache le message.
+        raise SystemExit("\n🔴 CITATION IMPOSSIBLE — rien n'a été réécrit.\n   %s\n"
+                         % err) from None
+
+
+def _construire():
     DOCS.mkdir(parents=True, exist_ok=True)
     for dest, (rel, title) in MAP.items():
         src = VAULT / rel
@@ -1893,6 +1904,27 @@ ARCANA_COUNT = 22
 ARCANA_FIELDS = {"meaning": "meaning", "destiny impact": "impact", "power": "power", "vibration": "vibration"}
 
 
+def _cartes_de_depart():
+    """Les trois arcanes montrées au joueur — LA décision, lue à un seul endroit.
+
+    🔴 POURQUOI ÇA N'EST PAS UNE CONSTANTE ÉCRITE ICI. Eric, 2026-08-20 :
+    *« on peut laisser 3 cartes par défaut, que les joueurs choisissent. Et
+    après c'est les tirages. »* Ces trois-là sont donc **les mêmes** que les
+    trois exemples du chapitre *Destiny* — une seule décision, pas deux. Une
+    liste côté site et une liste côté builder divergeraient le jour où Eric en
+    change une, et personne ne le verrait.
+
+    ⭐ La source est donc **la directive du chapitre elle-même** : ce que le
+    joueur lit et ce que la machine expose ne peuvent pas se contredire, parce
+    que c'est la même ligne.
+    """
+    src = VAULT / MAP["fates-hand-mechanic.md"][0]
+    if not src.exists():
+        return []
+    m = ARCANA_RE.search(src.read_text(encoding="utf-8"))
+    return [n.strip() for n in m.group(1).split(",") if n.strip()] if m else []
+
+
 def build_arcana():
     import json
     if not ARCANA_SRC.exists():
@@ -1917,10 +1949,24 @@ def build_arcana():
     if len(cards) != ARCANA_COUNT:
         print(f"  !! Found {len(cards)} Major Arcana, expected {ARCANA_COUNT} — arcana.js not rebuilt")
         return
+    depart = _cartes_de_depart()
+    par_nom = {c["name"].lower(): c for c in cards}
+    inconnus = [n for n in depart if n.lower() not in par_nom]
+    if inconnus:
+        print("  !! cartes de départ inconnues : %s — arcana.js not rebuilt"
+              % ", ".join(inconnus))
+        return
+    numerals = [par_nom[n.lower()]["numeral"] for n in depart]
     ARCANA_DST.write_text(
-        "window.FH_ARCANA = " + json.dumps(cards, ensure_ascii=False, separators=(",", ":")) + ";\n",
+        "window.FH_ARCANA = " + json.dumps(cards, ensure_ascii=False, separators=(",", ":")) + ";\n"
+        + "/* Les trois cartes montrées au joueur, DÉRIVÉES de la directive du\n"
+          "   chapitre Destiny — pas une seconde liste. Eric, 2026-08-20 :\n"
+          "   « 3 cartes par défaut, que les joueurs choisissent ». */\n"
+        + "window.FH_ARCANA_STARTERS = "
+        + json.dumps(numerals, ensure_ascii=False, separators=(",", ":")) + ";\n",
         encoding="utf-8")
-    print(f"  ok  arcana.js              <- major-arcana.md ({len(cards)} cards)")
+    print(f"  ok  arcana.js              <- major-arcana.md ({len(cards)} cards, "
+          f"{len(numerals)} de départ : {', '.join(depart)})")
 
 
 
