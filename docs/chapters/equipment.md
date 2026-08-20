@@ -244,9 +244,32 @@ itself** — Push sends it back, Topple puts it down.
 
 ### Who gets to use them
 
-Mastery is granted by a class feature, and **Fate's Hand grants it exactly as the SRD does** —
-which classes open it, how many weapons each one covers at a time, and how that number grows
-with level are the SRD's answers, unchanged. Read them in your class entry.
+Mastery is granted by a class feature, and **Fate's Hand grants it exactly as the SRD does**.
+Five classes open it. Which five, how many weapons each covers at a time, and what each may
+choose from are the SRD's answers — none of it is a Fate's Hand decision, and all of it is
+below rather than in another book.
+
+Two of the five see that number **grow** as they level; the other three keep the same one from
+first level to twentieth. ⚠️ **The pool itself never changes.** Levelling lets you know *more*
+kinds of weapon, not different ones — and you may swap which ones after a Long Rest either way.
+
+<!-- GENERATED — dérivé de fh-srd class.json + class-progression.json + weapon.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
+<div class="fh-srd-cite fh-srd-cite--index">
+<p class="fh-srd-cite__label">Derived from <strong>SRD 5.2.1</strong> — the 5 classes that grant mastery, and what each may choose from</p>
+<dl class="fh-srd-cite__list">
+<dt>Barbarian <span>· 2 at a time, then 3 from level 4, 4 from level 10</span></dt>
+<dd><em>28 weapons to choose from</em> — Battleaxe, Club, Dagger, Flail, Glaive, Greataxe, Greatclub, Greatsword, Halberd, Handaxe, Javelin, Lance, Light Hammer, Longsword, Mace, Maul, Morningstar, Pike, Quarterstaff, Rapier, Scimitar, Shortsword, Sickle, Spear, Trident, War Pick, Warhammer, Whip</dd>
+<dt>Fighter <span>· 3 at a time, then 4 from level 4, 5 from level 10, 6 from level 16</span></dt>
+<dd><em>38 weapons to choose from</em> — Battleaxe, Blowgun, Club, Dagger, Dart, Flail, Glaive, Greataxe, Greatclub, Greatsword, Halberd, Hand Crossbow, Handaxe, Heavy Crossbow, Javelin, Lance, Light Crossbow, Light Hammer, Longbow, Longsword, Mace, Maul, Morningstar, Musket, Pike, Pistol, Quarterstaff, Rapier, Scimitar, Shortbow, Shortsword, Sickle, Sling, Spear, Trident, War Pick, Warhammer, Whip</dd>
+<dt>Paladin <span>· 2 at a time, at every level</span></dt>
+<dd><em>38 weapons to choose from</em> — Battleaxe, Blowgun, Club, Dagger, Dart, Flail, Glaive, Greataxe, Greatclub, Greatsword, Halberd, Hand Crossbow, Handaxe, Heavy Crossbow, Javelin, Lance, Light Crossbow, Light Hammer, Longbow, Longsword, Mace, Maul, Morningstar, Musket, Pike, Pistol, Quarterstaff, Rapier, Scimitar, Shortbow, Shortsword, Sickle, Sling, Spear, Trident, War Pick, Warhammer, Whip</dd>
+<dt>Ranger <span>· 2 at a time, at every level</span></dt>
+<dd><em>38 weapons to choose from</em> — Battleaxe, Blowgun, Club, Dagger, Dart, Flail, Glaive, Greataxe, Greatclub, Greatsword, Halberd, Hand Crossbow, Handaxe, Heavy Crossbow, Javelin, Lance, Light Crossbow, Light Hammer, Longbow, Longsword, Mace, Maul, Morningstar, Musket, Pike, Pistol, Quarterstaff, Rapier, Scimitar, Shortbow, Shortsword, Sickle, Sling, Spear, Trident, War Pick, Warhammer, Whip</dd>
+<dt>Rogue <span>· 2 at a time, at every level</span></dt>
+<dd><em>19 weapons to choose from</em> — Club, Dagger, Dart, Greatclub, Hand Crossbow, Handaxe, Javelin, Light Crossbow, Light Hammer, Mace, Quarterstaff, Rapier, Scimitar, Shortbow, Shortsword, Sickle, Sling, Spear, Whip</dd>
+</dl>
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
+</div>
 
 ## What you start with
 

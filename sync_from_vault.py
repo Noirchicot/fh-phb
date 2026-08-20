@@ -338,6 +338,89 @@ def _srd_table(nom, lang="en"):
     return "\n".join(out)
 
 
+def _srd_mastery_by_class(lang="en"):
+    """Quelles classes ouvrent la maîtrise d'arme, combien, et sur quel vivier.
+
+    Vue DÉRIVÉE de trois exports qui ne la portent nulle part telle quelle :
+    `class.json` (le vivier, `weapon_mastery_from`), `class-progression.json`
+    (combien à la fois, niveau par niveau) et `weapon.json` (les noms).
+    C'est ce qui rend vraie la phrase du chapitre — « read them in your class
+    entry » — sans que le joueur ait à sortir de la page.
+
+    ⚠️ Le vivier ne dépend PAS du niveau : la table de progression dit « MORE
+    kinds », pas « d'autres kinds ». Seul le COMPTE grandit. Ne pas inverser.
+    """
+    classes = _srd_load("class", lang)
+    progression = _srd_load("class-progression", lang)
+    armes = {r["id"]: r["name"] for r in _srd_load("weapon", lang)["records"]}
+    par_classe = {r["name"]: r["data"] for r in progression["records"]}
+
+    lignes = []
+    for r in sorted(classes["records"], key=lambda x: x["name"]):
+        vivier = r["data"].get("weapon_mastery_from")
+        if not vivier:
+            continue
+        manquants = [i for i in vivier if i not in armes]
+        if manquants:
+            raise SrdCiteError(
+                "{{srd:mastery-by-class}} : %s cite des armes absentes de weapon.json "
+                "(%s) — les deux exports ne parlent plus de la même chose."
+                % (r["name"], ", ".join(manquants[:3]))
+            )
+        # Les paliers : on ne garde que les niveaux où le compte CHANGE.
+        # ⚠️ Seules DEUX classes en ont — le barbare et le guerrier portent une
+        #    colonne « Weapon Mastery » dans leur table. Pour les trois autres le
+        #    nombre ne bouge jamais, donc la table n'a pas de colonne et le compte
+        #    vit sur le record de classe. Ce n'est pas un trou : c'est la forme de
+        #    la source, et la lecture doit s'y plier plutôt que la déclarer cassée.
+        prog = par_classe.get(r["name"])
+        paliers, precedent = [], None
+        for niveau in (prog or {}).get("levels", []):
+            combien = niveau.get("resources", {}).get("weapon_mastery")
+            if combien is not None and combien != precedent:
+                paliers.append((niveau["level"], combien))
+                precedent = combien
+        if paliers:
+            combien = "%d at a time" % paliers[0][1]
+            if len(paliers) > 1:
+                combien += ", then " + ", ".join(
+                    "%d from level %d" % (n, lvl) for lvl, n in paliers[1:])
+        elif r["data"].get("weapon_mastery_count"):
+            combien = "%d at a time, at every level" % r["data"]["weapon_mastery_count"]
+        else:
+            raise SrdCiteError(
+                "{{srd:mastery-by-class}} : %s a un vivier mais aucun compte de "
+                "maîtrises, ni dans sa progression ni sur son record." % r["name"])
+        lignes.append((r["name"], combien,
+                       sorted(armes[i] for i in vivier), len(vivier)))
+
+    if not lignes:
+        raise SrdCiteError(
+            "{{srd:mastery-by-class}} : aucune classe ne porte de vivier — "
+            "le champ weapon_mastery_from a disparu de class.json.")
+
+    out = [
+        "<!-- GENERATED — dérivé de fh-srd class.json + class-progression.json + "
+        "weapon.json (run=%s). Ne pas éditer. -->" % classes.get("import_run", "?"),
+        '<div class="fh-srd-cite fh-srd-cite--index">',
+        '<p class="fh-srd-cite__label">Derived from <strong>%s</strong> — the %d classes '
+        "that grant mastery, and what each may choose from</p>"
+        % (html.escape(classes.get("layer_label", "SRD")), len(lignes)),
+        '<dl class="fh-srd-cite__list">',
+    ]
+    for nom, combien, noms, total in lignes:
+        out.append("<dt>%s <span>· %s</span></dt>"
+                   % (html.escape(nom), html.escape(combien)))
+        out.append("<dd><em>%d weapons to choose from</em> — %s</dd>"
+                   % (total, html.escape(", ".join(noms))))
+    out.append("</dl>")
+    attr = classes["records"][0].get("attribution", "")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
 def inject_srd_citations(text, dest):
     def one(m):
         try:
@@ -347,6 +430,8 @@ def inject_srd_citations(text, dest):
                         "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1)
                     )
                 return _srd_table(m.group(1))
+            if m.group(1) == "mastery-by-class":
+                return _srd_mastery_by_class()
             if m.group(1) == "weapons-by-mastery":
                 if m.group(2):
                     raise SrdCiteError(
