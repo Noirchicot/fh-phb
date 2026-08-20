@@ -1376,3 +1376,20 @@ body.fh-home-page .md-header { display: none; }
   text-transform: uppercase; color: var(--fh-gold); opacity: .85;
 }
 .md-typeset .fh-arcana-card dd { margin: .1em 0 0; line-height: 1.55; }
+
+/* Le teaser sans illustration : les 22 cartes d'Eric ne sont pas finies, et
+   les fichiers en place sont un tarot Rider-Waite-Smith de 1909 posé en
+   attendant. Montrer le jeu d'un autre comme exemple du sien serait faux, même
+   si c'est légal. La carte se tient donc sur son texte. */
+.md-typeset .fh-arcana-card--noart { padding-top: .2em; }
+.md-typeset .fh-arcana-card--noart figcaption {
+  border-bottom: 1px solid var(--fh-cite-rule);
+  padding-bottom: .5em;
+}
+.md-typeset .fh-arcana-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: .86em;
+  font-style: italic;
+  opacity: .7;
+}

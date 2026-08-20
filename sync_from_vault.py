@@ -1031,6 +1031,20 @@ def _lire_arcanes():
     return cartes
 
 
+# 🔴 LES 22 ILLUSTRATIONS NE SONT PAS CELLES D'ERIC. Eric, 2026-08-20 :
+#    « les cartes ne sont pas finalisées encore ». `docs/assets/img/tarot/major/`
+#    porte le tarot **Rider-Waite-Smith** (Pamela Colman Smith, 1909, domaine
+#    public) comme bouche-trou — voir son SOURCE.txt.
+# ⛔ Tant que ce drapeau est faux, le teaser du chapitre *Destiny* ne montre
+#    AUCUNE image : présenter le jeu d'un autre comme exemple de ce qu'est une
+#    carte de Fate's Hand est faux éditorialement, même si c'est légal.
+#    Le dock, lui, garde les bouche-trous : il rend une carte tirée en jeu, il
+#    ne prétend pas montrer l'identité visuelle du livre.
+# ✅ Le jour où ses 22 fichiers arrivent, sous les mêmes noms de numéral :
+#    passer ce drapeau à True. Une ligne, et les trois exemples s'illustrent.
+ARCANA_ART_READY = False
+
+
 def arcana_teaser(noms):
     """Trois cartes montrées en exemple, côté joueur.
 
@@ -1052,9 +1066,11 @@ def arcana_teaser(noms):
     out = ['<div class="fh-arcana-teaser">']
     for n in voulus:
         c = par_nom[n.lower()]
-        out.append('<figure class="fh-arcana-card">')
-        out.append('<img src="../../assets/img/tarot/major/%s.jpg" alt="%s" loading="lazy">'
-                   % (html.escape(c["numeral"]), html.escape(c["name"])))
+        out.append('<figure class="fh-arcana-card%s">'
+                   % ("" if ARCANA_ART_READY else " fh-arcana-card--noart"))
+        if ARCANA_ART_READY:
+            out.append('<img src="../../assets/img/tarot/major/%s.jpg" alt="%s" loading="lazy">'
+                       % (html.escape(c["numeral"]), html.escape(c["name"])))
         out.append('<figcaption><span class="fh-arcana-num">%s</span> %s</figcaption>'
                    % (html.escape(c["numeral"]), html.escape(c["name"])))
         out.append("<dl>")
@@ -1063,6 +1079,10 @@ def arcana_teaser(noms):
             if c.get(cle):
                 out.append("<dt>%s</dt><dd>%s</dd>" % (libelle, html.escape(c[cle])))
         out.append("</dl></figure>")
+    if not ARCANA_ART_READY:
+        out.append('<p class="fh-arcana-note">The twenty-two cards are being '
+                   "painted. These three are shown by their text alone until "
+                   "the deck is finished.</p>")
     out.append("</div>")
     return "\n".join(out)
 
@@ -1946,6 +1966,16 @@ def build_arcana():
         key = ARCANA_FIELDS.get(field.group(1).strip().lower())
         if key:
             current[key] = re.sub(r"\*{1,2}(.+?)\*{1,2}", r"\1", field.group(2)).strip()
+    # ⚠️ `numeral` est une CLÉ DE JOINTURE, pas un champ d'affichage : c'est par
+    #    lui que FH_ARCANA_STARTERS se résout, et que le builder retrouvera la
+    #    carte. Deux cartes au même numéral, ou une qui le perd, ne casseraient
+    #    rien — la jointure deviendrait silencieusement FAUSSE, ce qui est pire.
+    numeraux = [c["numeral"] for c in cards]
+    if len(set(numeraux)) != len(numeraux):
+        doublons = sorted({n for n in numeraux if numeraux.count(n) > 1})
+        print("  !! numéraux d'arcane en double : %s — arcana.js not rebuilt"
+              % ", ".join(doublons))
+        return
     if len(cards) != ARCANA_COUNT:
         print(f"  !! Found {len(cards)} Major Arcana, expected {ARCANA_COUNT} — arcana.js not rebuilt")
         return

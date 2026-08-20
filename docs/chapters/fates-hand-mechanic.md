@@ -113,8 +113,7 @@ are shown below so you know what a card looks like — the other nineteen are
 waiting.
 
 <div class="fh-arcana-teaser">
-<figure class="fh-arcana-card">
-<img src="../../assets/img/tarot/major/0.jpg" alt="The Fool" loading="lazy">
+<figure class="fh-arcana-card fh-arcana-card--noart">
 <figcaption><span class="fh-arcana-num">0</span> The Fool</figcaption>
 <dl>
 <dt>Meaning</dt><dd>innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.</dd>
@@ -122,8 +121,7 @@ waiting.
 <dt>Power</dt><dd>once per long rest, you may roll 2 Destiny dice at once, take the total of both as a bonus, and pay only the price of the highest.</dd>
 <dt>Vibration</dt><dd>luck effect (Bless or Guidance depending on level).</dd>
 </dl></figure>
-<figure class="fh-arcana-card">
-<img src="../../assets/img/tarot/major/VII.jpg" alt="The Chariot" loading="lazy">
+<figure class="fh-arcana-card fh-arcana-card--noart">
 <figcaption><span class="fh-arcana-num">VII</span> The Chariot</figcaption>
 <dl>
 <dt>Meaning</dt><dd>victory, determination, triumph. Active control, moving toward success.</dd>
@@ -131,8 +129,7 @@ waiting.
 <dt>Power</dt><dd>once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.</dd>
 <dt>Vibration</dt><dd>acceleration (Longstrider, Expeditious Retreat).</dd>
 </dl></figure>
-<figure class="fh-arcana-card">
-<img src="../../assets/img/tarot/major/XIX.jpg" alt="The Sun" loading="lazy">
+<figure class="fh-arcana-card fh-arcana-card--noart">
 <figcaption><span class="fh-arcana-num">XIX</span> The Sun</figcaption>
 <dl>
 <dt>Meaning</dt><dd>success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.</dd>
@@ -140,6 +137,7 @@ waiting.
 <dt>Power</dt><dd>once per short rest, add +2 to the result of a Destiny die without any additional cost.</dd>
 <dt>Vibration</dt><dd>minor light and healing (e.g. Light + small heal).</dd>
 </dl></figure>
+<p class="fh-arcana-note">The twenty-two cards are being painted. These three are shown by their text alone until the deck is finished.</p>
 </div>
 
 *The reading of all twenty-two belongs to your Game Master.*
