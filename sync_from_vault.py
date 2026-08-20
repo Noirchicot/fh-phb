@@ -32,7 +32,8 @@ import re, os, json, html, pathlib
 #    disciplinaire — c'est ce qui la fait tenir dans deux mois.
 SRD_ROOT = pathlib.Path(os.environ.get("FH_SRD", "/Users/Eric/tools/fh-srd"))
 SRD_EXPORTS = SRD_ROOT / "exports" / "srd"
-CITE_RE = re.compile(r"^\{\{srd:([a-z0-9-]+)(?::([a-z0-9,\- ]+))?\}\}[ \t]*$", re.M)
+CITE_RE = re.compile(
+    r"^\{\{srd:([a-z0-9-]+)(?::([a-z0-9,\- ]+))?(?:!([a-z0-9,\- ]+))?\}\}[ \t]*$", re.M)
 
 
 class SrdCiteError(RuntimeError):
@@ -108,7 +109,7 @@ def _srd_load(kind, lang="en"):
     return _SRD_CACHE[key]
 
 
-def _srd_block(kind, slugs, lang="en"):
+def _srd_block(kind, slugs, lang="en", sauf=None):
     doc = _srd_load(kind, lang)
     by_slug = {r["slug"]: r for r in doc["records"]}
     if slugs:
@@ -122,6 +123,27 @@ def _srd_block(kind, slugs, lang="en"):
         records = [by_slug[s] for s in wanted]
     else:
         records = doc["records"]
+
+    # ── L'EXCLUSION, ET POURQUOI ELLE EXISTE ────────────────────────────────
+    # Certains termes du SRD sont REDÉFINIS par Fate's Hand. Les citer verbatim
+    # à côté de la règle FH recréerait la double source qu'on passe la journée
+    # à supprimer : le lecteur verrait deux définitions et ne saurait pas
+    # laquelle fait foi. On les retire de la citation, et le chapitre dit en
+    # toutes lettres lesquels et où FH les définit — « quand on change les
+    # règles, on change les règles ».
+    # 🔴 Un slug exclu qui n'existe pas CASSE : sinon une entrée renommée en
+    #    amont réapparaîtrait silencieusement dans la page, contredisant FH.
+    if sauf:
+        retires = [s.strip() for s in sauf.split(",") if s.strip()]
+        inconnus = [s for s in retires if s not in by_slug]
+        if inconnus:
+            raise SrdCiteError(
+                "{{srd:%s!%s}} : %s n'existe pas dans %s.json — une exclusion qui "
+                "ne mord sur rien laisserait passer ce qu'elle devait retirer."
+                % (kind, sauf, ", ".join(inconnus), kind))
+        ecarte = set(retires)
+        records = [r for r in records if r["slug"] not in ecarte]
+
     if not records:
         raise SrdCiteError("{{srd:%s}} : aucun enregistrement à citer." % kind)
 
@@ -424,6 +446,11 @@ def _srd_mastery_by_class(lang="en"):
 def inject_srd_citations(text, dest):
     def one(m):
         try:
+            if m.group(1) in SRD_TABLES or m.group(1) in ("weapons-by-mastery", "mastery-by-class"):
+                if m.group(3):
+                    raise SrdCiteError(
+                        "{{srd:%s}} : une vue dérivée ne prend pas d'exclusion."
+                        % m.group(1))
             if m.group(1) in SRD_TABLES:
                 if m.group(2):
                     raise SrdCiteError(
@@ -438,7 +465,7 @@ def inject_srd_citations(text, dest):
                         "{{srd:weapons-by-mastery}} ne prend pas de sous-sélection."
                     )
                 return _srd_weapons_by_mastery()
-            return _srd_block(m.group(1), m.group(2))
+            return _srd_block(m.group(1), m.group(2), sauf=m.group(3))
         except SrdCiteError as err:
             raise SrdCiteError("%s : %s" % (dest, err)) from None
 
@@ -484,6 +511,10 @@ MAP = {
     "fates-hand-mechanic.md": ("1. Build a Character/D&D 5+ Fate’s Hand Mechanic.md",               "Destiny System"),
     "battlefield.md":         ("2. At the Table/Battlefield Rules.md",                              "Battlefield Rules"),
     "dungeoneering.md":       ("2. At the Table/Dungeoneering.md",                                  "Dungeoneering"),
+    # Le glossaire des règles — créé le 2026-08-20 pour fermer le trou le plus grave
+    # du survol : les chapitres employaient des termes majuscules (Prone, Advantage,
+    # l'action Search) sans qu'aucune page ne les définisse.
+    "rules-glossary.md":      ("2. At the Table/Rules Glossary.md",                                 "Rules Glossary"),
     "classes.md":             ("1. Build a Character/Class Modifications.md",                   "Classes"),
     "spells.md":              ("3. Magic & Soulforging/Fate’s Hand Spells.md",                          "New Spells"),
     "soulforge-crafting.md":  ("3. Magic & Soulforging/Soulforge Crafting.md",                          "Soulforge Crafting"),

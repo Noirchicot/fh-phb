@@ -522,7 +522,26 @@
 
 <script>
 // ================= DATA — canonical pools, REWORK 2026-07-12 (background included) =================
-const CLASS_POOL = {Artificer:12,Barbarian:12,Bard:16,Cleric:12,Druid:14,Fighter:12,Monk:14,Paladin:12,Ranger:14,Rogue:18,Sorcerer:12,Warlock:12,Wizard:12};
+// ── LES TROIS BOURSES ───────────────────────────────────────────────────────
+// Le livre (chapitre « Skills & Tools ») porte TROIS totaux, pas un :
+//   free  — la réserve libre : compétences OU outils, indifféremment
+//   skill — points LIÉS, placés dans la liste de classe, palier au choix
+//   tool  — points LIÉS à un outil ; ils ne traversent JAMAIS vers une compétence
+// ⚠️ C'est la règle des « deux bourses » : seuls les points LIBRES circulent.
+//    Un point d'outil lié non placé est PERDU — d'où l'avertissement dédié.
+// 📌 Ces nombres viennent du chapitre publié, source de vérité de la règle.
+//    L'ancienne table de cet outil en contredisait quatre (Bard +1, Monk +2,
+//    Ranger −1, Rogue −2) et portait un Artificier que Fate's Hand n'a pas.
+const CLASS_BUDGET = {
+  Barbarian:{free:10,skill:2,tool:0}, Cleric:{free:10,skill:2,tool:0},
+  Fighter:{free:10,skill:2,tool:0},   Paladin:{free:10,skill:2,tool:0},
+  Sorcerer:{free:10,skill:2,tool:0},  Warlock:{free:10,skill:2,tool:0},
+  Wizard:{free:10,skill:2,tool:0},    Monk:{free:10,skill:2,tool:0},
+  Bard:{free:12,skill:3,tool:2},      Druid:{free:12,skill:2,tool:1},
+  Ranger:{free:12,skill:3,tool:0},    Rogue:{free:14,skill:6,tool:1}
+};
+const CLASS_POOL = Object.fromEntries(
+  Object.entries(CLASS_BUDGET).map(([c,b])=>[c, b.free+b.skill+b.tool]));
 const TIER_LEVELS = [4,8];
 const SPECIES = {
   "Human":      {destiny:2, skillCreate:0, skillLevels:[]},
@@ -824,7 +843,7 @@ $('navBack').addEventListener('click',()=>{const i=stepIndex(activeStep); if(i>0
 // ================= POOL MATH =================
 function poolBreakdown(){
   const c = $('cls').value, lvl = +$('lvl').value||1;
-  const base = CLASS_POOL[c]||12;
+  const base = (CLASS_BUDGET[c]||{free:10}).free;   // la part de classe de la réserve LIBRE
   const tierPts = TIER_LEVELS.filter(L=>L<=lvl).length*2;
   const bardPts = c==="Bard" ? Math.max(0,lvl-1) : 0;
   const spKey = $('race').value;
@@ -838,20 +857,46 @@ function poolBreakdown(){
     const k=$(id).value; return s + ((k && ORIGIN_FEATS[k]) ? ORIGIN_FEATS[k].skillPts : 0); },0);
   const feat = (+$('featP').value||0)+skilled;
   const exp2 = +$('bonus1').value||0;
-  const total = base+tierPts+bardPts+race+feat+exp2;
-  return {c,lvl,base,tierPts,bardPts,race,tweak,keen,feat,exp2,total};
+  const bud = CLASS_BUDGET[c] || {free:10,skill:2,tool:0};
+  // Tout ce qui vient des niveaux, de l'espèce et des dons tombe dans la
+  // réserve LIBRE : ces gains ne nomment pas ce sur quoi ils se posent.
+  const free = bud.free+tierPts+bardPts+race+feat+exp2;
+  const boundSkill = bud.skill, boundTool = bud.tool;
+  const total = free+boundSkill+boundTool;
+  return {c,lvl,base,tierPts,bardPts,race,tweak,keen,feat,exp2,
+          free,boundSkill,boundTool,total};
 }
 function spentLeft(){
   const pb=poolBreakdown();
-  let spent=0, toolPts=0;
+  let toolPts=0, skillPts=0;
   items.forEach(it=>{
     // Keen Senses auto-½ counts as SPENT (the +2 species points cover it) — no discount.
-    spent += COST[it.tier];
-    if(it.type==="tool") toolPts+=COST[it.tier];
+    if(it.type==="tool") toolPts+=COST[it.tier]; else skillPts+=COST[it.tier];
   });
-  spent += +$('langPts').value||0;
-  const total = IMPORTED ? IMPORTED.pool.total : pb.total;
-  return {total, spent, left: total-spent, toolPts, lvl: IMPORTED?IMPORTED.pool.charLevel:pb.lvl, pb};
+  const langPts = +$('langPts').value||0;
+  const spent = toolPts+skillPts+langPts;
+
+  // Un personnage importé n'a qu'un total : on ne lui invente pas de bourses.
+  if(IMPORTED){
+    const total = IMPORTED.pool.total;
+    return {total, spent, left: total-spent, toolPts, skillPts, langPts,
+            free: total, freeLeft: total-spent,
+            boundSkill:0, boundSkillLeft:0, boundTool:0, boundToolLeft:0,
+            lvl: IMPORTED.pool.charLevel, pb};
+  }
+
+  // ⭐ L'ORDRE DE DÉBIT EST LA RÈGLE : une dépense épuise d'abord sa bourse
+  //    LIÉE, et ne déborde sur la réserve libre qu'ensuite. L'inverse
+  //    laisserait des points liés orphelins tout en affichant « équilibré ».
+  const boundToolUsed  = Math.min(toolPts,  pb.boundTool);
+  const boundSkillUsed = Math.min(skillPts, pb.boundSkill);
+  const freeUsed = (toolPts-boundToolUsed) + (skillPts-boundSkillUsed) + langPts;
+  return {
+    total: pb.total, spent, left: pb.total-spent, toolPts, skillPts, langPts,
+    free: pb.free, freeLeft: pb.free-freeUsed,
+    boundSkill: pb.boundSkill, boundSkillLeft: pb.boundSkill-boundSkillUsed,
+    boundTool: pb.boundTool,   boundToolLeft: pb.boundTool-boundToolUsed,
+    lvl: pb.lvl, pb};
 }
 function belowLock(it){return COST[it.tier] < COST[it.lock];}
 
@@ -889,11 +934,17 @@ function applyKeenSenses(){
   refresh();
 }
 function computeWarnings(){
-  const {left, toolPts, lvl} = spentLeft();
+  const {freeLeft, boundSkillLeft, boundToolLeft, boundTool, lvl} = spentLeft();
   const W=[];
-  if(left<0) W.push(["err",`Over budget by ${-left} point(s).`]);
-  if(left>0) W.push(["warn",`${left} point(s) still unspent.`]);
-  if(toolPts<1) W.push(["warn",`FH rule: at least 1 tool point at creation (current: ${toolPts}).`]);
+  if(freeLeft<0) W.push(["err",`Free pool over budget by ${-freeLeft} point(s).`]);
+  // ⚠️ Un point LIÉ non placé ne retombe pas dans la réserve libre : il est
+  //    perdu. C'est le piège que l'ancienne bourse unique cachait.
+  if(boundToolLeft>0) W.push(["err",
+    `${boundToolLeft} bound tool point(s) not placed — they buy tools only, and they are lost if left.`]);
+  if(boundSkillLeft>0) W.push(["err",
+    `${boundSkillLeft} bound skill point(s) not placed — your class already granted them.`]);
+  if(freeLeft>0) W.push(["warn",`${freeLeft} free point(s) still unspent.`]);
+  if(boundTool===0 && lvl>=1) { /* pas de plancher d'outil : le livre n'en impose plus */ }
   const expEarly = items.filter(it=>it.tier==="exp"&&COST[it.lock]<COST.exp&&lvl<4);
   if(expEarly.length) W.push(["warn",`Purchased expertise is reserved for level 4+ — ${expEarly.length} row(s) at level ${lvl}.`]);
   const below = items.filter(belowLock);
@@ -901,7 +952,8 @@ function computeWarnings(){
   return W;
 }
 function recalc(){
-  const {total, spent, left, pb} = spentLeft();
+  const S = spentLeft();
+  const {total, spent, left, pb} = S;
   $('vPool').textContent=total;
   $('vSpent').textContent=spent;
   const vl=$('vLeft'); vl.textContent=left;
@@ -911,17 +963,25 @@ function recalc(){
   fill.style.background = spent>total?"var(--bad)":"var(--good)";
   $('poolBreak').innerHTML= IMPORTED
     ? `<b>${IMPORTED.name||"DDB"}</b> (imported) — pool ${total} = ${IMPORTED.pool.breakdown}`
-    : `Pool = class ${pb.base} (background included) + levels ${pb.tierPts+pb.bardPts} + species ${pb.race} + feats ${pb.feat} + bonus ${pb.exp2} = ${total}`;
+    : `Free = class ${pb.base} (background included) + levels ${pb.tierPts+pb.bardPts} + species ${pb.race} + feats ${pb.feat} + bonus ${pb.exp2} = <b>${pb.free}</b>`
+      + (pb.boundSkill?` · bound skill <b>${pb.boundSkill}</b>`:"")
+      + (pb.boundTool?` · bound tool <b>${pb.boundTool}</b>`:"")
+      + ` · total ${total}`;
   // Sticky budget strip above the skills grid — live countdown, detailed sources.
+  // Trois compteurs, parce qu'il y a trois bourses. Un seul nombre laissait
+  // croire qu'un point d'outil lié pouvait payer une compétence.
+  const purse = (nom, reste, total) => total
+    ? `<span>${nom} <b style="color:${reste<0?"var(--bad)":reste===0?"var(--good)":"var(--ink)"}">${reste}</b>/${total}</span>`
+    : "";
   $('skillBudget').innerHTML = IMPORTED
     ? `<span>pool <b>${total}</b> (imported)</span><span>spent <b>${spent}</b></span><span class="sb-left" style="color:${left<0?"var(--bad)":left===0?"var(--good)":"var(--ink)"}">${left<0?`${-left} OVER!`:left===0?"BALANCED ✓":`${left} LEFT`}</span>`
-    : `<span>class <b>${pb.base+pb.tierPts+pb.bardPts}</b></span><span>species <b>${pb.race}</b></span><span>feats <b>${pb.feat+pb.exp2}</b></span><span>= total <b>${total}</b></span><span>spent <b>${spent}</b></span><span class="sb-left" style="color:${left<0?"var(--bad)":left===0?"var(--good)":"var(--ink)"}">${left<0?`${-left} OVER!`:left===0?"BALANCED ✓":`${left} LEFT`}</span>`;
+    : `${purse("free", S.freeLeft, S.free)}${purse("bound skill", S.boundSkillLeft, S.boundSkill)}${purse("bound tool", S.boundToolLeft, S.boundTool)}<span class="sb-left" style="color:${(S.freeLeft<0||S.boundToolLeft>0||S.boundSkillLeft>0)?"var(--bad)":S.freeLeft===0?"var(--good)":"var(--ink)"}">${S.freeLeft<0?`${-S.freeLeft} OVER!`:(S.boundToolLeft>0||S.boundSkillLeft>0)?"BOUND POINTS LEFT":S.freeLeft===0?"BALANCED ✓":`${S.freeLeft} LEFT`}</span>`;
   const W=computeWarnings();
   const bw=$('bmWarn');
   if(!W.length){ bw.className="bm-warn ok"; bw.textContent="✓ Allocation valid — all points placed."; }
   else { bw.className="bm-warn "+(W.some(w=>w[0]==="err")?"err":""); bw.textContent=W[0][1]+(W.length>1?` (+${W.length-1} more)`:""); }
   $('ruleNote').textContent =
-    "Canonical 2026-07-13: level-1 pool includes background (Rogue 18 · Bard 16 · Druid/Monk/Ranger 14 · others 12) · +2 at levels 4/8 · Bard +1/level from 2 · Araag & Elestu +2 at levels 3/6 · purchased expertise from level 4 · min. 1 tool point · languages free at creation.";
+    "Canonical 2026-08-20 — three purses, per the published chapter. Free pool at level 1, background included: Rogue 14 · Bard/Druid/Ranger 12 · others 10. Bound skill points: Rogue 6 · Bard/Ranger 3 · others 2. Bound tool points: Bard 2 · Druid/Rogue 1 · others 0 — these buy tools only and never cross to a skill. Then +2 free at levels 4/8/12/16/20 · Bard +1 per level from 2 · Araag & Elestu +2 at levels 3/6 · purchased expertise from level 4 · languages free at creation.";
   updateDestiny();
   renderSteps();
 }
