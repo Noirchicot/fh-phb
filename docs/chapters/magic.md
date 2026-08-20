@@ -1,5 +1,9 @@
 # Magic
 
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>
+
 Three kinds of magic are practised in Nymedes, and only one of them belongs to Fate's Hand.
 This page says which is which, and sends you to the chapter that holds it.
 

@@ -1,5 +1,9 @@
 # Dungeoneering
 
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>
+
 In built environments and dungeons, specific skills govern traps, locks and hidden passages.
 
 | Task | Skill | Ability |

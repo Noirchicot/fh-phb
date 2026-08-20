@@ -1,5 +1,9 @@
 # Destiny System
 
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>
+
 ---
 
 Glimmers of true power flicker beyond mortal sight, revealing a grand tapestry of fate. Your **Destiny Score** is both compass and conduit. Every hero begins with a **Major Arcana**—an echo of cosmic authority. Wield these gifts wisely: the greater your strength grows, the more the universe may demand in return.

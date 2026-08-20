@@ -681,6 +681,108 @@ def _srd_classes(lang="en"):
     return "\n".join(out)
 
 
+# ── LE RAPPEL EN TÊTE DE CHAPITRE ───────────────────────────────────────────
+# Eric, 2026-08-20 : « j'ai un peu peur de voir ma création noyée dans le SRD »,
+# puis « peut-on donner ce job de rappel des règles FH en tête de chapitre, plus
+# sous forme de menu avec des liens qu'un bloc de texte ? ». Table ratifiée le
+# même jour : `0c. Canon/Chapitres et genres — Canon (ratifié 2026-08-20).md`.
+#
+# ⭐ IL EST GÉNÉRÉ, JAMAIS ÉCRIT. Un rappel écrit à la main pourrit — la journée
+#    du 20/08 l'a prouvé deux fois : deux clauses dictées de mémoire par Eric
+#    restituaient un état qu'il avait lui-même corrigé deux jours plus tôt. Un
+#    rappel dérivé ne peut pas mentir : le jour où une couche cesse de patcher,
+#    la ligne disparaît toute seule.
+#
+# ⭐ ET LE « — » N'EST PAS UN TROU, C'EST UNE RÉPONSE. Onze chapitres ne portent
+#    aucun genre parce que le SRD ne dit RIEN de ces sujets. Le menu y écrit
+#    « entirely Fate's Hand », et c'est la meilleure réponse à sa crainte.
+CHAPTER_GENRES = {
+    "skills-and-tools.md": ["skill", "tool", "training"],
+    "classes.md":          ["class", "class-progression"],
+    "species.md":          ["species"],
+    "inheritance.md":      ["background", "training"],
+    "equipment.md":        ["weapon", "weapon-property", "weapon-mastery", "armor", "gear", "tool"],
+    "major-arcana.md":     ["arcana"],
+    "feats.md":            ["feat"],
+    "trainings.md":        ["training"],
+    "rules-glossary.md":   ["glossary"],
+    "skills-synergies.md": ["skill"],
+    "spells.md":           ["spell"],
+    "magic-items.md":      ["item"],
+    "crafting.md":         ["tool"],
+    "chaos-tables.md":     ["monster"],
+    # « — » : le SRD ne dit rien de ces sujets. Explicites, pas absents.
+    "identity.md": [], "ability-scores.md": [], "fates-hand-mechanic.md": [],
+    "moonkeeper.md": [], "leveling-up.md": [], "battlefield.md": [],
+    "dungeoneering.md": [], "magic.md": [], "dark-rituals.md": [],
+    "soulforge-crafting.md": [], "primordial-forces.md": [],
+}
+
+# Ce que le builder retire, ajoute ou modifie, par genre. ⏳ Produit par FHPC
+# depuis ses couches ; le fichier n'existe pas encore.
+# 🔴 SON ABSENCE NE SE DÉDUIT PAS EN SILENCE — c'est la leçon du 20/08. Tant
+#    qu'il manque, le menu dit ce qu'il PEUT prouver et ne prétend rien sur ce
+#    que FH change ; la passe l'annonce à l'écran.
+FH_CHANGES = SRD_ROOT.parent / "fhpc" / "exports" / "fh-changes.json"
+_CHANGES_CACHE = {}
+
+
+def _fh_changes():
+    if "d" not in _CHANGES_CACHE:
+        if FH_CHANGES.exists():
+            _CHANGES_CACHE["d"] = json.loads(FH_CHANGES.read_text(encoding="utf-8")).get("genres", {})
+        else:
+            _CHANGES_CACHE["d"] = None
+    return _CHANGES_CACHE["d"]
+
+
+def chapter_banner(dest):
+    """Le menu de tête. Retourne "" pour un chapitre hors table."""
+    if dest not in CHAPTER_GENRES:
+        return ""
+    genres = CHAPTER_GENRES[dest]
+    if not genres:
+        return (
+            '<nav class="fh-layer fh-layer--own">\n'
+            '<p><strong>Entirely Fate\u2019s Hand.</strong> The SRD says nothing about this '
+            "subject — every rule on this page is Eric's.</p>\n</nav>\n"
+        )
+    changes = _fh_changes()
+    out = ['<nav class="fh-layer">',
+           '<p class="fh-layer__label">What Fate\u2019s Hand does here</p>', "<ul>"]
+    for g in genres:
+        info = (changes or {}).get(g)
+        if info is None:
+            out.append('<li><span class="fh-layer__genre">%s</span> '
+                       '<span class="fh-layer__unknown">quoted from the SRD</span></li>'
+                       % html.escape(g.replace("-", " ")))
+            continue
+        morceaux = []
+        for cle, mot in (("added", "adds"), ("patched", "changes"), ("removed", "removes")):
+            noms = info.get(cle) or []
+            if noms:
+                morceaux.append('<span class="fh-layer__%s">%s %d</span>%s'
+                                % (cle, mot, len(noms),
+                                   " — " + html.escape(", ".join(noms[:6]))
+                                   + ("…" if len(noms) > 6 else "")))
+        out.append('<li><span class="fh-layer__genre">%s</span> %s</li>'
+                   % (html.escape(g.replace("-", " ")),
+                      " · ".join(morceaux) or '<span class="fh-layer__same">unchanged</span>'))
+    out.append("</ul></nav>")
+    return "\n".join(out) + "\n"
+
+
+def insert_banner(text, dest):
+    banniere = chapter_banner(dest)
+    if not banniere:
+        return text
+    lignes = text.split("\n")
+    for i, l in enumerate(lignes):
+        if l.startswith("# "):
+            return "\n".join(lignes[: i + 1] + ["", banniere] + lignes[i + 1 :])
+    return banniere + "\n" + text
+
+
 def inject_srd_citations(text, dest):
     def one(m):
         try:
@@ -1256,6 +1358,7 @@ def main():
         body = normalize_headings(body)
         body = ensure_h1(body, title)
         body = inject_srd_citations(body, dest)
+        body = insert_banner(body, dest)
         body = insert_images(body, dest)
         body = space_before_lists(body)
         body = collapse_blanks(body)
@@ -1272,6 +1375,9 @@ def main():
             continue
         dst.write_text(page, encoding="utf-8")
         print(f"  ok  {dst.name:24s} <- {src.name}")
+    if _fh_changes() is None:
+        print("  ?? fh-changes.json absent (%s) — le menu de tête ne dit "
+              "encore RIEN de ce que FH change" % FH_CHANGES)
     split_species()
     build_soulforge_data()
 

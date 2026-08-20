@@ -1,5 +1,11 @@
 # Trainings
 
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">training</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+</ul></nav>
+
 A **training** is something you **know**. Not something you practise, and not something you
 are more or less good at — so unlike a skill or a tool, **a training has no tier and no
 ability**. You either have it or you don't. A language is the clearest case: you speak Dwarvish

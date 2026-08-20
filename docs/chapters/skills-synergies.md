@@ -1,5 +1,11 @@
 # Synergy Rules
 
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">skill</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+</ul></nav>
+
 ## Overview
 
 At levels **1–4**, the base **DC** for most challenging skill checks is **16**, rising with tier at higher levels (DM's tiered table). This higher DC keeps challenges interesting while rewarding creative teamwork. You can gain a synergy bonus in three ways:

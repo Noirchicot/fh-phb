@@ -1196,3 +1196,52 @@ body.fh-home-page .md-header { display: none; }
 .md-typeset .fh-spell-meta { color: var(--fh-gold); opacity: .9; }
 .md-typeset .fh-spell-classes { font-style: italic; margin-bottom: .35em; }
 .md-typeset .fh-srd-cite--spells dd { margin-bottom: .9em; }
+
+/* ── Le rappel en tête de chapitre ───────────────────────────────────────────
+   Eric, 2026-08-20 : « j'ai un peu peur de voir ma création noyée dans le SRD ».
+   Ce bandeau répond à la crainte AVANT que la page ne commence : il dit ce que
+   Fate's Hand fait ici, et sur onze chapitres il dit que tout est de lui.
+   🔴 GÉNÉRÉ par sync_from_vault.py depuis la table ratifiée. Le styler ici est
+      sans risque ; l'éditer dans docs/ est un no-op. */
+.md-typeset .fh-layer {
+  margin: -.4em 0 2em;
+  padding: .75em 1em .8em;
+  border-left: 3px solid var(--fh-gold);
+  background: var(--fh-cite-bg);
+  border-radius: 0 5px 5px 0;
+  font-size: .84em;
+}
+.md-typeset .fh-layer__label {
+  margin: 0 0 .45em;
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fh-gold);
+}
+.md-typeset .fh-layer ul { margin: 0; padding: 0; list-style: none; }
+.md-typeset .fh-layer li { margin: .22em 0; padding: 0; line-height: 1.55; }
+.md-typeset .fh-layer li::before { content: none; }
+.md-typeset .fh-layer__genre {
+  display: inline-block;
+  min-width: 9.5em;
+  font-weight: 700;
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-layer__genre { color: var(--fh-gold); }
+.md-typeset .fh-layer__added   { color: #2f6b3a; font-weight: 700; }
+.md-typeset .fh-layer__patched { color: var(--fh-gold); font-weight: 700; }
+.md-typeset .fh-layer__removed { color: var(--fh-red); font-weight: 700; }
+[data-md-color-scheme="slate"] .md-typeset .fh-layer__added { color: #7fbf8a; }
+.md-typeset .fh-layer__same,
+.md-typeset .fh-layer__unknown { opacity: .55; font-style: italic; }
+
+/* Les onze chapitres que le SRD ne touche pas. C'est le meilleur usage du
+   bandeau : il ne dit pas ce qui a été emprunté, il dit que rien ne l'a été. */
+.md-typeset .fh-layer--own {
+  border-left-color: var(--fh-red);
+  background: color-mix(in srgb, var(--fh-red) 7%, transparent);
+}
+.md-typeset .fh-layer--own p { margin: 0; }
+[data-md-color-scheme="slate"] .md-typeset .fh-layer--own {
+  background: color-mix(in srgb, var(--fh-red) 14%, transparent);
+}

@@ -1,4 +1,9 @@
 # Nymedes's Primordial Forces
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>
+
 *(Les Forces Primordiales de Nymedes — côté règles)*
 
 The Third Age is shaped by Nymedes's **two opposed primordial forces**. This page holds their **rules** (in English); their **lore** lives in Les Forces Primordiales de Nymedes *(cosmologie)*. Each pocket **varies in size**, and may be **conjured** by a rite or **arise on its own**.

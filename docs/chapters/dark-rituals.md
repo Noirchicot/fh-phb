@@ -1,4 +1,9 @@
 # Dark Rituals
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>
+
 *(Rituels Noirs — la magie impériale)*
 
 **Dark Rituals** are large, collaborative magical workings that reach past the spell list — multi-caster ceremonies that bend the world's deep structure at a terrible price, paid in pooled **[Destiny](fates-hand-mechanic.md)**, in life, and often in blood. They are the province of **Imperial magic**, rooted in the **Moisson** of Karagall — the trade of souls and lives for power. Each is gated by **skill checks**, and they bite back when they fail.

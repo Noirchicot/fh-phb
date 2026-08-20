@@ -1,5 +1,11 @@
 # Feats
 
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">feat</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+</ul></nav>
+
 Fate's Hand adds a few feats of its own and leaves the rest alone. Everything the 2024 rules print works as printed, unless an entry below says otherwise — and where an entry does say otherwise, unfold *view older version* to see what it replaced.
 
 ## Origin feats

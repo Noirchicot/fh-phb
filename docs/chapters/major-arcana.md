@@ -1,5 +1,11 @@
 # Arcana
 
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">arcana</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+</ul></nav>
+
 ## Drawing a Major Arcana at character creation
 
 At character creation, draw **among the 22 Major Arcana** to determine its influence on the character's fate: [Random Tarot Card Generator](https://randomtarotcard.com/Death.html).

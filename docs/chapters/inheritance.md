@@ -1,5 +1,12 @@
 # Inheritance
 
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">background</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">training</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+</ul></nav>
+
 > 🔴 **There are no backgrounds in Fate's Hand.** You do not pick Acolyte, Criminal, Sage or
 > Soldier — they do not exist here. The step that replaces them is called **Inheritance**, and it
 > is made to measure: nothing is imposed, everything is chosen.

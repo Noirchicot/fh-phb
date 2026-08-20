@@ -1,4 +1,9 @@
 # Soulforge Crafting
+
+<nav class="fh-layer fh-layer--own">
+<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+</nav>
+
 *(La Forge des Esprits — système de craft itératif)*
 
 The **Soulforge** presses power into matter, binding monster parts to the **soul-stuff of the slain**. What it produces is always a **soulforged item**.

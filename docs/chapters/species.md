@@ -2,6 +2,12 @@
 
 ![The peoples of Nymedes](../assets/img/species-banner.jpg){ .fh-illus .fh-banner }
 
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">species</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+</ul></nav>
+
 ## The Species of Nymedes
 
 Nymedes carries the familiar peoples of fantasy — and three of its own, born of the world's strange history: the **[Araags](#araag)**, fiend-marked children of the Harvest; the **[Loroka](#loroka)**, the demi-orc old blood of the Theymoron highlands; and the **[Elestu](#elestu)**, the rare demi-elves born of elven unions with humans or Araags.

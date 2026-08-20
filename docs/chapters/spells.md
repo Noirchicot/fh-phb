@@ -1,4 +1,11 @@
 # New Spells
+
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">spell</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+</ul></nav>
+
 *(Sorts — révisions & nouveaux sorts Fate's Hand)*
 
 Fate's Hand revisions and new spells. Only the **changes** to existing spells are listed; everything else works as printed.

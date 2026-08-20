@@ -1,5 +1,13 @@
 # Fate's Hand 5+ — Skills & Tools: Player Guide
 
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">skill</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">tool</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+<li><span class="fh-layer__genre">training</span> <span class="fh-layer__unknown">quoted from the SRD</span></li>
+</ul></nav>
+
 A plain-language guide to how skill and tool points work, and what every skill and tool does.
 
 > 🥇 **This chapter is the source of truth for skill and tool points.** It is what the site
