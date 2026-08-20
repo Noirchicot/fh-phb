@@ -1,8 +1,5 @@
 # Equipment
 
-> 🚧 **Chapitre en cours.** *Weapon Mastery* est écrit (2026-08-20) ; le reste attend. Cette page existe pour que l'arborescence de la refonte se tienne
-> debout et se parcoure — son texte reste à écrire. *Emplacement posé le 2026-08-19.*
-
 ## Ce que ce chapitre doit porter
 
 Deux profondeurs dans un seul chapitre :

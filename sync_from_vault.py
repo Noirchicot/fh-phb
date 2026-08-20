@@ -630,10 +630,61 @@ def _srd_items(lang="en"):
     return "\n".join(out)
 
 
+def _srd_classes(lang="en"):
+    """Les douze classes du SRD, en fiches citées.
+
+    🔴 CE QUI EST DÉLIBÉRÉMENT ÉCARTÉ, et c'est le cœur de cette vue :
+    `skill_proficiencies` et `skill_choice`. La ligne du SRD nomme **Perception**
+    — que Fate's Hand a supprimée — et puise dans les 18 compétences du SRD au
+    lieu des 26 de FH. La citer mettrait une compétence inexistante sur une page
+    FH, et donnerait un second compte de points à côté de la table des points
+    liés. C'est la même précaution que les sept exclusions du glossaire.
+    ⚠️ `weapon_mastery_*` est écarté aussi : il est déjà cité dans *Equipment*,
+    et une règle publiée deux fois est une règle qui divergera.
+    """
+    doc = _srd_load("class", lang)
+    lignes = [
+        ("Hit die",         lambda d: d.get("hit_point_die")),
+        ("Primary ability", lambda d: d.get("primary_ability")),
+        ("Saving throws",   lambda d: ", ".join(d.get("saving_throw_proficiencies") or []) or None),
+        ("Armor training",  lambda d: d.get("armor_training")),
+        ("Weapons",         lambda d: d.get("weapon_proficiencies")),
+        ("Tools",           lambda d: d.get("tool_proficiencies")),
+        ("Starting equipment", lambda d: d.get("starting_equipment")),
+    ]
+    out = [
+        "<!-- GENERATED — cité depuis fh-srd class.json (run=%s). Ne pas éditer. -->"
+        % doc.get("import_run", "?"),
+        '<div class="fh-srd-cite fh-srd-cite--spells">',
+        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong> — all %d classes, '
+        "as printed, minus their skill lines</p>"
+        % (html.escape(doc.get("layer_label", "SRD")), doc.get("count", 0)),
+    ]
+    for r in sorted(doc["records"], key=lambda x: x["name"]):
+        d = r["data"]
+        out.append('<p class="fh-srd-cite__group">%s</p>' % html.escape(r["name"]))
+        out.append('<dl class="fh-srd-cite__list">')
+        for libelle, prendre in lignes:
+            v = prendre(d)
+            if v is None or v == "":
+                continue
+            out.append("<dt>%s</dt><dd>%s</dd>" % (html.escape(libelle), html.escape(str(v))))
+        traits = d.get("features") or []
+        if traits:
+            out.append("<dt>Features</dt><dd>%s</dd>"
+                       % html.escape(", ".join(f.get("name", "?") for f in traits)))
+        out.append("</dl>")
+    attr = doc["records"][0].get("attribution", "")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
 def inject_srd_citations(text, dest):
     def one(m):
         try:
-            if m.group(1) in SRD_TABLES or m.group(1) in ("weapons-by-mastery", "mastery-by-class", "feat-list", "spell-list", "item-list"):
+            if m.group(1) in SRD_TABLES or m.group(1) in ("weapons-by-mastery", "mastery-by-class", "feat-list", "spell-list", "item-list", "class-cards"):
                 if m.group(3):
                     raise SrdCiteError(
                         "{{srd:%s}} : une vue dérivée ne prend pas d'exclusion."
@@ -644,6 +695,8 @@ def inject_srd_citations(text, dest):
                         "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1)
                     )
                 return _srd_table(m.group(1))
+            if m.group(1) == "class-cards":
+                return _srd_classes()
             if m.group(1) == "item-list":
                 return _srd_items()
             if m.group(1) == "spell-list":
