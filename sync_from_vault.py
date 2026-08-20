@@ -742,7 +742,11 @@ CHAPTER_GENRES = {
     "soulforge-crafting.md": [], "primordial-forces.md": [],
 }
 
-# Ce que le builder retire, ajoute ou modifie, par genre. ⏳ Produit par FHPC
+# Ce que le builder retire, ajoute ou modifie, par genre.
+# ⚠️ Les noms de genres sont ceux des exports SRD — SAUF DEUX, qui sont propres
+#    à Fate's Hand et n'ont aucune contrepartie : `arcana` (22 arcanes) et
+#    `training` (13, la troisième dépense du pool). Le SRD n'en dit rien, et
+#    ce sont donc les deux genres où le menu dit le plus. ⏳ Produit par FHPC
 # depuis ses couches ; le fichier n'existe pas encore.
 # 🔴 SON ABSENCE NE SE DÉDUIT PAS EN SILENCE — c'est la leçon du 20/08. Tant
 #    qu'il manque, le menu dit ce qu'il PEUT prouver et ne prétend rien sur ce
@@ -761,7 +765,18 @@ def _fh_changes():
 
 
 def chapter_banner(dest):
-    """Le menu de tête. Retourne "" pour un chapitre hors table."""
+    """Le menu de tête. Retourne "" pour un chapitre hors table.
+
+    🔴 LA PHRASE QUI POUVAIT MENTIR, ET C'EST LA PARTIE QUI COMPTE.
+    `fh-changes.json` mesure des RECORDS. Une règle qu'Eric écrit dans la PROSE
+    d'un chapitre, sans record derrière, y est invisible. Cas vivant : le genre
+    `spell` sort à trois listes vides alors que `Fate's Hand Spells` porte 737
+    mots de sorts maison. Écrire « unchanged » ou « quoted from the SRD » sur
+    cette page dirait au lecteur que rien n'y est d'Eric — **le noyage, commis
+    par l'outil censé y répondre**.
+    D'où deux précautions : le mot est « no record differs », jamais
+    « unchanged » ; et un pied de bandeau rappelle ce que la mesure couvre.
+    """
     if dest not in CHAPTER_GENRES:
         return ""
     genres = CHAPTER_GENRES[dest]
@@ -772,27 +787,51 @@ def chapter_banner(dest):
             "subject — every rule on this page is Eric's.</p>\n</nav>\n"
         )
     changes = _fh_changes()
-    out = ['<nav class="fh-layer">',
-           '<p class="fh-layer__label">What Fate\u2019s Hand does here</p>', "<ul>"]
+    lignes, mesures, tout_vide = [], 0, True
     for g in genres:
         info = (changes or {}).get(g)
+        libelle = html.escape(g.replace("-", " "))
         if info is None:
-            out.append('<li><span class="fh-layer__genre">%s</span> '
-                       '<span class="fh-layer__unknown">quoted from the SRD</span></li>'
-                       % html.escape(g.replace("-", " ")))
+            lignes.append('<li><span class="fh-layer__genre">%s</span> '
+                          '<span class="fh-layer__unknown">not measured</span></li>' % libelle)
             continue
+        mesures += 1
         morceaux = []
         for cle, mot in (("added", "adds"), ("patched", "changes"), ("removed", "removes")):
             noms = info.get(cle) or []
             if noms:
-                morceaux.append('<span class="fh-layer__%s">%s %d</span>%s'
+                morceaux.append('<span class="fh-layer__%s">%s %d</span> — %s%s'
                                 % (cle, mot, len(noms),
-                                   " — " + html.escape(", ".join(noms[:6]))
-                                   + ("…" if len(noms) > 6 else "")))
-        out.append('<li><span class="fh-layer__genre">%s</span> %s</li>'
-                   % (html.escape(g.replace("-", " ")),
-                      " · ".join(morceaux) or '<span class="fh-layer__same">unchanged</span>'))
-    out.append("</ul></nav>")
+                                   html.escape(", ".join(noms[:6])),
+                                   "…" if len(noms) > 6 else ""))
+        # ⭐ `renamed` mérite sa propre phrase : rangé dans `patched` sous son
+        #    seul nom d'arrivée, « Gnome → Hoddon » deviendrait « FH retouche le
+        #    Hoddon », et le mot Gnome quitterait le livre sans qu'une ligne le
+        #    dise. C'est pourtant la phrase la plus forte du chapitre Species.
+        for r in info.get("renamed") or []:
+            morceaux.append('<span class="fh-layer__renamed">replaces</span> — %s → %s'
+                            % (html.escape(str(r.get("from"))), html.escape(str(r.get("to")))))
+        if morceaux:
+            tout_vide = False
+        lignes.append('<li><span class="fh-layer__genre">%s</span> %s</li>'
+                      % (libelle, " · ".join(morceaux)
+                         or '<span class="fh-layer__same">no record differs</span>'))
+
+    out = ['<nav class="fh-layer">',
+           '<p class="fh-layer__label">What Fate\u2019s Hand does here</p>', "<ul>"]
+    out += lignes
+    out.append("</ul>")
+    if mesures and tout_vide:
+        # Le cas dangereux : tout est vide côté données. On le dit d'abord, et
+        # on dit surtout ce que ça ne veut PAS dire.
+        out.append('<p class="fh-layer__note"><strong>No entry on this page differs from the '
+                   "SRD's data.</strong> That is not the same as saying nothing here is Fate\u2019s "
+                   "Hand: rules this chapter states in its own words are not counted by the "
+                   "measure — read the page.</p>")
+    elif mesures:
+        out.append('<p class="fh-layer__note">Measured against the SRD\u2019s data. Rules this '
+                   "chapter states in its own words are not counted here.</p>")
+    out.append("</nav>")
     return "\n".join(out) + "\n"
 
 

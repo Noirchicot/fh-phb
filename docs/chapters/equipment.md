@@ -3,13 +3,15 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">weapon</span> <span class="fh-layer__same">unchanged</span></li>
-<li><span class="fh-layer__genre">weapon property</span> <span class="fh-layer__same">unchanged</span></li>
-<li><span class="fh-layer__genre">weapon mastery</span> <span class="fh-layer__same">unchanged</span></li>
-<li><span class="fh-layer__genre">armor</span> <span class="fh-layer__same">unchanged</span></li>
-<li><span class="fh-layer__genre">gear</span> <span class="fh-layer__same">unchanged</span></li>
+<li><span class="fh-layer__genre">weapon</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">weapon property</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">weapon mastery</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">armor</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">gear</span> <span class="fh-layer__same">no record differs</span></li>
 <li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 13</span> — Card Set, Dice Set, Dragonchess Set, Mount (Air), Mount (Land), Mount (Water)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
-</ul></nav>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>
 
 ## Ce que ce chapitre doit porter
 

@@ -4,7 +4,9 @@
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
 <li><span class="fh-layer__genre">arcana</span> <span class="fh-layer__added">adds 22</span> — Death, Judgement, Justice, Strength, Temperance, The Chariot…</li>
-</ul></nav>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>
 
 ## Drawing a Major Arcana at character creation
 

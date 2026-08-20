@@ -4,7 +4,9 @@
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
 <li><span class="fh-layer__genre">feat</span> <span class="fh-layer__added">adds 1</span> — Auspicious (fh) · <span class="fh-layer__patched">changes 2</span> — Magic Initiate, Skilled</li>
-</ul></nav>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>
 
 Fate's Hand adds a few feats of its own and leaves the rest alone. Everything the 2024 rules print works as printed, unless an entry below says otherwise — and where an entry does say otherwise, unfold *view older version* to see what it replaced.
 

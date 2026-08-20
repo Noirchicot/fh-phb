@@ -3,8 +3,10 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">glossary</span> <span class="fh-layer__same">unchanged</span></li>
-</ul></nav>
+<li><span class="fh-layer__genre">glossary</span> <span class="fh-layer__same">no record differs</span></li>
+</ul>
+<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+</nav>
 
 Every capitalised term the rules lean on, defined once, on this page. **Look a word up here
 before you assume you know it** — several of them mean something narrower than they do in

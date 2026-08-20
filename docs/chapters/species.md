@@ -5,8 +5,10 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon…</li>
-</ul></nav>
+<li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>
 
 ## The Species of Nymedes
 

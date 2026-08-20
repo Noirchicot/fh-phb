@@ -5,7 +5,9 @@
 <ul>
 <li><span class="fh-layer__genre">background</span> <span class="fh-layer__added">adds 1</span> — Inheritance · <span class="fh-layer__removed">removes 4</span> — Acolyte, Criminal, Sage, Soldier</li>
 <li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
-</ul></nav>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>
 
 > 🔴 **There are no backgrounds in Fate's Hand.** You do not pick Acolyte, Criminal, Sage or
 > Soldier — they do not exist here. The step that replaces them is called **Inheritance**, and it

@@ -3,8 +3,10 @@
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">spell</span> <span class="fh-layer__same">unchanged</span></li>
-</ul></nav>
+<li><span class="fh-layer__genre">spell</span> <span class="fh-layer__same">no record differs</span></li>
+</ul>
+<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+</nav>
 
 *(Sorts — révisions & nouveaux sorts Fate's Hand)*
 

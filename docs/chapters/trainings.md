@@ -4,7 +4,9 @@
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
 <li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
-</ul></nav>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>
 
 A **training** is something you **know**. Not something you practise, and not something you
 are more or less good at — so unlike a skill or a tool, **a training has no tier and no

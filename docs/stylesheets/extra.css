@@ -1245,3 +1245,22 @@ body.fh-home-page .md-header { display: none; }
 [data-md-color-scheme="slate"] .md-typeset .fh-layer--own {
   background: color-mix(in srgb, var(--fh-red) 14%, transparent);
 }
+
+/* Le remplacement d'une entrée entière — « Gnome → Hoddon ». Rangé parmi les
+   modifications, il aurait disparu : c'est la ligne la plus forte du chapitre
+   Species, elle a droit à sa couleur. */
+.md-typeset .fh-layer__renamed { color: var(--fh-red); font-weight: 700; }
+[data-md-color-scheme="slate"] .md-typeset .fh-layer__renamed { color: #e0a08a; }
+
+/* 🔴 Le pied du bandeau. Il dit ce que la mesure NE couvre pas : les règles
+   qu'un chapitre énonce dans sa propre prose, sans record derrière, sont
+   invisibles à `fh-changes.json`. Sans cette ligne, la page des sorts —
+   737 mots d'Eric, zéro record divergent — aurait annoncé « unchanged ». */
+.md-typeset .fh-layer__note {
+  margin: .7em 0 0;
+  padding-top: .55em;
+  border-top: 1px solid var(--fh-cite-rule);
+  font-size: .9em;
+  line-height: 1.55;
+  opacity: .8;
+}

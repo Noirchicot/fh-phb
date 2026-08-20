@@ -4,8 +4,10 @@
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
 <li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">unchanged</span></li>
-</ul></nav>
+<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
+</ul>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+</nav>
 
 Only the **changes** are listed here — everything else works as printed in the 2024 rules.
 
