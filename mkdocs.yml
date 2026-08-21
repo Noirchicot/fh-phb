@@ -1,7 +1,20 @@
 site_name: Fate's Hand — Player's Handbook
 site_description: The Fate's Hand 5+ house rules — an expansion of D&D 2024.
 site_url: https://noirchicot.github.io/fh-phb/
-docs_dir: docs
+# ⛔ VERBATIM — NE PAS REFORMULER, NE RIEN AJOUTER.
+# La déclaration exigée par le SRD 5.2.1, en DEUX phrases, reprise telle quelle
+# depuis `fh-srd/exports/srd/en/*.json` (champ `attribution`, 315 signes). Le
+# dépôt source la teste caractère par caractère contre le PDF à chaque
+# exécution ; une paraphrase ici casserait cette garantie en silence.
+# 🔴 Et la page légale continue : « Veuillez n'inclure AUCUNE AUTRE attribution
+#    à Wizards ». Donc pas de « changes were made », pas d'avertissement de
+#    non-affiliation, rien autour. Ce qui est permis, verbatim : « compatible
+#    with fifth edition » / « 5E compatible ».
+# 📌 Elle est ici et nulle part ailleurs : `sync_from_vault.py` ne l'écrit plus
+#    dans les blocs (voir ATTR_PAR_BLOC). Si cette ligne disparaît, la remettre
+#    à True le même jour.
+copyright: >-
+  This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.
 
 theme:
   name: material

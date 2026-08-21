@@ -30,6 +30,20 @@ import re, os, json, html, pathlib
 # 🔴 Le bloc produit vit dans `docs/`, réécrit à chaque passe : il n'y a donc
 #    rien à éditer à la main qui survivrait. La garde est structurelle, pas
 #    disciplinaire — c'est ce qui la fait tenir dans deux mois.
+# ── L'ATTRIBUTION NE SE RÉPÈTE PAS ─────────────────────────────────────────
+# Eric, 2026-08-21 : « on n'a pas besoin de mettre "quoted from SRD" toutes les
+# 10 lignes ». Mesuré : le texte complet de la licence apparaissait HUIT fois
+# sur `equipment.md`, une par bloc cité.
+# 🔴 Et ce n'est pas qu'une question de maquette. La CC BY 4.0 exige UNE mention
+#    — « This work includes material from the System Reference Document 5.2.1… »
+#    — et demande explicitement de ne pas en ajouter d'autres à Wizards. Un
+#    emplacement unique suffit, et il vaut mieux : au pied de page global, la
+#    mention est sur TOUTES les pages, y compris celles qui ne citent rien.
+# ⚠️ La conformité est donc maintenue, pas allégée. Le pied de page est réglé
+#    par `copyright:` dans `mkdocs.yml` ; si cette ligne disparaît, remettre
+#    ATTR_PAR_BLOC à True le même jour.
+ATTR_PAR_BLOC = False
+
 SRD_ROOT = pathlib.Path(os.environ.get("FH_SRD", "/Users/Eric/tools/fh-srd"))
 SRD_EXPORTS = SRD_ROOT / "exports" / "srd"
 CITE_RE = re.compile(
@@ -158,7 +172,7 @@ def _srd_block(kind, slugs, lang="en", sauf=None):
         "Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->"
         % (kind, lang, doc.get("import_run", "?")),
         '<div class="fh-srd-cite">',
-        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — the '
+        '<p class="fh-srd-cite__label"><strong>%s</strong>%s — the '
         'official wording, unaltered</p>'
         % (html.escape(label), (" · " + html.escape(where)) if where else ""),
         '<dl class="fh-srd-cite__list">',
@@ -168,7 +182,8 @@ def _srd_block(kind, slugs, lang="en", sauf=None):
         out.append("<dd>%s</dd>" % html.escape(r["data"]["description"]))
     out.append("</dl>")
     if attr:
-        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+        if ATTR_PAR_BLOC:
+            out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
 
@@ -207,7 +222,8 @@ def _srd_weapons_by_mastery(lang="en"):
     # Dérivé ou cité, ça reste du SRD affiché : l'attribution suit la donnée.
     attr = doc["records"][0].get("attribution", "")
     if attr:
-        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+        if ATTR_PAR_BLOC:
+            out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
 
@@ -392,7 +408,7 @@ def _srd_table(nom, lang="en", sauf=None):
         "<!-- GENERATED — cité depuis fh-srd %s.json (run=%s). Ne pas éditer : "
         "réécrit par sync_from_vault.py. -->" % (spec["kind"], doc.get("import_run", "?")),
         '<div class="fh-srd-cite fh-srd-cite--table">',
-        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — %s</p>'
+        '<p class="fh-srd-cite__label"><strong>%s</strong>%s — %s</p>'
         % (html.escape(doc.get("layer_label", "SRD")),
            (" · " + html.escape(" et ".join(pages))) if pages else "",
            html.escape(spec["note"])),
@@ -412,7 +428,8 @@ def _srd_table(nom, lang="en", sauf=None):
     out.append("</tbody></table>")
     attr = records[0].get("attribution", "")
     if attr:
-        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+        if ATTR_PAR_BLOC:
+            out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
 
@@ -495,7 +512,8 @@ def _srd_mastery_by_class(lang="en"):
     out.append("</dl>")
     attr = classes["records"][0].get("attribution", "")
     if attr:
-        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+        if ATTR_PAR_BLOC:
+            out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
 
@@ -525,7 +543,7 @@ def _srd_feats(lang="en", sauf=None):
         "<!-- GENERATED — cité depuis fh-srd feat.json (run=%s). Ne pas éditer. -->"
         % doc.get("import_run", "?"),
         '<div class="fh-srd-cite">',
-        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — all %d, '
+        '<p class="fh-srd-cite__label"><strong>%s</strong>%s — all %d, '
         "as printed</p>"
         % (html.escape(doc.get("layer_label", "SRD")),
            (" · " + html.escape(" et ".join(pages))) if pages else "",
@@ -546,7 +564,8 @@ def _srd_feats(lang="en", sauf=None):
         out.append("</dl>")
     attr = doc["records"][0].get("attribution", "")
     if attr:
-        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+        if ATTR_PAR_BLOC:
+            out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
 
@@ -594,7 +613,7 @@ def _srd_spells(lang="en", niveaux=None):
         "<!-- GENERATED — cité depuis fh-srd spell.json (run=%s). Ne pas éditer. -->"
         % doc.get("import_run", "?"),
         '<div class="fh-srd-cite fh-srd-cite--spells">',
-        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — %d spells, '
+        '<p class="fh-srd-cite__label"><strong>%s</strong>%s — %d spells, '
         "as printed</p>"
         % (html.escape(doc.get("layer_label", "SRD")),
            (" · " + html.escape(pages[0] + "–" + pages[-1])) if len(pages) > 1
@@ -627,7 +646,8 @@ def _srd_spells(lang="en", niveaux=None):
         out.append("</dl>")
     attr = doc["records"][0].get("attribution", "")
     if attr:
-        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+        if ATTR_PAR_BLOC:
+            out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
 
@@ -664,7 +684,7 @@ def _srd_items(lang="en"):
         "<!-- GENERATED — cité depuis fh-srd item.json (run=%s). Ne pas éditer. -->"
         % doc.get("import_run", "?"),
         '<div class="fh-srd-cite fh-srd-cite--spells">',
-        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong>%s — all %d, '
+        '<p class="fh-srd-cite__label"><strong>%s</strong>%s — all %d, '
         "as printed</p>"
         % (html.escape(doc.get("layer_label", "SRD")),
            (" · " + html.escape(pages[0] + "–" + pages[-1])) if len(pages) > 1
@@ -684,7 +704,8 @@ def _srd_items(lang="en"):
         out.append("</dl>")
     attr = doc["records"][0].get("attribution", "")
     if attr:
-        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+        if ATTR_PAR_BLOC:
+            out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
 
@@ -715,7 +736,7 @@ def _srd_classes(lang="en"):
         "<!-- GENERATED — cité depuis fh-srd class.json (run=%s). Ne pas éditer. -->"
         % doc.get("import_run", "?"),
         '<div class="fh-srd-cite fh-srd-cite--spells">',
-        '<p class="fh-srd-cite__label">Quoted from <strong>%s</strong> — all %d classes, '
+        '<p class="fh-srd-cite__label"><strong>%s</strong> — all %d classes, '
         "as printed, minus their skill lines</p>"
         % (html.escape(doc.get("layer_label", "SRD")), doc.get("count", 0)),
     ]
@@ -735,7 +756,8 @@ def _srd_classes(lang="en"):
         out.append("</dl>")
     attr = doc["records"][0].get("attribution", "")
     if attr:
-        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+        if ATTR_PAR_BLOC:
+            out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
 
@@ -1528,6 +1550,34 @@ def strip_liens(text: str) -> str:
     return "\n".join(out)
 
 
+def alleger_labels_repetes(body: str) -> str:
+    """Une seule ligne, en bas de page, et aucun label dans le corps.
+
+    Eric, 2026-08-21, en cinq remarques successives : « on n'a pas besoin de
+    mettre quoted from SRD toutes les 10 lignes » · « au moins 5 fois dans la
+    page équipement » · « sérieux » · « et de n'en mettre qu'une en pied de
+    page » · puis la formulation elle-même : **« some of the text above in this
+    page is SRD content »**.
+
+    Les labels par bloc disparaissent tous. La page qui cite quoi que ce soit
+    porte UNE ligne à la fin, discrète, et c'est tout. Le lecteur n'a pas besoin
+    qu'on lui montre la couture à chaque paragraphe — il a besoin de savoir, une
+    fois, que la page n'est pas entièrement de l'auteur.
+
+    ⚠️ Sans rapport avec la licence : celle-ci est au pied de page global du
+    site (voir ATTR_PAR_BLOC et `copyright:` dans mkdocs.yml).
+    """
+    corps = re.sub(r'<p class="fh-srd-cite__label">.*?</p>\n?', "", body, flags=re.S)
+    if corps == body and "fh-srd-cite" not in body:
+        return body
+    if "fh-srd-cite" in corps:
+        corps = corps.rstrip() + (
+            '\n\n<p class="fh-srd-note">Some of the text above in this page '
+            'is SRD content.</p>\n'
+        )
+    return corps
+
+
 def ensure_h1(text: str, title: str) -> str:
     for ln in text.splitlines():
         if ln.strip() == "":
@@ -1804,6 +1854,7 @@ def _construire():
         avant_citations = body
         body = inject_srd_citations(body, dest)
         body = inject_arcana(body, dest)
+        body = alleger_labels_repetes(body)
         mesurer_proportion(dest, avant_citations, body)
         body = insert_banner_note(body, dest)
         body = insert_banner(body, dest)

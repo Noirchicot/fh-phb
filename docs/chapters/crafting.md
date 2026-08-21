@@ -7,7 +7,7 @@
 
 L'artisanat, comme au SRD.
 
-📌 Le **[Soulforging](soulforge-crafting.md)** est propre à Fate's Hand et garde son chapitre.
+Le **[Soulforging](soulforge-crafting.md)** est propre à Fate's Hand et garde son chapitre.
 
 ---
 

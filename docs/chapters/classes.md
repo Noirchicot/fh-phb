@@ -8,33 +8,33 @@
 <p>The quotations below are the SRD’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
 </aside>
 
-Only the **changes** are listed here — everything else works as printed in the 2024 rules.
+Only the changes are listed here — everything else works as printed in the 2024 rules.
 
 ## Rogue
-- **Sneak Critical** *(level 2)* — **+1 critical range**.
+- **Sneak Critical** *(level 2)* — +1 critical range.
 
 ## Fighter, Ranger & Paladin
 - Rien pour l'instant. La correction FH de **Great Weapon Fighting** a été retirée le
   2026-08-20 ; ces trois classes suivent les règles 2024 en attendant sa réécriture.
 
 ## Monk
-- **Deflect** — roll *unarmed die + Monk level + DEX*. If this covers all the incoming damage, that damage is **reflected**.
+- **Deflect** — roll *unarmed die + Monk level + DEX*. If this covers all the incoming damage, that damage is reflected.
 
 ## Silent Blade *(Rogue)*
-- Gains the **Garrot** free at level 3 (otherwise bought for **1 free point** — it is a *training*, not a tool). See **Battlefield Rules**.
+- Gains the **Garrot** free at level 3 (otherwise bought for 1 free point — it is a *training*, not a tool). See **Battlefield Rules**.
 
 ## Every class
 
-Only the changes are listed above. **The twelve classes themselves are below**, quoted from
+Only the changes are listed above. The twelve classes themselves are below, quoted from
 the SRD — hit die, primary ability, saving throws, what each is trained to wear and wield, what
 it starts with, and the features it gains.
 
-> ⚠️ **Two lines of each class are deliberately missing, and it matters.**
+> Two lines of each class are deliberately missing, and it matters.
 >
 > **Its skill list.** The SRD's version names *Perception*, which Fate's Hand does not have, and
 > picks from eighteen skills where Fate's Hand has twenty-six. Reproducing it would put a
 > non-existent skill on a Fate's Hand page and give you a second, conflicting count of points.
-> **What your class grants you in skills is in [Skills & Tools — Player Guide](skills-and-tools.md)** — bound
+> What your class grants you in skills is in [Skills & Tools — Player Guide](skills-and-tools.md) — bound
 > points, and you place them.
 >
 > **Its weapon mastery pool.** That one is real, and it is quoted in **Equipment** instead. A
@@ -44,7 +44,6 @@ it starts with, and the features it gains.
 <summary><strong>12 class entries</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd class.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> — all 12 classes, as printed, minus their skill lines</p>
 <p class="fh-srd-cite__group">Barbarian</p>
 <dl class="fh-srd-cite__list">
 <dt>Hit die</dt><dd>D12 per Barbarian level</dd>
@@ -169,9 +168,10 @@ it starts with, and the features it gains.
 <dt>Starting equipment</dt><dd>Choose A or B: (A) 2 Daggers, Arcane Focus (Quarterstaff), Robe, Spellbook, Scholar’s Pack, and 5 GP; or (B) 55 GP</dd>
 <dt>Features</dt><dd>Spellcasting, Ritual Adept, Arcane Recovery, Scholar, Wizard Subclass, Ability Score Improvement, Memorize Spell, Spell Mastery, Epic Boon, Signature Spells</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 </details>
+
+<p class="fh-srd-note">Some of the text above in this page is SRD content.</p>
 
 ---
 

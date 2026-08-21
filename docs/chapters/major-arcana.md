@@ -2,10 +2,10 @@
 
 ## Drawing a Major Arcana at character creation
 
-At character creation, draw **among the 22 Major Arcana** to determine its influence on the character's fate: [Random Tarot Card Generator](https://randomtarotcard.com/Death.html).
+At character creation, draw among the 22 Major Arcana to determine its influence on the character's fate: [Random Tarot Card Generator](https://randomtarotcard.com/Death.html).
 
 > [!note] One Arcana at a time
-> **Only one Major Arcana is active at a time** — there is no stacking of powers. When you draw a new Major Arcana (on a Major Awakening), you **gain +1 to your Destiny Score and 10 temporary Destiny Points either way**, then choose to:
+> Only one Major Arcana is active at a time — there is no stacking of powers. When you draw a new Major Arcana (on a Major Awakening), you gain +1 to your **Destiny Score** and 10 temporary **Destiny Points** either way, then choose to:
 > - **switch** to the new card — you lose the previous Arcana's powers and adopt the new one's, or
 > - **keep** your current Arcana — the new card's powers are discarded.
 
@@ -26,10 +26,10 @@ Each Major Arcana provides:
 
 ## Drawing in the whole tarot deck
 
-On an **Arcane Awakening** (your Destiny Points reach 0 after a Natural 20), you draw from the **whole tarot deck** — all 78 cards, Major and Minor Arcana: [Random Tarot Card Generator](https://randomtarotcard.com/).
+On an **Arcane Awakening** (your Destiny Points reach 0 after a Natural 20), you draw from the whole tarot deck — all 78 cards, Major and Minor Arcana: [Random Tarot Card Generator](https://randomtarotcard.com/).
 
-- **Minor Arcana** — gain **temporary Destiny Points equal to the card's value** (numbered cards give their number, Ace = 1; **heads — Page, Knight, Queen, King — give 10**), and a single **Brick**: not a power, but the chance to dream something into being. *(Full rule: [§5.1](fates-hand-mechanic.md#51-the-brick-dreaming-something-into-being).)*
-- **Major Arcana** — **+1 to your maximum Destiny Score and 10 temporary Destiny Points** either way, then **switch** to the new card or **keep** your current one (see the Destiny System, §5).
+- **Minor Arcana** — gain temporary **Destiny Points** equal to the card's value (numbered cards give their number, Ace = 1; heads — Page, Knight, Queen, King — give 10), and a single **Brick**: not a power, but the chance to dream something into being. *(Full rule: [§5.1](fates-hand-mechanic.md#51-the-brick-dreaming-something-into-being).)*
+- **Major Arcana** — +1 to your maximum **Destiny Score** and 10 temporary **Destiny Points** either way, then switch to the new card or keep your current one (see the Destiny System, §5).
 
 ## 0. The Fool
 - **Meaning** — innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.
@@ -106,7 +106,7 @@ On an **Arcane Awakening** (your Destiny Points reach 0 after a Natural 20), you
 ## XII. The Hanged Man
 - **Meaning** — sacrifice, letting go, new perspective. Renouncing to gain understanding.
 - **Destiny Impact** — +1
-- **Power** — if you **invoke Chaos** on a natural 1, you do not lose but immediately regain 2 Destiny Points and just roll 1d6 on the **[Chaos table](chaos-tables.md)**.
+- **Power** — if you invoke **Chaos** on a natural 1, you do not lose but immediately regain 2 Destiny Points and just roll 1d6 on the **[Chaos table](chaos-tables.md)**.
 - **Vibration** — neutralization (e.g. targeted *Slow*).
 
 ## XIII. Death

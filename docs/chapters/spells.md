@@ -10,7 +10,7 @@
 
 *(Sorts — révisions & nouveaux sorts Fate's Hand)*
 
-Fate's Hand revisions and new spells. Only the **changes** to existing spells are listed; everything else works as printed.
+Fate's Hand revisions and new spells. Only the changes to existing spells are listed; everything else works as printed.
 
 > [!abstract] Spells in this chapter
 > - [Bless](#bless) *(1st)*
@@ -25,100 +25,87 @@ Fate's Hand revisions and new spells. Only the **changes** to existing spells ar
 ## Bless
 *Revised for Fate's Hand.*
 
-- **Level:** 1st
-- **School:** Enchantment
-- **Casting Time:** 1 action
-- **Range:** 30 feet
-- **Components:** V, S, M (a sprinkle of holy water)
-- **Duration:** Concentration, up to 1 minute
-
+*1st-level enchantment*
+**Casting Time** 1 action · **Range** 30 feet · **Components** V, S, M (a sprinkle of holy water) · **Duration** Concentration, up to 1 minute
 **Additional effect** — if the caster spends one **Destiny Point**, the cost of fate is reduced by one for the creatures affected by the spell, for its duration. Except on critical rolls.
 
 ## Guidance
 *Revised for Fate's Hand.*
 
-- **Level:** Cantrip
-- **School:** Divination
-- **Casting Time:** 1 action
-- **Range:** Touch
-- **Components:** V, S
-- **Duration:** Concentration, up to 1 minute
+*cantrip divination*
+**Casting Time** 1 action · **Range** Touch · **Components** V, S · **Duration** Concentration, up to 1 minute
+**Effect** — either the usual 2024 effect, or the optional effect below.
 
-**Effect** — either the usual 2024 effect, **or** the optional effect below.
-
-**Optional effect** — you touch one willing creature and grant it **1 temporary Destiny Point** for the duration of the spell. A single creature can only benefit from this effect once per long rest.
+**Optional effect** — you touch one willing creature and grant it 1 temporary **Destiny Point** for the duration of the spell. A single creature can only benefit from this effect once per long rest.
 
 ## Appease the Chaos
 
-- **Level:** 3rd (Abjuration)
-- **Casting Time:** 1 action
-- **Range:** 30 feet
-- **Components:** V, S
-- **Duration:** Instantaneous
-- **Classes:** Cleric, Druid
-
+*3rd-level abjuration* · *Cleric, Druid*
+**Casting Time** 1 action · **Range** 30 feet · **Components** V, S · **Duration** Instantaneous
 **Effect** — you spend a **Destiny Point** to appease the wrath of the forces of chaos on the targeted creature, within 1 round following a Chaos Effect. You reduce the potency of the effect by a number equal to your proficiency bonus.
 
 > [!example] Example
-> Bruggar rolled 10 on the *[Strength Chaos table](chaos-tables.md#strength-str)*; Awki has a PB of 3. The roll is reduced to **7**.
+> Bruggar rolled 10 on the *[Strength Chaos table](chaos-tables.md#strength-str)*; Awki has a PB of 3. The roll is reduced to 7.
 
 ## Devil-Vision
 
-- **Level:** 2nd
-- **Casting Time:** 1 action
-- **Range:** Touch
-- **Components:** V, S
-- **Duration:** Concentration, up to 10 minutes
-
-**Effect** — the target can see through **magical and normal darkness** out to **60 feet**. **No upcasting.**
+*2nd-level divination* · *Wizard, Warlock*
+**Casting Time** 1 action · **Range** Touch · **Components** V, S · **Duration** Concentration, up to 10 minutes
+**Effect** — the target can see through magical and normal darkness out to 60 feet. **No upcasting.**
 
 ## Consecration
+*New spell — a rite of purification.*
 
-- **Classes:** Cleric, Paladin
+*1st (ritual)-level abjuration* · *Cleric (Life Domain), Paladin*
+**Casting Time** 1 hour — as a ritual, 1 hour 10 minutes (the rite, then an hour of prayer) · **Range** Self (30-foot radius) · **Components** V, S, M (an agate worth 100 GP) · **Duration** 1 hour
+**Effect** — you consecrate the place. Within the radius:
 
-**Effect** — can be cast to **regain 1 extra Destiny Point after a long rest**.
+- one creature regains 1 **Destiny Point** at the end of its next Long Rest;
+- *Dispel Magic* is applied against any spell in the area cast by a Fiend or an Undead;
+- *Lesser Restoration* is applied to one creature.
+
+**Spending Destiny Points** — for each additional Destiny Point spent, choose one, and it applies within the same radius:
+
+- extend one of the effects above to several creatures;
+- a further *Lesser Restoration*;
+- a further *Dispel Magic* against a spell cast by a Fiend or an Undead.
+
+The agate is not consumed unless a Destiny Point is spent.
 
 ## Transfer Essence
 *New spell — a utility rite of the [Soulforge Crafting](soulforge-crafting.md).*
 
-- **Level:** 1st
-- **School:** Transmutation
-- **Casting Time:** 1 action
-- **Range:** Touch — a creature **slain within the hour** (*Gentle Repose* → 10 hours)
-- **Components:** V, S, M (a **gemstone**, which the spell fills)
-- **Duration:** Instantaneous
-- **Classes:** Wizard, Cleric, Druid, Warlock
-
-**Effect** — you draw the **Essence** of a **freshly slain creature** into a **gemstone** you hold. The gem's **value** must meet the essence's PP — from 50 gp (1 PP) to 50,000 gp (11 PP); see [the gem table](soulforge-crafting.md#3-preparation-craft-infuse-ready). The transfer **automatically succeeds**.
+*1st-level transmutation* · *Wizard, Cleric, Druid, Warlock*
+**Casting Time** 1 action · **Range** Touch — a creature slain within the hour (*Gentle Repose* → 10 hours) · **Components** V, S, M (a gemstone, which the spell fills) · **Duration** Instantaneous
+**Effect** — you draw the **Essence** of a freshly slain creature into a gemstone you hold. The gem's value must meet the essence's PP — from 50 gp (1 PP) to 50,000 gp (11 PP); see [the gem table](soulforge-crafting.md#3-preparation-craft-infuse-ready). The transfer automatically succeeds.
 
 *In the **Demon Forest** this spell is needless — those beasts already carry their essence in the gems crusting their bodies; simply take the gem.*
 
 ## Identify
 *Works as printed — with a role in the [Soulforge Crafting](soulforge-crafting.md).*
 
-Cast on a harvested **catalyst part**, **identify** reveals the exact **power** that part will grant once forged. The Knowledge check only tells you *that* a part is a catalyst; only *identify* tells you *what* it does.
+Cast on a harvested **catalyst** part, **identify** reveals the exact power that part will grant once forged. The Knowledge check only tells you *that* a part is a catalyst; only *identify* tells you *what* it does.
 
 ## Gentle Repose
 *Works as printed — with three uses in the [Soulforge Crafting](soulforge-crafting.md) that stay decay in body and soul.*
 
-- **+1 salvage attempt** — on a slain creature, grants **one extra ingredient-retrieval attempt** beyond the **1d4-minute** harvest window.
-- **Essence storage** — extends the window to store an Essence into a gem from **1 hour to 10 hours**.
-- **Ingredient viability** — recast every **10 days**, keeps well-harvested **Structure & Catalyst** parts **viable indefinitely** (instead of the normal one month).
+- **+1 salvage attempt** — on a slain creature, grants one extra ingredient-retrieval attempt beyond the 1d4-minute harvest window.
+- **Essence storage** — extends the window to store an Essence into a gem from 1 hour to 10 hours.
+- **Ingredient viability** — recast every 10 days, keeps well-harvested **Structure & Catalyst** parts viable indefinitely (instead of the normal one month).
 
 ## Every spell
 
-The ones above are Fate's Hand's own. **Everything else a caster can learn is below**, quoted
+The ones above are Fate's Hand's own. Everything else a caster can learn is below, quoted
 whole from the SRD — three hundred and thirty-nine of them, by level, so you never have to
 leave this page to check a range or a casting time.
 
 Each entry opens with the shape of the spell — school, casting time, range, components,
-duration, and whether it is a **ritual** or needs **concentration** — then the text itself.
+duration, and whether it is a ritual or needs concentration — then the text itself.
 
 <details class="fh-fold">
 <summary><strong>339 spells</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd spell.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.107–p.175 — 339 spells, as printed</p>
 <p class="fh-srd-cite__group">Cantrips</p>
 <dl class="fh-srd-cite__list">
 <dt>Acid Splash</dt>
@@ -2335,16 +2322,17 @@ Similarly, wishing for a Legendary magic item or an Artifact might instantly tra
 
 The stress of casting Wish to produce any effect other than duplicating another spell weakens you. After enduring that stress, each time you cast a spell until you finish a Long Rest, you take 1d10 Necrotic damage per level of that spell. This damage can’t be reduced or prevented in any way. In addition, your Strength score becomes 3 for 2d4 days. For each of those days that you spend resting and doing nothing more than light activity, your remaining recovery time decreases by 2 days. Finally, there is a 33 percent chance that you are unable to cast Wish ever again if you suffer this stress.</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 </details>
+
+<p class="fh-srd-note">Some of the text above in this page is SRD content.</p>
 
 ---
 
 <nav class="fh-layer">
 <p class="fh-layer__label">What Fate’s Hand does here</p>
 <ul>
-<li><span class="fh-layer__genre">spell</span> <span class="fh-layer__same">no record differs</span></li>
+<li><span class="fh-layer__genre">spell</span> <span class="fh-layer__added">adds 4</span> — Appease the Chaos, Consecration, Devil-Vision, Transfer Essence · <span class="fh-layer__patched">changes 4</span> — Bless, Gentle Repose, Guidance, Identify</li>
 </ul>
-<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

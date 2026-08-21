@@ -4,19 +4,19 @@
 
 Deux profondeurs dans un seul chapitre :
 
-1. **À la création** — ce que le personnage emporte au départ. C'est ce que l'étape **8** du
+1. **À la création** — ce que le personnage emporte au départ. C'est ce que l'étape 8 du
    builder montre, en version courte
 
 2. **En référence** — l'équipement complet, comme au SRD, celui qu'on consulte en jeu
 
 ## What this chapter is — and what it is not
 
-**Everything is here.** You should not have to leave this page to look a rule up, so the
-tables and the rule text are on it — **quoted** from the SRD, never retold. They are pulled
+Everything is here. You should not have to leave this page to look a rule up, so the
+tables and the rule text are on it — quoted from the SRD, never retold. They are pulled
 from the published source each time this book is built, which is why they cannot drift: there
 is still only one copy of them anywhere, and it is not this one.
 
-**What Fate's Hand adds is the reading.** A weapon tells you four things, and only one of them
+What Fate's Hand adds is the reading. A weapon tells you four things, and only one of them
 is the damage die. Where you see us talking rather than quoting, we are sorting, grouping or
 warning — never restating a rule in our own words. And where Fate's Hand *changes* a rule, it
 says so, in as many words.
@@ -29,8 +29,8 @@ Past its cost and its weight, a weapon carries three things that decide how it p
 weapons that both roll 1d8 can play nothing alike.
 
 **Its properties** — what it demands of you, or allows you. Ten of them, and Fate's Hand
-sorts them in two families rather than one alphabet. Five are **demands**: *Two-Handed*,
-*Heavy*, *Loading*, *Ammunition*, *Range*. Five are **permissions**: *Finesse*, *Light*,
+sorts them in two families rather than one alphabet. Five are demands: *Two-Handed*,
+*Heavy*, *Loading*, *Ammunition*, *Range*. Five are permissions: *Finesse*, *Light*,
 *Thrown*, *Versatile*, *Reach*.
 
 **Its mastery** — the trick below.
@@ -40,7 +40,6 @@ to go looking for one.
 
 <!-- GENERATED — cité depuis fh-srd (kind=weapon-property, lang=en, run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->
 <div class="fh-srd-cite">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.89 et p.90 — the official wording, unaltered</p>
 <dl class="fh-srd-cite__list">
 <dt>Ammunition</dt>
 <dd>You can use a weapon that has the Ammunition property to make a ranged attack only if you have ammunition to fire from it. The type of ammunition required is specified with the weapon’s range. Each attack expends one piece of ammunition. Drawing the ammunition is part of the attack (you need a free hand to load a one-handed weapon). After a fight, you can spend 1 minute to recover half the ammunition (round down) you used in the fight; the rest is lost.</dd>
@@ -65,7 +64,6 @@ to go looking for one.
 <dt>Versatile</dt>
 <dd>A Versatile weapon can be used with one or two hands. A damage value in parentheses appears with the property. The weapon deals that damage when used with two hands to make a melee attack.</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
 ### Every weapon
@@ -76,7 +74,6 @@ All thirty-eight, with what each one does, what it asks, and the trick it carrie
 <summary><strong>38 weapons</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd weapon.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.91 — all 38, every value as printed</p>
 <table class="fh-srd-table">
 <thead><tr><th>Weapon</th><th>Damage</th><th>Properties</th><th>Mastery</th><th>Cost</th><th>Weight</th></tr></thead>
 <tbody>
@@ -123,7 +120,6 @@ All thirty-eight, with what each one does, what it asks, and the trick it carrie
 <tr><td>Musket</td><td>1d12 Piercing</td><td>Ammunition (Range 40/120; Bullet), Loading, Two-Handed</td><td>Slow</td><td>500 GP</td><td>10 lb.</td></tr>
 <tr><td>Pistol</td><td>1d10 Piercing</td><td>Ammunition (Range 30/90; Bullet), Loading</td><td>Vex</td><td>250 GP</td><td>3 lb.</td></tr>
 </tbody></table>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 </details>
 
@@ -134,7 +130,6 @@ What follows the table is ours: not the rule, but the trade it asks you to make.
 
 <!-- GENERATED — cité depuis fh-srd armor.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.92 — every value as printed</p>
 <table class="fh-srd-table">
 <thead><tr><th>Armor</th><th>Armor Class</th><th>Strength</th><th>Stealth</th><th>Cost</th><th>Weight</th></tr></thead>
 <tbody>
@@ -156,37 +151,55 @@ What follows the table is ours: not the rule, but the trade it asks you to make.
 <tr class="fh-srd-table__group"><th colspan="6">Shield</th></tr>
 <tr><td>Shield</td><td>+2</td><td>—</td><td>—</td><td>10 GP</td><td>6 lb.</td></tr>
 </tbody></table>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
-*Fate's Hand talking.* **The light ones** take all your Dexterity, uncapped — they reward a
-character who was already nimble. **The middle ones** set a higher floor but cap Dexterity,
+*Fate's Hand talking.* The light ones take all your Dexterity, uncapped — they reward a
+character who was already nimble. The middle ones set a higher floor but cap Dexterity,
 and that cap is the real decision: past a +2 modifier, more agility buys you nothing, so a
-very nimble character is worse off in a Breastplate than in Studded Leather. **The heavy
-ones** ignore Dexterity and hand you a flat number instead, three of them demanding Strength
-you may not have. **The shield is not armour** — it is one hand traded for two points, and it
+very nimble character is worse off in a Breastplate than in Studded Leather. The heavy
+ones ignore Dexterity and hand you a flat number instead, three of them demanding Strength
+you may not have. The shield is not armour — it is one hand traded for two points, and it
 stacks with anything.
 
-📌 **Stealth is the quiet tax**: seven of the thirteen give Disadvantage. Look for that column
+**Stealth** is the quiet tax: seven of the thirteen give Disadvantage. Look for that column
 before you look at the Armor Class one.
+
+> [!quote] Dreidel
+> Everyone I ever travelled with wore studded leather, which is the sensible thing, and I
+> never once saw any of them regret it. I wore a coat. This was a considered decision and I
+> stand by it.
+>
+> Here is what nobody tells you about the heavy ones. There was a caravan guard on the road
+> to Tyr Nidran, splendid in half plate, absolutely magnificent, the sort of silhouette that
+> makes bandits reconsider their career. He also could not cross a stable yard without
+> announcing it to the whole fief. Seven of the thirteen do that. Seven. And they put it in
+> a column on the far right where nobody looks, next to the price, as though the price were
+> the interesting part.
+>
+> He drowned. Not from the armour — the river was two feet deep, he tripped. But he
+> couldn't get up, and we were laughing, and by the time we understood we weren't laughing
+> any more. That was a long time ago and I still know exactly how long.
+>
+> Anyway. Read the Stealth column before you read the Armor Class one. And a shield is a
+> hand — that's all a shield is. Half the interesting things I did required two hands. The
+> other half required running, which is why I am still here to tell you about the column.
 
 ## Weapon Mastery
 
 Every weapon carries one **mastery property** — a small trick it does well, always, without
 being spent or rolled for. It is part of the weapon, not of you.
 
-Knowing how to swing a weapon is not enough to use its trick. **You use a mastery property
-only if a class feature has granted you mastery with that kind of weapon**, and you can
+Knowing how to swing a weapon is not enough to use its trick. You use a mastery property
+only if a class feature has granted you mastery with that kind of weapon, and you can
 change which weapons you have mastery with when you finish a Long Rest. A fighter who
 trained on axes all winter can wake up a spear fighter.
 
-**Fate's Hand changes nothing here.** The eight are the 2024 rules, and they are quoted
+Fate's Hand changes nothing here. The eight are the 2024 rules, and they are quoted
 below word for word rather than retold — a retelling is a second version, and a second
 version drifts.
 
 <!-- GENERATED — cité depuis fh-srd (kind=weapon-mastery, lang=en, run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->
 <div class="fh-srd-cite">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.90 — the official wording, unaltered</p>
 <dl class="fh-srd-cite__list">
 <dt>Cleave</dt>
 <dd>If you hit a creature with a melee attack roll using this weapon, you can make a melee attack roll with the weapon against a second creature within 5 feet of the first that is also within your reach. On a hit, the second creature takes the weapon’s damage, but don’t add your ability modifier to that damage unless that modifier is negative. You can make this extra attack only once per turn.</dd>
@@ -205,14 +218,12 @@ version drifts.
 <dt>Vex</dt>
 <dd>If you hit a creature with this weapon and deal damage to the creature, you have Advantage on your next attack roll against that creature before the end of your next turn.</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
 ### Which weapons carry which
 
 <!-- GENERATED — dérivé de fh-srd weapon.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--index">
-<p class="fh-srd-cite__label">Derived from <strong>SRD 5.2.1</strong> — which weapons carry which mastery</p>
 <dl class="fh-srd-cite__list">
 <dt>Cleave <span>· 2</span></dt>
 <dd>Greataxe, Halberd</dd>
@@ -231,31 +242,29 @@ version drifts.
 <dt>Vex <span>· 8</span></dt>
 <dd>Blowgun, Dart, Hand Crossbow, Handaxe, Pistol, Rapier, Shortbow, Shortsword</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
 ### Reading the eight at a glance
 
 *This part is Fate's Hand talking, not the SRD — it adds no rule, it only says how we group
-them.* Three **punish the miss or the crowd**: Graze pays you for missing, Cleave for standing
-between two enemies, Nick for carrying two blades. Three **bend the next exchange**: Sap
-weakens their swing, Vex sharpens yours, Slow takes their ground. Two **move the body
-itself** — Push sends it back, Topple puts it down.
+them.* Three punish the miss or the crowd: Graze pays you for missing, Cleave for standing
+between two enemies, Nick for carrying two blades. Three bend the next exchange: Sap
+weakens their swing, Vex sharpens yours, Slow takes their ground. Two move the body
+itself — Push sends it back, Topple puts it down.
 
 ### Who gets to use them
 
-Mastery is granted by a class feature, and **Fate's Hand grants it exactly as the SRD does**.
+Mastery is granted by a class feature, and Fate's Hand grants it exactly as the SRD does.
 Five classes open it. Which five, how many weapons each covers at a time, and what each may
 choose from are the SRD's answers — none of it is a Fate's Hand decision, and all of it is
 below rather than in another book.
 
-Two of the five see that number **grow** as they level; the other three keep the same one from
-first level to twentieth. ⚠️ **The pool itself never changes.** Levelling lets you know *more*
+Two of the five see that number grow as they level; the other three keep the same one from
+first level to twentieth. The pool itself never changes. Levelling lets you know *more*
 kinds of weapon, not different ones — and you may swap which ones after a Long Rest either way.
 
 <!-- GENERATED — dérivé de fh-srd class.json + class-progression.json + weapon.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--index">
-<p class="fh-srd-cite__label">Derived from <strong>SRD 5.2.1</strong> — the 5 classes that grant mastery, and what each may choose from</p>
 <dl class="fh-srd-cite__list">
 <dt>Barbarian <span>· 2 at a time, then 3 from level 4, 4 from level 10</span></dt>
 <dd><em>28 weapons to choose from</em> — Battleaxe, Club, Dagger, Flail, Glaive, Greataxe, Greatclub, Greatsword, Halberd, Handaxe, Javelin, Lance, Light Hammer, Longsword, Mace, Maul, Morningstar, Pike, Quarterstaff, Rapier, Scimitar, Shortsword, Sickle, Spear, Trident, War Pick, Warhammer, Whip</dd>
@@ -268,17 +277,16 @@ kinds of weapon, not different ones — and you may swap which ones after a Long
 <dt>Rogue <span>· 2 at a time, at every level</span></dt>
 <dd><em>19 weapons to choose from</em> — Club, Dagger, Dart, Greatclub, Hand Crossbow, Handaxe, Javelin, Light Crossbow, Light Hammer, Mace, Quarterstaff, Rapier, Scimitar, Shortbow, Shortsword, Sickle, Sling, Spear, Whip</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
 ## What you start with
 
-Level 1 gear is chosen at **step 8 of the builder**, and it comes from two places: your class
+Level 1 gear is chosen at step 8 of the builder, and it comes from two places: your class
 and your background. Fate's Hand rebuilt backgrounds — see **Inheritance** — so the gear a
 background hands you follows that chapter, not the SRD's list of packages.
 
-> ⚠️ **Ouvert** — *Inheritance* décide des dons d'origine, des langues et des bonus de
-> caracs, mais ne dit pas encore **ce qu'un héritage donne comme matériel**. Tant que ce n'est
+> **Ouvert** — *Inheritance* décide des dons d'origine, des langues et des bonus de
+> caracs, mais ne dit pas encore ce qu'un héritage donne comme matériel. Tant que ce n'est
 > pas tranché, l'étape 8 ne peut proposer que l'équipement de classe. **À décider par Eric** —
 > relevé le 2026-08-20.
 
@@ -295,7 +303,6 @@ list, brought onto this page so you never have to go and find it.
 <summary><strong>82 pieces of gear</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd gear.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.95 — every price as printed</p>
 <table class="fh-srd-table">
 <thead><tr><th>Item</th><th>Cost</th><th>Weight</th></tr></thead>
 <tbody>
@@ -382,7 +389,6 @@ list, brought onto this page so you never have to go and find it.
 <tr><td>Vial</td><td>1 GP</td><td>—</td></tr>
 <tr><td>Waterskin</td><td>2 SP</td><td>5 lb. (full)</td></tr>
 </tbody></table>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 </details>
 
@@ -391,23 +397,22 @@ list, brought onto this page so you never have to go and find it.
 A tool is not gear: it names an ability, a thing it lets you do, and a list of what it makes.
 That is why it gets a wider table than the rest.
 
-> 🔴 **The table below is the SRD's, and it is NOT Fate's Hand's tool list.** Twenty-five
-> against **thirty-seven**. Buy your tools from **Skills & Tools**, not from here — this table
+> The table below is the SRD's, and it is NOT Fate's Hand's tool list. Twenty-five
+> against thirty-seven. Buy your tools from **Skills & Tools**, not from here — this table
 > is the reference for what each one *does*, not for what you may take.
 >
 > | What Fate's Hand does | |
 > |---|---|
-> | **Adds Soulforging** *(CHA)* | It is in no SRD list at all. **Soulforge Crafting** and the soulforging rite both require **at least Novice** in it — so a character who picks tools from the table below cannot legally join a forge circle. |
-> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. **The SRD's single entry is not quoted below** — Fate's Hand removed it, so it is dropped automatically. |
-> | **Splits the Musical Instrument** into three | *Strings · Wind · Other*. A bard's two bound instrument points buy two of these, not two of anything. **Not quoted below either**, for the same reason. |
+> | **Adds Soulforging** *(CHA)* | It is in no SRD list at all. **Soulforge Crafting** and the soulforging rite both require at least **Novice** in it — so a character who picks tools from the table below cannot legally join a forge circle. |
+> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. The SRD's single entry is not quoted below — Fate's Hand removed it, so it is dropped automatically. |
+> | **Splits the Musical Instrument** into three | *Strings · Wind · Other*. A bard's two bound instrument points buy two of these, not two of anything. Not quoted below either, for the same reason. |
 > | **Makes mounts and vehicles tools** | *Mount (Air · Land · Water)* and *Vehicles (Air · Land · Water)* — six tools the SRD does not treat as tools at all. Riding is rolled here. |
 >
-> ⛔ **And the Garrot is on neither list**: it is a **training**, not a tool — no tier, no
+> And the **Garrot** is on neither list: it is a **training**, not a tool — no tier, no
 > ability. See **Trainings**.
 
 <!-- GENERATED — cité depuis fh-srd tool.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.93 et p.94 — what each one asks, and what it makes</p>
 <table class="fh-srd-table">
 <thead><tr><th>Tool</th><th>Ability</th><th>Utilize</th><th>Craft</th><th>Cost</th><th>Weight</th></tr></thead>
 <tbody>
@@ -435,8 +440,9 @@ That is why it gets a wider table than the rest.
 <tr><td>Weaver’s Tools</td><td>Dexterity</td><td>Mend a tear in clothing (DC 10), or sew a Tiny design (DC 10)</td><td>Padded Armor, Basket, Bedroll, Blanket, Fine Clothes, Net, Robe, Rope, Sack, String, Tent, Traveler’s Clothes</td><td>1 GP</td><td>5 lb.</td></tr>
 <tr><td>Woodcarver’s Tools</td><td>Dexterity</td><td>Carve a pattern in wood (DC 10)</td><td>Club, Greatclub, Quarterstaff, Ranged weapons (except Pistol, Musket, and Sling), Arcane Focus, Arrows, Bolts, Druidic Focus, Ink Pen, Needles Other Tools</td><td>1 GP</td><td>5 lb.</td></tr>
 </tbody></table>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+
+<p class="fh-srd-note">Some of the text above in this page is SRD content.</p>
 
 ---
 

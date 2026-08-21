@@ -18,12 +18,12 @@ never leaves the page to check a range.
 
 ## Dark Rituals — the one that is ours
 
-**Fate's Hand's own, and it works nothing like a spell.** A rite is not cast by a character:
-it is **performed by a circle**. It is gated by the **combined level** of everyone taking part
-and by their classes, and it is paid for in **Destiny**, in **necrotic damage**, in gold and in
+Fate's Hand's own, and it works nothing like a spell. A rite is not cast by a character:
+it is performed by a circle. It is gated by the combined level of everyone taking part
+and by their classes, and it is paid for in **Destiny**, in necrotic damage, in gold and in
 sacrifices — never in spell slots.
 
-⭐ **A rite is performed, not known.** That single sentence is the difference: you do not learn
+A rite is performed, not known. That single sentence is the difference: you do not learn
 a dark ritual and carry it, you assemble the people, the price and the components, and you
 perform it.
 

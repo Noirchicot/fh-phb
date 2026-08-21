@@ -4,17 +4,17 @@ Fate's Hand adds a few feats of its own and leaves the rest alone. Everything th
 
 ## Origin feats
 
-Your **Inheritance** grants one origin feat, **your choice**, from these five:
+Your **Inheritance** grants one origin feat, your choice, from these five:
 
 | Origin feat | What it does in Fate's Hand |
 |---|---|
 | **Alert** | as printed |
 | **Magic Initiate** | as printed |
 | **Savage Attacker** | as printed |
-| **Skilled** | ⭐ **+6 free skill points** — the SRD grants 3 proficiencies, and a proficiency is worth 2 points in Fate's Hand (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
-| **Auspicious** *(FH)* | **+2 to your Destiny Score** — see below |
+| **Skilled** | +6 free skill points — the SRD grants 3 proficiencies, and a proficiency is worth 2 points in Fate's Hand (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
+| **Auspicious** *(FH)* | +2 to your **Destiny Score** — see below |
 
-> ⛔ **No background record grants a feat.** There are no backgrounds in Fate's Hand; the step is
+> No background record grants a feat. There are no backgrounds in Fate's Hand; the step is
 > called **Inheritance** and the feat is always chosen freely. See [Inheritance](inheritance.md).
 
 ## Auspicious *(FH)*
@@ -39,7 +39,7 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 - Enables mass Leadership: you lead other *leaders* rather than rank-and-file allies.
 - Valid sub-leaders are only those who are themselves Battlefield Tacticians or have Expertise in the directed course of action, and you must be able to see each other.
 - The order is a DC 12 Leadership check, affecting one additional group per increment of 2 (12 = 1 group, 14 = 2, 16 = 3…).
-- On a success, each sub-leader gains a synergy bonus on the Leadership rolls they apply to their own group, for one minute.
+- On a success, each sub-leader gains an **edge** on the Leadership rolls they apply to their own group, for one minute.
 - Full Leadership mechanics: see the [Leadership rules](skills-and-tools.md#leadership).
 
 ## Soulforge feats
@@ -48,30 +48,29 @@ Your **Inheritance** grants one origin feat, **your choice**, from these five:
 <span class="fh-edition">FH5+ — General feat.</span>
 
 - +1 Constitution or Wisdom *(will)* (max 20).
-- You gain a **4th attunement slot** that can hold **only a body-forged gem** (see [Body Forging](soulforge-crafting.md#body-forging-fuse-a-gem-into-your-flesh)) — letting you bear a **second** gem in your flesh.
+- You gain a 4th attunement slot that can hold only a body-forged gem (see [Body Forging](soulforge-crafting.md#body-forging-fuse-a-gem-into-your-flesh)) — letting you bear a second gem in your flesh.
 - *No feat is needed for your first body-forged gem — anyone may bear one, in a normal attunement slot.*
 
 **Attunement at a glance**
 
 - *Without the feat:* slots 1–3 — each may hold a normal magic item, a Soulforged item, or your body-forged gem.
-- *With the feat:* slots 1–3 as above · slot 4 — **body-forged gem only**.
+- *With the feat:* slots 1–3 as above · slot 4 — body-forged gem only.
 
 ## Every feat
 
 Fate's Hand adds the ones above and changes nothing else, so the rest of the list is the SRD's
-— quoted here whole rather than left in another book. **Read a prerequisite before you plan
-for a feat**: most General feats need level 4 and a score of 13 in the right ability, and an
+— quoted here whole rather than left in another book. Read a prerequisite before you plan
+for a feat: most General feats need level 4 and a score of 13 in the right ability, and an
 Epic Boon needs level 19.
 
-> ⛔ **One feat is missing from the list below, on purpose.** The SRD's **Skilled** grants
+> One feat is missing from the list below, on purpose. The SRD's **Skilled** grants
 > *« proficiency in any combination of three skills or tools »* — and Fate's Hand converts that
-> into **+6 free points**, because a proficiency is worth 2 points here. Quoting the SRD's
-> wording beside ours would put two different prices on the same feat. **Ours is in the Origin
-> feats table above**, and it is the one that applies.
+> into +6 free points, because a proficiency is worth 2 points here. Quoting the SRD's
+> wording beside ours would put two different prices on the same feat. Ours is in the Origin
+> feats table above, and it is the one that applies.
 
 <!-- GENERATED — cité depuis fh-srd feat.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.87 et p.88 — all 17, as printed</p>
 <p class="fh-srd-cite__group">Origin feats</p>
 <dl class="fh-srd-cite__list">
 <dt>Alert</dt>
@@ -172,8 +171,9 @@ Merge with Shadows. While within Dim Light or Darkness, you can give yourself th
 
 Shadowy Form. While within Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant.</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
+
+<p class="fh-srd-note">Some of the text above in this page is SRD content.</p>
 
 ---
 

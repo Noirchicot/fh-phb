@@ -21,9 +21,9 @@ Whatever the truth of it, something in the elven line answers when fate is asked
 - **Darkvision** — 60 feet.
 - **Elven Lineage** — choose a lineage from the Elven Lineages table; you gain its level 1 benefit. At character levels 3 and 5 you learn the listed spell, always prepared, castable once without a slot per Long Rest, or with any slot of the appropriate level. Intelligence, Wisdom or Charisma is your spellcasting ability for this trait (chosen with the lineage).
 - **Fey Ancestry** — Advantage on saving throws you make to avoid or end the Charmed condition.
-- **Keen Senses** <span class="fh-tag">FH</span> — **2 [skill points](../skills-and-tools.md)**, spendable only on **Survival**, **Delve** or **Vigilance**, at the normal cost: half on two of the three, or full on a single one. *(The SRD grants one proficiency among Insight, Perception or Survival.)*
+- **Keen Senses** <span class="fh-tag">FH</span> — 2 [skill points](../skills-and-tools.md), spendable only on **Survival**, **Delve** or **Vigilance**, at the normal cost: half on two of the three, or full on a single one. *(The SRD grants one proficiency among Insight, Perception or Survival.)*
 - **Trance** — you don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation, during which you retain consciousness.
-- **Destiny** <span class="fh-tag">FH</span> — Base 2. **Splinter of Anon** *(elf chosen)*: **+2** to your Destiny pool.
+- **Destiny** <span class="fh-tag">FH</span> — Base 2. **Splinter of Anon** *(elf chosen)*: +2 to your Destiny pool.
 
 **Elven Lineages**
 

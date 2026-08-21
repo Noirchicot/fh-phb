@@ -8,20 +8,20 @@
 <p>The quotations below are the SRD’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
 </aside>
 
-Every capitalised term the rules lean on, defined once, on this page. **Look a word up here
-before you assume you know it** — several of them mean something narrower than they do in
+Every capitalised term the rules lean on, defined once, on this page. Look a word up here
+before you assume you know it — several of them mean something narrower than they do in
 ordinary English.
 
 ## What Fate's Hand defines differently
 
-Seven terms below are **deliberately absent** from the quoted list, because Fate's Hand
-answers them itself. Where the two would disagree, **this book wins** — and it says so here
+Seven terms below are deliberately absent from the quoted list, because Fate's Hand
+answers them itself. Where the two would disagree, this book wins — and it says so here
 rather than letting you find out mid-game:
 
 | Term | Where Fate's Hand answers it |
 |---|---|
-| **Proficiency** · **Skill** · **Expertise** | **Skills & Tools** — Fate's Hand has **26 skills** and three tiers, *Novice · Adept · Expert*, bought with points. There is no on/off proficiency. |
-| **Passive Perception** | Nowhere — **Perception does not exist** in Fate's Hand. It was split into *Vigilance*, *Delve* and *Survival*, each rolled. |
+| **Proficiency** · **Skill** · **Expertise** | **Skills & Tools** — Fate's Hand has 26 skills and three tiers, *Novice · Adept · Expert*, bought with points. There is no on/off proficiency. |
+| **Passive Perception** | Nowhere — Perception does not exist in Fate's Hand. It was split into *Vigilance*, *Delve* and *Survival*, each rolled. |
 | **Exhaustion** | **Battlefield Rules**, and the fatigue ladder in the **Fate's Hand Mechanic**. |
 | **Surprise** | **Battlefield Rules** — surprise is *not a round* here. |
 | **Falling** *(and dying)* | **Battlefield Rules** — death saves and concentration are **Constitution** saves. |
@@ -34,7 +34,6 @@ Everything else on this page is the SRD's, quoted word for word.
 <summary><strong>145 glossary entries</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd (kind=glossary, lang=en, run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->
 <div class="fh-srd-cite">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.176 et p.177 et p.178 et p.179 et p.180 et p.181 et p.182 et p.183 et p.184 et p.185 et p.186 et p.187 et p.188 et p.189 et p.190 et p.191 — the official wording, unaltered</p>
 <dl class="fh-srd-cite__list">
 <dt>Ability Check</dt>
 <dd>An ability check is a D20 Test that represents using one of the six abilities—or a specific skill associated with an ability—to overcome a challenge. See also “Playing the Game” (“D20 Tests” and “Proficiency”).</dd>
@@ -777,9 +776,10 @@ Unaware. You’re unaware of your surroundings.</dd>
 <dt>Weapon Attack</dt>
 <dd>A weapon attack is an attack roll made with a weapon. See also “Weapon.”</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 </details>
+
+<p class="fh-srd-note">Some of the text above in this page is SRD content.</p>
 
 ---
 

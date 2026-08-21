@@ -11,7 +11,7 @@ Nymedes carries the familiar peoples of fantasy — and three of its own, born o
 
 Species grant no ability modifiers — ability score increases come from your **Inheritance**. Every species keeps its standard speed.
 
-> 🔴 **Languages moved to Inheritance on 2026-08-18.** This line used to read *« Every species speaks two languages (Common plus one of your choice) »*. It still gives you **two**, but both are now **chosen**, and they are chosen where everything else you were *given* is chosen — see [Inheritance](inheritance.md). A species no longer hands you a tongue.
+> Languages moved to Inheritance on 2026-08-18. This line used to read *« Every species speaks two languages (Common plus one of your choice) »*. It still gives you two, but both are now chosen, and they are chosen where everything else you were *given* is chosen — see [Inheritance](inheritance.md). A species no longer hands you a tongue.
 
 ## Araag
 

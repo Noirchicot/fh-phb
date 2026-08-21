@@ -1,6 +1,6 @@
 # Chaos Tables
 
-**Rule:** when a character suffers an ability-based consequence (STR, DEX, CON, WIS, INT, CHA), roll **1d6 + Overreach** and compare the total to the relevant table (1–12). The higher the result, the worse — at the top end the effect is potentially **fatal**. Durations and effects are indicative; the GM may adjust to the situation. Magical healing or an extended rest may be needed to remove the most severe effects.
+**Rule:** when a character suffers an ability-based consequence (STR, DEX, CON, WIS, INT, CHA), roll 1d6 + Overreach and compare the total to the relevant table (1–12). The higher the result, the worse — at the top end the effect is potentially fatal. Durations and effects are indicative; the GM may adjust to the situation. Magical healing or an extended rest may be needed to remove the most severe effects.
 
 ## The Chaos Tables
 
@@ -19,9 +19,9 @@
 | 7 | Deep muscle tear: −4 STR for 1d4 days. |
 | 8 | Weakened tendon: disadvantage on all STR checks and melee attacks for 1 week. |
 | 9 | Broken bone: the limb is unusable, −4 STR until healed. |
-| 10 | Critical muscle rupture: **permanent −1 STR** (barring rare healing). |
+| 10 | Critical muscle rupture: permanent −1 STR (barring rare healing). |
 | 11 | Major disability: −6 STR for 1 month; requires advanced care. |
-| 12 | Total rupture (**fatal**): death, or permanent loss of use of a vital limb (GM's choice). |
+| 12 | Total rupture (fatal): death, or permanent loss of use of a vital limb (GM's choice). |
 
 ---
 
@@ -38,9 +38,9 @@
 | 7 | Joint strain: −4 DEX for 1d4 days. |
 | 8 | Nerve damage: disadvantage on DEX until healed, reduced speed. |
 | 9 | Severe dislocation: fine actions (lockpicking, climbing) impossible without care. |
-| 10 | Tendon lesions: **permanent −1 DEX**. |
-| 11 | Minor mutilation (finger/toe): **permanent −2 DEX**. |
-| 12 | Limb paralysis (**fatal**): no normal movement, potentially lethal. |
+| 10 | Tendon lesions: permanent −1 DEX. |
+| 11 | Minor mutilation (finger/toe): permanent −2 DEX. |
+| 12 | Limb paralysis (fatal): no normal movement, potentially lethal. |
 
 ---
 
@@ -56,10 +56,10 @@
 | 6 | Internal bleeding: −4 CON for 1d4 days. |
 | 7 | Weakened organs: disadvantage on all CON checks for 1 week. |
 | 8 | Minor organ perforation: lose maximum HP daily without care. |
-| 9 | Organ damage: **permanent −1 CON**. |
+| 9 | Organ damage: permanent −1 CON. |
 | 10 | Risk of septic shock: regular CON checks, risk of maximum-HP loss. |
-| 11 | Major organ failure: **permanent −2 CON**. |
-| 12 | Vital organ rupture (**fatal**): swift death without divine intervention. |
+| 11 | Major organ failure: permanent −2 CON. |
+| 12 | Vital organ rupture (fatal): swift death without divine intervention. |
 
 ---
 
@@ -75,10 +75,10 @@
 | 6 | Intense anxiety: −4 WIS for 1d4 days. |
 | 7 | Mild hallucinations: disadvantage on all WIS checks for 1 week. |
 | 8 | Panic attacks: disadvantage on WIS saving throws, prolonged −2 WIS. |
-| 9 | Psychic trauma: **permanent −1 WIS**. |
+| 9 | Psychic trauma: permanent −1 WIS. |
 | 10 | Depersonalisation: severe penalties, loss of grip on reality, requires magical care. |
-| 11 | Partial madness: **permanent −2 WIS**, erratic behaviour. |
-| 12 | Mental collapse (**fatal**): psychic coma or brain death. |
+| 11 | Partial madness: permanent −2 WIS, erratic behaviour. |
+| 12 | Mental collapse (fatal): psychic coma or brain death. |
 
 ---
 
@@ -94,10 +94,10 @@
 | 6 | Marked confusion: −4 INT for 1d4 days. |
 | 7 | Verbal incoherence: disadvantage on INT checks for 1 week. |
 | 8 | Partial aphasia: cannot read or write without care, −2 INT. |
-| 9 | Cognitive lesion: **permanent −1 INT**. |
+| 9 | Cognitive lesion: permanent −1 INT. |
 | 10 | Progressive amnesia: frequent failures on INT checks. |
-| 11 | Progressive dementia: **permanent −2 INT**. |
-| 12 | Brain death (**fatal**): total loss of mental faculties, catatonic state. |
+| 11 | Progressive dementia: permanent −2 INT. |
+| 12 | Brain death (fatal): total loss of mental faculties, catatonic state. |
 
 ---
 
@@ -112,11 +112,11 @@
 | 5 | Visible scar: −2 CHA until the next long rest. |
 | 6 | Partial disfigurement: −4 CHA for 1d4 days or until healed. |
 | 7 | Nervous tics, foul breath: disadvantage on CHA for 1 week. |
-| 8 | Facial mutilation: **permanent −1 CHA**. |
+| 8 | Facial mutilation: permanent −1 CHA. |
 | 9 | Public disgrace: tarnished reputation, hard to find help. |
-| 10 | Psychological shock: **permanent −2 CHA**, social isolation. |
+| 10 | Psychological shock: permanent −2 CHA, social isolation. |
 | 11 | Permanent vocal damage: hoarse voice, −4 CHA without rare healing. |
-| 12 | Social ruin (**fatal**): total loss of credibility — exile or social death. |
+| 12 | Social ruin (fatal): total loss of credibility — exile or social death. |
 
 ---
 

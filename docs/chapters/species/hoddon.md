@@ -33,7 +33,7 @@ So they are few, they are careful, and they are very good at not being where the
 |---|---|
 | **Forest Folk** | You know *Minor Illusion*, and always have *Speak with Animals* prepared — castable without a slot a number of times equal to your Proficiency Bonus per Long Rest |
 | **Rock Folk** | You know *Mending* and *Prestidigitation*, and can spend 10 minutes to build a Tiny clockwork device (AC 5, 1 HP) carrying one *Prestidigitation* effect; up to three at a time |
-| **The Mole People** <span class="fh-tag">FH</span> | Your Darkvision increases to **120 feet**; you gain **Meticulous** — Advantage on Investigation checks — and **1 skill point** (**Novice**) in **tinker's tools** |
+| **The Mole People** <span class="fh-tag">FH</span> | Your Darkvision increases to 120 feet; you gain **Meticulous** — Advantage on Investigation checks — and 1 skill point (**Novice**) in **tinker's tools** |
 
 *The Hoddon are the Fate's Hand name for the SRD gnome. Base SRD text: [Gnome](https://noirchicot.github.io/fh-srd/en/species/#gnome)*
 

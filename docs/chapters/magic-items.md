@@ -19,11 +19,11 @@
 ## Harvest Chalice
 *(Calice de Moisson)* — wondrous item · soul-vessel · rarity by size (uncommon → artifact)
 
-A vessel of **silver and gold** that banks the souls of the dying. The small ones are cups; the great ones are spheres — the same craft as Carrangor's soul-sphere and the colossal *sphères argentées* that once crowned the Ziggurats (see Bozetius et le 3e Âge). They are forged by the **Create Harvest Chalice** rituals in [Dark Rituals](dark-rituals.md).
+A vessel of silver and gold that banks the souls of the dying. The small ones are cups; the great ones are spheres — the same craft as Carrangor's soul-sphere and the colossal *sphères argentées* that once crowned the Ziggurats (see Bozetius et le 3e Âge). They are forged by the **Create Harvest Chalice** rituals in [Dark Rituals](dark-rituals.md).
 
-**Form & size.** A chalice's **diameter is 1 foot per 100 souls of capacity** — from a palm-sized cup (10 souls) to a 100-foot sphere (10,000 souls, the hard maximum).
+**Form & size.** A chalice's diameter is 1 foot per 100 souls of capacity — from a palm-sized cup (10 souls) to a 100-foot sphere (10,000 souls, the hard maximum).
 
-**Capacity** is fixed when the chalice is made: a **standard** chalice holds **10 souls**; a **Major** holds **25 souls per sentient sacrifice** used in its forging, up to the hard cap of **10,000**.
+**Capacity** is fixed when the chalice is made: a **standard** chalice holds 10 souls; a **Major** holds 25 souls per sentient sacrifice used in its forging, up to the hard cap of 10,000.
 
 **Value (silver & gold).**
 
@@ -34,33 +34,33 @@ A vessel of **silver and gold** that banks the souls of the dying. The small one
 | 1,000 souls | 10 ft | 100,000 gp |
 | 10,000 souls *(max)* | 100 ft | 1,000,000 gp |
 
-*≈ **100 gp per soul** of capacity (≈ 10,000 gp per foot of diameter).*
+*≈ 100 gp per soul of capacity (≈ 10,000 gp per foot of diameter).*
 
 ### Powers — *the same no matter the chalice's size*
 
-**Reap.** While you hold a Harvest Chalice, you can claim the soul of any creature that drops to **0 hit points within 20 feet** of you — even inside the **Crimson Shroud** (see [Dark Rituals](dark-rituals.md)), seizing the soul before the Moisson devours it. A soul must be claimed **within 1d4 rounds** of the creature falling (the GM rolls, ideally in secret); after that it is lost to you. A claimed soul is stored, up to the chalice's capacity.
+**Reap.** While you hold a Harvest Chalice, you can claim the soul of any creature that drops to 0 hit points within 20 feet of you — even inside the **Crimson Shroud** (see [Dark Rituals](dark-rituals.md)), seizing the soul before the Moisson devours it. A soul must be claimed within 1d4 rounds of the creature falling (the GM rolls, ideally in secret); after that it is lost to you. A claimed soul is stored, up to the chalice's capacity.
 
-**Transfer.** By spending **1 Destiny point**, you may pour souls from one chalice into another (up to the receiving chalice's capacity).
+**Transfer.** By spending 1 **Destiny** point, you may pour souls from one chalice into another (up to the receiving chalice's capacity).
 
-**Drink.** You may drink the souls a chalice holds, gaining **1 (temporary) Destiny point per soul** — points that **may carry you above your Destiny Score** (as other Arcana-touched sources do — see [D&D 5+ Fate’s Hand Mechanic](fates-hand-mechanic.md)). The souls so drunk are spent forever.
+**Drink.** You may drink the souls a chalice holds, gaining 1 (temporary) **Destiny** point per soul — points that may carry you above your **Destiny Score** (as other Arcana-touched sources do — see [D&D 5+ Fate’s Hand Mechanic](fates-hand-mechanic.md)). The souls so drunk are spent forever.
 
 - **Daily limit.** You can safely drink up to your **Destiny Score** in souls per day.
-- **Overdrinking → Chaos.** Drink *beyond* your Score in a day and you provoke **Chaos**: a **Wisdom saving throw vs DC 10 + Overreach**, where **Overreach = +1 per soul drunk above your Score** (resolve as the [Chaos effect](fates-hand-mechanic.md)).
-- **The coma.** You then collapse into a **coma**. Each day you may attempt a **Constitution saving throw, DC 8 + the souls drunk**, to wake — the **DC drops by 1 each day**.
-- **Cooldown.** Once roused, you must wait **a number of days equal to the souls you drank** before you may drink again.
+- **Overdrinking → Chaos.** Drink *beyond* your Score in a day and you provoke **Chaos**: a Wisdom saving throw vs DC 10 + Overreach, where Overreach = +1 per soul drunk above your Score (resolve as the [Chaos effect](fates-hand-mechanic.md)).
+- **The coma.** You then collapse into a coma. Each day you may attempt a Constitution saving throw, DC 8 + the souls drunk, to wake — the DC drops by 1 each day.
+- **Cooldown.** Once roused, you must wait a number of days equal to the souls you drank before you may drink again.
 
-**Drinking an Awakened soul.** The soul of an **Awakened (Aberrant)** — one banked from an Eluzi or any Arcana-touched being (see Eluzi / Aberrant) — is not spent for raw Destiny but for **borrowed power**. Drink one and you gain **10 Destiny points — exempt from the daily limit and from Chaos** — and for **10 days** you may wield the powers of the **Major Arcana that soul was awakened to** ([The Major Arcana](major-arcana.md)): drink a *Moon*-awakened soul and you channel the Moon for ten days, and the same numbers hold for any card. When the ten days pass, the borrowed power fades and the soul is spent.
+**Drinking an Awakened soul.** The soul of an **Awakened (Aberrant)** — one banked from an Eluzi or any Arcana-touched being (see Eluzi / Aberrant) — is not spent for raw Destiny but for borrowed power. Drink one and you gain 10 **Destiny** points — exempt from the daily limit and from **Chaos** — and for 10 days you may wield the powers of the **Major Arcana** that soul was awakened to ([The Major Arcana](major-arcana.md)): drink a *Moon*-awakened soul and you channel the Moon for ten days, and the same numbers hold for any card. When the ten days pass, the borrowed power fades and the soul is spent.
 
 > *This is why Karagall's **Eluzi** withdraw into torpor for long stretches — as **Poplocas** did. See Les Forces Primordiales de Nymedes.*
 
-**The Crimson Awakening** *(Éveil pourpre).* Drink **1,000 souls** over a lifetime and a **crimson Arcane Awakening to Karagall** is certain: you awaken to **The Devil — Major Arcana XV** (see [The Major Arcana](major-arcana.md)) — *and your body mutates.* You become an **Aberration** of the white-skinned, masked **Eluzi**, a race apart. *Some Araags have corrupted the rite to awaken instead to a Major Arcana of their choosing.*
+**The Crimson Awakening** *(Éveil pourpre).* Drink 1,000 souls over a lifetime and a crimson **Arcane Awakening** to Karagall is certain: you awaken to **The Devil — Major Arcana XV** (see [The Major Arcana](major-arcana.md)) — *and your body mutates.* You become an **Aberration** of the white-skinned, masked **Eluzi**, a race apart. *Some Araags have corrupted the rite to awaken instead to a Major Arcana of their choosing.*
 
-**Somatic Ascension.** Drink **100,000 souls** — a feat only a handful of Eluzi have reached — and you shed the flesh's limits entirely, becoming **pure energy held in a corporeal shell** (Karagall's own path). By the drinking rule, the road there is **~274 years of cumulative torpor** (see L'Éveil & Ascension des Eluzi).
+**Somatic Ascension.** Drink 100,000 souls — a feat only a handful of Eluzi have reached — and you shed the flesh's limits entirely, becoming pure energy held in a corporeal shell (Karagall's own path). By the drinking rule, the road there is ~274 years of cumulative torpor (see L'Éveil & Ascension des Eluzi).
 
 ## Every magic item
 
-What Fate's Hand adds is above. **The rest of what a party can find is below** — two hundred
-and fifty-three items, quoted whole, by kind. Each entry opens with its **rarity** exactly as
+What Fate's Hand adds is above. The rest of what a party can find is below — two hundred
+and fifty-three items, quoted whole, by kind. Each entry opens with its rarity exactly as
 printed, attunement included: that string is the SRD's own wording and it is not tidied up,
 because a rarity that reads *« Uncommon (+1), Rare (+2), or Very Rare (+3) »* means something
 a single word would lose.
@@ -69,7 +69,6 @@ a single word would lose.
 <summary><strong>253 magic items</strong>, quoted from the SRD — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd item.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
-<p class="fh-srd-cite__label">Quoted from <strong>SRD 5.2.1</strong> · p.209–p.253 — all 253, as printed</p>
 <p class="fh-srd-cite__group">Armor <span>· 19</span></p>
 <dl class="fh-srd-cite__list">
 <dt>Adamantine Armor</dt>
@@ -2119,9 +2118,10 @@ Once the Well of Many Worlds has opened a portal, it can’t do so again for 1d8
 <dt>Wings of Flying</dt>
 <dd><span class="fh-spell-meta">Rare (Requires Attunement)</span>While wearing this cloak, you can take a Magic action to turn the cloak into a pair of wings on your back. The wings lasts for 1 hour or until you end the effect early as a Magic action. The wings give you a Fly Speed of 60 feet. If you are aloft when the wings disappear, you fall. When the wings disappear, you can’t use them again for 1d12 hours.</dd>
 </dl>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 </details>
+
+<p class="fh-srd-note">Some of the text above in this page is SRD content.</p>
 
 ---
 

@@ -19,11 +19,11 @@ Elestu do not usually argue with either theory. They write both down, note who s
 - **Darkvision** <span class="fh-tag">FH</span> — 60 feet.
 - **Fey Ancestry** — Advantage on saving throws you make to avoid or end the Charmed condition.
 - **Trance** — you don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation, during which you retain consciousness.
-- **Keen Senses** <span class="fh-tag">FH</span> — **2 [skill points](../skills-and-tools.md)**, spendable only on **Survival**, **Delve** or **Vigilance**, at the normal cost: half on two of the three, or full on a single one. *(The SRD grants one proficiency among Insight, Perception or Survival.)*
+- **Keen Senses** <span class="fh-tag">FH</span> — 2 [skill points](../skills-and-tools.md), spendable only on **Survival**, **Delve** or **Vigilance**, at the normal cost: half on two of the three, or full on a single one. *(The SRD grants one proficiency among Insight, Perception or Survival.)*
 - **Fast Learner** <span class="fh-tag">FH</span> — +2 skill points at levels 1, 3 and 6.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.
 
-*The Elestu are a Fate's Hand people, built on the SRD elf. Base SRD text: [Elf](https://noirchicot.github.io/fh-srd/en/species/#elf) — note that Elestu have **no Elven Lineage**.*
+*The Elestu are a Fate's Hand people, built on the SRD elf. Base SRD text: [Elf](https://noirchicot.github.io/fh-srd/en/species/#elf) — note that Elestu have no **Elven Lineage**.*
 
 ---
 

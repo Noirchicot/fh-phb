@@ -18,7 +18,7 @@ What is not arguable is that they learn anything. Put a human beside a specialis
 
 - **Skillful** <span class="fh-tag">FH</span> — +2 [skill points](../skills-and-tools.md) at level 1, and that is all. *(The SRD grants one skill proficiency; Fate's Hand converts every level-1 grant into pool points.)*
 - **Versatile** — you gain an Origin feat of your choice.
-- **Destiny** <span class="fh-tag">FH</span> — Base 2. **Twice-Born** *(human chosen)*: recover **2** Destiny Points per Long Rest instead of one.
+- **Destiny** <span class="fh-tag">FH</span> — Base 2. **Twice-Born** *(human chosen)*: recover 2 Destiny Points per Long Rest instead of one.
 
 *Base SRD text: [Human](https://noirchicot.github.io/fh-srd/en/species/#human)*
 
