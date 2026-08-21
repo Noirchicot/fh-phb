@@ -125,5 +125,5 @@
 <ul>
 <li><span class="fh-layer__genre">monster</span> <span class="fh-layer__same">no record differs</span></li>
 </ul>
-<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+<p class="fh-layer__note"><strong>No entry on this page differs from the base game’s data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
 </nav>

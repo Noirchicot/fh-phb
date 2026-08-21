@@ -11,7 +11,7 @@ Your **Inheritance** grants one origin feat, your choice, from these five:
 | **Alert** | as printed |
 | **Magic Initiate** | as printed |
 | **Savage Attacker** | as printed |
-| **Skilled** | +6 free skill points — the SRD grants 3 proficiencies, and a proficiency is worth 2 points in Fate's Hand (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
+| **Skilled** | +6 free skill points — the base game grants 3 proficiencies, and a proficiency is worth 2 points in Fate's Hand (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
 | **Auspicious** *(FH)* | +2 to your **Destiny Score** — see below |
 
 > No background record grants a feat. There are no backgrounds in Fate's Hand; the step is
@@ -58,14 +58,14 @@ Your **Inheritance** grants one origin feat, your choice, from these five:
 
 ## Every feat
 
-Fate's Hand adds the ones above and changes nothing else, so the rest of the list is the SRD's
+Fate's Hand adds the ones above and changes nothing else, so the rest of the list is the base game's
 — quoted here whole rather than left in another book. Read a prerequisite before you plan
 for a feat: most General feats need level 4 and a score of 13 in the right ability, and an
 Epic Boon needs level 19.
 
-> One feat is missing from the list below, on purpose. The SRD's **Skilled** grants
+> One feat is missing from the list below, on purpose. The the base game's **Skilled** grants
 > *« proficiency in any combination of three skills or tools »* — and Fate's Hand converts that
-> into +6 free points, because a proficiency is worth 2 points here. Quoting the SRD's
+> into +6 free points, because a proficiency is worth 2 points here. Quoting the base game's
 > wording beside ours would put two different prices on the same feat. Ours is in the Origin
 > feats table above, and it is the one that applies.
 
@@ -182,5 +182,5 @@ Shadowy Form. While within Dim Light or Darkness, you have Resistance to all dam
 <ul>
 <li><span class="fh-layer__genre">feat</span> <span class="fh-layer__added">adds 1</span> — Auspicious (fh) · <span class="fh-layer__patched">changes 2</span> — Magic Initiate, Skilled</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

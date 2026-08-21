@@ -5,7 +5,7 @@
 <ul>
 <li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
 </ul>
-<p>The quotations below are the SRD’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+<p>The quotations below are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
 </aside>
 
 Every capitalised term the rules lean on, defined once, on this page. Look a word up here
@@ -26,12 +26,12 @@ rather than letting you find out mid-game:
 | **Surprise** | **Battlefield Rules** — surprise is *not a round* here. |
 | **Falling** *(and dying)* | **Battlefield Rules** — death saves and concentration are **Constitution** saves. |
 
-Everything else on this page is the SRD's, quoted word for word.
+Everything else on this page is the base game's, quoted word for word.
 
 ## The glossary
 
 <details class="fh-fold">
-<summary><strong>145 glossary entries</strong>, quoted from the SRD — open to read them</summary>
+<summary><strong>145 glossary entries</strong> — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd (kind=glossary, lang=en, run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->
 <div class="fh-srd-cite">
 <dl class="fh-srd-cite__list">
@@ -788,5 +788,5 @@ Unaware. You’re unaware of your surroundings.</dd>
 <ul>
 <li><span class="fh-layer__genre">glossary</span> <span class="fh-layer__same">no record differs</span></li>
 </ul>
-<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+<p class="fh-layer__note"><strong>No entry on this page differs from the base game’s data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
 </nav>

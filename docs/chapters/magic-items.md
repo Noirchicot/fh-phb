@@ -5,7 +5,7 @@
 <ul>
 <li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
 </ul>
-<p>The quotations below are the SRD’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+<p>The quotations below are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
 </aside>
 
 *(Objets Magiques)*
@@ -61,12 +61,12 @@ A vessel of silver and gold that banks the souls of the dying. The small ones ar
 
 What Fate's Hand adds is above. The rest of what a party can find is below — two hundred
 and fifty-three items, quoted whole, by kind. Each entry opens with its rarity exactly as
-printed, attunement included: that string is the SRD's own wording and it is not tidied up,
+printed, attunement included: that string is the base game's own wording and it is not tidied up,
 because a rarity that reads *« Uncommon (+1), Rare (+2), or Very Rare (+3) »* means something
 a single word would lose.
 
 <details class="fh-fold">
-<summary><strong>253 magic items</strong>, quoted from the SRD — open to read them</summary>
+<summary><strong>253 magic items</strong> — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd item.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
 <p class="fh-srd-cite__group">Armor <span>· 19</span></p>
@@ -2130,5 +2130,5 @@ Once the Well of Many Worlds has opened a portal, it can’t do so again for 1d8
 <ul>
 <li><span class="fh-layer__genre">item</span> <span class="fh-layer__same">no record differs</span></li>
 </ul>
-<p class="fh-layer__note"><strong>No entry on this page differs from the SRD's data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
+<p class="fh-layer__note"><strong>No entry on this page differs from the base game’s data.</strong> That is not the same as saying nothing here is Fate’s Hand: rules this chapter states in its own words are not counted by the measure — read the page.</p>
 </nav>

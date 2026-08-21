@@ -22,7 +22,7 @@ Halflings find the whole discussion faintly embarrassing. Their own account of t
 - **Naturally Stealthy** — you can take the Hide action while obscured only by a creature at least one size larger than you.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2. **Outlasting** *(halfling chosen)*: Advantage on [Chaos rolls](../chaos-tables.md).
 
-*Base SRD text: [Halfling](https://noirchicot.github.io/fh-srd/en/species/#halfling)*
+*Base the base game text: [Halfling](https://noirchicot.github.io/fh-srd/en/species/#halfling)*
 
 ---
 
@@ -31,5 +31,5 @@ Halflings find the whole discussion faintly embarrassing. Their own account of t
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

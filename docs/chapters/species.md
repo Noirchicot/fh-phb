@@ -116,5 +116,5 @@ Fiend-touched by pact, curse or ancestry, tieflings are forever being mistaken f
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

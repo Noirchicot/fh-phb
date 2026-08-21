@@ -21,7 +21,7 @@ The census-keeper of Huitzlika lists them with the dragonborn and tieflings as p
 - **Relentless Endurance** — when you drop to 0 hit points and don't die outright, you can drop to 1 instead. Once per Long Rest.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.
 
-*Base SRD text: [Orc](https://noirchicot.github.io/fh-srd/en/species/#orc)*
+*Base the base game text: [Orc](https://noirchicot.github.io/fh-srd/en/species/#orc)*
 
 ---
 
@@ -30,5 +30,5 @@ The census-keeper of Huitzlika lists them with the dragonborn and tieflings as p
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

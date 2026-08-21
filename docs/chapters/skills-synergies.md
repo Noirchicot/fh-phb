@@ -64,5 +64,5 @@ At levels 1–4 the base **DC** for a challenging check is 16, rising with tier 
 <ul>
 <li><span class="fh-layer__genre">skill</span> <span class="fh-layer__added">adds 9</span> — Academics, Appraise, Delve, Hunting, Leadership, Might… · <span class="fh-layer__patched">changes 17</span> — Acrobatics, Animal Handling, Arcana, Athletics, Deception, History… · <span class="fh-layer__removed">removes 1</span> — Perception</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

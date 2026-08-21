@@ -32,7 +32,7 @@ Every goliath met outside the north is a survivor of that long hunt. They are pa
 | **Stone's Endurance** *(Stone)* | Reaction: roll 1d12 + Constitution modifier and reduce the damage |
 | **Storm's Thunder** *(Storm)* | Reaction: deal 1d8 Thunder to a creature within 60 feet that damaged you |
 
-*Base SRD text: [Goliath](https://noirchicot.github.io/fh-srd/en/species/#goliath)*
+*Base the base game text: [Goliath](https://noirchicot.github.io/fh-srd/en/species/#goliath)*
 
 ---
 
@@ -41,5 +41,5 @@ Every goliath met outside the north is a survivor of that long hunt. They are pa
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

@@ -19,7 +19,7 @@ people and nothing else — there is no *Elvish* in Fate's Hand, only *Elf*. See
 
 ## Your alignment
 
-Two axes, and the SRD's own words for them are in the **Rules Glossary**. Fate's Hand changes
+Two axes, and the base game's own words for them are in the **Rules Glossary**. Fate's Hand changes
 nothing about what alignment *is*.
 
 What Fate's Hand changes is how much it weighs. Your standing in the world is tracked by
@@ -40,5 +40,5 @@ No species, class, feat or item in Fate's Hand is gated on gender, and none will
 ---
 
 <nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+<p><strong>Entirely Fate’s Hand.</strong> The base game says nothing about this subject — every rule on this page is Eric's.</p>
 </nav>

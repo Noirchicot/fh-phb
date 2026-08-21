@@ -35,7 +35,7 @@ So they are few, they are careful, and they are very good at not being where the
 | **Rock Folk** | You know *Mending* and *Prestidigitation*, and can spend 10 minutes to build a Tiny clockwork device (AC 5, 1 HP) carrying one *Prestidigitation* effect; up to three at a time |
 | **The Mole People** <span class="fh-tag">FH</span> | Your Darkvision increases to 120 feet; you gain **Meticulous** — Advantage on Investigation checks — and 1 skill point (**Novice**) in **tinker's tools** |
 
-*The Hoddon are the Fate's Hand name for the SRD gnome. Base SRD text: [Gnome](https://noirchicot.github.io/fh-srd/en/species/#gnome)*
+*The Hoddon are the Fate's Hand name for the base game gnome. Base the base game text: [Gnome](https://noirchicot.github.io/fh-srd/en/species/#gnome)*
 
 ---
 
@@ -44,5 +44,5 @@ So they are few, they are careful, and they are very good at not being where the
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

@@ -22,7 +22,7 @@ What they carry in the body matches what they carry in the temperament. Poison b
 - **Stonecunning** — as a Bonus Action, gain Tremorsense 60 feet for 10 minutes while on a stone surface. Uses equal to your Proficiency Bonus, regained on a Long Rest.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.
 
-*Base SRD text: [Dwarf](https://noirchicot.github.io/fh-srd/en/species/#dwarf)*
+*Base the base game text: [Dwarf](https://noirchicot.github.io/fh-srd/en/species/#dwarf)*
 
 ---
 
@@ -31,5 +31,5 @@ What they carry in the body matches what they carry in the temperament. Poison b
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

@@ -5,7 +5,7 @@
 
 ## Ce que ce chapitre doit porter
 
-L'artisanat, comme au SRD.
+L'artisanat, comme au jeu de base.
 
 Le **[Soulforging](soulforge-crafting.md)** est propre à Fate's Hand et garde son chapitre.
 
@@ -20,5 +20,5 @@ Le **[Soulforging](soulforge-crafting.md)** est propre à Fate's Hand et garde s
 <ul>
 <li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 14</span> — Card Set, Dice Set, Dragonchess Set, Instrument (Other), Instrument (Strings), Instrument (Wind)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

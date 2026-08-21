@@ -11,5 +11,5 @@ In built environments and dungeons, specific skills govern traps, locks and hidd
 ---
 
 <nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+<p><strong>Entirely Fate’s Hand.</strong> The base game says nothing about this subject — every rule on this page is Eric's.</p>
 </nav>

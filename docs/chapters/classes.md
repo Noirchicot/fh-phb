@@ -5,7 +5,7 @@
 <ul>
 <li><strong>Musical Instrument</strong> does not exist in Fate’s Hand — read one of <strong>Instrument (Strings)</strong>, <strong>(Wind)</strong> or <strong>(Other)</strong> — Fate’s Hand splits it in three, and each is bought separately.</li>
 </ul>
-<p>The quotations below are the SRD’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+<p>The quotations below are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
 </aside>
 
 Only the changes are listed here — everything else works as printed in the 2024 rules.
@@ -26,12 +26,12 @@ Only the changes are listed here — everything else works as printed in the 202
 ## Every class
 
 Only the changes are listed above. The twelve classes themselves are below, quoted from
-the SRD — hit die, primary ability, saving throws, what each is trained to wear and wield, what
+the base game — hit die, primary ability, saving throws, what each is trained to wear and wield, what
 it starts with, and the features it gains.
 
 > Two lines of each class are deliberately missing, and it matters.
 >
-> **Its skill list.** The SRD's version names *Perception*, which Fate's Hand does not have, and
+> **Its skill list.** The the base game's version names *Perception*, which Fate's Hand does not have, and
 > picks from eighteen skills where Fate's Hand has twenty-six. Reproducing it would put a
 > non-existent skill on a Fate's Hand page and give you a second, conflicting count of points.
 > What your class grants you in skills is in [Skills & Tools — Player Guide](skills-and-tools.md) — bound
@@ -41,7 +41,7 @@ it starts with, and the features it gains.
 > rule printed twice is a rule that will drift.
 
 <details class="fh-fold">
-<summary><strong>12 class entries</strong>, quoted from the SRD — open to read them</summary>
+<summary><strong>12 class entries</strong> — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd class.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
 <p class="fh-srd-cite__group">Barbarian</p>
@@ -181,5 +181,5 @@ it starts with, and the features it gains.
 <li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
 <li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

@@ -21,7 +21,7 @@ Whatever the truth of it, something in the elven line answers when fate is asked
 - **Darkvision** — 60 feet.
 - **Elven Lineage** — choose a lineage from the Elven Lineages table; you gain its level 1 benefit. At character levels 3 and 5 you learn the listed spell, always prepared, castable once without a slot per Long Rest, or with any slot of the appropriate level. Intelligence, Wisdom or Charisma is your spellcasting ability for this trait (chosen with the lineage).
 - **Fey Ancestry** — Advantage on saving throws you make to avoid or end the Charmed condition.
-- **Keen Senses** <span class="fh-tag">FH</span> — 2 [skill points](../skills-and-tools.md), spendable only on **Survival**, **Delve** or **Vigilance**, at the normal cost: half on two of the three, or full on a single one. *(The SRD grants one proficiency among Insight, Perception or Survival.)*
+- **Keen Senses** <span class="fh-tag">FH</span> — 2 [skill points](../skills-and-tools.md), spendable only on **Survival**, **Delve** or **Vigilance**, at the normal cost: half on two of the three, or full on a single one. *(The the base game grants one proficiency among Insight, Perception or Survival.)*
 - **Trance** — you don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of trancelike meditation, during which you retain consciousness.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2. **Splinter of Anon** *(elf chosen)*: +2 to your Destiny pool.
 
@@ -33,7 +33,7 @@ Whatever the truth of it, something in the elven line answers when fate is asked
 | **High Elf** | You know *Prestidigitation*; on a Long Rest you may swap it for another Wizard cantrip | *Detect Magic* | *Misty Step* |
 | **Wood Elf** | Your Speed increases to 35 feet; you know *Druidcraft* | *Longstrider* | *Pass without Trace* |
 
-*Base SRD text: [Elf](https://noirchicot.github.io/fh-srd/en/species/#elf)*
+*Base the base game text: [Elf](https://noirchicot.github.io/fh-srd/en/species/#elf)*
 
 ---
 
@@ -42,5 +42,5 @@ Whatever the truth of it, something in the elven line answers when fate is asked
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

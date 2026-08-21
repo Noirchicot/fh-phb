@@ -22,7 +22,7 @@ So the young leave. They go for work, for the Front, for a city where a Sira nam
 - **Soulforged Affinity** <span class="fh-tag">FH</span> — you may Body Forge a Soulgem into your own flesh at no cost in hit points *(cf. [Soulforge Crafting](../soulforge-crafting.md))*.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.
 
-*The Araag are a Fate's Hand people; they have no SRD counterpart.*
+*The Araag are a Fate's Hand people; they have no the base game counterpart.*
 
 ---
 
@@ -31,5 +31,5 @@ So the young leave. They go for work, for the Front, for a city where a Sira nam
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

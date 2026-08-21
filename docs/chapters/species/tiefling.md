@@ -29,11 +29,11 @@ So they arrive charming, because the alternative is arriving unemployed. The hab
 | **Chthonic** | Resistance to Necrotic damage; you know *Chill Touch* | *False Life* | *Ray of Enfeeblement* |
 | **Infernal** | Resistance to Fire damage; you know *Fire Bolt* | *Hellish Rebuke* | *Darkness* |
 
-*Base SRD text: [Tiefling](https://noirchicot.github.io/fh-srd/en/species/#tiefling)*
+*Base the base game text: [Tiefling](https://noirchicot.github.io/fh-srd/en/species/#tiefling)*
 
 ---
 
-*This work includes material taken from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC, available at [https://www.dndbeyond.com/srd](https://www.dndbeyond.com/srd). The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at [https://creativecommons.org/licenses/by/4.0/legalcode](https://creativecommons.org/licenses/by/4.0/legalcode). Portions of the SRD material — including the Elf, Human and other species — have been modified for this work.*
+*This work includes material taken from the System Reference Document 5.2 ("the base game 5.2") by Wizards of the Coast LLC, available at [https://www.dndbeyond.com/srd](https://www.dndbeyond.com/srd). The the base game 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at [https://creativecommons.org/licenses/by/4.0/legalcode](https://creativecommons.org/licenses/by/4.0/legalcode). Portions of the base game material — including the Elf, Human and other species — have been modified for this work.*
 
 ---
 
@@ -42,5 +42,5 @@ So they arrive charming, because the alternative is arriving unemployed. The hab
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

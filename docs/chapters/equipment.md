@@ -7,12 +7,12 @@ Deux profondeurs dans un seul chapitre :
 1. **À la création** — ce que le personnage emporte au départ. C'est ce que l'étape 8 du
    builder montre, en version courte
 
-2. **En référence** — l'équipement complet, comme au SRD, celui qu'on consulte en jeu
+2. **En référence** — l'équipement complet, celui qu'on consulte en jeu
 
 ## What this chapter is — and what it is not
 
 Everything is here. You should not have to leave this page to look a rule up, so the
-tables and the rule text are on it — quoted from the SRD, never retold. They are pulled
+tables and the rule text are on it, never retold. They are pulled
 from the published source each time this book is built, which is why they cannot drift: there
 is still only one copy of them anywhere, and it is not this one.
 
@@ -35,7 +35,7 @@ sorts them in two families rather than one alphabet. Five are demands: *Two-Hand
 
 **Its mastery** — the trick below.
 
-That sorting is ours. The rules themselves are the SRD's, quoted here whole so you never have
+That sorting is ours. The rules themselves are here whole, so you never have
 to go looking for one.
 
 <!-- GENERATED — cité depuis fh-srd (kind=weapon-property, lang=en, run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py à chaque passe. -->
@@ -71,7 +71,7 @@ to go looking for one.
 All thirty-eight, with what each one does, what it asks, and the trick it carries.
 
 <details class="fh-fold">
-<summary><strong>38 weapons</strong>, quoted from the SRD — open to read them</summary>
+<summary><strong>38 weapons</strong> — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd weapon.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">
 <table class="fh-srd-table">
@@ -125,7 +125,7 @@ All thirty-eight, with what each one does, what it asks, and the trick it carrie
 
 ## Armour, and what it asks in return
 
-Thirteen entries, quoted below exactly as the SRD prints them — every number, every price.
+Thirteen entries below — every number, every price.
 What follows the table is ours: not the rule, but the trade it asks you to make.
 
 <!-- GENERATED — cité depuis fh-srd armor.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
@@ -246,7 +246,7 @@ version drifts.
 
 ### Reading the eight at a glance
 
-*This part is Fate's Hand talking, not the SRD — it adds no rule, it only says how we group
+*This part is Fate's Hand talking — it adds no rule, it only says how we group
 them.* Three punish the miss or the crowd: Graze pays you for missing, Cleave for standing
 between two enemies, Nick for carrying two blades. Three bend the next exchange: Sap
 weakens their swing, Vex sharpens yours, Slow takes their ground. Two move the body
@@ -254,9 +254,9 @@ itself — Push sends it back, Topple puts it down.
 
 ### Who gets to use them
 
-Mastery is granted by a class feature, and Fate's Hand grants it exactly as the SRD does.
+Mastery is granted by a class feature, and Fate's Hand does not change it.
 Five classes open it. Which five, how many weapons each covers at a time, and what each may
-choose from are the SRD's answers — none of it is a Fate's Hand decision, and all of it is
+choose from are not Fate's Hand decisions, and all of it is
 below rather than in another book.
 
 Two of the five see that number grow as they level; the other three keep the same one from
@@ -283,7 +283,7 @@ kinds of weapon, not different ones — and you may swap which ones after a Long
 
 Level 1 gear is chosen at step 8 of the builder, and it comes from two places: your class
 and your background. Fate's Hand rebuilt backgrounds — see **Inheritance** — so the gear a
-background hands you follows that chapter, not the SRD's list of packages.
+background hands you follows that chapter, not the base game's list of packages.
 
 > **Ouvert** — *Inheritance* décide des dons d'origine, des langues et des bonus de
 > caracs, mais ne dit pas encore ce qu'un héritage donne comme matériel. Tant que ce n'est
@@ -300,7 +300,7 @@ Eighty-two entries, prices as printed. Nothing here is a Fate's Hand decision �
 list, brought onto this page so you never have to go and find it.
 
 <details class="fh-fold">
-<summary><strong>82 pieces of gear</strong>, quoted from the SRD — open to read them</summary>
+<summary><strong>82 pieces of gear</strong> — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd gear.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer : réécrit par sync_from_vault.py. -->
 <div class="fh-srd-cite fh-srd-cite--table">
 <table class="fh-srd-table">
@@ -397,16 +397,16 @@ list, brought onto this page so you never have to go and find it.
 A tool is not gear: it names an ability, a thing it lets you do, and a list of what it makes.
 That is why it gets a wider table than the rest.
 
-> The table below is the SRD's, and it is NOT Fate's Hand's tool list. Twenty-five
+> The table below is the base game's, and it is NOT Fate's Hand's tool list. Twenty-five
 > against thirty-seven. Buy your tools from **Skills & Tools**, not from here — this table
 > is the reference for what each one *does*, not for what you may take.
 >
 > | What Fate's Hand does | |
 > |---|---|
-> | **Adds Soulforging** *(CHA)* | It is in no SRD list at all. **Soulforge Crafting** and the soulforging rite both require at least **Novice** in it — so a character who picks tools from the table below cannot legally join a forge circle. |
-> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. The SRD's single entry is not quoted below — Fate's Hand removed it, so it is dropped automatically. |
+> | **Adds Soulforging** *(CHA)* | It is in no base list at all. **Soulforge Crafting** and the soulforging rite both require at least **Novice** in it — so a character who picks tools from the table below cannot legally join a forge circle. |
+> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. The the base game's single entry is not quoted below — Fate's Hand removed it, so it is dropped automatically. |
 > | **Splits the Musical Instrument** into three | *Strings · Wind · Other*. A bard's two bound instrument points buy two of these, not two of anything. Not quoted below either, for the same reason. |
-> | **Makes mounts and vehicles tools** | *Mount (Air · Land · Water)* and *Vehicles (Air · Land · Water)* — six tools the SRD does not treat as tools at all. Riding is rolled here. |
+> | **Makes mounts and vehicles tools** | *Mount (Air · Land · Water)* and *Vehicles (Air · Land · Water)* — six tools the base game does not treat as tools at all. Riding is rolled here. |
 >
 > And the **Garrot** is on neither list: it is a **training**, not a tool — no tier, no
 > ability. See **Trainings**.
@@ -456,5 +456,5 @@ That is why it gets a wider table than the rest.
 <li><span class="fh-layer__genre">gear</span> <span class="fh-layer__same">no record differs</span></li>
 <li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 14</span> — Card Set, Dice Set, Dragonchess Set, Instrument (Other), Instrument (Strings), Instrument (Wind)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

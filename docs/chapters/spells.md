@@ -5,7 +5,7 @@
 <ul>
 <li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
 </ul>
-<p>The quotations below are the SRD’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+<p>The quotations below are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
 </aside>
 
 *(Sorts — révisions & nouveaux sorts Fate's Hand)*
@@ -27,6 +27,7 @@ Fate's Hand revisions and new spells. Only the changes to existing spells are li
 
 *1st-level enchantment*
 **Casting Time** 1 action · **Range** 30 feet · **Components** V, S, M (a sprinkle of holy water) · **Duration** Concentration, up to 1 minute
+
 **Additional effect** — if the caster spends one **Destiny Point**, the cost of fate is reduced by one for the creatures affected by the spell, for its duration. Except on critical rolls.
 
 ## Guidance
@@ -34,6 +35,7 @@ Fate's Hand revisions and new spells. Only the changes to existing spells are li
 
 *cantrip divination*
 **Casting Time** 1 action · **Range** Touch · **Components** V, S · **Duration** Concentration, up to 1 minute
+
 **Effect** — either the usual 2024 effect, or the optional effect below.
 
 **Optional effect** — you touch one willing creature and grant it 1 temporary **Destiny Point** for the duration of the spell. A single creature can only benefit from this effect once per long rest.
@@ -42,6 +44,7 @@ Fate's Hand revisions and new spells. Only the changes to existing spells are li
 
 *3rd-level abjuration* · *Cleric, Druid*
 **Casting Time** 1 action · **Range** 30 feet · **Components** V, S · **Duration** Instantaneous
+
 **Effect** — you spend a **Destiny Point** to appease the wrath of the forces of chaos on the targeted creature, within 1 round following a Chaos Effect. You reduce the potency of the effect by a number equal to your proficiency bonus.
 
 > [!example] Example
@@ -51,6 +54,7 @@ Fate's Hand revisions and new spells. Only the changes to existing spells are li
 
 *2nd-level divination* · *Wizard, Warlock*
 **Casting Time** 1 action · **Range** Touch · **Components** V, S · **Duration** Concentration, up to 10 minutes
+
 **Effect** — the target can see through magical and normal darkness out to 60 feet. **No upcasting.**
 
 ## Consecration
@@ -58,6 +62,7 @@ Fate's Hand revisions and new spells. Only the changes to existing spells are li
 
 *1st (ritual)-level abjuration* · *Cleric (Life Domain), Paladin*
 **Casting Time** 1 hour — as a ritual, 1 hour 10 minutes (the rite, then an hour of prayer) · **Range** Self (30-foot radius) · **Components** V, S, M (an agate worth 100 GP) · **Duration** 1 hour
+
 **Effect** — you consecrate the place. Within the radius:
 
 - one creature regains 1 **Destiny Point** at the end of its next Long Rest;
@@ -77,6 +82,7 @@ The agate is not consumed unless a Destiny Point is spent.
 
 *1st-level transmutation* · *Wizard, Cleric, Druid, Warlock*
 **Casting Time** 1 action · **Range** Touch — a creature slain within the hour (*Gentle Repose* → 10 hours) · **Components** V, S, M (a gemstone, which the spell fills) · **Duration** Instantaneous
+
 **Effect** — you draw the **Essence** of a freshly slain creature into a gemstone you hold. The gem's value must meet the essence's PP — from 50 gp (1 PP) to 50,000 gp (11 PP); see [the gem table](soulforge-crafting.md#3-preparation-craft-infuse-ready). The transfer automatically succeeds.
 
 *In the **Demon Forest** this spell is needless — those beasts already carry their essence in the gems crusting their bodies; simply take the gem.*
@@ -96,14 +102,14 @@ Cast on a harvested **catalyst** part, **identify** reveals the exact power that
 ## Every spell
 
 The ones above are Fate's Hand's own. Everything else a caster can learn is below, quoted
-whole from the SRD — three hundred and thirty-nine of them, by level, so you never have to
+whole from the base game — three hundred and thirty-nine of them, by level, so you never have to
 leave this page to check a range or a casting time.
 
 Each entry opens with the shape of the spell — school, casting time, range, components,
 duration, and whether it is a ritual or needs concentration — then the text itself.
 
 <details class="fh-fold">
-<summary><strong>339 spells</strong>, quoted from the SRD — open to read them</summary>
+<summary><strong>339 spells</strong> — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd spell.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
 <p class="fh-srd-cite__group">Cantrips</p>
@@ -2334,5 +2340,5 @@ The stress of casting Wish to produce any effect other than duplicating another 
 <ul>
 <li><span class="fh-layer__genre">spell</span> <span class="fh-layer__added">adds 4</span> — Appease the Chaos, Consecration, Devil-Vision, Transfer Essence · <span class="fh-layer__patched">changes 4</span> — Bless, Gentle Repose, Guidance, Identify</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

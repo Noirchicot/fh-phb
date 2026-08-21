@@ -33,7 +33,7 @@ What is not in doubt is the posture. A dragonborn does not apologise for the roo
 | Bronze | Lightning | Silver | Cold |
 | Copper | Acid | White | Cold |
 
-*Base SRD text: [Dragonborn](https://noirchicot.github.io/fh-srd/en/species/#dragonborn)*
+*Base the base game text: [Dragonborn](https://noirchicot.github.io/fh-srd/en/species/#dragonborn)*
 
 ---
 
@@ -42,5 +42,5 @@ What is not in doubt is the posture. A dragonborn does not apologise for the roo
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

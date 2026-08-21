@@ -21,7 +21,7 @@ Their orc kin to the south get the reputation for ferocity. The Loroka get the h
 - **Versatile** <span class="fh-tag">FH</span> — you gain an Origin feat of your choice.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.
 
-*The Loroka are a Fate's Hand people, built on the SRD orc. Base SRD text: [Orc](https://noirchicot.github.io/fh-srd/en/species/#orc)*
+*The Loroka are a Fate's Hand people, built on the base game orc. Base the base game text: [Orc](https://noirchicot.github.io/fh-srd/en/species/#orc)*
 
 ---
 
@@ -30,5 +30,5 @@ Their orc kin to the south get the reputation for ferocity. The Loroka get the h
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

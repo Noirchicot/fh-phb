@@ -840,7 +840,7 @@ def chapter_banner(dest):
     if not genres:
         return (
             '<nav class="fh-layer fh-layer--own">\n'
-            '<p><strong>Entirely Fate\u2019s Hand.</strong> The SRD says nothing about this '
+            '<p><strong>Entirely Fate\u2019s Hand.</strong> The base game says nothing about this '
             "subject — every rule on this page is Eric's.</p>\n</nav>\n"
         )
     changes = _fh_changes()
@@ -882,11 +882,11 @@ def chapter_banner(dest):
         # Le cas dangereux : tout est vide côté données. On le dit d'abord, et
         # on dit surtout ce que ça ne veut PAS dire.
         out.append('<p class="fh-layer__note"><strong>No entry on this page differs from the '
-                   "SRD's data.</strong> That is not the same as saying nothing here is Fate\u2019s "
+                   "base game’s data.</strong> That is not the same as saying nothing here is Fate\u2019s "
                    "Hand: rules this chapter states in its own words are not counted by the "
                    "measure — read the page.</p>")
     elif mesures:
-        out.append('<p class="fh-layer__note">Measured against the SRD\u2019s data. Rules this '
+        out.append('<p class="fh-layer__note">Measured against the base game\u2019s data. Rules this '
                    "chapter states in its own words are not counted here.</p>")
     out.append("</nav>")
     return "\n".join(out) + "\n"
@@ -962,7 +962,7 @@ def note_de_traduction(dest):
         out.append("<li><strong>%s</strong> does not exist in Fate\u2019s Hand — %s.</li>"
                    % (html.escape(nom), TRADUCTIONS[nom]))
     out.append("</ul>")
-    out.append("<p>The quotations below are the SRD\u2019s, word for word. We do not edit a "
+    out.append("<p>The quotations below are the base game\u2019s, word for word. We do not edit a "
                "quotation to fit our rules — we tell you how to read it.</p>")
     out.append("</aside>")
     return "\n".join(out) + "\n"
@@ -1024,7 +1024,8 @@ def _replier(bloc, quoi):
         "weapon-table": "weapons", "gear-table": "pieces of gear", "tool-table": "tools",
         "feat-list": "feats", "class-cards": "class entries",
     }.get(quoi, "entries")
-    return ('<details class="fh-fold">\n<summary><strong>%d %s</strong>, quoted from the SRD '
+    # Le libellé ne nomme plus la source : la page le dit une fois, en bas.
+    return ('<details class="fh-fold">\n<summary><strong>%d %s</strong> '
             "— open to read them</summary>\n%s\n</details>" % (n, quoi_lisible, bloc))
 
 

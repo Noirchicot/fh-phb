@@ -9,7 +9,7 @@ This page says which is which, and sends you to the chapter that holds it.
 concentration. Fate's Hand adds a handful of spells of its own and changes nothing about how
 casting works.
 
-→ **Spells** carries the Fate's Hand spells *and* all 339 of the SRD's, by level, so a caster
+→ **Spells** carries the Fate's Hand spells *and* all 339 of the base game's, by level, so a caster
 never leaves the page to check a range.
 
 → **Rules Glossary** defines the words the spells lean on — *Concentration*, *Ritual*,
@@ -38,5 +38,5 @@ Not a school and not a spell list: a craft. It has its own chapter, and its own 
 ---
 
 <nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The SRD says nothing about this subject — every rule on this page is Eric's.</p>
+<p><strong>Entirely Fate’s Hand.</strong> The base game says nothing about this subject — every rule on this page is Eric's.</p>
 </nav>

@@ -16,11 +16,11 @@ What is not arguable is that they learn anything. Put a human beside a specialis
 
 **Creature type** Humanoid · **Size** Medium (about 4–7 feet tall) or Small (about 2–4 feet tall), chosen when you select this species · **Speed** 30 feet
 
-- **Skillful** <span class="fh-tag">FH</span> — +2 [skill points](../skills-and-tools.md) at level 1, and that is all. *(The SRD grants one skill proficiency; Fate's Hand converts every level-1 grant into pool points.)*
+- **Skillful** <span class="fh-tag">FH</span> — +2 [skill points](../skills-and-tools.md) at level 1, and that is all. *(The the base game grants one skill proficiency; Fate's Hand converts every level-1 grant into pool points.)*
 - **Versatile** — you gain an Origin feat of your choice.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2. **Twice-Born** *(human chosen)*: recover 2 Destiny Points per Long Rest instead of one.
 
-*Base SRD text: [Human](https://noirchicot.github.io/fh-srd/en/species/#human)*
+*Base the base game text: [Human](https://noirchicot.github.io/fh-srd/en/species/#human)*
 
 ---
 
@@ -29,5 +29,5 @@ What is not arguable is that they learn anything. Put a human beside a specialis
 <ul>
 <li><span class="fh-layer__genre">species</span> <span class="fh-layer__added">adds 3</span> — Araag, Elestu, Loroka · <span class="fh-layer__patched">changes 9</span> — Dragonborn, Dwarf, Elf, Goliath, Halfling, Hoddon… · <span class="fh-layer__renamed">replaces</span> — Gnome → Hoddon</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

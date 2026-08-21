@@ -9,7 +9,7 @@
 | | |
 |---|---|
 | **6 free points** | 4 from skills + 2 from tools, and they are interchangeable — spend them on skills *or* tools, wherever you like (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
-| **An Origin Feat** | your choice — the four SRD origin feats (*Alert · Magic Initiate · Savage Attacker · Skilled*) plus the Fate's Hand one that grants +2 **Destiny** (see [Feats](feats.md)). No record dictates it |
+| **An Origin Feat** | your choice — the four the base game origin feats (*Alert · Magic Initiate · Savage Attacker · Skilled*) plus the Fate's Hand one that grants +2 **Destiny** (see [Feats](feats.md)). No record dictates it |
 | **Ability score increases** | +2/+1 on two abilities, or +1/+1/+1 on three — any abilities you choose |
 | **Two languages** | your choice, from the Fate's Hand languages below — nothing is imposed, not even a common tongue |
 | **A purse of 50 gp** | it replaces what a background used to hand out, and it adds to the gold in your class kit |
@@ -32,7 +32,7 @@ out here, with the rest of your Inheritance. You choose two. *(Eric, 2026-08-18.
 | **Araag** · **Dragonborn** · **Dwarf** · **Elestu** · **Elf** · **Goliath** · **Halfling** · **Hoddon** · **Human** · **Loroka** · **Orc** · **Tiefling** |
 
 A language carries the name of its people, and nothing else. No *Elvish*, no *Dwarvish*, no
-*Draconic* — Fate's Hand drops the adjectival forms the SRD uses. One people, one tongue, one name.
+*Draconic* — Fate's Hand drops the adjectival forms the base game uses. One people, one tongue, one name.
 
 And no tongue is automatic. The old rule read *« Common plus one of your choice »*; the
 count is the same, the imposition is gone. That is the whole of Inheritance: nothing is
@@ -53,7 +53,7 @@ the Druid's *Druidic*. They come on top of your Inheritance's two.
 
 ## Starting equipment
 
-You take your class kit exactly as the SRD gives it, and a purse of 50 gp on top. The
+You take your class kit exactly as the base game gives it, and a purse of 50 gp on top. The
 purse replaces what a background used to hand out.
 
 > The 50 gp ADD to the gold already in your kit. A Barbarian taking option A ends up with
@@ -95,5 +95,5 @@ for what a point buys.)*
 <li><span class="fh-layer__genre">background</span> <span class="fh-layer__added">adds 1</span> — Inheritance · <span class="fh-layer__removed">removes 4</span> — Acolyte, Criminal, Sage, Soldier</li>
 <li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

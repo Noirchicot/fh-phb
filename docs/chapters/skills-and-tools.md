@@ -4,8 +4,8 @@ A plain-language guide to how skill and tool points work, and what every skill a
 
 > This chapter is the source of truth for skill and tool points. It is what the site
 > publishes. Nothing is a rule until it is here.
-> *Derivation and design record (how these numbers were built from the SRD, and why):*
-> Skill & Tool Points — Canon (SRD to FH).md. *Distribution tool:* [the skill builder](../builder.md).
+> *Derivation and design record (how these numbers were built from the base game, and why):*
+> Skill & Tool Points — Canon (the base game to FH).md. *Distribution tool:* [the skill builder](../builder.md).
 
 ---
 
@@ -238,7 +238,7 @@ exotic weapons *(⏳ not inventoried yet)*.
 - Your **free point pool** and your background 6 come from your first class only — they
   belong to the character, not to each class.
 
-- A second class gives what the SRD's *"As a Multiclass Character"* line gives, and nothing
+- A second class gives what the base game's *"As a Multiclass Character"* line gives, and nothing
   more:
 
 | 2nd class | What it grants |
@@ -446,5 +446,5 @@ A finesse weapon (DEX) that improves [Strangling](battlefield.md#strangle-new) (
 <li><span class="fh-layer__genre">tool</span> <span class="fh-layer__added">adds 14</span> — Card Set, Dice Set, Dragonchess Set, Instrument (Other), Instrument (Strings), Instrument (Wind)… · <span class="fh-layer__patched">changes 3</span> — Mason’s Tools, Potter’s Tools, Tinker’s Tools · <span class="fh-layer__removed">removes 2</span> — Gaming Set, Musical Instrument</li>
 <li><span class="fh-layer__genre">training</span> <span class="fh-layer__added">adds 13</span> — Araag, Dragonborn, Dwarf, Elestu, Elf, Garrot…</li>
 </ul>
-<p class="fh-layer__note">Measured against the SRD’s data. Rules this chapter states in its own words are not counted here.</p>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
