@@ -31,7 +31,7 @@ it starts with, and the features it gains.
 
 > Two lines of each class are deliberately missing, and it matters.
 >
-> **Its skill list.** The the base game's version names *Perception*, which Fate's Hand does not have, and
+> **Its skill list.** The base game's version names *Perception*, which Fate's Hand does not have, and
 > picks from eighteen skills where Fate's Hand has twenty-six. Reproducing it would put a
 > non-existent skill on a Fate's Hand page and give you a second, conflicting count of points.
 > What your class grants you in skills is in [Skills & Tools — Player Guide](skills-and-tools.md) — bound

@@ -404,7 +404,7 @@ That is why it gets a wider table than the rest.
 > | What Fate's Hand does | |
 > |---|---|
 > | **Adds Soulforging** *(CHA)* | It is in no base list at all. **Soulforge Crafting** and the soulforging rite both require at least **Novice** in it — so a character who picks tools from the table below cannot legally join a forge circle. |
-> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. The the base game's single entry is not quoted below — Fate's Hand removed it, so it is dropped automatically. |
+> | **Splits the Gaming Set** into four | *Card Set · Dice Set · Dragonchess Set · Three-Dragon Ante* — each its own tool, each bought separately. The base game's single entry is not quoted below — Fate's Hand removed it, so it is dropped automatically. |
 > | **Splits the Musical Instrument** into three | *Strings · Wind · Other*. A bard's two bound instrument points buy two of these, not two of anything. Not quoted below either, for the same reason. |
 > | **Makes mounts and vehicles tools** | *Mount (Air · Land · Water)* and *Vehicles (Air · Land · Water)* — six tools the base game does not treat as tools at all. Riding is rolled here. |
 >

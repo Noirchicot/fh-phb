@@ -63,7 +63,7 @@ Fate's Hand adds the ones above and changes nothing else, so the rest of the lis
 for a feat: most General feats need level 4 and a score of 13 in the right ability, and an
 Epic Boon needs level 19.
 
-> One feat is missing from the list below, on purpose. The the base game's **Skilled** grants
+> One feat is missing from the list below, on purpose. The base game's **Skilled** grants
 > *« proficiency in any combination of three skills or tools »* — and Fate's Hand converts that
 > into +6 free points, because a proficiency is worth 2 points here. Quoting the base game's
 > wording beside ours would put two different prices on the same feat. Ours is in the Origin
