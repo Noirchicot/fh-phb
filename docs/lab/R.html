@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>R — nommage</title>
+<!--
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │  PAGE ANNEXE — hors du pipeline, exprès.                               │
+  │                                                                        │
+  │  Eric, 2026-08-21 : « construire notre tableau équipement sur une page │
+  │  git annexe afin de ne pas être emmerdés par les gardes au début ».    │
+  │                                                                        │
+  │  Vérifié avant d'écrire ici : `docs/lab/` n'est touché par RIEN —      │
+  │  ni sync_from_vault.py (qui n'écrit que dans docs/chapters/ et les     │
+  │  deux pages d'outil), ni mkdocs.yml, ni robots.txt. Aucun détecteur    │
+  │  de fuite, aucune garde de secret, aucune citation à résoudre.         │
+  │  La page se déploie quand même : elle est lisible sur le téléphone.    │
+  │                                                                        │
+  │  ⛔ Ce fichier ne fait RIEN. C'est un tableau de NOMS.                  │
+  │     Aucun comportement, aucune donnée, aucun glisser-déposer.          │
+  └────────────────────────────────────────────────────────────────────────┘
+-->
+<style>
+  :root{
+    --parchment:#f5efe0; --ink:#2b2118; --gold:#9c6b16; --oxblood:#58180d;
+    --rule:rgba(92,67,38,.3); --soft:rgba(92,67,38,.08); --tile:#fbf7ec;
+    --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --parchment:#1a1611; --ink:#e8dcc2; --gold:#d8b65a; --oxblood:#c97a5f;
+    --rule:rgba(216,182,90,.3); --soft:rgba(216,182,90,.08); --tile:#231d16;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--parchment);color:var(--ink);
+       font:16px/1.6 var(--sans);padding:18px}
+  h1{font-size:1.3rem;margin:0 0 .2em}
+  .sub{margin:0 0 1.4em;opacity:.7;font-size:.88rem;max-width:60ch}
+  .sub code{font:600 .9em var(--mono);background:var(--soft);padding:.1em .35em;
+       border-radius:3px}
+
+  /* la scène : la liste à gauche, la colonne R à droite */
+  .scene{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);
+         gap:14px;align-items:start;max-width:780px}
+  @media (max-width:620px){.scene{grid-template-columns:1fr}}
+
+  /* tout élément nommé porte le même habit : un cadre et son nom */
+  .n{position:relative;border:1px solid var(--rule);border-radius:7px;
+     background:var(--tile);padding:22px 12px 12px;margin:0 0 10px}
+  .n > .id{position:absolute;top:-1px;left:-1px;
+     font:700 .62rem/1 var(--mono);letter-spacing:.03em;
+     color:var(--parchment);background:var(--gold);
+     padding:.32em .5em;border-radius:6px 0 6px 0}
+  .n > .fr{font-size:.82rem;opacity:.75;margin:0}
+  .n.grp{background:transparent;padding-bottom:6px}
+
+  .cats{display:flex;gap:4px;flex-wrap:wrap}
+  .cats span{border:1px solid var(--rule);border-radius:5px;padding:.25em .6em;
+     font-size:.76rem;background:var(--tile)}
+  .cats span:first-child{border-color:var(--gold);color:var(--gold)}
+
+  .row{display:flex;gap:8px;align-items:center}
+  .box{flex:1;border:1px dashed var(--rule);border-radius:5px;
+       padding:.55em .7em;font-size:.78rem;opacity:.65;background:transparent}
+  .dots{font:700 1rem/1 var(--mono);opacity:.5;padding:0 .3em}
+  .coins{display:flex;gap:14px;font:600 .8rem var(--mono);opacity:.75;
+       margin-top:.5em}
+  .recv{border:2px dashed var(--rule);border-radius:6px;padding:1.1em .7em;
+       text-align:center;font-size:.74rem;opacity:.6;letter-spacing:.04em}
+  .btn{border:1px solid var(--rule);border-radius:5px;padding:.5em .8em;
+       font:600 .74rem var(--sans);white-space:nowrap;opacity:.75}
+  .items{display:grid;gap:4px}
+  .items .box{padding:.7em .7em}
+
+  .todo{color:var(--oxblood);font-weight:700}
+  dl{max-width:62ch;margin:2em 0 0;font-size:.86rem}
+  dt{font:700 .78rem var(--mono);color:var(--gold);margin-top:.85em}
+  dd{margin:.1em 0 0 0}
+  footer{margin-top:2.4em;padding-top:1em;border-top:1px solid var(--rule);
+      font-size:.8rem;opacity:.7;max-width:62ch}
+</style>
+</head>
+<body>
+
+<h1>R — nommage</h1>
+<p class="sub">Tous les éléments de l'écran <code>R</code>, nommés. <b>Rien ne
+fonctionne ici</b> — c'est un tableau de noms, pas une maquette. Les noms en
+<span class="todo">rouge</span> sont ceux que je propose faute d'en avoir un ;
+les autres viennent de ton croquis.</p>
+
+<div class="scene">
+
+  <!-- ── la liste, à gauche de la colonne ──────────────────────────────── -->
+  <div class="n grp">
+    <span class="id">R.list</span>
+    <p class="fr">la liste des objets — défile · on clique (→ B1) ou on glisse
+    sur un récepteur</p>
+    <div class="items">
+      <div class="box"><b>R.list.item</b> — une ligne d'objet</div>
+      <div class="box">R.list.item</div>
+      <div class="box">R.list.item</div>
+      <div class="box">R.list.item</div>
+      <div class="box">R.list.item</div>
+      <div class="box">R.list.item</div>
+      <div class="box" style="opacity:.35">⋮ x items</div>
+    </div>
+  </div>
+
+  <!-- ── la colonne de commande ────────────────────────────────────────── -->
+  <div>
+
+    <div class="n">
+      <span class="id">R.cat</span>
+      <div class="cats">
+        <span>ARMES</span><span>ARMURES</span><span>GEAR</span><span>…</span>
+      </div>
+      <p class="fr" style="margin-top:.5em">sélection de catégorie — commande ce
+      que <code>R.list</code> contient</p>
+    </div>
+
+    <div class="n">
+      <span class="id">R.find</span>
+      <div class="row">
+        <div class="box">R.find.bar — la barre de recherche</div>
+        <div class="dots" title="R.menu">⋮</div>
+      </div>
+      <div class="coins">
+        <span>OR</span><span>SP</span><span>CP</span>
+      </div>
+      <p class="fr" style="margin-top:.5em">
+        <b>R.menu</b> <span class="todo">— les ⋮, à nommer : tri ? filtre ?</span><br>
+        <b>R.purse</b> — la bourse, trois monnaies</p>
+    </div>
+
+    <div class="n">
+      <span class="id">R.bag</span>
+      <p class="fr" style="margin:0 0 .5em">BACKPACK — mène à <code>SB3.1</code></p>
+      <div class="recv">R.bag.slot — le récepteur</div>
+    </div>
+
+    <div class="n">
+      <span class="id">R.craft</span>
+      <p class="fr" style="margin:0 0 .5em">CRAFT — mène à <code>B2</code></p>
+      <div class="row">
+        <div class="recv" style="flex:1">R.craft.slot — le récepteur</div>
+        <div class="btn">R.craft.back<br><span style="opacity:.6">GET BACK</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<dl>
+  <dt>R</dt>
+  <dd>l'écran lui-même : la colonne de commande. La liste défile à sa gauche.</dd>
+
+  <dt>R.cat</dt>
+  <dd>Les onglets de catégorie. Ils <b>commandent</b> le contenu de
+      <code>R.list</code> — une famille à la fois, pas un filtre.</dd>
+
+  <dt>R.list · R.list.item</dt>
+  <dd>La liste et ses lignes. Un clic ouvre <code>B1</code> ; un glisser part
+      vers un récepteur.</dd>
+
+  <dt>R.find · R.find.bar</dt>
+  <dd>Le bloc de recherche et son champ.</dd>
+
+  <dt class="todo">R.menu</dt>
+  <dd>Les trois points à droite du champ. <span class="todo">Nom provisoire —
+      je ne sais pas encore ce qu'ils ouvrent.</span></dd>
+
+  <dt>R.purse</dt>
+  <dd>La bourse : <b>OR · SP · CP</b>, trois monnaies affichées séparément.</dd>
+
+  <dt>R.bag · R.bag.slot</dt>
+  <dd>Le bloc BACKPACK et son récepteur. Mène à <code>SB3.1</code>.</dd>
+
+  <dt>R.craft · R.craft.slot · R.craft.back</dt>
+  <dd>Le bloc CRAFT, son récepteur, et <b>GET BACK</b> — qui reprend ce qu'on y
+      a posé. Le récepteur mène à <code>B2</code>, la Forge.</dd>
+</dl>
+
+<footer>
+  Page annexe — <code>docs/lab/</code> n'est lu par aucune garde du site :
+  ni le résolveur de citations, ni le détecteur de fuites, ni le refus de
+  publier un secret. Elle se déploie quand même, donc elle s'ouvre sur le
+  téléphone. <br>
+  ⛔ Rien ici n'est du code de production, et rien n'y sera repris tel quel.
+</footer>
+
+</body>
+</html>
