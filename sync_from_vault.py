@@ -2052,6 +2052,165 @@ def build_arcana():
 
 
 
+# ══ CE QUI SORT DE CE DÉPÔT SE DIT, AVANT DE SE FAIRE ══════════════════════
+# 🔴 L'INCIDENT, 2026-08-21. Cette passe écrit un fichier d'un AUTRE dépôt :
+#    `fhpc/layers/fh-lore-en.layer.json`. Trois fils ont cherché qui salissait
+#    la copie de travail de `fhpc` ; le coupable était une publication du PHB.
+#
+# ⚠️ LA MESURE, PAS LA DOCTRINE. Le geste n'était pas SILENCIEUX — il imprimait
+#    `ok  fh-lore-en.layer.json`. Il était ANONYME : un nom de fichier nu se lit
+#    comme un fichier d'ici. La nuance dit où porter le remède — nommer le
+#    DÉPÔT, pas ajouter une ligne de plus.
+#
+# ⭐ CE QUE ÇA POSE.
+#    · la passe DÉCLARE en préambule ce qu'elle peut écrire dehors et d'où elle
+#      lit — avant de rien faire, pas dans son rapport de fin ;
+#    · une écriture hors dépôt se nomme avec sa RACINE, la branche du voisin et
+#      l'état de la copie de travail qu'elle va salir ;
+#    · elle NE SE FAIT PAS si l'octet à écrire est celui qui est déjà là — une
+#      publication qui ne change rien ne touche personne ;
+#    · la fin de passe récapitule, et redit d'avertir le voisin si ça a bougé ;
+#    · un garde qui refuse l'écriture le DIT dans ce récapitulatif : « pas
+#      atteinte » et « inchangée » sont deux états différents, et les confondre
+#      est exactement la faute que la maison connaît — une absence n'est jamais
+#      une réponse.
+#
+# ⛔ CE QUE ÇA NE CHANGE PAS. Aucun contenu produit. Les gardes en dessous
+#    décident toujours seules s'il y a quelque chose à écrire ; ceci ne fait que
+#    le dire tout haut. `FH_NO_CROSS_WRITE=1` empêche la sortie — pour publier
+#    le site sans jamais toucher au voisin.
+DEPOT_ICI = pathlib.Path(__file__).resolve().parent
+NO_CROSS_WRITE = os.environ.get("FH_NO_CROSS_WRITE") == "1"
+
+# Une entrée par fichier écrit hors d'ici. C'est CETTE liste que le préambule
+# récite : le jour où une seconde sortie apparaît, elle s'annonce toute seule,
+# ou elle n'existe pas.
+SORTIES_ETRANGERES = []
+
+
+def _racine_depot(p):
+    """La racine git qui contient `p`, ou son dossier si rien n'est suivi."""
+    for parent in list(p.parents):
+        if (parent / ".git").exists():
+            return parent
+    return p.parent
+
+
+def _etat_git(racine):
+    """Ce que le voisin a sur les bras AVANT qu'on y touche."""
+    import subprocess
+    try:
+        br = subprocess.run(["git", "-C", str(racine), "branch", "--show-current"],
+                            capture_output=True, text=True, timeout=10)
+        st = subprocess.run(["git", "-C", str(racine), "status", "--porcelain"],
+                            capture_output=True, text=True, timeout=10)
+        if br.returncode or st.returncode:
+            return "pas un dépôt git"
+        sales = [l for l in st.stdout.splitlines() if l.strip()]
+        return (f"branche {br.stdout.strip() or '(détachée)'}, "
+                f"{len(sales)} fichier(s) déjà modifié(s) chez lui")
+    except Exception as e:                          # git absent, dépôt cassé…
+        return f"état git illisible ({e.__class__.__name__})"
+
+
+def declarer_sortie(chemin, quoi):
+    """Inscrit une écriture hors dépôt au tableau. À appeler à l'import."""
+    racine = _racine_depot(chemin)
+    sortie = {
+        "chemin": chemin,
+        "racine": racine,
+        "rel": chemin.relative_to(racine) if racine in chemin.parents else chemin,
+        "quoi": quoi,
+        # ⛔ L'état de départ n'est pas « rien » : c'est « on n'y est jamais
+        #    arrivé ». Un garde plus haut peut arrêter la passe avant.
+        "etat": "PAS ATTEINTE (un garde a arrêté avant l'écriture)",
+    }
+    SORTIES_ETRANGERES.append(sortie)
+    return sortie
+
+
+def ecrire_hors_depot(sortie, contenu, detail=""):
+    """Écrit `contenu` dans un fichier d'un autre dépôt, à voix haute.
+
+    Renvoie True seulement si l'octet a bougé sur le disque."""
+    chemin, racine = sortie["chemin"], sortie["racine"]
+    print(f"  ⚠  ÉCRITURE HORS DÉPÔT → {racine}")
+    print(f"     fichier : {sortie['rel']}")
+    print(f"     contenu : {detail or sortie['quoi']}")
+    print(f"     voisin  : {_etat_git(racine)}")
+
+    if NO_CROSS_WRITE:
+        sortie["etat"] = "SAUTÉE (FH_NO_CROSS_WRITE=1)"
+        print("     état    : SAUTÉE — FH_NO_CROSS_WRITE=1, le voisin ne bouge pas")
+        return False
+
+    ancien = chemin.read_text(encoding="utf-8") if chemin.exists() else None
+    if ancien == contenu:
+        sortie["etat"] = "inchangée, RIEN ÉCRIT"
+        print("     état    : inchangée, RIEN ÉCRIT — le voisin ne bouge pas")
+        return False
+
+    chemin.write_text(contenu, encoding="utf-8")
+    delta = len(contenu.encode("utf-8")) - (len(ancien.encode("utf-8")) if ancien else 0)
+    sortie["etat"] = f"ÉCRITE ({delta:+d} octets)"
+    print(f"     état    : ÉCRITE ({delta:+d} octets) — la copie de travail de "
+          f"« {racine.name} » a bougé")
+    return True
+
+
+def _sources_lues():
+    """D'où cette passe se nourrit. Une lecture ne salit personne, mais
+    l'ignorer coûte le même temps qu'une écriture anonyme."""
+    return [
+        (VAULT,        "les chapitres — le manuscrit"),
+        (SF_TOOLS,     "les données Soulforge"),
+        (SRD_EXPORTS,  "les exports SRD, cités à la construction"),
+        (FH_CHANGES,   "fh-changes.json — ce que FH retire, pour ne pas le citer"),
+        (BUILDER_SRC,  "les deux pages-outils (builder, roller)"),
+    ]
+
+
+def preambule():
+    """Ce que la passe VA toucher — dit avant, pas après."""
+    print("  ┌─ ce que cette passe touche ────────────────────────────────")
+    print(f"  │  ici    ✎ {DEPOT_ICI}")
+    print( "  │           docs/ est RÉÉCRIT INTÉGRALEMENT à chaque passe")
+    for s in SORTIES_ETRANGERES:
+        print(f"  │  DEHORS ✎ {s['racine']}  ←  {s['rel']}")
+        print(f"  │           {s['quoi']}")
+    if SORTIES_ETRANGERES:
+        print("  │           " + ("FH_NO_CROSS_WRITE=1 : aucune sortie ne se fera"
+                                  if NO_CROSS_WRITE
+                                  else "FH_NO_CROSS_WRITE=1 pour l'en empêcher"))
+    vus = set()
+    for p, quoi in _sources_lues():
+        r = _racine_depot(p) if p.suffix else p
+        if str(r) in vus:
+            continue
+        vus.add(str(r))
+        print(f"  │  lit    ↦ {r}")
+        print(f"  │           {quoi}")
+    print("  └────────────────────────────────────────────────────────────")
+
+
+def recapitulatif():
+    """Et ce qu'elle a VRAIMENT touché dehors."""
+    if not SORTIES_ETRANGERES:
+        return
+    print("  ┌─ dépôts voisins, après la passe ───────────────────────────")
+    for s in SORTIES_ETRANGERES:
+        print(f"  │  {s['racine'].name} / {s['rel']}")
+        print(f"  │     → {s['etat']}")
+    bouge = sorted({s["racine"].name for s in SORTIES_ETRANGERES
+                    if s["etat"].startswith("ÉCRITE")})
+    if bouge:
+        print("  │")
+        print(f"  │  🔴 PRÉVIENS LE FIL « {', '.join(bouge)} » : sa copie de travail")
+        print( "  │     a bougé, et ce n'est pas lui qui l'a fait. Le commit lui")
+        print( "  │     revient — ce dépôt-ci ne commite pas chez le voisin.")
+    print("  └────────────────────────────────────────────────────────────")
+
+
 # ══ LA PROSE D'ESPÈCE REDESCEND DANS LE BUILDER ════════════════════════════
 # Eric, 2026-08-17, en ratifiant la chaîne des sources : *« la page PHB est la
 # source, le builder l'IMPORTE »*.
@@ -2072,6 +2231,9 @@ def build_arcana():
 #    prose d'ambiance » qu'on découpe ici, et inventer un second extracteur
 #    pour une forme qui n'existe pas serait du code écrit d'avance.
 LORE_LAYER = pathlib.Path("/Users/Eric/tools/fhpc/layers/fh-lore-en.layer.json")
+SORTIE_LORE = declarer_sortie(
+    LORE_LAYER,
+    "le lore d'espèce, importé depuis les chapitres species/ de ce site")
 # Les ids de la couche : le slug du site, sauf le Hoddon, qui est le gnome SRD.
 LORE_IDS = {
     "araag":   "fh:species:en:araag",
@@ -2300,11 +2462,13 @@ def _sections_du_chapitre(lignes: list) -> list:
 def build_species_lore():
     import json
     if not LORE_LAYER.exists():
+        SORTIE_LORE["etat"] = "impossible : le fichier du voisin n'existe pas"
         print(f"  !! MISSING {LORE_LAYER} — lore d'espèce non importé")
         return
     couche = json.loads(LORE_LAYER.read_text(encoding="utf-8"))
     especes = couche.get("records", {}).get("species")
     if not isinstance(especes, dict):
+        SORTIE_LORE["etat"] = "impossible : le voisin n'a pas de records.species"
         print("  !! fh-lore-en n'a pas de records.species — lore non importé")
         return
 
@@ -2355,17 +2519,23 @@ def build_species_lore():
     # 🔴 UN GARDE, PAS UNE SUPPOSITION : on n'écrit rien plutôt que de publier
     #    une couche à moitié importée, dont la moitié restante daterait d'avant.
     if faits != len(SPECIES):
+        SORTIE_LORE["etat"] = (f"REFUSÉE par le garde : {faits}/{len(SPECIES)} "
+                               f"importés, manque {manques}")
         print(f"  !! lore d'espèce ABORTED : {faits}/{len(SPECIES)} importés, manque {manques}")
         return
-    LORE_LAYER.write_text(json.dumps(couche, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"  ok  fh-lore-en.layer.json  <- chapters/species/ "
-          f"({faits} espèces, {blocs_total} sections)")
+    ecrire_hors_depot(
+        SORTIE_LORE,
+        json.dumps(couche, indent=2, ensure_ascii=False) + "\n",
+        detail=(f"lore d'espèce ← docs/chapters/species/ "
+                f"({faits} espèces, {blocs_total} sections)"))
 
 
 if __name__ == "__main__":
     print("Syncing FH PHB chapters from vault…")
+    preambule()
     main()
     build_chaos_tables()
     build_arcana()
     build_species_lore()
+    recapitulatif()
     print("Done.")
