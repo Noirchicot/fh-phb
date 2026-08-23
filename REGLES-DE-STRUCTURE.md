@@ -1,12 +1,12 @@
 # Les règles de structure — le bloc que toute commande d'écran doit porter
 
-> **Pourquoi ce fichier existe.** Eric, 2026-08-24 : *« il y a plein de règles de structure qui
+> **Pourquoi ce fichier existe.** Eric, 2026-08-23 : *« il y a plein de règles de structure qui
 > semblent être systématiquement oubliées — genre quand je dis "fais comme pour Species" ou
 > "fais du F1", c'est pas toujours compris »*.
 >
 > 🔴 **Et la cause n'est pas chez les lots, elle est dans les commandes.** Les canons existent,
 > ils sont bons, ils sont ratifiés. **Mais une commande qui ne les nomme pas demande à un lot
-> d'appliquer une règle qu'il ne sait pas exister.** Vérifié le 24/08 : aucune des commandes
+> d'appliquer une règle qu'il ne sait pas exister.** Vérifié le 23/08 : aucune des commandes
 > d'écran de cette nuit ne citait le canon d'étape.
 
 ---

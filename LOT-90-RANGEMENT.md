@@ -10,7 +10,7 @@ machine.
   fusionne, Eric pousse.
 
 > 🔴 **L'EXIGENCE, ET C'EST LA SEULE QUI COMPTE : 416 SUR 416, AUCUN RESTE.**
-> Eric, 24/08 : *« on finit toute la séquence jusqu'au dernier item du SRD, la liste étant
+> Eric, 23/08 : *« on finit toute la séquence jusqu'au dernier item du SRD, la liste étant
 > désormais complète »*. Un objet sans rangement est un objet que l'écran ne peut pas montrer.
 
 ---
@@ -37,7 +37,7 @@ rangent pas dans un seul champ.**
 
 ## 2. 🔴 DÉRIVE D'ABORD, N'ÉCRIS QUE CE QUI NE SE DÉRIVE PAS
 
-Mesuré depuis le siège d'architecte, le 24/08 :
+Mesuré depuis le siège d'architecte, le 23/08 :
 
 | | n | d'où vient son étagère |
 |---|---:|---|

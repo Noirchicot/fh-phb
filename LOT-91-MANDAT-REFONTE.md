@@ -85,7 +85,7 @@ Le mandat ne le sait pas. **Ne l'invente pas — va le lire** :
 | | où |
 |---|---|
 | l'état vivant du chantier | `CHANTIER-STATUS.json` — tenu à jour cette nuit encore |
-| **les six lots fusionnés du 23-24/08** | `LOT-84` à `LOT-90` dans ce dépôt |
+| **les six lots fusionnés du 23-23/08** | `LOT-84` à `LOT-90` dans ce dépôt |
 | **le SRFH**, la couche neuve | vault `FH-WEB/FHPC/FHPCv2 SRFH et SRFH+.md` |
 | **l'écran R1** et tout ce qu'Eric en a dit | vault `FH-WEB/FHPC/FHPCv2 R1 cahier des charges.md` |
 | **la norme des listes** | vault `FH-WEB/FHPC/FHPCv2 norme des listes.md` |
@@ -102,7 +102,7 @@ c'est exactement ce qui s'est passé avec la règle n°1.
 
 **1. La charte d'autonomie (§4b) se dit « PROPOSÉE, pas encore active »**, et conditionne son
 application à une phrase exacte. ⚠️ **Eric a mis ce siège en autonomie deux fois les 23 et
-24/08**, sans prononcer la phrase du fichier. ➡️ **Constate l'écart, ne le tranche pas** :
+23/08**, sans prononcer la phrase du fichier. ➡️ **Constate l'écart, ne le tranche pas** :
 c'est une décision d'Eric, pas une correction de forme.
 
 **2. La porte de déploiement est déclarée GELÉE** parce que ses six items mesurent un produit
