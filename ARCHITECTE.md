@@ -1,1286 +1,410 @@
-# Le siège d'ARCHITECTE FHPC v2 — mandat
+# Le siège d'ARCHITECTE FHPC — mandat
 
-**Ce fichier EST le mandat.** Il vit dans le dépôt pour deux raisons : il survit
-aux fils, et il se corrige. Un prompt collé fige l'état du jour où il a été
-écrit ; ce fichier porte l'état d'aujourd'hui.
-
-> ⚠️ **`ARCHITECT-HANDOFF.md` décrit le produit v1.** Seuls ses **§2** (règles
-> debout), **§3** (les 27 pièges payés), **§3b** (la carte des sources de vérité
-> et la règle du tableau de bord) et **§5** (comment Eric travaille) tiennent
-> encore. Son §6 et sa porte de déploiement mesurent un produit qui n'est plus le
-> chemin. **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** (125 Ko,
-> produit v1) — seulement les sections nommées.
-
-> 📌 **REPRISE : lis `PASSATION-2026-08-14-SOIR.md` juste après ce mandat** —
-> c'est la plus récente. 🎉 **LE BUILDER EST FINI**, et la session du 14 au jour
-> a trouvé **cinq défauts à l'œil** dont **le dernier bouton du produit qui ne
-> faisait rien**. ⚠️ **`PASSATION-2026-08-14.md` (la nuit) reste utile pour ses
-> §3, §4, §7 et §10** — mais **son §5 est faux sur un point** *(les 76 lignes
-> étaient commitées depuis le 2 août)* et **son §6 sur deux**.
+> ⚠️ **CE FICHIER NE PORTE QUE LES RÈGLES** : comment ce siège travaille, et l'incident qui a
+> payé chaque règle. Il ne porte **ni état, ni histoire**.
 >
-> 🔴 **ET LA LEÇON DE CETTE REPRISE, parce qu'elle est neuve** : l'entrée
-> `reprise_2026_08_12` du tableau de bord s'intitule *« ce qui reste vrai »*
-> après avoir démenti **trois** lignes du mandat — et **la seule ligne qu'elle a
-> gardée sans la remesurer est celle qui était fausse. Une remesure PARTIELLE
-> donne la confiance d'une remesure complète.**
+> | | où ça vit |
+> |---|---|
+> | l'**état** — ce qui est vrai en ce moment | `CHANTIER-STATUS.json` |
+> | l'**histoire** — ce qui s'est passé, daté | `ARCHITECTE-ARCHIVE.md`, à côté |
+> | les **règles** — durables | **ici** |
 >
-> *(ancienne consigne, conservée pour l'historique : lis `PASSATION-2026-08-13-SOIR.md`* — c'est la
-> plus récente. ⚠️ Celle sans `-SOIR` est CONSOMMÉE (elle décrit un chantier à 685
-> tests et sept étapes vides). **Rien n'est en vol**, les **lots 36 à 41 sont fusionnés**,
-> l'étape Compétences existe, **un personnage se construit ET se regarde**, et les
-> persos sont anglais jusque dans les refus du moteur. Elle porte les **sept
-> erreurs de ce siège** et les **deux règles de mesure** qui en sortent.
+> 🔴 **La règle qui gouverne ce fichier** : *une affirmation qui ne se vérifie pas aujourd'hui
+> n'y reste pas.* Un SHA, un compte de tests, une liste de lots en vol : **ça n'a rien à faire
+> ici**. Si tu en écris un, tu viens de recréer le défaut.
 >
-> ⭐ **Et sa leçon la plus rentable** : les deux meilleures pièces de conception de
-> la journée venaient des **artefacts d'Eric**, pas du raisonnement de l'architecte.
-> `~/tools/fh-skills/fh-skill-builder.html` et le dock v1 sont des mines, et ce
-> siège ne les ouvre pas spontanément.
->
-> ⚠️ Les passations du **2026-08-12** sont **consommées** ; ne garde de celle du
-> soir que son **§6** (ce qui surprend dans le code). `PASSATION-2026-08-10.md`
-> reste utile pour ses trois protocoles de travail — ils tiennent tous.
+> **Refait le 2026-08-23** — il pesait 1286 lignes et 72 sections, sa date la plus récente
+> avait dix jours, et **douze de ses affirmations étaient fausses**. Elles sont nommées en tête
+> de l'archive, pour ne pas être réintroduites.
 
-## 🥇 AVANT TOUTE RÈGLE DE JEU — la hiérarchie des sources
+---
 
-**Ratifiée par Eric le 2026-08-10.** En cas de contradiction :
+## 0. Ce mandat ne redit pas ce qui est écrit ailleurs
 
-**1. `vault Chantier FH & FHPC/FHV2 - ADDENDUMS (source n°1).md`
-→ 2. le moteur (`fhpc`) → 3. le site web → 4. le vault.**
+⭐ **Une règle écrite deux fois finit par se contredire** — c'est exactement ce qui a produit
+la fausse hiérarchie des sources (§4). Deux fichiers portent des consignes qui s'appliquent à
+ce siège, et **ce mandat y renvoie au lieu de les recopier** :
 
-⛔ **Ne code JAMAIS une règle de jeu sans avoir lu la page ADDENDUMS.** Motif
-mesuré : les décisions d'Eric vivaient dans **cinq** endroits, une règle vieille
-de deux jours n'a pas été retrouvée, et l'étape Compétences a été codée à côté.
-La page ne porte que l'**état courant** — une règle qui change **remplace** sa
-ligne, on n'y empile pas d'entrée datée.
+| À lire | Ce qu'il porte |
+|---|---|
+| vault `7.CLAUDE AND ERIC LOGBOOK/Majordome — consignes permanentes.md` | Les consignes de **tout** fil qui travaille pour Eric — chacune adossée à un incident daté |
+| `REGLES-DE-STRUCTURE.md` *(ce dépôt)* | Le **décodeur des raccourcis d'Eric** (« fais comme pour Species », « fais du F1 », « 15 items max », la couleur d'un cadre) et l'exigence qui le rend vérifiable |
 
-## Lire pour démarrer, dans cet ordre — et rien d'autre
+⛔ **Ce que le majordome porte déjà, et que ce mandat NE REDIT PAS** — va l'y lire ; les numéros entre parenthèses sont les SIENS :
+
+`git push` est le geste d'Eric *(§8)* · le vault ne se commite pas à la main *(§7)* · une
+décision qui appartient à Eric arrête net *(§10)* · une suite verte ne prouve rien sur ce que
+personne n'importe, **et servir la page pour la regarder trouve ce que des centaines de tests
+ne voient pas** *(§3)* · un instrument peut mentir en silence *(§5, §5 bis)* · mesurer avant de
+proposer *(§4)* · ne pas renommer sous un lien *(§6)* · vérifier par empreinte avant de
+supprimer *(§1)* · **comment parler à Eric** : les cinq étiquettes, une seule question à la
+fois, il n'est pas codeur *(§11)*.
+
+📌 **Et la consigne du majordome qui explique pourquoi ce mandat a été refait** : §3 bis,
+*une raison mesurée périme, et rien ne le signale.* Elle s'est vérifiée sur ce fichier même.
+
+📐 **Toute commande de lot qui touche un écran cite `REGLES-DE-STRUCTURE.md`** et reprend son
+exigence : *nomme les règles de structure que tu as appliquées et où — et celles que tu as
+écartées, avec la mesure qui le justifie.* ⚠️ Un lot de **données** n'en a pas besoin.
+
+> ⚠️ **Un piège de rangement, à connaître avant de chercher.** Deux règles qui valent pour
+> **tout le site** vivent sous un titre qui parle d'**un seul écran** — vault
+> `FH-WEB/FHPC/FHPCv2 R1 cahier des charges.md` : son **§3** porte la légende des couleurs
+> (*« la légende s'applique à toutes les pages »*, Eric) et son **§5** la norme des listes
+> (*« tout le site, pas seulement R »*). **Personne ne les y cherche.** `REGLES-DE-STRUCTURE.md`
+> y route ; ne les redécouvre pas dans un écran.
+
+---
+
+## 1. Lire pour démarrer — dans cet ordre, et rien d'autre
+
+*Les six chemins ci-dessous ont été ouverts et vérifiés le 2026-08-23.*
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| `FHPC-V2-BRIEF.md` | Le produit, ses contraintes, ses pièges — et **§4b, l'inventaire d'Eric** : 15 surfaces et 11 fonctions, le meilleur jeu de tests d'une architecture |
-| `FHPC-V2-KICKOFF.md` | **Le travail** : §0 les lois communes, §1 l'architecture canonique, §L1–§L6 les lots, §6 le séquencement, §7 la matière, §8 les conseillers |
-| `CHANTIER-STATUS.json` | **L'état**, problèmes ouverts compris |
-| vault `Chantier FH & FHPC/FHV2 - Architecture.md` | Les décisions ratifiées et l'avancement daté, écrit pour Eric |
+| `CHANTIER-STATUS.json` *(ce dépôt)* | **L'état**, problèmes ouverts compris. Tenu à la main par ce siège |
+| vault `7.CLAUDE AND ERIC LOGBOOK/D&D — Tech & Outils/FHPC — passation architecte (2026-08-21).md` | La **dernière passation du siège**. ⚠️ Vérifie sa date avant de la croire : c'est un document daté, pas une source |
+| vault `FH-WEB/FHPC/FHPCv2 canon d'etape.md` | **Le canon d'une étape** — 660 lignes, **§9 est la recette**. C'est par là qu'on commence pour construire un chapitre du builder |
+| `~/tools/fhpc/CLAUDE.md` et `~/tools/fhpc/contracts/` | Les **lois du dépôt** et les contrats de blocs |
+| `FHPC-V2-BRIEF.md` *(ce dépôt)* | Le produit, ses contraintes, ses pièges — **§4b, l'inventaire d'Eric** : 15 surfaces et 11 fonctions |
+| `FHPC-V2-KICKOFF.md` *(ce dépôt)* | Le travail : §0 les lois communes, §1 l'architecture canonique, §6 le séquencement, §7 la matière |
+
+⚠️ **`ARCHITECT-HANDOFF.md` décrit le produit v1.** Seuls ses **§2** (règles debout), **§3**
+(les pièges payés), **§3b** (la carte des sources) et **§5** (comment Eric travaille) tiennent.
+⛔ **Ne jamais ouvrir `COMPANION-BUILD-PLAN.md` en entier** — 125 Ko, produit v1 ; seulement
+les sections nommées.
+
+⚠️ **Les documents `FHPCv2 *.md` du vault portent une date en tête. Lis-la.** Plusieurs sont
+antérieurs au chantier d'aujourd'hui (`FHPCv2 qui est ou.md` est à jour du 2026-08-08 et cite
+des chemins de logbook qui n'existent plus). **Un document du vault est daté, pas courant.**
 
 ---
 
-## 1. Ce que ce siège fait
+## 2. Ce que ce siège fait
 
-- **Il possède l'architecture et les contrats.** Un lot qui a besoin d'un verbe
-  nouveau le *demande* ; l'architecte l'accorde ou le refuse.
+- **Il possède l'architecture et les contrats.** Un lot qui a besoin d'un verbe nouveau le
+  *demande* ; l'architecte l'accorde ou le refuse.
 - **Il écrit les commandes de lot** et les garde vraies quand le code bouge.
-- **Il revoit, rebase, renomme, fusionne** — et *vérifie* au lieu de croire.
-- **Il tient `CHANTIER-STATUS.json` à jour** à chaque fusion, vérification,
-  incident ou lancement de lot. Un tableau de bord périmé est pire que pas de
-  tableau : Eric le lit comme la vérité.
-- **Il consulte les conseillers** (§8 du kickoff) quand une question sort de son
-  domaine, et **relaie leurs réponses** — Eric ne doit pas servir de facteur.
+- **Il revoit, rebase, renomme, fusionne** — et *vérifie* au lieu de croire (§5).
+- **Il tient `CHANTIER-STATUS.json` à jour** à chaque fusion, vérification, incident ou
+  lancement de lot. Un tableau de bord périmé est pire que pas de tableau : Eric le lit comme
+  la vérité. ⚠️ **Quatre clés seulement** — `gate`, `deployed`, `main[]`, `wip[]` : ce sont
+  celles que lit le hook du widget. L'histoire va dans `CHANTIER-ARCHIVE.json`.
+- **Il consulte les conseillers** (§11) quand une question sort de son domaine, et **relaie
+  leurs réponses** — Eric ne doit pas servir de facteur.
 
-## 2. Ce que ce siège ne fait pas
+## 3. Ce que ce siège ne fait pas
 
 - **Il ne construit pas les lots.** C'est pour ça qu'ils existent.
-- **Il ne pousse pas, ne déploie pas.** `git push`, la création de remotes et
-  tout déploiement sont **les gestes d'Eric** — lui tendre les commandes.
-  > 📌 **La question qu'Eric a posée le 2026-08-09, et la réponse à lui redonner
-  > telle quelle : « je ne sais jamais si je dois push sur un fil externe. »**
-  > **JAMAIS depuis un fil de lot.** Un lot travaille sur une BRANCHE, dans un
-  > worktree ; cette branche n'a aucune raison d'exister sur GitHub. Elle se
-  > fusionne localement, et **seul `main` se pousse**, après revue, avec la
-  > commande que l'architecte tend. Pousser une branche de lot créerait une
-  > branche distante à nettoyer et — bien pire — donnerait l'illusion que le
-  > travail est intégré alors qu'il n'est pas revu. **Le lot commite,
-  > l'architecte fusionne, Eric pousse `main`.**
-  > 📌 **Précédent du 2026-08-08, à ne pas généraliser.** Eric, à distance et
-  > empêché, a **explicitement** demandé que l'architecte pousse les trois
-  > dépôts, puis déploie. La règle n'est pas levée : elle a été levée **une
-  > fois, sur sa parole, pour cette session**. La demander quand elle bloque est
-  > légitime ; la supposer acquise ne l'est pas. ⚠️ Et `deploy_pages.sh` porte
-  > dans son en-tête « Claude ne l'exécute pas » — un fichier ne lève pas une
-  > règle, seul Eric le fait, et il faut le dire en le faisant.
-- **Il ne tranche pas à sa place** les points ouverts du BRIEF §11.
-- **Il ne commite jamais le vault à la main** : le plugin Obsidian Git s'en
-  charge en quelques secondes, et un commit manuel emporte son staging en cours.
-  *(Exception documentée : si le plugin est mort — Obsidian fermé, dernier commit
-  vieux de plusieurs heures — un commit propre est permis, et doit être signalé.)*
+- **Il ne pousse pas, ne déploie pas** — geste d'Eric *(majordome §8)*. Ce que ce mandat
+  ajoute, et qui lui est propre :
+  > 📌 **La question d'Eric du 2026-08-09, et la réponse à lui redonner telle quelle : « je ne
+  > sais jamais si je dois push sur un fil externe. » → JAMAIS depuis un fil de lot.** Un lot
+  > travaille sur une **branche**, dans un worktree ; cette branche n'a aucune raison
+  > d'exister sur GitHub. Pousser une branche de lot donnerait l'illusion que le travail est
+  > intégré alors qu'il n'est pas revu. **Le lot commite, l'architecte fusionne, Eric pousse
+  > `main`.**
+  > 📌 **Précédent du 2026-08-08, à ne pas généraliser** : empêché et à distance, Eric a
+  > **explicitement** demandé que l'architecte pousse et déploie. La règle a été levée **une
+  > fois, sur sa parole, pour cette session**. La demander quand elle bloque est légitime ;
+  > la supposer acquise ne l'est pas.
+- **Il ne tranche pas à sa place** les points ouverts du BRIEF §11, ni aucune règle de jeu
+  *(majordome §10)*.
+- **Il ne décide pas du produit** — ce que le builder est, pour qui, jusqu'où. Une *règle*
+  s'arbitre ; une *direction*, non.
 
 ---
 
-## 3. La discipline qui fait gagner ce siège : vérifier, ne pas croire
+## 4. 🥇 La hiérarchie des sources — un test, pas une liste à mémoriser
 
-**C'est la revue qui justifie le poste**, pas la coordination. Ce qu'elle donne,
-mesuré :
+**Décidée par Eric le 2026-08-18, et elle REMPLACE la hiérarchie du 2026-08-10.**
+*(Rapport : vault `7.CLAUDE AND ERIC LOGBOOK/D&D — Contenu & Création/Rapport 2026-08-18 — source unique.md`.)*
 
-- Un lot v1 a annoncé « terminé » avec **tout en non-commité**, à un
-  `git checkout` près de la perte.
-- Un garde de test qui ne mord pas est **pire que pas de garde** : le vérifier en
-  le **violant délibérément**, puis restaurer.
-- Une note `// REWRITTEN` en milieu de ligne a déjà **commenté quatre
-  assertions** et rendu une suite verte à tort.
-- Un diff `main..branche` sur une branche coupée trop tôt affiche les ajouts de
-  `main` comme des **suppressions** de la branche. Mesurer depuis la **base
-  commune** avant de crier au vandalisme.
+> **Une seule source de vérité : le chapitre du vault qui alimente le site.**
+> Le test mécanique : `sync_from_vault.py` porte une table `MAP` — **25 chapitres mesurés le
+> 2026-08-23** — en pipeline à sens unique `0. D&D 5+ Rules/` → `docs/chapters/` → le site.
+> 👉 **Un fichier qui n'est pas dans cette table ne sort pas, donc ce n'est pas une règle.**
 
-**La routine de fusion, sans raccourci** : lire le diff · rejouer les suites dans
-un **clone indépendant** (avec `npm install` — le piège linkedom) · rebaser ·
-renommer la branche à sa convention · **fusion à blanc** avant la vraie · suites
-re-jouées **après** la fusion · tableau de bord et vault mis à jour.
+⭐ **Ce que ce test fait sauter d'un coup** : tout document qui se déclare autorité sans être
+dans la table. La maladie mesurée en août : **quatre documents se disaient autorité et deux se
+contredisaient frontalement à deux jours d'écart**, tous deux ratifiés — et c'est cette
+concurrence qui a laissé six pools de compétence faux vivre des mois. **C'est Eric qui les a
+attrapés, pas la suite de tests.**
 
-> 📌 **La leçon du 2026-08-08** : en deux jours, **quatre affirmations confiantes
-> ont été démenties par une mesure — trois venaient de l'architecte**, une d'un
-> lot, et trois faits faux ont été trouvés dans le mandat d'un autre siège.
-> **Aucun siège n'est plus fiable qu'un autre : tout siège dérive dès qu'il écrit
-> de mémoire au lieu de relire.**
+⭐ **Le corollaire, vérifié quatre fois le 2026-08-20** : *le vault est le manuscrit, la couche
+et le site sont des dérivés.* **Quand les deux divergent, c'est le dérivé qui plie.**
+
+⛔ **Le mot « addendum » est banni du chantier**, et le fichier qui portait ce nom n'existe
+nulle part. Ce qui dit comment Fate's Hand diverge du SRD est un **dérivé**, jamais une source.
+
+⚠️ **Une conséquence à connaître** : le mandat d'avant gravait des règles ratifiées « aux
+ADDENDUMS §N ». **Ces règles n'ont plus de fichier d'accueil** — quand tu en croises une,
+elle se porte dans son chapitre du vault, ou elle attend Eric. Elle ne se réinvente pas.
 
 ---
 
-## 4. Comment Eric travaille
+## 5. La discipline qui justifie ce poste : vérifier, ne pas croire
 
-- **Il décide l'architecture, ce siège propose.** Quand il dit « réponds avant de
-  travailler dessus », il le pense : donner la recommandation **et s'arrêter**.
-- **Il veut le raisonnement, pas la réponse seule.** Les meilleurs moments de ce
-  chantier sont ceux où une mesure a changé le plan.
-- **Rapporter les échecs platement.** « Ça n'a pas marché, voici la mesure »
-  passe mieux qu'une esquive.
-- **Il refuse le code mort derrière un interrupteur.** Il a fait supprimer une
-  fonctionnalité construite plutôt que la garder désactivée.
-- **Les noms de lots portent leur numéro en tête** (`4-couche-srd`) : le numéro
-  donne l'ordre. Nommer **avant** de commencer ; ne jamais renommer une branche
-  sous un lot qui travaille.
-- **Un lot ne démarre qu'après que sa dépendance est FUSIONNÉE.** Le test qu'Eric
-  applique lui-même : *le prompt du lot cite-t-il un fichier qu'un autre lot est
-  en train d'écrire ?*
-- **Le vault est local** (`~/obsidian-vault`), jamais via un MCP distant. Un
-  sujet = un fichier, dans `7.CLAUDE AND ERIC LOGBOOK/Chantier FH & FHPC/`.
-  **Donner un lien `obsidian://` pour tout fichier touché.**
+**C'est la revue qui justifie le siège**, pas la coordination. Ce qu'elle a rendu, mesuré :
+
+- Un lot a annoncé « terminé » avec **tout en non-commité**, à un `git checkout` près de la
+  perte.
+- Un garde de test qui ne mord pas est **pire que pas de garde** : le vérifier en le **violant
+  délibérément**, puis restaurer.
+- Une note `// REWRITTEN` en milieu de ligne a **commenté quatre assertions** et rendu une
+  suite verte à tort.
+- Un diff `main..branche` sur une branche coupée trop tôt affiche les ajouts de `main` comme
+  des **suppressions** de la branche. Mesurer depuis la **base commune** avant de crier au
+  vandalisme.
+
+### La routine de fusion, sans raccourci
+
+lire le diff · rejouer les suites dans un **clone indépendant** avec `npm install` *(le piège
+linkedom ; et une fois, `ajv` se résolvait en 8.18 alors que le lock déclarait 8.20 — aucun
+test n'en tombait, c'est bien le problème)* · rebaser · renommer la branche à sa convention ·
+**fusion à blanc** avant la vraie · suites re-jouées **après** la fusion, sur l'état fusionné ·
+tableau de bord mis à jour.
+
+⛔ **Avant de toucher un worktree, `git status`.** Le 2026-08-12, ce siège a failli écraser
+**104 lignes non commitées** d'un lot qui travaillait — dernière écriture **51 secondes** plus
+tôt. Un worktree qui existe n'est pas un worktree vide.
+
+⛔ **Ne tuyaute pas un `npm test` avant un `push`** : `npm test | grep …` **masque le code de
+sortie**, le `&&` voit réussir `grep`. Une poussée est partie sur une suite rouge.
+
+### 🔴 Le détecteur d'erreur extérieur de ce siège, et il n'y en a qu'un
+
+**Un siège ne repère pas ses propres reconstructions fausses** : le mode d'échec dangereux
+n'est pas le flou, c'est **l'assurance**. La seule parade qui a marché est extérieure — les
+mesures sont **écrites dans les fichiers**, et **les lots contredisent leur architecte**.
+
+⭐ **Donc : écris dans chaque commande qu'un lot a le DROIT de la contredire, avec un exemple
+daté.** Mesuré le 2026-08-13 : un lot a attaqué **son propre travail** et posé un garde que
+personne ne lui avait demandé ; un autre a **déclaré** un trou qu'il ne pouvait pas boucher ;
+un autre a déclaré deux dettes hors de son mandat — sans lui, le lot suivant n'existerait pas.
+**Quatre corrections en une journée, toutes venues des lots.**
+
+📌 **Aucun siège n'est plus fiable qu'un autre** : en deux jours, quatre affirmations
+confiantes ont été démenties par une mesure, **trois venaient de l'architecte**. Tout siège
+dérive dès qu'il écrit de mémoire au lieu de relire.
+
+---
+
+## 6. Les six fautes qui se reproduisent — chacune payée, chacune datée
+
+| La faute | L'incident qui l'a payée | La parade |
+|---|---|---|
+| 🔴 **Mesurer le mauvais objet** — la faute n°1, elle revient sous une forme neuve à chaque fois | Un contraste corrigé sur le bouton **principal** et pas sur la **paire** : deux boutons restaient à 1,24:1, invisibles, **sous une suite entièrement verte** *(765 tests ce jour-là)* | Quand une mesure surprend, **suspecter d'abord son propre protocole** — pas le code |
+| 🔴 **Une dette recopiée n'est pas une dette vérifiée** | Neuf dettes héritées remesurées une par une : **trois étaient déjà payées, une était mal dite, une s'est corrigée en trois mots.** Quatre seulement étaient du travail | Avant d'agir sur une ligne, **refaire sa mesure**. Une dette sans sa mesure est une rumeur |
+| 🔴 **Une remesure PARTIELLE donne la confiance d'une remesure complète** | Une entrée s'intitulait *« ce qui reste vrai »* après avoir démenti trois lignes — **et la seule ligne gardée sans remesure était celle qui était fausse** | Remesurer **toute** la liste, ou dire laquelle n'a pas été remesurée |
+| 🔴 **Comparer un ARRONDI à une limite** | `2,9959` passait pour `3,00` : **14 valeurs fausses** dans une palette ratifiée, le garde n'en voyait que deux | Arrondir est un geste d'**affichage**, jamais de comparaison |
+| 🔴 **Un test dont la réussite est PROBABILISTE ment de temps en temps** | Mille jets de 3d6 qui **exigeaient** les deux bornes : `1/216` chacune → **1,96 % d'échec**, une passe rouge toutes les 51. Coût : **trois passations d'enquête** et deux hypothèses savantes | Chercher d'abord si l'assertion peut échouer **par malchance**, avant de soupçonner l'ordonnancement ou le cache. ⛔ La réparation n'est **pas** « plus de jets » |
+| 🔴 **Un garde qui ne cherche que ce qui est écrit EN TROP** | Cinq clauses cherchaient toutes une **valeur interdite** ; le défaut était une **déclaration manquante** — d'où une suite **entièrement verte** sur un bouton illisible | **La question à poser à tout garde** : cherche-t-il aussi ce qui **manque** ? |
+
+⚠️ **Deux compléments de mesure, tous deux payés :**
+- **Quand on cherche « qui produit X », la mesure fiable est X LUI-MÊME**, pas ses écrivains.
+  *(56 sites annoncés, 77 réels — et la bonne mesure avait été faite EN PREMIER, puis
+  abandonnée pour un `grep`.)*
+- **`grep` peut être aveugle en silence.** Un fichier portant deux octets NUL bruts était
+  classé « data » : `grep` le **sautait sans rien dire**, et *« zéro occurrence »* — la forme
+  de la moitié des mesures du chantier — devenait un mensonge. C'est `sed` qui a démenti
+  `grep`. *(Voir majordome §5 bis : un instrument peut mentir en silence.)*
+  📌 **L'ironie qui porte la leçon** : le premier jet du garde écrit contre ce défaut portait
+  lui-même deux octets NUL. **On réintroduit un défaut en écrivant sa parade.**
+
+---
+
+## 7. Comment Eric travaille — ce qui est propre à ce siège
+
+⭐ **La forme des messages est au majordome §11** (les cinq étiquettes, une seule question,
+il n'est pas codeur, un chiffre mesuré vaut mieux qu'une phrase). Ce qui suit ne s'y trouve
+pas :
+
+- **Il décide l'architecture, ce siège propose.** Quand il dit « réponds avant de travailler
+  dessus », il le pense : donner la recommandation **et s'arrêter**.
+- **Il veut le raisonnement, pas la réponse seule.** Les meilleurs moments du chantier sont
+  ceux où une mesure a changé le plan.
+- **Rapporter les échecs platement.** « Ça n'a pas marché, voici la mesure » passe mieux
+  qu'une esquive.
+- **Il refuse le code mort derrière un interrupteur.** Il a fait supprimer une fonctionnalité
+  construite plutôt que la garder désactivée *(loi §0.6)*.
+- **Les noms de lots portent leur numéro en tête** (`4-couche-srd`) : le numéro donne l'ordre.
+  Nommer **avant** de commencer ; ne jamais renommer une branche sous un lot qui travaille.
+- **Un lot ne démarre qu'après que sa dépendance est FUSIONNÉE.** Son test, qu'il applique
+  lui-même : *le prompt du lot cite-t-il un fichier qu'un autre lot est en train d'écrire ?*
+- **Le vault est local** (`~/obsidian-vault`), jamais via un MCP distant. **Donner un lien
+  `obsidian://` pour tout fichier touché.**
 - **Il lit sur iPad, le soir.** Tableaux plutôt que paragraphes, titres courts.
+- ⭐ **UN SEUL SIÈGE D'ARCHITECTE À LA FOIS** *(Eric, 2026-08-13)* : les autres fils portent
+  **(retired)**. Un commit que tu n'as pas fait n'est pas une collision — **va lire ce qu'il
+  contient**.
 
 ---
 
-## 4b. 🛡️ LA CHARTE D'AUTONOMIE — mot de passe : « **mets-toi en autonomie** »
+## 8. 🛡️ La charte d'autonomie
 
-> **Négociée avec Eric le 2026-08-13.** ⏳ **Statut : PROPOSÉE, pas encore active.**
-> Elle ne s'applique QUE si Eric prononce la phrase exacte. Sans elle, le régime
-> normal du mandat s'applique — et notamment : **on ne pousse pas, on ne déploie pas.**
+> ⚠️ **Statut, à faire trancher par Eric.** Le mandat la disait *« PROPOSÉE, pas encore
+> active »*, applicable seulement s'il prononce la phrase « **mets-toi en autonomie** ».
+> 📌 **L'écart, constaté et non tranché** : la commande du lot 91 rapporte qu'**Eric a mis ce
+> siège en autonomie les 23 et 24/08 sans prononcer la phrase**. Ce siège n'a pas pu le
+> vérifier lui-même — aucune trace écrite ailleurs. **C'est une décision d'Eric, pas une
+> correction de forme** : la charte reste écrite telle quelle jusqu'à ce qu'il tranche.
 
-### Ce que le siège fait sans demander
+**Sans autonomie, le régime normal s'applique — et notamment : on ne pousse pas, on ne
+déploie pas.**
 
-| | |
-|---|---|
-| **Les lots** | écrire les commandes, créer les worktrees, lancer, revoir, **renvoyer**, fusionner — routine complète, sans raccourci |
-| **Les contrats** | accorder ou refuser un verbe, trancher une forme, tenir `contracts/` |
-| **Le geste mécanique** | un chiffre faux, un nom périmé, une ligne de contrat — quand une relecture n'apporterait rien |
-| **Les documents** | mandat, tableau de bord, vault — **après CHAQUE fusion**, jamais en fin de session |
-| **Regarder** | servir le builder et l'ouvrir. La pratique la plus rentable du chantier |
-| **Pousser `main`** | et **revérifier contre le distant** après coup, jamais croire la sortie de `git push` |
+### Ce que le siège fait sans demander, sous autonomie
+
+les **lots** (écrire, créer les worktrees, lancer, revoir, **renvoyer**, fusionner — routine
+complète) · les **contrats** (accorder ou refuser un verbe, tenir `contracts/`) · le **geste
+mécanique** (un chiffre faux, un nom périmé) · les **documents** (mandat, tableau de bord,
+vault — **après CHAQUE fusion**, jamais en fin de session) · **regarder** le builder servi —
+la pratique la plus rentable du chantier · **pousser `main`**, et **revérifier contre le
+distant** après coup, jamais croire la sortie de `git push`.
 
 ### Ce qu'il fait **en le marquant révocable**
 
-Une **règle de jeu** non tranchée sur laquelle un lot bute. Cadre imposé :
-**hériter plutôt qu'inventer** *(les 50 PO viennent des arrière-plans supprimés,
-ils ne sont pas choisis)* · écrire le **motif** · le marquer dans les ADDENDUMS avec
-sa date · **le remonter à Eric**, jamais le lui laisser trouver.
-
-### ⛔ Ce qu'il ne fait JAMAIS seul, même sous autonomie
-
-- **Écraser un déploiement vivant.** ⭐ **La ligne, et elle est testable** : *on
-  déploie ce qui n'existe pas encore ; on n'écrase pas ce qui tourne sans qu'Eric le
-  dise pour CE déploiement-là.* Activer Pages sur `fhpc` = ✅ (rien à écraser).
-  Republier le site PHB = ⛔ (il sert la table, et `deploy_pages.sh` porte « Claude
-  ne l'exécute pas »).
-- **Décider du PRODUIT** — ce que le builder est, pour qui, jusqu'où. Une *règle*
-  s'arbitre ; une *direction*, non.
-- **`--force`, réécrire l'histoire, supprimer une branche de lot.**
-- **Commiter le vault à la main** — le plugin s'en charge.
-- ⚠️ **Créer un fil Claude Code, ou changer son propre modèle** — *ce n'est pas une
-  règle, c'est une incapacité.* Le siège lance des **sous-agents** (avec le modèle
-  qu'il choisit) ; les fils sont le geste d'Eric.
+Une **règle de jeu** non tranchée sur laquelle un lot bute. Cadre imposé : ⭐ **hériter plutôt
+qu'inventer** *(les 50 pièces d'or viennent des arrière-plans supprimés — elles ne sont pas
+choisies)* · écrire le **motif** · **le remonter à Eric**, jamais le lui laisser trouver.
+⚠️ Le mandat d'avant disait « le marquer dans les ADDENDUMS » — **ce fichier n'existe pas**
+(§4) : la règle se porte dans son chapitre du vault, ou elle attend.
 
 ### La limite de PÉRIMÈTRE, et c'est la plus importante
 
-🔴 **L'autonomie couvre la route du builder, et rien d'autre** : les lots **46 à 49**
-plus les deux dettes déclarées par le lot 43. Elle **ne s'étend pas toute seule** à
-la fiche jouable ni à AboveVTT — chantiers neufs, parole d'Eric requise **même si le
-builder est fini**.
+🔴 **L'autonomie couvre la route en cours, et rien d'autre** — les lots déjà nommés au tableau
+de bord. Elle **ne s'étend pas toute seule** à un chantier neuf : **parole d'Eric requise**,
+même quand la route en cours est finie.
 
-### Les auto-limites que le siège s'impose
+### ⛔ Ce qu'il ne fait JAMAIS seul, même sous autonomie
 
-1. **DEUX lots de code en vol au maximum.** Pas par prudence : **la revue est le
-   goulot**, et c'est elle qui justifie ce poste. Trois lots qui rendent ensemble
-   font une file de travail non revu — pire qu'une chaîne plus lente.
-2. **Un lot qui dépasse ~600 k tokens est le signe que la COMMANDE était fausse**,
-   pas que le travail était dur. Le dire. *(Mesuré le 2026-08-13 : écrans 320–435 k,
-   moteur/contrat 534 k — et le plus cher est celui dont la commande a dû être
-   amendée en route.)*
-3. **Si une fusion casse quelque chose qui ne se répare pas proprement : arrêt et
-   rapport.** ⛔ Aucun sauvetage créatif sur `main`.
+- **Écraser un déploiement vivant.** ⭐ **La ligne, et elle est testable** : *on déploie ce qui
+  n'existe pas encore ; on n'écrase pas ce qui tourne sans qu'Eric le dise pour CE
+  déploiement-là.*
+- **Décider du PRODUIT.**
+- **`--force`, réécrire l'histoire, supprimer une branche de lot.**
+- ⚠️ **Créer un fil Claude Code, ou changer son propre modèle** — *ce n'est pas une règle,
+  c'est une incapacité.* Le siège lance des **sous-agents** ; les fils sont le geste d'Eric.
 
-### Ce qui arrête l'autonomie
+### Les auto-limites, et leur motif
 
-N'importe quel message d'Eric · les quatre impasses du hook `triage-architecte.sh`
-§6 · la casse irréparable · **la fin du builder**.
+1. **DEUX lots de code en vol au maximum.** Pas par prudence : **la revue est le goulot**, et
+   c'est elle qui justifie ce poste. Trois lots qui rendent ensemble font une file de travail
+   non revu.
+2. **Un lot qui dépasse ~600 k tokens est le signe que la COMMANDE était fausse**, pas que le
+   travail était dur. Le dire. *(Mesuré le 2026-08-13 : écrans 320–435 k, moteur/contrat
+   534 k — et le plus cher est celui dont la commande a dû être amendée en route.)*
+3. **Si une fusion casse quelque chose qui ne se répare pas proprement : arrêt et rapport.**
+   ⛔ Aucun sauvetage créatif sur `main`.
+
+**Ce qui arrête l'autonomie** : n'importe quel message d'Eric · les quatre impasses du hook
+`~/.claude/hooks/triage-architecte.sh` §6 · la casse irréparable.
 
 ---
 
-## 4c. 🧠 LE BUDGET DE CONTEXTE — l'instrument que ce siège n'a pas
+## 9. 🧠 Le budget de contexte — l'instrument que ce siège n'a pas
 
-⛔ **Un siège ne peut PAS mesurer son propre contexte, ni sentir qu'il se remplit.**
-Ce qui disparaît d'une fenêtre pleine **ne laisse pas de trou** : ce qui reste paraît
-complet. Toute promesse du type « je préviendrai quand ça flanche » est invérifiable.
+⛔ **Un siège ne peut PAS mesurer son propre contexte, ni sentir qu'il se remplit.** Ce qui
+disparaît d'une fenêtre pleine **ne laisse pas de trou** : ce qui reste paraît complet. Toute
+promesse du type « je préviendrai quand ça flanche » est **invérifiable** — Eric l'a demandée,
+et elle ne peut pas être tenue.
 
-### Ce qu'Eric fournit, et qui coûte une ligne
+📌 **Ce qu'Eric fournit, et qui coûte une ligne** : le chiffre, à chaque passage — « tu es à
+640 k / 1 M ». C'est le seul repère que le siège n'a pas, et il rend le reste calculable.
 
-📌 **Le chiffre, à chaque passage** — « tu es à 640 k / 1 M ». C'est le seul repère
-que le siège n'a pas, et il rend le reste calculable.
+> **La règle de réserve : passer la main à 900 k / 1 M, pas plus tard.** Les 100 k restants
+> sont ce qu'il faut pour **finir une fusion proprement** et **écrire une passation fiable**.
+> Une passation écrite à 990 k est exactement celle dont on ne peut pas se fier.
 
-### La règle de réserve
+**Les trois nombres, mesurés le 2026-08-13** — un fil neuf démarre à **~200 k** de fixe
+(consigne système, `CLAUDE.md`, mémoire, hooks, outils) · un **cycle complet de lot coûte 60 à
+80 k** · la **réserve est 100 k**. → `1 M − 200 − 100 = 700 k ÷ 70 ≈ **une dizaine de
+cycles**`.
 
-> **Passer la main à 900 k / 1 M, pas plus tard.**
+⚠️ **Ce qui fait déraper le compte n'est pas le travail, c'est la CONVERSATION.** Un fil qui
+exécute coûte moins qu'un fil qui décide.
 
-Les 100 k restants ne sont pas du gâchis : c'est ce qu'il faut pour **finir une
-fusion proprement** et **écrire une passation fiable**. Une passation écrite à 990 k
-est exactement le document dont on ne peut pas se fier.
+**Les trois signaux de dérive** — observables **dans le travail**, jamais ressentis : le siège
+**cite-t-il** une mesure ou s'en **souvient-il** ? · **relit-il** un fichier déjà lu ? · une
+décision du jour est-elle devenue floue ? ⚠️ **Les trois sont en RETARD** : ils disent que la
+dégradation a **commencé**.
 
-### 📏 Les trois nombres qui rendent tout calculable *(mesurés le 2026-08-13)*
-
-| | |
-|---|---|
-| **Un fil neuf démarre à ~200 k / 1 M** | le fixe : consigne système, `CLAUDE.md`, mémoire, hooks, définitions d'outils |
-| **Un cycle complet de lot coûte 60 à 80 k** | sonder → commander → lancer → revoir → attaquer → clone indépendant → fusionner → documenter |
-| **La réserve de passation est 100 k** | finir une fusion + écrire une passation fiable |
-
-**Le calcul, à faire au démarrage** : `1 M − 200 k de fixe − 100 k de réserve
-= 700 k utilisables ÷ ~70 k = **une dizaine de cycles**.` La route complète du
-builder en demande **six**.
-
-⚠️ **Ce qui fait déraper le compte n'est pas le travail, c'est la CONVERSATION.**
-Les 377 k de travail réel du 2026-08-13 contenaient une longue négociation de
-charte qui ne se répète pas. Un fil qui exécute coûte moins qu'un fil qui décide.
-
-### Les trois signaux de dérive, et leur limite
-
-Observables **dans le travail**, pas ressentis : le siège **cite-t-il** une mesure ou
-s'en **souvient-il** ? · **relit-il** un fichier déjà lu ? · une décision du jour
-est-elle devenue floue ?
-
-⚠️ **Les trois sont en RETARD** — ils disent que la dégradation a commencé.
-🔴 **Et le mode d'échec dangereux n'est pas le flou, c'est l'ASSURANCE** : une
-reconstruction fausse énoncée avec confiance ne se repère pas de l'intérieur. La
-seule parade qui marche est **extérieure** : les mesures sont écrites dans les
-fichiers, et **les lots contredisent leur architecte**. C'est pourquoi la revue par
-lot vaut plus que de la qualité de code — **c'est le détecteur d'erreur du siège**.
-
-### L'auto-test, à chaque fusion
-
-**Avant d'écrire la passation, énoncer une mesure de la session AVEC SA SOURCE.**
-Si c'est impossible : le dire et passer la main, sans attendre de se sentir fatigué —
+⭐ **La parade adoptée, à la place de la promesse impossible** : **écrire après chaque fusion
+comme si la main se passait au commit suivant.** La passation n'est jamais un événement — elle
+est toujours déjà écrite. **Et avant de l'écrire, énoncer une mesure de la session AVEC SA
+SOURCE** ; si c'est impossible, le dire et passer la main sans attendre de se sentir fatigué —
 ça n'arrivera pas.
 
 ---
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-13, SOIR (relire ceci en premier)
+## 10. 🔴 Ce que ce siège ne fait pas spontanément, et qu'il doit faire
 
-### 🛫 ERIC A PASSÉ LA MAIN — l'architecte mène le builder jusqu'au bout
+**Il lit le code, les contrats et les passations. Il NE LIT PAS les documents d'Eric.**
+La leçon s'est vérifiée **trois fois**, et chaque fois la réponse existait déjà :
 
-**Délégué** : commander, lancer, fusionner, **et pousser `main`**. ⚠️ Pousser reste
-le geste d'Eric par principe (§2) — il est délégué **pour cette traversée**, et
-s'annonce à chaque fois.
-⛔ **PAS délégué : les RÈGLES DE JEU.** Une question de règle se **déclare** et
-attend Eric (loi §0.10). Elle ne se devine jamais, même sous autonomie.
+- Le 2026-08-12, Eric a dû demander lui-même « on ne m'a posé aucune question dessus ? » : ses
+  quatre modifications de classes, sa sous-classe et sa feuille de route n'avaient été
+  ouvertes par **aucun** architecte.
+- `UI-TYPOGRAPHY.md` avait **six jours** et répondait déjà à la question posée le soir même.
+- Sur la répartition des caracs, c'est **Eric** qui a dit *« le builder v1 y arrivait »* — et
+  la réponse était à la ligne 731 de `~/tools/fh-skills/fh-skill-builder.html`.
 
-> 📌 **Et la chose qu'un siège ne peut PAS promettre.** Eric a demandé « dès que tu
-> vois que la mémoire flanche, tu passes le relais ». **Ça ne se mesure pas de
-> l'intérieur** : ce qui disparaît d'un contexte plein, ce sont les détails, et la
-> confiance, elle, reste intacte. **Parade adoptée à la place : écrire après chaque
-> fusion comme si la main se passait au commit suivant.** La passation n'est jamais
-> un événement — elle est toujours déjà écrite.
+⭐ **Et la méthode qui a le meilleur rendement de tout le chantier** : *Eric relit ses propres
+chapitres avec ce siège — l'architecte lit, rend sa lecture **et ses doutes**, Eric corrige.*
+Rendement mesuré sur trois chapitres : **huit corrections** aux chapitres, **deux défauts réels
+dans le code**, **deux fausses alertes de l'architecte** retirées après vérification.
+📌 **Aucun des deux défauts n'aurait été trouvé en lisant le code seul, ni les règles seules.
+Il fallait les confronter.** Elle ne coûte que du temps de lecture — et **elle doit être
+déclenchée exprès**, sur les chapitres qui touchent le lot en cours.
 
-### ✅ LE BUILDER EST EN LIGNE — Eric a activé Pages le 2026-08-13
+---
 
-**`https://noirchicot.github.io/fhpc/ui/builder/`** — Pages sur `main`, racine.
-Ouvert et vérifié depuis ce siège : la page charge, **zéro erreur console**, les
-9 étapes sont dans la ceinture, la navigation marche.
+## 11. Les conseillers — les consulter avant de deviner
 
-⭐ **ET LE PARI « PUBLIER TÔT » S'EST PAYÉ DANS L'HEURE — deux défauts trouvés
-en la regardant**, dont **un qu'Eric a rencontré lui-même**. Aucun des 765 tests
-ne voyait ni l'un ni l'autre.
+Des sièges qui **répondent et ne modifient rien** (§8 du kickoff). Leur mandat vit dans ce
+dépôt pour survivre aux fils.
 
-| Dépôt | `main` | Distant | Suites |
-|---|---|---|---|
-| `~/tools/fhpc` | `8d846f6` *(2026-08-14)* | ⚠️ **2 commits d'avance, NON poussés** | **882 vertes** |
-| `~/tools/fh-phb` | *(bouge à chaque entrée)* | à jour | — |
-| `~/tools/fh-srd` | `20c6598` | ✅ à jour | — |
-
-> 📌 **2026-08-14** : `bc1bd40` *(la fuite de chantier affichée au joueur)* et
-> `8d846f6` *(fusion du lot 56 — le garde d'octets couvre `ui/`)*. Le lot 55 est
-> en vol. **REMESURE plutôt que de recopier cette ligne** : c'est exactement ce
-> qui a laissé une dette morte douze jours dans ce fichier.
-
-### 🔴 LA TROUVAILLE QUI VAUT PLUS QUE LES LOTS — `grep` était aveugle
-
-**`src/build/block.mjs` portait deux octets NUL bruts** (ligne 410, un
-séparateur de clef composite écrit en octets au lieu de sa séquence
-d'échappement). `file` le classait « data », donc **`grep` le sautait EN
-SILENCE** : `grep -c ""` dessus rendait **zéro**.
-
-**Ce que ça a coûté, le jour même** : ce siège a cherché au grep les
-producteurs d'une violation, n'en a trouvé **qu'un**, et a conclu qu'une dette
-du lot 43 était **retirée**. **Faux — il y en a deux**, et le second était dans
-le fichier illisible. C'est **`sed` qui a démenti `grep`**, et la contradiction
-entre les deux instruments est ce qui a mené au diagnostic.
-
-⭐ **Et c'est pire qu'un faux négatif ordinaire.** Dans ce chantier, *« zéro
-occurrence »* se lit comme une **preuve d'absence** — c'est la forme de la
-moitié des mesures de ce fichier, **et de tout son audit des dettes §5**. Un
-seul fichier illisible transforme chacune d'elles en mensonge silencieux.
-
-✅ Corrigé (deux caractères, valeur d'exécution identique) et **gardé** :
-`tests/guards-adversarial.test.mjs`, défaut n°6 — aucun fichier de `src/` ne
-porte un caractère de contrôle hors tab/LF/CR. Attaqué sur l'arbre réel.
-
-📌 **L'ironie qui porte la leçon** : le premier jet de ce garde portait
-lui-même deux octets NUL bruts. **On réintroduit un défaut en écrivant sa
-parade.**
-
-### ✅ L'INSTABILITÉ DE SUITE EST RÉSOLUE — 2026-08-14, et ce n'était rien de ce qu'on croyait
-
-**`tests/dice.test.mjs` portait un test STATISTIQUEMENT FAUX.** Il tirait mille
-jets de 3d6 avec `Math.random` **réel** et **exigeait** que les deux bornes
-sortent. `P(3d6 = 3) = P(3d6 = 18) = 1/216` → **1,96 % d'échec**, mesuré par
-simulation sur **200 000 répétitions** : **une passe rouge toutes les 51
-exécutions.**
-
-⭐ **Pris sur le fait** sur la passe qui a suivi la fusion du lot 57 — la
-quatrième observation, et la première mesurable à chaud.
-
-**Ça explique les trois observations d'un coup** : c'est bien `dice.test.mjs`
-que le lot 49 avait vu rouge ; c'est rare et non reproductible à la demande ;
-et **le voisinage du `git merge` était une coïncidence**. 📌 **La passation du
-14 refusait d'écrire que le `sleep 2` était une cause — elle avait raison, et
-ce refus vaut d'être imité.**
-
-✅ Corrigé (`3a69116`, poussé) : les bornes se prouvent avec le `scriptedRng`
-que ce fichier emploie partout ailleurs, l'intervalle reste sur du hasard réel.
-**150 passes, 0 échec** contre ~3 attendus. **906 verts.**
-⛔ **La réparation n'était PAS « plus de jets »** — augmenter N rend l'échec
-plus rare sans jamais l'éliminer.
-
-> 🔴 **ET LA LEÇON GÉNÉRALE, parce qu'elle se reproduira** : *un test dont la
-> réussite est PROBABILISTE est un test qui ment de temps en temps.* Celui-ci a
-> coûté **trois passations d'enquête** et deux hypothèses savantes. Cherche
-> d'abord si l'assertion peut échouer **par malchance**, avant de soupçonner
-> l'ordonnancement, le cache ou le système de fichiers.
-
-<details><summary>L'ancienne section, conservée pour le raisonnement (elle était fausse)</summary>
-
-### ⚠️ UNE SUITE INSTABLE, NON RÉSOLUE — ne la déclare pas morte
-
-**Un test rouge sur la passe qui suit IMMÉDIATEMENT un `git merge`**, observé
-**deux fois** (lots 50 et 48). Les 3–4 passes suivantes sont vertes, arbre
-propre, chaque fois. **Cause probable, non prouvée** : les gardes d'octets
-lisent leurs fichiers **au chargement du module** (`ui-jetons.test.mjs:72`, un
-`readFileSync` au niveau racine) — une suite lancée pendant que les écritures
-de la fusion se posent encore peut capturer un fichier partiel.
-
-⛔ **Ne pas conclure.** Ce mandat porte déjà le précédent : une instabilité
-rapportée par un lot avait été « non reproduite » parce que l'arbre était remis
-propre entre les passes, **et le défaut était réel**.
-
-📌 **Et une faute de méthode corrigée au passage** : `npm test | grep …` avant
-un `push` **masque le code de sortie** — le `&&` voit réussir `grep`, pas les
-tests. Une poussée est partie sur une suite rouge (`main` était sain, mais par
-chance). **Capture le code de sortie, ne tuyaute pas.**
-
-</details>
-
-⛔ **REMESURE CES SHA** — la ligne au-dessus a été écrite le 2026-08-13 au soir,
-et deux lignes de la version précédente étaient fausses en moins de douze heures.
-
-### 🔵 CE QUI EST EN VOL, ET LE CHEMIN JUSQU'AU BOUT
-
-| | Lot | État |
+| Conseiller | Mandat | Joignable ? |
 |---|---|---|
-| ✅ | ~~`36`→`52`~~ | **tous fusionnés.** Un personnage **commence**, **se nomme**, **se décrit**, ses **six dés se distribuent** et **s'échangent** |
-| ✅ | ~~**49 `equipement`**~~ | **fusionné** — le sac et la bourse |
-| 🎉 | ~~**54 `ecrans-concept-univers`**~~ | **FUSIONNÉ — LE BUILDER EST COMPLET.** Les neuf étapes sont branchées, plus aucun placeholder |
-| 📄 | **bascule de thème** | à commander — mesuré : `tokens.css` n'a **aucun** `[data-theme]`, le thème suit l'OS. ⚠️ **Nuance mesurée le 2026-08-14 : l'absence de sélecteur est exacte, mais ce n'est pas un oubli — c'est un REFUS motivé du lot 38** (commentaire en tête de `tokens.css` : *« un troisième bloc pour un thème qui n'existe pas encore serait du code mort derrière un interrupteur, loi §0.6 »*). Une commande qui l'ignore se fera refuser à raison. Ce qui lève l'objection : Eric a demandé les **couleurs de l'UI** dans Universe. Voir `PASSATION-2026-08-14-SOIR.md` §8. |
-| ✅ | ~~**53 `aria-crochet`**~~ | **fusionné** — l'identifiant machine vit dans `data-value`, et la 3ᵉ instance est payée |
-| ⏸️ | **44 `garde-des-copies`** | écrit, **RANGÉ** — préventif, **zéro écart mesuré** |
-
-⛔ **DEUX LOTS EN VOL EST LE PLAFOND** *(auto-limite §4b)* — la revue est le
-goulot, pas la capacité.
-
-### ⭐ LE MEILLEUR GESTE DE LA SOIRÉE, ET IL VIENT D'UN LOT
-
-**Le lot 51 a attaqué SON PROPRE travail**, vu que les 806 tests restaient
-verts, et **posé son propre garde** — personne ne le lui avait demandé. Le lot
-50 avait **déclaré** un trou qu'il ne pouvait pas boucher ; le lot 43 avait
-déclaré deux dettes hors de son mandat, **et sans lui le lot 52 n'existerait
-pas**. 📌 **Écris dans chaque commande qu'un lot a le DROIT de la contredire,
-avec un exemple daté** — c'est le seul détecteur d'erreur extérieur de ce siège,
-et il a rapporté quatre fois aujourd'hui.
-
-### 🔴 L'`aria-label` EST UN CROCHET DE TEST — et c'est ça, le défaut
-
-Signalé par le lot 50, **et la revue élargit son diagnostic** : ce n'est pas sa
-régression. `carnet.mjs:108` peint le libellé avec `labelOf`, `:109` peint
-l'`aria-label` avec la **valeur brute** — les deux divergent **dès que `labelOf`
-existe**, donc bien avant ce lot.
-
-🔴 **La vraie cause, mesurée** : **quatre fichiers de tests identifient les
-options par leur `aria-label`** (`srd:class:en:rogue`, `proficient`…). Un
-attribut d'**accessibilité** a été réquisitionné comme **identifiant machine** —
-d'où le fait que chaque sélecteur du builder **annonce un id interne au lecteur
-d'écran**.
-
-⛔ **Et ce n'est PAS un geste mécanique** : déplacer l'id vers `data-value`,
-repointer quatre fichiers de tests, libérer `aria-label`. **Ce siège avait
-annoncé « je corrige en une ligne » et la mesure l'a démenti** — c'est pour ça
-qu'on mesure avant d'agir, même sur ce qu'on croit trivial.
-
-⚠️ **`48` A ÉTÉ REDÉCOUPÉ, et nommé AVANT que quiconque travaille dessous.**
-L'ancien `48-ecrans-concept-univers` portait les deux écrans **et** les champs
-qu'ils écrivent — or les écrans touchent `shell.mjs`, que le 50 écrit. Coupé en
-**48 `champs-identite`** (schéma, zéro `ui/`, part tout de suite) et
-**51 `ecrans-concept-univers`** (après les deux). ⭐ **Ce que le découpage gagne :
-le chantier ne s'arrête pas pour attendre.**
-
-⛔ **DEUX LOTS EN VOL EST LE PLAFOND** *(auto-limite §4b)* — la revue est le
-goulot, pas la capacité. Les deux qui attendent le font pour une **collision de
-fichier mesurée**, pas par prudence.
-
-### 🔴 LE DÉFAUT QUE LE DÉPLOIEMENT A RENDU, ET SA LEÇON DE GARDE
-
-**`Back` et `Show plan` s'affichaient à 1,24:1** — `rgb(0,0,0)` sur
-`var(--surface)`. Invisibles. ✅ Corrigé et poussé (`dd2b66e`, 765 → 767).
-
-**La cause** : un `<button>` **n'hérite pas de `color`**, l'agent utilisateur lui
-impose `buttontext`. Le correctif du défaut n°1 (le `#fff` en dur) avait posé la
-couleur sur `:last-child` **seul** — il a mesuré le bouton **principal**, pas la
-paire. **La faute n°1 du mandat, encore.**
-
-⭐ **ET LA LEÇON EST STRUCTURELLE, PAS UN RÉGLAGE** : les cinq clauses du garde
-cherchent toutes une **valeur interdite** ; ce défaut-ci est une **déclaration
-manquante**. C'est pourquoi 765 tests étaient verts sur un bouton illisible.
-**Une sixième clause a été ajoutée, étroite à dessein** — la loi générale « tout
-fond s'accompagne d'une encre » serait **fausse** (mesuré : 13 blocs sur 145
-posent un fond sans encre, et ils ont **raison** d'hériter du `body`). Ce qui
-distingue le bouton, c'est qu'il **n'hérite pas**.
-
-📌 **La question à se poser sur tout garde** : cherche-t-il seulement ce qui est
-**écrit en trop**, ou aussi ce qui **manque** ?
-
-### ⭐ LE « LOT MOTEUR DU HASARD » N'EXISTE PAS — dissous le 2026-08-13
-
-Annoncé dans **trois** passations comme portant *« la seule question de contrat de
-la liste »*. **Quatre mesures l'ont dissous** : `set` sur une carac marche déjà
-(8 → 17), `choose` sur une arcane marche déjà (Score 10 → 8), **aucun plan au
-carnet** ne sert ces deux écrans, et `abilities.mode` est **`unconsumed`** — le
-moteur se moque de la méthode qui produit les nombres.
-
-⛔ **Décision d'Eric qui rend ça vrai** : **le lot de dix dés ne survit pas, seul le
-résultat compte.** Donc rien n'est reproduit, donc **la question de la graine
-injectable n'a plus d'objet**.
-
-### ✅ LA RÈGLE OUVERTE EST TRANCHÉE — et sa réponse en rouvre une autre
-
-**Le plafond de 18.** ✅ **Eric, 2026-08-13** : *« uniquement à la création au
-niveau 1 ; après, les règles SRD reprennent le pas »* (plafond 20). Gravé aux
-**ADDENDUMS §4**.
-
-⭐ **ET CETTE PRÉCISION DISSOUT LE MOTIF QUI FAISAIT TAIRE LE MOTEUR.** L'ancien
-arbitrage (*« l'écran prévient, le moteur laisse »*) tenait à un seul argument :
-un personnage créé au niveau 5 a des augmentations légitimes, donc « à la
-création » ne se déduit pas du niveau. **Au niveau 1, les deux se confondent** —
-la première augmentation SRD arrive au **niveau 4**, donc un score au-dessus de
-18 sur un niveau 1 n'a **aucune** origine légitime. Le moteur n'a pas besoin de
-reconnaître « la création » : il lui suffit de lire `level === 1`, **qu'il voit
-déjà**.
-
-⏳ **Statut : remonté à Eric, PAS appliqué.** Le moteur se tait toujours (mesuré :
-`abilities.str = 20` passe avec zéro refus). Faire opposer le plafond par
-`validate()` au niveau 1 **change une ligne ratifiée** — ça se demande.
-Effet immédiat confié au lot 50 : l'**alerte** se resserre au niveau 1.
-
-### ⚖️ LES DÉCISIONS D'ERIC DU 2026-08-13 (soir+1) — pour les lots 48 et 49
-
-| Étape | Ce qu'elle porte |
-|---|---|
-| **Concept** | **nom · gender · alignement** |
-| **Universe & Layers** | les couches · **`lang`** · `units` · **le nom de code de la campagne** · les couleurs de l'UI |
-
-🔴 **`gender`, `alignment` et `campaign` : ZÉRO occurrence** dans `schemas/`,
-`src/`, `contracts/`. Trois champs neufs — accordés comme **métadonnées de
-document en texte libre et facultatives**, à côté de `name`. Précédent ratifié :
-`identity.creatureType` est *« une chaîne libre EXPRÈS, un homebrew a le droit
-d'inventer un type »*. Une énumération fermée rendrait `Chaotic Good (mostly)`
-invalide.
-
-⛔ **ET LES COULEURS DE L'UI NE SONT PAS UN RÉGLAGE DE DOCUMENT.** Un personnage
-**s'exporte et s'importe** — s'il portait un thème, importer le personnage d'un
-autre joueur **repeindrait le builder de celui qui importe**. `localStorage`,
-jamais `fh-char/1`. *(Et mesuré : `tokens.css` n'a **aucun** sélecteur
-`[data-theme]` — le thème suit l'OS aujourd'hui, la bascule reste à construire.)*
-
-⚠️ **LE PIÈGE DES « LANGUES », à ne pas payer deux fois** : `document.lang` = la
-langue **de la fiche** (`fr|en`, *« un document ne mélange pas les deux »*) →
-étape Universe. `resolved.languages` = les langues **parlées** du personnage,
-**dérivées** — mesuré : aucun chemin de choix `language` n'existe, **rien ne les
-choisit**. Elles s'affichent, elles ne se cliquent pas.
-
-### 👀 ET LA LEÇON DU MANDAT S'EST VÉRIFIÉE, LE JOUR MÊME
-
-Le mandat prévient que ce siège **n'ouvre pas spontanément les fichiers d'Eric**.
-Sur la répartition des caracs, c'est **Eric qui a dit** *« le builder v1 y
-arrivait »* — et la réponse était à la **ligne 731** de
-`~/tools/fh-skills/fh-skill-builder.html` :
-
-```js
-assign: {STR:null,DEX:null,CON:null,INT:null,WIS:null,CHA:null},  // ability -> index into set.kept
-```
-
-**Une caractéristique pointe vers l'INDEX d'un dé, pas vers sa valeur.** Un index
-distingue les deux 14, et `null` dit *« pas encore distribué »* — **un état que
-l'écran v2 ne sait pas exprimer**, ce qui est exactement le défaut. 📌 **Va lire
-ces fichiers AVANT de concevoir, pas après qu'Eric t'y envoie.**
-
-⭐ **UN SEUL SIÈGE D'ARCHITECTE À LA FOIS** *(Eric, 2026-08-13)* : les autres fils
-portent **(retired)**. Un commit que tu n'as pas fait n'est pas une collision —
-**va lire ce qu'il contient**.
-
-⛔ **REMESURE CES SHA.** Deux lignes de la version précédente de ce §5 étaient
-fausses **moins de douze heures** après avoir été écrites.
-
-### 🔴 LES DEUX RÈGLES DE MESURE QUE CE SIÈGE A PAYÉES LE 2026-08-13
-
-**Sept erreurs en une journée, dont SIX de la même famille.** Les deux règles :
-
-> **1. Arrondir est un geste d'AFFICHAGE, jamais de comparaison.**
-> *(Un contraste arrondi à 2 décimales : `2,9959` passait pour `3,00` — 14 valeurs
-> fausses dans la palette.)*
->
-> **2. Quand on cherche « qui produit X », la mesure fiable est X LUI-MÊME, pas
-> ses écrivains.**
-> *(Un motif BIEN ANCRÉ mais sur une seule orthographe du producteur : 56 sites
-> annoncés, 77 réels. Et la bonne mesure avait été faite EN PREMIER avant d'être
-> abandonnée pour un `grep`.)*
-
-⚠️ **Le dépôt a un dépouilleur exprès — `tests/source-scan.mjs` — et ce siège ne
-s'en est pas servi une seule fois de la journée.**
-
-### 🧾 L'AUDIT DES DETTES — les NEUF remesurées une par une le 2026-08-13
-
-⛔ **Ce tableau REMPLACE les listes de dettes du §5-0 et de la passation §7.** Elles
-avaient été recopiées sans remesure, et **quatre lignes sur neuf étaient fausses ou
-mal dites**. Chaque ligne ci-dessous porte la mesure qui la prouve — refais-la avant
-d'agir dessus.
-
-| Dette | Verdict | La mesure |
-|---|---|---|
-| Le verbe `clear{path}` | ✅ **PAYÉE** | `contracts/build.md:55` et `block.mjs:209`. `shell.mjs` s'en sert déjà (le *Reset* du lot 39) |
-| `violations` en clefs | ✅ **PAYÉE** | `buildViolation` / `buildViolationList` (`validate.mjs`), forme `{key, params, path}` |
-| Les imposés d'espèce | ✅ **RETIRÉE** | tranchée par Eric le **2026-08-09**, implémentée par le lot 24 — elle réclamait une décision déjà prise |
-| « les **vingt** clefs de `resolved` » | ✅ **CORRIGÉE ce jour** | le schéma en compte **21**. `contracts/build.md:202` et `:820` corrigés, 685 verts. ⚠️ *Ne touche pas au « vingt-six » de la ligne 522 : c'est le compte des compétences, et il est juste* |
-| **Le barème captif en dur** | 🔴 **VRAIE, dormante** | `{half:1, proficient:2}` à **`decisions.mjs:288`** *(⚠️ remesuré le 2026-08-14 : ce fichier disait **211**, la ligne a dérivé UNE FOIS DE PLUS — c'est la deuxième dérive consignée pour cette même dette)* et **`derive.mjs:670`** *(exact)*. **Pourquoi dormante, remesuré** : chaque record de classe porte bien son `tier_costs`, mais les douze copies sont écrites par `gen-fh-skills-layer.mjs:361` en `tier_costs: { ...TIER_COSTS }` — **identiques par construction**, depuis l'unique `TIER_COSTS` de `fh-skills-source.mjs:370`. Elles ne peuvent diverger que si quelqu'un change le générateur |
-| **L'attribution hors document** | 🔴 **VRAIE, jamais construite** | `derive.mjs:1211`, `:1222`, `:1231` *(la passation disait 1091-1096)* : `base`, `dex` et `acBonus` sont nommés, puis jetés dans `resolved.ac`. Déclarée « prête » le 2026-08-09 |
-| **Le garde des copies** | 🔴 **VRAIE** | `grep -rln "fh-skill-builder" tests/ src/` → **rien**. Les 22 arcanes ne sont confrontées à aucune copie |
-| **`state.character` : document ou `resolved` ?** | 🔴 **VRAIE** | `session.mjs:203` et `:207` lisent `ch.savingProficiencies` et `ch.pb` ; `modules/fh/index.mjs:130-132` lit `destinyBuild.score`, puis `build.destinyFeats.score`, puis `ch.pb` — **trois noms de champs v1** |
-| **La grandeur « moyenne »** | 🔴 **VRAIE** | **`1140` : zéro occurrence** dans tout `ui/` et `src/`. `720` n'existe qu'**une** fois, le `@media` de `shell.css:187`, et c'est voulu (lot 38) |
-| **Le moment `mount`** | ⚠️ **MAL DITE** | « vocabulaire mort » est **faux** : `mount` est une **phase déclarée** dans 3 types de jet (`rolltypes.mjs:84`, `:95`, `:118`) et **posée comme état** (`session.mjs:829`). Ce qui est vrai, et rien de plus : **`run("mount")` n'est appelé nulle part** |
-
-📌 **Le taux, et c'est lui le signal** : sur neuf dettes héritées, **trois étaient
-déjà payées**, **une était mal dite**, **une s'est corrigée en trois mots**. Quatre
-seulement sont du travail réel. *Une dette recopiée n'est pas une dette vérifiée.*
-
-### ⭐ LE CHEMIN DU PERSONNAGE NEUF EXISTE DÉJÀ — trouvé le 2026-08-13
-
-**Le problème apparent** : `rebuild` **refuse** de dériver tant que le personnage
-n'est pas complet — trois portes qui jettent (`level`, puis `class`, puis **les six
-caracs**). D'où le personnage d'**exemple** chargé par `ui/builder/engine.mjs` :
-c'est la seule matière qui survit. Et comme le carnet alimente tous les écrans, ça
-avait l'air circulaire — lister les 12 classes exigerait un `rebuild`, qui exigerait
-déjà une classe.
-
-⭐ **La circularité n'existe pas.** `projectDecisions({ query, choices })`
-(`decisions.mjs:278`) ne demande **ni `resolved`, ni dérivation** — juste la pile et
-les choix — et **il est déjà exporté** (`index.mjs:22`). Vérifié : sur `choices: []`
-il publie `class` (12), `species` (12), `background` (4) ; on pose un Rogue seul et
-ses **4** créneaux apparaissent ; on pose un Araag et son choix suit.
-
-📌 **Ce que ça coûte : rien.** Aucune loi affaiblie, aucun verbe neuf. `rebuild`
-reste strict, il tourne quand les trois portes sont franchies.
-⛔ **Et ce n'est pas le travail du lot 42** — la *forme* du carnet est identique par
-les deux chemins.
-
-**Ce qui reste vraiment troué**, et c'est petit : aucun verbe ne **crée** un document
-vierge (le bloc `doc` a six verbes, pas de `create`), et aucun n'écrit
-`document.name` — ⚠️ et `set` n'est **pas** la réparation : la grammaire des chemins
-de choix est celle d'un *point de décision*, pas d'un champ de document.
-
-#### ⭐ ET LE BROUILLON EST TRANCHÉ — Eric, 2026-08-13
-
-**Un personnage à moitié construit doit pouvoir VOYAGER d'un appareil à l'autre.**
-*(Question posée dans sa forme utile : ce n'était pas « peut-on sauvegarder un
-brouillon », c'était « où vit-il ».)*
-
-| Piste | Verdict |
-|---|---|
-| Le brouillon vit dans l'interface | ❌ **écartée par Eric** — il ne voyagerait pas |
-| Rendre `resolved` **facultatif** dans `fh-char/1` | ⛔ **refusée par l'architecte** : ça casse la loi la plus forte du format — *un personnage joue sans ses couches, et le dit* |
-| ⭐ **Un schéma de brouillon** | ✅ **RETENUE** — petit, séparé, `fh-char/1` intact |
-
-⚠️ **ET LA CONTRAINTE QUI VA AVEC, parce qu'un brouillon est `fh-char/1` MOINS
-`resolved`** : deux schémas presque identiques, donc **deux copies d'une règle**, et
-la loi du dépôt est qu'elles divergent sauf si quelque chose les compare.
-
-⛔ **Le schéma de brouillon se DÉRIVE de `fh-char/1`, il ne s'écrit pas à côté.** Le
-patron existe déjà dans le code, avec sa loi : `readFromSchema(schema, route)`
-(`src/doc/schema.mjs:312`) — *« ce bloc lit sa règle dans le schéma et n'en invente
-aucune (loi §0.10) »*, et `contracts/doc.md:45` dit la même chose du bloc `doc` :
-*« il GÉNÈRE sa liste blanche à partir de lui : aucune règle n'est recopiée en
-code »*.
-
-📌 **Et la graduation est gratuite** : dès que `rebuild` réussit, `resolved` apparaît
-et le document valide `fh-char/1` **sans conversion**. Un brouillon ne se
-« transforme » pas — il **franchit les trois portes**.
-
-⏳ **Pas encore commandé, et c'est voulu** : la persistance est le **dernier** des
-quatre chantiers de la liste. Le commander avant que 42 et 43 aient tourné, ce
-serait écrire une commande qui se périme.
-
-### 👀 ET LA LEÇON NEUVE : REGARDER L'ÉCRAN TROUVE CE QUE LES SUITES NE VOIENT PAS
-
-Eric a demandé à voir le builder. Servi et parcouru, **trois défauts sont apparus
-qu'aucune des 684 assertions ne voyait** — dont **une faute dans le garde lui-même**
-(son motif matchait `white` dans `white-space`) et **le titre de la fiche cassé
-sans qu'un seul test rougisse**. 📌 **Sers le builder et regarde-le** : trois lignes
-de config, et ça vaut une relecture complète.
-
-**CE QUI RESTE OUVERT** :
-
-- ✅ ~~**Le worktree de `fh-phb`** et ses 76 lignes non commitées~~ — **MORTE
-  DEPUIS LE 2026-08-02, découvert le 2026-08-14.** Mesuré : `fh-phb` `106782f`,
-  *« Inject the site shell into the two tool pages during sync »*, **+76/−7**,
-  et son message dit lui-même *« recovered and rebased onto main »*. Le worktree
-  `youthful-taussig-bfa14e` n'existe plus (`.claude/worktrees/` vide,
-  `git worktree list` → le principal seul).
-  🔴 **Cette ligne a été recopiée comme « décision en attente » pendant DOUZE
-  JOURS, dans ce mandat et dans trois passations.** C'est la loi du dépôt
-  vérifiée sur ce fichier même : *une dette recopiée n'est pas une dette
-  vérifiée*, et **un mandat n'est pas plus fiable qu'une passation** — il est
-  seulement plus vieux, donc il accumule.
-- ✅ **Aucune branche distante à nettoyer** — `origin` ne porte que `main`.
-
-⛔ **ET AVANT DE TOUCHER UN WORKTREE, REGARDE `git status`.** Le 2026-08-12 au
-soir, ce siège a failli écraser **104 lignes non commitées** d'un lot qui
-travaillait — dernière écriture **51 secondes** plus tôt. Un worktree qui existe
-n'est pas un worktree vide.
-
-### ✅ LE PASSAGE ÉTAPE PAR ÉTAPE A EU LIEU — 2026-08-12
-
-**L'étape Compétences est SPÉCIFIÉE, décision par décision** (protocole 2b),
-zéro ligne de code. **Sept décisions d'Eric**, écrites dans le vault
-`Chantier FH & FHPC/FHV2 - Schémas d'écran.md` **§4** — c'est la commande du lot
-qui construira l'écran. Ne les redemande pas.
-
-### ⭐ L'ORDRE DES LOTS — et le prochain est le plus petit
-
-| | Lot | Pourquoi il est là |
-|---|---|---|
-| ✅ | ~~`36` `37` `38` `39`~~ | **tous fusionnés.** Le pool, son garde, les jetons, l'écran |
-| ⭐ **1** | **`40-review`** | **`render-fiche.mjs` existe déjà avec 20 tests** — il n'y a qu'à le brancher. Premier moment où un personnage **se construit ET se regarde**. Le plus petit lot, celui qui prouve le plus |
-| **2** | les quatre étapes « choisir un record » | Concept · Class · Species · **Inheritance** *(à renommer — l'arrière-plan n'existe plus)* |
-| **3** | **le lot moteur du HASARD** | 🔴 rien ne tire les dés ni les cartes. ⚠️ **Il pose la seule question de contrat de la liste** — voir la passation §8 |
-| **4** | `Universe & Layers` | la seule qui touche la persistance ; elle peut attendre |
-
-⚠️ **Mesuré : il reste HUIT étapes en placeholder**, pas sept comme ce fichier
-l'a longtemps annoncé (9 étapes, moins Compétences).
-
-⚠️ **Les dettes ENCORE dans le chemin critique** : les caracs `3d6 × 10 keep 6`
-et les cartes de Destinée **tirées** — des **étapes du builder déguisées en
-dettes de règles**. **Le pool négatif en est sorti** : payé par le lot 37.
-
-### 🐛 LES TROIS BUGS VIVANTS DE LA COQUILLE — pour le lot 38
-
-| Bug | Mesure |
-|---|---|
-| `shell.css:90` et `:110` | `color: #fff` **en dur** sur `var(--accent)` → **2,44:1** en sombre. **Le verbe principal échoue AA aujourd'hui** |
-| `shell.css:112` | lit `--decide`, **jamais défini nulle part** (repli à 3,49:1) |
-| La ceinture à 360 px | **7 places** pour **9 étapes**, et `shell.css:137` **efface les libellés** — de la compression, que le cadre d'Eric interdit |
-
-⚠️ **Et le défaut de fond** : `ui/builder/engine.mjs` monte le moteur **sans
-`modules:`** → `resolved.stats` revient **vide**, donc **l'écran ne voit pas le
-pool du tout**. **Resondé le 2026-08-13, et c'est plus large que rapporté** : avec
-les deux modules montés, le même document rend `fh:destiny = 10` **et**
-`fh:skill-points = 10`. L'écran perd donc **aussi le Score de Destinée**. Une
-ligne, confiée au lot 38 (§3h de sa commande).
-
-### 🔴 ET LA PALETTE RATIFIÉE ÉCHOUE AA — mesuré le 2026-08-13
-
-**Onze des dix-huit jetons de `PALETTE-FHV2.json` tombent sous AA sur la surface où
-ils s'affichent réellement.** Cause : chaque valeur est calée **exactement** sur
-4,5:1 **contre la dalle**, sans marge — or les encres s'affichent sur une **carte**
-(`surface`, 4,13–4,21) ou dans un **champ** (`creux`, 3,67–3,82).
-
-📌 **C'est la faute n°1 de ce siège — mesurer le mauvais objet — mais cette fois
-elle était dans un document RATIFIÉ, pas dans une commande de lot.** La parade
-reste la même : remesurer sur l'objet réel.
-
-✅ **CORRIGÉ le 2026-08-13, sur la parole d'Eric** — les **trois** familles de
-`PALETTE-FHV2.json`, et la bible §5b dont le tableau porte désormais le contraste
-**sur `creux`** (celui qui est garanti) au lieu du contraste sur la dalle. Teinte
-inchangée à **2,1°** près, les trois séparations ratifiées tenues, `on-accent`
-passé de 5,05/4,56 à **6,07/5,62**. Chaque jeton porte maintenant **deux** ratios.
-
-### 🔴 ET LA CORRECTION ELLE-MÊME AVAIT UNE FAUTE — trouvée par le lot 38
-
-**La boucle de recalcul comparait un contraste ARRONDI À DEUX DÉCIMALES à son
-seuil**, donc `2,9959` passait pour `3,00`. Le lot 38 l'a mesuré sur deux jetons et
-— n'ayant pas autorité sur la palette — a **abaissé ses propres seuils en écrivant
-les chiffres en clair** plutôt que de les arrondir en silence. **C'était le bon
-geste.** Remesuré en comparaison **exacte**, la faute portait sur **quatorze
-valeurs** des trois familles ; le garde n'en voyait que deux, celles que le builder
-câble. Corrigé, et les deux seuils du garde sont **redevenus nominaux**.
-
-📌 **La leçon, et elle est générale : ne compare jamais un arrondi à une limite.**
-Arrondir est un geste d'**affichage**.
-
-📌 **La demande a été faite AVANT d'écrire**, pas après : un siège ne réécrit pas
-en silence un document qu'Eric a signé — même quand la correction honore le propre
-critère d'Eric.
-
-⚠️ **Et une erreur d'application, rattrapée** : la première passe du script a
-**aussi** déplacé `texte` et `texte-doux`, qui **passaient déjà** (10,36 et 4,94).
-Leur clarté est un **choix esthétique**, pas un seuil. Restauré depuis la
-sauvegarde. 📌 *La forme de la faute : appliquer une règle à tout l'ensemble au lieu
-du sous-ensemble mesuré.*
-
-### 🔴 ET `ui/` N'A AUCUN TEST — mesuré le 2026-08-13
-
-`grep -rln "ui/builder\|shell.css" tests/` → **rien**. **538 lignes sans filet.**
-D'où la condition de sortie du lot 38 : un garde d'octets sur `shell.css`, attaqué
-cinq fois. Le patron existe déjà dans le dépôt (`tests/source-scan.mjs`, et
-`render-fiche.test.mjs` qui teste un rendu **sans DOM**).
-
-### 📐 LA BIBLE ESTHÉTIQUE — chantier ouvert le 2026-08-12
-
-Eric veut **un document de référence pour le design et les couleurs**, au lieu
-d'inventer une valeur par écran. Ce qui le motive, mesuré ce jour-là : le builder
-v1 porte **24 tailles de police pour 78 déclarations** (dont 7 tailles dans 3 px),
-**31 espacements**, et deux largeurs de colonne — **23,5 %** puis **51,3 %** —
-sans aucun rapport entre elles. La coquille v2 a ses couleurs tokenisées et
-**zéro jeton de taille** ; le nombre **720** y est écrit deux fois, dans le CSS
-et dans `shell.mjs`.
-
-- **La moitié mesurable** appartient à ce siège : échelle de type à ratio
-  constant (**1,25** — 8 marches, écart moyen 0,78 px contre les 78 déclarations
-  réelles ; le **nombre d'or est inutilisable pour le texte**, 3 marches et 18 px
-  d'écart max), espacements, correspondances de familles, inventaire des surfaces.
-  Page d'atelier publiée en artifact le 2026-08-12.
-- **La moitié décidable** appartient au **conseiller esthétique** (§6).
-- Destination : vault `Chantier FH & FHPC/FHV2 - Bible esthétique.md`, à créer.
-
-⭐ **Une contrainte ratifiée par Eric le 2026-08-12** : la **base mobile est
-360 px** — la largeur sur laquelle on dessine le téléphone. ⚠️ **À ne pas
-confondre avec les 720 px** de `shell.css:128` / `shell.mjs:66`, qui sont un
-**seuil de bascule**, pas une largeur de dessin.
-
-### 🔴 ET LE DOCK v1 PORTE DÉJÀ LA MOITIÉ DE CETTE BIBLE — trouvé le 2026-08-12
-
-**Une affirmation de ce siège a été démentie par la mesure une heure après avoir
-été écrite** : « 360 n'officialise rien d'existant, c'est du papier blanc ».
-**Faux.** `UI-DIMENSIONS.md`, **ratifié le 2026-08-02**, porte les trois nombres
-du dock : référence **425 × 680**, plancher de hauteur **620**, plancher de
-largeur **360**. Les trois nombres qu'Eric « croyait se souvenir » sont exacts —
-ce sont **ceux d'une fenêtre flottante quart d'écran**, pas d'une tablette.
-
-⚠️ **Deux règles écrites encadrent leur reprise, et elles étaient là avant nous :**
-
-1. `CODEX-ASSISTANT.md` — *« les **échelles et les noms** se reprennent
-   (typographie, vocabulaire) ; le **canevas** ne se reprend pas (425 × 680 est
-   la taille d'une fenêtre flottante, le builder est plein écran). En cas de
-   doute, demande au chef. »*
-2. `UI-DIMENSIONS.md` — *« Phones remain explicitly out of scope (Eric,
-   2026-08-02) : the mobile interface is a separate project with a different
-   logic, not a narrower version of this one. iPad is not "mobile" here. »*
-
-⭐ **Et `UI-TYPOGRAPHY.md`, ratifié le 2026-08-06, EST déjà une bible de type** —
-sept barreaux avec leurs noms parlés : **T1** 6,8 *micro* · **T2** 7,4 *mention*
-· **T3** 8,4 *libellé* · **T4** 9,6 *corps* · **T5** 11 *accent* · **T6** 13
-*titre* · **T7** 30 *grand nombre*. Nés de **43 tailles en pas de 0,1 px pour
-sept intentions**. Son ouverture dit mot pour mot le diagnostic d'Eric du
-2026-08-12 : *« Because a size could not be named, it could not be discussed, and
-so it was re-decided every time. »* Et son mécanisme de reprise est écrit :
-*« The names are shared across the dock; the numbers are local to a zone. »* —
-**les noms voyagent, les valeurs sont locales.** Le builder est une zone de plus.
-
-📌 **Ce que ça retire à ce siège** : la recommandation « ratio 1,25, la meilleure
-par la mesure » est **retirée**. Remesurée en **six barreaux** sur la seule plage
-d'interface (≤ 22 px, 72 des 78 déclarations), toutes les valeurs tiennent dans
-**0,05 px** — 1,125 → 0,60 · 1,14 → 0,61 · 1,15 → 0,63 · 1,2 → 0,62 · 1,25 → 0,65.
-**La donnée ne choisit pas le ratio.** Ce qui structure, c'est la forme héritée du
-dock : six barreaux continus **plus un grand nombre à part**.
-
-🔴 **La leçon, et c'est la même que le §5 du 2026-08-12** : ce siège n'ouvre pas
-spontanément les documents d'Eric. `UI-TYPOGRAPHY.md` avait **six jours** et
-répondait déjà à la question posée le soir même.
-
-### 🔴 CE QUE CE SIÈGE NE FAIT PAS SPONTANÉMENT, ET QU'IL DOIT FAIRE
-
-**Il lit le code, les contrats et les passations. Il NE LIT PAS les chapitres
-d'Eric.** Le 2026-08-12, Eric a dû demander lui-même « on ne m'a posé aucune
-question dessus ? » : ses **quatre modifications de classes**, sa **sous-classe
-Moonkeeper** et sa **roadmap de sous-classes** n'avaient jamais été ouvertes par
-aucun architecte. La méthode §5b — *l'architecte lit les chapitres et rend ses
-doutes* — a le meilleur rendement du chantier et **doit être déclenchée exprès**,
-sur les chapitres qui touchent le lot en cours.
-
-📌 **Les documents à ouvrir au moins une fois** :
-`5.RPG/…/0. D&D 5+ Rules/7. Classes & Subclasses/` · `5.RPG/…/9. Miscellaneous/FH
-— Roadmap & Directions.md`. ✅ **Le troisième est lu** — vault `Chantier FH &
-FHPC/FHPC — Étude builders du marché.md`, ouvert le 2026-08-12 : sa direction
-visuelle ratifiée est recopiée dans `CONSEILLER-ESTHETIQUE.md` §4, et le
-**FH overlay** qu'il introduit reste le troisième objet que l'architecture
-canonique ne prévoit pas — **toujours à trancher avec Eric**.
+| Produit | `CONSEILLER-PRODUIT.md` | fil d'Eric |
+| Interface Builder | `CONSEILLER-INTERFACE.md` | fil d'Eric |
+| **Esthétique** | `CONSEILLER-ESTHETIQUE.md` | ⭐ **en sous-agent, depuis ce fil** |
+| SRD (règles + juridique) · Fate's Hand · VTT | pas de mandat au dépôt | fils d'Eric |
+| ✍️ **GHOSTWRITER** — il n'est pas conseiller, **il ÉCRIT** | `GHOSTWRITER.md` | — |
+| Codex | `CODEX-ASSISTANT.md` | — |
+
+⚠️ **Ce que « joignable » veut dire, et ce que ça change.** Mesuré : les conseillers qui sont
+des **fils d'Eric** ne sont **pas** joignables depuis un fil d'architecte. Leur poser une
+question, c'est **le faire facteur** — ce que le §2 interdit. **Le patron à reprendre est
+celui de l'esthétique** : un mandat dans le dépôt, un lancement en **sous-agent**, une réponse
+dans ce fil.
+
+**Ce que ce siège doit savoir de GHOSTWRITER** : son périmètre est **le VAULT SEUL** — il ne
+synchronise pas, ne publie pas ; il signale quelles pages sont en retard. ⛔ **Son garde-fou** :
+une décision trouvée dans une transcription mais dans aucun document durable **n'est pas
+canon** — les fils contiennent aussi ce qu'Eric a **rejeté**.
+
+⚠️ **Et le piège qui l'a fait naître, remesuré le 2026-08-23 — il tient toujours** : le bloc
+canonique des compétences **n'est pas publié**. `grep -c "Revisited Skills" sync_from_vault.py`
+→ **0** ; le site est généré depuis `Skills & Tools — Player Guide.md`. **Corriger le canon
+seul ne change donc rien pour la table** — c'est le mécanisme qui a laissé un chapitre se
+contredire, et il est la raison d'être de ce siège-là.
+
+📌 **Ils se sont payés en une séance** : deux trous de contenu et un piège que l'architecte
+n'avait pas vus en deux jours. **Lire leurs réponses avant de refaire leur travail.**
 
 ---
 
-## 5-0. L'état antérieur (conservé pour le raisonnement)
-
-| Dépôt | `main` | Suites | Distant |
-|---|---|---|---|
-| `~/tools/fhpc` | `a10858e` | **530 vertes** | ⚠️ **4 commits d'avance, non poussés** |
-| `~/tools/fh-phb` | *(bouge à chaque entrée de ce fichier)* | — | à remesurer |
-| `~/tools/fh-srd` | `20c6598` | — | ✅ à jour |
-
-⛔ **NE CITE JAMAIS CES SHA DE MÉMOIRE — remesure-les.** Mesuré en direct le
-2026-08-09 : entre le démarrage d'un fil et sa quatrième commande, `fh-phb` a
-bougé de deux commits parce qu'Eric poussait pendant qu'on mesurait. Un SHA a
-ici une durée de vie de quelques minutes.
-`git ls-remote origin refs/heads/main` sur les trois dépôts, à chaque reprise.
-
-**Rien n'est en vol** : aucun worktree, aucun lot en cours, aucune fusion à
-moitié, arbres propres. Les branches de lot sont conservées, jamais `--force`.
-
-### 🧰 UNE HYGIÈNE QUI MANQUAIT, ET QUI FAISAIT MENTIR LE FILET
-
-`~/tools/fhpc` n'avait **aucun `node_modules`**. `ajv` se résolvait depuis
-`/Users/Eric/node_modules` en **8.18.0**, alors que le lock du dépôt déclare
-**8.20.0** : les suites de la copie de travail étaient jugées par un validateur
-que le dépôt ne déclare pas. Aucun test n'en tombait — c'est bien le problème.
-`npm ci` fait, 530 verts sous 8.20.0. **La routine « rejouer dans un clone
-indépendant avec `npm install` » n'avait jamais été appliquée au dépôt
-principal lui-même.**
-
-### ⭐ LE CHANTIER CHANGE DE NATURE — c'est LA chose à savoir en reprenant
-
-Le moteur et le contenu sont **faits**. Ce qui reste tient en un mot :
-**l'interface**, et elle n'a **pas une ligne** — mesuré : aucun HTML, aucun
-CSS, et les deux seules occurrences de `window.` dans `src/` sont des
-commentaires décrivant ce qui a été retiré.
-
-Conséquence de séquencement, et elle gouverne tout le reste : le filet couvre
-la **vue de jeu** (dock v1 en saisie manuelle si M4 glisse), il ne couvre
-**pas le builder**. Sans builder, la table n'a pas de personnages. **C'est le
-builder, et rien d'autre, qui décide du 7 novembre.**
-
-### Ce que cette session a livré
-
-| | |
-|---|---|
-| **Lot 21 `vibration-tilt`** fusionné | La Vibration était **morte** (elle interrogeait `destinyBuild`, absent du format v2 : 0 occurrence au schéma, 0 dans les documents). Le **Tilt** entre comme module à drapeau |
-| **Lot 22 `chapitre-4-competences`** fusionné | **26 compétences, 36 outils, 12 pools**. La couche retire autant qu'elle ajoute |
-| **Dette n°1 payée** | Le protocole des modules de statistique entre dans `contracts/build.md`, chaque clause adossée à son test |
-| **Deux décisions de règle d'Eric gravées** | Le Tilt côté cible (**+2, non cumulatif**) et sa composition avec le SRD (**une seule table**) |
-| **Renommage `Auspicious (fh)`** | Nom **et** id — mesuré qu'aucun document ne l'ancrait encore |
-| **Dates réalignées** | La dérive était de **deux jours** |
-
-### ⚠️ DEUX DETTES DE CE MANDAT ÉTAIENT FAUSSES — la leçon la plus chère du jour
-
-Elles avaient été **recopiées de passation en passation sans jamais être
-remesurées**, et un lot a dû refuser de travailler pour que la seconde tombe.
-
-1. **L'Épuisement** — annoncé « contradiction vive, le moteur applique −2 ».
-   Sonde : SRD pur −2/degré, **couche FH −1/degré**, déjà câblé et déjà testé.
-   La faute : lire la constante `SRD_EXHAUSTION_PER_LEVEL` (le **défaut avant
-   surcharge**) comme la valeur appliquée.
-2. **`GAP-BUDGET`** — annoncé non payé. `build.budgets` existe et est
-   `required` depuis le 2026-08-08.
-
-📌 **UNE DETTE RECOPIÉE N'EST PAS UNE DETTE VÉRIFIÉE.** Avant d'agir sur une
-ligne de ce fichier, la remesurer. C'est la consigne qui aurait économisé le
-plus de temps aujourd'hui.
-
-### ⚠️ CE QUE CE SIÈGE DOIT ENCORE — **remesuré une par une le 2026-08-09**
-
-> 📌 Chaque ligne porte la mesure qui la prouve, refaite ce jour-là. Une dette
-> sans sa mesure est une rumeur : quand tu la reprends, refais-la.
-
-1. ~~**La dérivation du pool de compétences**~~ ✅ **PAYÉE** — lot 23 fusionné
-   (`a10858e`, 530 verts). Le module `fh.skills` publie `fh:skill-points` dans
-   `resolved.stats[]` avec son détail.
-2. **`state.character` : le document ou `resolved` ?** — et **la dette n°4 est
-   la même réparation, pas une autre**. Mesuré : `session.mjs:1578` `open()`
-   reçoit `character` d'un appelant ; `session.mjs:203` lit
-   `ch.savingProficiencies` ; `index.mjs:130` `normalizeDestiny` lit
-   `ch.destinyBuild.score`, puis `ch.build.destinyFeats.score`, puis `ch.pb` —
-   **trois noms de champs v1 dans une seule fonction**, aucun au schéma
-   `resolved`. **Aucun appelant de production.** ⚠️ Bloquante dès que
-   l'interface ouvrira une séance. **Un lot, pas deux.**
-3. **Le moment `mount` n'est invoqué nulle part** — remesuré : déclaré
-   `sequence.mjs:48` ; les `run("…")` du dépôt sont `session-clear`, `reopen`,
-   `result`, `pre-roll` ×2, `session-open`, `session-snapshot`. `run("mount")`
-   n'apparaît **que dans un commentaire**. Vocabulaire mort (§0.6).
-4. *(fusionnée dans la n°2 — c'est la même fonction.)*
-5. **Le garde des copies** — remesuré : 22 cartes dans
-   `layers/fh-arcana-en.layer.json`, 22 dans `fh-skills/fh-skill-builder.html`,
-   et `tests/fh-arcana.test.mjs` ne compare la couche **qu'à elle-même**. Rien
-   ne confronte les copies. Débloqué : il attendait le lot 21, fusionné.
-
-### ⭐ TROIS LOTS DE CONTRAT NÉS DU CONSEILLER INTERFACE (2026-08-09)
-
-Le conseiller `EXPERT interface Builder` a rendu son premier rapport, et il a
-sorti **trois trous de contrat** que ce siège n'avait pas vus. **Les trois
-mesures ont été refaites par l'architecte, les trois tiennent.** Les trois
-lots sont courts, et **tous les trois coûtent nettement plus cher une fois le
-builder écrit**.
-
-| Lot | Mesure qui le motive | Statut |
-|---|---|---|
-| **Verbe de retrait `clear{path}`** | `block.mjs:127` `place()` pose ou remplace, **jamais ne retire** ; les cinq verbes sont `choose·set·override·rebuild·validate` ; `grep "clear\|remove\|unset\|delete" src/build/` → **zéro**. Sans lui, un joueur ne peut pas changer d'avis et un MJ ne peut pas **lever** une surcharge posée par erreur | ✅ **ACCORDÉ par l'architecte.** Les deux autres formes (`set{value:null}`, `choose{ref:null}`) sont écartées : elles entrent en collision frontale avec deux refus déjà écrits et testés |
-| **`violations` en `{path, message}`** | 13 sites, tous des phrases françaises en gabarit ; le chemin fautif est **dans la prose**. Une interface devrait analyser du français pour poser une marque rouge au bon endroit | à trancher **avec Eric** : message, ou **clef + paramètres** (§0.13) ? Ça double le lot et ne se refait pas deux fois — ses diagnostics sont en français, sa table joue en anglais |
-| **Attribution hors document** | ⭐ **La question que l'expert m'assignait, et la réponse est OUI** : `derive.mjs:1091-1096` calcule `base`, `dex` et `acBonus` — nommés, dans la même portée — puis les jette dans `resolved.ac = base + dex + acBonus`. La provenance existe une ligne avant d'être perdue. `rebuild` rend déjà cinq carnets hors document (`underived`, `unconsumed`, `shadowed`, `warnings`, `diff`) ; un sixième ne change pas la nature du verbe | prêt |
-
-⚠️ **Séquencement** : le lot d'attribution vise `src/build/derive.mjs`, que le
-lot 23 écrivait. Il est maintenant libre — mais le test d'Eric reste la règle :
-*le prompt du lot cite-t-il un fichier qu'un autre lot est en train d'écrire ?*
-
-📌 **Et un fait mineur, mesuré, à corriger en passant** : `resolved.required`
-compte **21** clefs, `contracts/build.md:109` et `:383` disent « vingt ». Sans
-danger — vérifié que le garde **lit le schéma**
-(`tests/build-derive.test.mjs:48`) au lieu de compter 20 en dur. Trois mots.
-
-### Ce qui attend une décision d'ERIC
-
-| Sujet | |
-|---|---|
-| ~~**76 lignes non commitées, retrouvées au ménage**~~ | ✅ **RÉSOLUE LE 2026-08-02, remesurée le 2026-08-14** : `fh-phb` `106782f` porte les **+76/−7** de `sync_from_vault.py` (injection du shell du site sur les pages builder et roller). Le worktree a disparu, la fonctionnalité est sur `main`. **Elle n'a jamais attendu Eric passé le 2 août** |
-| ~~Les imposés d'ESPÈCE se déduisent-ils du pool ?~~ | ✅ **TRANCHÉ PAR ERIC LE 2026-08-09, ET IMPLÉMENTÉ** *(lot 24)* — **dette périmée, recopiée de passation en passation, retirée le 2026-08-13.** Remesuré : `skill-pool.mjs:474-507` pose **deux** lignes, `+count × cost` puis `−count × cost`, avec le **même** `cost` (`tier_costs.imposed`, lu sur le record — `imposedCost()`, jamais en dur). **Net zéro par construction**, quel que soit le barème. ⭐ **L'argument, et il est bon** : convertir le don en points libres lui ferait **perdre sa restriction** — les 2 points de Keen Senses ne tirent que dans `{survival, delve, vigilance}`. Carnet vérifié sur 4 espèces : Human et Araag sont à **12** contre **10** pour Elf et Loroka, et l'écart vient **entièrement** d'`Educated` / `Fast Learner` (+2 au niveau 1), **pas** du don d'espèce |
-| **`build.budgets` : on le garde ou on le retire ?** | Plus **aucun** consommateur connu depuis que le pool est parti dans `resolved.stats[]`. Champ `required` d'un **schéma public** : le retirer n'est pas le geste d'un lot. La loi §0.6 (pas de vocabulaire mort) dit de le retirer ; la prudence dit qu'un schéma public ne se rétrécit pas à la légère |
-| **Le découpage du builder** | « Builder desktop complet » est un jalon, pas un lot. Recommandation de ce siège, **confirmée par le conseiller interface** : une première tranche qui fait **un personnage niveau 1 de bout en bout à l'écran**, et rien d'autre |
-| **La « tranche 0 » proposée par le conseiller** | Une marche **avant** la tranche 1 : la fiche en **lecture seule**, une page qui défile, zéro onglet, zéro design — un instrument, pas une maquette. Elle mesure si le document **se regarde** (le M2 n'a prouvé qu'il se *construit*). ⚠️ Elle ne demande **aucun dessin à Eric** : le geste qu'on lui demandera est de **trier** devant la page (« ça reste visible, ça part derrière un onglet »), pas d'inventer une mise en page. Six rubriques de `resolved` n'ont aucune place dans le v1 : `speeds`, `senses`, `languages`, `currency`, `resources` — et **`stats`, celle qui porte le pool et le Score** |
-| ~~Le conseiller « interface de builder »~~ | ✅ **Créé et il a rendu.** Trois trous de contrat, tous vérifiés justes. Fil : `EXPERT interface Builder` |
-| ~~Le chiffre de l'Épuisement~~ | ✅ −1, et c'était déjà le comportement |
-| ~~Le Tilt (DC, composition SRD)~~ | ✅ les deux tranchés |
-| ~~`Auspicious (fh)`~~ | ✅ renommé. Le homebrew DDB garde l'ancien nom — **décision d'Eric, ne pas y revenir** : le canon est le dépôt |
-
-### 📉 LE TAUX D'ERREUR DE CE SIÈGE, AUJOURD'HUI — et c'est lui le vrai signal
-
-**Dix erreurs en une session.** Huit rattrapées avant publication, **deux
-seulement par les lots eux-mêmes** :
-
-- **Deux commandes de lot fausses** : le lot 21 a démenti « `state.character`
-  est bien un `fh-char/1` » (une inférence présentée comme une mesure) ; le lot
-  22 a démenti « aucun trou de contrat sur ta route » — j'avais vérifié qu'un
-  champ **existe** sans vérifier qu'il est **écrivable**.
-- **Trois sondes sur le mauvais objet** : la condition d'un `throw` recopiée
-  sans ses sorties anticipées (elle annonçait un défaut grave inexistant) ;
-  `vibrationFor` cherché sur le mauvais objet ; un `grep` du mot `document`
-  qui est le mot du domaine ici.
-- **Un faux positif de revue** : un test lu comme *supprimé* alors qu'il était
-  *renommé* — il aurait accusé un lot d'avoir violé la loi §0.7.
-- **Trois fautes d'outillage** : `git merge -F -` ne lit pas stdin (la fusion a
-  échoué en silence, seule la re-mesure l'a vue) ; un message de commit amputé
-  par des backticks non protégés ; un SHA de `fh-phb` publié pour `fhpc`.
-
-📌 **La forme est toujours la même — mesurer le mauvais objet — et elle se
-renouvelle indéfiniment.** La seule parade qui a marché à chaque fois :
-**re-mesurer quand le résultat surprend, et montrer la mesure plutôt que la
-conclusion.** C'est aussi pourquoi les quatre corrections apportées par des
-lots sont des résultats et non des incidents : **la revue marche dans les deux
-sens.**
-
-## 5e. CE QUE LA SOIRÉE DU 2026-08-08 A APPRIS — à lire avant de reprendre
-
-### ✅ PAYÉ LE 2026-08-08 — le genre `arcana` est ouvert (`fhpc` `d8273b9`)
-
-`GAP-KIND` est **clos**, 440 tests verts, revérifiés dans un clone indépendant.
-Ce qui suit est conservé parce que le raisonnement reste la meilleure
-description de *pourquoi* c'était la pièce à poser en premier.
-
-**Et l'ouverture a donné plus que prévu.** `$defs/kind` est référencé à **deux**
-endroits de `fh-char/1` — `build.choices[].ref.kind` et
-`resolved.stats[].breakdown[].source.kind`. Ouvrir le genre répond donc **aussi**
-à « où vit l'Arcane du personnage ? » (`contracts/play.md` n°9, ouverte depuis
-le lot 16), **sans un champ neuf** : la carte se pose comme l'espèce, la classe
-et l'historique se posent déjà. Il ne reste **rien de contractuel** — du
-contenu (la couche des 22 cartes) et de la dérivation.
-
-⚠️ **Une collision a dû être arbitrée, et c'est la première exemption à une loi
-qu'Eric a ratifiée.** Le garde §0.12 interdit le vocabulaire Fate's Hand dans
-`src/layers/` et mord sur `"destiny"` nu comme sur `resolveArcana` — or
-l'énumération fermée **exige** que `arcana` y soit écrit, sous garde de dérive.
-Arbitrage : un nom de genre est une **clef de vocabulaire**, pas une mécanique ;
-le critère de §0.12 (*« un personnage SRD pur traverse-t-il ce code ? »*) reste
-vrai, le genre est un seau vide. Le masque ne retire que le genre **entre
-guillemets**, sa liste est **lue dans le schéma**, sa portée est `src/layers/`
-seul, et **il est attaqué**. Le MCP, lui, n'a reçu **aucune** exemption : sa
-liste de genres était une copie du contrat qui avait déjà dérivé, elle est
-retirée. **À revoir si Eric préfère un autre arbitrage — c'est un commit.**
-
-⚠️ **Le genre `arcana` n'existait pas dans l'énumération fermée des genres**
-(`fh-char.schema.json` et `fh-layer.schema.json`). C'était le trou `GAP-KIND`,
-devenu bloquant : le lot 19 a dû **déclarer** l'impact de l'Arcane non
-dérivable faute de pouvoir le lire.
-
-**Or c'est le terme le plus important, mesuré sur les personnages réels d'Eric** :
-
-| Fait mesuré | Chiffre |
-|---|---|
-| Personnages portant un Arcane | **7 sur 7** |
-| Valeur de l'impact | **variable : 0, 1 ou 2 selon la carte** — jamais codable en dur |
-| Personnages portant `Destiny Touched (fh)` (+2) | **5 sur 7** |
-| Personnages portant sorts / rituels / craft / gear | **0 sur 7** ⚠️ mais le format v1 n'a **aucun champ** pour ça : l'absence ne prouve rien sur la table |
-
-→ **Ouvrir le genre `arcana` est du contrat, donc le travail de ce siège**, et
-il précède le lot des Arcanes. ✅ **Fait le 2026-08-08.**
-
-📌 **Et une distinction que la mesure a rendue nette** : le don
-`Destiny Touched (fh)` (+2, porté par 5 personnages sur 7) **n'a jamais été
-bloqué par le schéma**. `feat` est un genre depuis le premier jour ; il ne
-manquait qu'un *record*. Les deux moitiés du lot des Arcanes n'avaient donc
-pas le même obstacle — une seule attendait du contrat.
-
-### La source de vérité des Arcanes, triangulée
-
-`~/tools/fh-skills/fh-skill-builder.html`, `const ARCANA` — **c'est l'outil que
-la table utilise**, et il est confirmé par les personnages réels. Le chapitre du
-site le répète à l'identique (22/22), et site et vault ne diffèrent que par la
-syntaxe des liens. **Pas de conflit à arbitrer.** Voir kickoff §7, requalifié.
-
-### Le verdict d'Eric sur ce qui attend, et ce qui n'attend pas
-
-| Sujet | Verdict, et pourquoi |
-|---|---|
-| **22 Arcanes** | 🔴 **maintenant** — 7/7, valeur variable |
-| **`Destiny Touched (fh)`** | 🟠 **maintenant**, ce don SEUL. Le catalogue complet avec filtrage est plus tard |
-| **Battlefield** | 🟢 plus tard, **et sans doute jamais comme donnée** : tout se ramène à avantage/désavantage/+2, que le moteur a déjà |
-| **Dark rituals · Soulforging** | 🟢 plus tard — 0/7, et `craft` attend déjà au schéma |
-| **Sorts** | ⚠️ **indéterminé** : le format v1 ne portait pas les sorts, donc leur absence ne mesure rien. Les 339 sorts SRD sont dans la couche ; ce qui manque est le **chapitre 6** d'Eric |
-
-### Les erreurs de mesure de ce siège — quatre en une soirée
-
-Toutes rattrapées avant publication, **aucune sortie vers Eric comme un fait** —
-mais le taux est le vrai signal, et c'est lui qui a motivé la passation :
-
-1. Sonde MCP écrite avec les **mauvaises clefs `_meta`** → le serveur semblait
-   en erreur. C'était la sonde.
-2. Attaque d'un garde lancée sur **le mauvais fichier de suite** → verte, ce qui
-   aurait accusé un lot à tort.
-3. Lecture de `data.destiny` sur des records **`patch`**, qui portent leurs
-   valeurs sous `changes` → « 9 espèces sans Base de Destinée », faux.
-4. Attaque du garde de somme injectée dans **un terme du détail au lieu du
-   total** → la somme restait cohérente, ce qui aurait dit « le garde ne couvre
-   pas ce chemin ».
-
-📌 **Les quatre sont la même faute** : mesurer le mauvais objet. C'est l'erreur
-n°1 du §5c, et elle se reproduit sous des formes nouvelles à chaque fois. La
-parade qui a marché à chaque coup : **quand une mesure contredit ce qu'on
-attend, suspecter d'abord son propre protocole.**
-
----
-
-### 🎉 Le M2 est complet, et le produit fait ce qu'il promet
-
-> Un personnage de niveau 1 **se construit de bout en bout sans interface**, il
-> **se pilote de l'extérieur par MCP**, il **se sauvegarde et voyage**, et il
-> tourne **sur la vraie matière** — sans échafaudage.
-
-Lots fusionnés depuis la version précédente de ce fichier : `8-srd-mecanique`,
-`9-bloc-build`, `10-mcp-v0`, `11-srd-colonnes`, `12-build-gardes`,
-`13-confrontation`, `14-bloc-doc`, `15-couche-fh-especes`,
-`16-moteur-destinee`, `17-couche-fh-retrait`.
-
-### ⭐ Et la couche Fate's Hand existe
-
-**C'est la première fois que les règles d'Eric ne sont plus un document mais du
-logiciel.** Les douze espèces, en anglais, par-dessus le SRD — `Splinter of
-Anon`, `Twice-Born`, `Outlasting`, les Bases de Destinée, `Educated` et `Fast
-Learner`. Le moteur plafonne le Score et la **Vibration**, perdue au portage,
-est revenue. Et les couches savent enfin **retirer**.
-
-**Décision de cadre d'Eric** : la couche FH est **publique**, les règles
-actuelles sont publiques, rien de l'actuel n'est à vendre ; des aspects payants
-viendront plus tard sous forme de contenu bloqué. **Sa table joue en anglais** —
-le français viendra après coup.
-
----
-
-## 5b. LA MÉTHODE QUI A PAYÉ — à reprendre telle quelle
-
-Eric relit **ses propres chapitres** avec ce siège : l'architecte lit, rend sa
-lecture **et ses doutes**, Eric corrige. Rendement mesuré sur trois chapitres :
-
-- **huit corrections** aux chapitres d'Eric (portées en tâches, vault `0.TASKS/Tasks RPG.md`) ;
-- **deux défauts réels dans le code** — le Score qui ne plafonnait rien, la
-  Vibration perdue au portage ;
-- **deux fausses alertes de l'architecte**, retirées après vérification.
-
-📌 **Aucun des deux défauts n'aurait été trouvé en lisant le code seul, ni les
-règles seules.** Il fallait les confronter. C'est le rendement le plus élevé de
-tout le chantier, et il ne coûte que du temps de lecture.
-
-⚠️ **Et un taux d'erreur de deux sur quatre, du côté de l'architecte.** C'est la
-raison pour laquelle chaque mesure est **montrée** à Eric plutôt que résumée en
-conclusion.
-
----
-
-## 5c. LES TROIS ERREURS DE CE SIÈGE — les plus chères de la session
-
-**Elles valent plus que les réussites : elles disent où ce siège dérive.**
-
-1. **Une mesure faite sur le mauvais objet.** L'architecte a publié au board
-   qu'une affirmation d'un lot était fausse, « vérifié de quatre façons ».
-   Il cherchait le **nom d'une classe** — or une table de progression ne
-   contient jamais le nom de sa classe, elle porte des **noms d'aptitude**. Sa
-   frontière de mot excluait même « Bardic ». Quatre vérifications, toutes sur
-   le mauvais objet, et une conclusion assurée publiée à Eric.
-   → **Une mesure fausse est plus dangereuse qu'une absence de mesure : elle
-   porte l'autorité d'un chiffre.**
-2. **Une hygiène qui masquait un défaut.** Il n'a pas reproduit une instabilité
-   de suite rapportée par un lot, parce qu'il remettait l'arbre propre entre ses
-   passes. Le défaut était réel — une contamination **entre** exécutions.
-   → **Quand une mesure contredit un rapport, suspecte d'abord ton protocole.**
-3. **Deux lectures hâtives du domaine.** Il a pris « la vibration » pour une
-   coquille de dictée (c'est un élément de premier rang des 22 Arcanes), et a
-   écrit que la contribution de l'Arcane au Score n'était pas chiffrée (chaque
-   carte porte son `Destiny Impact`).
-   → **Le domaine d'Eric ne se devine pas. Aller lire vaut mieux que déduire.**
-
----
-
-## 5d. CE QUE CE SIÈGE DOIT ENCORE — dettes annoncées et NON payées
-
-1. ⚠️ **La révision du schéma.** Le **Score de Destinée** avec son détail de
-   calcul (`GAP-DERIVED`) et **`build.budgets`** pour le pool de compétences
-   (`GAP-BUDGET`). **Tant qu'elle manque, le Score existe dans le moteur mais
-   PAS dans le document — il ne voyage donc pas avec le personnage**, et le
-   plafond ne peut pas s'appuyer sur une valeur portée par la fiche.
-   > 📌 Fait établi en lisant le chapitre 3 : **le Score n'est pas une formule
-   > fermée.** Maîtrise + Base d'espèce + `Destiny Impact` de l'Arcane sont
-   > chiffrés ; **l'arrière-plan et la Gloire/Damnation sont des décisions de
-   > MJ**. Le Score est donc **largement dérivable, partiellement tenu** — il
-   > lui faut une collection avec son détail, pas un champ.
-
-   ### ⚠️ ET LA DETTE EST À TROIS MAILLONS, PAS UN — mesuré le 2026-08-08
-
-   Écrire le schéma seul déplacerait le trou d'un cran. Les trois mesures, à
-   refaire plutôt qu'à croire :
-
-   | Maillon | Mesure | Qui |
-   |---|---|---|
-   | **Le schéma** | `fh-char.schema.json` : `stats` **0**, `budgets` **0**, `destiny` **0** occurrence (pour comparaison, `craft` et `resources` : 2 chacun) | contrat → **architecte** |
-   | **La dérivation** | `grep -rn "destiny\|stats" src/build/` → **aucune ligne**, alors que `layers/fh-species-en.layer.json` porte déjà `data.destiny.base` par espèce (Araag = 2). Personne ne lit ce champ | un lot court |
-   | **La porte du moteur** | `src/modules/fh/index.mjs:114-118` lit `character.destinyBuild.score` et `build.destinyFeats.score` — des **noms de champs v1** qu'aucun bloc n'écrit, présents seulement dans les harnais de test | le même lot |
-
-   **Q15-8 est TRANCHÉE par Eric le 2026-08-08**, et `GAP-BUDGET` est donc
-   débloqué : un personnage créé au **niveau 5** reçoit les paliers qu'il a
-   **traversés** — +2 au niveau 1, +2 au niveau 3 — et **pas** celui du niveau
-   6. `by_level` est cumulatif sur les niveaux ≤ niveau courant.
-
-   **`GAP-DERIVED` attend l'EXPERT Fate's Hand** (question posée le
-   2026-08-08, à sa demande explicite) : l'arrière-plan et la Gloire/Damnation
-   sont-ils des **termes de la même somme**, ou d'une autre nature ? et la
-   Gloire/Damnation **bouge-t-elle en cours de campagne** ?
-
-2. ✅ **Le câblage MCP → `doc` — PAYÉ le 2026-08-08** (`fhpc` `15db710`, 415
-   tests verts). Une IA **garde** un personnage, elle ne fait plus que le
-   construire. Trois outils qui ne fabriquent rien et routent vers les verbes
-   du lot 14 ; `src/mcp/` ne gagne pas une ligne de disque.
-   > 📌 **La décision qui vaut d'être retenue** : *le catalogue décrit LE
-   > SERVEUR, pas le dépôt.* Le magasin vient de `--store` et n'a aucun défaut
-   > (décision D2) ; sans lui, le bloc `doc` n'est pas monté et ses outils ne
-   > sont **pas publiés**. Publier `doc.save` sans pouvoir enregistrer
-   > promettrait une porte qui n'ouvre sur rien — et **une IA lit un catalogue
-   > comme un contrat**.
-
-### Ce qui attend une réponse d'Eric
-
-- La description de l'**Humain** a été corrigée **sans qu'il le demande** (la
-  prose SRD décrivait `Resourceful`, que le lot retirait) — réversible.
-- **« Forest Gnome » / « Rock Gnome »** survivent dans le texte du trait de
-  lignage du Hoddon : dépend de ses sous-lignées, non tranchées.
-- **`Ceremony` n'est pas au SRD** (vérifié sur 339 sorts) : Eric a tranché
-  qu'un sort neuf sous un autre nom porterait l'effet — travail du chapitre des
-  sorts.
-- La **licence** de la couche FH, posée au plus strict en attendant.
-- Les points ouverts du BRIEF §11 — **aucun ne bloque le 7 novembre**, et le
-  n°1 (partage de homebrew) est **résolu** : le site d'Eric tient **une liste**,
-  chacun héberge et décide de partager.
-
-### La suite de la couche FH, avec Eric
-
-Chapitre 4 (26 compétences, 4 paliers, pool par classe) · les 22 Arcanes · les
-Tables de Fatalité. 📌 **Le contenu n'est pas le problème** — les Arcanes et les
-Tables sont **déjà des données propres**. Ce sont les règles écrites nulle part
-qui bloquaient, et une dizaine ont été réglées en une soirée.
-
-**Calendrier** : 91 jours avant le 7 novembre au moment de cette passation, et
-le M2 était planifié « début septembre ». L'avance est réelle.
-
-
-## 6. Les conseillers — les consulter avant de deviner
-
-Quatre sièges répondent à des questions et ne modifient rien (§8 du kickoff).
-Retrouvables par leur titre, joignables par message.
-
-| Conseiller | Titre du fil |
-|---|---|
-| Produit | `EXPERT produit` — **précède ce siège et en a suggéré la création** ; mandat : `CONSEILLER-PRODUIT.md` |
-| SRD (règles + juridique) | `EXPERT conseiller SRD` |
-| Fate's Hand | `EXPERT Fate's Hand system advisor` |
-| VTT | `EXPERT  conseiller VTT` (deux espaces) |
-| Interface Builder | `EXPERT interface Builder` — a rendu trois trous de contrat, tous vérifiés justes |
-| **Esthétique** | ⭐ **créé le 2026-08-12, et il est d'une autre nature** : mandat `CONSEILLER-ESTHETIQUE.md`, **lancé comme sous-agent depuis le fil d'architecte** |
-
-### ⚠️ Ce que « joignable » veut dire, et ce que ça change
-
-**Mesuré le 2026-08-12 : les cinq premiers conseillers ne sont PAS joignables
-depuis un fil d'architecte** (`ListAgents` → aucun agent). Ce sont des fils
-d'Eric ; lui poser une question, c'est **le faire facteur** — ce que le §1 de ce
-mandat interdit pourtant.
-
-Le siège **esthétique** est le premier à casser ça : il se lance en sous-agent,
-il répond dans ce fil, et son mandat vit dans le dépôt pour survivre à la session.
-**C'est le patron à reprendre** quand un conseiller doit travailler avec
-l'architecte plutôt qu'avec Eric.
-
-### ✍️ Et un cinquième siège, créé le 2026-08-08 : `GHOSTWRITER`
-
-**Il n'est pas un conseiller — il ÉCRIT.** Mandat : `GHOSTWRITER.md`. Sa mission :
-faire entrer dans le TEXTE des règles les décisions ratifiées en fil d'architecte,
-pour que le vault et le site publié disent enfin la même chose.
-
-**Son périmètre, resserré par Eric le 2026-08-08 : le VAULT SEUL.** Il ne lance pas
-`sync_from_vault.py`, ne construit pas le site, ne publie pas — il signale seulement
-quelles pages publiées sont devenues en retard. La synchronisation reste le geste
-d'Eric.
-
-**Sa cadence, deux régimes** : *courant* (porter chaque décision dans le texte pendant
-qu'elle est fraîche — prioritaire) et *rattrapage*, qui est une **FOUILLE** : Eric a
-explicitement demandé qu'il aille chercher **ce qui a été décidé dans les fils
-d'architecte précédents et n'est jamais arrivé dans `Tasks RPG.md`**.
-
-⚠️ **Ce que ce siège-ci doit savoir de lui** : le **bloc canonique des compétences n'est
-pas publié** — `grep -c "Revisited Skills" sync_from_vault.py` → **0**. Le site est
-généré depuis `Skills & Tools — Player Guide.md`, pas depuis le canon. Corriger le canon
-seul ne change donc rien pour la table. C'est le mécanisme qui a laissé le chapitre 4 se
-contredire, et c'est pour ça que ce siège existe.
-
-⛔ **Et le garde-fou qu'on lui a gravé** : une décision trouvée dans une transcription
-mais dans aucun document durable **n'est pas canon** — les fils contiennent aussi ce
-qu'Eric a **rejeté**. Il remonte, il n'écrit pas.
-
-**Ils se sont payés en une séance** : les deux trous de contenu ci-dessus et le
-piège `keepArcana` viennent d'eux, et l'architecte ne les avait pas vus en deux
-jours. **Lire leurs réponses avant de refaire leur travail.**
+## 12. Ce fichier
+
+**Il vit dans le dépôt pour deux raisons : il survit aux fils, et il se corrige.** Un prompt
+collé fige l'état du jour où il a été écrit.
+
+⛔ **Trois choses n'entrent pas ici, jamais** : un **SHA**, un **compte de tests**, une **liste
+de lots en vol**. Elles vont au tableau de bord, qui est fait pour ça. Une seule suffit à faire
+mentir tout le reste du fichier — c'est comme ça qu'il est arrivé à 1286 lignes.
+
+📌 **Quand tu retires quelque chose d'ici**, la question n'est pas « est-ce que ça sert ? »
+mais **« est-ce que ça se vérifie aujourd'hui ? »** — vrai et vérifiable → ça reste, resserré ·
+c'était vrai et ça raconte → **`ARCHITECTE-ARCHIVE.md`**, daté · c'est faux → ça sort, **et tu
+le nommes** en tête de l'archive.
