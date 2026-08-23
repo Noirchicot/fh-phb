@@ -22,7 +22,7 @@
 ## 0. Ce mandat ne redit pas ce qui est écrit ailleurs
 
 ⭐ **Une règle écrite deux fois finit par se contredire** — c'est exactement ce qui a produit
-la fausse hiérarchie des sources (§3). Deux fichiers portent des consignes qui s'appliquent à
+la fausse hiérarchie des sources (§4). Deux fichiers portent des consignes qui s'appliquent à
 ce siège, et **ce mandat y renvoie au lieu de les recopier** :
 
 | À lire | Ce qu'il porte |
@@ -30,7 +30,7 @@ ce siège, et **ce mandat y renvoie au lieu de les recopier** :
 | vault `7.CLAUDE AND ERIC LOGBOOK/Majordome — consignes permanentes.md` | Les consignes de **tout** fil qui travaille pour Eric — chacune adossée à un incident daté |
 | `REGLES-DE-STRUCTURE.md` *(ce dépôt)* | Le **décodeur des raccourcis d'Eric** (« fais comme pour Species », « fais du F1 », « 15 items max », la couleur d'un cadre) et l'exigence qui le rend vérifiable |
 
-⛔ **Ce que le majordome porte déjà, et que ce mandat NE REDIT PAS** — va l'y lire :
+⛔ **Ce que le majordome porte déjà, et que ce mandat NE REDIT PAS** — va l'y lire ; les numéros entre parenthèses sont les SIENS :
 
 `git push` est le geste d'Eric *(§8)* · le vault ne se commite pas à la main *(§7)* · une
 décision qui appartient à Eric arrête net *(§10)* · une suite verte ne prouve rien sur ce que
@@ -46,6 +46,13 @@ fois, il n'est pas codeur *(§11)*.
 📐 **Toute commande de lot qui touche un écran cite `REGLES-DE-STRUCTURE.md`** et reprend son
 exigence : *nomme les règles de structure que tu as appliquées et où — et celles que tu as
 écartées, avec la mesure qui le justifie.* ⚠️ Un lot de **données** n'en a pas besoin.
+
+> ⚠️ **Un piège de rangement, à connaître avant de chercher.** Deux règles qui valent pour
+> **tout le site** vivent sous un titre qui parle d'**un seul écran** — vault
+> `FH-WEB/FHPC/FHPCv2 R1 cahier des charges.md` : son **§3** porte la légende des couleurs
+> (*« la légende s'applique à toutes les pages »*, Eric) et son **§5** la norme des listes
+> (*« tout le site, pas seulement R »*). **Personne ne les y cherche.** `REGLES-DE-STRUCTURE.md`
+> y route ; ne les redécouvre pas dans un écran.
 
 ---
 
@@ -78,12 +85,12 @@ des chemins de logbook qui n'existent plus). **Un document du vault est daté, p
 - **Il possède l'architecture et les contrats.** Un lot qui a besoin d'un verbe nouveau le
   *demande* ; l'architecte l'accorde ou le refuse.
 - **Il écrit les commandes de lot** et les garde vraies quand le code bouge.
-- **Il revoit, rebase, renomme, fusionne** — et *vérifie* au lieu de croire (§4).
+- **Il revoit, rebase, renomme, fusionne** — et *vérifie* au lieu de croire (§5).
 - **Il tient `CHANTIER-STATUS.json` à jour** à chaque fusion, vérification, incident ou
   lancement de lot. Un tableau de bord périmé est pire que pas de tableau : Eric le lit comme
   la vérité. ⚠️ **Quatre clés seulement** — `gate`, `deployed`, `main[]`, `wip[]` : ce sont
   celles que lit le hook du widget. L'histoire va dans `CHANTIER-ARCHIVE.json`.
-- **Il consulte les conseillers** (§10) quand une question sort de son domaine, et **relaie
+- **Il consulte les conseillers** (§11) quand une question sort de son domaine, et **relaie
   leurs réponses** — Eric ne doit pas servir de facteur.
 
 ## 3. Ce que ce siège ne fait pas
@@ -187,12 +194,12 @@ dérive dès qu'il écrit de mémoire au lieu de relire.
 
 | La faute | L'incident qui l'a payée | La parade |
 |---|---|---|
-| 🔴 **Mesurer le mauvais objet** — la faute n°1, elle revient sous une forme neuve à chaque fois | Un contraste corrigé sur le bouton **principal** et pas sur la **paire** : deux boutons restaient à 1,24:1, invisibles, sous 765 tests verts | Quand une mesure surprend, **suspecter d'abord son propre protocole** — pas le code |
+| 🔴 **Mesurer le mauvais objet** — la faute n°1, elle revient sous une forme neuve à chaque fois | Un contraste corrigé sur le bouton **principal** et pas sur la **paire** : deux boutons restaient à 1,24:1, invisibles, **sous une suite entièrement verte** *(765 tests ce jour-là)* | Quand une mesure surprend, **suspecter d'abord son propre protocole** — pas le code |
 | 🔴 **Une dette recopiée n'est pas une dette vérifiée** | Neuf dettes héritées remesurées une par une : **trois étaient déjà payées, une était mal dite, une s'est corrigée en trois mots.** Quatre seulement étaient du travail | Avant d'agir sur une ligne, **refaire sa mesure**. Une dette sans sa mesure est une rumeur |
 | 🔴 **Une remesure PARTIELLE donne la confiance d'une remesure complète** | Une entrée s'intitulait *« ce qui reste vrai »* après avoir démenti trois lignes — **et la seule ligne gardée sans remesure était celle qui était fausse** | Remesurer **toute** la liste, ou dire laquelle n'a pas été remesurée |
 | 🔴 **Comparer un ARRONDI à une limite** | `2,9959` passait pour `3,00` : **14 valeurs fausses** dans une palette ratifiée, le garde n'en voyait que deux | Arrondir est un geste d'**affichage**, jamais de comparaison |
 | 🔴 **Un test dont la réussite est PROBABILISTE ment de temps en temps** | Mille jets de 3d6 qui **exigeaient** les deux bornes : `1/216` chacune → **1,96 % d'échec**, une passe rouge toutes les 51. Coût : **trois passations d'enquête** et deux hypothèses savantes | Chercher d'abord si l'assertion peut échouer **par malchance**, avant de soupçonner l'ordonnancement ou le cache. ⛔ La réparation n'est **pas** « plus de jets » |
-| 🔴 **Un garde qui ne cherche que ce qui est écrit EN TROP** | Cinq clauses cherchaient toutes une **valeur interdite** ; le défaut était une **déclaration manquante** — d'où 765 verts sur un bouton illisible | **La question à poser à tout garde** : cherche-t-il aussi ce qui **manque** ? |
+| 🔴 **Un garde qui ne cherche que ce qui est écrit EN TROP** | Cinq clauses cherchaient toutes une **valeur interdite** ; le défaut était une **déclaration manquante** — d'où une suite **entièrement verte** sur un bouton illisible | **La question à poser à tout garde** : cherche-t-il aussi ce qui **manque** ? |
 
 ⚠️ **Deux compléments de mesure, tous deux payés :**
 - **Quand on cherche « qui produit X », la mesure fiable est X LUI-MÊME**, pas ses écrivains.

@@ -85,7 +85,7 @@ sont devenues fausses **sans que rien ne le signale** — c'est la consigne 3 bi
 > vivaient dans cinq endroits, et l'étape Compétences a été codée à côté d'une règle vieille
 > de deux jours.
 
-## 🥇 AVANT TOUTE RÈGLE DE JEU — la hiérarchie des sources
+### 🥇 AVANT TOUTE RÈGLE DE JEU — la hiérarchie des sources
 
 **Ratifiée par Eric le 2026-08-10.** En cas de contradiction :
 
@@ -106,9 +106,9 @@ ligne, on n'y empile pas d'entrée datée.
 > vrai aujourd'hui.** Ce qui reste vrai, ce sont les INCIDENTS et leurs leçons — chaque
 > règle du mandat en vient. Les lots cités (36 → 57) sont tous fusionnés depuis.
 
-## 5. L'ÉTAT DU CHANTIER — 2026-08-13, SOIR (relire ceci en premier)
+### 5. L'ÉTAT DU CHANTIER — 2026-08-13, SOIR (relire ceci en premier)
 
-### 🛫 ERIC A PASSÉ LA MAIN — l'architecte mène le builder jusqu'au bout
+#### 🛫 ERIC A PASSÉ LA MAIN — l'architecte mène le builder jusqu'au bout
 
 **Délégué** : commander, lancer, fusionner, **et pousser `main`**. ⚠️ Pousser reste
 le geste d'Eric par principe (§2) — il est délégué **pour cette traversée**, et
@@ -123,7 +123,7 @@ attend Eric (loi §0.10). Elle ne se devine jamais, même sous autonomie.
 > fusion comme si la main se passait au commit suivant.** La passation n'est jamais
 > un événement — elle est toujours déjà écrite.
 
-### ✅ LE BUILDER EST EN LIGNE — Eric a activé Pages le 2026-08-13
+#### ✅ LE BUILDER EST EN LIGNE — Eric a activé Pages le 2026-08-13
 
 **`https://noirchicot.github.io/fhpc/ui/builder/`** — Pages sur `main`, racine.
 Ouvert et vérifié depuis ce siège : la page charge, **zéro erreur console**, les
@@ -144,7 +144,7 @@ ne voyait ni l'un ni l'autre.
 > en vol. **REMESURE plutôt que de recopier cette ligne** : c'est exactement ce
 > qui a laissé une dette morte douze jours dans ce fichier.
 
-### 🔴 LA TROUVAILLE QUI VAUT PLUS QUE LES LOTS — `grep` était aveugle
+#### 🔴 LA TROUVAILLE QUI VAUT PLUS QUE LES LOTS — `grep` était aveugle
 
 **`src/build/block.mjs` portait deux octets NUL bruts** (ligne 410, un
 séparateur de clef composite écrit en octets au lieu de sa séquence
@@ -170,7 +170,7 @@ porte un caractère de contrôle hors tab/LF/CR. Attaqué sur l'arbre réel.
 lui-même deux octets NUL bruts. **On réintroduit un défaut en écrivant sa
 parade.**
 
-### ✅ L'INSTABILITÉ DE SUITE EST RÉSOLUE — 2026-08-14, et ce n'était rien de ce qu'on croyait
+#### ✅ L'INSTABILITÉ DE SUITE EST RÉSOLUE — 2026-08-14, et ce n'était rien de ce qu'on croyait
 
 **`tests/dice.test.mjs` portait un test STATISTIQUEMENT FAUX.** Il tirait mille
 jets de 3d6 avec `Math.random` **réel** et **exigeait** que les deux bornes
@@ -201,7 +201,7 @@ plus rare sans jamais l'éliminer.
 
 <details><summary>L'ancienne section, conservée pour le raisonnement (elle était fausse)</summary>
 
-### ⚠️ UNE SUITE INSTABLE, NON RÉSOLUE — ne la déclare pas morte
+#### ⚠️ UNE SUITE INSTABLE, NON RÉSOLUE — ne la déclare pas morte
 
 **Un test rouge sur la passe qui suit IMMÉDIATEMENT un `git merge`**, observé
 **deux fois** (lots 50 et 48). Les 3–4 passes suivantes sont vertes, arbre
@@ -224,7 +224,7 @@ chance). **Capture le code de sortie, ne tuyaute pas.**
 ⛔ **REMESURE CES SHA** — la ligne au-dessus a été écrite le 2026-08-13 au soir,
 et deux lignes de la version précédente étaient fausses en moins de douze heures.
 
-### 🔵 CE QUI EST EN VOL, ET LE CHEMIN JUSQU'AU BOUT
+#### 🔵 CE QUI EST EN VOL, ET LE CHEMIN JUSQU'AU BOUT
 
 | | Lot | État |
 |---|---|---|
@@ -238,7 +238,7 @@ et deux lignes de la version précédente étaient fausses en moins de douze heu
 ⛔ **DEUX LOTS EN VOL EST LE PLAFOND** *(auto-limite §4b)* — la revue est le
 goulot, pas la capacité.
 
-### ⭐ LE MEILLEUR GESTE DE LA SOIRÉE, ET IL VIENT D'UN LOT
+#### ⭐ LE MEILLEUR GESTE DE LA SOIRÉE, ET IL VIENT D'UN LOT
 
 **Le lot 51 a attaqué SON PROPRE travail**, vu que les 806 tests restaient
 verts, et **posé son propre garde** — personne ne le lui avait demandé. Le lot
@@ -248,7 +248,7 @@ pas**. 📌 **Écris dans chaque commande qu'un lot a le DROIT de la contredire,
 avec un exemple daté** — c'est le seul détecteur d'erreur extérieur de ce siège,
 et il a rapporté quatre fois aujourd'hui.
 
-### 🔴 L'`aria-label` EST UN CROCHET DE TEST — et c'est ça, le défaut
+#### 🔴 L'`aria-label` EST UN CROCHET DE TEST — et c'est ça, le défaut
 
 Signalé par le lot 50, **et la revue élargit son diagnostic** : ce n'est pas sa
 régression. `carnet.mjs:108` peint le libellé avec `labelOf`, `:109` peint
@@ -277,7 +277,7 @@ le chantier ne s'arrête pas pour attendre.**
 goulot, pas la capacité. Les deux qui attendent le font pour une **collision de
 fichier mesurée**, pas par prudence.
 
-### 🔴 LE DÉFAUT QUE LE DÉPLOIEMENT A RENDU, ET SA LEÇON DE GARDE
+#### 🔴 LE DÉFAUT QUE LE DÉPLOIEMENT A RENDU, ET SA LEÇON DE GARDE
 
 **`Back` et `Show plan` s'affichaient à 1,24:1** — `rgb(0,0,0)` sur
 `var(--surface)`. Invisibles. ✅ Corrigé et poussé (`dd2b66e`, 765 → 767).
@@ -298,7 +298,7 @@ distingue le bouton, c'est qu'il **n'hérite pas**.
 📌 **La question à se poser sur tout garde** : cherche-t-il seulement ce qui est
 **écrit en trop**, ou aussi ce qui **manque** ?
 
-### ⭐ LE « LOT MOTEUR DU HASARD » N'EXISTE PAS — dissous le 2026-08-13
+#### ⭐ LE « LOT MOTEUR DU HASARD » N'EXISTE PAS — dissous le 2026-08-13
 
 Annoncé dans **trois** passations comme portant *« la seule question de contrat de
 la liste »*. **Quatre mesures l'ont dissous** : `set` sur une carac marche déjà
@@ -310,7 +310,7 @@ moteur se moque de la méthode qui produit les nombres.
 résultat compte.** Donc rien n'est reproduit, donc **la question de la graine
 injectable n'a plus d'objet**.
 
-### ✅ LA RÈGLE OUVERTE EST TRANCHÉE — et sa réponse en rouvre une autre
+#### ✅ LA RÈGLE OUVERTE EST TRANCHÉE — et sa réponse en rouvre une autre
 
 **Le plafond de 18.** ✅ **Eric, 2026-08-13** : *« uniquement à la création au
 niveau 1 ; après, les règles SRD reprennent le pas »* (plafond 20). Gravé aux
@@ -330,7 +330,7 @@ déjà**.
 `validate()` au niveau 1 **change une ligne ratifiée** — ça se demande.
 Effet immédiat confié au lot 50 : l'**alerte** se resserre au niveau 1.
 
-### ⚖️ LES DÉCISIONS D'ERIC DU 2026-08-13 (soir+1) — pour les lots 48 et 49
+#### ⚖️ LES DÉCISIONS D'ERIC DU 2026-08-13 (soir+1) — pour les lots 48 et 49
 
 | Étape | Ce qu'elle porte |
 |---|---|
@@ -356,7 +356,7 @@ langue **de la fiche** (`fr|en`, *« un document ne mélange pas les deux »*) �
 **dérivées** — mesuré : aucun chemin de choix `language` n'existe, **rien ne les
 choisit**. Elles s'affichent, elles ne se cliquent pas.
 
-### 👀 ET LA LEÇON DU MANDAT S'EST VÉRIFIÉE, LE JOUR MÊME
+#### 👀 ET LA LEÇON DU MANDAT S'EST VÉRIFIÉE, LE JOUR MÊME
 
 Le mandat prévient que ce siège **n'ouvre pas spontanément les fichiers d'Eric**.
 Sur la répartition des caracs, c'est **Eric qui a dit** *« le builder v1 y
@@ -379,7 +379,7 @@ portent **(retired)**. Un commit que tu n'as pas fait n'est pas une collision �
 ⛔ **REMESURE CES SHA.** Deux lignes de la version précédente de ce §5 étaient
 fausses **moins de douze heures** après avoir été écrites.
 
-### 🔴 LES DEUX RÈGLES DE MESURE QUE CE SIÈGE A PAYÉES LE 2026-08-13
+#### 🔴 LES DEUX RÈGLES DE MESURE QUE CE SIÈGE A PAYÉES LE 2026-08-13
 
 **Sept erreurs en une journée, dont SIX de la même famille.** Les deux règles :
 
@@ -396,7 +396,7 @@ fausses **moins de douze heures** après avoir été écrites.
 ⚠️ **Le dépôt a un dépouilleur exprès — `tests/source-scan.mjs` — et ce siège ne
 s'en est pas servi une seule fois de la journée.**
 
-### 🧾 L'AUDIT DES DETTES — les NEUF remesurées une par une le 2026-08-13
+#### 🧾 L'AUDIT DES DETTES — les NEUF remesurées une par une le 2026-08-13
 
 ⛔ **Ce tableau REMPLACE les listes de dettes du §5-0 et de la passation §7.** Elles
 avaient été recopiées sans remesure, et **quatre lignes sur neuf étaient fausses ou
@@ -420,7 +420,7 @@ d'agir dessus.
 déjà payées**, **une était mal dite**, **une s'est corrigée en trois mots**. Quatre
 seulement sont du travail réel. *Une dette recopiée n'est pas une dette vérifiée.*
 
-### ⭐ LE CHEMIN DU PERSONNAGE NEUF EXISTE DÉJÀ — trouvé le 2026-08-13
+#### ⭐ LE CHEMIN DU PERSONNAGE NEUF EXISTE DÉJÀ — trouvé le 2026-08-13
 
 **Le problème apparent** : `rebuild` **refuse** de dériver tant que le personnage
 n'est pas complet — trois portes qui jettent (`level`, puis `class`, puis **les six
@@ -445,7 +445,7 @@ vierge (le bloc `doc` a six verbes, pas de `create`), et aucun n'écrit
 `document.name` — ⚠️ et `set` n'est **pas** la réparation : la grammaire des chemins
 de choix est celle d'un *point de décision*, pas d'un champ de document.
 
-#### ⭐ ET LE BROUILLON EST TRANCHÉ — Eric, 2026-08-13
+##### ⭐ ET LE BROUILLON EST TRANCHÉ — Eric, 2026-08-13
 
 **Un personnage à moitié construit doit pouvoir VOYAGER d'un appareil à l'autre.**
 *(Question posée dans sa forme utile : ce n'était pas « peut-on sauvegarder un
@@ -476,7 +476,7 @@ et le document valide `fh-char/1` **sans conversion**. Un brouillon ne se
 quatre chantiers de la liste. Le commander avant que 42 et 43 aient tourné, ce
 serait écrire une commande qui se périme.
 
-### 👀 ET LA LEÇON NEUVE : REGARDER L'ÉCRAN TROUVE CE QUE LES SUITES NE VOIENT PAS
+#### 👀 ET LA LEÇON NEUVE : REGARDER L'ÉCRAN TROUVE CE QUE LES SUITES NE VOIENT PAS
 
 Eric a demandé à voir le builder. Servi et parcouru, **trois défauts sont apparus
 qu'aucune des 684 assertions ne voyait** — dont **une faute dans le garde lui-même**
@@ -504,14 +504,14 @@ soir, ce siège a failli écraser **104 lignes non commitées** d'un lot qui
 travaillait — dernière écriture **51 secondes** plus tôt. Un worktree qui existe
 n'est pas un worktree vide.
 
-### ✅ LE PASSAGE ÉTAPE PAR ÉTAPE A EU LIEU — 2026-08-12
+#### ✅ LE PASSAGE ÉTAPE PAR ÉTAPE A EU LIEU — 2026-08-12
 
 **L'étape Compétences est SPÉCIFIÉE, décision par décision** (protocole 2b),
 zéro ligne de code. **Sept décisions d'Eric**, écrites dans le vault
 `Chantier FH & FHPC/FHV2 - Schémas d'écran.md` **§4** — c'est la commande du lot
 qui construira l'écran. Ne les redemande pas.
 
-### ⭐ L'ORDRE DES LOTS — et le prochain est le plus petit
+#### ⭐ L'ORDRE DES LOTS — et le prochain est le plus petit
 
 | | Lot | Pourquoi il est là |
 |---|---|---|
@@ -528,7 +528,7 @@ l'a longtemps annoncé (9 étapes, moins Compétences).
 et les cartes de Destinée **tirées** — des **étapes du builder déguisées en
 dettes de règles**. **Le pool négatif en est sorti** : payé par le lot 37.
 
-### 🐛 LES TROIS BUGS VIVANTS DE LA COQUILLE — pour le lot 38
+#### 🐛 LES TROIS BUGS VIVANTS DE LA COQUILLE — pour le lot 38
 
 | Bug | Mesure |
 |---|---|
@@ -543,7 +543,7 @@ les deux modules montés, le même document rend `fh:destiny = 10` **et**
 `fh:skill-points = 10`. L'écran perd donc **aussi le Score de Destinée**. Une
 ligne, confiée au lot 38 (§3h de sa commande).
 
-### 🔴 ET LA PALETTE RATIFIÉE ÉCHOUE AA — mesuré le 2026-08-13
+#### 🔴 ET LA PALETTE RATIFIÉE ÉCHOUE AA — mesuré le 2026-08-13
 
 **Onze des dix-huit jetons de `PALETTE-FHV2.json` tombent sous AA sur la surface où
 ils s'affichent réellement.** Cause : chaque valeur est calée **exactement** sur
@@ -560,7 +560,7 @@ reste la même : remesurer sur l'objet réel.
 inchangée à **2,1°** près, les trois séparations ratifiées tenues, `on-accent`
 passé de 5,05/4,56 à **6,07/5,62**. Chaque jeton porte maintenant **deux** ratios.
 
-### 🔴 ET LA CORRECTION ELLE-MÊME AVAIT UNE FAUTE — trouvée par le lot 38
+#### 🔴 ET LA CORRECTION ELLE-MÊME AVAIT UNE FAUTE — trouvée par le lot 38
 
 **La boucle de recalcul comparait un contraste ARRONDI À DEUX DÉCIMALES à son
 seuil**, donc `2,9959` passait pour `3,00`. Le lot 38 l'a mesuré sur deux jetons et
@@ -583,14 +583,14 @@ Leur clarté est un **choix esthétique**, pas un seuil. Restauré depuis la
 sauvegarde. 📌 *La forme de la faute : appliquer une règle à tout l'ensemble au lieu
 du sous-ensemble mesuré.*
 
-### 🔴 ET `ui/` N'A AUCUN TEST — mesuré le 2026-08-13
+#### 🔴 ET `ui/` N'A AUCUN TEST — mesuré le 2026-08-13
 
 `grep -rln "ui/builder\|shell.css" tests/` → **rien**. **538 lignes sans filet.**
 D'où la condition de sortie du lot 38 : un garde d'octets sur `shell.css`, attaqué
 cinq fois. Le patron existe déjà dans le dépôt (`tests/source-scan.mjs`, et
 `render-fiche.test.mjs` qui teste un rendu **sans DOM**).
 
-### 📐 LA BIBLE ESTHÉTIQUE — chantier ouvert le 2026-08-12
+#### 📐 LA BIBLE ESTHÉTIQUE — chantier ouvert le 2026-08-12
 
 Eric veut **un document de référence pour le design et les couleurs**, au lieu
 d'inventer une valeur par écran. Ce qui le motive, mesuré ce jour-là : le builder
@@ -613,7 +613,7 @@ et dans `shell.mjs`.
 confondre avec les 720 px** de `shell.css:128` / `shell.mjs:66`, qui sont un
 **seuil de bascule**, pas une largeur de dessin.
 
-### 🔴 ET LE DOCK v1 PORTE DÉJÀ LA MOITIÉ DE CETTE BIBLE — trouvé le 2026-08-12
+#### 🔴 ET LE DOCK v1 PORTE DÉJÀ LA MOITIÉ DE CETTE BIBLE — trouvé le 2026-08-12
 
 **Une affirmation de ce siège a été démentie par la mesure une heure après avoir
 été écrite** : « 360 n'officialise rien d'existant, c'est du papier blanc ».
@@ -653,7 +653,7 @@ dock : six barreaux continus **plus un grand nombre à part**.
 spontanément les documents d'Eric. `UI-TYPOGRAPHY.md` avait **six jours** et
 répondait déjà à la question posée le soir même.
 
-### 🔴 CE QUE CE SIÈGE NE FAIT PAS SPONTANÉMENT, ET QU'IL DOIT FAIRE
+#### 🔴 CE QUE CE SIÈGE NE FAIT PAS SPONTANÉMENT, ET QU'IL DOIT FAIRE
 
 **Il lit le code, les contrats et les passations. Il NE LIT PAS les chapitres
 d'Eric.** Le 2026-08-12, Eric a dû demander lui-même « on ne m'a posé aucune
@@ -673,7 +673,7 @@ canonique ne prévoit pas — **toujours à trancher avec Eric**.
 
 ---
 
-## 5-0. L'état antérieur (conservé pour le raisonnement)
+### 5-0. L'état antérieur (conservé pour le raisonnement)
 
 | Dépôt | `main` | Suites | Distant |
 |---|---|---|---|
@@ -690,7 +690,7 @@ ici une durée de vie de quelques minutes.
 **Rien n'est en vol** : aucun worktree, aucun lot en cours, aucune fusion à
 moitié, arbres propres. Les branches de lot sont conservées, jamais `--force`.
 
-### 🧰 UNE HYGIÈNE QUI MANQUAIT, ET QUI FAISAIT MENTIR LE FILET
+#### 🧰 UNE HYGIÈNE QUI MANQUAIT, ET QUI FAISAIT MENTIR LE FILET
 
 `~/tools/fhpc` n'avait **aucun `node_modules`**. `ajv` se résolvait depuis
 `/Users/Eric/node_modules` en **8.18.0**, alors que le lock du dépôt déclare
@@ -700,7 +700,7 @@ que le dépôt ne déclare pas. Aucun test n'en tombait — c'est bien le probl�
 indépendant avec `npm install` » n'avait jamais été appliquée au dépôt
 principal lui-même.**
 
-### ⭐ LE CHANTIER CHANGE DE NATURE — c'est LA chose à savoir en reprenant
+#### ⭐ LE CHANTIER CHANGE DE NATURE — c'est LA chose à savoir en reprenant
 
 Le moteur et le contenu sont **faits**. Ce qui reste tient en un mot :
 **l'interface**, et elle n'a **pas une ligne** — mesuré : aucun HTML, aucun
@@ -712,7 +712,7 @@ la **vue de jeu** (dock v1 en saisie manuelle si M4 glisse), il ne couvre
 **pas le builder**. Sans builder, la table n'a pas de personnages. **C'est le
 builder, et rien d'autre, qui décide du 7 novembre.**
 
-### Ce que cette session a livré
+#### Ce que cette session a livré
 
 | | |
 |---|---|
@@ -723,7 +723,7 @@ builder, et rien d'autre, qui décide du 7 novembre.**
 | **Renommage `Auspicious (fh)`** | Nom **et** id — mesuré qu'aucun document ne l'ancrait encore |
 | **Dates réalignées** | La dérive était de **deux jours** |
 
-### ⚠️ DEUX DETTES DE CE MANDAT ÉTAIENT FAUSSES — la leçon la plus chère du jour
+#### ⚠️ DEUX DETTES DE CE MANDAT ÉTAIENT FAUSSES — la leçon la plus chère du jour
 
 Elles avaient été **recopiées de passation en passation sans jamais être
 remesurées**, et un lot a dû refuser de travailler pour que la seconde tombe.
@@ -739,7 +739,7 @@ remesurées**, et un lot a dû refuser de travailler pour que la seconde tombe.
 ligne de ce fichier, la remesurer. C'est la consigne qui aurait économisé le
 plus de temps aujourd'hui.
 
-### ⚠️ CE QUE CE SIÈGE DOIT ENCORE — **remesuré une par une le 2026-08-09**
+#### ⚠️ CE QUE CE SIÈGE DOIT ENCORE — **remesuré une par une le 2026-08-09**
 
 > 📌 Chaque ligne porte la mesure qui la prouve, refaite ce jour-là. Une dette
 > sans sa mesure est une rumeur : quand tu la reprends, refais-la.
@@ -765,7 +765,7 @@ plus de temps aujourd'hui.
    et `tests/fh-arcana.test.mjs` ne compare la couche **qu'à elle-même**. Rien
    ne confronte les copies. Débloqué : il attendait le lot 21, fusionné.
 
-### ⭐ TROIS LOTS DE CONTRAT NÉS DU CONSEILLER INTERFACE (2026-08-09)
+#### ⭐ TROIS LOTS DE CONTRAT NÉS DU CONSEILLER INTERFACE (2026-08-09)
 
 Le conseiller `EXPERT interface Builder` a rendu son premier rapport, et il a
 sorti **trois trous de contrat** que ce siège n'avait pas vus. **Les trois
@@ -788,7 +788,7 @@ compte **21** clefs, `contracts/build.md:109` et `:383` disent « vingt ». Sans
 danger — vérifié que le garde **lit le schéma**
 (`tests/build-derive.test.mjs:48`) au lieu de compter 20 en dur. Trois mots.
 
-### Ce qui attend une décision d'ERIC
+#### Ce qui attend une décision d'ERIC
 
 | Sujet | |
 |---|---|
@@ -802,7 +802,7 @@ danger — vérifié que le garde **lit le schéma**
 | ~~Le Tilt (DC, composition SRD)~~ | ✅ les deux tranchés |
 | ~~`Auspicious (fh)`~~ | ✅ renommé. Le homebrew DDB garde l'ancien nom — **décision d'Eric, ne pas y revenir** : le canon est le dépôt |
 
-### 📉 LE TAUX D'ERREUR DE CE SIÈGE, AUJOURD'HUI — et c'est lui le vrai signal
+#### 📉 LE TAUX D'ERREUR DE CE SIÈGE, AUJOURD'HUI — et c'est lui le vrai signal
 
 **Dix erreurs en une session.** Huit rattrapées avant publication, **deux
 seulement par les lots eux-mêmes** :
@@ -828,9 +828,9 @@ conclusion.** C'est aussi pourquoi les quatre corrections apportées par des
 lots sont des résultats et non des incidents : **la revue marche dans les deux
 sens.**
 
-## 5e. CE QUE LA SOIRÉE DU 2026-08-08 A APPRIS — à lire avant de reprendre
+### 5e. CE QUE LA SOIRÉE DU 2026-08-08 A APPRIS — à lire avant de reprendre
 
-### ✅ PAYÉ LE 2026-08-08 — le genre `arcana` est ouvert (`fhpc` `d8273b9`)
+#### ✅ PAYÉ LE 2026-08-08 — le genre `arcana` est ouvert (`fhpc` `d8273b9`)
 
 `GAP-KIND` est **clos**, 440 tests verts, revérifiés dans un clone indépendant.
 Ce qui suit est conservé parce que le raisonnement reste la meilleure
@@ -879,14 +879,14 @@ bloqué par le schéma**. `feat` est un genre depuis le premier jour ; il ne
 manquait qu'un *record*. Les deux moitiés du lot des Arcanes n'avaient donc
 pas le même obstacle — une seule attendait du contrat.
 
-### La source de vérité des Arcanes, triangulée
+#### La source de vérité des Arcanes, triangulée
 
 `~/tools/fh-skills/fh-skill-builder.html`, `const ARCANA` — **c'est l'outil que
 la table utilise**, et il est confirmé par les personnages réels. Le chapitre du
 site le répète à l'identique (22/22), et site et vault ne diffèrent que par la
 syntaxe des liens. **Pas de conflit à arbitrer.** Voir kickoff §7, requalifié.
 
-### Le verdict d'Eric sur ce qui attend, et ce qui n'attend pas
+#### Le verdict d'Eric sur ce qui attend, et ce qui n'attend pas
 
 | Sujet | Verdict, et pourquoi |
 |---|---|
@@ -896,7 +896,7 @@ syntaxe des liens. **Pas de conflit à arbitrer.** Voir kickoff §7, requalifié
 | **Dark rituals · Soulforging** | 🟢 plus tard — 0/7, et `craft` attend déjà au schéma |
 | **Sorts** | ⚠️ **indéterminé** : le format v1 ne portait pas les sorts, donc leur absence ne mesure rien. Les 339 sorts SRD sont dans la couche ; ce qui manque est le **chapitre 6** d'Eric |
 
-### Les erreurs de mesure de ce siège — quatre en une soirée
+#### Les erreurs de mesure de ce siège — quatre en une soirée
 
 Toutes rattrapées avant publication, **aucune sortie vers Eric comme un fait** —
 mais le taux est le vrai signal, et c'est lui qui a motivé la passation :
@@ -918,7 +918,7 @@ attend, suspecter d'abord son propre protocole.**
 
 ---
 
-### 🎉 Le M2 est complet, et le produit fait ce qu'il promet
+#### 🎉 Le M2 est complet, et le produit fait ce qu'il promet
 
 > Un personnage de niveau 1 **se construit de bout en bout sans interface**, il
 > **se pilote de l'extérieur par MCP**, il **se sauvegarde et voyage**, et il
@@ -929,7 +929,7 @@ Lots fusionnés depuis la version précédente de ce fichier : `8-srd-mecanique`
 `13-confrontation`, `14-bloc-doc`, `15-couche-fh-especes`,
 `16-moteur-destinee`, `17-couche-fh-retrait`.
 
-### ⭐ Et la couche Fate's Hand existe
+#### ⭐ Et la couche Fate's Hand existe
 
 **C'est la première fois que les règles d'Eric ne sont plus un document mais du
 logiciel.** Les douze espèces, en anglais, par-dessus le SRD — `Splinter of
@@ -944,7 +944,7 @@ le français viendra après coup.
 
 ---
 
-## 5b. LA MÉTHODE QUI A PAYÉ — à reprendre telle quelle
+### 5b. LA MÉTHODE QUI A PAYÉ — à reprendre telle quelle
 
 Eric relit **ses propres chapitres** avec ce siège : l'architecte lit, rend sa
 lecture **et ses doutes**, Eric corrige. Rendement mesuré sur trois chapitres :
@@ -964,7 +964,7 @@ conclusion.
 
 ---
 
-## 5c. LES TROIS ERREURS DE CE SIÈGE — les plus chères de la session
+### 5c. LES TROIS ERREURS DE CE SIÈGE — les plus chères de la session
 
 **Elles valent plus que les réussites : elles disent où ce siège dérive.**
 
@@ -988,7 +988,7 @@ conclusion.
 
 ---
 
-## 5d. CE QUE CE SIÈGE DOIT ENCORE — dettes annoncées et NON payées
+### 5d. CE QUE CE SIÈGE DOIT ENCORE — dettes annoncées et NON payées
 
 1. ⚠️ **La révision du schéma.** Le **Score de Destinée** avec son détail de
    calcul (`GAP-DERIVED`) et **`build.budgets`** pour le pool de compétences
@@ -1033,7 +1033,7 @@ conclusion.
    > promettrait une porte qui n'ouvre sur rien — et **une IA lit un catalogue
    > comme un contrat**.
 
-### Ce qui attend une réponse d'Eric
+#### Ce qui attend une réponse d'Eric
 
 - La description de l'**Humain** a été corrigée **sans qu'il le demande** (la
   prose SRD décrivait `Resourceful`, que le lot retirait) — réversible.
@@ -1047,7 +1047,7 @@ conclusion.
   n°1 (partage de homebrew) est **résolu** : le site d'Eric tient **une liste**,
   chacun héberge et décide de partager.
 
-### La suite de la couche FH, avec Eric
+#### La suite de la couche FH, avec Eric
 
 Chapitre 4 (26 compétences, 4 paliers, pool par classe) · les 22 Arcanes · les
 Tables de Fatalité. 📌 **Le contenu n'est pas le problème** — les Arcanes et les
@@ -1066,7 +1066,7 @@ le M2 était planifié « début septembre ». L'avance est réelle.
 > ⛔ Les **titres de fils** ci-dessous sont de l'état, pas des règles : un fil se ferme.
 > La règle qui en sort vit dans `ARCHITECTE.md` §11.
 
-## 6. Les conseillers — les consulter avant de deviner
+### 6. Les conseillers — les consulter avant de deviner
 
 Quatre sièges répondent à des questions et ne modifient rien (§8 du kickoff).
 Retrouvables par leur titre, joignables par message.
@@ -1080,7 +1080,7 @@ Retrouvables par leur titre, joignables par message.
 | Interface Builder | `EXPERT interface Builder` — a rendu trois trous de contrat, tous vérifiés justes |
 | **Esthétique** | ⭐ **créé le 2026-08-12, et il est d'une autre nature** : mandat `CONSEILLER-ESTHETIQUE.md`, **lancé comme sous-agent depuis le fil d'architecte** |
 
-### ⚠️ Ce que « joignable » veut dire, et ce que ça change
+#### ⚠️ Ce que « joignable » veut dire, et ce que ça change
 
 **Mesuré le 2026-08-12 : les cinq premiers conseillers ne sont PAS joignables
 depuis un fil d'architecte** (`ListAgents` → aucun agent). Ce sont des fils
@@ -1092,7 +1092,7 @@ il répond dans ce fil, et son mandat vit dans le dépôt pour survivre à la se
 **C'est le patron à reprendre** quand un conseiller doit travailler avec
 l'architecte plutôt qu'avec Eric.
 
-### ✍️ Et un cinquième siège, créé le 2026-08-08 : `GHOSTWRITER`
+#### ✍️ Et un cinquième siège, créé le 2026-08-08 : `GHOSTWRITER`
 
 **Il n'est pas un conseiller — il ÉCRIT.** Mandat : `GHOSTWRITER.md`. Sa mission :
 faire entrer dans le TEXTE des règles les décisions ratifiées en fil d'architecte,
