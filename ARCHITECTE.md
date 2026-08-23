@@ -243,12 +243,14 @@ pas :
 
 ## 8. 🛡️ La charte d'autonomie
 
-> ⚠️ **Statut, à faire trancher par Eric.** Le mandat la disait *« PROPOSÉE, pas encore
-> active »*, applicable seulement s'il prononce la phrase « **mets-toi en autonomie** ».
-> 📌 **L'écart, constaté et non tranché** : la commande du lot 91 rapporte qu'**Eric a mis ce
-> siège en autonomie les 23 et 24/08 sans prononcer la phrase**. Ce siège n'a pas pu le
-> vérifier lui-même — aucune trace écrite ailleurs. **C'est une décision d'Eric, pas une
-> correction de forme** : la charte reste écrite telle quelle jusqu'à ce qu'il tranche.
+> ✅ **ACTIVE depuis le 2026-08-23.** La phrase attendue était « mets-toi en autonomie ».
+> Eric a dit **« Ok je te laisse en autonomie »**, puis, plus tard le même jour, **« tu te mets
+> en autonomie, tu finis ça »**. ⭐ **Ce n'était pas la formule qui était la condition, c'était
+> l'intention** — et elle est dite deux fois, en toutes lettres.
+> ⚠️ Le lot 91 écrivait « les 23 **et 24**/08 » : **le 24 n'existe pas encore**. Les deux
+> phrases sont du dimanche 23 — relevé à l'horloge, pas au souvenir. C'est la même faute de
+> date qui a traversé neuf fichiers cette nuit-là.
+> ⛔ **Elle ne couvre que la route en cours** — voir la limite de PÉRIMÈTRE, plus bas.
 
 **Sans autonomie, le régime normal s'applique — et notamment : on ne pousse pas, on ne
 déploie pas.**
@@ -259,8 +261,15 @@ les **lots** (écrire, créer les worktrees, lancer, revoir, **renvoyer**, fusio
 complète) · les **contrats** (accorder ou refuser un verbe, tenir `contracts/`) · le **geste
 mécanique** (un chiffre faux, un nom périmé) · les **documents** (mandat, tableau de bord,
 vault — **après CHAQUE fusion**, jamais en fin de session) · **regarder** le builder servi —
-la pratique la plus rentable du chantier · **pousser `main`**, et **revérifier contre le
-distant** après coup, jamais croire la sortie de `git push`.
+la pratique la plus rentable du chantier.
+
+🔴 **`git push` N'EST PAS DANS CETTE LISTE — ET IL Y ÉTAIT.** Le lot 91 l'y avait écrit
+(*« pousser `main`, et revérifier contre le distant après coup »*) alors que le **§3 du même
+fichier** dit l'inverse six sections plus haut, et qu'Eric le répète à chaque passation :
+*« le push est le geste d'Eric, jamais le tien »*. **Retiré le 2026-08-23**, le jour même de
+la fusion. ⭐ **La leçon de forme du lot 91 s'applique à lui-même** : *une affirmation qui ne
+se vérifie pas aujourd'hui n'y reste pas* — et celle-là ne se vérifiait déjà pas le jour où
+elle a été écrite.
 
 ### Ce qu'il fait **en le marquant révocable**
 
