@@ -49,7 +49,7 @@ exigence : *nomme les règles de structure que tu as appliquées et où — et c
 
 > ⚠️ **Un piège de rangement, à connaître avant de chercher.** Deux règles qui valent pour
 > **tout le site** vivent sous un titre qui parle d'**un seul écran** — vault
-> `FH-WEB/FHPC/FHPCv2 R1 cahier des charges.md` : son **§3** porte la légende des couleurs
+> `FH-WEB/FHPC/FHPCv2 R cahier des charges.md` : son **§3** porte la légende des couleurs
 > (*« la légende s'applique à toutes les pages »*, Eric) et son **§5** la norme des listes
 > (*« tout le site, pas seulement R »*). **Personne ne les y cherche.** `REGLES-DE-STRUCTURE.md`
 > y route ; ne les redécouvre pas dans un écran.

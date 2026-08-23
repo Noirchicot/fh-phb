@@ -18,9 +18,10 @@ Eric parle court. Chaque raccourci pointe vers un canon écrit, et **le canon fa
 | il dit | ça veut dire | c'est écrit ici |
 |---|---|---|
 | **« fais comme pour Species »** | applique **le canon d'une étape** — l'étape des espèces est la référence, ratifiée le 19/08 *« après que l'Elfe a été bon de bout en bout »* | vault `FH-WEB/FHPC/FHPCv2 canon d'etape.md` — **660 lignes**, §9 est la recette |
-| **« fais du F1 »** · **un FF** · **un R1** | la **nomenclature des cadres** : la **lettre** dit l'écran, le **chiffre** dit qui décide de la hauteur — **1 = imposée**, 2 = libre | `fhpc/ui/builder/CADRES.md` |
+| **« fais du FF1 »** · **un F** · **une carte** | la **nomenclature des cadres**. 🔴 **DEUX NIVEAUX, ET ILS NE SE MÉLANGENT PAS** : l'**écran** porte la lettre (**F · FF · FS**) ; ce qui **vit dedans** porte un nom et **jamais** de lettre (**carte · dalle · tuile**). L'ancien vocabulaire à deux chiffres a été **tué le 19/08** — la table de traduction dit `F1 · FF1 → carte`, `F2 · FF2 → dalle`, `F3 → dalle saignante`. Eric parle encore l'ancien : traduis-le, ne le recopie pas | `fhpc/ui/builder/CADRES.md` §1-2 |
+| **« R »**, **« B1 »**, **« SB3.2 »** | ⛔ **CE NE SONT PAS DES CADRES** — c'est l'**arborescence** du chapitre Équipement, un nom de POSITION dans l'arbre. 🔴 L'architecte a fabriqué un « R1 » en collant les deux vocabulaires, et a construit un lot dessus (23/08). **Un écran a donc DEUX noms : où il est (R), et comment il est montré (FF + une carte)** | vault `FHPCv2 ecrans equipement.md` · `CADRES.md` |
 | **« 15 items max »** · **« pas scrollable »** | la **norme des listes**, qui vaut pour tout le site | vault `FH-WEB/FHPC/FHPCv2 norme des listes.md` |
-| **la couleur d'un cadre** dans un croquis | la **nomenclature des types** : noir = jeton + dropdown · bleu = collecteur · rouge = bouton · rose penché = saisie · vert = dropdown | vault `FH-WEB/FHPC/FHPCv2 R1 cahier des charges.md` §3 |
+| **la couleur d'un cadre** dans un croquis | la **nomenclature des types** : noir = jeton + dropdown · bleu = collecteur · rouge = bouton · rose penché = saisie · vert = dropdown | vault `FH-WEB/FHPC/FHPCv2 R cahier des charges.md` §3 |
 
 ⭐ **Aucun de ces quatre n'est une préférence.** Ce sont des décisions d'Eric, datées, prises
 après des mesures ou des essais au doigt. Un lot qui les ignore ne fait pas un choix différent :

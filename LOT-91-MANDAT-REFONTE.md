@@ -87,7 +87,7 @@ Le mandat ne le sait pas. **Ne l'invente pas — va le lire** :
 | l'état vivant du chantier | `CHANTIER-STATUS.json` — tenu à jour cette nuit encore |
 | **les six lots fusionnés du 23-23/08** | `LOT-84` à `LOT-90` dans ce dépôt |
 | **le SRFH**, la couche neuve | vault `FH-WEB/FHPC/FHPCv2 SRFH et SRFH+.md` |
-| **l'écran R1** et tout ce qu'Eric en a dit | vault `FH-WEB/FHPC/FHPCv2 R1 cahier des charges.md` |
+| **l'écran R1** et tout ce qu'Eric en a dit | vault `FH-WEB/FHPC/FHPCv2 R cahier des charges.md` |
 | **la norme des listes** | vault `FH-WEB/FHPC/FHPCv2 norme des listes.md` |
 | le rangement de l'équipement | vault `FH-WEB/FHPC/FHPCv2 rangement equipement.md` |
 
