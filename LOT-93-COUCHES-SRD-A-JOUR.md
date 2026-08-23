@@ -108,7 +108,7 @@ d'environnement** mesurées et commentées (`NODE_TEST_CONTEXT` retiré, rapport
 
 - **La couche `srfh`** (lot 90, EN seulement, 294 objets). Faut-il l'importer dans `fhpc`, et
   lui donner une page ? **Question ouverte, elle appartient à Eric.** Ne l'importe pas.
-- **Tout écran.** Le tambour, R1, la grille : rien. Tu ne touches qu'à la donnée et à ses gardes.
+- **Tout écran.** Le tambour, l'écran R, la grille : rien. Tu ne touches qu'à la donnée et à ses gardes.
 
 ---
 

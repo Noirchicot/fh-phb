@@ -1,6 +1,6 @@
 # Lot 94 — l'écran R corrigé au doigt : ce qu'Eric a vu sur son iPhone
 
-**En clair :** Eric a regardé R1 sur son téléphone et a rendu six corrections. Cinq sont des
+**En clair :** Eric a regardé l'écran R sur son téléphone et a rendu six corrections. Cinq sont des
 gestes précis (enlever, rétrécir, remettre dans l'ordre). La sixième est un **défaut de
 comportement qu'il a vu et que le code croit pourtant traiter** — c'est celle qui demande de
 mesurer avant de coder.
@@ -51,7 +51,7 @@ l'écran porte **en trop**. C'est sa règle, écrite après la palette FREE (91 
 plafonner. ⛔ Ne recopie aucune de ces cotes dans une prose : `--measure-f` a vécu une heure et
 Eric l'a tuée le 19/08 pour cette raison exacte.
 
-📌 **Corrige aussi les commentaires du fichier.** Ils parlent de « R1 » comme d'un cadre et
+📌 **Corrige aussi les commentaires du fichier.** Ils parlent de « R1 » — un nom qui n'existe pas — comme d'un cadre, et
 décrivent la hauteur comme « ce qui reste sous le belt ». Un prochain lot les lira.
 
 ---
@@ -121,7 +121,7 @@ Eric, en regardant l'écran :
 | **les collecteurs** | *« un drop fait la même taille que l'item »* | une cible de dépôt a **la taille d'un jeton de la grille**, pas une bande pleine largeur |
 | **les boutons** | *« les cases GEAR / CART / CRAFT / NEXT doivent se réduire »* | la barre du bas rétrécit |
 
-⭐ **La règle derrière le premier, et elle vaut au-delà de R1** : *une cible a la taille de ce
+⭐ **La règle derrière le premier, et elle vaut au-delà de l'écran R** : *une cible a la taille de ce
 qu'on lui donne.* Un collecteur grand comme trois jetons ment sur ce qu'il attend — et il mange
 de la hauteur pour le dire.
 
@@ -207,6 +207,6 @@ lot 93. Un lot suivra.
   que chaque suppression a rendu en pixels** ;
 - **la preuve que le bloc est plafonné à `--measure`** — la largeur mesurée sur un grand écran ;
 - **ce que tu as trouvé sur le §4** : l'instant que tu as observé, ce que tu as vu, la cause ;
-- une **capture** de R1 après tes changements ;
+- une **capture** de l'écran R après tes changements ;
 - la suite complète verte, et le compte affiché ;
 - toute contradiction entre ce document et ta mesure : **ta mesure gagne, dis-le.**
