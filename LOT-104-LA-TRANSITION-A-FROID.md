@@ -53,30 +53,38 @@ la pire des preuves.**
 | **`Size`**, côté anglais seul | **rien à faire** : différence d'édition mesurée (le cran français va de `Surprise` à `Télépathie`, ses treize têtes reproduites une par une). Il reste anglais seul |
 | **`Vitesse d'escalade` · `de nage` · `de vol`**, côté français seul | 🔴 aucun anglais à qui EMPRUNTER une adresse → ✅ **on leur en FABRIQUE une**, décision d'Eric ci-dessous |
 
-## ✅ ERIC A TRANCHÉ, 2026-08-24 : **« Les inventer oui »**
+## ✅ ERIC A AUTORISÉ D'INVENTER — ⭐ ET ON N'EN A PAS EU BESOIN
 
-➡️ **Les trois reçoivent une adresse anglaise, fabriquée.** ⛔ Plus d'adresse française, pas
-même pour elles : **`git grep 'srd:[a-z-]*:fr:'` doit rendre ZÉRO, sans exception.**
+Eric, 2026-08-24 : **« Les inventer oui »**. **L'autorisation est acquise et elle n'a pas servi :
+le livre anglais imprime déjà les trois termes.** Vérifié depuis le siège, sur les exports :
 
-⭐ **ET VOICI POURQUOI TON SCRUPULE ÉTAIT JUSTE ET LA DÉCISION AUSSI — ils ne portent pas sur la
-même chose.** Tu refusais d'inventer du **VOCABULAIRE** ; Eric fait inventer une **ADRESSE**.
+```
+Fly Speed      37 occurrences   ·   Flying Speed      ZÉRO
+Swim Speed     22               ·   Swimming Speed    ZÉRO
+Climb Speed    15               ·   Climbing Speed    ZÉRO
+Burrow Speed    8               ·   Burrowing Speed   ZÉRO
+```
 
-> **Loi §0.13 : le moteur produit des identifiants, l'interface produit des mots.**
+Le livre **écrit** ces termes ; il ne leur donne simplement **pas d'entrée de glossaire**.
 
-**Le lecteur ne verra jamais `climbing-speed`.** Il lira *« Vitesse d'escalade »*, qui reste le
-libellé, pris dans le livre, inchangé. ⭐ **Une adresse fabriquée n'est pas une traduction
-inventée** : c'est un nom de machine pour une chose que la machine doit pouvoir désigner.
+⭐⭐ **ET LE QUATRIÈME MEMBRE DE LA FAMILLE PROUVE LE PATRON** : `Burrow Speed`, lui, **a** son
+entrée anglaise — et son jumeau français `Vitesse de fouissement` est **déjà apparié**. Le
+patron `<X> Speed` ↔ `Vitesse de <x>` est donc **attesté des deux côtés, par une paire qui
+existe**. Rien n'est inventé, tout est **adopté**.
 
-**Comment tu les fabriques :**
+➡️ **`climb-speed` · `swim-speed` · `fly-speed`**, provenance **`adopted:english-book`**, ⛔ **pas
+`invented`**. La provenance doit dire la vérité : ces adresses ont une source.
 
-| | |
-|---|---|
-| dérivée du **français**, rendue en anglais | et **dérivée**, pas choisie au goût |
-| ⚠️ **vérifie la collision** | l'anglais porte **déjà** `Climbing`, `Swimming`, `Flying`. 🔴 **Ces trois-là sont DES ENTRÉES DISTINCTES** — la vitesse n'est pas le mode de déplacement. Une adresse qui écraserait l'une des trois est un défaut, pas un raccourci |
-| **la provenance le dit** | `invented:2026-08-24` ou l'équivalent de ton module — ⭐ **une adresse fabriquée doit se reconnaître comme telle dix ans plus tard** |
+🔴 **ET VOICI LA LEÇON, PARCE QU'ELLE A FAILLI COÛTER CHER** : le premier réflexe était
+`climbing-speed`, calqué sur l'entrée `Climbing` **qui existe**. **Le livre écrit `Climb Speed`.**
+⭐ **C'est le contrôle NÉGATIF — zéro occurrence de `Climbing Speed` — qui l'a dit.** Une adresse
+choisie au goût aurait été **fausse et muette** : rien ne l'aurait signalée, jamais.
 
-⛔ **Trois, et seulement trois.** Si ta mesure en trouve d'autres, **tu ne les fabriques pas** :
-tu les nommes et tu t'arrêtes. Eric a tranché sur un cas connu, pas sur une catégorie.
+**La collision est vérifiée sur les 1 367 records réels** : les trois adresses sont libres, et
+`climbing`/`swimming`/`flying`/`speed` restent **intactes et distinctes** — le test prouve la
+distinction **par le texte**, pas seulement par l'absence de collision. ⛔ Et le garde refuse
+**dans les deux sens** : si l'anglais gagnait un jour l'une de ces entrées, le français aurait un
+vrai vis-à-vis et **se pairerait au lieu de s'adopter**.
 
 ---
 
@@ -116,6 +124,17 @@ spell.duration       16                        →  zéro
 ➡️ **La table de conversion fait une douzaine d'entrées par champ, pas 1 669.** Et elle
 **existe déjà** : ⭐ **c'est la donnée française d'aujourd'hui.** Tu la **dérives**, tu ne
 l'écris pas.
+
+🔴 **ET LA COUPURE EST PAR VALEUR, JAMAIS PAR CHAMP — mesuré, et ma mesure ne pouvait pas le
+voir.** `monster.speed` vaut tantôt `20 ft.` (conversion pure, **9 fois**), tantôt
+`30 ft., Fly 60 ft.` — **une phrase française, 200 fois**. ⛔ Décider « le champ `speed` se
+convertit » **perdrait les 200 phrases**.
+➡️ **Clef retenue : `(champ, valeur)`** — la plus étroite des trois qui marchent (130 / **85** /
+84, toutes sans ambiguïté). La valeur seule accepterait en silence un `30 feet` qui voudrait dire
+autre chose ailleurs ; le genre en tête recopierait `1 GP` quatre fois pour rien.
+
+📌 ⭐ **Et le livre CHANGE D'UNITÉ quand ça l'arrange** : `1/2 lb. → 250 g`. Un convertisseur
+générique aurait écrit « 0,25 kg ». **La table dérivée porte le livre, pas l'arithmétique.**
 
 ⚠️ **MA MESURE PORTE SUR 58 SORTS SUR 339.** Le zéro-ambiguïté est fort, **il n'est pas
 exhaustif**. ⛔ **Refais-la sur tout le corpus, sur tous les champs porteurs d'unité.** Si une
