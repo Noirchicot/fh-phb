@@ -5,8 +5,18 @@ tu peux »*. **Je les ai rendus.** ⭐ **Aucun n'est un goût : chacun est tranc
 qu'Eric a écrite, ou par SON PROPRE DOCUMENT.** Ce que je n'ai pas pu trancher est nommé et
 laissé.
 
-⛔ **Tout ce lot est RÉVOCABLE et daté.** Chaque décision porte son motif **dans le code**, en une
-ligne, pour qu'Eric puisse la renverser en la lisant.
+## ✅ ET ERIC LES A VALIDÉES — « Je valide », 2026-08-24
+
+🔴 **Ça change ce que tu écris dans le code.** Ces décisions ne sont plus « rendues par le siège,
+révocables » : elles sont **RATIFIÉES**. Le commentaire doit le dire ainsi, avec la date.
+
+⭐ **La nuance n'est pas cosmétique** : un motif marqué *révocable* invite le lot suivant à le
+rediscuter ; un motif marqué *ratifié* lui dit de le respecter et d'aller voir Eric s'il n'est pas
+d'accord. **Les deux se lisent dans dix ans, et ils ne disent pas la même chose.**
+
+📌 Garde quand même **le motif entier** — la règle qui tranche, et l'incident ou le précédent qui
+la fonde. ⛔ *Ratifié* ne veut pas dire *sans argument* : une décision dont on a perdu la raison
+se refait.
 
 - **Dépôt :** `~/tools/fh-srd` · **branche `106-arbitrages`**, partie de `main` (**ea78639**).
 - ⛔ **Jamais sur `main`, jamais de `git push`.**
