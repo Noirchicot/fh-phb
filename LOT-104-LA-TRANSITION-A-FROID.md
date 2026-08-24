@@ -51,17 +51,32 @@ la pire des preuves.**
 | | ce que ça devient |
 |---|---|
 | **`Size`**, côté anglais seul | **rien à faire** : différence d'édition mesurée (le cran français va de `Surprise` à `Télépathie`, ses treize têtes reproduites une par une). Il reste anglais seul |
-| **`Vitesse d'escalade` · `de nage` · `de vol`**, côté français seul | 🔴 **elles n'ont AUCUN anglais à qui emprunter une adresse** |
+| **`Vitesse d'escalade` · `de nage` · `de vol`**, côté français seul | 🔴 aucun anglais à qui EMPRUNTER une adresse → ✅ **on leur en FABRIQUE une**, décision d'Eric ci-dessous |
 
-⚠️ **Eric n'a pas tranché ce cas-là, et « à froid » ne le tranche pas non plus.**
+## ✅ ERIC A TRANCHÉ, 2026-08-24 : **« Les inventer oui »**
 
-➡️ **Ce que tu fais, et c'est un choix HÉRITÉ plutôt qu'inventé** : **elles gardent leur adresse
-française**, marquées explicitement comme les seules à le faire, **avec leur motif écrit dans le
-module**. ⛔ **Tu n'inventes pas `climbing-speed`** — donner une clef anglaise à une entrée qui
-n'en a pas, c'est fabriquer du vocabulaire, et tu l'as refusé toi-même à juste titre.
+➡️ **Les trois reçoivent une adresse anglaise, fabriquée.** ⛔ Plus d'adresse française, pas
+même pour elles : **`git grep 'srd:[a-z-]*:fr:'` doit rendre ZÉRO, sans exception.**
 
-🔴 **MARQUE CE CHOIX RÉVOCABLE** et remonte-le : c'est une décision d'Eric qui attend, pas une
-que je prends. **Trois adresses, et elles sont nommées.**
+⭐ **ET VOICI POURQUOI TON SCRUPULE ÉTAIT JUSTE ET LA DÉCISION AUSSI — ils ne portent pas sur la
+même chose.** Tu refusais d'inventer du **VOCABULAIRE** ; Eric fait inventer une **ADRESSE**.
+
+> **Loi §0.13 : le moteur produit des identifiants, l'interface produit des mots.**
+
+**Le lecteur ne verra jamais `climbing-speed`.** Il lira *« Vitesse d'escalade »*, qui reste le
+libellé, pris dans le livre, inchangé. ⭐ **Une adresse fabriquée n'est pas une traduction
+inventée** : c'est un nom de machine pour une chose que la machine doit pouvoir désigner.
+
+**Comment tu les fabriques :**
+
+| | |
+|---|---|
+| dérivée du **français**, rendue en anglais | et **dérivée**, pas choisie au goût |
+| ⚠️ **vérifie la collision** | l'anglais porte **déjà** `Climbing`, `Swimming`, `Flying`. 🔴 **Ces trois-là sont DES ENTRÉES DISTINCTES** — la vitesse n'est pas le mode de déplacement. Une adresse qui écraserait l'une des trois est un défaut, pas un raccourci |
+| **la provenance le dit** | `invented:2026-08-24` ou l'équivalent de ton module — ⭐ **une adresse fabriquée doit se reconnaître comme telle dix ans plus tard** |
+
+⛔ **Trois, et seulement trois.** Si ta mesure en trouve d'autres, **tu ne les fabriques pas** :
+tu les nommes et tu t'arrêtes. Eric a tranché sur un cas connu, pas sur une catégorie.
 
 ---
 
@@ -86,7 +101,7 @@ changent, c'est le but. **Le remplacer par le bon :**
 |---|---|
 | ✅ **le TEXTE des pages françaises est identique** | mot pour mot. **Un seul mot qui bouge est un défaut** — c'est le même garde que ton T2, sur la seule moitié qui doit encore tenir |
 | ✅ **les ANCRES changent, et chacune s'explique** | l'ancienne, la nouvelle, et la paire qui l'autorise |
-| ✅ **`git grep 'srd:[a-z-]*:fr:'` rend ZÉRO** | sauf les trois orphelines déclarées. ⭐ C'est la preuve la plus courte du lot |
+| ✅ **`git grep 'srd:[a-z-]*:fr:'` rend ZÉRO** | ⛔ **sans exception** — les trois orphelines reçoivent une adresse anglaise fabriquée. ⭐ C'est la preuve la plus courte du lot |
 | ✅ **aucun record perdu** | 1 328 paires entrent, le compte final sort, et l'écart s'explique |
 
 ---
@@ -111,7 +126,7 @@ pas sauté** · ⛔ **ouvrir un genre au contrat désarme une des quatre portes*
 - **`git grep` des identifiants `:fr:` → zéro**, hors les trois orphelines nommées ;
 - **le texte des pages françaises inchangé**, et le dire ;
 - **le compte de records avant/après**, et l'écart expliqué ;
-- ⏳ **les trois orphelines**, leur adresse, et la question pour Eric ;
+- ✅ **les trois adresses fabriquées**, leur dérivation, et **la preuve qu'aucune n'écrase `Climbing`/`Swimming`/`Flying`** ;
 - 🔴 **CE QUE TU LAISSES CASSÉ CHEZ `fhpc`** — nomme-le précisément : combien de fichiers de
   tests, quelles signatures, ce que la couche devient. **C'est la commande du lot suivant.**
 - 🔴 **ET UNE COUTURE PRÉCISE, SIGNALÉE PAR LE FIL DE L'ÉCRAN R** : son pipeline lit les records
