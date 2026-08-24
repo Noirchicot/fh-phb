@@ -114,6 +114,11 @@ pas sauté** · ⛔ **ouvrir un genre au contrat désarme une des quatre portes*
 - ⏳ **les trois orphelines**, leur adresse, et la question pour Eric ;
 - 🔴 **CE QUE TU LAISSES CASSÉ CHEZ `fhpc`** — nomme-le précisément : combien de fichiers de
   tests, quelles signatures, ce que la couche devient. **C'est la commande du lot suivant.**
+- 🔴 **ET UNE COUTURE PRÉCISE, SIGNALÉE PAR LE FIL DE L'ÉCRAN R** : son pipeline lit les records
+  **par `extends`** — `slotParBase`, dans `equipment-step.mjs`, fait correspondre `data.extends`
+  à un emplacement du corps. **Si les identifiants `fr:` disparaissent des `extends` de la couche
+  `shelving`, c'est régénéré donc gratuit** — ⭐ mais **NOMME-LE** dans ce que tu laisses cassé,
+  pour que le lot `fhpc` sache que la couture est là au lieu de la découvrir.
 - les suites vertes dans un **clone indépendant**, avec le compte ;
 - ce que tu as **refusé** de faire et pourquoi ;
 - toute contradiction entre ce document et ta mesure : **ta mesure gagne, dis-le.**
