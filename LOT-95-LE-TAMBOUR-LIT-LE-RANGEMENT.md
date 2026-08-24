@@ -8,15 +8,20 @@ donnée depuis le lot 90** — et l'écran ne le lit pas.
 - **Dépôt :** `~/tools/fhpc` · **branche `95-tambour-rangement`**.
 - ⛔ **Jamais sur `main`, jamais de `git push`.**
 
-## 🔴 CE LOT NE DÉMARRE PAS AVANT LA RÉGÉNÉRATION DES COUCHES
+## ✅ LE TERRAIN EST LIBRE — vérifié le 2026-08-24, pas supposé
 
-La suite de `fhpc` porte **2 rouges** : les couches sont périmées depuis les lots 97 et 98.
-⛔ **Un lot ne peut pas se vérifier sur une suite rouge.** Eric lance
-`node src/tools/gen-srd-layer.mjs` ; le lot part après.
+| | |
+|---|---|
+| les couches | ✅ **régénérées** (lot 101) — `armor_category` est **dans la couche** : `medium 5 · heavy 4 · light 3 · shield 1` |
+| la suite | ✅ **1342 verts** sur `main` (`abfbcb7`), version **285** |
+| `equipment-step.mjs`, `shell.css`, `ecran-r.html` | ✅ **libres** — le fil de l'écran R a fini avec eux et travaille sur **B3** (fichiers neufs, aucun recouvrement) |
 
-⭐ **Et ce n'est pas qu'une question de vert** : la régénération fait entrer `armor_category`
-(`medium 5 · heavy 4 · light 3 · shield 1`) dans la couche. **C'est une des données dont tu as
-besoin.**
+⭐ **Et je l'ai mesuré au lieu de le croire** : sa branche `94-ecran-r` diffère de `main` sur ces
+trois fichiers, mais **ZÉRO ligne hors du `?v=`**. Un bump de version fait paraître un diff
+énorme là où rien n'a changé — c'est le deuxième lot de suite où ça se vérifie.
+
+⚠️ **Sa branche porte 6 commits de B3 au-dessus de `main` et n'est pas fusionnée.** Tu pars de
+`main`, tu rebaseras à la fin. **Ne va pas lire son travail B3 : ce n'est pas le tien.**
 
 ---
 
