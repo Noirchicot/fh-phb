@@ -80,29 +80,79 @@ tu les nommes et tu t'arrêtes. Eric a tranché sur un cas connu, pas sur une ca
 
 ---
 
-## 4. Ce que tu produis
+## 4. ✅ ERIC A TRANCHÉ : **OPTION 4 — la conversion passe de la DONNÉE au RENDU**
 
-1. **Les records français fusionnent dans les anglais.** La couche `fr` devient un **patch de
-   `name` et `description`** — plus de `cost`, plus de `weight`, plus de valeurs converties.
-   ⭐ **Le poids reste `3 lb.` dans la donnée** ; rendre des kilos est le travail de l'écran, pas
-   de la couche. C'est tout le sens de la loi §0.13.
-2. **Les 544 références croisées suivent mécaniquement** — elles ne se décident pas, elles se
-   dérivent.
-3. **Le site français se régénère** sur les nouvelles adresses.
+> **Le lecteur français ne doit rien perdre. Et la couche cesse quand même d'être un
+> embranchement.** Les deux, parce que ce ne sont pas les mêmes valeurs.
+
+🔴 **MON §4.1 D'ORIGINE ÉTAIT FAUX, ET TA MESURE L'A TUÉ.** Un patch limité à
+`name`/`description` amputait le site français des deux tiers de son contenu. **Ta mesure gagne,
+et elle a changé la commande.** Voici la bonne :
+
+### La coupure, et elle n'est PAS entre `name`/`description` et le reste
+
+| ce que c'est | où ça va |
+|---|---|
+| **les MOTS français** — `name`, `description`, et les ~80 autres champs de texte : `monster.alignment`, `monster.actions`, `class.features`, `item.rarity`, `spell.components`… | ✅ **dans le PATCH.** Ce sont des **traductions**, et une traduction est un mot du livre |
+| **les NOMBRES CONVERTIS** — `spell.range` *9 m*, `gear.cost` *25 po*, les poids… | ⛔ **PAS dans le patch.** Ce sont des **conversions**, et une conversion se **dérive** |
+
+⭐ **La conversion n'est pas une traduction.** Un mot français doit être **pris dans le livre** ;
+un nombre français se **recalcule**. C'est ce que la loi §0.13 sépare depuis le début — *le
+moteur produit des identifiants, l'interface produit des mots* — et une **unité** n'est ni l'un
+ni l'autre : c'est un **rendu**.
+
+### ⭐ Et voici pourquoi ça ne coûte rien : la conversion est une FONCTION
+
+**Mesuré depuis le siège**, sur 58 sorts appariés par une empreinte **non textuelle** :
+
+```
+spell.range          12 valeurs EN distinctes  →  ZÉRO ambiguïté
+spell.casting_time    8                        →  zéro
+spell.duration       16                        →  zéro
+
+'10 feet' → '3 m'     '100 feet' → '30 m'     '1 mile' → '1,5 km'
+```
+
+➡️ **La table de conversion fait une douzaine d'entrées par champ, pas 1 669.** Et elle
+**existe déjà** : ⭐ **c'est la donnée française d'aujourd'hui.** Tu la **dérives**, tu ne
+l'écris pas.
+
+⚠️ **MA MESURE PORTE SUR 58 SORTS SUR 339.** Le zéro-ambiguïté est fort, **il n'est pas
+exhaustif**. ⛔ **Refais-la sur tout le corpus, sur tous les champs porteurs d'unité.** Si une
+valeur anglaise rend **deux** valeurs françaises, **tu t'arrêtes et tu la nommes** — ce serait
+que la conversion n'est pas une fonction, et toute l'option 4 reposerait dessus.
+
+📌 **Et garde la rondeur du livre, pas celle du calcul** : le livre écrit *9 m* là où 30 pieds
+font 9,144. **La table dérivée porte les arrondis d'Eric**, jamais un produit recalculé.
 
 ---
 
-## 5. 🔴 LA VÉRIFICATION — et elle change de nature, lis bien
-
-⛔ **Le garde « le site FR se reconstruit à l'octet près » NE S'APPLIQUE PLUS** : les URL
-changent, c'est le but. **Le remplacer par le bon :**
+## 5. 🔴 LA VÉRIFICATION — elle redevient l'octet près, et c'est le but
 
 | | |
 |---|---|
-| ✅ **le TEXTE des pages françaises est identique** | mot pour mot. **Un seul mot qui bouge est un défaut** — c'est le même garde que ton T2, sur la seule moitié qui doit encore tenir |
-| ✅ **les ANCRES changent, et chacune s'explique** | l'ancienne, la nouvelle, et la paire qui l'autorise |
-| ✅ **`git grep 'srd:[a-z-]*:fr:'` rend ZÉRO** | ⛔ **sans exception** — les trois orphelines reçoivent une adresse anglaise fabriquée. ⭐ C'est la preuve la plus courte du lot |
-| ✅ **aucun record perdu** | 1 328 paires entrent, le compte final sort, et l'écart s'explique |
+| ✅ **les pages françaises se reconstruisent BYTE-IDENTIQUES** | ⭐ **c'est la preuve de l'option 4.** Un seul mot qui bouge = **la table est incomplète**, et il te dit lequel |
+| ✅ **les ANCRES changent, et chacune s'explique** | l'ancienne, la nouvelle, la paire qui l'autorise |
+| ✅ **`git grep 'srd:[a-z-]*:fr:'` rend ZÉRO** | ⛔ sans exception — voir §5 bis pour `sources/` |
+| ✅ **aucun record perdu** | 1 366 paires entrent, le compte final sort, l'écart s'explique |
+
+⭐ **Le garde que je t'avais retiré t'est rendu, et plus fort qu'avant** : il ne dit plus
+seulement « rien n'a bougé », il **mesure la complétude de la table de conversion**.
+
+---
+
+## 5 bis. ✅ TES DEUX PROPOSITIONS SONT ACCORDÉES — décisions d'architecte
+
+**① Les 739 identifiants `:fr:` de `sources/`, dont les 90 signatures d'Eric → re-clefés sur le
+SLUG FRANÇAIS.** ✅ **Accordé.** ⭐ Ton argument est le bon : un slug est **un mot du livre**,
+l'adresse ne le sera plus. **Et ce n'est pas une table d'alias** — rien ne résout par elle à
+l'exécution, elle ne fait que porter la provenance. ⛔ La signature d'Eric doit rester lisible
+par Eric : c'est ça qu'on protège.
+
+**② Les `:fr:` peuvent vivre dans `build/srd.sqlite`, qui est gitignorée.** ✅ **Accordé**, et
+pour ta raison exactement : sans eux, **les routes de correspondance cesseraient de tourner et la
+table se figerait** — elle ne serait plus vérifiable. ⛔ Ce dépôt refuse partout ailleurs qu'une
+table cesse de se prouver ; il ne va pas commencer ici.
 
 ---
 
