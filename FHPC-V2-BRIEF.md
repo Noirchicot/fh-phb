@@ -40,9 +40,26 @@ passent devant l'achèvement du dock.
 | **3** | **Le personnage appartient au joueur, la campagne appartient au MJ.** Le joueur héberge ses propres données et **partage une copie** au serveur du MJ quand il rejoint une campagne | Pas de comptes chez Eric : pas de RGPD, pas de promesse de disponibilité, pas de facture qui grandit. Toute synchro multi-appareils doit rester **optionnelle et débranchable** |
 | **4** | **La table d'Eric ne joue pas sur FHPC aujourd'hui.** *« Les données joueurs sont en sécurité ailleurs, on peut les perdre ici. »* **Dans trois mois, on joue à FH** | Liberté totale sur les données existantes. Et **une date dure** : c'est la seule du chantier |
 
-**Non tranché, et qui le restera jusqu'à ce qu'Eric le dise** : où vit le partage
-public de homebrew (un format de fichier ne suffit pas, il faut un endroit — c'est
-le seul point où il redeviendrait hébergeur malgré lui).
+✅ **TRANCHÉ LE LENDEMAIN, 2026-08-08 — et cette ligne a menti pendant dix-huit jours.**
+Ce document date du 07/08 ; la décision est du 08/08 et **personne n'est revenu la corriger
+ici**. Elle a fait redécouvrir le sujet de zéro le 2026-08-26.
+
+> Eric, 08/08 : *« mon site tient une liste ok. **chacun héberge son homebrew et décide ou pas
+> de le partager.** question suivante »*
+
+➡️ **Ta liste, leurs serveurs, leur choix de partager.** ⛔ Une **liste**, pas un aiguilleur :
+le client va parler **directement** à l'URL du propriétaire — *« mon site fait communiquer les
+serveurs »* a été **explicitement écarté**, ça recréerait le serveur mondial interdit.
+⛔ Le pointeur est une **URL publique nue rendant du JSON**, sans authentification — sinon Eric
+redevient courtier d'identité. Une ligne d'index = `{id, nom, version, url, empreinte}`, ce qui
+est déjà le `layerRef` du document de personnage.
+⚠️ **Un index de pointeurs ROUILLE** — un homebrew disparaît le jour où son auteur change un
+réglage de partage. ⛔ **Aucun cache, aucun miroir** *(mettre en cache le fichier d'autrui
+fissurerait le coffre)* : ça **se dit dans l'interface, jamais en silence**, et le document de
+personnage porte ses valeurs résolues (§3.1).
+📌 Confirmé et durci le **20/08** — *« je vends un coffre »*, et un **censeur** uniquement sur le
+homebrew publié à large spectre, jamais sur ce qu'un MJ donne à sa table. Voir vault
+`FH-WEB/FHPHB/FHPHB acces par cle.md` et `ARCHITECTE-ARCHIVE.md:1047`.
 
 ---
 
@@ -327,8 +344,11 @@ silencieux ».
 
 À ne pas décider à la place d'Eric :
 
-1. **Où vit le partage public de homebrew** (§2). Un format ne suffit pas, il faut
-   un endroit — et c'est le seul point où il redeviendrait hébergeur.
+1. ✅ ~~**Où vit le partage public de homebrew**~~ — **TRANCHÉ le 2026-08-08**, voir §2.
+   *« Mon site tient une liste. Chacun héberge son homebrew et décide ou pas de le partager. »*
+   ⏳ **Ce qui reste ouvert n'est pas le principe, c'est la FORME** : où vit physiquement la
+   liste (« GitHub pour l'instant, en preuve de concept ») et **le censeur du large spectre**,
+   annoncé le 20/08 et **non conçu** — ⚠️ une modération promise et non tenue est pire que rien.
 2. **La synchro multi-appareils du joueur** : assumée par le joueur, ou service
    optionnel ? Optionnel se retire, obligatoire ne se retire pas.
 3. **Le sort du dock v1** au-delà du gel : maintenu, archivé, ou repris comme
