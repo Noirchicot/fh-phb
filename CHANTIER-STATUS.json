@@ -58,6 +58,12 @@
   ],
   "wip": [
     {
+      "state": "en-attente",
+      "name": "📖 Le livre web paginé — CONSIGNÉ le 2026-08-25, PAS PLANIFIÉ",
+      "repo": "vault (démo hors dépôts)",
+      "note": "⏳ Eric : « consigne cela même si on ne bosse pas dessus » puis « on fera plus tard ». ⛔ AUCUN LOT OUVERT. Démo fonctionnelle : le chapitre Species recomposé COMME UN LIVRE — couverture + 36 pages éditoriales, DOUBLE PAGE en paysage / page unique en portrait, navigation HORIZONTALE (geste, flèches, deux onglets), ⛔ aucun défilement vertical, sceau `FS`, sommaire numéroté, reprise à la dernière page lue. ⭐ L'intention est écrite EN NÉGATIF, ce qui la rend nette : « ni une page web verticale, ni une imitation d'ebook, ni un lecteur PDF, ni un long document découpé automatiquement » — il veut l'expérience SPATIALE d'un vrai livre de règles, avec une relation visuelle entre la page et sa vis-à-vis. La pagination est ÉDITORIALE : le texte est redistribué, pas coupé. ⭐⭐ CE QUI COMPTE POUR LE CHANTIER : le LIVRE et le BUILDER viennent de converger sur UNE SEULE GRAMMAIRE DE LECTURE, sans se concerter — unité finie (la dalle / la page), ⛔ jamais de défilement, navigation LATÉRALE, quantité DÉRIVÉE (du compte / de la composition). La même loi, deux objets. Et la démo emploie déjà `FS`, notre vocabulaire ratifié des cadres. ⚠️ LE PIÈGE : la démo est un projet **Next.js / Vite / React + drizzle-orm**, alors que le livre est STATIQUE et le builder en modules ES NUS sans framework. 🔴 ADOPTER LE FORMAT N'OBLIGE PAS À ADOPTER LA PILE — la grammaire éditoriale se réimplémente sans React. 📄 Consigné : vault `FH-WEB/FHPHB/FHPHB livre web pagine.md`. Pièces : `Gpt in FH/Rendre le Player Companion immersif.md` (la consigne d'Eric, mot pour mot) et `Gpt in FH/Fates-Hand-Species-Reader.zip` (3,5 Mo, source ; rien installé, rien construit). ⏳ SI ÇA DEVIENT UN CHANTIER, la première question est à Eric : reconstruit-on la grammaire dans le site statique existant, ou publie-t-on un second site ?"
+    },
+    {
       "state": "en-cours",
       "name": "SRFH et SRFH+ — contrat écrit le 2026-08-23, couches à remplir",
       "repo": "vault + fhpc",
