@@ -16,6 +16,63 @@ réel, elle ne se force pas en `.png`.
 
 ## Les croquis
 
+### `2026-08-26-gabarit-ecran-trois-bandes.jpg` ✅ *déposé le 2026-08-26*
+
+**Le gabarit d'un écran, vu de dessus.** Trois bandes, et ses annotations à lui :
+
+```
+        ┌──────────── TITRE ────────────┐
+        │  ╔═════════════════════════╗  │
+        │  ║                         ║  │   ← « NE BOUGE PAS
+        │  ║      ZONE DE SCROLL     ║  │       BORD INVISIBLE »
+        │  ║                         ║  │
+        │  ╚═════════════════════════╝  │
+        │  📖   [ btn ]  [ btn ]     ❓  │   ← « BOUTONS CENTRÉS »
+        └───────────────────────────────┘
+```
+
+🔴 **CE QU'IL RATIFIE**
+
+| la bande | ce qu'elle fait |
+|---|---|
+| **le TITRE** | en haut, **fixe** |
+| **la ZONE DE SCROLL** | 🔴 **elle NE BOUGE PAS** — son cadre est immobile, le contenu défile DEDANS. Et son **bord est invisible** |
+| **la bande basse** | **fixe** : 📖 à gauche · les boutons **centrés** · ❓ à droite |
+
+⭐ **Les deux petits organes ne se centrent pas** *(Eric, le même jour)* : *« deux petits organes à
+gauche et à droite, prenant peu de place dans la rangée des boutons, **ils ne se centrent pas** »*.
+La rangée réserve leur colonne des deux côtés ; les boutons se centrent sur ce qui reste.
+
+⚖️ **SA PORTÉE, ET ELLE EST BORNÉE PAR SES MOTS** : *« **s'il y a une zone de scroll**. Si on n'est
+pas déjà dans le guide ou dans les règles bien sûr. »*
+
+| ✅ le gabarit s'applique | ⛔ il ne s'applique pas |
+|---|---|
+| un écran du parcours qui a **une zone de scroll** | **le guide** |
+| | **les règles** |
+
+➡️ **C'est un DÉFAUT, pas un mur** — la loi du dépôt depuis le 26/08. Un écran sans zone de scroll
+n'a rien à en faire.
+
+🔴 **CE QU'IL CORRIGE, ET C'EST MESURÉ** — relevé sur `main` à 360 px, le 2026-08-26 :
+
+| l'écran | le titre | la zone de scroll | la bande basse |
+|---|---|---|---|
+| **Species** *(bilan)* | ✅ `guide-titre` | ✅ `parcours-resume` | ✅ `parcours-pied` |
+| **Class** | ✅ | ✅ | ✅ |
+| **Abilities** | ✅ | ⛔ aucune | ⛔ **aucune** |
+| **Skills** | ⛔ **aucun** | ⛔ **aucune** | ⛔ **aucune** |
+
+⭐⭐ **ET ÇA EXPLIQUE LE DÉFAUT QU'ERIC A VU LE MATIN MÊME** — *« les boutons cachent le texte »*.
+📏 Sur Skills : la carte fait **471 px** de haut, son contenu **4 357** — il déborde de **3 886 px**,
+et **rien ne défile à l'intérieur**. C'est le champ ENTIER qui défile, boutons compris. `Done` se
+retrouve donc posé sur une ligne de compétence, parce qu'il est **dans le flux** au lieu d'être dans
+une bande fixe.
+➡️ **Le croquis n'est pas une préférence de dessin : c'est le remède d'un défaut mesuré.**
+
+⏳ **Deux écrans à mettre au gabarit** — Abilities et Skills. ⛔ Species et Class l'ont déjà.
+
+
 ### `2026-08-15-species-lore-choose.jpg` ✅ *déposé le 2026-08-15*
 
 **Species, vu de dessus.** Ce qu'il a tranché, et que le texte avait manqué :
