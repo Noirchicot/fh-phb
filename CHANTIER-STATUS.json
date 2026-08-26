@@ -21,7 +21,7 @@
     "label": "Release 5/6/7 (Traits · Actions · Spells), déployée et vérifiée live le 2026-08-01",
     "fhpc_builder": {
       "url": "https://noirchicot.github.io/fhpc/ui/builder/",
-      "active": "🔴 **ÉCART main ↔ SITE, ET IL VIENT DE GITHUB, PAS DE NOUS** *(2026-08-26, 17 h)* — `origin/main` = **def8876 (v301)**, le site sert encore **v299**. Deux versions sont poussées et attendent : v300 (l'arête de verre) et v301 (les cinq décisions + le livre du Lore). 📏 DIAGNOSTIC MESURÉ, pas supposé : la file de construction Pages est bouchée. Le run de v300 est resté **queued 42 min 43 s** puis a rendu « Page build failed » — il n'a jamais démarré. Les trois builds précédents avaient pris 36 s, 1 min 17 et 1 min 38. ⛔ Ce n'est pas le contenu : le dépôt pèse 14 MiB de pack, aucun fichier au-dessus de 5 Mo, `build_type: legacy` sur `main/` inchangé. ⚠️ ET UNE FAUTE DE MA PART À CONNAÎTRE : j'ai rapporté à Eric « pas d'échec, juste bloqué » alors que le build tournait encore. **Un build en cours ne dit pas qu'il réussira** — il a erré ensuite. Ne pas conclure sur un état transitoire. ➡️ La parade quand ça se reproduit : repousser (un commit vide suffit) pour remettre un run dans la file."
+      "active": "🚀 **v302 EN LIGNE ET VÉRIFIÉE le 2026-08-26 au soir** — `origin/main` = `eefec34`, local identique, `v=302` servi, zéro erreur JS. Vérifié CONTRE LE DISTANT puis SUR LA PAGE RENDUE. ⭐ **TOUT LE TRAVAIL DE LA JOURNÉE EST DEVANT ERIC** : le cadre ne peint rien (fond AUCUN, liseré 0, rembourrage 0) · la dalle à **50 %** avec son arête de verre à 55 % · le jeton à **10 px (T1)** · le **livre du Lore** présent et le mot `Lore` parti · le collecteur doré à liseré d'état · la lueur de nuit du bouton · trois colonnes toujours. \n⚠️ **LA FILE PAGES S'EST DÉBLOQUÉE SEULE** après ~3 h : les cinq derniers builds sont passés en 20 à 45 s. Un build resté *queued 42 min* avait erré entre-temps. ⛔ Ce n'était jamais notre contenu. 📌 **La parade quand ça se reproduit** : attendre, puis repousser si le build erre — et ⛔ **ne pas conclure sur un build EN COURS** (j'ai rapporté « pas d'échec » sur un build qui a erré ensuite)."
     }
   },
   "main": [
@@ -57,6 +57,12 @@
     }
   ],
   "wip": [
+    {
+      "state": "probleme",
+      "name": "🔴 LE TEXTE NU SUR L'IMAGE — famille de défauts ouverte par le fond transparent",
+      "repo": "fhpc",
+      "note": "⭐ CAUSE : depuis v298 le cadre d'écran ne peint plus. Tout texte qui n'est dans AUCUNE dalle tombe donc sur l'image de fond nue. C'était mesuré AVANT le changement (six étapes parcourues) et jugé petit : **quatre nœuds**. ⚠️ **Il y en a un CINQUIÈME, et je l'ai trouvé après coup en regardant le site déployé.**\n\n| où | l'encre | contraste mesuré |\n|---|---|---|\n| **Skills**, 2 lignes (`.skills-pooldetail-line`) | `--text-muted` | **1,05** le jour |\n| 🔴 **l'écran de CHARGEMENT** (`.placeholder`, « Loading the engine… ») | `--text-soft` | **1,89** le jour · **1,01** la nuit |\n| **Abilities**, 2 lignes | `--text` | dans la bande (l'encre qui survit) |\n\n🔴 **LE CINQUIÈME EST LE PIRE, ET C'EST CELUI QUE PERSONNE N'AVAIT REGARDÉ** : `.placeholder` est posé DIRECTEMENT sur la carte (`shell.mjs`), et c'est **la première chose qu'un visiteur voit** — plus l'écran d'erreur moteur, qui porte le même habit. À **1,01 la nuit**, le texte est rigoureusement invisible.\n\n⛔ **NON RÉPARÉ, ET POUR UNE BONNE RAISON — LE TERRAIN EST TENU** : `shell.mjs` est au lot **G-guide**, `shell.css` au lot **C-gabarit**. Toucher maintenant écraserait deux agents. ➡️ **À faire dès qu'ils ont rendu.**\n\n📌 LA LEÇON : *une mesure faite avant un changement mesure le monde d'avant.* J'avais compté quatre textes nus sur six ÉTAPES parcourues — l'écran de chargement n'est une étape d'aucune, il n'était dans aucun de mes six passages."
+    },
     {
       "state": "fini",
       "name": "✅ LA TABLE D'ERIC — VIDÉE le 2026-08-26",
