@@ -16,7 +16,7 @@ Every goliath met outside the north is a survivor of that long hunt. They are pa
 
 **Creature type** Humanoid · **Size** Medium (about 7–8 feet tall) · **Speed** 35 feet
 
-- **Giant Ancestry** — choose one boon from the table below; uses equal to your Proficiency Bonus, regained on a Long Rest.
+- **Giant Ancestry** — choose one boon from the table below; 2 uses (+1 at levels 5, 9, 13 and 17), regained on a Long Rest.
 - **Large Form** — at level 5, as a Bonus Action, become Large for 10 minutes: Advantage on Strength checks, and your Speed increases by 10 feet. Once per Long Rest.
 - **Powerful Build** — Advantage on saves against the Grappled condition, and you count as one size larger for carrying capacity.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.

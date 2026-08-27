@@ -18,7 +18,7 @@ What is not in doubt is the posture. A dragonborn does not apologise for the roo
 
 - **Darkvision** — 60 feet.
 - **Draconic Ancestry** — your lineage stems from a dragon progenitor. Choose the kind of dragon from the Draconic Ancestors table; your choice sets your **Breath Weapon** and **Damage Resistance**, and your appearance.
-- **Breath Weapon** — in place of one attack, exhale magical energy in a 15-foot Cone or a 30-foot Line, 5 feet wide. Dexterity save (DC 8 + Constitution modifier + Proficiency Bonus); 1d10 damage of your ancestry's type, half on a success. It rises to 2d10 at level 5, 3d10 at 11 and 4d10 at 17. Uses equal to your Proficiency Bonus, regained on a Long Rest.
+- **Breath Weapon** — in place of one attack, exhale magical energy in a 15-foot Cone or a 30-foot Line, 5 feet wide. Dexterity save (DC 8 + Constitution modifier + 2, rising by 1 at levels 5, 9, 13 and 17); 1d10 damage of your ancestry's type, half on a success. It rises to 2d10 at level 5, 3d10 at 11 and 4d10 at 17. 2 uses (+1 at levels 5, 9, 13 and 17), regained on a Long Rest.
 - **Damage Resistance** — to the damage type set by your Draconic Ancestry.
 - **Draconic Flight** — at level 5, sprout spectral wings as a Bonus Action for 10 minutes: a Fly Speed equal to your Speed.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.

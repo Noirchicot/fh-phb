@@ -17,7 +17,7 @@ The census-keeper of Huitzlika lists them with the dragonborn and tieflings as p
 **Creature type** Humanoid · **Size** Medium (about 6–7 feet tall) · **Speed** 30 feet
 
 - **Darkvision** — 120 feet.
-- **Adrenaline Rush** — take the Dash action as a Bonus Action and gain temporary hit points equal to your Proficiency Bonus. Uses equal to your Proficiency Bonus, regained on a Short or Long Rest.
+- **Adrenaline Rush** — take the Dash action as a Bonus Action and gain 2 temporary hit points (+1 at levels 5, 9, 13 and 17). 2 uses (+1 at levels 5, 9, 13 and 17), regained on a Short or Long Rest.
 - **Relentless Endurance** — when you drop to 0 hit points and don't die outright, you can drop to 1 instead. Once per Long Rest.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.
 

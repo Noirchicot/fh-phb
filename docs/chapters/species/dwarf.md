@@ -19,7 +19,7 @@ What they carry in the body matches what they carry in the temperament. Poison b
 - **Darkvision** — 120 feet.
 - **Dwarven Resilience** — resistance to Poison damage, and Advantage on saves to avoid or end the Poisoned condition.
 - **Dwarven Toughness** — your hit point maximum increases by 1, and by 1 again at every level.
-- **Stonecunning** — as a Bonus Action, gain Tremorsense 60 feet for 10 minutes while on a stone surface. Uses equal to your Proficiency Bonus, regained on a Long Rest.
+- **Stonecunning** — as a Bonus Action, gain Tremorsense 60 feet for 10 minutes while on a stone surface. 2 uses (+1 at levels 5, 9, 13 and 17), regained on a Long Rest.
 - **Destiny** <span class="fh-tag">FH</span> — Base 2.
 
 *Base the base game text: [Dwarf](https://noirchicot.github.io/fh-srd/en/species/#dwarf)*

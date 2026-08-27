@@ -66,7 +66,7 @@ because a rarity that reads *« Uncommon (+1), Rare (+2), or Very Rare (+3) »* 
 a single word would lose.
 
 <details class="fh-fold">
-<summary><strong>253 magic items</strong> — open to read them</summary>
+<summary><strong>258 magic items</strong> — open to read them</summary>
 <!-- GENERATED — cité depuis fh-srd item.json (run=84bc651f48a7c1dd0077f076cd35bf73). Ne pas éditer. -->
 <div class="fh-srd-cite fh-srd-cite--spells">
 <p class="fh-srd-cite__group">Armor <span>· 19</span></p>
@@ -798,7 +798,7 @@ Regaining Charges. The wand regains 1d6 + 1 expended charges daily at dawn. If y
 <dt>Wand of the War Mage, +1, +2, or +3</dt>
 <dd><span class="fh-spell-meta">Uncommon (+1), Rare (+2), or Very Rare (+3) (Requires Attunement by a Spellcaster)</span>While holding this wand, you gain a bonus to spell attack rolls determined by the wand’s rarity. In addition, you ignore Half Cover when making a spell attack roll.</dd>
 </dl>
-<p class="fh-srd-cite__group">Weapons <span>· 28</span></p>
+<p class="fh-srd-cite__group">Weapons <span>· 33</span></p>
 <dl class="fh-srd-cite__list">
 <dt>Ammunition of Slaying</dt>
 <dd><span class="fh-spell-meta">Very Rare · Any Ammunition</span>This magic ammunition is meant to slay creatures of a particular type, which the GM chooses or determines randomly by rolling on the table below. If a creature of that type takes damage from the ammunition, the creature makes a DC 17 Constitution saving throw, taking an extra 6d10 Force damage on a failed save or half as much extra damage on a successful one.
@@ -835,9 +835,9 @@ While berserk, you regard the creature nearest to you that you can see or hear a
 <dt>Dagger of Venom</dt>
 <dd><span class="fh-spell-meta">Rare · Dagger</span>You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon.
 
-You can take a Bonus Action to magically coat the blade with poison. The poison remains for 1 minute or until an attack using this weapon hits a creature. That creature must succeed on a DC 15 Constitution saving throw or take 2d10 Poison damage and have the Poisoned condition for 1 minute. The weapon can’t be used this way again until the next dawn. Dancing Sword Weapon (Greatsword, Longsword, Rapier, Scimitar, or Shortsword), Very Rare (Requires Attunement)
-
-You can take a Bonus Action to toss this magic weapon into the air. When you do so, the weapon begins to hover, flies up to 30 feet, and attacks one creature of your choice within 5 feet of itself. The weapon uses your attack roll and adds your ability modifier to damage rolls.
+You can take a Bonus Action to magically coat the blade with poison. The poison remains for 1 minute or until an attack using this weapon hits a creature. That creature must succeed on a DC 15 Constitution saving throw or take 2d10 Poison damage and have the Poisoned condition for 1 minute. The weapon can’t be used this way again until the next dawn.</dd>
+<dt>Dancing Sword</dt>
+<dd><span class="fh-spell-meta">Very Rare (Requires Attunement) · Greatsword, Longsword, Rapier, Scimitar, or Shortsword</span>You can take a Bonus Action to toss this magic weapon into the air. When you do so, the weapon begins to hover, flies up to 30 feet, and attacks one creature of your choice within 5 feet of itself. The weapon uses your attack roll and adds your ability modifier to damage rolls.
 
 While the weapon hovers, you can take a Bonus Action to cause it to fly up to 30 feet to another spot within 30 feet of you. As part of the same Bonus Action, you can cause the weapon to attack one creature within 5 feet of the weapon.
 
@@ -864,6 +864,12 @@ Arrow of Transport. As a Magic action, you can fire one energy arrow from this w
 Energy Ladder. As a Magic action, you can loose a flurry of energy arrows from this weapon at a wall up to 60 feet away from yourself. The arrows become glowing rungs that stick out of the wall, forming a magical ladder up to 60 feet long on the wall. This ladder lasts for 1 minute before disappearing.</dd>
 <dt>Flame Tongue</dt>
 <dd><span class="fh-spell-meta">Rare (Requires Attunement) · Any Melee Weapon</span>While holding this magic weapon, you can take a Bonus Action and use a command word to cause flames to engulf the damage-dealing part of the weapon. These flames shed Bright Light in a 40- foot radius and Dim Light for an additional 40 feet. While the weapon is ablaze, it deals an extra 2d6 Fire damage on a hit. The flames last until you take a Bonus Action to issue the command again or until you drop, stow, or sheathe the weapon.</dd>
+<dt>Frost Brand</dt>
+<dd><span class="fh-spell-meta">Very Rare (Requires Attunement) · Glaive, Greatsword, Longsword, Rapier, Scimitar, or Shortsword</span>When you hit with an attack roll using this magic weapon, the target takes an extra 1d6 Cold damage. In addition, while you hold the weapon, you have Resistance to Fire damage.
+
+In freezing temperatures, the weapon sheds Bright Light in a 10-foot radius and Dim Light for an additional 10 feet.
+
+When you draw this weapon, you can extinguish all nonmagical flames within 30 feet of yourself. Once used, this property can’t be used again for 1 hour.</dd>
 <dt>Giant Slayer</dt>
 <dd><span class="fh-spell-meta">Rare · Any Simple or Martial</span>You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon.
 
@@ -884,6 +890,12 @@ While you hold the drawn weapon, it creates a 10-foot Emanation originating from
 <dd><span class="fh-spell-meta">Uncommon · Javelin</span>Each time you make an attack roll with this magic weapon and hit, you can have it deal Lightning damage instead of Piercing damage.
 
 Lightning Bolt. When you throw this weapon at a target no farther than 120 feet from you, you can forgo making a ranged attack roll and instead turn the weapon into a bolt of lightning. This bolt forms a 5-foot-wide Line between you and the target. The target and each other creature in the Line (excluding you) makes a DC 13 Dexterity saving throw, taking 4d6 Lightning damage on a failed save or half as much damage on a successful one. Immediately after dealing this damage, the weapon reappears in your hand. This property can’t be used again until the next dawn.</dd>
+<dt>Luck Blade</dt>
+<dd><span class="fh-spell-meta">Legendary (Requires Attunement) · Glaive, Greatsword, Longsword, Rapier, Scimitar, Sickle, or Shortsword</span>You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon. While the weapon is on your person, you also gain a +1 bonus to saving throws.
+
+Luck. If the weapon is on your person, you can call on its luck (no action required) to reroll one failed D20 Test if you don’t have the Incapacitated condition. You must use the second roll. Once used, this property can’t be used again until the next dawn.
+
+Wish. The weapon has 1d3 charges. While holding it, you can expend 1 charge and cast Wish from it. Once used, this property can’t be used again until the next dawn. The weapon loses this property if it has no charges.</dd>
 <dt>Mace of Disruption</dt>
 <dd><span class="fh-spell-meta">Rare (Requires Attunement) · Mace</span>When you hit a Fiend or an Undead with this magic weapon, that creature takes an extra 2d6 Radiant damage. If the target has 25 Hit Points or fewer after taking this damage, it must succeed on a DC 15 Wisdom saving throw or be destroyed. On a successful save, the creature has the Frightened condition until the end of your next turn.
 
@@ -931,19 +943,15 @@ blade disappear. While the blade exists, this magic weapon functions as a Longsw
 
 You gain a +2 bonus to attack rolls and damage rolls made with this weapon, which deals Radiant damage instead of Slashing damage. When you hit an Undead with it, that target takes an extra 1d8 Radiant damage.
 
-Sunlight. The sword’s luminous blade emits Bright Light in a 15-foot radius and Dim Light for an additional 15 feet. The light is sunlight. While the blade persists, you can take a Magic action to expand or reduce its radius of Bright Light and Dim Light by 5 feet each, to a maximum of 30 feet each or a minimum of 10 feet each.
-
-Sword of Life Stealing Weapon (Glaive, Greatsword, Longsword, Rapier, Scimitar, or Shortsword), Rare (Requires Attunement)
-
-When you attack a creature with this magic weapon and roll a 20 on the d20 for the attack roll, that target takes an extra 15 Necrotic damage if it isn’t a Construct or an Undead, and you gain Temporary Hit Points equal to the amount of Necrotic damage taken.</dd>
+Sunlight. The sword’s luminous blade emits Bright Light in a 15-foot radius and Dim Light for an additional 15 feet. The light is sunlight. While the blade persists, you can take a Magic action to expand or reduce its radius of Bright Light and Dim Light by 5 feet each, to a maximum of 30 feet each or a minimum of 10 feet each.</dd>
+<dt>Sword of Life Stealing</dt>
+<dd><span class="fh-spell-meta">Rare (Requires Attunement) · Glaive, Greatsword, Longsword, Rapier, Scimitar, or Shortsword</span>When you attack a creature with this magic weapon and roll a 20 on the d20 for the attack roll, that target takes an extra 15 Necrotic damage if it isn’t a Construct or an Undead, and you gain Temporary Hit Points equal to the amount of Necrotic damage taken.</dd>
 <dt>Sword of Sharpness</dt>
 <dd><span class="fh-spell-meta">Very Rare (Requires Attunement) · Glaive, Greatsword, Longsword, or Scimitar</span>When you attack an object with this magic weapon and hit, maximize your weapon damage dice against the target.
 
-When you attack a creature with this weapon and roll a 20 on the d20 for the attack roll, that target takes an extra 14 Slashing damage and gains 1 Exhaustion level.
-
-Sword of Wounding Weapon (Glaive, Greatsword, Longsword, Rapier, Scimitar, or Shortsword), Rare (Requires Attunement)
-
-When you hit a creature with an attack using this magic weapon, the target takes an extra 2d6 Necrotic damage and must succeed on a DC 15 Constitution saving throw or be unable to regain Hit Points for 1 hour. The target repeats the save at the end of each of its turns, ending the effect on itself on a success.</dd>
+When you attack a creature with this weapon and roll a 20 on the d20 for the attack roll, that target takes an extra 14 Slashing damage and gains 1 Exhaustion level.</dd>
+<dt>Sword of Wounding</dt>
+<dd><span class="fh-spell-meta">Rare (Requires Attunement) · Glaive, Greatsword, Longsword, Rapier, Scimitar, or Shortsword</span>When you hit a creature with an attack using this magic weapon, the target takes an extra 2d6 Necrotic damage and must succeed on a DC 15 Constitution saving throw or be unable to regain Hit Points for 1 hour. The target repeats the save at the end of each of its turns, ending the effect on itself on a success.</dd>
 <dt>Thunderous Greatclub</dt>
 <dd><span class="fh-spell-meta">Very Rare (Requires Attunement) · Greatclub</span>While you are attuned to this magic weapon, your Strength is 20 unless your Strength is already equal to or greater than that score. The weapon deals an extra 1d8 Thunder damage to any creature it hits and an extra 3d8 Thunder damage to objects it hits that aren’t being worn or carried.
 
@@ -1544,15 +1552,7 @@ First Command Word. The box unfolds into a Rowboat. Second Command Word. The box
 
 When the box becomes a vessel, its weight becomes that of a normal vessel its size, and anything that was stored in the box remains in the boat.
 
-Statistics for the Rowboat and Keelboat appear in “Equipment.” If either vessel is reduced to 0 Hit Points, the Folding Boat is destroyed.
-
-Frost Brand Weapon (Glaive, Greatsword, Longsword, Rapier, Scimitar, or Shortsword), Very Rare (Requires Attunement)
-
-When you hit with an attack roll using this magic weapon, the target takes an extra 1d6 Cold damage. In addition, while you hold the weapon, you have Resistance to Fire damage.
-
-In freezing temperatures, the weapon sheds Bright Light in a 10-foot radius and Dim Light for an additional 10 feet.
-
-When you draw this weapon, you can extinguish all nonmagical flames within 30 feet of yourself. Once used, this property can’t be used again for 1 hour.</dd>
+Statistics for the Rowboat and Keelboat appear in “Equipment.” If either vessel is reduced to 0 Hit Points, the Folding Boat is destroyed.</dd>
 <dt>Gauntlets of Ogre Power</dt>
 <dd><span class="fh-spell-meta">Uncommon (Requires Attunement)</span>Your Strength is 19 while you wear these gauntlets. They have no effect on you if your Strength is 19 or higher without them.</dd>
 <dt>Gem of Brightness</dt>
@@ -1728,15 +1728,7 @@ You can take a Magic action to remove the flask’s stopper and release the crea
 
 An Identify spell reveals if the flask contains a creature, but the only way to determine the type of creature is to open the flask. A newly discovered Iron Flask might already contain a creature chosen by the GM.</dd>
 <dt>Lantern of Revealing</dt>
-<dd><span class="fh-spell-meta">Uncommon</span>While lit, this hooded lantern burns for 6 hours on 1 pint of oil, shedding Bright Light in a 30-foot radius and Dim Light for an additional 30 feet. Invisible creatures and objects are visible as long as they are in the lantern’s Bright Light. You can take a Utilize action to lower the hood, reducing the lantern’s light to Dim Light in a 5-foot radius.
-
-Luck Blade Weapon (Glaive, Greatsword, Longsword, Rapier, Scimitar, Sickle, or Shortsword), Legendary (Requires Attunement)
-
-You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon. While the weapon is on your person, you also gain a +1 bonus to saving throws.
-
-Luck. If the weapon is on your person, you can call on its luck (no action required) to reroll one failed D20 Test if you don’t have the Incapacitated condition. You must use the second roll. Once used, this property can’t be used again until the next dawn.
-
-Wish. The weapon has 1d3 charges. While holding it, you can expend 1 charge and cast Wish from it. Once used, this property can’t be used again until the next dawn. The weapon loses this property if it has no charges.</dd>
+<dd><span class="fh-spell-meta">Uncommon</span>While lit, this hooded lantern burns for 6 hours on 1 pint of oil, shedding Bright Light in a 30-foot radius and Dim Light for an additional 30 feet. Invisible creatures and objects are visible as long as they are in the lantern’s Bright Light. You can take a Utilize action to lower the hood, reducing the lantern’s light to Dim Light in a 5-foot radius.</dd>
 <dt>Mantle of Spell Resistance</dt>
 <dd><span class="fh-spell-meta">Rare (Requires Attunement)</span>You have Advantage on saving throws against spells while you wear this cloak.</dd>
 <dt>Manual of Bodily Health</dt>
