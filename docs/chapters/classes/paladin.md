@@ -27,26 +27,26 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td>Lay On Hands, Spellcasting, Weapon Mastery</td><td>—</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td>Fighting Style, Paladin’s Smite</td><td>—</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td>Channel Divinity, Paladin Subclass</td><td>2</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td>Ability Score Improvement</td><td>2</td><td>5</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td>Extra Attack, Faithful Steed</td><td>2</td><td>6</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td>Aura of Protection</td><td>2</td><td>6</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td>Subclass feature</td><td>2</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td>Ability Score Improvement</td><td>2</td><td>7</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td>Abjure Foes</td><td>2</td><td>9</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td>Aura of Courage</td><td>2</td><td>9</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td>Radiant Strikes</td><td>3</td><td>10</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td>Ability Score Improvement</td><td>3</td><td>10</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td>—</td><td>3</td><td>11</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td>Restoring Touch</td><td>3</td><td>11</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td>Subclass feature</td><td>3</td><td>12</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td>Ability Score Improvement</td><td>3</td><td>12</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td>—</td><td>3</td><td>14</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td>Aura Expansion</td><td>3</td><td>14</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td>Epic Boon</td><td>3</td><td>15</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td>Subclass feature</td><td>3</td><td>15</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-lay-on-hands">Lay On Hands</a>, <a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>—</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-fighting-style">Fighting Style</a>, <a class="fh-lien" href="#l2-paladin-s-smite">Paladin’s Smite</a></td><td>—</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-channel-divinity">Channel Divinity</a>, <a class="fh-lien" href="#l3-paladin-subclass">Paladin Subclass</a></td><td>2</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>5</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a>, <a class="fh-lien" href="#l5-faithful-steed">Faithful Steed</a></td><td>2</td><td>6</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l6-aura-of-protection">Aura of Protection</a></td><td>2</td><td>6</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>2</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>7</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l9-abjure-foes">Abjure Foes</a></td><td>2</td><td>9</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-aura-of-courage">Aura of Courage</a></td><td>2</td><td>9</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l11-radiant-strikes">Radiant Strikes</a></td><td>3</td><td>10</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>10</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>11</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-restoring-touch">Restoring Touch</a></td><td>3</td><td>11</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>12</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>12</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>3</td><td>14</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-aura-expansion">Aura Expansion</a></td><td>3</td><td>14</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>3</td><td>15</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>15</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-lay-on-hands">Level 1: Lay On Hands</h3>

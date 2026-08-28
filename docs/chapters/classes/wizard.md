@@ -27,26 +27,26 @@ Weavers of arcane grammar, wizards bend reality through study, not birth. Spellb
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td>Spellcasting, Ritual Adept, Arcane Recovery</td><td>3</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td>Scholar</td><td>3</td><td>5</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td>Wizard Subclass</td><td>3</td><td>6</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td>Ability Score Improvement</td><td>4</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td>Memorize Spell</td><td>4</td><td>9</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td>Subclass feature</td><td>4</td><td>10</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td>—</td><td>4</td><td>11</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td>Ability Score Improvement</td><td>4</td><td>12</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td>—</td><td>4</td><td>14</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td>Subclass feature</td><td>5</td><td>15</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td>—</td><td>5</td><td>16</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td>Ability Score Improvement</td><td>5</td><td>16</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td>—</td><td>5</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td>Subclass feature</td><td>5</td><td>18</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td>—</td><td>5</td><td>19</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td>Ability Score Improvement</td><td>5</td><td>21</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td>—</td><td>5</td><td>22</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td>Spell Mastery</td><td>5</td><td>23</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td>Epic Boon</td><td>5</td><td>24</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td>Signature Spells</td><td>5</td><td>25</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-ritual-adept">Ritual Adept</a>, <a class="fh-lien" href="#l1-arcane-recovery">Arcane Recovery</a></td><td>3</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-scholar">Scholar</a></td><td>3</td><td>5</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-wizard-subclass">Wizard Subclass</a></td><td>3</td><td>6</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-memorize-spell">Memorize Spell</a></td><td>4</td><td>9</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>10</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">—</td><td>4</td><td>11</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>12</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>4</td><td>14</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>15</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>5</td><td>16</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>16</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>5</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>18</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>5</td><td>19</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>21</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>5</td><td>22</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-spell-mastery">Spell Mastery</a></td><td>5</td><td>23</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>5</td><td>24</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-signature-spells">Signature Spells</a></td><td>5</td><td>25</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>

@@ -28,26 +28,26 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td>Spellcasting, Innate Sorcery</td><td>—</td><td>4</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td>Font of Magic, Metamagic</td><td>2</td><td>4</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td>Sorcerer Subclass</td><td>3</td><td>4</td><td>6</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td>Ability Score Improvement</td><td>4</td><td>5</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td>Sorcerous Restoration</td><td>5</td><td>5</td><td>9</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td>Subclass feature</td><td>6</td><td>5</td><td>10</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td>Sorcery Incarnate</td><td>7</td><td>5</td><td>11</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td>Ability Score Improvement</td><td>8</td><td>5</td><td>12</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td>—</td><td>9</td><td>5</td><td>14</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td>Metamagic</td><td>10</td><td>6</td><td>15</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td>—</td><td>11</td><td>6</td><td>16</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td>Ability Score Improvement</td><td>12</td><td>6</td><td>16</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td>—</td><td>13</td><td>6</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td>Subclass feature</td><td>14</td><td>6</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td>—</td><td>15</td><td>6</td><td>18</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td>Ability Score Improvement</td><td>16</td><td>6</td><td>18</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td>Metamagic</td><td>17</td><td>6</td><td>19</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td>Subclass feature</td><td>18</td><td>6</td><td>20</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td>Epic Boon</td><td>19</td><td>6</td><td>21</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td>Arcane Apotheosis</td><td>20</td><td>6</td><td>22</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-innate-sorcery">Innate Sorcery</a></td><td>—</td><td>4</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-font-of-magic">Font of Magic</a>, <a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>2</td><td>4</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-sorcerer-subclass">Sorcerer Subclass</a></td><td>3</td><td>4</td><td>6</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>5</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-sorcerous-restoration">Sorcerous Restoration</a></td><td>5</td><td>5</td><td>9</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>6</td><td>5</td><td>10</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-sorcery-incarnate">Sorcery Incarnate</a></td><td>7</td><td>5</td><td>11</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>8</td><td>5</td><td>12</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>9</td><td>5</td><td>14</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>10</td><td>6</td><td>15</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>11</td><td>6</td><td>16</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>12</td><td>6</td><td>16</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>13</td><td>6</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>14</td><td>6</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>15</td><td>6</td><td>18</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>16</td><td>6</td><td>18</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>17</td><td>6</td><td>19</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>18</td><td>6</td><td>20</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>19</td><td>6</td><td>21</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-arcane-apotheosis">Arcane Apotheosis</a></td><td>20</td><td>6</td><td>22</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>

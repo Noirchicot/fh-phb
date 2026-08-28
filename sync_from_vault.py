@@ -837,11 +837,16 @@ def _fh_colonnes(pool, niveau, nom_classe):
 #    et « Weapon Mastery » ; son croquis du 28/08 dit « Rages per Day » et
 #    « Weapon Masteries ». Une table courte et NOMMÉE, plutôt qu'un renommage
 #    en douce : ce qui n'y figure pas garde le mot du SRD, mot pour mot.
-# ⏳ *« per Day »* dit une règle un peu différente de la vraie (les rages
-#    reviennent à un repos LONG, une seule à un repos court) — signalé à Eric,
-#    qui garde son mot pour l'instant.
+# ⭐ « Proficiency Bonus » RESTE — Eric, 2026-08-28 : *« tout est calculé
+#    dessus, je ne vois pas l'utilité de changer le terme »*. Le bannissement du
+#    28/08 au matin visait les TRAITS, où le bonus servait de compteur d'usages
+#    (converti en échelle écrite) ; la colonne de progression, elle, nomme la
+#    valeur que tout le système calcule. Deux emplois, deux sorts.
 _LIBELLES_FH = {
-    "Rages": "Rages per Day",
+    # 🔴 « per Long Rest » et non « per Day » — Eric, 2026-08-28, après que la
+    #    mesure lui a montré l'écart : une rage revient au repos COURT, toutes
+    #    au repos LONG. Le mot dit maintenant la règle.
+    "Rages": "Rages per Long Rest",
     "Weapon Mastery": "Weapon Masteries",
 }
 
@@ -948,18 +953,49 @@ def _srd_class_full(slug, lang="en"):
     for h in ("Free Points", "Bound Skills", "Bound Tools"):
         out.append('<th class="fh">%s</th>' % _empile(h))
     out.append("</tr></thead><tbody>")
+    # où chaque aptitude est ÉCRITE (son premier niveau de texte)
+    niveau_du_texte = {}
+    for f in d.get("features") or []:
+        nom_f = f.get("name")
+        if nom_f and nom_f not in niveau_du_texte:
+            niveau_du_texte[nom_f] = f.get("level")
     for ligne in prog["data"].get("levels") or []:
         niveau = int(ligne.get("level"))
+        # 🔗 CHAQUE APTITUDE DE LA TABLE MÈNE À SON TEXTE — Eric, 2026-08-28 :
+        #    *« il faut des liens du tableau vers les traits listés en dessous »*.
+        #    ⭐ L'ancre est FABRIQUÉE, pas cherchée : `_ancre(niveau, nom)` donne
+        #    la même chaîne des deux côtés, donc un lien ne peut pas viser une
+        #    ancre qui n'existe pas — sauf pour les lignes que le SRD n'écrit
+        #    pas comme des aptitudes (« Subclass feature », « Ability Score
+        #    Improvement » à répétition), qui restent en texte simple.
+        # ⚠️ ET LE LIEN VISE LE NIVEAU OÙ L'APTITUDE EST ÉCRITE, PAS CELUI DE
+        #    LA LIGNE — mesuré : 43 liens morts sur 214 sans ça. « Ability
+        #    Score Improvement » revient aux niveaux 8, 12 et 16 mais n'a QU'UN
+        #    texte, au niveau 4 ; « Expertise » du barde est écrite au 2 et
+        #    reparaît au 9. Une ancre par ligne aurait mené dans le vide trois
+        #    fois sur dix. La carte dit où le texte VIT, une fois pour toutes.
+        liees = []
+        for nom_f in (ligne.get("features") or []):
+            cible = niveau_du_texte.get(nom_f)
+            if cible is not None:
+                liees.append('<a class="fh-lien" href="#%s">%s</a>'
+                             % (_ancre(cible, nom_f), html.escape(nom_f)))
+            else:
+                liees.append(html.escape(nom_f))
         cells = [str(niveau), "+%s" % ligne.get("proficiency_bonus", ""),
-                 ", ".join(ligne.get("features") or []) or "—"]
+                 ", ".join(liees) or "—"]
         res = ligne.get("resources") or {}
         for c in cols_srd:
             v = res.get(c["key"])
             cells.append("—" if v in (None, "") else str(v))
         fh = _fh_colonnes(pool, niveau, rec["name"])
         cells += [fh.get("Free", "—"), fh.get("Bound skill", "—"), fh.get("Bound tool", "—")]
+        # ⚠️ la 3ᵉ cellule porte des LIENS : elle est déjà échappée pièce par
+        #    pièce ci-dessus. La ré-échapper afficherait le balisage en clair.
         out.append("<tr>%s</tr>" % "".join(
-            "<td>%s</td>" % html.escape(c) for c in cells))
+            "<td%s>%s</td>" % (' class="fh-pcfh__feat"' if i == 2 else "",
+                               c if i == 2 else html.escape(c))
+            for i, c in enumerate(cells)))
     out.append("</tbody></table>")
     out.append('<p class="fh-pcfh__note">The last three columns are Fate\'s Hand. '
                "They show your <b>running total</b> at that level, not the gain — "

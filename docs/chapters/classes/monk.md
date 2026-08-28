@@ -29,26 +29,26 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td>Martial Arts, Unarmored Defense</td><td>1d6</td><td>—</td><td>—</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td>Monk’s Focus, Unarmored Movement, Uncanny Metabolism</td><td>1d6</td><td>2</td><td>+10 ft.</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td>Deflect Attacks, Monk Subclass</td><td>1d6</td><td>3</td><td>+10 ft.</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td>Ability Score Improvement, Slow Fall</td><td>1d6</td><td>4</td><td>+10 ft.</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td>Extra Attack, Stunning Strike</td><td>1d8</td><td>5</td><td>+10 ft.</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td>Empowered Strikes, Subclass feature</td><td>1d8</td><td>6</td><td>+15 ft.</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td>Evasion</td><td>1d8</td><td>7</td><td>+15 ft.</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td>Ability Score Improvement</td><td>1d8</td><td>8</td><td>+15 ft.</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td>Acrobatic Movement</td><td>1d8</td><td>9</td><td>+15 ft.</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td>Heightened Focus, Self-Restoration</td><td>1d8</td><td>10</td><td>+20 ft.</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td>Subclass feature</td><td>1d10</td><td>11</td><td>+20 ft.</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td>Ability Score Improvement</td><td>1d10</td><td>12</td><td>+20 ft.</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td>Deflect Energy</td><td>1d10</td><td>13</td><td>+20 ft.</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td>Disciplined Survivor</td><td>1d10</td><td>14</td><td>+25 ft.</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td>Perfect Focus</td><td>1d10</td><td>15</td><td>+25 ft.</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td>Ability Score Improvement</td><td>1d10</td><td>16</td><td>+25 ft.</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td>Subclass feature</td><td>1d12</td><td>17</td><td>+25 ft.</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td>Superior Defense</td><td>1d12</td><td>18</td><td>+30 ft.</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td>Epic Boon</td><td>1d12</td><td>19</td><td>+30 ft.</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td>Body and Mind</td><td>1d12</td><td>20</td><td>+30 ft.</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-martial-arts">Martial Arts</a>, <a class="fh-lien" href="#l1-unarmored-defense">Unarmored Defense</a></td><td>1d6</td><td>—</td><td>—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-monk-s-focus">Monk’s Focus</a>, <a class="fh-lien" href="#l2-unarmored-movement">Unarmored Movement</a>, <a class="fh-lien" href="#l2-uncanny-metabolism">Uncanny Metabolism</a></td><td>1d6</td><td>2</td><td>+10 ft.</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-deflect-attacks">Deflect Attacks</a>, <a class="fh-lien" href="#l3-monk-subclass">Monk Subclass</a></td><td>1d6</td><td>3</td><td>+10 ft.</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a>, <a class="fh-lien" href="#l4-slow-fall">Slow Fall</a></td><td>1d6</td><td>4</td><td>+10 ft.</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a>, <a class="fh-lien" href="#l5-stunning-strike">Stunning Strike</a></td><td>1d8</td><td>5</td><td>+10 ft.</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l6-empowered-strikes">Empowered Strikes</a>, Subclass feature</td><td>1d8</td><td>6</td><td>+15 ft.</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-evasion">Evasion</a></td><td>1d8</td><td>7</td><td>+15 ft.</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>1d8</td><td>8</td><td>+15 ft.</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l9-acrobatic-movement">Acrobatic Movement</a></td><td>1d8</td><td>9</td><td>+15 ft.</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-heightened-focus">Heightened Focus</a>, <a class="fh-lien" href="#l10-self-restoration">Self-Restoration</a></td><td>1d8</td><td>10</td><td>+20 ft.</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>1d10</td><td>11</td><td>+20 ft.</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>1d10</td><td>12</td><td>+20 ft.</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l13-deflect-energy">Deflect Energy</a></td><td>1d10</td><td>13</td><td>+20 ft.</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-disciplined-survivor">Disciplined Survivor</a></td><td>1d10</td><td>14</td><td>+25 ft.</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l15-perfect-focus">Perfect Focus</a></td><td>1d10</td><td>15</td><td>+25 ft.</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>1d10</td><td>16</td><td>+25 ft.</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>1d12</td><td>17</td><td>+25 ft.</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-superior-defense">Superior Defense</a></td><td>1d12</td><td>18</td><td>+30 ft.</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>1d12</td><td>19</td><td>+30 ft.</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-body-and-mind">Body and Mind</a></td><td>1d12</td><td>20</td><td>+30 ft.</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-martial-arts">Level 1: Martial Arts</h3>

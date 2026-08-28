@@ -27,26 +27,26 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td>Spellcasting, Favored Enemy, Weapon Mastery</td><td>2</td><td>2</td><td>12</td><td>3</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td>Deft Explorer, Fighting Style</td><td>2</td><td>3</td><td>14</td><td>3</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td>Ranger Subclass</td><td>2</td><td>4</td><td>14</td><td>3</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td>Ability Score Improvement</td><td>2</td><td>5</td><td>16</td><td>3</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td>Extra Attack</td><td>3</td><td>6</td><td>16</td><td>3</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td>Roving</td><td>3</td><td>6</td><td>16</td><td>3</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td>Subclass feature</td><td>3</td><td>7</td><td>16</td><td>3</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td>Ability Score Improvement</td><td>3</td><td>7</td><td>18</td><td>3</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td>Expertise</td><td>4</td><td>9</td><td>22</td><td>3</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td>Tireless</td><td>4</td><td>9</td><td>22</td><td>3</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td>Subclass feature</td><td>4</td><td>10</td><td>22</td><td>3</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td>Ability Score Improvement</td><td>4</td><td>10</td><td>24</td><td>3</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td>Relentless Hunter</td><td>5</td><td>11</td><td>24</td><td>3</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td>Nature’s Veil</td><td>5</td><td>11</td><td>24</td><td>3</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td>Subclass feature</td><td>5</td><td>12</td><td>24</td><td>3</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td>Ability Score Improvement</td><td>5</td><td>12</td><td>26</td><td>3</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td>Precise Hunter</td><td>6</td><td>14</td><td>26</td><td>3</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td>Feral Senses</td><td>6</td><td>14</td><td>26</td><td>3</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td>Epic Boon</td><td>6</td><td>15</td><td>26</td><td>3</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td>Foe Slayer</td><td>6</td><td>15</td><td>28</td><td>3</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-favored-enemy">Favored Enemy</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>2</td><td>2</td><td>12</td><td>3</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-deft-explorer">Deft Explorer</a>, <a class="fh-lien" href="#l2-fighting-style">Fighting Style</a></td><td>2</td><td>3</td><td>14</td><td>3</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-ranger-subclass">Ranger Subclass</a></td><td>2</td><td>4</td><td>14</td><td>3</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>5</td><td>16</td><td>3</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a></td><td>3</td><td>6</td><td>16</td><td>3</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l6-roving">Roving</a></td><td>3</td><td>6</td><td>16</td><td>3</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>7</td><td>16</td><td>3</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>7</td><td>18</td><td>3</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l9-expertise">Expertise</a></td><td>4</td><td>9</td><td>22</td><td>3</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-tireless">Tireless</a></td><td>4</td><td>9</td><td>22</td><td>3</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>10</td><td>22</td><td>3</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>10</td><td>24</td><td>3</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l13-relentless-hunter">Relentless Hunter</a></td><td>5</td><td>11</td><td>24</td><td>3</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-nature-s-veil">Nature’s Veil</a></td><td>5</td><td>11</td><td>24</td><td>3</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>12</td><td>24</td><td>3</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>12</td><td>26</td><td>3</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l17-precise-hunter">Precise Hunter</a></td><td>6</td><td>14</td><td>26</td><td>3</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-feral-senses">Feral Senses</a></td><td>6</td><td>14</td><td>26</td><td>3</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>6</td><td>15</td><td>26</td><td>3</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-foe-slayer">Foe Slayer</a></td><td>6</td><td>15</td><td>28</td><td>3</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>

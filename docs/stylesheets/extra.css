@@ -1197,6 +1197,67 @@ body.fh-home-page .md-header { display: none; }
   opacity: .62;
 }
 
+/* ══ LA NORME DU LIEN — une seule, pour tout le site ═══════════════════════
+   Eric, 2026-08-28 : *« peut-on faire des liens (bleu pas souligné) ou (rouge
+   pas souligné) ou un autre format… Il faut que ça reste discret mais
+   suffisamment visible. Une norme unique pour tout le site, visible mais qui
+   ne casse pas le flow de lecture. »*
+
+   ⭐ POURQUOI LE BLEU, ET PAS L'OR NI L'OXBLOOD — la raison est que chaque
+   teinte de ce livre DIT DÉJÀ quelque chose :
+     · l'OR dit « Fate's Hand » (les pastilles, les titres, les colonnes FH) ;
+     · l'OXBLOOD dit « titre de rubrique », c'est la couleur des en-têtes D&D ;
+     · l'ENCRE dit « texte ».
+   Un lien peint dans l'une de ces trois emprunterait un sens qui n'est pas le
+   sien : sur une page de classe, un mot doré se lit « ceci est FH », pas
+   « ceci s'ouvre ». Le bleu est la seule teinte encore libre — et c'est déjà
+   celle qu'Eric a ratifiée dans le builder le 27/08 (*« le texte en bleu, non
+   souligné »*), donc les deux surfaces parlent enfin la même langue.
+
+   📏 CONTRASTES MESURÉS (le texte courant vaut 13,5 le jour et 13,1 la nuit) :
+   #2f5d7c sur parchemin = 6,05 · #8fb4d0 sur cuir = 8,16. Tous deux au-dessus
+   de 4,5 (AA), tous deux SOUS le texte courant — c'est ce qui les rend visibles
+   sans crier : un lien plus contrasté que la phrase qui le porte arrête la
+   lecture au lieu de l'accompagner.
+
+   ⛔ PAS DE SOULIGNEMENT, et pas seulement par goût : le site se lit à l'iPad,
+   où il n'y a PAS de survol. L'état de repos doit donc suffire à lui seul —
+   d'où une teinte franche plutôt qu'un trait qui n'apparaît qu'au pointeur.
+   Le soulignement revient au survol et au focus, pour qui a un clavier. */
+:root {
+  --fh-link:       #2f5d7c;
+  --fh-link-hover: #1f4e6b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fh-link:       #8fb4d0;
+    --fh-link-hover: #b3cee2;
+  }
+}
+[data-md-color-scheme="slate"] {
+  --fh-link:       #8fb4d0;
+  --fh-link-hover: #b3cee2;
+}
+
+.md-typeset a.fh-lien,
+.md-typeset .fh-lien {
+  color: var(--fh-link);
+  text-decoration: none;
+  /* ⚠️ le lien garde la graisse de son voisinage : c'est la TEINTE qui le
+     signale, pas un gras qui trouerait le paragraphe. */
+  font-weight: inherit;
+}
+.md-typeset a.fh-lien:hover,
+.md-typeset a.fh-lien:focus-visible {
+  color: var(--fh-link-hover);
+  text-decoration: underline;
+  text-underline-offset: .14em;
+}
+.md-typeset a.fh-lien:focus-visible {
+  outline: 2px solid var(--fh-link);
+  outline-offset: 2px;
+}
+
 /* ══ PCFH — LA PAGE D'UNE CLASSE, FAITE POUR ÊTRE LUE ══════════════════════
    Eric, 2026-08-28 : *« je voudrais avoir sur FH WEB un PCFH joli à lire et
    complet »*. Ce n'est pas la fiche condensée du builder (SRFH+) : ici on
@@ -1285,7 +1346,8 @@ body.fh-home-page .md-header { display: none; }
   background: color-mix(in srgb, var(--fh-gold) 7%, transparent);
 }
 /* la colonne des aptitudes est la seule qui respire — c'est elle qu'on lit */
-.md-typeset .fh-pcfh__table td:nth-child(3) { white-space: normal; min-width: 7.5rem; }
+.md-typeset .fh-pcfh__table td:nth-child(3),
+.md-typeset .fh-pcfh__table td.fh-pcfh__feat { white-space: normal; min-width: 7.5rem; }
 /* 📏 .38 ET NON .45 : mesuré à 1280 px, la table demandait 934 pour 930 — il
    manquait QUATRE pixels pour que les trois colonnes FH entrent dans le
    champ. Ce sont les gouttières qui cèdent, pas une colonne. */

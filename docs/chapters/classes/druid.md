@@ -29,26 +29,26 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td>Spellcasting, Druidic, Primal Order</td><td>—</td><td>2</td><td>4</td><td>12</td><td>2</td><td>1</td></tr>
-<tr><td>2</td><td>+2</td><td>Wild Shape, Wild Companion</td><td>2</td><td>2</td><td>5</td><td>12</td><td>2</td><td>1</td></tr>
-<tr><td>3</td><td>+2</td><td>Druid Subclass</td><td>2</td><td>2</td><td>6</td><td>12</td><td>2</td><td>1</td></tr>
-<tr><td>4</td><td>+2</td><td>Ability Score Improvement</td><td>2</td><td>3</td><td>7</td><td>14</td><td>2</td><td>1</td></tr>
-<tr><td>5</td><td>+3</td><td>Wild Resurgence</td><td>2</td><td>3</td><td>9</td><td>14</td><td>2</td><td>1</td></tr>
-<tr><td>6</td><td>+3</td><td>Subclass feature</td><td>3</td><td>3</td><td>10</td><td>14</td><td>2</td><td>1</td></tr>
-<tr><td>7</td><td>+3</td><td>Elemental Fury</td><td>3</td><td>3</td><td>11</td><td>14</td><td>2</td><td>1</td></tr>
-<tr><td>8</td><td>+3</td><td>Ability Score Improvement</td><td>3</td><td>3</td><td>12</td><td>16</td><td>2</td><td>1</td></tr>
-<tr><td>9</td><td>+4</td><td>—</td><td>3</td><td>3</td><td>14</td><td>16</td><td>2</td><td>1</td></tr>
-<tr><td>10</td><td>+4</td><td>Subclass feature</td><td>3</td><td>4</td><td>15</td><td>16</td><td>2</td><td>1</td></tr>
-<tr><td>11</td><td>+4</td><td>—</td><td>3</td><td>4</td><td>16</td><td>16</td><td>2</td><td>1</td></tr>
-<tr><td>12</td><td>+4</td><td>Ability Score Improvement</td><td>3</td><td>4</td><td>16</td><td>18</td><td>2</td><td>1</td></tr>
-<tr><td>13</td><td>+5</td><td>—</td><td>3</td><td>4</td><td>17</td><td>18</td><td>2</td><td>1</td></tr>
-<tr><td>14</td><td>+5</td><td>Subclass feature</td><td>3</td><td>4</td><td>17</td><td>18</td><td>2</td><td>1</td></tr>
-<tr><td>15</td><td>+5</td><td>Improved Elemental Fury</td><td>3</td><td>4</td><td>18</td><td>18</td><td>2</td><td>1</td></tr>
-<tr><td>16</td><td>+5</td><td>Ability Score Improvement</td><td>3</td><td>4</td><td>18</td><td>20</td><td>2</td><td>1</td></tr>
-<tr><td>17</td><td>+6</td><td>—</td><td>4</td><td>4</td><td>19</td><td>20</td><td>2</td><td>1</td></tr>
-<tr><td>18</td><td>+6</td><td>Beast Spells</td><td>4</td><td>4</td><td>20</td><td>20</td><td>2</td><td>1</td></tr>
-<tr><td>19</td><td>+6</td><td>Epic Boon</td><td>4</td><td>4</td><td>21</td><td>20</td><td>2</td><td>1</td></tr>
-<tr><td>20</td><td>+6</td><td>Archdruid</td><td>4</td><td>4</td><td>22</td><td>22</td><td>2</td><td>1</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-druidic">Druidic</a>, <a class="fh-lien" href="#l1-primal-order">Primal Order</a></td><td>—</td><td>2</td><td>4</td><td>12</td><td>2</td><td>1</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-wild-shape">Wild Shape</a>, <a class="fh-lien" href="#l2-wild-companion">Wild Companion</a></td><td>2</td><td>2</td><td>5</td><td>12</td><td>2</td><td>1</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-druid-subclass">Druid Subclass</a></td><td>2</td><td>2</td><td>6</td><td>12</td><td>2</td><td>1</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>3</td><td>7</td><td>14</td><td>2</td><td>1</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-wild-resurgence">Wild Resurgence</a></td><td>2</td><td>3</td><td>9</td><td>14</td><td>2</td><td>1</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>3</td><td>10</td><td>14</td><td>2</td><td>1</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-elemental-fury">Elemental Fury</a></td><td>3</td><td>3</td><td>11</td><td>14</td><td>2</td><td>1</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>3</td><td>12</td><td>16</td><td>2</td><td>1</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>3</td><td>14</td><td>16</td><td>2</td><td>1</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>15</td><td>16</td><td>2</td><td>1</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>4</td><td>16</td><td>16</td><td>2</td><td>1</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>16</td><td>18</td><td>2</td><td>1</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>4</td><td>17</td><td>18</td><td>2</td><td>1</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>17</td><td>18</td><td>2</td><td>1</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l15-improved-elemental-fury">Improved Elemental Fury</a></td><td>3</td><td>4</td><td>18</td><td>18</td><td>2</td><td>1</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>18</td><td>20</td><td>2</td><td>1</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>4</td><td>4</td><td>19</td><td>20</td><td>2</td><td>1</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-beast-spells">Beast Spells</a></td><td>4</td><td>4</td><td>20</td><td>20</td><td>2</td><td>1</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>4</td><td>4</td><td>21</td><td>20</td><td>2</td><td>1</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-archdruid">Archdruid</a></td><td>4</td><td>4</td><td>22</td><td>22</td><td>2</td><td>1</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>

@@ -19,7 +19,7 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <th rowspan="2">Level</th>
 <th rowspan="2">Proficiency<br>Bonus</th>
 <th rowspan="2">Class<br>Features</th>
-<th rowspan="2">Rages<br>per Day</th>
+<th rowspan="2">Rages<br>per Long Rest</th>
 <th rowspan="2">Rage<br>Damage</th>
 <th rowspan="2">Weapon<br>Masteries</th>
 <th colspan="3" class="fh-pcfh__group">Skill Points</th>
@@ -28,26 +28,26 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td>Rage, Unarmored Defense, Weapon Mastery</td><td>2</td><td>+2</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td>Danger Sense, Reckless Attack</td><td>2</td><td>+2</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td>Barbarian Subclass, Primal Knowledge</td><td>3</td><td>+2</td><td>2</td><td>10</td><td>4</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td>Ability Score Improvement</td><td>3</td><td>+2</td><td>3</td><td>12</td><td>4</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td>Extra Attack, Fast Movement</td><td>3</td><td>+2</td><td>3</td><td>12</td><td>4</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td>Subclass feature</td><td>4</td><td>+2</td><td>3</td><td>12</td><td>4</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td>Feral Instinct, Instinctive Pounce</td><td>4</td><td>+2</td><td>3</td><td>12</td><td>4</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td>Ability Score Improvement</td><td>4</td><td>+2</td><td>3</td><td>14</td><td>4</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td>Brutal Strike</td><td>4</td><td>+3</td><td>3</td><td>14</td><td>4</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td>Subclass feature</td><td>4</td><td>+3</td><td>4</td><td>14</td><td>4</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td>Relentless Rage</td><td>4</td><td>+3</td><td>4</td><td>14</td><td>4</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td>Ability Score Improvement</td><td>5</td><td>+3</td><td>4</td><td>16</td><td>4</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td>Improved Brutal Strike</td><td>5</td><td>+3</td><td>4</td><td>16</td><td>4</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td>Subclass feature</td><td>5</td><td>+3</td><td>4</td><td>16</td><td>4</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td>Persistent Rage</td><td>5</td><td>+3</td><td>4</td><td>16</td><td>4</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td>Ability Score Improvement</td><td>5</td><td>+4</td><td>4</td><td>18</td><td>4</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td>Improved Brutal Strike</td><td>6</td><td>+4</td><td>4</td><td>18</td><td>4</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td>Indomitable Might</td><td>6</td><td>+4</td><td>4</td><td>18</td><td>4</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td>Epic Boon</td><td>6</td><td>+4</td><td>4</td><td>18</td><td>4</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td>Primal Champion</td><td>6</td><td>+4</td><td>4</td><td>20</td><td>4</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-rage">Rage</a>, <a class="fh-lien" href="#l1-unarmored-defense">Unarmored Defense</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>2</td><td>+2</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-danger-sense">Danger Sense</a>, <a class="fh-lien" href="#l2-reckless-attack">Reckless Attack</a></td><td>2</td><td>+2</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-barbarian-subclass">Barbarian Subclass</a>, <a class="fh-lien" href="#l3-primal-knowledge">Primal Knowledge</a></td><td>3</td><td>+2</td><td>2</td><td>10</td><td>4</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>+2</td><td>3</td><td>12</td><td>4</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a>, <a class="fh-lien" href="#l5-fast-movement">Fast Movement</a></td><td>3</td><td>+2</td><td>3</td><td>12</td><td>4</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>+2</td><td>3</td><td>12</td><td>4</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-feral-instinct">Feral Instinct</a>, <a class="fh-lien" href="#l7-instinctive-pounce">Instinctive Pounce</a></td><td>4</td><td>+2</td><td>3</td><td>12</td><td>4</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>+2</td><td>3</td><td>14</td><td>4</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l9-brutal-strike">Brutal Strike</a></td><td>4</td><td>+3</td><td>3</td><td>14</td><td>4</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>+3</td><td>4</td><td>14</td><td>4</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l11-relentless-rage">Relentless Rage</a></td><td>4</td><td>+3</td><td>4</td><td>14</td><td>4</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>+3</td><td>4</td><td>16</td><td>4</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l13-improved-brutal-strike">Improved Brutal Strike</a></td><td>5</td><td>+3</td><td>4</td><td>16</td><td>4</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>+3</td><td>4</td><td>16</td><td>4</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l15-persistent-rage">Persistent Rage</a></td><td>5</td><td>+3</td><td>4</td><td>16</td><td>4</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>+4</td><td>4</td><td>18</td><td>4</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l13-improved-brutal-strike">Improved Brutal Strike</a></td><td>6</td><td>+4</td><td>4</td><td>18</td><td>4</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-indomitable-might">Indomitable Might</a></td><td>6</td><td>+4</td><td>4</td><td>18</td><td>4</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>6</td><td>+4</td><td>4</td><td>18</td><td>4</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-primal-champion">Primal Champion</a></td><td>6</td><td>+4</td><td>4</td><td>20</td><td>4</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-rage">Level 1: Rage</h3>

@@ -27,26 +27,26 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td>Fighting Style, Second Wind, Weapon Mastery</td><td>2</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td>Action Surge (one use), Tactical Mind</td><td>2</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td>Fighter Subclass</td><td>2</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td>Ability Score Improvement</td><td>3</td><td>4</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td>Extra Attack, Tactical Shift</td><td>3</td><td>4</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td>Ability Score Improvement</td><td>3</td><td>4</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td>Subclass feature</td><td>3</td><td>4</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td>Ability Score Improvement</td><td>3</td><td>4</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td>Indomitable (one use), Tactical Master</td><td>3</td><td>4</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td>Subclass feature</td><td>4</td><td>5</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td>Two Extra Attacks</td><td>4</td><td>5</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td>Ability Score Improvement</td><td>4</td><td>5</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td>Indomitable (two uses), Studied Attacks</td><td>4</td><td>5</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td>Ability Score Improvement</td><td>4</td><td>5</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td>Subclass feature</td><td>4</td><td>5</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td>Ability Score Improvement</td><td>4</td><td>6</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td>Action Surge (two uses), Indomitable (three uses)</td><td>4</td><td>6</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td>Subclass feature</td><td>4</td><td>6</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td>Epic Boon</td><td>4</td><td>6</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td>Three Extra Attacks</td><td>4</td><td>6</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-fighting-style">Fighting Style</a>, <a class="fh-lien" href="#l1-second-wind">Second Wind</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>2</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat">Action Surge (one use), <a class="fh-lien" href="#l2-tactical-mind">Tactical Mind</a></td><td>2</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-fighter-subclass">Fighter Subclass</a></td><td>2</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a>, <a class="fh-lien" href="#l5-tactical-shift">Tactical Shift</a></td><td>3</td><td>4</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">Indomitable (one use), <a class="fh-lien" href="#l9-tactical-master">Tactical Master</a></td><td>3</td><td>4</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>5</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l11-two-extra-attacks">Two Extra Attacks</a></td><td>4</td><td>5</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>5</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">Indomitable (two uses), <a class="fh-lien" href="#l13-studied-attacks">Studied Attacks</a></td><td>4</td><td>5</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>5</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>5</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>6</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">Action Surge (two uses), Indomitable (three uses)</td><td>4</td><td>6</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>6</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>4</td><td>6</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-three-extra-attacks">Three Extra Attacks</a></td><td>4</td><td>6</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-fighting-style">Level 1: Fighting Style</h3>
