@@ -14,7 +14,7 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 <dt>Weapons</dt><dd>Simple weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Chain Shirt, Shield, Mace, Holy Symbol, Priest’s Pack, and 7 GP; or (B) 110 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead>
+<table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
 <th rowspan="2">Proficiency<br>Bonus</th>
@@ -22,62 +22,49 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 <th rowspan="2">Channel<br>Divinity</th>
 <th rowspan="2">Cantrips</th>
 <th rowspan="2">Prepared<br>Spells</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="9" class="fh-pcfh__group">Spell Slots per Spell Level</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
+<th class="fh-pcfh__slot">1</th>
+<th class="fh-pcfh__slot">2</th>
+<th class="fh-pcfh__slot">3</th>
+<th class="fh-pcfh__slot">4</th>
+<th class="fh-pcfh__slot">5</th>
+<th class="fh-pcfh__slot">6</th>
+<th class="fh-pcfh__slot">7</th>
+<th class="fh-pcfh__slot">8</th>
+<th class="fh-pcfh__slot">9</th>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-divine-order">Divine Order</a></td><td>—</td><td>3</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-channel-divinity">Channel Divinity</a></td><td>2</td><td>3</td><td>5</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-cleric-subclass">Cleric Subclass</a></td><td>2</td><td>3</td><td>6</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>4</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-sear-undead">Sear Undead</a></td><td>2</td><td>4</td><td>9</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>10</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-blessed-strikes">Blessed Strikes</a></td><td>3</td><td>4</td><td>11</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>12</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>4</td><td>14</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-divine-intervention">Divine Intervention</a></td><td>3</td><td>5</td><td>15</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>5</td><td>16</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>5</td><td>16</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>5</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-improved-blessed-strikes">Improved Blessed Strikes</a></td><td>3</td><td>5</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>5</td><td>18</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>5</td><td>18</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>5</td><td>19</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>4</td><td>5</td><td>20</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>4</td><td>5</td><td>21</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-greater-divine-intervention">Greater Divine Intervention</a></td><td>4</td><td>5</td><td>22</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-divine-order">Divine Order</a></td><td>—</td><td>3</td><td>4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-channel-divinity">Channel Divinity</a></td><td>2</td><td>3</td><td>5</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-cleric-subclass">Cleric Subclass</a></td><td>2</td><td>3</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>4</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-sear-undead">Sear Undead</a></td><td>2</td><td>4</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-blessed-strikes">Blessed Strikes</a></td><td>3</td><td>4</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>4</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-divine-intervention">Divine Intervention</a></td><td>3</td><td>5</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>5</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>5</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>5</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-improved-blessed-strikes">Improved Blessed Strikes</a></td><td>3</td><td>5</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>5</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>5</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>5</td><td>19</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>4</td><td>5</td><td>20</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>4</td><td>5</td><td>21</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-greater-divine-intervention">Greater Divine Intervention</a></td><td>4</td><td>5</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>You have learned to cast spells through prayer and meditation. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Cleric spells, which appear on the Cleric spell list later in the class’s description.</p>
 <p>Cantrips. You know three cantrips of your choice from the Cleric spell list. Guidance, Sacred Flame, and Thaumaturgy are recommended.</p>
 <p>Whenever you gain a Cleric level, you can replace one of your cantrips with another cantrip of your choice from the Cleric spell list.</p>
-<p>Cleric Features</p>
-<p>Proficiency Bonus Channel Divinity Prepared Spells</p>
-<p>Level Class Features Cantrips 1 2 3 4 5 6 7 8 9</p>
-<p>1 +2 Spellcasting, Divine Order — 3 4 2 — — — — — — — —</p>
-<p>2 +2 Channel Divinity 2 3 5 3 — — — — — — — —</p>
-<p>3 +2 Cleric Subclass 2 3 6 4 2 — — — — — — —</p>
-<p>4 +2 Ability Score Improvement 2 4 7 4 3 — — — — — — —</p>
-<p>5 +3 Sear Undead 2 4 9 4 3 2 — — — — — —</p>
-<p>6 +3 Subclass feature 3 4 10 4 3 3 — — — — — —</p>
-<p>7 +3 Blessed Strikes 3 4 11 4 3 3 1 — — — — —</p>
-<p>8 +3 Ability Score Improvement 3 4 12 4 3 3 2 — — — — —</p>
-<p>9 +4 — 3 4 14 4 3 3 3 1 — — — —</p>
-<p>10 +4 Divine Intervention 3 5 15 4 3 3 3 2 — — — —</p>
-<p>11 +4 — 3 5 16 4 3 3 3 2 1 — — —</p>
-<p>12 +4 Ability Score Improvement 3 5 16 4 3 3 3 2 1 — — —</p>
-<p>13 +5 — 3 5 17 4 3 3 3 2 1 1 — —</p>
-<p>14 +5 Improved Blessed Strikes 3 5 17 4 3 3 3 2 1 1 — —</p>
-<p>15 +5 — 3 5 18 4 3 3 3 2 1 1 1 —</p>
-<p>16 +5 Ability Score Improvement 3 5 18 4 3 3 3 2 1 1 1 —</p>
-<p>17 +6 Subclass feature 3 5 19 4 3 3 3 2 1 1 1 1</p>
-<p>18 +6 — 4 5 20 4 3 3 3 3 1 1 1 1</p>
-<p>19 +6 Epic Boon 4 5 21 4 3 3 3 3 2 1 1 1</p>
-<p>20 +6 Greater Divine Intervention 4 5 22 4 3 3 3 3 2 2 1 1</p>
-<p>——Spell Slots per Spell Level—— When you reach Cleric levels 4 and 10, you learn another cantrip of your choice from the Cleric spell list, as shown in the Cantrips column of the Cleric Features table.</p>
+<p>When you reach Cleric levels 4 and 10, you learn another cantrip of your choice from the Cleric spell list, as shown in the Cantrips column of the Cleric Features table.</p>
 <p>Spell Slots. The Cleric Features table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
 <p>Prepared Spells of Level 1+. You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose four level 1 spells from the Cleric spell list. Bless, Cure Wounds, Guiding Bolt, and Shield of Faith are recommended.</p>
 <p>The number of spells on your list increases as you gain Cleric levels, as shown in the Prepared Spells column of the Cleric Features table. Whenever that number increases, choose additional spells from the Cleric spell list until the number of spells on your list matches the number on the table. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 3 Cleric, your list of prepared spells can include six spells of levels 1 and 2 in any combination.</p>

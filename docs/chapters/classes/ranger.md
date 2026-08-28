@@ -14,66 +14,50 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Druidic Focus (sprig of mistletoe), Explorer’s Pack, and 7 GP; or (B) 150 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead>
+<table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
 <th rowspan="2">Proficiency<br>Bonus</th>
 <th rowspan="2">Class<br>Features</th>
 <th rowspan="2">Favored<br>Enemy</th>
 <th rowspan="2">Prepared<br>Spells</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="5" class="fh-pcfh__group">Spell Slots per Spell Level</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
+<th class="fh-pcfh__slot">1</th>
+<th class="fh-pcfh__slot">2</th>
+<th class="fh-pcfh__slot">3</th>
+<th class="fh-pcfh__slot">4</th>
+<th class="fh-pcfh__slot">5</th>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-favored-enemy">Favored Enemy</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>2</td><td>2</td><td>12</td><td>3</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-deft-explorer">Deft Explorer</a>, <a class="fh-lien" href="#l2-fighting-style">Fighting Style</a></td><td>2</td><td>3</td><td>14</td><td>3</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-ranger-subclass">Ranger Subclass</a></td><td>2</td><td>4</td><td>14</td><td>3</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>5</td><td>16</td><td>3</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a></td><td>3</td><td>6</td><td>16</td><td>3</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l6-roving">Roving</a></td><td>3</td><td>6</td><td>16</td><td>3</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>7</td><td>16</td><td>3</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>7</td><td>18</td><td>3</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l9-expertise">Expertise</a></td><td>4</td><td>9</td><td>22</td><td>3</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-tireless">Tireless</a></td><td>4</td><td>9</td><td>22</td><td>3</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>10</td><td>22</td><td>3</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>10</td><td>24</td><td>3</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l13-relentless-hunter">Relentless Hunter</a></td><td>5</td><td>11</td><td>24</td><td>3</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-nature-s-veil">Nature’s Veil</a></td><td>5</td><td>11</td><td>24</td><td>3</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>12</td><td>24</td><td>3</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>12</td><td>26</td><td>3</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l17-precise-hunter">Precise Hunter</a></td><td>6</td><td>14</td><td>26</td><td>3</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-feral-senses">Feral Senses</a></td><td>6</td><td>14</td><td>26</td><td>3</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>6</td><td>15</td><td>26</td><td>3</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-foe-slayer">Foe Slayer</a></td><td>6</td><td>15</td><td>28</td><td>3</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-favored-enemy">Favored Enemy</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>2</td><td>2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>3</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-deft-explorer">Deft Explorer</a>, <a class="fh-lien" href="#l2-fighting-style">Fighting Style</a></td><td>2</td><td>3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>3</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-ranger-subclass">Ranger Subclass</a></td><td>2</td><td>4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>3</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>5</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>3</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a></td><td>3</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>3</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l6-roving">Roving</a></td><td>3</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>3</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>3</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>18</td><td>3</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l9-expertise">Expertise</a></td><td>4</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>22</td><td>3</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-tireless">Tireless</a></td><td>4</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>22</td><td>3</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>22</td><td>3</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>24</td><td>3</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l13-relentless-hunter">Relentless Hunter</a></td><td>5</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>24</td><td>3</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-nature-s-veil">Nature’s Veil</a></td><td>5</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>24</td><td>3</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td>24</td><td>3</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td>26</td><td>3</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l17-precise-hunter">Precise Hunter</a></td><td>6</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td>26</td><td>3</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-feral-senses">Feral Senses</a></td><td>6</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td>26</td><td>3</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>6</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td>26</td><td>3</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-foe-slayer">Foe Slayer</a></td><td>6</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td>28</td><td>3</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>You have learned to channel the magical essence of nature to cast spells. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Ranger spells, which appear in the Ranger spell list later in the class’s description.</p>
-<p>Spell Slots. The Ranger Features table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest. Ranger Features</p>
-<p>Proficiency Bonus Favored Enemy Prepared Spells</p>
-<p>Level Class Features 1 2 3 4 5</p>
-<p>1 +2 Spellcasting, Favored Enemy, Weapon Mastery 2 2 2 — — — —</p>
-<p>2 +2 Deft Explorer, Fighting Style 2 3 2 — — — —</p>
-<p>3 +2 Ranger Subclass 2 4 3 — — — —</p>
-<p>4 +2 Ability Score Improvement 2 5 3 — — — —</p>
-<p>5 +3 Extra Attack 3 6 4 2 — — —</p>
-<p>6 +3 Roving 3 6 4 2 — — —</p>
-<p>7 +3 Subclass feature 3 7 4 3 — — —</p>
-<p>8 +3 Ability Score Improvement 3 7 4 3 — — —</p>
-<p>9 +4 Expertise 4 9 4 3 2 — —</p>
-<p>10 +4 Tireless 4 9 4 3 2 — —</p>
-<p>11 +4 Subclass feature 4 10 4 3 3 — —</p>
-<p>12 +4 Ability Score Improvement 4 10 4 3 3 — —</p>
-<p>13 +5 Relentless Hunter 5 11 4 3 3 1 —</p>
-<p>14 +5 Nature’s Veil 5 11 4 3 3 1 —</p>
-<p>15 +5 Subclass feature 5 12 4 3 3 2 —</p>
-<p>16 +5 Ability Score Improvement 5 12 4 3 3 2 —</p>
-<p>17 +6 Precise Hunter 6 14 4 3 3 3 1</p>
-<p>18 +6 Feral Senses 6 14 4 3 3 3 1</p>
-<p>19 +6 Epic Boon 6 15 4 3 3 3 2</p>
-<p>20 +6 Foe Slayer 6 15 4 3 3 3 2</p>
+<p>Spell Slots. The Ranger Features table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
 <p>Prepared Spells of Level 1+. You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two level 1 Ranger spells. Cure Wounds and Ensnaring Strike are recommended.</p>
 <p>The number of spells on your list increases as you gain Ranger levels, as shown in the Prepared Spells column of the Ranger Features table. Whenever that number increases, choose additional Ranger spells until the number of spells on your list matches the number in the Ranger Features table. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 5 Ranger, your list of prepared spells can include six Ranger spells of level 1 or 2 in any combination.</p>
 <p>If another Ranger feature gives you spells that you always have prepared, those spells don’t count against the number of spells you can prepare with this feature, but those spells otherwise count as Ranger spells for you.</p>
@@ -174,3 +158,11 @@ the budget to use it on a second skill.
 </ul>
 <p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
+
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
+</ul>
+<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>

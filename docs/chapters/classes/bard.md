@@ -15,7 +15,7 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <dt>Tools</dt><dd>Choose 3 Musical Instruments (see “Equipment”)</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Leather Armor, 2 Daggers, Musical Instrument of your choice, Entertainer’s Pack, and 19 GP; or (B) 90 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead>
+<table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
 <th rowspan="2">Proficiency<br>Bonus</th>
@@ -23,59 +23,47 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <th rowspan="2">Bardic<br>Die</th>
 <th rowspan="2">Cantrips</th>
 <th rowspan="2">Prepared<br>Spells</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="9" class="fh-pcfh__group">Spell Slots per Spell Level</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
+<th class="fh-pcfh__slot">1</th>
+<th class="fh-pcfh__slot">2</th>
+<th class="fh-pcfh__slot">3</th>
+<th class="fh-pcfh__slot">4</th>
+<th class="fh-pcfh__slot">5</th>
+<th class="fh-pcfh__slot">6</th>
+<th class="fh-pcfh__slot">7</th>
+<th class="fh-pcfh__slot">8</th>
+<th class="fh-pcfh__slot">9</th>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-bardic-inspiration">Bardic Inspiration</a>, <a class="fh-lien" href="#l1-spellcasting">Spellcasting</a></td><td>D6</td><td>2</td><td>4</td><td>12</td><td>3</td><td>2</td></tr>
-<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-expertise">Expertise</a>, <a class="fh-lien" href="#l2-jack-of-all-trades">Jack of All Trades</a></td><td>D6</td><td>2</td><td>5</td><td>17</td><td>3</td><td>2</td></tr>
-<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-bard-subclass">Bard Subclass</a></td><td>D6</td><td>2</td><td>6</td><td>18</td><td>3</td><td>2</td></tr>
-<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>D6</td><td>3</td><td>7</td><td>21</td><td>3</td><td>2</td></tr>
-<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-font-of-inspiration">Font of Inspiration</a></td><td>D8</td><td>3</td><td>9</td><td>22</td><td>3</td><td>2</td></tr>
-<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>D8</td><td>3</td><td>10</td><td>23</td><td>3</td><td>2</td></tr>
-<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-countercharm">Countercharm</a></td><td>D8</td><td>3</td><td>11</td><td>24</td><td>3</td><td>2</td></tr>
-<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>D8</td><td>3</td><td>12</td><td>27</td><td>3</td><td>2</td></tr>
-<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-expertise">Expertise</a></td><td>D8</td><td>3</td><td>14</td><td>28</td><td>3</td><td>2</td></tr>
-<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-magical-secrets">Magical Secrets</a></td><td>D10</td><td>4</td><td>15</td><td>29</td><td>3</td><td>2</td></tr>
-<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>D10</td><td>4</td><td>16</td><td>30</td><td>3</td><td>2</td></tr>
-<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>D10</td><td>4</td><td>16</td><td>33</td><td>3</td><td>2</td></tr>
-<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>D10</td><td>4</td><td>17</td><td>34</td><td>3</td><td>2</td></tr>
-<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>D10</td><td>4</td><td>17</td><td>35</td><td>3</td><td>2</td></tr>
-<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>D12</td><td>4</td><td>18</td><td>36</td><td>3</td><td>2</td></tr>
-<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>D12</td><td>4</td><td>18</td><td>39</td><td>3</td><td>2</td></tr>
-<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>D12</td><td>4</td><td>19</td><td>40</td><td>3</td><td>2</td></tr>
-<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-superior-inspiration">Superior Inspiration</a></td><td>D12</td><td>4</td><td>20</td><td>41</td><td>3</td><td>2</td></tr>
-<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>D12</td><td>4</td><td>21</td><td>42</td><td>3</td><td>2</td></tr>
-<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-words-of-creation">Words of Creation</a></td><td>D12</td><td>4</td><td>22</td><td>45</td><td>3</td><td>2</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-bardic-inspiration">Bardic Inspiration</a>, <a class="fh-lien" href="#l1-spellcasting">Spellcasting</a></td><td>D6</td><td>2</td><td>4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>3</td><td>2</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-expertise">Expertise</a>, <a class="fh-lien" href="#l2-jack-of-all-trades">Jack of All Trades</a></td><td>D6</td><td>2</td><td>5</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>17</td><td>3</td><td>2</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-bard-subclass">Bard Subclass</a></td><td>D6</td><td>2</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>18</td><td>3</td><td>2</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>D6</td><td>3</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>21</td><td>3</td><td>2</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-font-of-inspiration">Font of Inspiration</a></td><td>D8</td><td>3</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>22</td><td>3</td><td>2</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>D8</td><td>3</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>23</td><td>3</td><td>2</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-countercharm">Countercharm</a></td><td>D8</td><td>3</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>24</td><td>3</td><td>2</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>D8</td><td>3</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>27</td><td>3</td><td>2</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-expertise">Expertise</a></td><td>D8</td><td>3</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>28</td><td>3</td><td>2</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-magical-secrets">Magical Secrets</a></td><td>D10</td><td>4</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>29</td><td>3</td><td>2</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>D10</td><td>4</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>30</td><td>3</td><td>2</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>D10</td><td>4</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>33</td><td>3</td><td>2</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>D10</td><td>4</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>34</td><td>3</td><td>2</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>D10</td><td>4</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>35</td><td>3</td><td>2</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>D12</td><td>4</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>36</td><td>3</td><td>2</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>D12</td><td>4</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>39</td><td>3</td><td>2</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>D12</td><td>4</td><td>19</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>40</td><td>3</td><td>2</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-superior-inspiration">Superior Inspiration</a></td><td>D12</td><td>4</td><td>20</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>41</td><td>3</td><td>2</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>D12</td><td>4</td><td>21</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>42</td><td>3</td><td>2</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-words-of-creation">Words of Creation</a></td><td>D12</td><td>4</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>45</td><td>3</td><td>2</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-bardic-inspiration">Level 1: Bardic Inspiration</h3>
 <p>You can supernaturally inspire others through words, music, or dance. This inspiration is represented by your Bardic Inspiration die, which is a d6.</p>
-<p>Using Bardic Inspiration. As a Bonus Action, you can inspire another creature within 60 feet of yourself who can see or hear you. That creature gains</p>
-<p>Bard Features</p>
-<p>Proficiency Bonus Bardic Die Prepared Spells ——Spell Slots per Spell Level—— Level Class Features Cantrips 1 2 3 4 5 6 7 8 9</p>
-<p>1 +2 Bardic Inspiration, Spellcasting D6 2 4 2 — — — — — — — —</p>
-<p>2 +2 Expertise, Jack of All Trades D6 2 5 3 — — — — — — — —</p>
-<p>3 +2 Bard Subclass D6 2 6 4 2 — — — — — — —</p>
-<p>4 +2 Ability Score Improvement D6 3 7 4 3 — — — — — — —</p>
-<p>5 +3 Font of Inspiration D8 3 9 4 3 2 — — — — — —</p>
-<p>6 +3 Subclass feature D8 3 10 4 3 3 — — — — — —</p>
-<p>7 +3 Countercharm D8 3 11 4 3 3 1 — — — — —</p>
-<p>8 +3 Ability Score Improvement D8 3 12 4 3 3 2 — — — — —</p>
-<p>9 +4 Expertise D8 3 14 4 3 3 3 1 — — — —</p>
-<p>10 +4 Magical Secrets D10 4 15 4 3 3 3 2 — — — —</p>
-<p>11 +4 — D10 4 16 4 3 3 3 2 1 — — —</p>
-<p>12 +4 Ability Score Improvement D10 4 16 4 3 3 3 2 1 — — —</p>
-<p>13 +5 — D10 4 17 4 3 3 3 2 1 1 — —</p>
-<p>14 +5 Subclass feature D10 4 17 4 3 3 3 2 1 1 — —</p>
-<p>15 +5 — D12 4 18 4 3 3 3 2 1 1 1 —</p>
-<p>16 +5 Ability Score Improvement D12 4 18 4 3 3 3 2 1 1 1 —</p>
-<p>17 +6 — D12 4 19 4 3 3 3 2 1 1 1 1</p>
-<p>18 +6 Superior Inspiration D12 4 20 4 3 3 3 3 1 1 1 1</p>
-<p>19 +6 Epic Boon D12 4 21 4 3 3 3 3 2 1 1 1</p>
-<p>20 +6 Words of Creation D12 4 22 4 3 3 3 3 2 2 1 1 one of your Bardic Inspiration dice. A creature can have only one Bardic Inspiration die at a time.</p>
+<p>Using Bardic Inspiration. As a Bonus Action, you can inspire another creature within 60 feet of yourself who can see or hear you. That creature gains one of your Bardic Inspiration dice. A creature can have only one Bardic Inspiration die at a time.</p>
 <p>Once within the next hour when the creature fails a D20 Test, the creature can roll the Bardic Inspiration die and add the number rolled to the d20, potentially turning the failure into a success. A Bardic Inspiration die is expended when it’s rolled.</p>
 <p>Number of Uses. You can confer a Bardic Inspiration die a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.</p>
 <p>At Higher Levels. Your Bardic Inspiration die changes when you reach certain Bard levels, as shown in the Bardic Die column of the Bard Features table. The die becomes a d8 at level 5, a d10 at level 10, and a d12 at level 15.</p>
@@ -171,3 +159,11 @@ level 2. The +1 of your own ladder lands at the same level and is not the same g
 </ul>
 <p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
+
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Musical Instrument</strong> does not exist in Fate’s Hand — read one of <strong>Instrument (Strings)</strong>, <strong>(Wind)</strong> or <strong>(Other)</strong> — Fate’s Hand splits it in three, and each is bought separately.</li>
+</ul>
+<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>

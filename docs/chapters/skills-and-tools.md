@@ -37,14 +37,14 @@ A plain-language guide to how skill and tool points work, and what every skill a
 
 ### Your three totals
 
-| Class | Bound skill | Bound tool | **Free point pool** |
-|---|---|---|---|
-| Barbarian, Cleric, Fighter, Paladin, Sorcerer, Warlock, Wizard | 2 | 0 | 10 |
-| Bard | 3 | 2 | 12 |
-| Druid | 2 | 1 | 12 |
-| Monk | 2 | 0 | 10 |
-| Ranger | 3 | 0 | 12 |
-| Rogue | 6 | 1 | 14 |
+| Class | Bound skill | Bound tool | **Free point pool** | Expertise access |
+|---|---|---|---|---|
+| Barbarian, Cleric, Fighter, Paladin, Sorcerer, Warlock, Wizard | 2 | 0 | 10 | lvl 4 |
+| Bard | 3 | 2 | 12 | **lvl 2** |
+| Druid | 2 | 1 | 12 | lvl 4 |
+| Monk | 2 | 0 | 10 | lvl 4 |
+| Ranger | 3 | 0 | 12 | **lvl 2** |
+| Rogue | 6 | 1 | 14 | **lvl 1** |
 
 Your background gives 6 free points (4 skill + 2 tool, all interchangeable), and Fate's Hand
 adds +2 free on top because there are 26 skills to fill. Both are already counted in the table.

@@ -21,7 +21,7 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <th rowspan="2">Proficiency<br>Bonus</th>
 <th rowspan="2">Class<br>Features</th>
 <th rowspan="2">Sneak<br>Attack</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
@@ -53,29 +53,7 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <p>You gain Expertise in two of your skill proficiencies of your choice. Sleight of Hand and Stealth are recommended if you have proficiency in them.</p>
 <p>At Rogue level 6, you gain Expertise in two more of your skill proficiencies of your choice.</p>
 <h3 class="fh-pcfh__feature" id="l1-sneak-attack">Level 1: Sneak Attack</h3>
-<p>You know how to strike subtly and exploit a foe’s distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack Rogue Features</p>
-<p>Level Proficiency Bonus Class Features Sneak Attack</p>
-<p>1 +2 Expertise, Sneak Attack, Thieves’ Cant, Weapon Mastery 1d6</p>
-<p>2 +2 Cunning Action 1d6</p>
-<p>3 +2 Rogue Subclass, Steady Aim 2d6</p>
-<p>4 +2 Ability Score Improvement 2d6</p>
-<p>5 +3 Cunning Strike, Uncanny Dodge 3d6</p>
-<p>6 +3 Expertise 3d6</p>
-<p>7 +3 Evasion, Reliable Talent 4d6</p>
-<p>8 +3 Ability Score Improvement 4d6</p>
-<p>9 +4 Subclass feature 5d6</p>
-<p>10 +4 Ability Score Improvement 5d6</p>
-<p>11 +4 Improved Cunning Strike 6d6</p>
-<p>12 +4 Ability Score Improvement 6d6</p>
-<p>13 +5 Subclass feature 7d6</p>
-<p>14 +5 Devious Strikes 7d6</p>
-<p>15 +5 Slippery Mind 8d6</p>
-<p>16 +5 Ability Score Improvement 8d6</p>
-<p>17 +6 Subclass feature 9d6</p>
-<p>18 +6 Elusive 9d6</p>
-<p>19 +6 Epic Boon 10d6</p>
-<p>20 +6 Stroke of Luck 10d6</p>
-<p>roll if you have Advantage on the roll and the attack uses a Finesse or a Ranged weapon. The extra damage’s type is the same as the weapon’s type.</p>
+<p>You know how to strike subtly and exploit a foe’s distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack roll if you have Advantage on the roll and the attack uses a Finesse or a Ranged weapon. The extra damage’s type is the same as the weapon’s type.</p>
 <p>You don’t need Advantage on the attack roll if at least one of your allies is within 5 feet of the target, the ally doesn’t have the Incapacitated condition, and you don’t have Disadvantage on the attack roll.</p>
 <p>The extra damage increases as you gain Rogue levels, as shown in the Sneak Attack column of the Rogue Features table.</p>
 <h3 class="fh-pcfh__feature" id="l1-thieves-cant">Level 1: Thieves’ Cant</h3>
@@ -180,3 +158,11 @@ the Rogue is the only class whose printed layout reaches past Novice. *(The layo
 </ul>
 <p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
+
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
+</ul>
+<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>

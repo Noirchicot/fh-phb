@@ -15,7 +15,7 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <dt>Tools</dt><dd>Herbalism Kit</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Leather Armor, Shield, Sickle, Druidic Focus (Quarterstaff), Explorer’s Pack, Herbalism Kit, and 9 GP; or (B) 50 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead>
+<table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
 <th rowspan="2">Proficiency<br>Bonus</th>
@@ -23,60 +23,46 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <th rowspan="2">Wild<br>Shape</th>
 <th rowspan="2">Cantrips</th>
 <th rowspan="2">Prepared<br>Spells</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="9" class="fh-pcfh__group">Spell Slots per Spell Level</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
+<th class="fh-pcfh__slot">1</th>
+<th class="fh-pcfh__slot">2</th>
+<th class="fh-pcfh__slot">3</th>
+<th class="fh-pcfh__slot">4</th>
+<th class="fh-pcfh__slot">5</th>
+<th class="fh-pcfh__slot">6</th>
+<th class="fh-pcfh__slot">7</th>
+<th class="fh-pcfh__slot">8</th>
+<th class="fh-pcfh__slot">9</th>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-druidic">Druidic</a>, <a class="fh-lien" href="#l1-primal-order">Primal Order</a></td><td>—</td><td>2</td><td>4</td><td>12</td><td>2</td><td>1</td></tr>
-<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-wild-shape">Wild Shape</a>, <a class="fh-lien" href="#l2-wild-companion">Wild Companion</a></td><td>2</td><td>2</td><td>5</td><td>12</td><td>2</td><td>1</td></tr>
-<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-druid-subclass">Druid Subclass</a></td><td>2</td><td>2</td><td>6</td><td>12</td><td>2</td><td>1</td></tr>
-<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>3</td><td>7</td><td>14</td><td>2</td><td>1</td></tr>
-<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-wild-resurgence">Wild Resurgence</a></td><td>2</td><td>3</td><td>9</td><td>14</td><td>2</td><td>1</td></tr>
-<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>3</td><td>10</td><td>14</td><td>2</td><td>1</td></tr>
-<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-elemental-fury">Elemental Fury</a></td><td>3</td><td>3</td><td>11</td><td>14</td><td>2</td><td>1</td></tr>
-<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>3</td><td>12</td><td>16</td><td>2</td><td>1</td></tr>
-<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>3</td><td>14</td><td>16</td><td>2</td><td>1</td></tr>
-<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>15</td><td>16</td><td>2</td><td>1</td></tr>
-<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>4</td><td>16</td><td>16</td><td>2</td><td>1</td></tr>
-<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>16</td><td>18</td><td>2</td><td>1</td></tr>
-<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>4</td><td>17</td><td>18</td><td>2</td><td>1</td></tr>
-<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>17</td><td>18</td><td>2</td><td>1</td></tr>
-<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l15-improved-elemental-fury">Improved Elemental Fury</a></td><td>3</td><td>4</td><td>18</td><td>18</td><td>2</td><td>1</td></tr>
-<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>18</td><td>20</td><td>2</td><td>1</td></tr>
-<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>4</td><td>4</td><td>19</td><td>20</td><td>2</td><td>1</td></tr>
-<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-beast-spells">Beast Spells</a></td><td>4</td><td>4</td><td>20</td><td>20</td><td>2</td><td>1</td></tr>
-<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>4</td><td>4</td><td>21</td><td>20</td><td>2</td><td>1</td></tr>
-<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-archdruid">Archdruid</a></td><td>4</td><td>4</td><td>22</td><td>22</td><td>2</td><td>1</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-druidic">Druidic</a>, <a class="fh-lien" href="#l1-primal-order">Primal Order</a></td><td>—</td><td>2</td><td>4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>1</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-wild-shape">Wild Shape</a>, <a class="fh-lien" href="#l2-wild-companion">Wild Companion</a></td><td>2</td><td>2</td><td>5</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>1</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-druid-subclass">Druid Subclass</a></td><td>2</td><td>2</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>1</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>3</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>1</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-wild-resurgence">Wild Resurgence</a></td><td>2</td><td>3</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>1</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>3</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>1</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-elemental-fury">Elemental Fury</a></td><td>3</td><td>3</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>1</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>3</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>1</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>3</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>1</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>1</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>3</td><td>4</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>1</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>18</td><td>2</td><td>1</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>4</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>18</td><td>2</td><td>1</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>4</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>18</td><td>2</td><td>1</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l15-improved-elemental-fury">Improved Elemental Fury</a></td><td>3</td><td>4</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>18</td><td>2</td><td>1</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>4</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>20</td><td>2</td><td>1</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>4</td><td>4</td><td>19</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>1</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-beast-spells">Beast Spells</a></td><td>4</td><td>4</td><td>20</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>1</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>4</td><td>4</td><td>21</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>1</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-archdruid">Archdruid</a></td><td>4</td><td>4</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>22</td><td>2</td><td>1</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
-<p>You have learned to cast spells through studying the mystical forces of nature. See “Spells” for the rules on spellcasting. The information below details</p>
-<p>Druid Features</p>
-<p>Proficiency Bonus Wild Shape Prepared Spells</p>
-<p>Level Class Features Cantrips 1 2 3 4 5 6 7 8 9</p>
-<p>1 +2 Spellcasting, Druidic, Primal Order — 2 4 2 — — — — — — — —</p>
-<p>2 +2 Wild Shape, Wild Companion 2 2 5 3 — — — — — — — —</p>
-<p>3 +2 Druid Subclass 2 2 6 4 2 — — — — — — —</p>
-<p>4 +2 Ability Score Improvement 2 3 7 4 3 — — — — — — —</p>
-<p>5 +3 Wild Resurgence 2 3 9 4 3 2 — — — — — —</p>
-<p>6 +3 Subclass feature 3 3 10 4 3 3 — — — — — —</p>
-<p>7 +3 Elemental Fury 3 3 11 4 3 3 1 — — — — —</p>
-<p>8 +3 Ability Score Improvement 3 3 12 4 3 3 2 — — — — —</p>
-<p>9 +4 — 3 3 14 4 3 3 3 1 — — — —</p>
-<p>10 +4 Subclass feature 3 4 15 4 3 3 3 2 — — — —</p>
-<p>11 +4 — 3 4 16 4 3 3 3 2 1 — — —</p>
-<p>12 +4 Ability Score Improvement 3 4 16 4 3 3 3 2 1 — — —</p>
-<p>13 +5 — 3 4 17 4 3 3 3 2 1 1 — —</p>
-<p>14 +5 Subclass feature 3 4 17 4 3 3 3 2 1 1 — —</p>
-<p>15 +5 Improved Elemental Fury 3 4 18 4 3 3 3 2 1 1 1 —</p>
-<p>16 +5 Ability Score Improvement 3 4 18 4 3 3 3 2 1 1 1 —</p>
-<p>17 +6 — 4 4 19 4 3 3 3 2 1 1 1 1</p>
-<p>18 +6 Beast Spells 4 4 20 4 3 3 3 3 1 1 1 1</p>
-<p>19 +6 Epic Boon 4 4 21 4 3 3 3 3 2 1 1 1</p>
-<p>20 +6 Archdruid 4 4 22 4 3 3 3 3 2 2 1 1</p>
-<p>——Spell Slots per Spell Level—— how you use those rules with Druid spells, which appear on the Druid spell list later in the class’s description.</p>
+<p>You have learned to cast spells through studying the mystical forces of nature. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Druid spells, which appear on the Druid spell list later in the class’s description.</p>
 <p>Cantrips. You know two cantrips of your choice from the Druid spell list. Druidcraft and Produce Flame are recommended.</p>
 <p>Whenever you gain a Druid level, you can replace one of your cantrips with another cantrip of your choice from the Druid spell list.</p>
 <p>When you reach Druid levels 4 and 10, you learn another cantrip of your choice from the Druid spell list, as shown in the Cantrips column of the Druid Features table.</p>
@@ -213,3 +199,11 @@ The Druid is one of three classes to carry a bound tool point at all.
 </ul>
 <p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
+
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
+</ul>
+<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>

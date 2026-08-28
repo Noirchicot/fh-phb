@@ -1,124 +1,47 @@
 # Classes
 
-<aside class="fh-translate">
-<p class="fh-translate__label">Reading the quotations on this page</p>
-<ul>
-<li><strong>Musical Instrument</strong> does not exist in Fate’s Hand — read one of <strong>Instrument (Strings)</strong>, <strong>(Wind)</strong> or <strong>(Other)</strong> — Fate’s Hand splits it in three, and each is bought separately.</li>
-<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
-</ul>
-<p>The quotations below are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
-</aside>
 
-## Fate's Hand and the twelve classes
+Your class is the training your character carries: what they reached for when
+things went wrong, and got good at. You choose it once, at the start, and it
+grows with you for twenty levels. Everything else about your character — where
+they came from, what they own, what they believe — is decided elsewhere. This
+chapter is only the training.
 
-Each class below is printed **whole**: its base-game entry first, then what Fate's Hand hands
-you on top. Where the two meet, Fate's Hand wins and the base-game line is not quoted at all —
-you never have to hold two versions of the same rule in your head.
+### What you will find on a class page
 
-What Fate's Hand changes about a class is almost never a feature: it is the points the class
-hands you, and where you are allowed to put them.
+Each of the twelve opens the same way, so you can read any of them the moment
+you can read one.
 
-Your class no longer asks you to *"choose two skills"*. It hands you a budget, and you lay it
-out yourself. Three numbers say what that budget is, and you only ever spend the third.
+**The progression table** comes first: one row per level, from 1 to 20. Read
+along your row and you have your whole character at that level — what you gain,
+how many times a day you can do it, how many skill points you hold. Every
+feature named in that table is a link; follow it and you land on the paragraph
+that explains it.
 
-| | |
+**The features** come next, in the order you receive them, each under the level
+where you get it. You never need the ones below your level, so a level-3
+character reads three short sections and stops.
+
+**The subclass** comes last. Somewhere around level 3 your class asks you to
+specialise, and the subclass is that answer — a handful of extra features layered
+on top of the ones you already have.
+
+At the foot of each class, one boxed note lists what Fate's Hand hands that class
+beyond the base game. It is there for the curious; you can play the class without
+reading it.
+
+### Where the rest of your character lives
+
+| If you are looking for | Go to |
 |---|---|
-| **Bound skill points** | already placed on skills, inside your class list |
-| **Bound tool points** | already placed on tools your class fixes |
-| **Free point pool** | yours — spend on skills *or* tools, wherever you like |
-
-Bound points are never in the free pool. They are spent before the sheet reaches you, and they
-do not cross over: a bound tool point buys a tier on a tool and never on a skill. Only free
-points move freely. How you spend any of them is in [Skills & Tools — Player Guide](skills-and-tools.md); what
-each class carries is below, class by class.
-
-### The tiers — one table, all twelve classes
-
-| Tier | Cost |
-|---|---|
-| **Novice** | 1 point |
-| **Adept** | 2 points |
-| **Expert** | 4 points |
-
-A point and a tier are the same thing: spending 4 on one skill *is* placing an **Expert**. No
-class prices a tier differently, so this table is printed once and holds everywhere.
-
-### The ladder — one line, all twelve classes
-
-**+2 free points at levels 4 · 8 · 12 · 16 · 20**, counted on your character level.
-
-You receive every step you have *passed through*, not only the last one: a character built
-directly at level 9 holds the step at 4 and the step at 8. One class carries a second ladder
-of its own — the Bard.
-
-### Expertise access, and who opens it early
-
-**Expert** may be bought from the level printed under your class. Nine of the twelve open it at
-level 4. Three open it earlier, and each does so through a feature: Rogue at **lvl 1** · Bard at
-**lvl 2** · Ranger at **lvl 2**.
-
-A feature that grants Expertise never hands you an expertise. It hands you free points, plus
-the permission to spend at **Expert** before level 4. Two gains, not one — and the permission
-is half of what the feature is worth.
-
-### The twelve, side by side
-
-| Class | Bound skill | Bound tool | Free point pool | Expertise access |
-|---|---|---|---|---|
-| Barbarian | 2 | 0 | 10 | lvl 4 |
-| Bard | 3 | 2 | 12 | **lvl 2** |
-| Cleric | 2 | 0 | 10 | lvl 4 |
-| Druid | 2 | 1 | 12 | lvl 4 |
-| Fighter | 2 | 0 | 10 | lvl 4 |
-| Monk | 2 | 0 | 10 | lvl 4 |
-| Paladin | 2 | 0 | 10 | lvl 4 |
-| Ranger | 3 | 0 | 12 | **lvl 2** |
-| Rogue | 6 | 1 | 14 | **lvl 1** |
-| Sorcerer | 2 | 0 | 10 | lvl 4 |
-| Warlock | 2 | 0 | 10 | lvl 4 |
-| Wizard | 2 | 0 | 10 | lvl 4 |
-
-Your Inheritance's 6 free points are already counted in that pool. Your species, your Origin
-Feat and your talents are not — they add on top. *(See [Inheritance](inheritance.md) and
-[Skills & Tools — Player Guide](skills-and-tools.md).)*
-
-### Class lists, and the one thing Fate's Hand rewrote
-
-Six class lists differ from the base game's, for two distinct reasons.
-
-**Five were rewritten because they named *Perception***, which Fate's Hand does not have:
-**Delve**, **Vigilance** and **Survival** take its place — Barbarian, Druid, Fighter, Ranger and
-Rogue.
-
-**One was written outright.** The base game lets a bard pick from *any* skill; Fate's Hand names
-the six a bard is trained in, and its three bound points are placed among those. It is the first
-list decided rather than converted.
-
-The remaining six stand as printed.
-
-> ⏳ Those six are closed lists, and none of them reaches the nine skills Fate's Hand added. That
-> is a fact, not a ruling: no one has yet decided whether a Wizard should reach *Academics*, or a
-> Warlock *Streetwise*. When that is decided, it is decided here — the Bard shows the shape it
-> would take.
-
-### Each class, in full — and the two lines that are missing
-
-Every section below opens with that class as the base game prints it: hit die, primary ability,
-saving throws, what it is trained to wear and wield, what it starts with, and the features it
-gains by level. What Fate's Hand hands you is printed straight after, in the same section.
-
-> Two lines of each entry are deliberately missing, and it matters.
->
-> **Its weapon mastery pool.** That one is real, and it is quoted in **Equipment** instead. A
-> rule printed twice is a rule that will drift.
->
-> **Its skill list.** The base game's version names *Perception*, which Fate's Hand does not
-> have, and picks from eighteen skills where Fate's Hand has twenty-six. The list that counts is
-> the one printed under your class, with the points that go on it.
-
-Everything on this page that is **not** marked <span class="fh-tag">FH</span> is the base game as printed. The
-subclasses are the base game's, plus one: the **[Moonkeeper](moonkeeper.md)**, a Fate's Hand sorcerer
-subclass.
+| what your skill points buy, and how to spend them | [Skills & Tools](skills-and-tools.md) |
+| your weapons, armour and what they do | [Equipment](equipment.md) |
+| where your character comes from, and the points it grants | [Inheritance](inheritance.md) |
+| your species and what it gives you | [Species](species.md) |
+| the card you carry, and your Destiny Score | [The Fate's Hand mechanic](fates-hand-mechanic.md) |
+| how you gain levels, and what each one brings | [Leveling Up](leveling-up.md) |
+| casting, spell slots and how magic behaves | [Magic](magic.md) |
+| a word you have met and do not know | [Rules Glossary](rules-glossary.md) |
 
 ## Barbarian
 

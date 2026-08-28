@@ -14,67 +14,50 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Chain Mail, Shield, Longsword, 6 Javelins, Holy Symbol, Priest’s Pack, and 9 GP; or (B) 150 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead>
+<table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
 <th rowspan="2">Proficiency<br>Bonus</th>
 <th rowspan="2">Class<br>Features</th>
 <th rowspan="2">Channel<br>Divinity</th>
 <th rowspan="2">Prepared<br>Spells</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="5" class="fh-pcfh__group">Spell Slots per Spell Level</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
+<th class="fh-pcfh__slot">1</th>
+<th class="fh-pcfh__slot">2</th>
+<th class="fh-pcfh__slot">3</th>
+<th class="fh-pcfh__slot">4</th>
+<th class="fh-pcfh__slot">5</th>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-lay-on-hands">Lay On Hands</a>, <a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>—</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-fighting-style">Fighting Style</a>, <a class="fh-lien" href="#l2-paladin-s-smite">Paladin’s Smite</a></td><td>—</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-channel-divinity">Channel Divinity</a>, <a class="fh-lien" href="#l3-paladin-subclass">Paladin Subclass</a></td><td>2</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>5</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a>, <a class="fh-lien" href="#l5-faithful-steed">Faithful Steed</a></td><td>2</td><td>6</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l6-aura-of-protection">Aura of Protection</a></td><td>2</td><td>6</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>2</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>7</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l9-abjure-foes">Abjure Foes</a></td><td>2</td><td>9</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-aura-of-courage">Aura of Courage</a></td><td>2</td><td>9</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l11-radiant-strikes">Radiant Strikes</a></td><td>3</td><td>10</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>10</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>11</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-restoring-touch">Restoring Touch</a></td><td>3</td><td>11</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>12</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>12</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>3</td><td>14</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-aura-expansion">Aura Expansion</a></td><td>3</td><td>14</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>3</td><td>15</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>15</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-lay-on-hands">Lay On Hands</a>, <a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>—</td><td>2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-fighting-style">Fighting Style</a>, <a class="fh-lien" href="#l2-paladin-s-smite">Paladin’s Smite</a></td><td>—</td><td>3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-channel-divinity">Channel Divinity</a>, <a class="fh-lien" href="#l3-paladin-subclass">Paladin Subclass</a></td><td>2</td><td>4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>5</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-extra-attack">Extra Attack</a>, <a class="fh-lien" href="#l5-faithful-steed">Faithful Steed</a></td><td>2</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l6-aura-of-protection">Aura of Protection</a></td><td>2</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>2</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l9-abjure-foes">Abjure Foes</a></td><td>2</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l10-aura-of-courage">Aura of Courage</a></td><td>2</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l11-radiant-strikes">Radiant Strikes</a></td><td>3</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>3</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l14-restoring-touch">Restoring Touch</a></td><td>3</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>3</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>3</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-aura-expansion">Aura Expansion</a></td><td>3</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>3</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-lay-on-hands">Level 1: Lay On Hands</h3>
 <p>Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level.</p>
-<p>Paladin Features</p>
-<p>Proficiency Bonus Channel Divinity Prepared Spells</p>
-<p>Level Class Features 1 2 3 4 5</p>
-<p>1 +2 Lay On Hands, Spellcasting, Weapon Mastery — 2 2 — — — —</p>
-<p>2 +2 Fighting Style, Paladin’s Smite — 3 2 — — — —</p>
-<p>3 +2 Channel Divinity, Paladin Subclass 2 4 3 — — — —</p>
-<p>4 +2 Ability Score Improvement 2 5 3 — — — —</p>
-<p>5 +3 Extra Attack, Faithful Steed 2 6 4 2 — — —</p>
-<p>6 +3 Aura of Protection 2 6 4 2 — — —</p>
-<p>7 +3 Subclass feature 2 7 4 3 — — —</p>
-<p>8 +3 Ability Score Improvement 2 7 4 3 — — —</p>
-<p>9 +4 Abjure Foes 2 9 4 3 2 — —</p>
-<p>10 +4 Aura of Courage 2 9 4 3 2 — —</p>
-<p>11 +4 Radiant Strikes 3 10 4 3 3 — —</p>
-<p>12 +4 Ability Score Improvement 3 10 4 3 3 — —</p>
-<p>13 +5 — 3 11 4 3 3 1 —</p>
-<p>14 +5 Restoring Touch 3 11 4 3 3 1 —</p>
-<p>15 +5 Subclass feature 3 12 4 3 3 2 —</p>
-<p>16 +5 Ability Score Improvement 3 12 4 3 3 2 —</p>
-<p>17 +6 — 3 14 4 3 3 3 1</p>
-<p>18 +6 Aura Expansion 3 14 4 3 3 3 1</p>
-<p>19 +6 Epic Boon 3 15 4 3 3 3 2</p>
-<p>20 +6 Subclass feature 3 15 4 3 3 3 2</p>
-<p>—Spell Slots per Spell Level— As a Bonus Action, you can touch a creature (which could be yourself) and draw power from the pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool.</p>
+<p>As a Bonus Action, you can touch a creature (which could be yourself) and draw power from the pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool.</p>
 <p>You can also expend 5 Hit Points from the pool of healing power to remove the Poisoned condition from the creature; those points don’t also restore Hit Points to the creature.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>You have learned to cast spells through prayer and meditation. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Paladin spells, which appear in the Paladin spell list later in the class’s description.</p>

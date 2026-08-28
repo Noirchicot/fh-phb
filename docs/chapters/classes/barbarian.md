@@ -22,7 +22,7 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <th rowspan="2">Rages<br>per Long Rest</th>
 <th rowspan="2">Rage<br>Damage</th>
 <th rowspan="2">Weapon<br>Masteries</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
@@ -53,28 +53,7 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <h3 class="fh-pcfh__feature" id="l1-rage">Level 1: Rage</h3>
 <p>You can imbue yourself with a primal power called Rage, a force that grants you extraordinary might and resilience. You can enter it as a Bonus Action if you aren’t wearing Heavy armor.</p>
 <p>You can enter your Rage the number of times shown for your Barbarian level in the Rages column of the Barbarian Features table. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest.</p>
-<p>Barbarian Features</p>
-<p>Level Proficiency Bonus Class Features Rages Rage Damage Weapon Mastery</p>
-<p>1 +2 Rage, Unarmored Defense, Weapon Mastery 2 +2 2</p>
-<p>2 +2 Danger Sense, Reckless Attack 2 +2 2</p>
-<p>3 +2 Barbarian Subclass, Primal Knowledge 3 +2 2</p>
-<p>4 +2 Ability Score Improvement 3 +2 3</p>
-<p>5 +3 Extra Attack, Fast Movement 3 +2 3</p>
-<p>6 +3 Subclass feature 4 +2 3</p>
-<p>7 +3 Feral Instinct, Instinctive Pounce 4 +2 3</p>
-<p>8 +3 Ability Score Improvement 4 +2 3</p>
-<p>9 +4 Brutal Strike 4 +3 3</p>
-<p>10 +4 Subclass feature 4 +3 4</p>
-<p>11 +4 Relentless Rage 4 +3 4</p>
-<p>12 +4 Ability Score Improvement 5 +3 4</p>
-<p>13 +5 Improved Brutal Strike 5 +3 4</p>
-<p>14 +5 Subclass feature 5 +3 4</p>
-<p>15 +5 Persistent Rage 5 +3 4</p>
-<p>16 +5 Ability Score Improvement 5 +4 4</p>
-<p>17 +6 Improved Brutal Strike 6 +4 4</p>
-<p>18 +6 Indomitable Might 6 +4 4</p>
-<p>19 +6 Epic Boon 6 +4 4</p>
-<p>20 +6 Primal Champion 6 +4 4 While active, your Rage follows the rules below.</p>
+<p>While active, your Rage follows the rules below.</p>
 <p>Damage Resistance. You have Resistance to Bludgeoning, Piercing, and Slashing damage.</p>
 <p>Rage Damage. When you make an attack using Strength—with either a weapon or an Unarmed Strike—and deal damage to the target, you gain a bonus to the damage that increases as you gain levels as a Barbarian, as shown in the Rage Damage column of the Barbarian Features table.</p>
 <p>Strength Advantage. You have Advantage on Strength checks and Strength saving throws.</p>
@@ -174,3 +153,11 @@ everything else you gain by levelling is free.
 </ul>
 <p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
+
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
+</ul>
+<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>

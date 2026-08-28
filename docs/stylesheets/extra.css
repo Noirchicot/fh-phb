@@ -1247,11 +1247,13 @@ body.fh-home-page .md-header { display: none; }
      signale, pas un gras qui trouerait le paragraphe. */
   font-weight: inherit;
 }
+/* Eric, 28/08 : *« le texte même police, juste variation de couleur »*. Donc le
+   survol lui aussi ne bouge QUE la teinte — pas de soulignement qui viendrait
+   changer la hauteur de ligne d'un mot au passage de la souris. */
 .md-typeset a.fh-lien:hover,
 .md-typeset a.fh-lien:focus-visible {
   color: var(--fh-link-hover);
-  text-decoration: underline;
-  text-underline-offset: .14em;
+  text-decoration: none;
 }
 .md-typeset a.fh-lien:focus-visible {
   outline: 2px solid var(--fh-link);
@@ -1324,15 +1326,19 @@ body.fh-home-page .md-header { display: none; }
   vertical-align: top;
   line-height: 1.2;
 }
-/* ⭐ LE CHAPEAU DU GROUPE FH — le SEUL trait horizontal de l'en-tête, et la
-   seule cellule centrée : elle surplombe trois colonnes, elle se lit au-dessus
-   d'elles. */
+/* ⭐ UN CHAPEAU DE GROUPE — le seul trait horizontal de l'en-tête, et la seule
+   cellule centrée : elle surplombe ses colonnes, elle se lit au-dessus d'elles.
+   Il y en a deux quand la classe lance des sorts : « Spell Slots per Spell
+   Level » (du SRD, à l'encre) et « Skill Points » (de FH, à l'or). */
 .md-typeset .fh-pcfh__table th.fh-pcfh__group {
   text-align: center;
-  color: var(--fh-gold);
   opacity: 1;
   border-bottom: 1px solid var(--fh-rule);
 }
+/* les colonnes d'emplacements ne portent qu'un chiffre : elles se serrent */
+.md-typeset .fh-pcfh__table th.fh-pcfh__slot { text-align: center; }
+.md-typeset .fh-pcfh__table th.fh-pcfh__slot,
+.md-typeset .fh-pcfh__table td.fh-pcfh__slot { padding-left: .18em; padding-right: .18em; }
 /* ⛔ AUCUN TRAIT ENTRE LES DEUX ÉTAGES AILLEURS : les cellules qui enjambent
    les deux rangées (`rowspan`) ne portent leur bordure qu'en bas de l'en-tête,
    là où le corps commence. */
@@ -1357,9 +1363,31 @@ body.fh-home-page .md-header { display: none; }
    chercher. */
 .md-typeset .fh-pcfh__table th, .md-typeset .fh-pcfh__table td { padding: .26em .28em; }
 /* ⭐ LES TROIS DERNIÈRES COLONNES SONT FH, ET ÇA SE VOIT SANS LÉGENDE :
-   elles portent l'or de la maison, le SRD garde l'encre du texte. */
+   elles portent l'or de la maison, le SRD garde l'encre du texte.
+   ⛔ PAR CLASSE, PLUS PAR POSITION. `th:nth-last-child(-n+3)` DÉDUISAIT quelles
+   cellules d'en-tête sont FH — et se trompait : la première rangée d'en-tête ne
+   compte pas les mêmes cellules que le corps (les libellés à `rowspan` y sont
+   suivis du seul chapeau). Mesuré sur la page publiée du magicien : « Cantrips »
+   et « Prepared Spells », deux colonnes DU SRD, portaient l'or sur les douze
+   pages. Une cote donnée bat une cote déduite — le générateur marque `fh` là où
+   c'est FH, et le style ne devine plus rien. */
 .md-typeset .fh-pcfh__table td:nth-last-child(-n+3),
-.md-typeset .fh-pcfh__table th:nth-last-child(-n+3) { color: var(--fh-gold); }
+.md-typeset .fh-pcfh__table th.fh { color: var(--fh-gold); }
+
+/* 📏 LA TABLE D'UN LANCEUR — dix-huit colonnes au lieu de neuf, 1006 px demandés
+   pour 930 chez le barde. Ce qui cède est ce qui ne porte pas d'information :
+   l'interlettrage des titres (décoratif) et le confort de la colonne
+   d'aptitudes. Aucune colonne ne disparaît — la vue d'ensemble est ce qu'on est
+   venu chercher.
+   ⛔ ET CE BLOC VIENT APRÈS LES RÈGLES GÉNÉRALES, PAS AVANT. Placé plus haut, il
+      avait la MÊME spécificité qu'elles (0,3,1) et perdait donc sur l'ordre
+      seul : la classe était bien posée, le style ne s'appliquait pas — 940 px
+      au lieu des 930 attendus, sans qu'aucune erreur ne le dise. */
+.md-typeset .fh-pcfh__table--dense th { letter-spacing: 0; }
+.md-typeset .fh-pcfh__table--dense td.fh-pcfh__feat,
+.md-typeset .fh-pcfh__table--dense td:nth-child(3) { min-width: 6rem; }
+.md-typeset .fh-pcfh__table--dense th,
+.md-typeset .fh-pcfh__table--dense td { padding-left: .2em; padding-right: .2em; }
 .md-typeset .fh-pcfh__note { font-size: var(--t-micro); opacity: .6; margin: 0 0 1.8em; }
 
 /* les aptitudes : un titre par niveau, du texte dessous — rien de plus */

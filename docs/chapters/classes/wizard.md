@@ -14,68 +14,55 @@ Weavers of arcane grammar, wizards bend reality through study, not birth. Spellb
 <dt>Weapons</dt><dd>Simple weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) 2 Daggers, Arcane Focus (Quarterstaff), Robe, Spellbook, Scholar’s Pack, and 5 GP; or (B) 55 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead>
+<table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
 <th rowspan="2">Proficiency<br>Bonus</th>
 <th rowspan="2">Class<br>Features</th>
 <th rowspan="2">Cantrips</th>
 <th rowspan="2">Prepared<br>Spells</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="9" class="fh-pcfh__group">Spell Slots per Spell Level</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
+<th class="fh-pcfh__slot">1</th>
+<th class="fh-pcfh__slot">2</th>
+<th class="fh-pcfh__slot">3</th>
+<th class="fh-pcfh__slot">4</th>
+<th class="fh-pcfh__slot">5</th>
+<th class="fh-pcfh__slot">6</th>
+<th class="fh-pcfh__slot">7</th>
+<th class="fh-pcfh__slot">8</th>
+<th class="fh-pcfh__slot">9</th>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-ritual-adept">Ritual Adept</a>, <a class="fh-lien" href="#l1-arcane-recovery">Arcane Recovery</a></td><td>3</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-scholar">Scholar</a></td><td>3</td><td>5</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-wizard-subclass">Wizard Subclass</a></td><td>3</td><td>6</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-memorize-spell">Memorize Spell</a></td><td>4</td><td>9</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>10</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">—</td><td>4</td><td>11</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>12</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>4</td><td>14</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>15</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>5</td><td>16</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>16</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>5</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>18</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>5</td><td>19</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>21</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>5</td><td>22</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-spell-mastery">Spell Mastery</a></td><td>5</td><td>23</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>5</td><td>24</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-signature-spells">Signature Spells</a></td><td>5</td><td>25</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-ritual-adept">Ritual Adept</a>, <a class="fh-lien" href="#l1-arcane-recovery">Arcane Recovery</a></td><td>3</td><td>4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-scholar">Scholar</a></td><td>3</td><td>5</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-wizard-subclass">Wizard Subclass</a></td><td>3</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-memorize-spell">Memorize Spell</a></td><td>4</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>4</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat">—</td><td>4</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>4</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>5</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>5</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>5</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>5</td><td>19</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>5</td><td>21</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat">—</td><td>5</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l18-spell-mastery">Spell Mastery</a></td><td>5</td><td>23</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>5</td><td>24</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-signature-spells">Signature Spells</a></td><td>5</td><td>25</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>As a student of arcane magic, you have learned to cast spells. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Wizard spells, which appear in the Wizard spell list later in the class’s description.</p>
 <p>Cantrips. You know three Wizard cantrips of your choice. Light, Mage Hand, and Ray of Frost are recommended. Whenever you finish a Long Rest, you can replace one of your cantrips from this feature with another Wizard cantrip of your choice.</p>
-<p>Wizard Features</p>
-<p>Proficiency Bonus Prepared Spells</p>
-<p>Level Class Features Cantrips 1 2 3 4 5 6 7 8 9</p>
-<p>1 +2 Spellcasting, Ritual Adept, Arcane Recovery 3 4 2 — — — — — — — —</p>
-<p>2 +2 Scholar 3 5 3 — — — — — — — —</p>
-<p>3 +2 Wizard Subclass 3 6 4 2 — — — — — — —</p>
-<p>4 +2 Ability Score Improvement 4 7 4 3 — — — — — — —</p>
-<p>5 +3 Memorize Spell 4 9 4 3 2 — — — — — —</p>
-<p>6 +3 Subclass feature 4 10 4 3 3 — — — — — —</p>
-<p>7 +3 — 4 11 4 3 3 1 — — — — —</p>
-<p>8 +3 Ability Score Improvement 4 12 4 3 3 2 — — — — —</p>
-<p>9 +4 — 4 14 4 3 3 3 1 — — — —</p>
-<p>10 +4 Subclass feature 5 15 4 3 3 3 2 — — — —</p>
-<p>11 +4 — 5 16 4 3 3 3 2 1 — — —</p>
-<p>12 +4 Ability Score Improvement 5 16 4 3 3 3 2 1 — — —</p>
-<p>13 +5 — 5 17 4 3 3 3 2 1 1 — —</p>
-<p>14 +5 Subclass feature 5 18 4 3 3 3 2 1 1 — —</p>
-<p>15 +5 — 5 19 4 3 3 3 2 1 1 1 —</p>
-<p>16 +5 Ability Score Improvement 5 21 4 3 3 3 2 1 1 1 —</p>
-<p>17 +6 — 5 22 4 3 3 3 2 1 1 1 1</p>
-<p>18 +6 Spell Mastery 5 23 4 3 3 3 3 1 1 1 1</p>
-<p>19 +6 Epic Boon 5 24 4 3 3 3 3 2 1 1 1</p>
-<p>20 +6 Signature Spells 5 25 4 3 3 3 3 2 2 1 1</p>
-<p>——Spell Slots per Spell Level—— When you reach Wizard levels 4 and 10, you learn another Wizard cantrip of your choice, as shown in the Cantrips column of the Wizard Features table.</p>
+<p>When you reach Wizard levels 4 and 10, you learn another Wizard cantrip of your choice, as shown in the Cantrips column of the Wizard Features table.</p>
 <p>Spellbook. Your wizardly apprenticeship culminated in the creation of a unique book: your spellbook. It is a Tiny object that weighs 3 pounds, contains 100 pages, and can be read only by you or someone casting Identify. You determine the book’s appearance and materials, such as a gilt-edged tome or a collection of vellum bound with twine.</p>
 <p>The book contains the level 1+ spells you know. It starts with six level 1 Wizard spells of your choice. Detect Magic, Feather Fall, Mage Armor, Magic Missile, Sleep, and Thunderwave are recommended.</p>
 <p>Whenever you gain a Wizard level after 1, add two Wizard spells of your choice to your spellbook. Each of these spells must be of a level for which you have spell slots, as shown in the Wizard Features table. The spells are the culmination of arcane research you do regularly.</p>

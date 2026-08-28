@@ -21,7 +21,7 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <th rowspan="2">Class<br>Features</th>
 <th rowspan="2">Second<br>Wind</th>
 <th rowspan="2">Weapon<br>Masteries</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
@@ -52,28 +52,6 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <h3 class="fh-pcfh__feature" id="l1-fighting-style">Level 1: Fighting Style</h3>
 <p>You have honed your martial prowess and gain a Fighting Style feat of your choice (see “Feats”). Defense is recommended.</p>
 <p>Whenever you gain a Fighter level, you can replace the feat you chose with a different Fighting Style feat.</p>
-<p>Fighter Features</p>
-<p>Level Proficiency Bonus Class Features Second Wind Weapon Mastery</p>
-<p>1 +2 Fighting Style, Second Wind, Weapon Mastery 2 3</p>
-<p>2 +2 Action Surge (one use), Tactical Mind 2 3</p>
-<p>3 +2 Fighter Subclass 2 3</p>
-<p>4 +2 Ability Score Improvement 3 4</p>
-<p>5 +3 Extra Attack, Tactical Shift 3 4</p>
-<p>6 +3 Ability Score Improvement 3 4</p>
-<p>7 +3 Subclass feature 3 4</p>
-<p>8 +3 Ability Score Improvement 3 4</p>
-<p>9 +4 Indomitable (one use), Tactical Master 3 4</p>
-<p>10 +4 Subclass feature 4 5</p>
-<p>11 +4 Two Extra Attacks 4 5</p>
-<p>12 +4 Ability Score Improvement 4 5</p>
-<p>13 +5 Indomitable (two uses), Studied Attacks 4 5</p>
-<p>14 +5 Ability Score Improvement 4 5</p>
-<p>15 +5 Subclass feature 4 5</p>
-<p>16 +5 Ability Score Improvement 4 6</p>
-<p>17 +6 Action Surge (two uses), Indomitable (three uses) 4 6</p>
-<p>18 +6 Subclass feature 4 6</p>
-<p>19 +6 Epic Boon 4 6</p>
-<p>20 +6 Three Extra Attacks 4 6</p>
 <h3 class="fh-pcfh__feature" id="l1-second-wind">Level 1: Second Wind</h3>
 <p>You have a limited well of physical and mental stamina that you can draw on. As a Bonus Action, you can use it to regain Hit Points equal to 1d10 plus your Fighter level.</p>
 <p>You can use this feature twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest.</p>
@@ -155,3 +133,11 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 </ul>
 <p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
+
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
+</ul>
+<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>

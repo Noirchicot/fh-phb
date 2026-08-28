@@ -14,7 +14,7 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <dt>Weapons</dt><dd>Simple weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Spear, 2 Daggers, Arcane Focus (crystal), Dungeoneer’s Pack, and 28 GP; or (B) 50 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead>
+<table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
 <th rowspan="2">Proficiency<br>Bonus</th>
@@ -22,62 +22,49 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <th rowspan="2">Sorcery<br>Points</th>
 <th rowspan="2">Cantrips</th>
 <th rowspan="2">Prepared<br>Spells</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="9" class="fh-pcfh__group">Spell Slots per Spell Level</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
+<th class="fh-pcfh__slot">1</th>
+<th class="fh-pcfh__slot">2</th>
+<th class="fh-pcfh__slot">3</th>
+<th class="fh-pcfh__slot">4</th>
+<th class="fh-pcfh__slot">5</th>
+<th class="fh-pcfh__slot">6</th>
+<th class="fh-pcfh__slot">7</th>
+<th class="fh-pcfh__slot">8</th>
+<th class="fh-pcfh__slot">9</th>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
-<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-innate-sorcery">Innate Sorcery</a></td><td>—</td><td>4</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-font-of-magic">Font of Magic</a>, <a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>2</td><td>4</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-sorcerer-subclass">Sorcerer Subclass</a></td><td>3</td><td>4</td><td>6</td><td>10</td><td>2</td><td>0</td></tr>
-<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>5</td><td>7</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-sorcerous-restoration">Sorcerous Restoration</a></td><td>5</td><td>5</td><td>9</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>6</td><td>5</td><td>10</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-sorcery-incarnate">Sorcery Incarnate</a></td><td>7</td><td>5</td><td>11</td><td>12</td><td>2</td><td>0</td></tr>
-<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>8</td><td>5</td><td>12</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>9</td><td>5</td><td>14</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>10</td><td>6</td><td>15</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>11</td><td>6</td><td>16</td><td>14</td><td>2</td><td>0</td></tr>
-<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>12</td><td>6</td><td>16</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>13</td><td>6</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>14</td><td>6</td><td>17</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>15</td><td>6</td><td>18</td><td>16</td><td>2</td><td>0</td></tr>
-<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>16</td><td>6</td><td>18</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>17</td><td>6</td><td>19</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>18</td><td>6</td><td>20</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>19</td><td>6</td><td>21</td><td>18</td><td>2</td><td>0</td></tr>
-<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-arcane-apotheosis">Arcane Apotheosis</a></td><td>20</td><td>6</td><td>22</td><td>20</td><td>2</td><td>0</td></tr>
+<tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-spellcasting">Spellcasting</a>, <a class="fh-lien" href="#l1-innate-sorcery">Innate Sorcery</a></td><td>—</td><td>4</td><td>2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-font-of-magic">Font of Magic</a>, <a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>2</td><td>4</td><td>4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-sorcerer-subclass">Sorcerer Subclass</a></td><td>3</td><td>4</td><td>6</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>10</td><td>2</td><td>0</td></tr>
+<tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>4</td><td>5</td><td>7</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-sorcerous-restoration">Sorcerous Restoration</a></td><td>5</td><td>5</td><td>9</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>6</td><td>+3</td><td class="fh-pcfh__feat">Subclass feature</td><td>6</td><td>5</td><td>10</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>7</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l7-sorcery-incarnate">Sorcery Incarnate</a></td><td>7</td><td>5</td><td>11</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>12</td><td>2</td><td>0</td></tr>
+<tr><td>8</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>8</td><td>5</td><td>12</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>9</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>9</td><td>5</td><td>14</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>10</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>10</td><td>6</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>11</td><td>+4</td><td class="fh-pcfh__feat">—</td><td>11</td><td>6</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>14</td><td>2</td><td>0</td></tr>
+<tr><td>12</td><td>+4</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>12</td><td>6</td><td>16</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>13</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>13</td><td>6</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>14</td><td>+5</td><td class="fh-pcfh__feat">Subclass feature</td><td>14</td><td>6</td><td>17</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>15</td><td>+5</td><td class="fh-pcfh__feat">—</td><td>15</td><td>6</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>16</td><td>2</td><td>0</td></tr>
+<tr><td>16</td><td>+5</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>16</td><td>6</td><td>18</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">—</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>17</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-metamagic">Metamagic</a></td><td>17</td><td>6</td><td>19</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>18</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>18</td><td>6</td><td>20</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>19</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l19-epic-boon">Epic Boon</a></td><td>19</td><td>6</td><td>21</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>18</td><td>2</td><td>0</td></tr>
+<tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-arcane-apotheosis">Arcane Apotheosis</a></td><td>20</td><td>6</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>Drawing from your innate magic, you can cast spells. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Sorcerer spells, which appear in the Sorcerer spell list later in the class’s description.</p>
 <p>Cantrips. You know four Sorcerer cantrips of your choice. Light, Prestidigitation, Shocking Grasp, and Sorcerous Burst are recommended. Whenever you gain a Sorcerer level, you can replace one of your cantrips from this feature with another Sorcerer cantrip of your choice.</p>
 <p>When you reach Sorcerer levels 4 and 10, you learn another Sorcerer cantrip of your choice, as shown in the Cantrips column of the Sorcerer Features table.</p>
-<p>Spell Slots. The Sorcerer Features table shows how many spell slots you have to cast your level 1+ Sorcerer Features</p>
-<p>Proficiency Bonus Sorcery Points Prepared Spells</p>
-<p>Level Class Features Cantrips 1 2 3 4 5 6 7 8 9</p>
-<p>1 +2 Spellcasting, Innate Sorcery — 4 2 2 — — — — — — — —</p>
-<p>2 +2 Font of Magic, Metamagic 2 4 4 3 — — — — — — — —</p>
-<p>3 +2 Sorcerer Subclass 3 4 6 4 2 — — — — — — —</p>
-<p>4 +2 Ability Score Improvement 4 5 7 4 3 — — — — — — —</p>
-<p>5 +3 Sorcerous Restoration 5 5 9 4 3 2 — — — — — —</p>
-<p>6 +3 Subclass feature 6 5 10 4 3 3 — — — — — —</p>
-<p>7 +3 Sorcery Incarnate 7 5 11 4 3 3 1 — — — — —</p>
-<p>8 +3 Ability Score Improvement 8 5 12 4 3 3 2 — — — — —</p>
-<p>9 +4 — 9 5 14 4 3 3 3 1 — — — —</p>
-<p>10 +4 Metamagic 10 6 15 4 3 3 3 2 — — — —</p>
-<p>11 +4 — 11 6 16 4 3 3 3 2 1 — — —</p>
-<p>12 +4 Ability Score Improvement 12 6 16 4 3 3 3 2 1 — — —</p>
-<p>13 +5 — 13 6 17 4 3 3 3 2 1 1 — —</p>
-<p>14 +5 Subclass feature 14 6 17 4 3 3 3 2 1 1 — —</p>
-<p>15 +5 — 15 6 18 4 3 3 3 2 1 1 1 —</p>
-<p>16 +5 Ability Score Improvement 16 6 18 4 3 3 3 2 1 1 1 —</p>
-<p>17 +6 Metamagic 17 6 19 4 3 3 3 2 1 1 1 1</p>
-<p>18 +6 Subclass feature 18 6 20 4 3 3 3 3 1 1 1 1</p>
-<p>19 +6 Epic Boon 19 6 21 4 3 3 3 3 2 1 1 1</p>
-<p>20 +6 Arcane Apotheosis 20 6 22 4 3 3 3 3 2 2 1 1</p>
-<p>spells. You regain all expended slots when you finish a Long Rest.</p>
+<p>Spell Slots. The Sorcerer Features table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
 <p>Prepared Spells of Level 1+. You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two level 1 Sorcerer spells. Burning Hands and Detect Magic are recommended.</p>
 <p>The number of spells on your list increases as you gain Sorcerer levels, as shown in the Prepared Spells column of the Sorcerer Features table. Whenever that number increases, choose additional Sorcerer spells until the number of spells on your list matches the number in the Sorcerer Features table. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 3 Sorcerer, your list of prepared spells can include six Sorcerer spells of level 1 or 2 in any combination.</p>
 <p>If another Sorcerer feature gives you spells that you always have prepared, those spells don’t count</p>

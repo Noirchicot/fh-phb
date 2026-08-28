@@ -23,7 +23,7 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <th rowspan="2">Martial<br>Arts</th>
 <th rowspan="2">Focus<br>Points</th>
 <th rowspan="2">Unarmored<br>Movement</th>
-<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>
 </tr><tr>
 <th class="fh">Free<br>Points</th>
 <th class="fh">Bound<br>Skills</th>
@@ -159,3 +159,11 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 </ul>
 <p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>
+
+<aside class="fh-translate">
+<p class="fh-translate__label">Reading the quotations on this page</p>
+<ul>
+<li><strong>Musical Instrument</strong> does not exist in Fate’s Hand — read one of <strong>Instrument (Strings)</strong>, <strong>(Wind)</strong> or <strong>(Other)</strong> — Fate’s Hand splits it in three, and each is bought separately.</li>
+</ul>
+<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
+</aside>

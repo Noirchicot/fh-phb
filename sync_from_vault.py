@@ -873,6 +873,86 @@ def _ancre(niveau, nom):
     return "l%s-%s" % (niveau, base) if niveau not in (None, "") else base
 
 
+_LEGENDE_RESIDU = re.compile(r"^—+\s*Spell Slots per Spell Level\s*—*\s*")
+
+
+def _paragraphes_sans_table_plate(txt, classe):
+    """Le texte d'une aptitude, DÉBARRASSÉ de la table de progression que le SRD
+    y recolle en texte plat.
+
+    🔴 Eric, 2026-08-28, sur la page du Barbare : *« Utilité de ceci ? car très
+    moche »* — vingt et un paragraphes d'une ligne (« 7 +3 Feral Instinct,
+    Instinctive Pounce 4 +2 3 ») qui répètent mot pour mot la table de
+    progression rendue en tête de page. Aucune utilité : c'est la MÊME table,
+    sans ses colonnes.
+
+    ⚠️ ET ELLE EST INSÉRÉE AU MILIEU D'UNE PHRASE. Mesuré sur les onze : le SRD
+    coupe « …to cast your level 1+ » / [table] / « spells. You regain all
+    expended slots… ». Couper sans RECOLLER laisserait deux moitiés de phrase.
+    Le titre « <Classe> Features » se retrouve lui aussi collé au bout du
+    fragment gauche, et la légende « ——Spell Slots per Spell Level—— » au
+    début du fragment droit. Trois coutures, pas une.
+
+    ⛔ LE TÉMOIN EST « 1 À 20 », PAS LE NOM. Un premier filtre sur l'en-tête
+    « Level Proficiency Bonus » n'attrapait que 4 classes sur 12 — une liste de
+    motifs ne dit jamais qu'elle est incomplète. Le vrai signe qu'un bloc est LA
+    progression d'une classe, c'est que ses lignes numérotent exactement 1..20.
+    C'est ce qui sauve « Creating Spell Slots » du sorcier (1..5, une table de
+    COÛTS que rien d'autre ne porte) : elle reste.
+    """
+    lignes = str(txt or "").split("\n")
+    num = [i for i, l in enumerate(lignes) if re.match(r"^\d{1,2}\s", l)]
+    niveaux = [int(re.match(r"^(\d{1,2})\s", lignes[i]).group(1)) for i in num]
+    if niveaux != list(range(1, 21)):
+        return [l.strip() for l in lignes if l.strip()]
+
+    deb, fin = num[0], num[-1]
+    # Remonter les lignes d'en-tête. Une ligne d'en-tête ne contient AUCUN point ;
+    # une phrase, si. C'est ce qui empêche de mordre sur « Spell Slots. The
+    # Sorcerer Features table shows… », qui porte le titre collé à son bout.
+    i, remontees = deb - 1, 0
+    while i >= 0 and remontees < 4:
+        l = lignes[i].strip()
+        if not l:
+            i -= 1
+            continue
+        if "." in l:
+            break
+        deb, i, remontees = i, i - 1, remontees + 1
+
+    avant = [l.strip() for l in lignes[:deb] if l.strip()]
+    apres = [l.strip() for l in lignes[fin + 1:] if l.strip()]
+
+    # ⚠️ LA DERNIÈRE LIGNE DE TABLE PEUT PORTER UNE QUEUE DE PROSE. Mesuré sur
+    #    deux des onze : « 20 +6 Primal Champion 6 +4 4 While active, your Rage
+    #    follows the rules below. » et « …2 2 1 1 one of your Bardic Inspiration
+    #    dice. » Jeter la ligne entière perdait une phrase de règle — et le
+    #    compte des paragraphes (31 → 9) ne l'aurait jamais dit. Une cellule de
+    #    table est un nombre, un tiret, un bonus ou un dé ; ce qui suit le
+    #    dernier de ceux-là est du texte, et il se rattache à ce qui précède.
+    jetons = lignes[fin].split()
+    der = max((i for i, j in enumerate(jetons)
+               if re.fullmatch(r"[+-]?\d+|—|–|-|\d*[dD]\d+", j)), default=-1)
+    queue = " ".join(jetons[der + 1:]).strip()
+    if queue:
+        apres.insert(0, queue)
+
+    if avant:
+        avant[-1] = re.sub(r"\s*%s Features\s*$" % re.escape(classe), "", avant[-1]).strip()
+        if not avant[-1]:
+            avant.pop()
+    if apres:
+        apres[0] = _LEGENDE_RESIDU.sub("", apres[0]).strip()
+        if not apres[0]:
+            apres.pop(0)
+
+    # Recoller les deux moitiés SI la phrase était coupée — et seulement alors :
+    # une gauche qui finit par un point est un paragraphe complet, pas une moitié.
+    if avant and apres and not avant[-1].endswith((".", ":", "!", "?")):
+        avant[-1] = "%s %s" % (avant[-1], apres.pop(0))
+    return avant + apres
+
+
 def _srd_class_full(slug, lang="en"):
     """UNE classe, en manuel de joueur : image, table de progression enrichie
     Fate's Hand, texte entier de chaque aptitude, puis la sous-classe."""
@@ -944,12 +1024,31 @@ def _srd_class_full(slug, lang="en"):
     cols_srd = prog["data"].get("resource_columns") or []
     hauts = ["Level", "Proficiency Bonus", "Class Features"] \
         + [_LIBELLES_FH.get(c["label"], c["label"]) for c in cols_srd]
-    out.append('<table class="fh-pcfh__table" id="progression"><thead>')
+    # 🔮 LES EMPLACEMENTS DE SORTS ENTRENT DANS LA TABLE. Ils n'y étaient pas :
+    #    ils vivaient dans la table plate que le SRD recollait plus bas, et que
+    #    l'on vient de retirer. Sans eux, sept classes perdraient l'information
+    #    que leur propre texte leur dit d'aller chercher (« The Wizard Features
+    #    table shows how many spell slots you have »). Ils prennent donc le même
+    #    chapeau à deux étages que **Skill Points** — le format qu'Eric a ratifié
+    #    sert ici une seconde fois, sans rien inventer.
+    slots = prog["data"].get("spell_slot_levels") or 0
+    # 📏 UNE TABLE QUI GAGNE NEUF COLONNES NE TIENT PLUS : mesuré chez le barde,
+    #    1006 px demandés pour 930 disponibles à 1280. La classe `--dense` est
+    #    une cote DONNÉE (« cette table porte des emplacements »), pas une
+    #    déduction du style sur la largeur — et ce sont les vides qui cèdent :
+    #    l'interlettrage des titres et le confort de la colonne d'aptitudes.
+    dense = " fh-pcfh__table--dense" if slots else ""
+    out.append('<table class="fh-pcfh__table%s" id="progression"><thead>' % dense)
     out.append("<tr>")
     for h in hauts:
         out.append('<th rowspan="2">%s</th>' % _empile(h))
-    out.append('<th colspan="3" class="fh-pcfh__group">Skill Points</th>')
+    if slots:
+        out.append('<th colspan="%d" class="fh-pcfh__group">Spell Slots per Spell Level</th>'
+                   % slots)
+    out.append('<th colspan="3" class="fh-pcfh__group fh">Skill Points</th>')
     out.append("</tr><tr>")
+    for n in range(1, slots + 1):
+        out.append('<th class="fh-pcfh__slot">%d</th>' % n)
     for h in ("Free Points", "Bound Skills", "Bound Tools"):
         out.append('<th class="fh">%s</th>' % _empile(h))
     out.append("</tr></thead><tbody>")
@@ -988,13 +1087,25 @@ def _srd_class_full(slug, lang="en"):
         for c in cols_srd:
             v = res.get(c["key"])
             cells.append("—" if v in (None, "") else str(v))
+        # Un emplacement à 0 s'écrit « — » : le SRD lui-même imprime le tiret,
+        # et un zéro se lirait comme une valeur alors qu'il dit une absence.
+        emplacements = ligne.get("spell_slots") or []
+        for n in range(slots):
+            v = emplacements[n] if n < len(emplacements) else 0
+            cells.append("—" if not v else str(v))
         fh = _fh_colonnes(pool, niveau, rec["name"])
         cells += [fh.get("Free", "—"), fh.get("Bound skill", "—"), fh.get("Bound tool", "—")]
         # ⚠️ la 3ᵉ cellule porte des LIENS : elle est déjà échappée pièce par
         #    pièce ci-dessus. La ré-échapper afficherait le balisage en clair.
+        premier_slot = 3 + len(cols_srd)
+        def _classe(i):
+            if i == 2:
+                return ' class="fh-pcfh__feat"'
+            if slots and premier_slot <= i < premier_slot + slots:
+                return ' class="fh-pcfh__slot"'
+            return ""
         out.append("<tr>%s</tr>" % "".join(
-            "<td%s>%s</td>" % (' class="fh-pcfh__feat"' if i == 2 else "",
-                               c if i == 2 else html.escape(c))
+            "<td%s>%s</td>" % (_classe(i), c if i == 2 else html.escape(c))
             for i, c in enumerate(cells)))
     out.append("</tbody></table>")
     out.append('<p class="fh-pcfh__note">The last three columns are Fate\'s Hand. '
@@ -1015,28 +1126,22 @@ def _srd_class_full(slug, lang="en"):
         titre = "Level %s: %s" % (f.get("level", "?"), f.get("name", "?"))
         out.append('<h3 class="fh-pcfh__feature" id="%s">%s</h3>'
                    % (_ancre(f.get("level"), f.get("name")), html.escape(titre)))
-        for para in str(f.get("description") or "").split("\n"):
-            para = para.strip()
-            if para:
-                out.append("<p>%s</p>" % html.escape(para))
+        for para in _paragraphes_sans_table_plate(f.get("description"), rec["name"]):
+            out.append("<p>%s</p>" % html.escape(para))
 
     # ── LA SOUS-CLASSE ─────────────────────────────────────────────────────
     sc = d.get("subclass")
     if isinstance(sc, dict) and sc.get("name"):
         out.append('<h3 class="fh-pcfh__subclass">%s subclass: %s</h3>'
                    % (html.escape(rec["name"]), html.escape(sc["name"])))
-        for para in str(sc.get("description") or "").split("\n"):
-            para = para.strip()
-            if para:
-                out.append("<p>%s</p>" % html.escape(para))
+        for para in _paragraphes_sans_table_plate(sc.get("description"), rec["name"]):
+            out.append("<p>%s</p>" % html.escape(para))
         for f in sc.get("features") or []:
             out.append('<h4 class="fh-pcfh__feature" id="%s">Level %s: %s</h4>'
                        % (_ancre(f.get("level"), f.get("name")),
                           html.escape(str(f.get("level", "?"))), html.escape(f.get("name", "?"))))
-            for para in str(f.get("description") or "").split("\n"):
-                para = para.strip()
-                if para:
-                    out.append("<p>%s</p>" % html.escape(para))
+            for para in _paragraphes_sans_table_plate(f.get("description"), rec["name"]):
+                out.append("<p>%s</p>" % html.escape(para))
 
     attr = rec.get("attribution", "")
     if attr:
@@ -1310,8 +1415,39 @@ def note_de_traduction(dest):
     pourri au premier terme qui bouge — et il en resterait un cinquième qu'on
     aurait oublié.
     """
-    trouves = sorted({f.split(" (")[0] for f in _FUITES.get(dest, set())}
-                     & set(TRADUCTIONS))
+    return _note_pour(sorted({f.split(" (")[0] for f in _FUITES.get(dest, set())}
+                             & set(TRADUCTIONS)))
+
+
+def _sans_bloc(lignes, ouvre, ferme):
+    """Les lignes, privées du bloc qui va de `ouvre` à `ferme` (bornes comprises).
+
+    ⚠️ Bornée : si l'ouverture n'a pas de fermeture, on ne coupe RIEN plutôt que
+    de manger la fin du document. Une absence de fin n'autorise pas à tout jeter.
+    """
+    deb = next((i for i, l in enumerate(lignes) if ouvre in l), None)
+    if deb is None:
+        return list(lignes)
+    fin = next((i for i in range(deb, len(lignes)) if ferme in lignes[i]), None)
+    if fin is None:
+        return list(lignes)
+    return list(lignes[:deb]) + list(lignes[fin + 1:])
+
+
+def note_pour_texte(txt):
+    """La même note, mais calculée sur UN texte — celui d'une page fille.
+
+    🔴 Eric, 2026-08-28 : le bandeau se posait en tête de `classes.md`, donc sur
+    la page d'INDEX — qui ne cite rien. Les termes qu'il commente vivent sur les
+    douze pages filles (*Perception* chez cinq d'entre elles, *Musical
+    Instrument* chez le barde et le moine). Il expliquait comment lire des
+    citations qui étaient ailleurs.
+    """
+    return _note_pour([nom for nom in sorted(TRADUCTIONS)
+                       if re.search(r"\b%s\b" % re.escape(nom), txt or "")])
+
+
+def _note_pour(trouves):
     if not trouves:
         return ""
     out = ['<aside class="fh-translate">',
@@ -1320,7 +1456,8 @@ def note_de_traduction(dest):
         out.append("<li><strong>%s</strong> does not exist in Fate\u2019s Hand — %s.</li>"
                    % (html.escape(nom), TRADUCTIONS[nom]))
     out.append("</ul>")
-    out.append("<p>The quotations below are the base game\u2019s, word for word. We do not edit a "
+    # \u00ab on this page \u00bb, pas \u00ab below \u00bb : la note se pose d\u00e9sormais aussi EN PIED.
+    out.append("<p>The quotations on this page are the base game\u2019s, word for word. We do not edit a "
                "quotation to fit our rules — we tell you how to read it.</p>")
     out.append("</aside>")
     return "\n".join(out) + "\n"
@@ -2215,15 +2352,28 @@ def split_classes():
     preamble = [ln for ln in lines[:starts[0][0]]
                 if not ln.startswith(MENU_DROP_PREFIX)]
 
+    # ⛔ LA NOTE DE LECTURE QUITTE L'INDEX. `insert_banner_note()` l'avait posée
+    #    sous le « # Classes » du chapitre entier ; après le découpage, cet index
+    #    ne porte que douze blurbs — pas une seule citation à lire. Elle repart
+    #    en pied des pages filles qui citent vraiment (voir plus bas).
     CLASSES_DIR.mkdir(parents=True, exist_ok=True)
-    menu = "\n".join(preamble).rstrip().splitlines()
+    menu = _sans_bloc("\n".join(preamble).rstrip().splitlines(),
+                      '<aside class="fh-translate">', "</aside>")
 
     for n, (i, slug_, name) in enumerate(starts):
         block = lines[i:bornes[n + 1]]
         titre = block[0][3:].strip()
         corps = "\n".join(block[1:]).strip()
         corps = descendre_dun_cran(corps)
+        # 🔴 LA NOTE DE LECTURE VA EN PIED, ET SUR LA PAGE QUI CITE VRAIMENT.
+        #    Eric, 2026-08-28 : *« le lecteur doit découvrir la classe sans se
+        #    soucier de ce qu'on a changé ou pas »* — même loi que le rappel des
+        #    écarts. Elle ne s'affiche que si CE texte porte le terme : cinq
+        #    classes citent *Perception*, deux *Musical Instrument*, cinq rien.
+        note = note_pour_texte(corps)
         page = f"# {titre}\n\n{corps}\n\n{tail}\n"
+        if note:
+            page += "\n" + note
         (CLASSES_DIR / f"{slug_}.md").write_text(page, encoding="utf-8")
 
         menu.append("")
