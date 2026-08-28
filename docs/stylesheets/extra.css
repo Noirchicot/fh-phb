@@ -1197,6 +1197,41 @@ body.fh-home-page .md-header { display: none; }
   opacity: .62;
 }
 
+/* ── LA FICHE D'UNE CLASSE, DANS LE FIL DE SA SECTION ──────────────────────
+   Eric, 2026-08-28 : *« je veux la classe EN ENTIER, SRD inclus »* — la fiche
+   ne vit plus dans un bloc replié en fin de chapitre, elle vit SOUS le titre
+   de sa classe. Elle se lit donc comme du contenu, pas comme une annexe :
+   deux colonnes tant que la page est large, une seule au téléphone.
+   ⭐ Le libellé de provenance reste (la citation se dit toujours), mais il
+   s'efface — sur douze sections, douze rappels criards feraient le composite
+   qu'Eric reproche justement au livre. */
+.md-typeset .fh-srd-cite--entry { margin: 1.2em 0 1.6em; }
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__label { opacity: .34; }
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: .25em 1.1em;
+  align-items: baseline;
+}
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list dt { margin-top: 0; }
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list dd { margin: 0; }
+/* les aptitudes par niveau : le numéro tient la ligne, les noms suivent */
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list dd b {
+  color: var(--fh-gold);
+  font-variant-numeric: tabular-nums;
+  margin-left: .35em;
+}
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list dd b:first-child { margin-left: 0; }
+@media (max-width: 44em) {
+  /* ⛔ une grille à deux colonnes sur un téléphone coupe les valeurs longues
+     (l'équipement de départ tient en une phrase) : on repasse au fil. */
+  .md-typeset .fh-srd-cite--entry .fh-srd-cite__list {
+    display: block;
+  }
+  .md-typeset .fh-srd-cite--entry .fh-srd-cite__list dt { margin-top: .7em; }
+  .md-typeset .fh-srd-cite--entry .fh-srd-cite__list dt:first-child { margin-top: 0; }
+}
+
 /* ── La table citée ─────────────────────────────────────────────────────────
    Eric, 2026-08-20 : « la mise en forme plus jolie peut rester de la citation ».
    Citer contraint les MOTS, pas la PRÉSENTATION — donc la table du SRD peut

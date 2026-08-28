@@ -12,12 +12,12 @@ Your **Inheritance** grants one origin feat, your choice, from these five:
 | **Magic Initiate** | as printed |
 | **Savage Attacker** | as printed |
 | **Skilled** | +6 free skill points — the base game grants 3 proficiencies, and a proficiency is worth 2 points in Fate's Hand (see [Skills & Tools — Player Guide](skills-and-tools.md)) |
-| **Auspicious** *(FH)* | +2 to your **Destiny Score** — see below |
+| **Auspicious** <span class="fh-tag">FH</span> | +2 to your **Destiny Score** — see below |
 
 > No background record grants a feat. There are no backgrounds in Fate's Hand; the step is
 > called **Inheritance** and the feat is always chosen freely. See [Inheritance](inheritance.md).
 
-## Auspicious *(FH)*
+## Auspicious <span class="fh-tag">FH</span>
 <span class="fh-edition">FH5+ — Origin feat.</span>
 
 - +2 to your Destiny Score.

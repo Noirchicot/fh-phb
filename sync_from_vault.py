@@ -762,6 +762,81 @@ def _srd_classes(lang="en"):
     return "\n".join(out)
 
 
+def _srd_class_entry(slug, lang="en"):
+    """UNE classe du SRD, ENTIÈRE, dans le fil de sa section.
+
+    🔴 Eric, 2026-08-28 : *« je veux que dans les classes de FH WEB tu produises
+    la classe EN ENTIER, SRD inclus — quand FH remplace, tu écrases le SRD. »*
+
+    ⭐ CE QUI CHANGE PAR RAPPORT À `class-cards`, ET C'EST TOUT LE POINT : les
+    douze fiches ne vivent plus dans UN bloc replié en fin de chapitre, où le
+    lecteur devait aller les chercher loin de la classe qu'il lit. Chaque
+    section appelle la sienne, et le texte Fate's Hand se lit à côté du SRD
+    qu'il complète — la page redevient une classe, pas un composite.
+
+    ⛔ CE QUI RESTE ÉCARTÉ, POUR LA RAISON D'AVANT : la ligne de compétences du
+    SRD (elle nomme *Perception*, que FH n'a pas, et donne un second compte de
+    points) et la maîtrise d'arme (citée dans *Equipment* — une règle publiée
+    deux fois est une règle qui divergera). Ce que FH REMPLACE ne se cite donc
+    jamais à côté de son remplaçant : il est écrasé, comme Eric le demande.
+
+    ⚠️ ET LA FICHE NE SE REPLIE PAS. `_replier` existe pour les longues listes
+    citées ; ici la fiche EST le contenu de la section, et un contenu replié
+    par défaut serait un contenu qu'on ne lit pas.
+    """
+    doc = _srd_load("class", lang)
+    voulu = slug.strip().lower()
+    trouve = None
+    for r in doc["records"]:
+        if r["name"].strip().lower() == voulu:
+            trouve = r
+            break
+    if trouve is None:
+        connus = ", ".join(sorted(r["name"] for r in doc["records"]))
+        raise SrdCiteError(
+            "{{srd:class-entry:%s}} : le SRD ne porte pas cette classe. Connues : %s"
+            % (slug, connus))
+    d = trouve["data"]
+    lignes = [
+        ("Hit die",         lambda x: x.get("hit_point_die")),
+        ("Primary ability", lambda x: x.get("primary_ability")),
+        ("Saving throws",   lambda x: ", ".join(x.get("saving_throw_proficiencies") or []) or None),
+        ("Armor training",  lambda x: x.get("armor_training")),
+        ("Weapons",         lambda x: x.get("weapon_proficiencies")),
+        ("Tools",           lambda x: x.get("tool_proficiencies")),
+        ("Starting equipment", lambda x: x.get("starting_equipment")),
+    ]
+    out = [
+        "<!-- GENERATED — cité depuis fh-srd class.json (run=%s). Ne pas éditer. -->"
+        % doc.get("import_run", "?"),
+        '<div class="fh-srd-cite fh-srd-cite--entry">',
+        '<p class="fh-srd-cite__label"><strong>%s</strong> — as printed, '
+        "minus the lines Fate's Hand replaces</p>"
+        % html.escape(doc.get("layer_label", "SRD")),
+        '<dl class="fh-srd-cite__list">',
+    ]
+    for libelle, prendre in lignes:
+        v = prendre(d)
+        if v is None or v == "":
+            continue
+        out.append("<dt>%s</dt><dd>%s</dd>" % (html.escape(libelle), html.escape(str(v))))
+    traits = d.get("features") or []
+    if traits:
+        par_niveau = {}
+        for f in traits:
+            par_niveau.setdefault(f.get("level", "?"), []).append(f.get("name", "?"))
+        rendu = " · ".join(
+            "<b>%s</b> %s" % (n, html.escape(", ".join(par_niveau[n])))
+            for n in sorted(par_niveau, key=lambda z: (z == "?", z)))
+        out.append("<dt>Features by level</dt><dd>%s</dd>" % rendu)
+    out.append("</dl>")
+    attr = trouve.get("attribution", "")
+    if attr and ATTR_PAR_BLOC:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
 # ── LE RAPPEL EN TÊTE DE CHAPITRE ───────────────────────────────────────────
 # Eric, 2026-08-20 : « j'ai un peu peur de voir ma création noyée dans le SRD »,
 # puis « peut-on donner ce job de rappel des règles FH en tête de chapitre, plus
@@ -1142,6 +1217,11 @@ def inject_srd_citations(text, dest):
                         "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1)
                     )
                 return _srd_table(m.group(1))
+            if m.group(1) == "class-entry":
+                if not m.group(2):
+                    raise SrdCiteError(
+                        "{{srd:class-entry}} attend une classe : {{srd:class-entry:barbarian}}")
+                b = _srd_class_entry(m.group(2)); _scanner_fuites(b, dest); return b
             if m.group(1) == "class-cards":
                 b = _srd_classes(); _scanner_fuites(b, dest); return _replier(b, 'class-cards')
             if m.group(1) == "item-list":
@@ -1850,6 +1930,15 @@ def _construire():
         body = strip_liens(body)
         body = fix_path_refs(body)
         body = convert_wikilinks(body)
+        body = mark_fh_tags(body)
+        # 🔴 LA PASTILLE FH VAUT POUR TOUS LES CHAPITRES — Eric, 2026-08-28 :
+        # *« dans le texte, tu mets le petit logo FH quand c'est FH »*, pour les
+        # classes. Elle ne vivait que dans `split_species()` : les onze autres
+        # chapitres écrivaient `*(FH)*` et le publiaient TEL QUEL — mesuré sur
+        # `classes.md`, 29 marques dans la note, ZÉRO pastille sur la page.
+        # ⭐ Elle monte donc au pipeline commun, là où toutes les conversions de
+        # texte vivent. Species ne change pas d'un pixel : sa propre passe est
+        # idempotente (elle ne trouve plus rien à remplacer).
         body = normalize_headings(body)
         body = ensure_h1(body, title)
         avant_citations = body
