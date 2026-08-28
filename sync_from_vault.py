@@ -762,6 +762,210 @@ def _srd_classes(lang="en"):
     return "\n".join(out)
 
 
+# ══ PCFH — LE MANUEL DU JOUEUR, PAR CLASSE ══════════════════════════════════
+# Eric, 2026-08-28 : *« ce que je voudrais avoir sur FH WEB, c'est un PCFH
+# (Player Companion rules) joli à lire et COMPLET. En dessous, pour moi, c'est
+# du synthétique SRFH+ rules. »* Puis : *« je veux un tableau de ce type et le
+# texte comme ça pour chaque classe — tu dois intégrer dans le tableau destiny,
+# free points, bound skills, bound tools, qu'on ait une vue globale et rapide
+# de tout ce qu'il y a d'un coup »* · *« tu peux rajouter les images. »*
+#
+# ⭐ DEUX FORMATS, DEUX LECTEURS, ET C'EST LA DÉCISION : **PCFH** est le livre
+#    qu'on LIT (table de progression enrichie, texte entier de chaque aptitude,
+#    la sous-classe, l'image) ; **SRFH+** est la fiche qu'on CONSULTE — le
+#    condensé du builder, qui reste tel quel. Le même contenu ne peut pas servir
+#    les deux : l'un se parcourt, l'autre se cherche.
+#
+# ⛔ RIEN N'EST RETAPÉ. La progression vient de `class-progression.json`, les
+#    aptitudes et leurs textes de `class.json`, les nombres Fate's Hand de
+#    `fh-skills-en.layer.json` (le dépôt fhpc — c'est là qu'ils vivent
+#    aujourd'hui, et c'est la seule source de ces chiffres).
+
+FHPC_SKILLS_LAYER = pathlib.Path(
+    os.environ.get("FH_FHPC", "/Users/Eric/tools/fhpc")) / "layers" / "fh-skills-en.layer.json"
+
+_POOL_CACHE = {}
+
+
+def _fh_pool(class_id):
+    """Le pool Fate's Hand d'une classe — lu à la couche, jamais recopié."""
+    if not _POOL_CACHE:
+        try:
+            data = json.loads(FHPC_SKILLS_LAYER.read_text(encoding="utf-8"))
+        except OSError as err:
+            raise SrdCiteError(
+                "PCFH : la couche des points de classe est introuvable (%s). "
+                "Sans elle, la table mentirait sur les points." % err) from None
+        for cid, rec in (data.get("records", {}).get("class") or {}).items():
+            pool = (rec.get("changes") or {}).get("data[fh_skill_pool]")
+            if pool:
+                _POOL_CACHE[cid] = pool
+    return _POOL_CACHE.get(class_id)
+
+
+def _fh_colonnes(pool, niveau, nom_classe):
+    """Ce que Fate's Hand ajoute à la ligne d'un niveau : points libres CUMULÉS,
+    points liés (skills, outils).
+
+    ⭐ CUMULÉS, ET C'EST LE POINT : la règle dit *« vous recevez chaque palier
+    TRAVERSÉ, pas seulement le dernier »*. Une colonne qui n'afficherait que le
+    gain du niveau ferait compter le joueur ; celle-ci lui donne son total.
+    ⛔ Deux échelles distinctes, jamais fondues : `by_level` compte sur le
+    niveau de PERSONNAGE, `by_class_level` sur le niveau DE CLASSE (le +1 du
+    barde). Elles coïncident tant qu'on ne multiclasse pas — cette table est
+    celle d'une classe unique, et elle le dit en tête.
+    """
+    if not pool:
+        return {}
+    libres = int(pool.get("free_point_pool") or 0)
+    lies = int(pool.get("bound_skill_points") or 0)
+    outils = int(pool.get("bound_tool_points") or 0)
+    for n, gain in (pool.get("by_level") or {}).items():
+        if int(n) <= niveau:
+            libres += int(gain)
+    for n, gain in (pool.get("by_class_level") or {}).items():
+        if int(n) <= niveau:
+            libres += int(gain)
+    for grant in (pool.get("grants") or []):
+        if int(grant.get("level", 99)) <= niveau:
+            libres += int(grant.get("points") or 0)
+            lies += int(grant.get("boundSkill") or 0)
+    return {"Free": str(libres), "Bound skill": str(lies), "Bound tool": str(outils)}
+
+
+def _ancre(niveau, nom):
+    """Un identifiant STABLE et PRÉVISIBLE pour une aptitude : `l3-primal-knowledge`.
+
+    ⭐ Prévisible est le mot : le builder doit pouvoir FABRIQUER le lien sans
+    lire la page. Niveau + nom en minuscules, tirets — rien qui dépende de
+    l'ordre de rendu ni d'un compteur.
+    """
+    base = re.sub(r"[^a-z0-9]+", "-", str(nom or "").lower()).strip("-")
+    return "l%s-%s" % (niveau, base) if niveau not in (None, "") else base
+
+
+def _srd_class_full(slug, lang="en"):
+    """UNE classe, en manuel de joueur : image, table de progression enrichie
+    Fate's Hand, texte entier de chaque aptitude, puis la sous-classe."""
+    doc = _srd_load("class", lang)
+    voulu = slug.strip().lower()
+    rec = next((r for r in doc["records"] if r["name"].strip().lower() == voulu), None)
+    if rec is None:
+        connus = ", ".join(sorted(r["name"] for r in doc["records"]))
+        raise SrdCiteError(
+            "{{srd:class-full:%s}} : le SRD ne porte pas cette classe. Connues : %s"
+            % (slug, connus))
+    prog_doc = _srd_load("class-progression", lang)
+    prog = next((r for r in prog_doc["records"]
+                 if r["data"].get("class") == rec["id"]), None)
+    if prog is None:
+        raise SrdCiteError(
+            "{{srd:class-full:%s}} : le SRD porte la classe mais pas sa "
+            "progression — une table de niveaux sans niveaux serait un mensonge." % slug)
+    d = rec["data"]
+    pool = _fh_pool(rec["id"])
+    if pool is None:
+        raise SrdCiteError(
+            "{{srd:class-full:%s}} : aucun pool Fate's Hand pour cette classe. "
+            "La table doit porter ses points ; sans eux elle n'est pas FH." % slug)
+
+    out = ["<!-- GENERATED — SRD %s + fh-skills. Ne pas éditer. -->"
+           % doc.get("import_run", "?"),
+           '<div class="fh-pcfh">']
+
+    # ⛔ PAS D'IMAGE ICI, ET C'EST UNE CORRECTION MESURÉE : une illustration
+    #    Fate's Hand n'est pas du SRD — elle n'a rien à faire dans un bloc CITÉ.
+    #    Et le chemin l'a prouvé : `descendre_dun_cran()` repointe les liens
+    #    MARKDOWN d'une page fille (`](../assets` -> `](../../assets`), pas les
+    #    attributs `src=` d'un HTML généré. L'image sortait donc d'un cran trop
+    #    haut sur les douze pages. Elle vit dans le manuscrit, en markdown, là
+    #    où le mécanisme existant la corrige déjà — comme pour Species.
+
+    # ── la carte d'identité ────────────────────────────────────────────────
+    identite = [
+        ("Hit die", d.get("hit_point_die")),
+        ("Primary ability", d.get("primary_ability")),
+        ("Saving throws", ", ".join(d.get("saving_throw_proficiencies") or []) or None),
+        ("Armor training", d.get("armor_training")),
+        ("Weapons", d.get("weapon_proficiencies")),
+        ("Tools", d.get("tool_proficiencies")),
+        ("Starting equipment", d.get("starting_equipment")),
+    ]
+    out.append('<dl class="fh-pcfh__id">')
+    for libelle, v in identite:
+        if v:
+            out.append("<dt>%s</dt><dd>%s</dd>" % (html.escape(libelle), html.escape(str(v))))
+    out.append("</dl>")
+
+    # ── LA TABLE DE PROGRESSION, colonnes SRD puis colonnes FH ─────────────
+    cols_srd = prog["data"].get("resource_columns") or []
+    entetes = ["Level", "Bonus", "Class Features"] + [c["label"] for c in cols_srd] \
+        + ["Free", "Bound skill", "Bound tool"]
+    out.append('<table class="fh-pcfh__table" id="progression"><thead><tr>')
+    for h in entetes:
+        out.append("<th>%s</th>" % html.escape(h))
+    out.append("</tr></thead><tbody>")
+    for ligne in prog["data"].get("levels") or []:
+        niveau = int(ligne.get("level"))
+        cells = [str(niveau), "+%s" % ligne.get("proficiency_bonus", ""),
+                 ", ".join(ligne.get("features") or []) or "—"]
+        res = ligne.get("resources") or {}
+        for c in cols_srd:
+            v = res.get(c["key"])
+            cells.append("—" if v in (None, "") else str(v))
+        fh = _fh_colonnes(pool, niveau, rec["name"])
+        cells += [fh.get("Free", "—"), fh.get("Bound skill", "—"), fh.get("Bound tool", "—")]
+        out.append("<tr>%s</tr>" % "".join(
+            "<td>%s</td>" % html.escape(c) for c in cells))
+    out.append("</tbody></table>")
+    out.append('<p class="fh-pcfh__note">The last three columns are Fate\'s Hand. '
+               "They show your <b>running total</b> at that level, not the gain — "
+               "you keep every step you passed through.</p>")
+
+    # ── LE TEXTE DE CHAQUE APTITUDE, AVEC SON ANCRE ────────────────────────
+    # 🔴 Eric, 2026-08-28 : *« important d'avoir des tags de localisation »*.
+    # ⭐ SANS ANCRE, RIEN NE PEUT POINTER ICI. Un titre écrit en HTML brut ne
+    #    reçoit AUCUN identifiant de mkdocs (seul le markdown en gagne un) :
+    #    ces vingt-quatre aptitudes étaient donc introuvables depuis le
+    #    builder, qui doit pouvoir ouvrir « Rage » ou « Primal Knowledge » à
+    #    la ligne près (NORMES §7 ter, la table des ancres de `liens-fh.mjs`).
+    # ⛔ ET L'ANCRE PORTE LE NIVEAU, PAS SEULEMENT LE NOM : « Improved Brutal
+    #    Strike » existe DEUX fois chez le barbare (13 et 17). Un identifiant
+    #    par nom seul en aurait écrasé un — et le lien aurait mené au mauvais.
+    for f in d.get("features") or []:
+        titre = "Level %s: %s" % (f.get("level", "?"), f.get("name", "?"))
+        out.append('<h3 class="fh-pcfh__feature" id="%s">%s</h3>'
+                   % (_ancre(f.get("level"), f.get("name")), html.escape(titre)))
+        for para in str(f.get("description") or "").split("\n"):
+            para = para.strip()
+            if para:
+                out.append("<p>%s</p>" % html.escape(para))
+
+    # ── LA SOUS-CLASSE ─────────────────────────────────────────────────────
+    sc = d.get("subclass")
+    if isinstance(sc, dict) and sc.get("name"):
+        out.append('<h3 class="fh-pcfh__subclass">%s subclass: %s</h3>'
+                   % (html.escape(rec["name"]), html.escape(sc["name"])))
+        for para in str(sc.get("description") or "").split("\n"):
+            para = para.strip()
+            if para:
+                out.append("<p>%s</p>" % html.escape(para))
+        for f in sc.get("features") or []:
+            out.append('<h4 class="fh-pcfh__feature" id="%s">Level %s: %s</h4>'
+                       % (_ancre(f.get("level"), f.get("name")),
+                          html.escape(str(f.get("level", "?"))), html.escape(f.get("name", "?"))))
+            for para in str(f.get("description") or "").split("\n"):
+                para = para.strip()
+                if para:
+                    out.append("<p>%s</p>" % html.escape(para))
+
+    attr = rec.get("attribution", "")
+    if attr:
+        out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
+    out.append("</div>")
+    return "\n".join(out)
+
+
 def _srd_class_entry(slug, lang="en"):
     """UNE classe du SRD, ENTIÈRE, dans le fil de sa section.
 
@@ -1217,6 +1421,11 @@ def inject_srd_citations(text, dest):
                         "{{srd:%s}} ne prend pas de sous-sélection." % m.group(1)
                     )
                 return _srd_table(m.group(1))
+            if m.group(1) == "class-full":
+                if not m.group(2):
+                    raise SrdCiteError(
+                        "{{srd:class-full}} attend une classe : {{srd:class-full:barbarian}}")
+                b = _srd_class_full(m.group(2)); _scanner_fuites(b, dest); return b
             if m.group(1) == "class-entry":
                 if not m.group(2):
                     raise SrdCiteError(
@@ -1741,6 +1950,32 @@ def add_tool_chrome(html: str, body_class: str, self_link) -> str:
 #    nature. La page-menu garde donc ses douze titres H2 : les vieux liens
 #    continuent d'arriver quelque part de sensé.
 SPECIES_DIR = DOCS / "species"
+
+# ══ LES DOUZE CLASSES, ET LEUR DÉCOUPAGE ══════════════════════════════════
+# Eric, 2026-08-28 : *« organisation des classes comme dans species : un blurb
+# résumé plus image sur un overview, et des liens vers classes individuelles »*,
+# puis *« je veux un PCFH joli à lire et COMPLET »*.
+# ⭐ LE DÉCOUPAGE CESSE D'ÊTRE UN CONFORT, IL DEVIENT NÉCESSAIRE : une classe
+#    PCFH porte sa table de 20 niveaux, le texte entier de ses ~24 aptitudes et
+#    sa sous-classe. Douze sur une page feraient un mur que personne ne lit —
+#    exactement le défaut qu'Eric nomme depuis le 20/08.
+# ⛔ Une seule liste, comme SPECIES : elle sert le découpage ET les vignettes,
+#    pour qu'ils ne puissent jamais se contredire.
+CLASSES = [
+    ("barbarian", "## Barbarian", "Barbarian"),
+    ("bard",      "## Bard",      "Bard"),
+    ("cleric",    "## Cleric",    "Cleric"),
+    ("druid",     "## Druid",     "Druid"),
+    ("fighter",   "## Fighter",   "Fighter"),
+    ("monk",      "## Monk",      "Monk"),
+    ("paladin",   "## Paladin",   "Paladin"),
+    ("ranger",    "## Ranger",    "Ranger"),
+    ("rogue",     "## Rogue",     "Rogue"),
+    ("sorcerer",  "## Sorcerer",  "Sorcerer"),
+    ("warlock",   "## Warlock",   "Warlock"),
+    ("wizard",    "## Wizard",    "Wizard"),
+]
+CLASSES_DIR = DOCS / "classes"
 # La phrase qui explique le marquage n'a de sens que sur une page complète —
 # la page-menu ne porte aucun trait.
 MENU_DROP_PREFIX = "Each entry below carries its lore first"
@@ -1855,6 +2090,75 @@ def split_species():
     menu += ["", tail, ""]
     src.write_text("\n".join(menu), encoding="utf-8")
     print(f"  ok  species.md            -> menu + {len(starts)} pages in chapters/species/")
+
+
+def split_classes():
+    """`classes.md` -> un overview + douze pages. Le jumeau de `split_species()`.
+
+    ⭐ ÉCRIT À CÔTÉ PLUTÔT QUE PARAMÉTRÉ, ET C'EST UN CHOIX QUI SE DIT : les
+    deux découpages partagent la forme mais pas les règles — une espèce porte
+    une vignette `.jpg` et son blurb, une classe porte une vignette `.webp`, un
+    blurb ET sa table de points. Paramétrer `split_species` aurait demandé six
+    drapeaux ; deux fonctions courtes se lisent mieux qu'une longue à options.
+    ⛔ Le jour où elles divergeront pour de bon, on sera content qu'elles soient
+    séparées ; le jour où elles convergeront, on les fondra en connaissance.
+    """
+    src_ = DOCS / "classes.md"
+    if not src_.exists():
+        print("  !! MISSING classes.md — class pages not split")
+        return
+    lines = src_.read_text(encoding="utf-8").splitlines()
+
+    starts = []
+    for i, ln in enumerate(lines):
+        for slug_, head, name in CLASSES:
+            if ln.startswith(head):
+                starts.append((i, slug_, name))
+                break
+
+    # 🔴 LE MÊME GARDE QUE SPECIES : on n'écrit rien plutôt que de publier un
+    #    chapitre amputé en silence.
+    if len(starts) != len(CLASSES):
+        trouve = {s[1] for s in starts}
+        manque = [s for s, _, _ in CLASSES if s not in trouve]
+        print(f"  !! class split ABORTED: {len(starts)}/{len(CLASSES)} headings"
+              f" found, missing {manque} — classes.md left whole")
+        return
+
+    end = len(lines)
+    for i in range(len(lines) - 1, starts[-1][0], -1):
+        if lines[i].strip() == "---":
+            end = i
+            break
+    tail = "\n".join(lines[end:]).strip()
+
+    bornes = [s[0] for s in starts] + [end]
+    preamble = [ln for ln in lines[:starts[0][0]]
+                if not ln.startswith(MENU_DROP_PREFIX)]
+
+    CLASSES_DIR.mkdir(parents=True, exist_ok=True)
+    menu = "\n".join(preamble).rstrip().splitlines()
+
+    for n, (i, slug_, name) in enumerate(starts):
+        block = lines[i:bornes[n + 1]]
+        titre = block[0][3:].strip()
+        corps = "\n".join(block[1:]).strip()
+        corps = descendre_dun_cran(corps)
+        page = f"# {titre}\n\n{corps}\n\n{tail}\n"
+        (CLASSES_DIR / f"{slug_}.md").write_text(page, encoding="utf-8")
+
+        menu.append("")
+        menu.append(block[0])
+        menu.append("")
+        menu.append(f"![{name}](../assets/img/class-{slug_}.webp){{ .fh-thumb }}")
+        menu.append("")
+        menu.append(_lead_paragraph(block))
+        menu.append("")
+        menu.append(f"[Read the full entry →](classes/{slug_}.md)")
+
+    menu += ["", tail, ""]
+    src_.write_text("\n".join(menu), encoding="utf-8")
+    print(f"  ok  classes.md            -> menu + {len(starts)} pages in chapters/classes/")
 
 
 _PROPORTIONS = []
@@ -1983,6 +2287,7 @@ def _construire():
         print("  ?? fh-changes.json absent (%s) — le menu de tête ne dit "
               "encore RIEN de ce que FH change" % FH_CHANGES)
     split_species()
+    split_classes()
     build_soulforge_data()
 
 

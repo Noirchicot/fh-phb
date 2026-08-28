@@ -101,6 +101,7 @@ plugins:
 # qu'on cesse de lire.
 not_in_nav: |
   chapters/species/*.md
+  chapters/classes/*.md
 
 nav:
   # ══ REFONTE 2026-08-20 — quatre menus racine, deux côtés ═══════════════

@@ -1197,6 +1197,87 @@ body.fh-home-page .md-header { display: none; }
   opacity: .62;
 }
 
+/* ══ PCFH — LA PAGE D'UNE CLASSE, FAITE POUR ÊTRE LUE ══════════════════════
+   Eric, 2026-08-28 : *« je voudrais avoir sur FH WEB un PCFH joli à lire et
+   complet »*. Ce n'est pas la fiche condensée du builder (SRFH+) : ici on
+   déroule vingt niveaux et le texte entier des aptitudes. La mise en page doit
+   donc servir la LECTURE SUIVIE, pas la consultation rapide. */
+.md-typeset .fh-pcfh { margin: 1.2em 0 2em; }
+
+/* l'illustration : elle ouvre la page, elle ne la coupe pas en deux.
+   ⚠️ Elle vient du MANUSCRIT (markdown), pas du bloc cité — une image FH n'est
+   pas du SRD, et seul le markdown est repointé quand la page descend d'un
+   dossier. */
+.md-typeset img.fh-pcfh-art,
+.md-typeset img.fh-pcfh__art {
+  display: block;
+  width: 100%; max-width: 22rem;
+  margin: 0 auto 1.6em;
+  border-radius: 3px;
+}
+
+/* la carte d'identité — deux colonnes serrées, l'œil y revient sans lire */
+.md-typeset .fh-pcfh__id {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: .3em 1.2em;
+  margin: 0 0 1.6em;
+}
+.md-typeset .fh-pcfh__id dt { font-weight: 700; color: var(--fh-gold); }
+.md-typeset .fh-pcfh__id dd { margin: 0; }
+
+/* ── LA TABLE DE PROGRESSION ───────────────────────────────────────────────
+   ⛔ Elle DÉBORDE plutôt qu'elle ne se replie : neuf colonnes sur un
+   téléphone, c'est un défilement horizontal assumé — le replier ferait perdre
+   la vue d'ensemble, qui est exactement ce qu'Eric demande (« qu'on ait une
+   vue globale et rapide de tout ce qu'il y a d'un coup »). */
+.md-typeset .fh-pcfh__table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  /* 📏 MESURÉ : à .84em et 14rem de colonne d'aptitudes, les TROIS colonnes
+     Fate's Hand tombaient hors champ à 800 px — or ce sont précisément elles
+     qu'Eric veut voir « d'un coup ». Le corps descend et la colonne large
+     cède : ce sont les VIDES et le confort qui reculent, jamais l'information
+     qu'on est venu chercher. */
+  font-size: .76em;
+  margin: 0 0 .5em;
+}
+.md-typeset .fh-pcfh__table th,
+.md-typeset .fh-pcfh__table td {
+  padding: .3em .6em;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--fh-rule);
+}
+.md-typeset .fh-pcfh__table th {
+  font-size: var(--t-micro);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .72;
+}
+/* la colonne des aptitudes est la seule qui respire — c'est elle qu'on lit */
+.md-typeset .fh-pcfh__table td:nth-child(3) { white-space: normal; min-width: 9rem; }
+/* 📏 .38 ET NON .45 : mesuré à 1280 px, la table demandait 934 pour 930 — il
+   manquait QUATRE pixels pour que les trois colonnes FH entrent dans le
+   champ. Ce sont les gouttières qui cèdent, pas une colonne. */
+.md-typeset .fh-pcfh__table th, .md-typeset .fh-pcfh__table td { padding: .28em .38em; }
+/* ⭐ LES TROIS DERNIÈRES COLONNES SONT FH, ET ÇA SE VOIT SANS LÉGENDE :
+   elles portent l'or de la maison, le SRD garde l'encre du texte. */
+.md-typeset .fh-pcfh__table td:nth-last-child(-n+3),
+.md-typeset .fh-pcfh__table th:nth-last-child(-n+3) { color: var(--fh-gold); }
+.md-typeset .fh-pcfh__note { font-size: var(--t-micro); opacity: .6; margin: 0 0 1.8em; }
+
+/* les aptitudes : un titre par niveau, du texte dessous — rien de plus */
+.md-typeset h3.fh-pcfh__feature,
+.md-typeset h4.fh-pcfh__feature { margin-top: 1.5em; }
+.md-typeset .fh-pcfh__subclass {
+  margin-top: 2.2em;
+  padding-top: .8em;
+  border-top: 1px solid var(--fh-rule);
+}
+
 /* ── LA FICHE D'UNE CLASSE, DANS LE FIL DE SA SECTION ──────────────────────
    Eric, 2026-08-28 : *« je veux la classe EN ENTIER, SRD inclus »* — la fiche
    ne vit plus dans un bloc replié en fin de chapitre, elle vit SOUS le titre
