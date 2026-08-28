@@ -123,46 +123,21 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <h4 class="fh-pcfh__feature" id="l15-superior-hunter-s-defense">Level 15: Superior Hunter’s Defense</h4>
 <p>When you take damage, you can take a Reaction to give yourself Resistance to that damage and any other damage of the same type until the end of the current turn.</p>
 <p>Rogue</p>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
-**What your class hands you** <span class="fh-tag">FH</span>
+> [!note] What Fate's Hand changes
+>
+> | Bound skill | Bound tool | Free point pool | Expertise access |
+> |---|---|---|---|
+> | 3 | 0 | 12 | lvl 2 |
+>
+> **Your class list** <span class="fh-tag">FH</span> — Animal Handling · Athletics · Insight · Investigation · Nature · **Delve** · **Vigilance** · Stealth · Survival.
+>
+> **Deft Explorer** *(level 2)* <span class="fh-tag">FH</span> — **+2 free points**, and permission to buy **Expert** from
+> level 2.
+>
+> **Expertise** *(level 9)* <span class="fh-tag">FH</span> — **+4 free points**. The permission is already yours; this is
+> the budget to use it on a second skill.
 
-| Bound skill | Bound tool | Free point pool | Expertise access |
-|---|---|---|---|
-| 3 | 0 | 12 | lvl 2 |
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 
-**Your class list** <span class="fh-tag">FH</span> — Animal Handling · Athletics · Insight · Investigation · Nature · **Delve** · **Vigilance** · Stealth · Survival.
-
-**Deft Explorer** *(level 2)* <span class="fh-tag">FH</span> — **+2 free points**, and permission to buy **Expert** from
-level 2.
-
-**Expertise** *(level 9)* <span class="fh-tag">FH</span> — **+4 free points**. The permission is already yours; this is
-the budget to use it on a second skill.
-
-> [!note] What Fate's Hand adds to the Ranger
-> - **Points** — 3 bound skill · 0 bound tool · 12 free · **Expertise access** lvl 2
-> - **Gains by level** — +2 free points at levels 4 · 8 · 12 · 16 · 20
-> - **List** — rewritten: *Perception* gives way to **Delve** and **Vigilance**
-> - **Grants** — *Deft Explorer* (level 2): +2 free points, and permission to buy **Expert** from lvl 2 · *Expertise* (level 9): +4 free points
-> - **Subclasses** — as printed
-> - **Arbitrated** — nothing; every Ranger rule stands as printed
-
----
-
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
-<aside class="fh-translate">
-<p class="fh-translate__label">Reading the quotations on this page</p>
-<ul>
-<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
-</ul>
-<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
-</aside>

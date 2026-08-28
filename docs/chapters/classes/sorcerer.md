@@ -135,36 +135,19 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <p>You can cast Summon Dragon without a Material component. You can also cast it once without a spell slot, and you regain the ability to cast it in this way when you finish a Long Rest.</p>
 <p>Whenever you start casting the spell, you can modify it so that it doesn’t require Concentration. If you do so, the spell’s duration becomes 1 minute for that casting.</p>
 <p>Warlock</p>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
-**What your class hands you** <span class="fh-tag">FH</span>
+> [!note] What Fate's Hand changes
+>
+> | Bound skill | Bound tool | Free point pool | Expertise access |
+> |---|---|---|---|
+> | 2 | 0 | 10 | lvl 4 |
+>
+> **Your class list** — Arcana · Deception · Insight · Intimidation · Persuasion · Religion, as printed.
+>
+> **One subclass more than the base game** <span class="fh-tag">FH</span> — beside the sorcerous origins printed above,
+> Fate's Hand adds the **[Moonkeeper](../moonkeeper.md)**: the Lunar Sorcery tradition, whose magic waxes and wanes
+> with the moons of Nymedes. It is the only subclass Fate's Hand adds to any class.
 
-| Bound skill | Bound tool | Free point pool | Expertise access |
-|---|---|---|---|
-| 2 | 0 | 10 | lvl 4 |
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 
-**Your class list** — Arcana · Deception · Insight · Intimidation · Persuasion · Religion, as printed.
-
-**One subclass more than the base game** <span class="fh-tag">FH</span> — beside the sorcerous origins printed above,
-Fate's Hand adds the **[Moonkeeper](../moonkeeper.md)**: the Lunar Sorcery tradition, whose magic waxes and wanes
-with the moons of Nymedes. It is the only subclass Fate's Hand adds to any class.
-
-> [!note] What Fate's Hand adds to the Sorcerer
-> - **Points** — 2 bound skill · 0 bound tool · 10 free · **Expertise access** lvl 4
-> - **Gains by level** — +2 free points at levels 4 · 8 · 12 · 16 · 20
-> - **List** — as printed
-> - **Grants** — none; no Sorcerer feature hands out points or opens Expertise early
-> - **Subclasses** — as printed, **plus the [Moonkeeper](../moonkeeper.md)**
-> - **Arbitrated** — nothing; every Sorcerer rule stands as printed
-
----
-
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>

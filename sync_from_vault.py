@@ -2429,15 +2429,32 @@ def split_classes():
         titre = block[0][3:].strip()
         corps = "\n".join(block[1:]).strip()
         corps = descendre_dun_cran(corps)
-        # 🔴 LA NOTE DE LECTURE VA EN PIED, ET SUR LA PAGE QUI CITE VRAIMENT.
-        #    Eric, 2026-08-28 : *« le lecteur doit découvrir la classe sans se
-        #    soucier de ce qu'on a changé ou pas »* — même loi que le rappel des
-        #    écarts. Elle ne s'affiche que si CE texte porte le terme : cinq
-        #    classes citent *Perception*, deux *Musical Instrument*, cinq rien.
-        note = note_pour_texte(corps)
-        page = f"# {titre}\n\n{corps}\n\n{tail}\n"
-        if note:
-            page += "\n" + note
+        # 🔴 DEUX BLOCS EN PIED, ET RIEN D'AUTRE. Eric, 2026-08-28, devant les
+        #    CINQ qui s'y empilaient : *« beaucoup de choses redondantes là
+        #    dedans ; seules deux choses bien distinctes et c'est tout — What
+        #    Fate's Hand changes, et la ref au SRD en tout petit »*.
+        #
+        #    Ce qui part, et pourquoi :
+        #    · le callout « What Fate's Hand adds to the <Classe> » — mesuré :
+        #      pas une information que le bloc au-dessus ne portait déjà, plus
+        #      quatre lignes qui ne disent rien (« as printed », « nothing », et
+        #      l'échelle commune aux douze, qui vit au chapitre Skills) ;
+        #    · le nav « What Fate's Hand does here » — un INSTRUMENT DE MESURE du
+        #      chapitre entier, qui annonce « class changes 12 » sur la page
+        #      d'UNE classe. Il reste sur l'index, où il est vrai ;
+        #    · la note « Reading the quotations » — *« ce qui va dans les skills
+        #      va dans les skills, pas besoin de se répéter sur Perception »*.
+        #      Le chapitre Skills porte « The Perception split ».
+        # ⭐ ET L'ATTRIBUTION PASSE EN DERNIER. Elle fermait le bloc cité, donc
+        #    elle tombait AVANT « What Fate's Hand changes » : cinq lignes de
+        #    licence en travers de la page, juste avant ce que le lecteur est
+        #    venu chercher. Elle reste sur la page — la licence l'exige — mais
+        #    en pied et en tout petit, comme Eric l'a demandé.
+        attr = re.search(r'<p class="fh-srd-cite__attr">.*?</p>\n?', corps, re.S)
+        if attr:
+            corps = corps.replace(attr.group(0), "")
+            corps = corps.rstrip() + "\n\n" + attr.group(0).strip() + "\n"
+        page = f"# {titre}\n\n{corps}\n"
         (CLASSES_DIR / f"{slug_}.md").write_text(page, encoding="utf-8")
 
         menu.append("")

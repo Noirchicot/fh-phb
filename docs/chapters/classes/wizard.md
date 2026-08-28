@@ -115,34 +115,17 @@ Weavers of arcane grammar, wizards bend reality through study, not birth. Spellb
 <p>You can increase the power of your spells. When you cast a Wizard spell with a spell slot of levels 1–5 that deals damage, you can deal maximum damage with that spell on the turn you cast it.</p>
 <p>The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a Long Rest, you take 2d12 Necrotic damage for each level of the spell slot immediately after you cast it. This damage ignores Resistance and Immunity.</p>
 <p>Each time you use this feature again before finishing a Long Rest, the Necrotic damage per spell level increases by 1d12.</p>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
-**What your class hands you** <span class="fh-tag">FH</span>
-
-| Bound skill | Bound tool | Free point pool | Expertise access |
-|---|---|---|---|
-| 2 | 0 | 10 | lvl 4 |
-
-**Your class list** — Arcana · History · Insight · Investigation · Medicine · Nature · Religion, as printed.
-
-> [!note] What Fate's Hand adds to the Wizard
-> - **Points** — 2 bound skill · 0 bound tool · 10 free · **Expertise access** lvl 4
-> - **Gains by level** — +2 free points at levels 4 · 8 · 12 · 16 · 20
-> - **List** — as printed
-> - **Grants** — none; no Wizard feature hands out points or opens Expertise early
-> - **Subclasses** — as printed
-> - **Arbitrated** — nothing; every Wizard rule stands as printed
+> [!note] What Fate's Hand changes
+>
+> | Bound skill | Bound tool | Free point pool | Expertise access |
+> |---|---|---|---|
+> | 2 | 0 | 10 | lvl 4 |
+>
+> **Your class list** — Arcana · History · Insight · Investigation · Medicine · Nature · Religion, as printed.
 
 <p class="fh-srd-note">Some of the text above in this page is SRD content.</p>
 
----
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>

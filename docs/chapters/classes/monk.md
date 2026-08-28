@@ -133,40 +133,15 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <h4 class="fh-pcfh__feature" id="l17-quivering-palm">Level 17: Quivering Palm</h4>
 <p>You gain the ability to set up lethal vibrations in someone’s body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them. Alternatively, when you take the Attack action on your turn, you can forgo one of the attacks to end the vibrations. To end them, you and the target must be on the same plane of existence. When you end them, the target must make a Constitution saving throw, taking 10d12 Force damage on a failed save or half as much damage on a successful one.</p>
 <p>You can have only one creature under the effect of this feature at a time. You can end the vibrations harmlessly (no action required). Paladin</p>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
-**What your class hands you** <span class="fh-tag">FH</span>
+> [!note] What Fate's Hand changes
+>
+> | Bound skill | Bound tool | Free point pool | Expertise access |
+> |---|---|---|---|
+> | 2 | 0 | 10 | lvl 4 |
+>
+> **Your class list** — Acrobatics · Athletics · History · Insight · Religion · Stealth, as printed.
 
-| Bound skill | Bound tool | Free point pool | Expertise access |
-|---|---|---|---|
-| 2 | 0 | 10 | lvl 4 |
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 
-**Your class list** — Acrobatics · Athletics · History · Insight · Religion · Stealth, as printed.
-
-> [!note] What Fate's Hand adds to the Monk
-> - **Points** — 2 bound skill · 0 bound tool · 10 free · **Expertise access** lvl 4
-> - **Gains by level** — +2 free points at levels 4 · 8 · 12 · 16 · 20
-> - **List** — as printed
-> - **Grants** — none; no Monk feature hands out points or opens Expertise early
-> - **Subclasses** — as printed
-> - **Arbitrated** — nothing; every Monk rule stands as printed, *Deflect Attacks* included
-
----
-
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
-<aside class="fh-translate">
-<p class="fh-translate__label">Reading the quotations on this page</p>
-<ul>
-<li><strong>Musical Instrument</strong> does not exist in Fate’s Hand — read one of <strong>Instrument (Strings)</strong>, <strong>(Wind)</strong> or <strong>(Other)</strong> — Fate’s Hand splits it in three, and each is bought separately.</li>
-</ul>
-<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
-</aside>

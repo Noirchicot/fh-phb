@@ -109,32 +109,15 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 <h4 class="fh-pcfh__feature" id="l14-hurl-through-hell">Level 14: Hurl Through Hell</h4>
 <p>Once per turn when you hit a creature with an attack roll, you can try to instantly transport the target through the Lower Planes. The target must succeed on a Charisma saving throw against your spell save DC, or the target disappears and hurtles through a nightmare landscape. The target takes 8d10 Psychic damage if it isn’t a Fiend, and it has the Incapacitated condition until the end of your next turn, when it returns to the space it previously occupied or the nearest unoccupied space.</p>
 <p>Once you use this feature, you can’t use it again until you finish a Long Rest unless you expend a Pact Magic spell slot (no action required) to restore your use of it. Wizard</p>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
-**What your class hands you** <span class="fh-tag">FH</span>
+> [!note] What Fate's Hand changes
+>
+> | Bound skill | Bound tool | Free point pool | Expertise access |
+> |---|---|---|---|
+> | 2 | 0 | 10 | lvl 4 |
+>
+> **Your class list** — Arcana · Deception · History · Intimidation · Investigation · Nature · Religion, as printed.
 
-| Bound skill | Bound tool | Free point pool | Expertise access |
-|---|---|---|---|
-| 2 | 0 | 10 | lvl 4 |
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 
-**Your class list** — Arcana · Deception · History · Intimidation · Investigation · Nature · Religion, as printed.
-
-> [!note] What Fate's Hand adds to the Warlock
-> - **Points** — 2 bound skill · 0 bound tool · 10 free · **Expertise access** lvl 4
-> - **Gains by level** — +2 free points at levels 4 · 8 · 12 · 16 · 20
-> - **List** — as printed
-> - **Grants** — none; no Warlock feature hands out points or opens Expertise early
-> - **Subclasses** — as printed
-> - **Arbitrated** — nothing; every Warlock rule stands as printed
-
----
-
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>

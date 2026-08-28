@@ -1196,6 +1196,18 @@ body.fh-home-page .md-header { display: none; }
   line-height: 1.5;
   opacity: .62;
 }
+/* 🔴 « Ref au SRD rules (en tout petit) » — Eric, 2026-08-28. Sur une page de
+   classe, l'attribution passe en pied, et ce n'est plus un bloc : c'est la
+   mention légale qui ferme la page. Elle reste lisible à qui la cherche, et
+   cesse de couper la lecture juste avant « What Fate's Hand changes ». */
+.md-typeset .fh-pcfh + .admonition + .fh-srd-cite__attr,
+.md-typeset > .fh-srd-cite__attr {
+  margin-top: 2.4em;
+  padding-top: .6em;
+  font-size: .68rem;
+  line-height: 1.45;
+  opacity: .48;
+}
 
 /* ══ LA NORME DU LIEN — une seule, pour tout le site ═══════════════════════
    Eric, 2026-08-28 : *« peut-on faire des liens (bleu pas souligné) ou (rouge

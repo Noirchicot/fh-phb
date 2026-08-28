@@ -168,42 +168,17 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <h4 class="fh-pcfh__feature" id="l14-nature-s-sanctuary">Level 14: Nature’s Sanctuary</h4>
 <p>As a Magic action, you can expend a use of your Wild Shape and cause spectral trees and vines to appear in a 15-foot Cube on the ground within 120 feet of yourself. They last there for 1 minute or until you have the Incapacitated condition or die. You and your allies have Half Cover while in that area, and your allies gain the current Resistance of your Nature’s Ward while there.</p>
 <p>As a Bonus Action, you can move the Cube up to 60 feet to ground within 120 feet of yourself. Fighter</p>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
-**What your class hands you** <span class="fh-tag">FH</span>
+> [!note] What Fate's Hand changes
+>
+> | Bound skill | Bound tool | Free point pool | Expertise access |
+> |---|---|---|---|
+> | 2 | 1 | 12 | lvl 4 |
+>
+> **Your class list** <span class="fh-tag">FH</span> — Animal Handling · Arcana · Insight · Medicine · Nature · **Delve** · **Vigilance** · Religion · Survival.
+>
+> The Druid is one of three classes to carry a bound tool point at all.
 
-| Bound skill | Bound tool | Free point pool | Expertise access |
-|---|---|---|---|
-| 2 | 1 | 12 | lvl 4 |
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 
-**Your class list** <span class="fh-tag">FH</span> — Animal Handling · Arcana · Insight · Medicine · Nature · **Delve** · **Vigilance** · Religion · Survival.
-
-The Druid is one of three classes to carry a bound tool point at all.
-
-> [!note] What Fate's Hand adds to the Druid
-> - **Points** — 2 bound skill · 1 bound tool · 12 free · **Expertise access** lvl 4
-> - **Gains by level** — +2 free points at levels 4 · 8 · 12 · 16 · 20
-> - **List** — rewritten: *Perception* gives way to **Delve** and **Vigilance**
-> - **Grants** — none; no Druid feature hands out points or opens Expertise early
-> - **Subclasses** — as printed
-> - **Arbitrated** — nothing; every Druid rule stands as printed
-
----
-
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
-<aside class="fh-translate">
-<p class="fh-translate__label">Reading the quotations on this page</p>
-<ul>
-<li><strong>Perception</strong> does not exist in Fate’s Hand — read <strong>Vigilance</strong>, <strong>Delve</strong> or <strong>Survival</strong> — Fate’s Hand split it in three, and which one applies depends on what you are looking at.</li>
-</ul>
-<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
-</aside>

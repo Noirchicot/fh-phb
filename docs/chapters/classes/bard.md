@@ -115,55 +115,30 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <p>You always have the chosen spells prepared, and whenever you gain a Bard level, you can replace one of the spells with another spell that meets these requirements.</p>
 <h4 class="fh-pcfh__feature" id="l14-peerless-skill">Level 14: Peerless Skill</h4>
 <p>When you make an ability check or attack roll and fail, you can expend one use of Bardic Inspiration; roll the Bardic Inspiration die, and add the number rolled to the d20, potentially turning a failure into a success. On a failure, the Bardic Inspiration isn’t expended. Cleric</p>
-<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
 
-**What your class hands you** <span class="fh-tag">FH</span>
+> [!note] What Fate's Hand changes
+>
+> | Bound skill | Bound tool | Free point pool | Expertise access |
+> |---|---|---|---|
+> | 3 | 2 | 12 | lvl 2 |
+>
+> **Your class list** <span class="fh-tag">FH</span> — History · Performance · **Academics** ·
+> Persuasion · Deception · **Streetwise**. Your three bound skill points are placed among those six;
+> the base game let a bard pick from all of them, and Fate's Hand names the six a bard is actually
+> trained in.
+>
+> **Your tool list** <span class="fh-tag">FH</span> — Calligrapher's Supplies · Cards · Cartographer's Tools · Dice ·
+> Instrument (Strings) · Instrument (Wind) · Instrument (Other) · Painter's Supplies. Your two bound
+> tool points are placed among those eight.
+>
+> **A second ladder, yours alone** <span class="fh-tag">FH</span> — **+1 free point at every Bard level, from Bard level 2 to
+> 20**. It counts on your Bard levels, not your character level, and it replaces *Jack of All
+> Trades*, which Fate's Hand removes. At Bard level 4 you gain it *and* the +2 of the shared
+> ladder: two gains, counted separately.
+>
+> **Expertise** *(level 2)* <span class="fh-tag">FH</span> — **+4 free points**, and permission to buy **Expert** from
+> level 2. The +1 of your own ladder lands at the same level and is not the same gain.
 
-| Bound skill | Bound tool | Free point pool | Expertise access |
-|---|---|---|---|
-| 3 | 2 | 12 | lvl 2 |
+<p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 
-**Your class list** <span class="fh-tag">FH</span> — History · Performance · **Academics** ·
-Persuasion · Deception · **Streetwise**. Your three bound skill points are placed among those six;
-the base game let a bard pick from all of them, and Fate's Hand names the six a bard is actually
-trained in.
-
-**Your tool list** <span class="fh-tag">FH</span> — Calligrapher's Supplies · Cards · Cartographer's Tools · Dice ·
-Instrument (Strings) · Instrument (Wind) · Instrument (Other) · Painter's Supplies. Your two bound
-tool points are placed among those eight.
-
-**A second ladder, yours alone** <span class="fh-tag">FH</span> — **+1 free point at every Bard level, from Bard level 2 to
-20**. It counts on your Bard levels, not your character level, and it replaces *Jack of All
-Trades*, which Fate's Hand removes. At Bard level 4 you gain it *and* the +2 of the shared
-ladder: two gains, counted separately.
-
-**Expertise** *(level 2)* <span class="fh-tag">FH</span> — **+4 free points**, and permission to buy **Expert** from
-level 2. The +1 of your own ladder lands at the same level and is not the same gain.
-
-> [!note] What Fate's Hand adds to the Bard
-> - **Points** — 3 bound skill · 2 bound tool · 12 free · **Expertise access** lvl 2
-> - **Gains by level** — +2 free points at levels 4 · 8 · 12 · 16 · 20, **plus +1 at every Bard level from 2 to 20** — the second ladder, which replaces *Jack of All Trades*
-> - **List** — written outright: six named skills, and a tool list of eight
-> - **Grants** — *Expertise* (level 2): +4 free points, and permission to buy **Expert** from lvl 2
-> - **Subclasses** — as printed
-> - **Arbitrated** — nothing; every Bard rule stands as printed
-
----
-
-<nav class="fh-layer">
-<p class="fh-layer__label">What Fate’s Hand does here</p>
-<ul>
-<li><span class="fh-layer__genre">class</span> <span class="fh-layer__patched">changes 12</span> — Barbarian, Bard, Cleric, Druid, Fighter, Monk…</li>
-<li><span class="fh-layer__genre">class progression</span> <span class="fh-layer__same">no record differs</span></li>
-</ul>
-<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
-</nav>
-
-<aside class="fh-translate">
-<p class="fh-translate__label">Reading the quotations on this page</p>
-<ul>
-<li><strong>Musical Instrument</strong> does not exist in Fate’s Hand — read one of <strong>Instrument (Strings)</strong>, <strong>(Wind)</strong> or <strong>(Other)</strong> — Fate’s Hand splits it in three, and each is bought separately.</li>
-</ul>
-<p>The quotations on this page are the base game’s, word for word. We do not edit a quotation to fit our rules — we tell you how to read it.</p>
-</aside>
