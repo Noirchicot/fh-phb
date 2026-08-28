@@ -15,16 +15,19 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <dt>Tools</dt><dd>Choose 3 Musical Instruments (see “Equipment”)</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Leather Armor, 2 Daggers, Musical Instrument of your choice, Entertainer’s Pack, and 19 GP; or (B) 90 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead><tr>
-<th>Level</th>
-<th>Bonus</th>
-<th>Class Features</th>
-<th>Bardic Die</th>
-<th>Cantrips</th>
-<th>Prepared Spells</th>
-<th>Free</th>
-<th>Bound skill</th>
-<th>Bound tool</th>
+<table class="fh-pcfh__table" id="progression"><thead>
+<tr>
+<th rowspan="2">Level</th>
+<th rowspan="2">Proficiency<br>Bonus</th>
+<th rowspan="2">Class<br>Features</th>
+<th rowspan="2">Bardic<br>Die</th>
+<th rowspan="2">Cantrips</th>
+<th rowspan="2">Prepared<br>Spells</th>
+<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+</tr><tr>
+<th class="fh">Free<br>Points</th>
+<th class="fh">Bound<br>Skills</th>
+<th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
 <tr><td>1</td><td>+2</td><td>Bardic Inspiration, Spellcasting</td><td>D6</td><td>2</td><td>4</td><td>12</td><td>3</td><td>2</td></tr>
 <tr><td>2</td><td>+2</td><td>Expertise, Jack of All Trades</td><td>D6</td><td>2</td><td>5</td><td>17</td><td>3</td><td>2</td></tr>

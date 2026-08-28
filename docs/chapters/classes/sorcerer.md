@@ -14,16 +14,19 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <dt>Weapons</dt><dd>Simple weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Spear, 2 Daggers, Arcane Focus (crystal), Dungeoneer’s Pack, and 28 GP; or (B) 50 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead><tr>
-<th>Level</th>
-<th>Bonus</th>
-<th>Class Features</th>
-<th>Sorcery Points</th>
-<th>Cantrips</th>
-<th>Prepared Spells</th>
-<th>Free</th>
-<th>Bound skill</th>
-<th>Bound tool</th>
+<table class="fh-pcfh__table" id="progression"><thead>
+<tr>
+<th rowspan="2">Level</th>
+<th rowspan="2">Proficiency<br>Bonus</th>
+<th rowspan="2">Class<br>Features</th>
+<th rowspan="2">Sorcery<br>Points</th>
+<th rowspan="2">Cantrips</th>
+<th rowspan="2">Prepared<br>Spells</th>
+<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+</tr><tr>
+<th class="fh">Free<br>Points</th>
+<th class="fh">Bound<br>Skills</th>
+<th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
 <tr><td>1</td><td>+2</td><td>Spellcasting, Innate Sorcery</td><td>—</td><td>4</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
 <tr><td>2</td><td>+2</td><td>Font of Magic, Metamagic</td><td>2</td><td>4</td><td>4</td><td>10</td><td>2</td><td>0</td></tr>

@@ -15,16 +15,19 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <dt>Tools</dt><dd>Choose one type of Artisan’s Tools or Musical Instrument (see “Equipment”)</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Spear, 5 Daggers, Artisan’s Tools or Musical Instrument chosen for the tool proficiency above, Explorer’s Pack, and 11 GP; or (B) 50 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead><tr>
-<th>Level</th>
-<th>Bonus</th>
-<th>Class Features</th>
-<th>Martial Arts</th>
-<th>Focus Points</th>
-<th>Unarmored Movement</th>
-<th>Free</th>
-<th>Bound skill</th>
-<th>Bound tool</th>
+<table class="fh-pcfh__table" id="progression"><thead>
+<tr>
+<th rowspan="2">Level</th>
+<th rowspan="2">Proficiency<br>Bonus</th>
+<th rowspan="2">Class<br>Features</th>
+<th rowspan="2">Martial<br>Arts</th>
+<th rowspan="2">Focus<br>Points</th>
+<th rowspan="2">Unarmored<br>Movement</th>
+<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+</tr><tr>
+<th class="fh">Free<br>Points</th>
+<th class="fh">Bound<br>Skills</th>
+<th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
 <tr><td>1</td><td>+2</td><td>Martial Arts, Unarmored Defense</td><td>1d6</td><td>—</td><td>—</td><td>10</td><td>2</td><td>0</td></tr>
 <tr><td>2</td><td>+2</td><td>Monk’s Focus, Unarmored Movement, Uncanny Metabolism</td><td>1d6</td><td>2</td><td>+10 ft.</td><td>10</td><td>2</td><td>0</td></tr>

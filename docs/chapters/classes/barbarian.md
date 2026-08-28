@@ -14,16 +14,19 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Greataxe, 4 Handaxes, Explorer’s Pack, and 15 GP; or (B) 75 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead><tr>
-<th>Level</th>
-<th>Bonus</th>
-<th>Class Features</th>
-<th>Rages</th>
-<th>Rage Damage</th>
-<th>Weapon Mastery</th>
-<th>Free</th>
-<th>Bound skill</th>
-<th>Bound tool</th>
+<table class="fh-pcfh__table" id="progression"><thead>
+<tr>
+<th rowspan="2">Level</th>
+<th rowspan="2">Proficiency<br>Bonus</th>
+<th rowspan="2">Class<br>Features</th>
+<th rowspan="2">Rages<br>per Day</th>
+<th rowspan="2">Rage<br>Damage</th>
+<th rowspan="2">Weapon<br>Masteries</th>
+<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+</tr><tr>
+<th class="fh">Free<br>Points</th>
+<th class="fh">Bound<br>Skills</th>
+<th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
 <tr><td>1</td><td>+2</td><td>Rage, Unarmored Defense, Weapon Mastery</td><td>2</td><td>+2</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>
 <tr><td>2</td><td>+2</td><td>Danger Sense, Reckless Attack</td><td>2</td><td>+2</td><td>2</td><td>10</td><td>2</td><td>0</td></tr>

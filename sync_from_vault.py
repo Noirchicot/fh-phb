@@ -833,6 +833,30 @@ def _fh_colonnes(pool, niveau, nom_classe):
     return {"Free": str(libres), "Bound skill": str(lies), "Bound tool": str(outils)}
 
 
+# ⚖️ LES LIBELLÉS QU'ERIC A RÉÉCRITS, ET EUX SEULS. Le SRD imprime « Rages »
+#    et « Weapon Mastery » ; son croquis du 28/08 dit « Rages per Day » et
+#    « Weapon Masteries ». Une table courte et NOMMÉE, plutôt qu'un renommage
+#    en douce : ce qui n'y figure pas garde le mot du SRD, mot pour mot.
+# ⏳ *« per Day »* dit une règle un peu différente de la vraie (les rages
+#    reviennent à un repos LONG, une seule à un repos court) — signalé à Eric,
+#    qui garde son mot pour l'instant.
+_LIBELLES_FH = {
+    "Rages": "Rages per Day",
+    "Weapon Mastery": "Weapon Masteries",
+}
+
+
+def _empile(libelle):
+    """« Rage Damage » -> « Rage<br>Damage » : deux mots l'un sur l'autre, DANS
+    la même cellule. ⛔ Pas deux cellules — Eric : *« pas de séparation »*.
+    La coupe se fait au PREMIER espace : « Rages per Day » donne « Rages » puis
+    « per Day », et un libellé d'un seul mot reste entier."""
+    mots = str(libelle).split(" ", 1)
+    if len(mots) == 1:
+        return html.escape(mots[0])
+    return "%s<br>%s" % (html.escape(mots[0]), html.escape(mots[1]))
+
+
 def _ancre(niveau, nom):
     """Un identifiant STABLE et PRÉVISIBLE pour une aptitude : `l3-primal-knowledge`.
 
@@ -897,13 +921,32 @@ def _srd_class_full(slug, lang="en"):
             out.append("<dt>%s</dt><dd>%s</dd>" % (html.escape(libelle), html.escape(str(v))))
     out.append("</dl>")
 
-    # ── LA TABLE DE PROGRESSION, colonnes SRD puis colonnes FH ─────────────
+    # ── LA TABLE DE PROGRESSION, EN-TÊTE À DEUX ÉTAGES ─────────────────────
+    # 🔴 Eric, 2026-08-28, croquis annoté à l'appui : *« Level / proficiency
+    # bonus (l'un au-dessus de l'autre, PAS DE SÉPARATION) / class features
+    # (idem) / rages per day (idem) / … / skill points (le chapeau) »*, puis
+    # sur la capture : *« cadré en haut »*.
+    #
+    # ⭐ UN SEUL TRAIT HORIZONTAL DANS TOUTE L'EN-TÊTE, et c'est le point : les
+    #    libellés de deux mots s'EMPILENT dans une seule cellule (un retour à
+    #    la ligne, pas une division), tandis que **Skill Points** chapeaute
+    #    vraiment ses trois colonnes. Le seul trait qui apparaît est donc celui
+    #    qui sépare le groupe FH de ses sous-colonnes — il se voit parce qu'il
+    #    est le seul, et il dit exactement ce qu'il sépare.
+    # ⛔ LE CROQUIS D'ERIC PRIME SUR SA PHRASE : il avait dit « Level centré
+    #    vertical », son croquis annoté dit « cadré en haut » pour toute la
+    #    rangée. C'est le croquis qui fait foi (loi du 26/08).
     cols_srd = prog["data"].get("resource_columns") or []
-    entetes = ["Level", "Bonus", "Class Features"] + [c["label"] for c in cols_srd] \
-        + ["Free", "Bound skill", "Bound tool"]
-    out.append('<table class="fh-pcfh__table" id="progression"><thead><tr>')
-    for h in entetes:
-        out.append("<th>%s</th>" % html.escape(h))
+    hauts = ["Level", "Proficiency Bonus", "Class Features"] \
+        + [_LIBELLES_FH.get(c["label"], c["label"]) for c in cols_srd]
+    out.append('<table class="fh-pcfh__table" id="progression"><thead>')
+    out.append("<tr>")
+    for h in hauts:
+        out.append('<th rowspan="2">%s</th>' % _empile(h))
+    out.append('<th colspan="3" class="fh-pcfh__group">Skill Points</th>')
+    out.append("</tr><tr>")
+    for h in ("Free Points", "Bound Skills", "Bound Tools"):
+        out.append('<th class="fh">%s</th>' % _empile(h))
     out.append("</tr></thead><tbody>")
     for ligne in prog["data"].get("levels") or []:
         niveau = int(ligne.get("level"))

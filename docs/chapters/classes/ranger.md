@@ -14,15 +14,18 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Druidic Focus (sprig of mistletoe), Explorer’s Pack, and 7 GP; or (B) 150 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead><tr>
-<th>Level</th>
-<th>Bonus</th>
-<th>Class Features</th>
-<th>Favored Enemy</th>
-<th>Prepared Spells</th>
-<th>Free</th>
-<th>Bound skill</th>
-<th>Bound tool</th>
+<table class="fh-pcfh__table" id="progression"><thead>
+<tr>
+<th rowspan="2">Level</th>
+<th rowspan="2">Proficiency<br>Bonus</th>
+<th rowspan="2">Class<br>Features</th>
+<th rowspan="2">Favored<br>Enemy</th>
+<th rowspan="2">Prepared<br>Spells</th>
+<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+</tr><tr>
+<th class="fh">Free<br>Points</th>
+<th class="fh">Bound<br>Skills</th>
+<th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
 <tr><td>1</td><td>+2</td><td>Spellcasting, Favored Enemy, Weapon Mastery</td><td>2</td><td>2</td><td>12</td><td>3</td><td>0</td></tr>
 <tr><td>2</td><td>+2</td><td>Deft Explorer, Fighting Style</td><td>2</td><td>3</td><td>14</td><td>3</td><td>0</td></tr>

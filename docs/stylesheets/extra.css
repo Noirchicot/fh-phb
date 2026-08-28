@@ -1256,13 +1256,44 @@ body.fh-home-page .md-header { display: none; }
   letter-spacing: .06em;
   text-transform: uppercase;
   opacity: .72;
+  /* 🔴 CADRÉ EN HAUT — Eric, croquis annoté du 28/08. Une en-tête à deux
+     étages dont les libellés seraient centrés ferait flotter les mots à des
+     hauteurs différentes selon qu'ils tiennent sur une ou deux lignes ; cadrés
+     en haut, ils partent tous de la même ligne. */
+  vertical-align: top;
+  line-height: 1.2;
+}
+/* ⭐ LE CHAPEAU DU GROUPE FH — le SEUL trait horizontal de l'en-tête, et la
+   seule cellule centrée : elle surplombe trois colonnes, elle se lit au-dessus
+   d'elles. */
+.md-typeset .fh-pcfh__table th.fh-pcfh__group {
+  text-align: center;
+  color: var(--fh-gold);
+  opacity: 1;
+  border-bottom: 1px solid var(--fh-rule);
+}
+/* ⛔ AUCUN TRAIT ENTRE LES DEUX ÉTAGES AILLEURS : les cellules qui enjambent
+   les deux rangées (`rowspan`) ne portent leur bordure qu'en bas de l'en-tête,
+   là où le corps commence. */
+.md-typeset .fh-pcfh__table thead th[rowspan] { border-bottom: 1px solid var(--fh-rule); }
+
+/* 🦓 LA VARIATION DE COULEUR DE LIGNE — Eric, même croquis, trois flèches :
+   *« variation de couleur … de ligne »*. Vingt niveaux et neuf colonnes : sans
+   elle, l'œil perd sa ligne entre « Level » et « Bound Tools ». Elle est
+   TRÈS discrète (4 %) — assez pour guider, pas assez pour rayer la page. */
+.md-typeset .fh-pcfh__table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--fh-gold) 7%, transparent);
 }
 /* la colonne des aptitudes est la seule qui respire — c'est elle qu'on lit */
-.md-typeset .fh-pcfh__table td:nth-child(3) { white-space: normal; min-width: 9rem; }
+.md-typeset .fh-pcfh__table td:nth-child(3) { white-space: normal; min-width: 7.5rem; }
 /* 📏 .38 ET NON .45 : mesuré à 1280 px, la table demandait 934 pour 930 — il
    manquait QUATRE pixels pour que les trois colonnes FH entrent dans le
    champ. Ce sont les gouttières qui cèdent, pas une colonne. */
-.md-typeset .fh-pcfh__table th, .md-typeset .fh-pcfh__table td { padding: .28em .38em; }
+/* 📏 .32 : mesuré sur le SORCIER PACTE, la classe la plus large — douze
+   colonnes (cinq ressources) demandaient 972 pour 930. Ce sont les gouttières
+   qui cèdent, jamais une colonne : la vue d'ensemble est ce qu'Eric est venu
+   chercher. */
+.md-typeset .fh-pcfh__table th, .md-typeset .fh-pcfh__table td { padding: .26em .28em; }
 /* ⭐ LES TROIS DERNIÈRES COLONNES SONT FH, ET ÇA SE VOIT SANS LÉGENDE :
    elles portent l'or de la maison, le SRD garde l'encre du texte. */
 .md-typeset .fh-pcfh__table td:nth-last-child(-n+3),

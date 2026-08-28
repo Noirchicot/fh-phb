@@ -14,15 +14,18 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A, B, or C: (A) Chain Mail, Greatsword, Flail, 8 Javelins, Dungeoneer’s Pack, and 4 GP; (B) Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Dungeoneer’s Pack, and 11 GP; or (C) 155 GP</dd>
 </dl>
-<table class="fh-pcfh__table" id="progression"><thead><tr>
-<th>Level</th>
-<th>Bonus</th>
-<th>Class Features</th>
-<th>Second Wind</th>
-<th>Weapon Mastery</th>
-<th>Free</th>
-<th>Bound skill</th>
-<th>Bound tool</th>
+<table class="fh-pcfh__table" id="progression"><thead>
+<tr>
+<th rowspan="2">Level</th>
+<th rowspan="2">Proficiency<br>Bonus</th>
+<th rowspan="2">Class<br>Features</th>
+<th rowspan="2">Second<br>Wind</th>
+<th rowspan="2">Weapon<br>Masteries</th>
+<th colspan="3" class="fh-pcfh__group">Skill Points</th>
+</tr><tr>
+<th class="fh">Free<br>Points</th>
+<th class="fh">Bound<br>Skills</th>
+<th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
 <tr><td>1</td><td>+2</td><td>Fighting Style, Second Wind, Weapon Mastery</td><td>2</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
 <tr><td>2</td><td>+2</td><td>Action Surge (one use), Tactical Mind</td><td>2</td><td>3</td><td>10</td><td>2</td><td>0</td></tr>
