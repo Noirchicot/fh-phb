@@ -57,27 +57,27 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>You have learned to channel the magical essence of nature to cast spells. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Ranger spells, which appear in the Ranger spell list later in the class’s description.</p>
-<p>Spell Slots. The Ranger Features table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
+<p class="fh-pcfh__regle"><strong>Spell Slots.</strong> The <a class="fh-lien" href="#progression">Ranger Features table</a> shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
 <p>Prepared Spells of Level 1+. You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two level 1 Ranger spells. Cure Wounds and Ensnaring Strike are recommended.</p>
-<p>The number of spells on your list increases as you gain Ranger levels, as shown in the Prepared Spells column of the Ranger Features table. Whenever that number increases, choose additional Ranger spells until the number of spells on your list matches the number in the Ranger Features table. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 5 Ranger, your list of prepared spells can include six Ranger spells of level 1 or 2 in any combination.</p>
+<p>The number of spells on your list increases as you gain Ranger levels, as shown in the Prepared Spells column of the <a class="fh-lien" href="#progression">Ranger Features table</a>. Whenever that number increases, choose additional Ranger spells until the number of spells on your list matches the number in the <a class="fh-lien" href="#progression">Ranger Features table</a>. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 5 Ranger, your list of prepared spells can include six Ranger spells of level 1 or 2 in any combination.</p>
 <p>If another Ranger feature gives you spells that you always have prepared, those spells don’t count against the number of spells you can prepare with this feature, but those spells otherwise count as Ranger spells for you.</p>
 <p>—Spell Slots per Spell Level—</p>
-<p>Changing Your Prepared Spells. Whenever you finish a Long Rest, you can replace one spell on your list with another Ranger spell for which you have spell slots.</p>
-<p>Spellcasting Ability. Wisdom is your spellcasting ability for your Ranger spells.</p>
-<p>Spellcasting Focus. You can use a Druidic Focus as a Spellcasting Focus for your Ranger spells.</p>
+<p class="fh-pcfh__regle"><strong>Changing Your Prepared Spells.</strong> Whenever you finish a Long Rest, you can replace one spell on your list with another Ranger spell for which you have spell slots.</p>
+<p class="fh-pcfh__regle"><strong>Spellcasting Ability.</strong> Wisdom is your spellcasting ability for your Ranger spells.</p>
+<p class="fh-pcfh__regle"><strong>Spellcasting Focus.</strong> You can use a Druidic Focus as a Spellcasting Focus for your Ranger spells.</p>
 <h3 class="fh-pcfh__feature" id="l1-favored-enemy">Level 1: Favored Enemy</h3>
 <p>You always have the Hunter’s Mark spell prepared. You can cast it twice without expending a spell slot, and you regain all expended uses of this ability when you finish a Long Rest.</p>
-<p>The number of times you can cast the spell without a spell slot increases when you reach certain Ranger levels, as shown in the Favored Enemy column of the Ranger Features table.</p>
+<p>The number of times you can cast the spell without a spell slot increases when you reach certain Ranger levels, as shown in the Favored Enemy column of the <a class="fh-lien" href="#progression">Ranger Features table</a>.</p>
 <h3 class="fh-pcfh__feature" id="l1-weapon-mastery">Level 1: Weapon Mastery</h3>
 <p>Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longbows and Shortswords.</p>
 <p>Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the mastery properties of Scimitars and Longswords.</p>
 <h3 class="fh-pcfh__feature" id="l2-deft-explorer">Level 2: Deft Explorer</h3>
 <p>Thanks to your travels, you gain the following benefits.</p>
-<p>Expertise. Choose one of your skill proficiencies with which you lack Expertise. You gain Expertise in that skill.</p>
-<p>Languages. You know two languages of your choice from the language tables in “Character Creation.”</p>
+<p class="fh-pcfh__regle"><strong>Expertise.</strong> Choose one of your skill proficiencies with which you lack Expertise. You gain Expertise in that skill.</p>
+<p class="fh-pcfh__regle"><strong>Languages.</strong> You know two languages of your choice from the language tables in “Character Creation.”</p>
 <h3 class="fh-pcfh__feature" id="l2-fighting-style">Level 2: Fighting Style</h3>
 <p>You gain a Fighting Style feat of your choice (see “Feats”). Instead of choosing one of those feats, you can choose the option below.</p>
-<p>Druidic Warrior. You learn two Druid cantrips of your choice (see the Druid class’s section for a list of Druid spells). Guidance and Starry Wisp are recommended. The chosen cantrips count as Ranger spells for you, and Wisdom is your spellcasting ability for them. Whenever you gain a Ranger level, you can replace one of these cantrips with another Druid cantrip.</p>
+<p class="fh-pcfh__regle"><strong>Druidic Warrior.</strong> You learn two Druid cantrips of your choice (see the Druid class’s section for a list of Druid spells). Guidance and Starry Wisp are recommended. The chosen cantrips count as Ranger spells for you, and Wisdom is your spellcasting ability for them. Whenever you gain a Ranger level, you can replace one of these cantrips with another Druid cantrip.</p>
 <h3 class="fh-pcfh__feature" id="l3-ranger-subclass">Level 3: Ranger Subclass</h3>
 <p>You gain a Ranger subclass of your choice. The Hunter subclass is detailed after this class’s description. A subclass is a specialization that grants you features at certain Ranger levels. For the rest of your career, you gain each of your subclass’s features that are of your Ranger level or lower.</p>
 <h3 class="fh-pcfh__feature" id="l4-ability-score-improvement">Level 4: Ability Score Improvement</h3>
@@ -90,8 +90,8 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <p>Choose two of your skill proficiencies with which you lack Expertise. You gain Expertise in those skills.</p>
 <h3 class="fh-pcfh__feature" id="l10-tireless">Level 10: Tireless</h3>
 <p>Primal forces now help fuel you on your journeys, granting you the following benefits.</p>
-<p>Temporary Hit Points. As a Magic action, you can give yourself a number of Temporary Hit Points equal to 1d8 plus your Wisdom modifier (minimum of 1). You can use this action a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.</p>
-<p>Decrease Exhaustion. Whenever you finish a Short Rest, your Exhaustion level, if any, decreases by 1.</p>
+<p class="fh-pcfh__regle"><strong>Temporary Hit Points.</strong> As a Magic action, you can give yourself a number of Temporary Hit Points equal to 1d8 plus your Wisdom modifier (minimum of 1). You can use this action a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.</p>
+<p class="fh-pcfh__regle"><strong>Decrease Exhaustion.</strong> Whenever you finish a Short Rest, your Exhaustion level, if any, decreases by 1.</p>
 <h3 class="fh-pcfh__feature" id="l13-relentless-hunter">Level 13: Relentless Hunter</h3>
 <p>Taking damage can’t break your Concentration on Hunter’s Mark.</p>
 <h3 class="fh-pcfh__feature" id="l14-nature-s-veil">Level 14: Nature’s Veil</h3>
@@ -112,12 +112,12 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <p>You can call on the forces of nature to reveal certain strengths and weaknesses of your prey. While a creature is marked by your Hunter’s Mark, you know whether that creature has any Immunities, Resistances, or Vulnerabilities, and if the creature has any, you know what they are.</p>
 <h4 class="fh-pcfh__feature" id="l3-hunter-s-prey">Level 3: Hunter’s Prey</h4>
 <p>You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.</p>
-<p>Colossus Slayer. Your tenacity can wear down even the most resilient foes. When you hit a creature with a weapon, the weapon deals an extra 1d8 damage to the target if it’s missing any of its Hit Points. You can deal this extra damage only once per turn.</p>
-<p>Horde Breaker. Once on each of your turns when you make an attack with a weapon, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target, that is within the weapon’s range, and that you haven’t attacked this turn.</p>
+<p class="fh-pcfh__regle"><strong>Colossus Slayer.</strong> Your tenacity can wear down even the most resilient foes. When you hit a creature with a weapon, the weapon deals an extra 1d8 damage to the target if it’s missing any of its Hit Points. You can deal this extra damage only once per turn.</p>
+<p class="fh-pcfh__regle"><strong>Horde Breaker.</strong> Once on each of your turns when you make an attack with a weapon, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target, that is within the weapon’s range, and that you haven’t attacked this turn.</p>
 <h4 class="fh-pcfh__feature" id="l7-defensive-tactics">Level 7: Defensive Tactics</h4>
 <p>You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.</p>
-<p>Escape the Horde. Opportunity Attacks have Disadvantage against you.</p>
-<p>Multiattack Defense. When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn.</p>
+<p class="fh-pcfh__regle"><strong>Escape the Horde.</strong> Opportunity Attacks have Disadvantage against you.</p>
+<p class="fh-pcfh__regle"><strong>Multiattack Defense.</strong> When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn.</p>
 <h4 class="fh-pcfh__feature" id="l11-superior-hunter-s-prey">Level 11: Superior Hunter’s Prey</h4>
 <p>Once per turn when you deal damage to a creature marked by your Hunter’s Mark, you can also deal that spell’s extra damage to a different creature that you can see within 30 feet of the first creature.</p>
 <h4 class="fh-pcfh__feature" id="l15-superior-hunter-s-defense">Level 15: Superior Hunter’s Defense</h4>

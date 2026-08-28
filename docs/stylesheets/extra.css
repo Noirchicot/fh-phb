@@ -1383,6 +1383,23 @@ body.fh-home-page .md-header { display: none; }
       avait la MÊME spécificité qu'elles (0,3,1) et perdait donc sur l'ordre
       seul : la classe était bien posée, le style ne s'appliquait pas — 940 px
       au lieu des 930 attendus, sans qu'aucune erreur ne le dise. */
+/* ══ LE TEXTE D'UNE APTITUDE — respirer, sans qu'un mot bouge ══════════════
+   Eric, 2026-08-28 : *« juste mais mochement présenté ; rends-le plus digeste,
+   aéré »*. Une aptitude est souvent une petite liste de règles nommées
+   (« Damage Resistance. » … « Duration. »), que l'export du SRD nous rend en
+   paragraphes plats et identiques. Le terme reprend son gras et sa règle prend
+   un peu d'air : l'œil retrouve d'un coup ce qu'il cherche.
+   ⛔ Le terme est en ENCRE, pas en or : c'est du SRD. L'or dit « Fate's Hand ». */
+.md-typeset .fh-pcfh__regle {
+  margin: .75em 0 .55em;
+  padding-left: .9em;
+  border-left: 2px solid var(--fh-rule);
+}
+.md-typeset .fh-pcfh__regle strong { letter-spacing: .01em; }
+/* les puces que le SRD écrase sur une seule ligne, rendues à la ligne */
+.md-typeset ul.fh-pcfh__puces { margin: .5em 0 .8em; }
+.md-typeset ul.fh-pcfh__puces li { margin-bottom: .2em; }
+
 .md-typeset .fh-pcfh__table--dense th { letter-spacing: 0; }
 .md-typeset .fh-pcfh__table--dense td.fh-pcfh__feat,
 .md-typeset .fh-pcfh__table--dense td:nth-child(3) { min-width: 6rem; }

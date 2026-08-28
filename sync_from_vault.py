@@ -875,6 +875,70 @@ def _ancre(niveau, nom):
 
 _LEGENDE_RESIDU = re.compile(r"^—+\s*Spell Slots per Spell Level\s*—*\s*")
 
+# Un « lead-in » du SRD : un terme en tête de paragraphe, suivi d'un point, qui
+# nomme la règle que la phrase énonce — « **Damage Resistance.** You have
+# Resistance to… ». Le SRD l'imprime en gras ; l'export nous le rend en texte
+# plat, et le paragraphe se lit alors comme une phrase parmi d'autres.
+# 📏 MESURÉ sur les douze classes : 107 paragraphes, 65 termes distincts, et
+#    ZÉRO faux positif — les mots de liaison admis (of, or, and, the, to, a,
+#    per) suffisent à couvrir « No Concentration or Spells » et « Number of
+#    Uses » sans jamais attraper une phrase ordinaire, qui commence par un verbe
+#    ou un pronom non capitalisé (« You can imbue yourself… »).
+_LEAD_IN = re.compile(
+    r"^((?:[A-Z][\w’/+-]*|of|or|and|the|to|a|per)"
+    r"(?: (?:[A-Z][\w’/+-]*|of|or|and|the|to|a|per)){0,4})\. (?=[A-Z“])")
+
+
+def _prose_citee(txt, classe):
+    """Un fragment de texte cité, échappé, où la table de la classe devient un lien.
+
+    🔗 « …as shown in the Rages column of the **Barbarian Features table** » —
+    cette table est juste au-dessus, elle porte `id="progression"`, et le
+    lecteur n'avait aucun moyen d'y retourner. Le lien ne change pas un mot :
+    il rend cliquable celui qui désigne déjà la cible.
+    """
+    s = html.escape(txt)
+    if classe:
+        nom = html.escape(classe)
+        s = re.sub(r"\b%s Features table\b" % re.escape(nom),
+                   '<a class="fh-lien" href="#progression">%s Features table</a>' % nom, s)
+    return s
+
+
+def _rendu_aptitude(paras, classe):
+    """Le texte d'une aptitude, rendu LISIBLE sans qu'un mot bouge.
+
+    🔴 Eric, 2026-08-28 : *« ce bloc texte est juste mais mochement présenté ;
+    sans en changer le sens, rends-le plus digeste, aéré »*. La doctrine du
+    chapitre l'autorise en toutes lettres — **citer contraint les MOTS, pas la
+    PRÉSENTATION**. Ce qu'on rend ici, c'est la mise en forme que le SRD a
+    perdue en traversant l'export : ses termes en gras et ses listes à puces.
+
+    ⛔ Aucun mot ajouté, retiré ni réordonné. Trois gestes, tous typographiques :
+    le lead-in reprend son gras, les puces redeviennent une liste, et la table
+    citée devient le lien vers la table.
+    """
+    out = []
+    for p in paras:
+        if "•" in p:
+            morceaux = [x.strip() for x in p.split("•")]
+            tete, items = morceaux[0], [x for x in morceaux[1:] if x]
+            if tete:
+                out.append("<p>%s</p>" % _prose_citee(tete, classe))
+            out.append('<ul class="fh-pcfh__puces">')
+            out += ["<li>%s</li>" % _prose_citee(x, classe) for x in items]
+            out.append("</ul>")
+            continue
+        m = _LEAD_IN.match(p)
+        if m:
+            terme = m.group(1)
+            out.append('<p class="fh-pcfh__regle"><strong>%s.</strong> %s</p>'
+                       % (html.escape(terme),
+                          _prose_citee(p[len(terme) + 2:], classe)))
+        else:
+            out.append("<p>%s</p>" % _prose_citee(p, classe))
+    return out
+
 
 def _paragraphes_sans_table_plate(txt, classe):
     """Le texte d'une aptitude, DÉBARRASSÉ de la table de progression que le SRD
@@ -1126,22 +1190,22 @@ def _srd_class_full(slug, lang="en"):
         titre = "Level %s: %s" % (f.get("level", "?"), f.get("name", "?"))
         out.append('<h3 class="fh-pcfh__feature" id="%s">%s</h3>'
                    % (_ancre(f.get("level"), f.get("name")), html.escape(titre)))
-        for para in _paragraphes_sans_table_plate(f.get("description"), rec["name"]):
-            out.append("<p>%s</p>" % html.escape(para))
+        out += _rendu_aptitude(
+            _paragraphes_sans_table_plate(f.get("description"), rec["name"]), rec["name"])
 
     # ── LA SOUS-CLASSE ─────────────────────────────────────────────────────
     sc = d.get("subclass")
     if isinstance(sc, dict) and sc.get("name"):
         out.append('<h3 class="fh-pcfh__subclass">%s subclass: %s</h3>'
                    % (html.escape(rec["name"]), html.escape(sc["name"])))
-        for para in _paragraphes_sans_table_plate(sc.get("description"), rec["name"]):
-            out.append("<p>%s</p>" % html.escape(para))
+        out += _rendu_aptitude(
+            _paragraphes_sans_table_plate(sc.get("description"), rec["name"]), rec["name"])
         for f in sc.get("features") or []:
             out.append('<h4 class="fh-pcfh__feature" id="%s">Level %s: %s</h4>'
                        % (_ancre(f.get("level"), f.get("name")),
                           html.escape(str(f.get("level", "?"))), html.escape(f.get("name", "?"))))
-            for para in _paragraphes_sans_table_plate(f.get("description"), rec["name"]):
-                out.append("<p>%s</p>" % html.escape(para))
+            out += _rendu_aptitude(
+                _paragraphes_sans_table_plate(f.get("description"), rec["name"]), rec["name"])
 
     attr = rec.get("attribution", "")
     if attr:

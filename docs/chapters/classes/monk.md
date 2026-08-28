@@ -53,23 +53,26 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-martial-arts">Level 1: Martial Arts</h3>
 <p>Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons, which are the following:</p>
-<p>• Simple Melee weapons • Martial Melee weapons that have the Light property</p>
+<ul class="fh-pcfh__puces">
+<li>Simple Melee weapons</li>
+<li>Martial Melee weapons that have the Light property</li>
+</ul>
 <p>You gain the following benefits while you are unarmed or wielding only Monk weapons and you aren’t wearing armor or wielding a Shield.</p>
-<p>Bonus Unarmed Strike. You can make an Unarmed Strike as a Bonus Action.</p>
-<p>Martial Arts Die. You can roll 1d6 in place of the normal damage of your Unarmed Strike or Monk weapons. This die changes as you gain Monk levels, as shown in the Martial Arts column of the Monk Features table.</p>
-<p>Dexterous Attacks. You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC.</p>
+<p class="fh-pcfh__regle"><strong>Bonus Unarmed Strike.</strong> You can make an Unarmed Strike as a Bonus Action.</p>
+<p class="fh-pcfh__regle"><strong>Martial Arts Die.</strong> You can roll 1d6 in place of the normal damage of your Unarmed Strike or Monk weapons. This die changes as you gain Monk levels, as shown in the Martial Arts column of the <a class="fh-lien" href="#progression">Monk Features table</a>.</p>
+<p class="fh-pcfh__regle"><strong>Dexterous Attacks.</strong> You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC.</p>
 <h3 class="fh-pcfh__feature" id="l1-unarmored-defense">Level 1: Unarmored Defense</h3>
 <p>While you aren’t wearing armor or wielding a Shield, your base Armor Class equals 10 plus your Dexterity and Wisdom modifiers.</p>
 <h3 class="fh-pcfh__feature" id="l2-monk-s-focus">Level 2: Monk’s Focus</h3>
-<p>Your focus and martial training allow you to harness a well of extraordinary energy within yourself. This energy is represented by Focus Points. Your Monk level determines the number of points you have, as shown in the Focus Points column of the Monk Features table.</p>
+<p>Your focus and martial training allow you to harness a well of extraordinary energy within yourself. This energy is represented by Focus Points. Your Monk level determines the number of points you have, as shown in the Focus Points column of the <a class="fh-lien" href="#progression">Monk Features table</a>.</p>
 <p>You can expend these points to enhance or fuel certain Monk features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind, each of which is detailed below.</p>
 <p>When you expend a Focus Point, it is unavailable until you finish a Short or Long Rest, at the end of which you regain all your expended points.</p>
 <p>Some features that use Focus Points require your target to make a saving throw. The save DC equals 8 plus your Wisdom modifier and Proficiency Bonus.</p>
-<p>Flurry of Blows. You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action.</p>
-<p>Patient Defense. You can take the Disengage action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and the Dodge actions as a Bonus Action.</p>
-<p>Step of the Wind. You can take the Dash action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn.</p>
+<p class="fh-pcfh__regle"><strong>Flurry of Blows.</strong> You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action.</p>
+<p class="fh-pcfh__regle"><strong>Patient Defense.</strong> You can take the Disengage action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and the Dodge actions as a Bonus Action.</p>
+<p class="fh-pcfh__regle"><strong>Step of the Wind.</strong> You can take the Dash action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn.</p>
 <h3 class="fh-pcfh__feature" id="l2-unarmored-movement">Level 2: Unarmored Movement</h3>
-<p>Your speed increases by 10 feet while you aren’t wearing armor or wielding a Shield. This bonus increases when you reach certain Monk levels, as shown on the Monk Features table.</p>
+<p>Your speed increases by 10 feet while you aren’t wearing armor or wielding a Shield. This bonus increases when you reach certain Monk levels, as shown on the <a class="fh-lien" href="#progression">Monk Features table</a>.</p>
 <h3 class="fh-pcfh__feature" id="l2-uncanny-metabolism">Level 2: Uncanny Metabolism</h3>
 <p>When you roll Initiative, you can regain all expended Focus Points. When you do so, roll your Martial Arts die, and regain a number of Hit Points equal to your Monk level plus the number rolled.</p>
 <p>Once you use this feature, you can’t use it again until you finish a Long Rest.</p>
@@ -96,8 +99,8 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <p>While you aren’t wearing armor or wielding a Shield, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the movement.</p>
 <h3 class="fh-pcfh__feature" id="l10-heightened-focus">Level 10: Heightened Focus</h3>
 <p>Your Flurry of Blows, Patient Defense, and Step of the Wind gain the following benefits.</p>
-<p>Flurry of Blows. You can expend 1 Focus Point to use Flurry of Blows and make three Unarmed Strikes with it instead of two. Patient Defense. When you expend a Focus Point to use Patient Defense, you gain a number of Temporary Hit Points equal to two rolls of your Martial Arts die.</p>
-<p>Step of the Wind. When you expend a Focus Point to use Step of the Wind, you can choose a willing creature within 5 feet of yourself that is Large or smaller. You move the creature with you until the end of your turn. The creature’s movement doesn’t provoke Opportunity Attacks.</p>
+<p class="fh-pcfh__regle"><strong>Flurry of Blows.</strong> You can expend 1 Focus Point to use Flurry of Blows and make three Unarmed Strikes with it instead of two. Patient Defense. When you expend a Focus Point to use Patient Defense, you gain a number of Temporary Hit Points equal to two rolls of your Martial Arts die.</p>
+<p class="fh-pcfh__regle"><strong>Step of the Wind.</strong> When you expend a Focus Point to use Step of the Wind, you can choose a willing creature within 5 feet of yourself that is Large or smaller. You move the creature with you until the end of your turn. The creature’s movement doesn’t provoke Opportunity Attacks.</p>
 <h3 class="fh-pcfh__feature" id="l10-self-restoration">Level 10: Self-Restoration</h3>
 <p>Through sheer force of will, you can remove one of the following conditions from yourself at the end of each of your turns: Charmed, Frightened, or Poisoned.</p>
 <p>In addition, forgoing food and drink doesn’t give you levels of Exhaustion.</p>
@@ -119,9 +122,9 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <p>Warriors of the Open Hand are masters of unarmed combat. They learn techniques to push and trip their opponents and manipulate their own energy to protect themselves from harm.</p>
 <h4 class="fh-pcfh__feature" id="l3-open-hand-technique">Level 3: Open Hand Technique</h4>
 <p>Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose one of the following effects on that target.</p>
-<p>Addle. The target can’t make Opportunity Attacks until the start of its next turn.</p>
-<p>Push. The target must succeed on a Strength saving throw or be pushed up to 15 feet away from you.</p>
-<p>Topple. The target must succeed on a Dexterity saving throw or have the Prone condition.</p>
+<p class="fh-pcfh__regle"><strong>Addle.</strong> The target can’t make Opportunity Attacks until the start of its next turn.</p>
+<p class="fh-pcfh__regle"><strong>Push.</strong> The target must succeed on a Strength saving throw or be pushed up to 15 feet away from you.</p>
+<p class="fh-pcfh__regle"><strong>Topple.</strong> The target must succeed on a Dexterity saving throw or have the Prone condition.</p>
 <h4 class="fh-pcfh__feature" id="l6-wholeness-of-body">Level 6: Wholeness of Body</h4>
 <p>You gain the ability to heal yourself. As a Bonus Action, you can roll your Martial Arts die. You regain a number of Hit Points equal to the number rolled plus your Wisdom modifier (minimum of 1 Hit Point regained).</p>
 <p>You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.</p>

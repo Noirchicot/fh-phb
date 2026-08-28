@@ -62,26 +62,30 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>Drawing from your innate magic, you can cast spells. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Sorcerer spells, which appear in the Sorcerer spell list later in the class’s description.</p>
-<p>Cantrips. You know four Sorcerer cantrips of your choice. Light, Prestidigitation, Shocking Grasp, and Sorcerous Burst are recommended. Whenever you gain a Sorcerer level, you can replace one of your cantrips from this feature with another Sorcerer cantrip of your choice.</p>
-<p>When you reach Sorcerer levels 4 and 10, you learn another Sorcerer cantrip of your choice, as shown in the Cantrips column of the Sorcerer Features table.</p>
-<p>Spell Slots. The Sorcerer Features table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
+<p class="fh-pcfh__regle"><strong>Cantrips.</strong> You know four Sorcerer cantrips of your choice. Light, Prestidigitation, Shocking Grasp, and Sorcerous Burst are recommended. Whenever you gain a Sorcerer level, you can replace one of your cantrips from this feature with another Sorcerer cantrip of your choice.</p>
+<p>When you reach Sorcerer levels 4 and 10, you learn another Sorcerer cantrip of your choice, as shown in the Cantrips column of the <a class="fh-lien" href="#progression">Sorcerer Features table</a>.</p>
+<p class="fh-pcfh__regle"><strong>Spell Slots.</strong> The <a class="fh-lien" href="#progression">Sorcerer Features table</a> shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
 <p>Prepared Spells of Level 1+. You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two level 1 Sorcerer spells. Burning Hands and Detect Magic are recommended.</p>
-<p>The number of spells on your list increases as you gain Sorcerer levels, as shown in the Prepared Spells column of the Sorcerer Features table. Whenever that number increases, choose additional Sorcerer spells until the number of spells on your list matches the number in the Sorcerer Features table. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 3 Sorcerer, your list of prepared spells can include six Sorcerer spells of level 1 or 2 in any combination.</p>
+<p>The number of spells on your list increases as you gain Sorcerer levels, as shown in the Prepared Spells column of the <a class="fh-lien" href="#progression">Sorcerer Features table</a>. Whenever that number increases, choose additional Sorcerer spells until the number of spells on your list matches the number in the <a class="fh-lien" href="#progression">Sorcerer Features table</a>. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 3 Sorcerer, your list of prepared spells can include six Sorcerer spells of level 1 or 2 in any combination.</p>
 <p>If another Sorcerer feature gives you spells that you always have prepared, those spells don’t count</p>
 <p>——Spell Slots per Spell Level——</p>
 <p>against the number of spells you can prepare with this feature, but those spells otherwise count as Sorcerer spells for you.</p>
-<p>Changing Your Prepared Spells. Whenever you gain a Sorcerer level, you can replace one spell on your list with another Sorcerer spell for which you have spell slots.</p>
-<p>Spellcasting Ability. Charisma is your spellcasting ability for your Sorcerer spells.</p>
-<p>Spellcasting Focus. You can use an Arcane Focus as a Spellcasting Focus for your Sorcerer spells.</p>
+<p class="fh-pcfh__regle"><strong>Changing Your Prepared Spells.</strong> Whenever you gain a Sorcerer level, you can replace one spell on your list with another Sorcerer spell for which you have spell slots.</p>
+<p class="fh-pcfh__regle"><strong>Spellcasting Ability.</strong> Charisma is your spellcasting ability for your Sorcerer spells.</p>
+<p class="fh-pcfh__regle"><strong>Spellcasting Focus.</strong> You can use an Arcane Focus as a Spellcasting Focus for your Sorcerer spells.</p>
 <h3 class="fh-pcfh__feature" id="l1-innate-sorcery">Level 1: Innate Sorcery</h3>
-<p>An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits: • The spell save DC of your Sorcerer spells increases by 1. • You have Advantage on the attack rolls of Sorcerer spells you cast.</p>
+<p>An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits:</p>
+<ul class="fh-pcfh__puces">
+<li>The spell save DC of your Sorcerer spells increases by 1.</li>
+<li>You have Advantage on the attack rolls of Sorcerer spells you cast.</li>
+</ul>
 <p>You can use this feature twice, and you regain all expended uses of it when you finish a Long Rest.</p>
 <h3 class="fh-pcfh__feature" id="l2-font-of-magic">Level 2: Font of Magic</h3>
 <p>You can tap into the wellspring of magic within yourself. This wellspring is represented by Sorcery Points, which allow you to create a variety of magical effects.</p>
-<p>You have 2 Sorcery Points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer Features table. You can’t have more Sorcery Points than the number shown in the table for your level. You regain all expended Sorcery Points when you finish a Long Rest.</p>
+<p>You have 2 Sorcery Points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the <a class="fh-lien" href="#progression">Sorcerer Features table</a>. You can’t have more Sorcery Points than the number shown in the table for your level. You regain all expended Sorcery Points when you finish a Long Rest.</p>
 <p>You can use your Sorcery Points to fuel the options below, along with other features, such as Metamagic, that use those points.</p>
 <p>Converting Spell Slots to Sorcery Points. You can expend a spell slot to gain a number of Sorcery Points equal to the slot’s level (no action required).</p>
-<p>Creating Spell Slots. As a Bonus Action, you can transform unexpended Sorcery Points into one spell slot. The Creating Spell Slots table shows the cost of creating a spell slot of a given level, and it lists the minimum Sorcerer level you must be to create a slot. You can create a spell slot no higher than level 5.</p>
+<p class="fh-pcfh__regle"><strong>Creating Spell Slots.</strong> As a Bonus Action, you can transform unexpended Sorcery Points into one spell slot. The Creating Spell Slots table shows the cost of creating a spell slot of a given level, and it lists the minimum Sorcerer level you must be to create a slot. You can create a spell slot no higher than level 5.</p>
 <p>Any spell slot you create with this feature vanishes when you finish a Long Rest.</p>
 <p>Creating Spell Slots</p>
 <p>Spell Slot Level Sorcery Point Cost Min. Sorcerer Level</p>

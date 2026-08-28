@@ -55,7 +55,7 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <h3 class="fh-pcfh__feature" id="l1-sneak-attack">Level 1: Sneak Attack</h3>
 <p>You know how to strike subtly and exploit a foe’s distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack roll if you have Advantage on the roll and the attack uses a Finesse or a Ranged weapon. The extra damage’s type is the same as the weapon’s type.</p>
 <p>You don’t need Advantage on the attack roll if at least one of your allies is within 5 feet of the target, the ally doesn’t have the Incapacitated condition, and you don’t have Disadvantage on the attack roll.</p>
-<p>The extra damage increases as you gain Rogue levels, as shown in the Sneak Attack column of the Rogue Features table.</p>
+<p>The extra damage increases as you gain Rogue levels, as shown in the Sneak Attack column of the <a class="fh-lien" href="#progression">Rogue Features table</a>.</p>
 <h3 class="fh-pcfh__feature" id="l1-thieves-cant">Level 1: Thieves’ Cant</h3>
 <p>You picked up various languages in the communities where you plied your roguish talents. You know Thieves’ Cant and one other language of your choice, which you choose from the language tables in “Character Creation.”</p>
 <h3 class="fh-pcfh__feature" id="l1-weapon-mastery">Level 1: Weapon Mastery</h3>
@@ -103,20 +103,20 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <p>A mix of burglar, treasure hunter, and explorer, you are the epitome of an adventurer. In addition to improving your agility and stealth, you gain abilities useful for delving into ruins and getting maximum benefit from the magic items you find there.</p>
 <h4 class="fh-pcfh__feature" id="l3-fast-hands">Level 3: Fast Hands</h4>
 <p>As a Bonus Action, you can do one of the following.</p>
-<p>Sleight of Hand. Make a Dexterity (Sleight of Hand) check to pick a lock or disarm a trap with Thieves’ Tools or to pick a pocket.</p>
+<p class="fh-pcfh__regle"><strong>Sleight of Hand.</strong> Make a Dexterity (Sleight of Hand) check to pick a lock or disarm a trap with Thieves’ Tools or to pick a pocket.</p>
 <p>Use an Object. Take the Utilize action, or take the Magic action to use a magic item that requires that action.</p>
 <h4 class="fh-pcfh__feature" id="l3-second-story-work">Level 3: Second-Story Work</h4>
 <p>You’ve trained to get into especially hard-to-reach places, granting you these benefits.</p>
-<p>Climber. You gain a Climb Speed equal to your Speed.</p>
-<p>Jumper. You can determine your jump distance using your Dexterity rather than your Strength.</p>
+<p class="fh-pcfh__regle"><strong>Climber.</strong> You gain a Climb Speed equal to your Speed.</p>
+<p class="fh-pcfh__regle"><strong>Jumper.</strong> You can determine your jump distance using your Dexterity rather than your Strength.</p>
 <h4 class="fh-pcfh__feature" id="l9-supreme-sneak">Level 9: Supreme Sneak</h4>
 <p>You gain the following Cunning Strike option.</p>
 <p>Stealth Attack (Cost: 1d6). If you have the Hide action’s Invisible condition, this attack doesn’t end that condition on you if you end the turn behind Three-Quarters Cover or Total Cover.</p>
 <h4 class="fh-pcfh__feature" id="l13-use-magic-device">Level 13: Use Magic Device</h4>
 <p>You’ve learned how to maximize use of magic items, granting you the following benefits.</p>
-<p>Attunement. You can attune to up to four magic items at once.</p>
-<p>Charges. Whenever you use a magic item property that expends charges, roll 1d6. On a roll of 6, you use the property without expending the charges.</p>
-<p>Scrolls. You can use any Spell Scroll, using Intelligence as your spellcasting ability for the spell. If the spell is a cantrip or a level 1 spell, you can cast it reliably. If the scroll contains a higher-level spell, you must first succeed on an Intelligence (Arcana) check (DC 10 plus the spell’s level). On a successful check, you cast the spell from the scroll. On a failed check, the scroll disintegrates.</p>
+<p class="fh-pcfh__regle"><strong>Attunement.</strong> You can attune to up to four magic items at once.</p>
+<p class="fh-pcfh__regle"><strong>Charges.</strong> Whenever you use a magic item property that expends charges, roll 1d6. On a roll of 6, you use the property without expending the charges.</p>
+<p class="fh-pcfh__regle"><strong>Scrolls.</strong> You can use any Spell Scroll, using Intelligence as your spellcasting ability for the spell. If the spell is a cantrip or a level 1 spell, you can cast it reliably. If the scroll contains a higher-level spell, you must first succeed on an Intelligence (Arcana) check (DC 10 plus the spell’s level). On a successful check, you cast the spell from the scroll. On a failed check, the scroll disintegrates.</p>
 <h4 class="fh-pcfh__feature" id="l17-thief-s-reflexes">Level 17: Thief’s Reflexes</h4>
 <p>You are adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your Initiative minus 10.</p>
 <p>Sorcerer</p>

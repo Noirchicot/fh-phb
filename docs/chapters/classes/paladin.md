@@ -61,19 +61,19 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <p>You can also expend 5 Hit Points from the pool of healing power to remove the Poisoned condition from the creature; those points don’t also restore Hit Points to the creature.</p>
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>You have learned to cast spells through prayer and meditation. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Paladin spells, which appear in the Paladin spell list later in the class’s description.</p>
-<p>Spell Slots. The Paladin Features table shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
+<p class="fh-pcfh__regle"><strong>Spell Slots.</strong> The <a class="fh-lien" href="#progression">Paladin Features table</a> shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
 <p>Prepared Spells of Level 1+. You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two level 1 Paladin spells. Heroism and Searing Smite are recommended.</p>
-<p>The number of spells on your list increases as you gain Paladin levels, as shown in the Prepared Spells column of the Paladin Features table. Whenever that number increases, choose additional Paladin spells until the number of spells on your list matches the number in the Paladin Features table. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 5 Paladin, your list of prepared spells can include six Paladin spells of level 1 or 2 in any combination.</p>
+<p>The number of spells on your list increases as you gain Paladin levels, as shown in the Prepared Spells column of the <a class="fh-lien" href="#progression">Paladin Features table</a>. Whenever that number increases, choose additional Paladin spells until the number of spells on your list matches the number in the <a class="fh-lien" href="#progression">Paladin Features table</a>. The chosen spells must be of a level for which you have spell slots. For example, if you’re a level 5 Paladin, your list of prepared spells can include six Paladin spells of level 1 or 2 in any combination.</p>
 <p>If another Paladin feature gives you spells that you always have prepared, those spells don’t count against the number of spells you can prepare with this feature, but those spells otherwise count as Paladin spells for you.</p>
-<p>Changing Your Prepared Spells. Whenever you finish a Long Rest, you can replace one spell on your list with another Paladin spell for which you have spell slots.</p>
-<p>Spellcasting Ability. Charisma is your spellcasting ability for your Paladin spells.</p>
-<p>Spellcasting Focus. You can use a Holy Symbol as a Spellcasting Focus for your Paladin spells.</p>
+<p class="fh-pcfh__regle"><strong>Changing Your Prepared Spells.</strong> Whenever you finish a Long Rest, you can replace one spell on your list with another Paladin spell for which you have spell slots.</p>
+<p class="fh-pcfh__regle"><strong>Spellcasting Ability.</strong> Charisma is your spellcasting ability for your Paladin spells.</p>
+<p class="fh-pcfh__regle"><strong>Spellcasting Focus.</strong> You can use a Holy Symbol as a Spellcasting Focus for your Paladin spells.</p>
 <h3 class="fh-pcfh__feature" id="l1-weapon-mastery">Level 1: Weapon Mastery</h3>
 <p>Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Longswords and Javelins.</p>
 <p>Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the mastery properties of Halberds and Flails.</p>
 <h3 class="fh-pcfh__feature" id="l2-fighting-style">Level 2: Fighting Style</h3>
 <p>You gain a Fighting Style feat of your choice (see “Feats” for feats). Instead of choosing one of those feats, you can choose the option below.</p>
-<p>Blessed Warrior. You learn two Cleric cantrips of your choice (see the Cleric class’s section for a list of Cleric spells). Guidance and Sacred Flame are recommended. The chosen cantrips count as Paladin spells for you, and Charisma is your spellcasting ability for them. Whenever you gain a Paladin level, you can replace one of these cantrips with another Cleric cantrip.</p>
+<p class="fh-pcfh__regle"><strong>Blessed Warrior.</strong> You learn two Cleric cantrips of your choice (see the Cleric class’s section for a list of Cleric spells). Guidance and Sacred Flame are recommended. The chosen cantrips count as Paladin spells for you, and Charisma is your spellcasting ability for them. Whenever you gain a Paladin level, you can replace one of these cantrips with another Cleric cantrip.</p>
 <h3 class="fh-pcfh__feature" id="l2-paladin-s-smite">Level 2: Paladin’s Smite</h3>
 <p>You always have the Divine Smite spell prepared. In addition, you can cast it without expending a spell slot, but you must finish a Long Rest before you can cast it in this way again.</p>
 <h3 class="fh-pcfh__feature" id="l3-channel-divinity">Level 3: Channel Divinity</h3>
@@ -83,7 +83,7 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <p>A Paladin tries to hold to the highest standards of conduct, but even the most dedicated are fallible. Sometimes a Paladin transgresses their oath.</p>
 <p>A Paladin who has broken a vow typically seeks absolution, spending an all-night vigil as a sign of penitence or undertaking a fast. After a rite of forgiveness, the Paladin starts fresh.</p>
 <p>If your Paladin unrepentantly violates their oath, talk to your GM. Your Paladin should probably take a more appropriate subclass or even abandon the class and adopt another one. If a Channel Divinity effect requires a saving throw, the DC equals the spell save DC from this class’s Spellcasting feature.</p>
-<p>Divine Sense. As a Bonus Action, you can open your awareness to detect Celestials, Fiends, and Undead. For the next 10 minutes or until you have the Incapacitated condition, you know the location of any creature of those types within 60 feet of yourself, and you know its creature type. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the Hallow spell.</p>
+<p class="fh-pcfh__regle"><strong>Divine Sense.</strong> As a Bonus Action, you can open your awareness to detect Celestials, Fiends, and Undead. For the next 10 minutes or until you have the Incapacitated condition, you know the location of any creature of those types within 60 feet of yourself, and you know its creature type. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the Hallow spell.</p>
 <h3 class="fh-pcfh__feature" id="l3-paladin-subclass">Level 3: Paladin Subclass</h3>
 <p>You gain a Paladin subclass of your choice. The Oath of Devotion subclass is detailed after this class’s description. A subclass is a specialization that grants you features at certain Paladin levels. For the rest of your career, you gain each of your subclass’s features that are of your Paladin level or lower.</p>
 <h3 class="fh-pcfh__feature" id="l4-ability-score-improvement">Level 4: Ability Score Improvement</h3>
@@ -115,7 +115,11 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <p>The Oath of Devotion binds Paladins to the ideals of justice and order. These Paladins meet the archetype of the knight in shining armor. They hold themselves to the highest standards of conduct, and some—for better or worse—hold the rest of the world to the same standards.</p>
 <p>Many who swear this oath are devoted to gods of law and good and use their gods’ tenets as the measure of personal devotion. Others hold angels as their ideals and incorporate images of angelic wings into their helmets or coats of arms.</p>
 <p>These paladins share the following tenets:</p>
-<p>• Let your word be your promise. • Protect the weak and never fear to act. • Let your honorable deeds be an example.</p>
+<ul class="fh-pcfh__puces">
+<li>Let your word be your promise.</li>
+<li>Protect the weak and never fear to act.</li>
+<li>Let your honorable deeds be an example.</li>
+</ul>
 <h4 class="fh-pcfh__feature" id="l3-oath-of-devotion-spells">Level 3: Oath of Devotion Spells</h4>
 <p>The magic of your oath ensures you always have certain spells ready; when you reach a Paladin level specified in the Oath of Devotion Spells table, you thereafter always have the listed spells prepared.</p>
 <p>Oath of Devotion Spells</p>
@@ -135,9 +139,9 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <p>Your magical smite now radiates protective energy. Whenever you cast Divine Smite, you and your allies have Half Cover while in your Aura of Protection. The aura has this benefit until the start of your next turn.</p>
 <h4 class="fh-pcfh__feature" id="l20-holy-nimbus">Level 20: Holy Nimbus</h4>
 <p>As a Bonus Action, you can imbue your Aura of Protection with holy power, granting the benefits below for 10 minutes or until you end them (no action required). Once you use this feature, you can’t use it again until you finish a Long Rest. You can also restore your use of it by expending a level 5 spell slot (no action required).</p>
-<p>Holy Ward. You have Advantage on any saving throw you are forced to make by a Fiend or an Undead.</p>
-<p>Radiant Damage. Whenever an enemy starts its turn in the aura, that creature takes Radiant damage equal to your Charisma modifier plus your Proficiency Bonus.</p>
-<p>Sunlight. The aura is filled with Bright Light that is sunlight.</p>
+<p class="fh-pcfh__regle"><strong>Holy Ward.</strong> You have Advantage on any saving throw you are forced to make by a Fiend or an Undead.</p>
+<p class="fh-pcfh__regle"><strong>Radiant Damage.</strong> Whenever an enemy starts its turn in the aura, that creature takes Radiant damage equal to your Charisma modifier plus your Proficiency Bonus.</p>
+<p class="fh-pcfh__regle"><strong>Sunlight.</strong> The aura is filled with Bright Light that is sunlight.</p>
 <p>Ranger</p>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>

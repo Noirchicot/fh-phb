@@ -55,10 +55,10 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <h3 class="fh-pcfh__feature" id="l1-second-wind">Level 1: Second Wind</h3>
 <p>You have a limited well of physical and mental stamina that you can draw on. As a Bonus Action, you can use it to regain Hit Points equal to 1d10 plus your Fighter level.</p>
 <p>You can use this feature twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest.</p>
-<p>When you reach certain Fighter levels, you gain more uses of this feature, as shown in the Second Wind column of the Fighter Features table.</p>
+<p>When you reach certain Fighter levels, you gain more uses of this feature, as shown in the Second Wind column of the <a class="fh-lien" href="#progression">Fighter Features table</a>.</p>
 <h3 class="fh-pcfh__feature" id="l1-weapon-mastery">Level 1: Weapon Mastery</h3>
 <p>Your training with weapons allows you to use the mastery properties of three kinds of Simple or Martial weapons of your choice. Whenever you finish a Long Rest, you can practice weapon drills and change one of those weapon choices.</p>
-<p>When you reach certain Fighter levels, you gain the ability to use the mastery properties of more kinds of weapons, as shown in the Weapon Mastery column of the Fighter Features table.</p>
+<p>When you reach certain Fighter levels, you gain the ability to use the mastery properties of more kinds of weapons, as shown in the Weapon Mastery column of the <a class="fh-lien" href="#progression">Fighter Features table</a>.</p>
 <h3 class="fh-pcfh__feature" id="l2-action-surge">Level 2: Action Surge</h3>
 <p>You can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action, except the Magic action.</p>
 <p>Once you use this feature, you can’t do so again until you finish a Short or Long Rest. Starting at level 17, you can use it twice before a rest but only once on a turn.</p>
@@ -101,8 +101,8 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <p>Your attack rolls with weapons and Unarmed Strikes can now score a Critical Hit on a roll of 18–20 on the d20.</p>
 <h4 class="fh-pcfh__feature" id="l18-survivor">Level 18: Survivor</h4>
 <p>You attain the pinnacle of resilience in battle, giving you these benefits.</p>
-<p>Defy Death. You have Advantage on Death Saving Throws. Moreover, when you roll 18–20 on a Death Saving Throw, you gain the benefit of rolling a 20 on it.</p>
-<p>Heroic Rally. At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Point.</p>
+<p class="fh-pcfh__regle"><strong>Defy Death.</strong> You have Advantage on Death Saving Throws. Moreover, when you roll 18–20 on a Death Saving Throw, you gain the benefit of rolling a 20 on it.</p>
+<p class="fh-pcfh__regle"><strong>Heroic Rally.</strong> At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Point.</p>
 <p>Monk</p>
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </div>
