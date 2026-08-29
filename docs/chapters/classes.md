@@ -3,9 +3,10 @@ hide:
   - toc
 ---
 
+# Classes
+
 <div class="fh-dalle" markdown>
 
-# Classes
 
 
 Your class is the training your character carries: what they reached for when
@@ -52,9 +53,9 @@ reading it.
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Barbarian
+
+<div class="fh-dalle" markdown>
 
 ![Barbarian](../assets/img/class-barbarian.webp){ .fh-thumb }
 
@@ -64,9 +65,9 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Bard
+
+<div class="fh-dalle" markdown>
 
 ![Bard](../assets/img/class-bard.webp){ .fh-thumb }
 
@@ -76,9 +77,9 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Cleric
+
+<div class="fh-dalle" markdown>
 
 ![Cleric](../assets/img/class-cleric.webp){ .fh-thumb }
 
@@ -88,9 +89,9 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Druid
+
+<div class="fh-dalle" markdown>
 
 ![Druid](../assets/img/class-druid.webp){ .fh-thumb }
 
@@ -100,9 +101,9 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Fighter
+
+<div class="fh-dalle" markdown>
 
 ![Fighter](../assets/img/class-fighter.webp){ .fh-thumb }
 
@@ -112,9 +113,9 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Monk
+
+<div class="fh-dalle" markdown>
 
 ![Monk](../assets/img/class-monk.webp){ .fh-thumb }
 
@@ -124,9 +125,9 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Paladin
+
+<div class="fh-dalle" markdown>
 
 ![Paladin](../assets/img/class-paladin.webp){ .fh-thumb }
 
@@ -136,9 +137,9 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Ranger
+
+<div class="fh-dalle" markdown>
 
 ![Ranger](../assets/img/class-ranger.webp){ .fh-thumb }
 
@@ -148,9 +149,9 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Rogue
+
+<div class="fh-dalle" markdown>
 
 ![Rogue](../assets/img/class-rogue.webp){ .fh-thumb }
 
@@ -160,9 +161,9 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Sorcerer
+
+<div class="fh-dalle" markdown>
 
 ![Sorcerer](../assets/img/class-sorcerer.webp){ .fh-thumb }
 
@@ -172,9 +173,9 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Warlock
+
+<div class="fh-dalle" markdown>
 
 ![Warlock](../assets/img/class-warlock.webp){ .fh-thumb }
 
@@ -184,9 +185,9 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 
 </div>
 
-<div class="fh-dalle" markdown>
-
 ## Wizard
+
+<div class="fh-dalle" markdown>
 
 ![Wizard](../assets/img/class-wizard.webp){ .fh-thumb }
 

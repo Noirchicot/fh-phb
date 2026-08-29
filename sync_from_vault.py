@@ -2439,8 +2439,8 @@ def split_classes():
     #    le titre, jusqu'aux entrées de classe.
     for _i, _l in enumerate(menu):
         if _l.startswith("# "):
-            menu = (menu[:_i]
-                    + ['<div class="fh-dalle" markdown>', "", menu[_i]]
+            menu = (menu[:_i + 1]
+                    + ["", '<div class="fh-dalle" markdown>', ""]
                     + menu[_i + 1:] + ["", "</div>"])
             break
 
@@ -2479,28 +2479,20 @@ def split_classes():
         #    35 % »*. Ce qui précède le bloc généré est du markdown ; le div
         #    porte `markdown` pour que mkdocs continue de le traiter
         #    (extension `md_in_html`, déjà active).
-        # 🔴 Eric, 2026-08-29 : *« recadre tes dalles — certains titres et
-        #    images ne sont pas dans, ou dépassent »*. Le titre MONTE dans la
-        #    dalle d'intro (il flottait sur l'image de fond) ; l'extension
-        #    `md_in_html` rend le `#` en vrai <h1>, mkdocs y lit toujours le
-        #    titre de page.
         coupe = corps.find('<div class="fh-pcfh">')
         if coupe > 0:
-            corps = ('<div class="fh-dalle" markdown>\n\n# %s\n\n%s\n\n</div>\n\n%s'
-                     % (titre, corps[:coupe].strip(), corps[coupe:]))
+            corps = ('<div class="fh-dalle" markdown>\n\n%s\n\n</div>\n\n%s'
+                     % (corps[:coupe].strip(), corps[coupe:]))
         # ⛔ EXIT LA TABLE DES MATIÈRES DE DROITE (Eric, même dictée : *« exit
         #    le menu latéral droit »*) — par le mécanisme NATIF de Material
         #    (`hide: toc`), pas par un display:none qui laisserait sa place.
-        if coupe > 0:
-            page = f"---\nhide:\n  - toc\n---\n\n{corps}\n"
-        else:
-            page = f"---\nhide:\n  - toc\n---\n\n# {titre}\n\n{corps}\n"
+        page = f"---\nhide:\n  - toc\n---\n\n# {titre}\n\n{corps}\n"
         (CLASSES_DIR / f"{slug_}.md").write_text(page, encoding="utf-8")
 
         menu.append("")
-        menu.append('<div class="fh-dalle" markdown>')
-        menu.append("")
         menu.append(block[0])
+        menu.append("")
+        menu.append('<div class="fh-dalle" markdown>')
         menu.append("")
         menu.append(f"![{name}](../assets/img/class-{slug_}.webp){{ .fh-thumb }}")
         menu.append("")

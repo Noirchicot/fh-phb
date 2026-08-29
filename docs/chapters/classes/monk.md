@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-<div class="fh-dalle" markdown>
-
 # Monk
+
+<div class="fh-dalle" markdown>
 
 A monk spent years turning an empty hand into a weapon nobody had to hand them, and their own body into armor nobody had to forge. Somewhere in there they learn to catch a blow mid-flight and send it back. No steel, no plate: just discipline, repeated past where most people quit and call it enough.
 

@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-<div class="fh-dalle" markdown>
-
 # Ranger
+
+<div class="fh-dalle" markdown>
 
 A ranger notices what the ground is trying to hide—a bent stalk, a wrong print, weather an hour before anyone else smells it. Half warrior, half quiet spellcaster, most dangerous at home, oddly at ease around animals that would bolt from anyone else. Rangers walk point, and everyone follows the boot prints.
 

@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-<div class="fh-dalle" markdown>
-
 # Paladin
+
+<div class="fh-dalle" markdown>
 
 A paladin's magic comes with strings attached—one oath, sworn once, that the power keeps checking against. Keep it, and the strength holds; bend it for convenience, and the paladin feels it first. They walk into fights cautious people avoid, healing hands as practiced as the blade. The oath is the whole engine.
 

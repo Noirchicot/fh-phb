@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-<div class="fh-dalle" markdown>
-
 # Fighter
+
+<div class="fh-dalle" markdown>
 
 Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook, no arcane grammar—only muscle and discipline. They are the wall that never breaks. Armor is their skin; courage is the spell. Knight, duelist, veteran—all built by practice, not birth. When magic fails, steel remains.
 

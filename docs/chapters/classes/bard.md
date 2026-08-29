@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-<div class="fh-dalle" markdown>
-
 # Bard
+
+<div class="fh-dalle" markdown>
 
 A bard bets a song can do what a sword can't, and wins more than skeptics expect. Charisma isn't decoration here—it's the power source, drawn from music, wit, and nerve rather than study or scripture. They can talk down a guard, then fight the next one, barely noticing. Every performance is a small working of magic.
 

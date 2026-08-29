@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-<div class="fh-dalle" markdown>
-
 # Druid
+
+<div class="fh-dalle" markdown>
 
 A druid doesn't dominate nature, they petition it—and get answers more often than a king would like. Ask properly, and weather, root, even a wolf's own body can be borrowed a while; the oldest barely bother turning back. Kingdoms trust borders. A druid was loyal to the ground before any line got drawn.
 
