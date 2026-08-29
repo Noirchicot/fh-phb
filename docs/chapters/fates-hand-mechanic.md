@@ -1,4 +1,4 @@
-# Destiny System
+# Destiny & Arcana
 
 ---
 
@@ -8,11 +8,224 @@ Glimmers of true power flicker beyond mortal sight, revealing a grand tapestry o
 
 ---
 
-## 1. Destiny Score, Points & Dice
+## 1. The Major Arcana
+
+Twenty-two cards, and each one is a person your fate could turn out to be.
+A card is never just a bonus: it carries a **meaning**, it moves your Destiny
+Score, it grants a **power** you may use, and it can sing **vibrations** into
+your soul — six ways the world answers you.
+
+At character creation, draw your card among the 22 Major Arcana ([Random Tarot Card Generator](https://randomtarotcard.com/Death.html)), or pick one of the **three starter cards** below — the builder sets them out for a first character. Only one Major Arcana is ever active — powers never stack. New cards come later, drawn on an Arcane Awakening (§7).
+
+Each card's page gives:
+
+- **Meaning** — a symbolic summary.
+- **Signature Ability** — the card's ability score, read on *your* sheet: the spellcasting ability of its Vibrations, and the Chaos table any Vibration drags you onto.
+- **Destiny Impact** — a modifier to the initial Destiny score.
+- **Power** — a regularly usable ability (like a racial trait).
+- **Vibrations** — six stored one-shot effects, rank 1 to 6 (the rules: §8).
+
+<div class="fh-arcana-teaser">
+<figure class="fh-arcana-card">
+<a href="../arcana/the-fool/"><img src="../../assets/img/tarot/major/0.jpg" alt="The Fool" loading="lazy"></a>
+<figcaption><span class="fh-arcana-num">0</span> <a href="../arcana/the-fool/">The Fool</a></figcaption>
+</figure>
+<figure class="fh-arcana-card">
+<a href="../arcana/the-chariot/"><img src="../../assets/img/tarot/major/VII.jpg" alt="The Chariot" loading="lazy"></a>
+<figcaption><span class="fh-arcana-num">VII</span> <a href="../arcana/the-chariot/">The Chariot</a></figcaption>
+</figure>
+<figure class="fh-arcana-card">
+<a href="../arcana/the-sun/"><img src="../../assets/img/tarot/major/XIX.jpg" alt="The Sun" loading="lazy"></a>
+<figcaption><span class="fh-arcana-num">XIX</span> <a href="../arcana/the-sun/">The Sun</a></figcaption>
+</figure>
+<p class="fh-arcana-note">The three starter cards — the builder offers them to a first character; the full deck below is yours to draw from.</p>
+</div>
+
+## 2. The Deck
+
+The full deck, card by card — meaning, signature ability, impact, power, and the six Vibrations of each.
+
+### 0. The Fool
+
+![The Fool](../assets/img/tarot/major/0.jpg){ .fh-thumb }
+
+innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.
+
+[Read the full entry →](arcana/the-fool.md)
+
+### I. The Magician
+
+![The Magician](../assets/img/tarot/major/I.jpg){ .fh-thumb }
+
+ingenuity, creativity, mastery of tools. The intellect shapes reality. The initiator of change through willpower.
+
+[Read the full entry →](arcana/the-magician.md)
+
+### II. The High Priestess
+
+![The High Priestess](../assets/img/tarot/major/II.jpg){ .fh-thumb }
+
+hidden knowledge, intuition, mystery. Inner wisdom, revelation through patient study. Silence and secrets of the soul.
+
+[Read the full entry →](arcana/the-high-priestess.md)
+
+### III. The Empress
+
+![The Empress](../assets/img/tarot/major/III.jpg){ .fh-thumb }
+
+fertility, abundance, growth, prosperity. Support, harmony, generosity.
+
+[Read the full entry →](arcana/the-empress.md)
+
+### IV. The Emperor
+
+![The Emperor](../assets/img/tarot/major/IV.jpg){ .fh-thumb }
+
+authority, order, stable power. Construction, organization, protection.
+
+[Read the full entry →](arcana/the-emperor.md)
+
+### V. The Hierophant
+
+![The Hierophant](../assets/img/tarot/major/V.jpg){ .fh-thumb }
+
+tradition, teaching, spiritual guidance. Faith, rituals, sacred order.
+
+[Read the full entry →](arcana/the-hierophant.md)
+
+### VI. The Lovers
+
+![The Lovers](../assets/img/tarot/major/VI.jpg){ .fh-thumb }
+
+choice, harmony, relationships, moral dilemmas. Union, sacrifice, cooperation.
+
+[Read the full entry →](arcana/the-lovers.md)
+
+### VII. The Chariot
+
+![The Chariot](../assets/img/tarot/major/VII.jpg){ .fh-thumb }
+
+victory, determination, triumph. Active control, moving toward success.
+
+[Read the full entry →](arcana/the-chariot.md)
+
+### VIII. Strength
+
+![Strength](../assets/img/tarot/major/VIII.jpg){ .fh-thumb }
+
+courage, mastery of instincts, perseverance, moral and physical endurance.
+
+[Read the full entry →](arcana/strength.md)
+
+### IX. The Hermit
+
+![The Hermit](../assets/img/tarot/major/IX.jpg){ .fh-thumb }
+
+introspection, solitude, search for truth. Knowledge found in inner calm.
+
+[Read the full entry →](arcana/the-hermit.md)
+
+### X. Wheel of Fortune
+
+![Wheel of Fortune](../assets/img/tarot/major/X.jpg){ .fh-thumb }
+
+change, unstable destiny, opportunity, unpredictability. Embracing the cycle of ups and downs.
+
+[Read the full entry →](arcana/wheel-of-fortune.md)
+
+### XI. Justice
+
+![Justice](../assets/img/tarot/major/XI.jpg){ .fh-thumb }
+
+fairness, responsibility, moral order. Evaluating, assuming responsibility, restoring balance.
+
+[Read the full entry →](arcana/justice.md)
+
+### XII. The Hanged Man
+
+![The Hanged Man](../assets/img/tarot/major/XII.jpg){ .fh-thumb }
+
+sacrifice, letting go, new perspective. Renouncing to gain understanding.
+
+[Read the full entry →](arcana/the-hanged-man.md)
+
+### XIII. Death
+
+![Death](../assets/img/tarot/major/XIII.jpg){ .fh-thumb }
+
+transformation, end of a cycle, rebirth. Radical change, not absolute finality.
+
+[Read the full entry →](arcana/death.md)
+
+### XIV. Temperance
+
+![Temperance](../assets/img/tarot/major/XIV.jpg){ .fh-thumb }
+
+moderation, harmony, compromise. Finding balance and the right measure.
+
+[Read the full entry →](arcana/temperance.md)
+
+### XV. The Devil
+
+![The Devil](../assets/img/tarot/major/XV.jpg){ .fh-thumb }
+
+temptation, illusions, voluntary servitude. Power at the cost of freedom.
+
+[Read the full entry →](arcana/the-devil.md)
+
+### XVI. The Tower
+
+![The Tower](../assets/img/tarot/major/XVI.jpg){ .fh-thumb }
+
+shock, collapse, brutal revelation. Destruction to rebuild on truth.
+
+[Read the full entry →](arcana/the-tower.md)
+
+### XVII. The Star
+
+![The Star](../assets/img/tarot/major/XVII.jpg){ .fh-thumb }
+
+hope, inspiration, celestial guidance. A beacon in the night, trust in the future.
+
+[Read the full entry →](arcana/the-star.md)
+
+### XVIII. The Moon
+
+![The Moon](../assets/img/tarot/major/XVIII.jpg){ .fh-thumb }
+
+illusions, dreams, nocturnal mysteries. The unconscious mind, distorted perception.
+
+[Read the full entry →](arcana/the-moon.md)
+
+### XIX. The Sun
+
+![The Sun](../assets/img/tarot/major/XIX.jpg){ .fh-thumb }
+
+success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.
+
+[Read the full entry →](arcana/the-sun.md)
+
+### XX. Judgement
+
+![Judgement](../assets/img/tarot/major/XX.jpg){ .fh-thumb }
+
+rebirth, higher calling, final reckoning. Weighing the past, offering redemption or judgment.
+
+[Read the full entry →](arcana/judgement.md)
+
+### XXI. The World
+
+![The World](../assets/img/tarot/major/XXI.jpg){ .fh-thumb }
+
+accomplishment, wholeness, unity. The end of one cycle, opening to a new beginning.
+
+[Read the full entry →](arcana/the-world.md)
+
+## 3. Destiny Score, Points & Dice
 
 - **Destiny Score** — your ceiling (maximum). A measure of your cosmic significance.
 - **Destiny Points** — your current value. Spent to fuel Destiny Dice; replenished on rest.
-- **Destiny Dice** — d4 / d6 / d8 / d10 / d12, used to bend a roll (see §3).
+- **Destiny Dice** — d4 / d6 / d8 / d10 / d12, used to bend a roll (see §5).
 
 ### Calculating your Destiny Score
 - **Proficiency** — add your proficiency bonus.
@@ -38,12 +251,12 @@ Base Destiny is 2 for every species. A handful get a dedicated Destiny-chosen po
 
 ---
 
-## 2. Recovery & Erosion
+## 4. Recovery & Erosion
 
 - **Long rest:** regain +1 **Destiny Point** — capped at your Destiny Score.
 - **Even total → die back:** each time your Points reach an even number, regain the lowest missing die.
 - **Cap & overflow:** long rest and most recovery cannot exceed your Score. The exceptions — **Arcana cards** and **Natural 1s** — grant *temporary* points that may push you above your Score.
-- **Natural 20 (on a d20):** −1 Destiny Point. If this brings you to 0, trigger an **Arcane Awakening** (§5).
+- **Natural 20 (on a d20):** −1 Destiny Point. If this brings you to 0, trigger an **Arcane Awakening** (§7).
 - **Natural 1 (on a d20):** either **Accept** (fail, +1 *temporary* point) or **Invoke Chaos** (Points → 0, the failure becomes a critical success, then roll 2d6 on the [Chaos Table](chaos-tables.md)).
 - Other sources of temporary points: the **[Ceremony](https://www.dndbeyond.com/spells/14760-ceremony)** spell (once per long rest; better with a richer sacrifice), and **Minor Arcana** drawn on an Awakening.
 
@@ -51,22 +264,22 @@ Base Destiny is 2 for every species. A handful get a dedicated Destiny-chosen po
 
 ---
 
-## 3. Using Destiny Dice
+## 5. Using Destiny Dice
 
 1. **Spend a die** — roll it; subtract the result from your Destiny Points and add it to a d20 check (attack, skill, or save).
-2. **Breach 0** — if your Points reach 0 or below, provoke **Chaos** (§4).
+2. **Breach 0** — if your Points reach 0 or below, provoke **Chaos** (§6).
 3. **Max roll = Critical Success** — counts as a Natural 20; you lose only −1 Point (not the full roll) and the die is spent until recovered.
-4. **Roll of 1 = Arcane Critical Failure — or a refusal.** A 1 on a Destiny Die is an offer, exactly as a Natural 1 on a d20 is (§2). Choose:
+4. **Roll of 1 = Arcane Critical Failure — or a refusal.** A 1 on a Destiny Die is an offer, exactly as a Natural 1 on a d20 is (§4). Choose:
     - **Accept** — the check fails critically; you gain +1 **Destiny Point** but lose that die. *(That +1 often lands you on an even total, which immediately regains the lowest missing die — so roughly one time in two you get a die straight back.)*
-    - **Refuse** — the 1 reads instead as the die's highest face: an **Arcane Critical Success** (§1), counting as a Natural 20. The price is exactly what defying a Natural 1 costs — your Points drop to 0 and you roll 2d6 on the [Chaos Table](chaos-tables.md) for the ability you were using. The die is spent either way, and refusing forfeits the +1 point along with any die it would have brought back.
+    - **Refuse** — the 1 reads instead as the die's highest face: an **Arcane Critical Success** (§3), counting as a Natural 20. The price is exactly what defying a Natural 1 costs — your Points drop to 0 and you roll 2d6 on the [Chaos Table](chaos-tables.md) for the ability you were using. The die is spent either way, and refusing forfeits the +1 point along with any die it would have brought back.
 
-> *Refusing is the mirror of §2's Natural 1: the same gesture, made from the other side. Fate offered you a way out of the failure it was about to hand you; taking it back costs everything you were holding.*
+> *Refusing is the mirror of §4's Natural 1: the same gesture, made from the other side. Fate offered you a way out of the failure it was about to hand you; taking it back costs everything you were holding.*
 
 > *Example — Lirien (Points 6) attempts a wild acrobatic feat with a d6. She rolls 5: +5 to her check, dropping her to 1. She avoids Chaos (5 < 6), but one more push risks calamity.*
 
 ---
 
-## 4. The Chaos Effect
+## 6. The Chaos Effect
 
 Chaos occurs when spending a die brings your Destiny Points to 0 or below.
 
@@ -75,7 +288,7 @@ Chaos occurs when spending a die brings your Destiny Points to 0 or below.
 3. **Success** — suffer 1 level of **Exhaustion**.
 4. **Failure** — roll 1d6 + Overreach on the [Chaos Table](chaos-tables.md) for that ability. The higher the result, the worse (injuries, lasting handicaps, madness tied to the ability used).
 
-A **Natural 1** on a d20 may instead force destiny — turning the failure into a critical success (Natural 20) at the cost of a 2d6 [Chaos roll](chaos-tables.md). Refusing an **Arcane Critical Failure** (§3.4) costs the same 2d6, and likewise skips the Overreach save entirely: the two refusals go straight to the table.
+A **Natural 1** on a d20 may instead force destiny — turning the failure into a critical success (Natural 20) at the cost of a 2d6 [Chaos roll](chaos-tables.md). Refusing an **Arcane Critical Failure** (§5.4) costs the same 2d6, and likewise skips the Overreach save entirely: the two refusals go straight to the table.
 
 ### Exhaustion — house scale
 
@@ -91,59 +304,16 @@ The 5e ladder is not used here. Chaos hands out levels often enough that the off
 
 ---
 
-## 5. Arcane Awakening
+## 7. Arcane Awakening
 
 When your Destiny Points reach 0 after a Natural 20, draw a card from the tarot deck:
 
-- **Minor Arcana** — gain temporary **Destiny Points** equal to the card's value, and a single **Brick** (§5.1). Numbered cards give their number (Ace = 1); heads — Page, Knight, Queen, King — give 10.
+- **Minor Arcana** — gain temporary **Destiny Points** equal to the card's value, and a single **Brick** (§7.1). Numbered cards give their number (Ace = 1); heads — Page, Knight, Queen, King — give 10.
 - **Major Arcana** — you gain +1 to your maximum **Destiny Score** and 10 temporary **Destiny Points** *either way*, then choose to switch to the new card (losing your old Arcana's powers for the new one's) or keep your current one. Only one Major Arcana is ever active — powers never stack.
 
 > *Example — Alysandra (Points 1) lands a final strike with a Nat 20, draining her to 0 and sparking an Awakening. She draws **The Emperor**: her Score climbs and she gains command over lesser minds.*
 
-### 5.2 What a Major Arcana is
-
-Twenty-two cards, and each one is a person your fate could turn out to be.
-A card is never just a bonus: it carries a **meaning**, it moves your Destiny
-Score, it grants a **power** you may use, and it leaves a **vibration** — a way
-the world answers you.
-
-You meet them one at a time. There is no list to study before you play:
-you learn a card by drawing it, and what you draw is yours for good. Three
-are shown below so you know what a card looks like — the other nineteen are
-waiting.
-
-<div class="fh-arcana-teaser">
-<figure class="fh-arcana-card">
-<img src="../../assets/img/tarot/major/0.jpg" alt="The Fool" loading="lazy">
-<figcaption><span class="fh-arcana-num">0</span> The Fool</figcaption>
-<dl>
-<dt>Meaning</dt><dd>innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.</dd>
-<dt>Impact</dt><dd>+2</dd>
-<dt>Power</dt><dd>once per long rest, you may roll 2 Destiny dice at once, take the total of both as a bonus, and pay only the price of the highest.</dd>
-</dl></figure>
-<figure class="fh-arcana-card">
-<img src="../../assets/img/tarot/major/VII.jpg" alt="The Chariot" loading="lazy">
-<figcaption><span class="fh-arcana-num">VII</span> The Chariot</figcaption>
-<dl>
-<dt>Meaning</dt><dd>victory, determination, triumph. Active control, moving toward success.</dd>
-<dt>Impact</dt><dd>+1</dd>
-<dt>Power</dt><dd>once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.</dd>
-</dl></figure>
-<figure class="fh-arcana-card">
-<img src="../../assets/img/tarot/major/XIX.jpg" alt="The Sun" loading="lazy">
-<figcaption><span class="fh-arcana-num">XIX</span> The Sun</figcaption>
-<dl>
-<dt>Meaning</dt><dd>success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.</dd>
-<dt>Impact</dt><dd>+1</dd>
-<dt>Power</dt><dd>once per short rest, add +2 to the result of a Destiny die without any additional cost.</dd>
-</dl></figure>
-</div>
-
-*The reading of all twenty-two belongs to your Game Master.*
-
----
-
-### 5.1 The Brick — dreaming something into being
+### 7.1 The Brick — dreaming something into being
 
 A **Brick** is not a power. It is a roleplay opportunity: the chance to dream
 something into reality. It has no objective, no statistics and no cost — and
@@ -185,13 +355,13 @@ fusion — in Les Forces Primordiales de Nymedes.)*
 
 ---
 
-## 6. Arcane Vibrations
+## 8. Arcane Vibrations
 
-When fate sings through your card, a fragment of its theme stays with you. Each Major Arcana has **six Vibrations** — one per rank, listed on its page in [The Major Arcana](major-arcana.md).
+When fate sings through your card, a fragment of its theme stays with you. Each Major Arcana has **six Vibrations** — one per rank, listed under each card in the Deck (§2).
 
 ### Storing a Vibration
 
-When you roll an **Arcane Critical Success** on a Destiny Die (§3) while you have **at least 1 Destiny Point**, your Arcana **vibrates**: store one Vibration of your choice among those you have access to.
+When you roll an **Arcane Critical Success** on a Destiny Die (§5) while you have **at least 1 Destiny Point**, your Arcana **vibrates**: store one Vibration of your choice among those you have access to.
 
 - Your **Destiny Score** (fixed) sets the **highest rank** you can reach:
 
@@ -210,7 +380,7 @@ A stored Vibration is a scroll written into your soul: **casting it consumes it,
 
 ### Losing a Vibration
 
-Whenever you **refuse** a Natural 1 or an Arcane Critical Failure (§2, §3.4), on top of the usual price you must **give up one stored Vibration of your choice**, if you have any.
+Whenever you **refuse** a Natural 1 or an Arcane Critical Failure (§2, §5.4), on top of the usual price you must **give up one stored Vibration of your choice**, if you have any.
 
 > *Example — Caracole (Destiny Score 11 → rank 4 access). With enough Points at hand, he stores a 2-vp Vibration, then a 3-vp one. Leaping a chasm, he rolls a Natural 1 — certain death. He refuses fate: the 1 becomes a 20, his Points drop to 0, Chaos rolls — and he lets go of one of his two Vibrations. The other stays stored; until his Points recover he can neither store more nor cast it, except through Chaos.*
 
@@ -224,6 +394,10 @@ Your Destiny Score and the Arcana are the wellspring of power in a world where h
 
 ---
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The base game says nothing about this subject — every rule on this page is Eric's.</p>
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">arcana</span> <span class="fh-layer__added">adds 22</span> — Death, Judgement, Justice, Strength, Temperance, The Chariot…</li>
+</ul>
+<p class="fh-layer__note">Measured against the base game’s data. Rules this chapter states in its own words are not counted here.</p>
 </nav>

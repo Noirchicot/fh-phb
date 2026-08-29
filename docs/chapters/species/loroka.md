@@ -1,4 +1,4 @@
-# Loroka
+# oroka
 
 ![Loroka](../../assets/img/species-loroka.jpg){ .fh-portrait }
 

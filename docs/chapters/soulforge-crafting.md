@@ -62,7 +62,7 @@ Named tiers sit on even PP; the "+" half-tiers are the *between-tier* items (odd
 - *Artifact* / beyond-Epic essence is never rolled from CR — reserve it for unique sources.
 
 > [!note] Souls as essence — tolerated, if the cause is "just"
-> In the **Demon Forest**, beasts carry their essence in the gems crusting their bodies — just take the gem. Reaping an **Aberrant** yields essence equal to its **Destiny Score**, and the **Arcana** it awakened to ([The Major Arcana](major-arcana.md)) becomes its own **catalyst** — a blade reaped from a Devil-touched Eluzi bears the Devil's mark. A gem may also be fused into living flesh (see *Body Forging*, below).
+> In the **Demon Forest**, beasts carry their essence in the gems crusting their bodies — just take the gem. Reaping an **Aberrant** yields essence equal to its **Destiny Score**, and the **Arcana** it awakened to ([the Deck](fates-hand-mechanic.md#2-the-deck)) becomes its own **catalyst** — a blade reaped from a Devil-touched Eluzi bears the Devil's mark. A gem may also be fused into living flesh (see *Body Forging*, below).
 
 ---
 

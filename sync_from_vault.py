@@ -1376,7 +1376,6 @@ CHAPTER_GENRES = {
     "species.md":          ["species"],
     "inheritance.md":      ["background", "training"],
     "equipment.md":        ["weapon", "weapon-property", "weapon-mastery", "armor", "gear", "tool"],
-    "major-arcana.md":     ["arcana"],
     "feats.md":            ["feat"],
     "trainings.md":        ["training"],
     "rules-glossary.md":   ["glossary"],
@@ -1386,7 +1385,7 @@ CHAPTER_GENRES = {
     "crafting.md":         ["tool"],
     "chaos-tables.md":     ["monster"],
     # « — » : le SRD ne dit rien de ces sujets. Explicites, pas absents.
-    "identity.md": [], "ability-scores.md": [], "fates-hand-mechanic.md": [],
+    "identity.md": [], "ability-scores.md": [], "fates-hand-mechanic.md": ["arcana"],
     "moonkeeper.md": [], "leveling-up.md": [], "battlefield.md": [],
     "dungeoneering.md": [], "magic.md": [], "dark-rituals.md": [],
     "soulforge-crafting.md": [], "primordial-forces.md": [],
@@ -1716,25 +1715,20 @@ def arcana_teaser(noms):
             "{{arcana:%s}} : %s n'est pas une carte du chapitre (disponibles : %s)."
             % (noms, ", ".join(manquants), ", ".join(sorted(par_nom))))
     out = ['<div class="fh-arcana-teaser">']
+    slug_par_num = {num: slug_ for slug_, _h, num, _n in ARCANA22}
     for n in voulus:
         c = par_nom[n.lower()]
+        slug_ = slug_par_num.get(c["numeral"], "")
         out.append('<figure class="fh-arcana-card%s">'
                    % ("" if ARCANA_ART_READY else " fh-arcana-card--noart"))
         if ARCANA_ART_READY:
-            out.append('<img src="../../assets/img/tarot/major/%s.jpg" alt="%s" loading="lazy">'
-                       % (html.escape(c["numeral"]), html.escape(c["name"])))
-        out.append('<figcaption><span class="fh-arcana-num">%s</span> %s</figcaption>'
-                   % (html.escape(c["numeral"]), html.escape(c["name"])))
-        out.append("<dl>")
-        for libelle, cle in (("Meaning", "meaning"), ("Impact", "impact"),
-                             ("Power", "power"), ("Vibration", "vibration")):
-            if c.get(cle):
-                out.append("<dt>%s</dt><dd>%s</dd>" % (libelle, html.escape(c[cle])))
-        out.append("</dl></figure>")
-    if not ARCANA_ART_READY:
-        out.append('<p class="fh-arcana-note">The twenty-two cards are being '
-                   "painted. These three are shown by their text alone until "
-                   "the deck is finished.</p>")
+            out.append('<a href="../arcana/%s/"><img src="../../assets/img/tarot/major/%s.jpg" alt="%s" loading="lazy"></a>'
+                       % (slug_, html.escape(c["numeral"]), html.escape(c["name"])))
+        out.append('<figcaption><span class="fh-arcana-num">%s</span> <a href="../arcana/%s/">%s</a></figcaption>'
+                   % (html.escape(c["numeral"]), slug_, html.escape(c["name"])))
+        out.append("</figure>")
+    out.append('<p class="fh-arcana-note">The three starter cards — the builder offers '
+               "them to a first character; the full deck below is yours to draw from.</p>")
     out.append("</div>")
     return "\n".join(out)
 
@@ -1842,7 +1836,7 @@ MAP = {
     "skills-and-tools.md":    ("1. Build a Character/Skills & Tools — Player Guide.md",                       "Skills & Tools"),
     "feats.md":               ("2. At the Table/Feats.md",                                                "Feats"),
     "skills-synergies.md":    ("2. At the Table/4. Skills and synergies.md",              "Skills, Synergies & DCs"),
-    "fates-hand-mechanic.md": ("1. Build a Character/D&D 5+ Fate’s Hand Mechanic.md",               "Destiny System"),
+    "fates-hand-mechanic.md": ("1. Build a Character/D&D 5+ Fate’s Hand Mechanic.md",               "Destiny & Arcana"),
     "battlefield.md":         ("2. At the Table/Battlefield Rules.md",                              "Battlefield Rules"),
     "dungeoneering.md":       ("2. At the Table/Dungeoneering.md",                                  "Dungeoneering"),
     # Le glossaire des règles — créé le 2026-08-20 pour fermer le trou le plus grave
@@ -1859,7 +1853,6 @@ MAP = {
     # "circle-magic.md":      ("6. Spells & Magic/Circle Magic.md",                                "Circle Magic"),
     "magic-items.md":         ("3. Magic & Soulforging/Magic Items.md",                                 "Magic Items"),
     "primordial-forces.md":   ("4. World/Nymedes's Primordial Forces.md",                 "Nymedes's Primordial Forces"),
-    "major-arcana.md":        ("1. Build a Character/The Major Arcana.md",                          "Arcana"),
     "chaos-tables.md":        ("5. Dungeon Master Vault/Tables de Fatalité par Attribut.md",           "Chaos Tables"),
 }
 
@@ -2425,7 +2418,7 @@ def split_species():
     for n, (i, slug_, name) in enumerate(starts):
         block = lines[i:bornes[n + 1]]
         # ── la page complète ───────────────────────────────────────────────
-        titre = block[0][3:].strip()          # `## [Elf](…)` -> `[Elf](…)`
+        titre = block[0][4:].strip()          # `## [Elf](…)` -> `[Elf](…)`
         corps = "\n".join(block[1:]).strip()
         # Une page d'espèce vit un cran plus profond : ../assets -> ../../assets
         corps = descendre_dun_cran(corps)
@@ -2759,28 +2752,28 @@ def build_chaos_tables():
 # ⛔ Une seule liste, comme SPECIES et CLASSES : elle sert le découpage ET
 #    les vignettes, pour qu'ils ne puissent jamais se contredire.
 ARCANA22 = [
-    ("the-fool",           "## 0. The Fool",             "0",     "The Fool"),
-    ("the-magician",       "## I. The Magician",         "I",     "The Magician"),
-    ("the-high-priestess", "## II. The High Priestess",  "II",    "The High Priestess"),
-    ("the-empress",        "## III. The Empress",        "III",   "The Empress"),
-    ("the-emperor",        "## IV. The Emperor",         "IV",    "The Emperor"),
-    ("the-hierophant",     "## V. The Hierophant",       "V",     "The Hierophant"),
-    ("the-lovers",         "## VI. The Lovers",          "VI",    "The Lovers"),
-    ("the-chariot",        "## VII. The Chariot",        "VII",   "The Chariot"),
-    ("strength",           "## VIII. Strength",          "VIII",  "Strength"),
-    ("the-hermit",         "## IX. The Hermit",          "IX",    "The Hermit"),
-    ("wheel-of-fortune",   "## X. Wheel of Fortune",     "X",     "Wheel of Fortune"),
-    ("justice",            "## XI. Justice",             "XI",    "Justice"),
-    ("the-hanged-man",     "## XII. The Hanged Man",     "XII",   "The Hanged Man"),
-    ("death",              "## XIII. Death",             "XIII",  "Death"),
-    ("temperance",         "## XIV. Temperance",         "XIV",   "Temperance"),
-    ("the-devil",          "## XV. The Devil",           "XV",    "The Devil"),
-    ("the-tower",          "## XVI. The Tower",          "XVI",   "The Tower"),
-    ("the-star",           "## XVII. The Star",          "XVII",  "The Star"),
-    ("the-moon",           "## XVIII. The Moon",         "XVIII", "The Moon"),
-    ("the-sun",            "## XIX. The Sun",            "XIX",   "The Sun"),
-    ("judgement",          "## XX. Judgement",           "XX",    "Judgement"),
-    ("the-world",          "## XXI. The World",          "XXI",   "The World"),
+    ("the-fool",           "### 0. The Fool",             "0",     "The Fool"),
+    ("the-magician",       "### I. The Magician",         "I",     "The Magician"),
+    ("the-high-priestess", "### II. The High Priestess",  "II",    "The High Priestess"),
+    ("the-empress",        "### III. The Empress",        "III",   "The Empress"),
+    ("the-emperor",        "### IV. The Emperor",         "IV",    "The Emperor"),
+    ("the-hierophant",     "### V. The Hierophant",       "V",     "The Hierophant"),
+    ("the-lovers",         "### VI. The Lovers",          "VI",    "The Lovers"),
+    ("the-chariot",        "### VII. The Chariot",        "VII",   "The Chariot"),
+    ("strength",           "### VIII. Strength",          "VIII",  "Strength"),
+    ("the-hermit",         "### IX. The Hermit",          "IX",    "The Hermit"),
+    ("wheel-of-fortune",   "### X. Wheel of Fortune",     "X",     "Wheel of Fortune"),
+    ("justice",            "### XI. Justice",             "XI",    "Justice"),
+    ("the-hanged-man",     "### XII. The Hanged Man",     "XII",   "The Hanged Man"),
+    ("death",              "### XIII. Death",             "XIII",  "Death"),
+    ("temperance",         "### XIV. Temperance",         "XIV",   "Temperance"),
+    ("the-devil",          "### XV. The Devil",           "XV",    "The Devil"),
+    ("the-tower",          "### XVI. The Tower",          "XVI",   "The Tower"),
+    ("the-star",           "### XVII. The Star",          "XVII",  "The Star"),
+    ("the-moon",           "### XVIII. The Moon",         "XVIII", "The Moon"),
+    ("the-sun",            "### XIX. The Sun",            "XIX",   "The Sun"),
+    ("judgement",          "### XX. Judgement",           "XX",    "Judgement"),
+    ("the-world",          "### XXI. The World",          "XXI",   "The World"),
 ]
 ARCANA_DIR = DOCS / "arcana"
 
@@ -2794,9 +2787,9 @@ def split_arcana():
     carte en grand (`.fh-card-illus`) avant le descriptif.
     ⚠️ TOURNE APRÈS `build_arcana()` : arcana.js lit la page ENTIÈRE ; le
     découpage la remplace par le menu-galerie."""
-    src = DOCS / "major-arcana.md"
+    src = DOCS / "fates-hand-mechanic.md"
     if not src.exists():
-        print("  !! MISSING major-arcana.md — arcana pages not split")
+        print("  !! MISSING fates-hand-mechanic.md — arcana pages not split")
         return
     lines = src.read_text(encoding="utf-8").splitlines()
 
@@ -2816,9 +2809,16 @@ def split_arcana():
               f" found, missing {manque} — major-arcana.md left whole")
         return
 
+    # ⚠️ LES CARTES VIVENT AU MILIEU DU CHAPITRE (fusion du 2026-08-29) : la
+    #    suite (## 3. Destiny Score… → Final Notes) doit SURVIVRE au découpage.
     end = len(lines)
+    for j in range(starts[-1][0] + 1, len(lines)):
+        if lines[j].startswith("## "):
+            end = j
+            break
     bornes = [s[0] for s in starts] + [end]
     preamble = lines[:starts[0][0]]
+    suite = lines[end:]
 
     ARCANA_DIR.mkdir(parents=True, exist_ok=True)
     menu = "\n".join(preamble).rstrip().splitlines()
@@ -2832,7 +2832,7 @@ def split_arcana():
                "{ .fh-card-illus }" % (name, num))
         # la table des six ne se serre pas contre la carte flottante : le
         # titre « Vibrations of… » clear le float, la table respire dessous.
-        corps = re.sub(r"^(### Vibrations of .+)$", r"\1 { .fh-clear }", corps, flags=re.M)
+        corps = re.sub(r"^(#### Vibrations of .+)$", r"\1 { .fh-clear }", corps, flags=re.M)
         page = f"# {titre}\n\n{img}\n\n{corps}\n"
         (ARCANA_DIR / f"{slug_}.md").write_text(page, encoding="utf-8")
 
@@ -2853,8 +2853,10 @@ def split_arcana():
         menu.append("")
         menu.append(f"[Read the full entry →](arcana/{slug_}.md)")
 
+    menu.append("")
+    menu += suite
     src.write_text("\n".join(menu) + "\n", encoding="utf-8")
-    print(f"  ok  major-arcana.md        -> gallery + {len(starts)} pages in chapters/arcana/")
+    print(f"  ok  fates-hand-mechanic.md -> Deck menu + {len(starts)} pages in chapters/arcana/")
 
 
 # 🔴 LA SOURCE EST LE VAULT, PAS LA PAGE PUBLIÉE — mesuré au 2e run du
@@ -2862,7 +2864,7 @@ def split_arcana():
 #    menu-galerie, et au run SUIVANT le lecteur y trouvait 0 carte — le teaser
 #    du chapitre Destiny refusait ses trois exemples. Un lecteur qui lit un
 #    artefact de build lit l'état du build PRÉCÉDENT.
-ARCANA_SRC = VAULT / "1. Build a Character/The Major Arcana.md"
+ARCANA_SRC = VAULT / MAP["fates-hand-mechanic.md"][0]  # le chapitre fusionné Destiny & Arcana
 ARCANA_DST = ROOT / "docs" / "javascripts" / "arcana.js"
 ARCANA_COUNT = 22
 ARCANA_FIELDS = {"meaning": "meaning", "signature ability": "ability", "destiny impact": "impact", "power": "power", "vibration": "vibration"}

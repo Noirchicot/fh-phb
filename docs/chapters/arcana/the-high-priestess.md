@@ -7,7 +7,7 @@
 - **Destiny Impact** — +1
 - **Power** — roll a Destiny die in secret and store it; you may use the result before the end of the next long rest.
 
-### Vibrations of The High Priestess { .fh-clear }
+#### Vibrations of The High Priestess { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

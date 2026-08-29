@@ -7,7 +7,7 @@
 - **Destiny Impact** — +1
 - **Power** — once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.
 
-### Vibrations of The Chariot { .fh-clear }
+#### Vibrations of The Chariot { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

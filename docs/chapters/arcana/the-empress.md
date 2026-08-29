@@ -7,7 +7,7 @@
 - **Destiny Impact** — +2
 - **Power** — recover an additional Destiny Point after a long rest if you have 2 or less.
 
-### Vibrations of The Empress { .fh-clear }
+#### Vibrations of The Empress { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

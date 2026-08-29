@@ -7,7 +7,7 @@
 - **Destiny Impact** — +0
 - **Power** — you are immune to everything above 6 on the **[Chaos table](../chaos-tables.md)**, and trigger an Awakening on a 12.
 
-### Vibrations of Death { .fh-clear }
+#### Vibrations of Death { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

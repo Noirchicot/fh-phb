@@ -7,7 +7,7 @@
 - **Destiny Impact** — +1
 - **Power** — on the first Destiny roll of the day you choose either advantage or disadvantage, then a cycle is in place. During that same day, any individual (including you) within a 30-foot radius rolling a Destiny die rolls with advantage if you chose disadvantage, or the contrary.
 
-### Vibrations of Wheel of Fortune { .fh-clear }
+#### Vibrations of Wheel of Fortune { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

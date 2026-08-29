@@ -7,7 +7,7 @@
 - **Destiny Impact** — +0
 - **Power** — the critical range of your Destiny dice is doubled (3 or 4 on a d4, 5 or 6 on a d6).
 
-### Vibrations of Strength { .fh-clear }
+#### Vibrations of Strength { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

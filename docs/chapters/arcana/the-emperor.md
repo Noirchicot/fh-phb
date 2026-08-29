@@ -7,7 +7,7 @@
 - **Destiny Impact** — +1
 - **Power** — once per long rest, sacrifice a die to obtain the highest possible bonus non-critical result.
 
-### Vibrations of The Emperor { .fh-clear }
+#### Vibrations of The Emperor { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

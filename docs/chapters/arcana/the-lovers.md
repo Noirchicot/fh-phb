@@ -7,7 +7,7 @@
 - **Destiny Impact** — +2
 - **Power** — once per long rest, as a reaction, roll a Destiny die to the benefit of one party member within 30 ft of you, while another (including you) suffers the cost.
 
-### Vibrations of The Lovers { .fh-clear }
+#### Vibrations of The Lovers { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

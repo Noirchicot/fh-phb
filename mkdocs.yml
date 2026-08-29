@@ -103,6 +103,7 @@ not_in_nav: |
   chapters/species/*.md
   chapters/classes/*.md
   chapters/arcana/*.md
+  chapters/major-arcana.md
 
 nav:
   # ══ REFONTE 2026-08-20 — quatre menus racine, deux côtés ═══════════════
@@ -115,7 +116,7 @@ nav:
     - 1 · Identity: chapters/identity.md
     - 2 · Species: chapters/species.md
     - 3 · Inheritance: chapters/inheritance.md
-    - 4 · Destiny: chapters/fates-hand-mechanic.md
+    - 4 · Destiny & Arcana: chapters/fates-hand-mechanic.md
     - 5 · Class: chapters/classes.md
     - Moonkeeper: chapters/moonkeeper.md
     - 6 · Abilities: chapters/ability-scores.md
@@ -149,5 +150,4 @@ nav:
     # chapitre — dans le DM vault ». La lecture des 22 est au MJ ; le joueur
     # découvre une carte en la tirant. ⏳ Un teaser de 3 cartes est prévu côté
     # joueur — lesquelles n'est pas tranché, donc il n'est pas posé.
-    - The Arcana Explained: chapters/major-arcana.md
   - SRD 5.2.1: https://noirchicot.github.io/fh-srd/

@@ -7,7 +7,7 @@
 - **Destiny Impact** — +1
 - **Power** — once per short rest, add +2 to the result of a Destiny die without any additional cost.
 
-### Vibrations of The Sun { .fh-clear }
+#### Vibrations of The Sun { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

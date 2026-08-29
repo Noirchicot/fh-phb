@@ -1,4 +1,4 @@
-# Elestu
+# lestu
 
 ![Elestu](../../assets/img/species-elestu.jpg){ .fh-portrait }
 

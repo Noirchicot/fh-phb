@@ -7,7 +7,7 @@
 - **Destiny Impact** — +0
 - **Power** — once per long rest, as a reaction, sacrifice all your Destiny Points to transform any successful roll into a critical failure within 30 feet. Ignore the Chaos Effect.
 
-### Vibrations of The Tower { .fh-clear }
+#### Vibrations of The Tower { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

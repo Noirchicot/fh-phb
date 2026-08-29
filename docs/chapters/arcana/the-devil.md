@@ -7,7 +7,7 @@
 - **Destiny Impact** — +0
 - **Power** — once per short rest, roll a Destiny die in advance if you have one. As a reaction or even in advance, you may give it to anyone within 30 feet. It will cost the recipient one Destiny Point to acquire it; in return you collect this benefit as a temporary Destiny Point, and your die is blocked (unusable by you) until it is used by the recipient or at the end of their next long rest. When the die is used by the recipient it acts as if it were their own; your die then resets and you may use it again. - If the recipient did not use your die by the end of their long rest, they lose it and it becomes usable by you again. - An "infernal Awakening" as a reaction to using your die may have strange consequences.
 
-### Vibrations of The Devil { .fh-clear }
+#### Vibrations of The Devil { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

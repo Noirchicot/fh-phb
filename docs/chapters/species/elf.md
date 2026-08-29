@@ -1,4 +1,4 @@
-# [Elf](https://www.dndbeyond.com/species/1751437-elf)
+# Elf](https://www.dndbeyond.com/species/1751437-elf)
 
 ![Elf](../../assets/img/species-elf.jpg){ .fh-portrait }
 

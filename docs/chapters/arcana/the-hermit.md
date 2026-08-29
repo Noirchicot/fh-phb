@@ -7,7 +7,7 @@
 - **Destiny Impact** — +2
 - **Power** — once per long rest, you can store the result of your lowest available Destiny die and use it later.
 
-### Vibrations of The Hermit { .fh-clear }
+#### Vibrations of The Hermit { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

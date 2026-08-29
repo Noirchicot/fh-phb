@@ -7,7 +7,7 @@
 - **Destiny Impact** — +0
 - **Power** — once per short rest you may spend a Destiny die, with no cost in Destiny Points, to replace any d20 roll by a 10.
 
-### Vibrations of Judgement { .fh-clear }
+#### Vibrations of Judgement { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

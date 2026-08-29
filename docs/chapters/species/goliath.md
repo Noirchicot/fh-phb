@@ -1,4 +1,4 @@
-# [Goliath](https://www.dndbeyond.com/species/1751439-goliath)
+# Goliath](https://www.dndbeyond.com/species/1751439-goliath)
 
 ![Goliath](../../assets/img/species-goliath.jpg){ .fh-portrait }
 

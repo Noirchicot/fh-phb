@@ -7,7 +7,7 @@
 - **Destiny Impact** — +2
 - **Power** — once per long rest, in a 30-foot radius, as a reaction you can roll a Destiny die that will act as a buffer limiting the Destiny cost.
 
-### Vibrations of Temperance { .fh-clear }
+#### Vibrations of Temperance { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

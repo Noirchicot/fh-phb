@@ -7,7 +7,7 @@
 - **Destiny Impact** — +1
 - **Power** — after a long rest, you may transfer up to 2 Destiny Points and 2 Destiny dice from the strongest to the weakest. The recipients may be willing or not. You may freely rule on ties, die or points. This may concern up to 4 individuals.
 
-### Vibrations of Justice { .fh-clear }
+#### Vibrations of Justice { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

@@ -7,7 +7,7 @@
 - **Destiny Impact** — +1
 - **Power** — once per long rest, adjust the size of a Destiny die of a willing creature (d4 into d12 or vice-versa).
 
-### Vibrations of The Magician { .fh-clear }
+#### Vibrations of The Magician { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

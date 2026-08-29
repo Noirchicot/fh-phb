@@ -7,7 +7,7 @@
 - **Destiny Impact** — +2
 - **Power** — once per short rest, as a reaction within 30 feet, you may convert one of your Destiny dice into healing and add it to one individual's short rest dice (+ Constitution bonus), with no cost in Destiny Points.
 
-### Vibrations of The Hierophant { .fh-clear }
+#### Vibrations of The Hierophant { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

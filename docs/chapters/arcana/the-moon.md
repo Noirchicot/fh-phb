@@ -7,7 +7,7 @@
 - **Destiny Impact** — +2
 - **Power** — except for a critical Fail / Success, the Destiny cost is reduced by 1.
 
-### Vibrations of The Moon { .fh-clear }
+#### Vibrations of The Moon { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

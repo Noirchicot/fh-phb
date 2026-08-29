@@ -7,7 +7,7 @@
 - **Destiny Impact** — +2
 - **Power** — once per long rest, you may roll 2 Destiny dice at once, take the total of both as a bonus, and pay only the price of the highest.
 
-### Vibrations of The Fool { .fh-clear }
+#### Vibrations of The Fool { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

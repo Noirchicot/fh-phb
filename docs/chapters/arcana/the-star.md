@@ -7,7 +7,7 @@
 - **Destiny Impact** — +2
 - **Power** — once per long rest, take the average (rounded up) of a Destiny die instead of rolling.
 
-### Vibrations of The Star { .fh-clear }
+#### Vibrations of The Star { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |

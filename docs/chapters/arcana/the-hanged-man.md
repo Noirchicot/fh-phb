@@ -7,7 +7,7 @@
 - **Destiny Impact** — +1
 - **Power** — if you invoke **Chaos** on a natural 1, you do not lose but immediately regain 2 Destiny Points and just roll 1d6 on the **[Chaos table](../chaos-tables.md)**.
 
-### Vibrations of The Hanged Man { .fh-clear }
+#### Vibrations of The Hanged Man { .fh-clear }
 
 | Rank (vp) | Vibration | Effect |
 | --- | --- | --- |
