@@ -1776,3 +1776,23 @@ body.fh-home-page .md-header { display: none; }
   letter-spacing: .04em;
   opacity: .45;
 }
+
+
+/* ══ La galerie des 22 arcanes (Eric, 2026-08-29 : « toutes les cartes,
+   quelque chose de joli ») — et la carte en grand sur sa page. La vignette
+   EST la carte : l'oeuvre porte la tuile, le texte se tient dessous. ══ */
+
+/* La carte en grand sur sa page (le menu, lui, reprend .fh-thumb de species). */
+.md-typeset img.fh-card-illus {
+  float: right;
+  width: min(300px, 42%);
+  margin: .3rem 0 1rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--fh-rule);
+  box-shadow: 0 8px 26px rgba(0,0,0,.32);
+}
+@media (max-width: 44em) {
+  .md-typeset img.fh-card-illus { float: none; display: block; width: min(300px, 80%); margin: .3rem auto 1rem; }
+}
+
+.md-typeset .fh-clear { clear: both; }

@@ -1657,8 +1657,8 @@ def _lire_arcanes():
     for line in ARCANA_SRC.read_text(encoding="utf-8").splitlines():
         h = re.match(r"^#{2,4}\s+([0IVXL]+)\.\s+(.+?)\s*$", line.strip())
         if h:
-            cur = {"numeral": h.group(1), "name": h.group(2).strip(),
-                   "meaning": "", "impact": "", "power": "", "vibration": ""}
+            cur = {"numeral": h.group(1), "name": h.group(2).strip(), "meaning": "",
+                   "ability": "", "impact": "", "power": "", "vibration": ""}
             cartes.append(cur)
             continue
         if cur is None:
@@ -1682,7 +1682,11 @@ def _lire_arcanes():
 #    ne prétend pas montrer l'identité visuelle du livre.
 # ✅ Le jour où ses 22 fichiers arrivent, sous les mêmes noms de numéral :
 #    passer ce drapeau à True. Une ligne, et les trois exemples s'illustrent.
-ARCANA_ART_READY = False
+# 2026-08-29, Eric : "Mets toutes les cartes avec leurs images. Je ne limite
+#    plus a trois cartes publiees." Les 22 fichiers sont les siens : 16 masters
+#    v2 (pilotes + vagues A/B/C de l'archive Tarot) et 6 cartes v1 (XIV, XV,
+#    XVII, XVIII, XX, XXI - en attente de refonte v2). Voir SOURCE.txt.
+ARCANA_ART_READY = True
 
 
 def arcana_teaser(noms):
@@ -1937,6 +1941,14 @@ CHAPTER_IMAGES = {
     ],
 }
 
+
+# La bannière du chapitre Arcana — quatre cartes maîtresses en bandeau,
+# composée depuis docs/assets/img/tarot/major/ (Eric, 2026-08-29 : « belle
+# image »). Les images DES cartes, elles, sont posées par `split_arcana()`.
+CHAPTER_IMAGES["major-arcana.md"] = [
+    ("# Arcana",
+     "![The Major Arcana](../assets/img/arcana-banner.jpg){ .fh-illus .fh-banner }"),
+]
 
 CHAPTER_IMAGES["species.md"] = (
     [("# Species",
@@ -2732,10 +2744,120 @@ def build_chaos_tables():
 
 # The 22 Major Arcana, lifted the same way, so an Arcane Awakening can deal a
 # real card with its real powers instead of asking the player to go and look.
-ARCANA_SRC = DOCS / "major-arcana.md"
+# ══ LES 22 ARCANES, ET LEUR DÉCOUPAGE ════════════════════════════════════
+# Eric, 2026-08-29 : « Mets toutes les cartes avec leur images et leur
+# descriptif complet dans le site. Fais quelque chose de joli. Tu peux
+# utiliser la logique species et classes sur l'architecture du chapitre. »
+# ⛔ Une seule liste, comme SPECIES et CLASSES : elle sert le découpage ET
+#    les vignettes, pour qu'ils ne puissent jamais se contredire.
+ARCANA22 = [
+    ("the-fool",           "## 0. The Fool",             "0",     "The Fool"),
+    ("the-magician",       "## I. The Magician",         "I",     "The Magician"),
+    ("the-high-priestess", "## II. The High Priestess",  "II",    "The High Priestess"),
+    ("the-empress",        "## III. The Empress",        "III",   "The Empress"),
+    ("the-emperor",        "## IV. The Emperor",         "IV",    "The Emperor"),
+    ("the-hierophant",     "## V. The Hierophant",       "V",     "The Hierophant"),
+    ("the-lovers",         "## VI. The Lovers",          "VI",    "The Lovers"),
+    ("the-chariot",        "## VII. The Chariot",        "VII",   "The Chariot"),
+    ("strength",           "## VIII. Strength",          "VIII",  "Strength"),
+    ("the-hermit",         "## IX. The Hermit",          "IX",    "The Hermit"),
+    ("wheel-of-fortune",   "## X. Wheel of Fortune",     "X",     "Wheel of Fortune"),
+    ("justice",            "## XI. Justice",             "XI",    "Justice"),
+    ("the-hanged-man",     "## XII. The Hanged Man",     "XII",   "The Hanged Man"),
+    ("death",              "## XIII. Death",             "XIII",  "Death"),
+    ("temperance",         "## XIV. Temperance",         "XIV",   "Temperance"),
+    ("the-devil",          "## XV. The Devil",           "XV",    "The Devil"),
+    ("the-tower",          "## XVI. The Tower",          "XVI",   "The Tower"),
+    ("the-star",           "## XVII. The Star",          "XVII",  "The Star"),
+    ("the-moon",           "## XVIII. The Moon",         "XVIII", "The Moon"),
+    ("the-sun",            "## XIX. The Sun",            "XIX",   "The Sun"),
+    ("judgement",          "## XX. Judgement",           "XX",    "Judgement"),
+    ("the-world",          "## XXI. The World",          "XXI",   "The World"),
+]
+ARCANA_DIR = DOCS / "arcana"
+
+
+def split_arcana():
+    """`major-arcana.md` -> un menu-galerie + vingt-deux pages de carte.
+
+    Le troisième jumeau (species, puis classes le 2026-08-28). Ses règles
+    propres : la vignette est LA CARTE elle-même (`tarot/major/<num>.jpg`),
+    le blurb est le champ **Meaning**, et la page complète ouvre sur la
+    carte en grand (`.fh-card-illus`) avant le descriptif.
+    ⚠️ TOURNE APRÈS `build_arcana()` : arcana.js lit la page ENTIÈRE ; le
+    découpage la remplace par le menu-galerie."""
+    src = DOCS / "major-arcana.md"
+    if not src.exists():
+        print("  !! MISSING major-arcana.md — arcana pages not split")
+        return
+    lines = src.read_text(encoding="utf-8").splitlines()
+
+    starts = []
+    for i, ln in enumerate(lines):
+        for slug_, head, num, name in ARCANA22:
+            if ln.startswith(head):
+                starts.append((i, slug_, num, name))
+                break
+
+    # 🔴 LE MÊME GARDE QUE SPECIES : on n'écrit rien plutôt que de publier un
+    #    chapitre amputé en silence.
+    if len(starts) != len(ARCANA22):
+        trouve = {s[1] for s in starts}
+        manque = [s for s, _, _, _ in ARCANA22 if s not in trouve]
+        print(f"  !! arcana split ABORTED: {len(starts)}/{len(ARCANA22)} headings"
+              f" found, missing {manque} — major-arcana.md left whole")
+        return
+
+    end = len(lines)
+    bornes = [s[0] for s in starts] + [end]
+    preamble = lines[:starts[0][0]]
+
+    ARCANA_DIR.mkdir(parents=True, exist_ok=True)
+    menu = "\n".join(preamble).rstrip().splitlines()
+
+    for n, (i, slug_, num, name) in enumerate(starts):
+        block = lines[i:bornes[n + 1]]
+        titre = block[0][3:].strip()
+        corps = "\n".join(block[1:]).strip()
+        corps = descendre_dun_cran(corps)
+        img = ("![%s — Fate's Hand tarot](../../assets/img/tarot/major/%s.jpg)"
+               "{ .fh-card-illus }" % (name, num))
+        # la table des six ne se serre pas contre la carte flottante : le
+        # titre « Vibrations of… » clear le float, la table respire dessous.
+        corps = re.sub(r"^(### Vibrations of .+)$", r"\1 { .fh-clear }", corps, flags=re.M)
+        page = f"# {titre}\n\n{img}\n\n{corps}\n"
+        (ARCANA_DIR / f"{slug_}.md").write_text(page, encoding="utf-8")
+
+        # ── son entrée au menu, le format de species : titre, vignette
+        #    flottante, blurb (le Meaning), lien vers la page complète ──
+        meaning = ""
+        for ln in block:
+            f = re.match(r"^- \*\*Meaning\*\* — (.+)$", ln.strip())
+            if f:
+                meaning = re.sub(r"\*{1,2}", "", f.group(1)).strip()
+                break
+        menu.append("")
+        menu.append(block[0])
+        menu.append("")
+        menu.append(f"![{name}](../assets/img/tarot/major/{num}.jpg){{ .fh-thumb }}")
+        menu.append("")
+        menu.append(meaning)
+        menu.append("")
+        menu.append(f"[Read the full entry →](arcana/{slug_}.md)")
+
+    src.write_text("\n".join(menu) + "\n", encoding="utf-8")
+    print(f"  ok  major-arcana.md        -> gallery + {len(starts)} pages in chapters/arcana/")
+
+
+# 🔴 LA SOURCE EST LE VAULT, PAS LA PAGE PUBLIÉE — mesuré au 2e run du
+#    2026-08-29 : `split_arcana()` remplace docs/major-arcana.md par le
+#    menu-galerie, et au run SUIVANT le lecteur y trouvait 0 carte — le teaser
+#    du chapitre Destiny refusait ses trois exemples. Un lecteur qui lit un
+#    artefact de build lit l'état du build PRÉCÉDENT.
+ARCANA_SRC = VAULT / "1. Build a Character/The Major Arcana.md"
 ARCANA_DST = ROOT / "docs" / "javascripts" / "arcana.js"
 ARCANA_COUNT = 22
-ARCANA_FIELDS = {"meaning": "meaning", "destiny impact": "impact", "power": "power", "vibration": "vibration"}
+ARCANA_FIELDS = {"meaning": "meaning", "signature ability": "ability", "destiny impact": "impact", "power": "power", "vibration": "vibration"}
 
 
 def _cartes_de_depart():
@@ -2769,7 +2891,7 @@ def build_arcana():
         heading = re.match(r"^#{2,4}\s+([0IVXL]+)\.\s+(.+?)\s*$", line.strip())
         if heading:
             current = {"numeral": heading.group(1), "name": heading.group(2).strip(),
-                       "meaning": "", "impact": "", "power": "", "vibration": ""}
+                       "meaning": "", "ability": "", "impact": "", "power": "", "vibration": ""}
             cards.append(current)
             continue
         if current is None:
@@ -3298,6 +3420,7 @@ if __name__ == "__main__":
     main()
     build_chaos_tables()
     build_arcana()
+    split_arcana()
     build_species_lore()
     recapitulatif()
     print("Done.")

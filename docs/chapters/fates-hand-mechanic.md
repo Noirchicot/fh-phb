@@ -113,31 +113,30 @@ are shown below so you know what a card looks like — the other nineteen are
 waiting.
 
 <div class="fh-arcana-teaser">
-<figure class="fh-arcana-card fh-arcana-card--noart">
+<figure class="fh-arcana-card">
+<img src="../../assets/img/tarot/major/0.jpg" alt="The Fool" loading="lazy">
 <figcaption><span class="fh-arcana-num">0</span> The Fool</figcaption>
 <dl>
 <dt>Meaning</dt><dd>innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.</dd>
 <dt>Impact</dt><dd>+2</dd>
 <dt>Power</dt><dd>once per long rest, you may roll 2 Destiny dice at once, take the total of both as a bonus, and pay only the price of the highest.</dd>
-<dt>Vibration</dt><dd>luck effect (Bless or Guidance depending on level).</dd>
 </dl></figure>
-<figure class="fh-arcana-card fh-arcana-card--noart">
+<figure class="fh-arcana-card">
+<img src="../../assets/img/tarot/major/VII.jpg" alt="The Chariot" loading="lazy">
 <figcaption><span class="fh-arcana-num">VII</span> The Chariot</figcaption>
 <dl>
 <dt>Meaning</dt><dd>victory, determination, triumph. Active control, moving toward success.</dd>
 <dt>Impact</dt><dd>+1</dd>
 <dt>Power</dt><dd>once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.</dd>
-<dt>Vibration</dt><dd>acceleration (Longstrider, Expeditious Retreat).</dd>
 </dl></figure>
-<figure class="fh-arcana-card fh-arcana-card--noart">
+<figure class="fh-arcana-card">
+<img src="../../assets/img/tarot/major/XIX.jpg" alt="The Sun" loading="lazy">
 <figcaption><span class="fh-arcana-num">XIX</span> The Sun</figcaption>
 <dl>
 <dt>Meaning</dt><dd>success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.</dd>
 <dt>Impact</dt><dd>+1</dd>
 <dt>Power</dt><dd>once per short rest, add +2 to the result of a Destiny die without any additional cost.</dd>
-<dt>Vibration</dt><dd>minor light and healing (e.g. Light + small heal).</dd>
 </dl></figure>
-<p class="fh-arcana-note">The twenty-two cards are being painted. These three are shown by their text alone until the deck is finished.</p>
 </div>
 
 *The reading of all twenty-two belongs to your Game Master.*
@@ -185,6 +184,38 @@ fusion — in Les Forces Primordiales de Nymedes.)*
 > wanting to tell you about them.
 
 ---
+
+## 6. Arcane Vibrations
+
+When fate sings through your card, a fragment of its theme stays with you. Each Major Arcana has **six Vibrations** — one per rank, listed on its page in [The Major Arcana](major-arcana.md).
+
+### Storing a Vibration
+
+When you roll an **Arcane Critical Success** on a Destiny Die (§3) while you have **at least 1 Destiny Point**, your Arcana **vibrates**: store one Vibration of your choice among those you have access to.
+
+- Your **Destiny Score** (fixed) sets the **highest rank** you can reach:
+
+| Destiny Score | 1–3 | 4–6 | 7–10 | 11–15 | 16–20 | 21+ |
+| --- | --- | --- | --- | --- | --- | --- |
+| Max rank (1 rank = 1 vp) | 1 | 2 | 3 | 4 | 5 | 6 |
+
+- You choose freely among every rank you have access to, and you may store **the same Vibration more than once**.
+- **Storage cap — your current Destiny Points:** you cannot store a Vibration if the total vp of your stored Vibrations would exceed your current Points. Points lost later do not erase what is stored — but nothing new fits past the cap.
+
+### Casting a Vibration
+
+A stored Vibration is a scroll written into your soul: **casting it consumes it, and costs 1 Destiny Point**. No components. It uses your action unless the mirrored effect says otherwise, with your card's **Signature Ability** as spellcasting ability (save DC = 8 + proficiency bonus + your modifier). Vibrations only come back by storing new ones — no recovery on a rest.
+
+**Casting through Chaos.** You may cast without paying the point by **invoking Chaos** — the exact gesture of refusing a Natural 1 (§2): your Points drop to 0 and you roll 2d6 **straight on your card's Signature-Ability [Chaos table](chaos-tables.md)**, no saving throw, skipping the Overreach save entirely. At 0 Points, this is the only way left to release a Vibration.
+
+### Losing a Vibration
+
+Whenever you **refuse** a Natural 1 or an Arcane Critical Failure (§2, §3.4), on top of the usual price you must **give up one stored Vibration of your choice**, if you have any.
+
+> *Example — Caracole (Destiny Score 11 → rank 4 access). With enough Points at hand, he stores a 2-vp Vibration, then a 3-vp one. Leaping a chasm, he rolls a Natural 1 — certain death. He refuses fate: the 1 becomes a 20, his Points drop to 0, Chaos rolls — and he lets go of one of his two Vibrations. The other stays stored; until his Points recover he can neither store more nor cast it, except through Chaos.*
+
+> [!note] Vibrations and aberrants
+> The 132 Vibration powers are also the prize pool of **aberrant kills**: a slain aberrant yields a catalyst whose power is drawn from the Vibration tables — the arcana matching the aberrant's nature, rank capped by its CR tier.
 
 ## Final Notes
 Your Destiny Score and the Arcana are the wellspring of power in a world where heroic inspiration wanes. Draw carefully on your dice, lest you tumble into Chaos. A Major Arcana may raise you among the lords of reality — but tread softly.
