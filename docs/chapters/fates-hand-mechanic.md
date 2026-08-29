@@ -47,7 +47,7 @@ The full deck, card by card — meaning, signature ability, impact, power, and t
 
 ### 0. The Fool
 
-![The Fool](../assets/img/tarot/major/0.jpg){ .fh-thumb }
+![The Fool](../assets/img/tarot/major/thumbs/0.jpg){ .fh-thumb }
 
 innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.
 
@@ -55,7 +55,7 @@ innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into
 
 ### I. The Magician
 
-![The Magician](../assets/img/tarot/major/I.jpg){ .fh-thumb }
+![The Magician](../assets/img/tarot/major/thumbs/I.jpg){ .fh-thumb }
 
 ingenuity, creativity, mastery of tools. The intellect shapes reality. The initiator of change through willpower.
 
@@ -63,7 +63,7 @@ ingenuity, creativity, mastery of tools. The intellect shapes reality. The initi
 
 ### II. The High Priestess
 
-![The High Priestess](../assets/img/tarot/major/II.jpg){ .fh-thumb }
+![The High Priestess](../assets/img/tarot/major/thumbs/II.jpg){ .fh-thumb }
 
 hidden knowledge, intuition, mystery. Inner wisdom, revelation through patient study. Silence and secrets of the soul.
 
@@ -71,7 +71,7 @@ hidden knowledge, intuition, mystery. Inner wisdom, revelation through patient s
 
 ### III. The Empress
 
-![The Empress](../assets/img/tarot/major/III.jpg){ .fh-thumb }
+![The Empress](../assets/img/tarot/major/thumbs/III.jpg){ .fh-thumb }
 
 fertility, abundance, growth, prosperity. Support, harmony, generosity.
 
@@ -79,7 +79,7 @@ fertility, abundance, growth, prosperity. Support, harmony, generosity.
 
 ### IV. The Emperor
 
-![The Emperor](../assets/img/tarot/major/IV.jpg){ .fh-thumb }
+![The Emperor](../assets/img/tarot/major/thumbs/IV.jpg){ .fh-thumb }
 
 authority, order, stable power. Construction, organization, protection.
 
@@ -87,7 +87,7 @@ authority, order, stable power. Construction, organization, protection.
 
 ### V. The Hierophant
 
-![The Hierophant](../assets/img/tarot/major/V.jpg){ .fh-thumb }
+![The Hierophant](../assets/img/tarot/major/thumbs/V.jpg){ .fh-thumb }
 
 tradition, teaching, spiritual guidance. Faith, rituals, sacred order.
 
@@ -95,7 +95,7 @@ tradition, teaching, spiritual guidance. Faith, rituals, sacred order.
 
 ### VI. The Lovers
 
-![The Lovers](../assets/img/tarot/major/VI.jpg){ .fh-thumb }
+![The Lovers](../assets/img/tarot/major/thumbs/VI.jpg){ .fh-thumb }
 
 choice, harmony, relationships, moral dilemmas. Union, sacrifice, cooperation.
 
@@ -103,7 +103,7 @@ choice, harmony, relationships, moral dilemmas. Union, sacrifice, cooperation.
 
 ### VII. The Chariot
 
-![The Chariot](../assets/img/tarot/major/VII.jpg){ .fh-thumb }
+![The Chariot](../assets/img/tarot/major/thumbs/VII.jpg){ .fh-thumb }
 
 victory, determination, triumph. Active control, moving toward success.
 
@@ -111,7 +111,7 @@ victory, determination, triumph. Active control, moving toward success.
 
 ### VIII. Strength
 
-![Strength](../assets/img/tarot/major/VIII.jpg){ .fh-thumb }
+![Strength](../assets/img/tarot/major/thumbs/VIII.jpg){ .fh-thumb }
 
 courage, mastery of instincts, perseverance, moral and physical endurance.
 
@@ -119,7 +119,7 @@ courage, mastery of instincts, perseverance, moral and physical endurance.
 
 ### IX. The Hermit
 
-![The Hermit](../assets/img/tarot/major/IX.jpg){ .fh-thumb }
+![The Hermit](../assets/img/tarot/major/thumbs/IX.jpg){ .fh-thumb }
 
 introspection, solitude, search for truth. Knowledge found in inner calm.
 
@@ -127,7 +127,7 @@ introspection, solitude, search for truth. Knowledge found in inner calm.
 
 ### X. Wheel of Fortune
 
-![Wheel of Fortune](../assets/img/tarot/major/X.jpg){ .fh-thumb }
+![Wheel of Fortune](../assets/img/tarot/major/thumbs/X.jpg){ .fh-thumb }
 
 change, unstable destiny, opportunity, unpredictability. Embracing the cycle of ups and downs.
 
@@ -135,7 +135,7 @@ change, unstable destiny, opportunity, unpredictability. Embracing the cycle of 
 
 ### XI. Justice
 
-![Justice](../assets/img/tarot/major/XI.jpg){ .fh-thumb }
+![Justice](../assets/img/tarot/major/thumbs/XI.jpg){ .fh-thumb }
 
 fairness, responsibility, moral order. Evaluating, assuming responsibility, restoring balance.
 
@@ -143,7 +143,7 @@ fairness, responsibility, moral order. Evaluating, assuming responsibility, rest
 
 ### XII. The Hanged Man
 
-![The Hanged Man](../assets/img/tarot/major/XII.jpg){ .fh-thumb }
+![The Hanged Man](../assets/img/tarot/major/thumbs/XII.jpg){ .fh-thumb }
 
 sacrifice, letting go, new perspective. Renouncing to gain understanding.
 
@@ -151,7 +151,7 @@ sacrifice, letting go, new perspective. Renouncing to gain understanding.
 
 ### XIII. Death
 
-![Death](../assets/img/tarot/major/XIII.jpg){ .fh-thumb }
+![Death](../assets/img/tarot/major/thumbs/XIII.jpg){ .fh-thumb }
 
 transformation, end of a cycle, rebirth. Radical change, not absolute finality.
 
@@ -159,7 +159,7 @@ transformation, end of a cycle, rebirth. Radical change, not absolute finality.
 
 ### XIV. Temperance
 
-![Temperance](../assets/img/tarot/major/XIV.jpg){ .fh-thumb }
+![Temperance](../assets/img/tarot/major/thumbs/XIV.jpg){ .fh-thumb }
 
 moderation, harmony, compromise. Finding balance and the right measure.
 
@@ -167,7 +167,7 @@ moderation, harmony, compromise. Finding balance and the right measure.
 
 ### XV. The Devil
 
-![The Devil](../assets/img/tarot/major/XV.jpg){ .fh-thumb }
+![The Devil](../assets/img/tarot/major/thumbs/XV.jpg){ .fh-thumb }
 
 temptation, illusions, voluntary servitude. Power at the cost of freedom.
 
@@ -175,7 +175,7 @@ temptation, illusions, voluntary servitude. Power at the cost of freedom.
 
 ### XVI. The Tower
 
-![The Tower](../assets/img/tarot/major/XVI.jpg){ .fh-thumb }
+![The Tower](../assets/img/tarot/major/thumbs/XVI.jpg){ .fh-thumb }
 
 shock, collapse, brutal revelation. Destruction to rebuild on truth.
 
@@ -183,7 +183,7 @@ shock, collapse, brutal revelation. Destruction to rebuild on truth.
 
 ### XVII. The Star
 
-![The Star](../assets/img/tarot/major/XVII.jpg){ .fh-thumb }
+![The Star](../assets/img/tarot/major/thumbs/XVII.jpg){ .fh-thumb }
 
 hope, inspiration, celestial guidance. A beacon in the night, trust in the future.
 
@@ -191,7 +191,7 @@ hope, inspiration, celestial guidance. A beacon in the night, trust in the futur
 
 ### XVIII. The Moon
 
-![The Moon](../assets/img/tarot/major/XVIII.jpg){ .fh-thumb }
+![The Moon](../assets/img/tarot/major/thumbs/XVIII.jpg){ .fh-thumb }
 
 illusions, dreams, nocturnal mysteries. The unconscious mind, distorted perception.
 
@@ -199,7 +199,7 @@ illusions, dreams, nocturnal mysteries. The unconscious mind, distorted percepti
 
 ### XIX. The Sun
 
-![The Sun](../assets/img/tarot/major/XIX.jpg){ .fh-thumb }
+![The Sun](../assets/img/tarot/major/thumbs/XIX.jpg){ .fh-thumb }
 
 success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.
 
@@ -207,7 +207,7 @@ success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.
 
 ### XX. Judgement
 
-![Judgement](../assets/img/tarot/major/XX.jpg){ .fh-thumb }
+![Judgement](../assets/img/tarot/major/thumbs/XX.jpg){ .fh-thumb }
 
 rebirth, higher calling, final reckoning. Weighing the past, offering redemption or judgment.
 
@@ -215,7 +215,7 @@ rebirth, higher calling, final reckoning. Weighing the past, offering redemption
 
 ### XXI. The World
 
-![The World](../assets/img/tarot/major/XXI.jpg){ .fh-thumb }
+![The World](../assets/img/tarot/major/thumbs/XXI.jpg){ .fh-thumb }
 
 accomplishment, wholeness, unity. The end of one cycle, opening to a new beginning.
 

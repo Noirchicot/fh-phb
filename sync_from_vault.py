@@ -2847,7 +2847,10 @@ def split_arcana():
         menu.append("")
         menu.append(block[0])
         menu.append("")
-        menu.append(f"![{name}](../assets/img/tarot/major/{num}.jpg){{ .fh-thumb }}")
+        # Eric, 2026-08-29 : « plutôt que de faire moche, découpe une partie de
+        # l'image pour avoir un carré » — la vignette du Deck est un CROP carré
+        # (thumbs/), la carte entière reste sur la page dédiée.
+        menu.append(f"![{name}](../assets/img/tarot/major/thumbs/{num}.jpg){{ .fh-thumb }}")
         menu.append("")
         menu.append(meaning)
         menu.append("")
