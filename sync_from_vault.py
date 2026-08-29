@@ -1714,23 +1714,12 @@ def arcana_teaser(noms):
         raise SrdCiteError(
             "{{arcana:%s}} : %s n'est pas une carte du chapitre (disponibles : %s)."
             % (noms, ", ".join(manquants), ", ".join(sorted(par_nom))))
-    out = ['<div class="fh-arcana-teaser">']
-    slug_par_num = {num: slug_ for slug_, _h, num, _n in ARCANA22}
-    for n in voulus:
-        c = par_nom[n.lower()]
-        slug_ = slug_par_num.get(c["numeral"], "")
-        out.append('<figure class="fh-arcana-card%s">'
-                   % ("" if ARCANA_ART_READY else " fh-arcana-card--noart"))
-        if ARCANA_ART_READY:
-            out.append('<a href="../arcana/%s/"><img src="../../assets/img/tarot/major/%s.jpg" alt="%s" loading="lazy"></a>'
-                       % (slug_, html.escape(c["numeral"]), html.escape(c["name"])))
-        out.append('<figcaption><span class="fh-arcana-num">%s</span> <a href="../arcana/%s/">%s</a></figcaption>'
-                   % (html.escape(c["numeral"]), slug_, html.escape(c["name"])))
-        out.append("</figure>")
-    out.append('<p class="fh-arcana-note">The three starter cards — the builder offers '
-               "them to a first character; the full deck below is yours to draw from.</p>")
-    out.append("</div>")
-    return "\n".join(out)
+    # ⛔ PLUS AUCUN RENDU — Eric, 2026-08-29 : « les trois en gros format,
+    #    enlève-les, elles embolisent la page générale ». La directive reste
+    #    dans le vault parce qu'elle est la SOURCE des trois cartes de départ
+    #    (arcana.js / le builder) — la validation ci-dessus continue de crier
+    #    si une carte nommée disparaît du chapitre. Le rendu, lui, est vide.
+    return ""
 
 
 ARCANA_RE = re.compile(r"^\{\{arcana:([^}]+)\}\}[ \t]*$", re.M)

@@ -15,7 +15,7 @@ A card is never just a bonus: it carries a **meaning**, it moves your Destiny
 Score, it grants a **power** you may use, and it can sing **vibrations** into
 your soul — six ways the world answers you.
 
-At character creation, draw your card among the 22 Major Arcana ([Random Tarot Card Generator](https://randomtarotcard.com/Death.html)), or pick one of the **three starter cards** below — the builder sets them out for a first character. Only one Major Arcana is ever active — powers never stack. New cards come later, drawn on an Arcane Awakening (§7).
+At character creation, draw your card among the 22 Major Arcana ([Random Tarot Card Generator](https://randomtarotcard.com/Death.html)) — or take one of the **three starter cards** the builder sets out for a first character (The Fool, The Chariot, The Sun). Only one Major Arcana is ever active — powers never stack. New cards come later, drawn on an Arcane Awakening (§7).
 
 Each card's page gives:
 
@@ -24,22 +24,6 @@ Each card's page gives:
 - **Destiny Impact** — a modifier to the initial Destiny score.
 - **Power** — a regularly usable ability (like a racial trait).
 - **Vibrations** — six stored one-shot effects, rank 1 to 6 (the rules: §8).
-
-<div class="fh-arcana-teaser">
-<figure class="fh-arcana-card">
-<a href="../arcana/the-fool/"><img src="../../assets/img/tarot/major/0.jpg" alt="The Fool" loading="lazy"></a>
-<figcaption><span class="fh-arcana-num">0</span> <a href="../arcana/the-fool/">The Fool</a></figcaption>
-</figure>
-<figure class="fh-arcana-card">
-<a href="../arcana/the-chariot/"><img src="../../assets/img/tarot/major/VII.jpg" alt="The Chariot" loading="lazy"></a>
-<figcaption><span class="fh-arcana-num">VII</span> <a href="../arcana/the-chariot/">The Chariot</a></figcaption>
-</figure>
-<figure class="fh-arcana-card">
-<a href="../arcana/the-sun/"><img src="../../assets/img/tarot/major/XIX.jpg" alt="The Sun" loading="lazy"></a>
-<figcaption><span class="fh-arcana-num">XIX</span> <a href="../arcana/the-sun/">The Sun</a></figcaption>
-</figure>
-<p class="fh-arcana-note">The three starter cards — the builder offers them to a first character; the full deck below is yours to draw from.</p>
-</div>
 
 ## 2. The Deck
 

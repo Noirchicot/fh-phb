@@ -1,8 +1,6 @@
-Fate's Hand — Major Arcana, published 2026-08-29.
-16 masters by Eric Goldman, from FH-WEB/Ressources/Tarot/01-Master-Archive-v1
-(Pilots: 0, XII, XVI, XIX · Wave A: I-IV · Wave B: V-VIII · Wave C: IX, X, XI, XIII),
-resampled to 480px JPEG q80.
-6 cards (XIV, XV, XVII, XVIII, XX, XXI) are Rider-Waite-Smith (Pamela Colman
-Smith, 1909, public domain — the cleaned set from _legacy/) standing in until
-their FH repaint: replace here when the waves close.
+Fate's Hand — Major Arcana, all 22 by Eric Goldman. Published 2026-08-29.
+16 v2 masters from FH-WEB/Ressources/Tarot/01-Master-Archive-v1
+(Pilots: 0, XII, XVI, XIX · Wave A: I-IV · Wave B: V-VIII · Wave C: IX, X, XI, XIII).
+6 v1 cards (XIV, XV, XVII, XVIII, XX, XXI) from _legacy/tarot-major-png-cleaned —
+Eric's earlier set, awaiting their v2 repaint: replace here when the waves close.
 thumbs/ = square crops for the Deck overview (full cards live on card pages).
