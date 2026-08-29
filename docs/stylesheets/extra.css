@@ -1429,7 +1429,13 @@ body.fh-home-page .md-header { display: none; }
 /* les aptitudes : un titre par niveau, du texte dessous — rien de plus */
 .md-typeset h3.fh-pcfh__feature,
 .md-typeset h4.fh-pcfh__feature { margin-top: 1.5em; }
-.md-typeset .fh-pcfh__subclass {
+/* Le RANG SECTION d'une page de classe — Eric, 2026-08-29 : *« Eldritch
+   invocations doit être une sous-section, au même titre que Intro / Tableau /
+   Features »*. Une tête de section (options de classe, sous-classe) porte le
+   grand blanc et le filet ; une feature (`fh-pcfh__feature`) n'a que sa marge.
+   Deux rangs, deux habits — et les deux têtes de rang partagent LA règle. */
+.md-typeset .fh-pcfh__subclass,
+.md-typeset .fh-pcfh__section {
   margin-top: 2.2em;
   padding-top: .8em;
   border-top: 1px solid var(--fh-rule);

@@ -95,7 +95,7 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <p>4 6 7</p>
 <p>5 7 9</p>
 <h3 class="fh-pcfh__feature" id="l2-metamagic">Level 2: Metamagic</h3>
-<p>Because your magic flows from within, you can alter your spells to suit your needs; you gain two Metamagic options of your choice from “Metamagic Options” later in this class’s description. You use the chosen options to temporarily modify spells you cast. To use an option, you must spend the number of Sorcery Points that it costs.</p>
+<p>Because your magic flows from within, you can alter your spells to suit your needs; you gain two Metamagic options of your choice from “<a class="fh-lien" href="#metamagic-options">Metamagic Options</a>” later in this class’s description. You use the chosen options to temporarily modify spells you cast. To use an option, you must spend the number of Sorcery Points that it costs.</p>
 <p>You can use only one Metamagic option on a spell when you cast it unless otherwise noted in one of those options.</p>
 <p>Whenever you gain a Sorcerer level, you can replace one of your Metamagic options with one you don’t know. You gain two more options at Sorcerer level 10 and two more at Sorcerer level 17.</p>
 <h3 class="fh-pcfh__feature" id="l3-sorcerer-subclass">Level 3: Sorcerer Subclass</h3>
@@ -111,7 +111,7 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-arcane-apotheosis">Level 20: Arcane Apotheosis</h3>
 <p>While your Innate Sorcery feature is active, you can use one Metamagic option on each of your turns without spending Sorcery Points on it.</p>
-<h3 class="fh-pcfh__feature" id="metamagic-options">Metamagic Options</h3>
+<h3 class="fh-pcfh__section" id="metamagic-options">Metamagic Options</h3>
 <h4 class="fh-pcfh__feature" id="opt-careful-spell">Careful Spell</h4>
 <p>When you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell’s full force. To do so, spend 1 Sorcery Point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell, and it takes no damage if it would normally take half damage on a successful save.</p>
 <h4 class="fh-pcfh__feature" id="opt-distant-spell">Distant Spell</h4>

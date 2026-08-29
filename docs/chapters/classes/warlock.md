@@ -53,7 +53,7 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
 <h3 class="fh-pcfh__feature" id="l1-eldritch-invocations">Level 1: Eldritch Invocations</h3>
-<p>You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with an abiding magical ability or other lessons. You gain one invocation of your choice, such as Pact of the Tome. Invocations are described in the “Eldritch Invocation Options” section later in this class’s description.</p>
+<p>You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with an abiding magical ability or other lessons. You gain one invocation of your choice, such as Pact of the Tome. Invocations are described in the “<a class="fh-lien" href="#eldritch-invocation-options">Eldritch Invocation Options</a>” section later in this class’s description.</p>
 <p class="fh-pcfh__regle"><strong>Prerequisites.</strong> If an invocation has a prerequisite, you must meet it to learn that invocation. For example, if an invocation requires you to be a level 5+ Warlock, you can select the invocation once you reach Warlock level 5.</p>
 <p class="fh-pcfh__regle"><strong>Replacing and Gaining Invocations.</strong> Whenever you gain a Warlock level, you can replace one of your invocations with another one for which you qualify. You can’t replace an invocation if it’s a prerequisite for another invocation that you have.</p>
 <p>When you gain certain Warlock levels, you gain more invocations of your choice, as shown in the Invocations column of the <a class="fh-lien" href="#progression">Warlock Features table</a>.</p>
@@ -88,7 +88,7 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Fate is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-eldritch-master">Level 20: Eldritch Master</h3>
 <p>When you use your Magical Cunning feature, you regain all your expended Pact Magic spell slots.</p>
-<h3 class="fh-pcfh__feature" id="eldritch-invocation-options">Eldritch Invocation Options</h3>
+<h3 class="fh-pcfh__section" id="eldritch-invocation-options">Eldritch Invocation Options</h3>
 <h4 class="fh-pcfh__feature" id="opt-agonizing-blast">Agonizing Blast</h4>
 <p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock, a Warlock Cantrip That Deals Damage</em></p>
 <p>Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell’s damage rolls.</p>

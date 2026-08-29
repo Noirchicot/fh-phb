@@ -1215,7 +1215,11 @@ def _srd_class_full(slug, lang="en"):
                    if (o.get("data") or {}).get("category") == categorie]
         if not options:
             continue
-        out.append('<h3 class="fh-pcfh__feature" id="%s">%s</h3>'
+        # ⭐ RANG SECTION, PAS RANG FEATURE — Eric, 2026-08-29 : *« Eldritch
+        #    invocations doit être une sous-section, au même titre que Intro /
+        #    Tableau / Features »*. Rendue en `fh-pcfh__feature`, la section se
+        #    noyait dans le fil des aptitudes, un « Level 20 » de plus.
+        out.append('<h3 class="fh-pcfh__section" id="%s">%s</h3>'
                    % (_ancre(None, titre_section), html.escape(titre_section)))
         for o in sorted(options, key=lambda x: x["data"]["name"]):
             od = o["data"]
@@ -1245,7 +1249,19 @@ def _srd_class_full(slug, lang="en"):
     if attr:
         out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
-    return "\n".join(out)
+    corps = "\n".join(out)
+    # 🔗 LA PROMESSE DEVIENT UN LIEN — Eric, 2026-08-29 : *« mérite un lien
+    #    bleu »*. Le texte SRD cite la section entre guillemets courbes
+    #    (« described in the “Eldritch Invocation Options” section ») : chaque
+    #    mention, où qu'elle soit dans la page, saute à la section. On remplace
+    #    APRÈS assemblage — la cible existe forcément, c'est nous qui venons de
+    #    l'écrire ; une classe sans section déclarée n'est pas touchée.
+    for _, titre_section in _OPTIONS_DE_CLASSE.get(rec["name"], ()):
+        corps = corps.replace(
+            "\u201c%s\u201d" % titre_section,
+            '\u201c<a class="fh-lien" href="#%s">%s</a>\u201d'
+            % (_ancre(None, titre_section), html.escape(titre_section)))
+    return corps
 
 
 # Quelles classes portent une section d'options, et sous quel titre — les DEUX
