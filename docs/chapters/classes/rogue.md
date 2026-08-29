@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-# Rogue
-
 <div class="fh-dalle" markdown>
+
+# Rogue
 
 A rogue doesn't overpower a fight, they end it early—one clean opening turns an ordinary hit into the only hit that mattered. That same eye for the gap shows up in a lock, a lie, a guard's blind spot. Jack of a dozen trades and better at leaving unseen, a rogue survives on a second way out already scouted.
 

@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-# Wizard
-
 <div class="fh-dalle" markdown>
+
+# Wizard
 
 Weavers of arcane grammar, wizards bend reality through study, not birth. Spellbooks hold their power—lost pages mean lost magic. They shape fire, bend time, pierce minds, through relentless intellect. Fragile in armor, mighty in will, they trade strength for the universe's deepest secrets, one spell slot at a time.
 

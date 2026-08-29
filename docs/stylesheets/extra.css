@@ -1240,15 +1240,21 @@ body.fh-home-page .md-header { display: none; }
   --fh-link:       #2f5d7c;
   --fh-link-hover: #1f4e6b;
 }
+/* 🔴 LA GARDE SUIT LA BASCULE, PAS L'OS — mesuré le 2026-08-29 : en JOUR
+   forcé sous un OS réglé sombre, le lien restait bleu-nuit sur dalle claire
+   (1,57:1 pour 4,5 exigé). `prefers-color-scheme` dit le réglage de la
+   machine ; c'est `data-md-color-scheme` qui dit ce que la page AFFICHE.
+   Le média ne sert plus que de filet quand l'attribut n'est pas encore posé. */
+[data-md-color-scheme="slate"],
+[data-md-color-scheme="slate"] :root {
+  --fh-link:       #8fb4d0;
+  --fh-link-hover: #b3cee2;
+}
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  body:not([data-md-color-scheme]) {
     --fh-link:       #8fb4d0;
     --fh-link-hover: #b3cee2;
   }
-}
-[data-md-color-scheme="slate"] {
-  --fh-link:       #8fb4d0;
-  --fh-link-hover: #b3cee2;
 }
 
 .md-typeset a.fh-lien,
@@ -1869,13 +1875,26 @@ body.fh-classbelt-page :is(#progression, #features, #subclass, #fh-changes,
    aucun autre chapitre ne change. */
 body:has(.fh-dalle) {
   --fhb-surface: #ebe8e1;
-  --fhb-dalle: color-mix(in srgb, var(--fhb-surface) 35%, transparent);
+  /* 🔴 50 %, PLUS 35 — Eric, 2026-08-29 : *« passe à 50 % de voile, le texte
+     de couleur pose problème »*. C'est le barreau --voile-inter du builder,
+     dont la définition dit exactement ça : « un peu de texte, pas de
+     couleur » — de l'or et des liens sur du verre demandent le verre moyen. */
+  --fhb-dalle: color-mix(in srgb, var(--fhb-surface) 50%, transparent);
   --fhb-lisere: rgba(255, 255, 255, .55);
   background: url("../assets/img/bg-day.jpg") center / cover fixed no-repeat;
+}
+/* 🔴 « LE TEXTE DE COULEUR POSE PROBLÈME » (Eric, 2026-08-29) — MESURÉ : sur le
+   verre de jour à 50 %, l'or de la maison (#7d6535) rend 3,98:1 pour 4,5 exigé.
+   Le lien (5,2) et toute la nuit (7+) tiennent. L'or de CES pages fonce donc
+   d'un cran (#5f4c26 → 5,8:1) — le même mot, dit assez fort pour du verre.
+   C'est la loi du builder : l'accent ne survit pas tel quel sur une dalle. */
+body:has(.fh-dalle) {
+  --fh-gold: #5f4c26;
 }
 body[data-md-color-scheme="slate"]:has(.fh-dalle) {
   --fhb-surface: #1f1c16;
   --fhb-lisere: rgba(255, 255, 255, .14);
+  --fh-gold: #bfa87e;   /* la nuit garde son or : 7,0 mesuré, rien à forcer */
   background: url("../assets/img/bg-night.jpg") center / cover fixed no-repeat;
 }
 /* le papier du contenu s'efface : c'est le fond qui porte, les dalles flottent */
@@ -1890,6 +1909,11 @@ body:has(.fh-dalle) .md-content { background: transparent; }
   border-radius: .5rem;
   padding: 1rem 1.2rem;
   margin: 1.1em 0;
+  /* 🔴 flow-root : la dalle CONTIENT ses flottants — la vignette de l'index
+     (`.fh-thumb`, float:right) s'échappait par le bas de sa dalle (Eric :
+     « certains titres et images dépassent »). Un div ne contient pas un
+     float ; une racine de flux, si. */
+  display: flow-root;
 }
 /* les dalles générées vivent dans .fh-pcfh, qui gardait ses propres marges */
 .md-typeset .fh-pcfh section.fh-dalle { margin: 1.1em 0; }

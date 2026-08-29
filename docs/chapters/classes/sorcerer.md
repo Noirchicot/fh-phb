@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-# Sorcerer
-
 <div class="fh-dalle" markdown>
+
+# Sorcerer
 
 A sorcerer's magic showed up before any teacher could claim credit—inherited, inborn, or triggered by something that only happened once. It answers to instinct more than study: faster to reach for than a wizard's spell, harder to leash even after years of aiming it. Ask how it works and watch them shrug: it just does.
 

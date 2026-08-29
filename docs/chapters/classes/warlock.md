@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-# Warlock
-
 <div class="fh-dalle" markdown>
+
+# Warlock
 
 Somewhere past the ordinary rules of magic sits a warlock's patron; what that deal cost is nobody else's business. Invocations are doors that shouldn't exist, forced open once and left unlocked—no study, just payment made. The fine print stays private. What shows is the confidence of someone who no longer asks.
 

@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-# Barbarian
-
 <div class="fh-dalle" markdown>
+
+# Barbarian
 
 Rage isn't losing control—it's the only control a barbarian trusts. Pain fades, caution burns away, and the body remembers a violence older than any drilled stance. They shrug off blows that would drop an armored knight, then hit back twice as hard. No spellbook, no oath: only fury, sharpened by every fight survived.
 

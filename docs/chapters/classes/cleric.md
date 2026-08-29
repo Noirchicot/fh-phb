@@ -3,9 +3,9 @@ hide:
   - toc
 ---
 
-# Cleric
-
 <div class="fh-dalle" markdown>
+
+# Cleric
 
 A cleric's power isn't borrowed, it's granted—proof something answered the prayer. The bargain cuts both ways: healing in one hand, judgment in the other, and a debt of service that doesn't clock out after battle. Robes under armor, a holy symbol worth more than the sword. Private life is the calling's first casualty.
 
