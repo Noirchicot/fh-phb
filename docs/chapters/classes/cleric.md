@@ -1,22 +1,11 @@
----
-hide:
-  - toc
----
-
 # Cleric
-
-<div class="fh-dalle" markdown>
 
 A cleric's power isn't borrowed, it's granted—proof something answered the prayer. The bargain cuts both ways: healing in one hand, judgment in the other, and a debt of service that doesn't clock out after battle. Robes under armor, a holy symbol worth more than the sword. Private life is the calling's first casualty.
 
 ![Cleric](../../assets/img/class-cleric.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
-
-</div>
-
 <div class="fh-pcfh">
-<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D8 per Cleric level</dd>
 <dt>Primary ability</dt><dd>Wisdom</dd>
@@ -25,8 +14,6 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 <dt>Weapons</dt><dd>Simple weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Chain Shirt, Shield, Mace, Holy Symbol, Priest’s Pack, and 7 GP; or (B) 110 GP</dd>
 </dl>
-</section>
-<section class="fh-dalle">
 <table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -73,8 +60,6 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-greater-divine-intervention">Greater Divine Intervention</a></td><td>4</td><td>5</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>You have learned to cast spells through prayer and meditation. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Cleric spells, which appear on the Cleric spell list later in the class’s description.</p>
 <p class="fh-pcfh__regle"><strong>Cantrips.</strong> You know three cantrips of your choice from the Cleric spell list. Guidance, Sacred Flame, and Thaumaturgy are recommended.</p>
@@ -118,8 +103,6 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Fate is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-greater-divine-intervention">Level 20: Greater Divine Intervention</h3>
 <p>You can call on even more powerful divine intervention. When you use your Divine Intervention feature, you can choose Wish when you select a spell. If you do so, you can’t use Divine Intervention again until you finish 2d4 Long Rests.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Cleric subclass: Life Domain</h3>
 <p>Soothe the Hurts of the World</p>
 <p>The Life Domain focuses on the positive energy that helps sustain all life in the multiverse. Clerics who tap into this domain are masters of healing, using that life force to cure many hurts.</p>
@@ -140,7 +123,6 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 <p>The healing spells you cast on others heal you as well. Immediately after you cast a spell with a spell slot that restores Hit Points to one or more creatures other than yourself, you regain Hit Points equal to 2 plus the spell slot’s level.</p>
 <h4 class="fh-pcfh__feature" id="l17-supreme-healing">Level 17: Supreme Healing</h4>
 <p>When you would normally roll one or more dice to restore Hit Points to a creature with a spell or Channel Divinity, don’t roll those dice for the healing; instead use the highest number possible for each die. For example, instead of restoring 2d6 Hit Points to a creature with a spell, you restore 12. Druid</p>
-</section>
 </div>
 
 > [!note] What Fate's Hand changes

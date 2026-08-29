@@ -1,12 +1,4 @@
----
-hide:
-  - toc
----
-
 # Classes
-
-<div class="fh-dalle" markdown>
-
 
 
 Your class is the training your character carries: what they reached for when
@@ -51,11 +43,7 @@ reading it.
 | casting, spell slots and how magic behaves | [Magic](magic.md) |
 | a word you have met and do not know | [Rules Glossary](rules-glossary.md) |
 
-</div>
-
 ## Barbarian
-
-<div class="fh-dalle" markdown>
 
 ![Barbarian](../assets/img/class-barbarian.webp){ .fh-thumb }
 
@@ -63,11 +51,7 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 
 [Read the full entry →](classes/barbarian.md)
 
-</div>
-
 ## Bard
-
-<div class="fh-dalle" markdown>
 
 ![Bard](../assets/img/class-bard.webp){ .fh-thumb }
 
@@ -75,11 +59,7 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 
 [Read the full entry →](classes/bard.md)
 
-</div>
-
 ## Cleric
-
-<div class="fh-dalle" markdown>
 
 ![Cleric](../assets/img/class-cleric.webp){ .fh-thumb }
 
@@ -87,11 +67,7 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 
 [Read the full entry →](classes/cleric.md)
 
-</div>
-
 ## Druid
-
-<div class="fh-dalle" markdown>
 
 ![Druid](../assets/img/class-druid.webp){ .fh-thumb }
 
@@ -99,11 +75,7 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 
 [Read the full entry →](classes/druid.md)
 
-</div>
-
 ## Fighter
-
-<div class="fh-dalle" markdown>
 
 ![Fighter](../assets/img/class-fighter.webp){ .fh-thumb }
 
@@ -111,11 +83,7 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 
 [Read the full entry →](classes/fighter.md)
 
-</div>
-
 ## Monk
-
-<div class="fh-dalle" markdown>
 
 ![Monk](../assets/img/class-monk.webp){ .fh-thumb }
 
@@ -123,11 +91,7 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 
 [Read the full entry →](classes/monk.md)
 
-</div>
-
 ## Paladin
-
-<div class="fh-dalle" markdown>
 
 ![Paladin](../assets/img/class-paladin.webp){ .fh-thumb }
 
@@ -135,11 +99,7 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 
 [Read the full entry →](classes/paladin.md)
 
-</div>
-
 ## Ranger
-
-<div class="fh-dalle" markdown>
 
 ![Ranger](../assets/img/class-ranger.webp){ .fh-thumb }
 
@@ -147,11 +107,7 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 
 [Read the full entry →](classes/ranger.md)
 
-</div>
-
 ## Rogue
-
-<div class="fh-dalle" markdown>
 
 ![Rogue](../assets/img/class-rogue.webp){ .fh-thumb }
 
@@ -159,11 +115,7 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 
 [Read the full entry →](classes/rogue.md)
 
-</div>
-
 ## Sorcerer
-
-<div class="fh-dalle" markdown>
 
 ![Sorcerer](../assets/img/class-sorcerer.webp){ .fh-thumb }
 
@@ -171,11 +123,7 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 
 [Read the full entry →](classes/sorcerer.md)
 
-</div>
-
 ## Warlock
-
-<div class="fh-dalle" markdown>
 
 ![Warlock](../assets/img/class-warlock.webp){ .fh-thumb }
 
@@ -183,19 +131,13 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 
 [Read the full entry →](classes/warlock.md)
 
-</div>
-
 ## Wizard
-
-<div class="fh-dalle" markdown>
 
 ![Wizard](../assets/img/class-wizard.webp){ .fh-thumb }
 
 Weavers of arcane grammar, wizards bend reality through study, not birth. Spellbooks hold their power—lost pages mean lost magic. They shape fire, bend time, pierce minds, through relentless intellect. Fragile in armor, mighty in will, they trade strength for the universe's deepest secrets, one spell slot at a time.
 
 [Read the full entry →](classes/wizard.md)
-
-</div>
 
 ---
 

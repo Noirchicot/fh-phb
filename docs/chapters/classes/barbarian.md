@@ -1,22 +1,11 @@
----
-hide:
-  - toc
----
-
 # Barbarian
-
-<div class="fh-dalle" markdown>
 
 Rage isn't losing control—it's the only control a barbarian trusts. Pain fades, caution burns away, and the body remembers a violence older than any drilled stance. They shrug off blows that would drop an armored knight, then hit back twice as hard. No spellbook, no oath: only fury, sharpened by every fight survived.
 
 ![Barbarian](../../assets/img/class-barbarian.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
-
-</div>
-
 <div class="fh-pcfh">
-<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D12 per Barbarian level</dd>
 <dt>Primary ability</dt><dd>Strength</dd>
@@ -25,8 +14,6 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Greataxe, 4 Handaxes, Explorer’s Pack, and 15 GP; or (B) 75 GP</dd>
 </dl>
-</section>
-<section class="fh-dalle">
 <table class="fh-pcfh__table" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -63,8 +50,6 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-primal-champion">Primal Champion</a></td><td>6</td><td>+4</td><td>4</td><td>20</td><td>4</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-rage">Level 1: Rage</h3>
 <p>You can imbue yourself with a primal power called Rage, a force that grants you extraordinary might and resilience. You can enter it as a Bonus Action if you aren’t wearing Heavy armor.</p>
 <p>You can enter your Rage the number of times shown for your Barbarian level in the Rages column of the <a class="fh-lien" href="#progression">Barbarian Features table</a>. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest.</p>
@@ -126,8 +111,6 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-primal-champion">Level 20: Primal Champion</h3>
 <p>You embody primal power. Your Strength and Constitution scores increase by 4, to a maximum of 25.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Barbarian subclass: Path of the Berserker</h3>
 <p>Channel Rage into Violent Fury</p>
 <p>Barbarians who walk the Path of the Berserker direct their Rage primarily toward violence. Their path is one of untrammeled fury, and they thrill in the chaos of battle as they allow their Rage to seize and empower them.</p>
@@ -140,7 +123,6 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <h4 class="fh-pcfh__feature" id="l14-intimidating-presence">Level 14: Intimidating Presence</h4>
 <p>As a Bonus Action, you can strike terror into others with your menacing presence and primal power. When you do so, each creature of your choice in a 30-foot Emanation originating from you must make a Wisdom saving throw (DC 8 plus your Strength modifier and Proficiency Bonus). On a failed save, a creature has the Frightened condition for 1 minute. At the end of each of the Frightened creature’s turns, the creature repeats the save, ending the effect on itself on a success.</p>
 <p>Once you use this feature, you can’t use it again until you finish a Long Rest unless you expend a use of your Rage (no action required) to restore your use of it. Bard</p>
-</section>
 </div>
 
 > [!note] What Fate's Hand changes

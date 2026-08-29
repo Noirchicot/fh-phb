@@ -1,22 +1,11 @@
----
-hide:
-  - toc
----
-
 # Monk
-
-<div class="fh-dalle" markdown>
 
 A monk spent years turning an empty hand into a weapon nobody had to hand them, and their own body into armor nobody had to forge. Somewhere in there they learn to catch a blow mid-flight and send it back. No steel, no plate: just discipline, repeated past where most people quit and call it enough.
 
 ![Monk](../../assets/img/class-monk.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
-
-</div>
-
 <div class="fh-pcfh">
-<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D8 per Monk level</dd>
 <dt>Primary ability</dt><dd>Dexterity and Wisdom</dd>
@@ -26,8 +15,6 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <dt>Tools</dt><dd>Choose one type of Artisan’s Tools or Musical Instrument (see “Equipment”)</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Spear, 5 Daggers, Artisan’s Tools or Musical Instrument chosen for the tool proficiency above, Explorer’s Pack, and 11 GP; or (B) 50 GP</dd>
 </dl>
-</section>
-<section class="fh-dalle">
 <table class="fh-pcfh__table" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -64,8 +51,6 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-body-and-mind">Body and Mind</a></td><td>1d12</td><td>20</td><td>+30 ft.</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-martial-arts">Level 1: Martial Arts</h3>
 <p>Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons, which are the following:</p>
 <ul class="fh-pcfh__puces">
@@ -132,8 +117,6 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-body-and-mind">Level 20: Body and Mind</h3>
 <p>You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Monk subclass: Warrior of the Open Hand</h3>
 <p>Master Unarmed Combat Techniques</p>
 <p>Warriors of the Open Hand are masters of unarmed combat. They learn techniques to push and trip their opponents and manipulate their own energy to protect themselves from harm.</p>
@@ -150,7 +133,6 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <h4 class="fh-pcfh__feature" id="l17-quivering-palm">Level 17: Quivering Palm</h4>
 <p>You gain the ability to set up lethal vibrations in someone’s body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them. Alternatively, when you take the Attack action on your turn, you can forgo one of the attacks to end the vibrations. To end them, you and the target must be on the same plane of existence. When you end them, the target must make a Constitution saving throw, taking 10d12 Force damage on a failed save or half as much damage on a successful one.</p>
 <p>You can have only one creature under the effect of this feature at a time. You can end the vibrations harmlessly (no action required). Paladin</p>
-</section>
 </div>
 
 > [!note] What Fate's Hand changes

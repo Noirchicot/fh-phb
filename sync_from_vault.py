@@ -1064,17 +1064,11 @@ def _srd_class_full(slug, lang="en"):
         ("Tools", d.get("tool_proficiencies")),
         ("Starting equipment", d.get("starting_equipment")),
     ]
-    # 🪟 CHAQUE SECTION SUR SA DALLE — Eric, 2026-08-29 : *« le fond du
-    #    builder, chaque section sera sur une dalle FF transparence 35 % »*.
-    #    Les sections du belt et les dalles sont LES MÊMES découpes : carte
-    #    d'identité, table, aptitudes, sous-classe — une dalle chacune.
-    out.append('<section class="fh-dalle">')
     out.append('<dl class="fh-pcfh__id">')
     for libelle, v in identite:
         if v:
             out.append("<dt>%s</dt><dd>%s</dd>" % (html.escape(libelle), html.escape(str(v))))
     out.append("</dl>")
-    out.append("</section>")
 
     # ── LA TABLE DE PROGRESSION, EN-TÊTE À DEUX ÉTAGES ─────────────────────
     # 🔴 Eric, 2026-08-28, croquis annoté à l'appui : *« Level / proficiency
@@ -1108,7 +1102,6 @@ def _srd_class_full(slug, lang="en"):
     #    déduction du style sur la largeur — et ce sont les vides qui cèdent :
     #    l'interlettrage des titres et le confort de la colonne d'aptitudes.
     dense = " fh-pcfh__table--dense" if slots else ""
-    out.append('<section class="fh-dalle">')
     out.append('<table class="fh-pcfh__table%s" id="progression"><thead>' % dense)
     out.append("<tr>")
     for h in hauts:
@@ -1182,7 +1175,6 @@ def _srd_class_full(slug, lang="en"):
     out.append('<p class="fh-pcfh__note">The last three columns are Fate\'s Hand. '
                "They show your <b>running total</b> at that level, not the gain — "
                "you keep every step you passed through.</p>")
-    out.append("</section>")
 
     # ── LE TEXTE DE CHAQUE APTITUDE, AVEC SON ANCRE ────────────────────────
     # 🔴 Eric, 2026-08-28 : *« important d'avoir des tags de localisation »*.
@@ -1194,19 +1186,16 @@ def _srd_class_full(slug, lang="en"):
     # ⛔ ET L'ANCRE PORTE LE NIVEAU, PAS SEULEMENT LE NOM : « Improved Brutal
     #    Strike » existe DEUX fois chez le barbare (13 et 17). Un identifiant
     #    par nom seul en aurait écrasé un — et le lien aurait mené au mauvais.
-    out.append('<section class="fh-dalle">')
     for f in d.get("features") or []:
         titre = "Level %s: %s" % (f.get("level", "?"), f.get("name", "?"))
         out.append('<h3 class="fh-pcfh__feature" id="%s">%s</h3>'
                    % (_ancre(f.get("level"), f.get("name")), html.escape(titre)))
         out += _rendu_aptitude(
             _paragraphes_sans_table_plate(f.get("description"), rec["name"]), rec["name"])
-    out.append("</section>")
 
     # ── LA SOUS-CLASSE ─────────────────────────────────────────────────────
     sc = d.get("subclass")
     if isinstance(sc, dict) and sc.get("name"):
-        out.append('<section class="fh-dalle">')
         out.append('<h3 class="fh-pcfh__subclass">%s subclass: %s</h3>'
                    % (html.escape(rec["name"]), html.escape(sc["name"])))
         out += _rendu_aptitude(
@@ -1217,7 +1206,6 @@ def _srd_class_full(slug, lang="en"):
                           html.escape(str(f.get("level", "?"))), html.escape(f.get("name", "?"))))
             out += _rendu_aptitude(
                 _paragraphes_sans_table_plate(f.get("description"), rec["name"]), rec["name"])
-        out.append("</section>")
 
     attr = rec.get("attribution", "")
     if attr:
@@ -2435,14 +2423,6 @@ def split_classes():
     CLASSES_DIR.mkdir(parents=True, exist_ok=True)
     menu = _sans_bloc("\n".join(preamble).rstrip().splitlines(),
                       '<aside class="fh-translate">', "</aside>")
-    # 🪟 L'INTRO DE L'INDEX MONTE SUR SA DALLE elle aussi — tout ce qui suit
-    #    le titre, jusqu'aux entrées de classe.
-    for _i, _l in enumerate(menu):
-        if _l.startswith("# "):
-            menu = (menu[:_i + 1]
-                    + ["", '<div class="fh-dalle" markdown>', ""]
-                    + menu[_i + 1:] + ["", "</div>"])
-            break
 
     for n, (i, slug_, name) in enumerate(starts):
         block = lines[i:bornes[n + 1]]
@@ -2474,37 +2454,20 @@ def split_classes():
         if attr:
             corps = corps.replace(attr.group(0), "")
             corps = corps.rstrip() + "\n\n" + attr.group(0).strip() + "\n"
-        # 🪟 L'INTRO (blurb + illustration) MONTE SUR SA DALLE — Eric,
-        #    2026-08-29 : *« chaque section sera sur une dalle FF transparence
-        #    35 % »*. Ce qui précède le bloc généré est du markdown ; le div
-        #    porte `markdown` pour que mkdocs continue de le traiter
-        #    (extension `md_in_html`, déjà active).
-        coupe = corps.find('<div class="fh-pcfh">')
-        if coupe > 0:
-            corps = ('<div class="fh-dalle" markdown>\n\n%s\n\n</div>\n\n%s'
-                     % (corps[:coupe].strip(), corps[coupe:]))
-        # ⛔ EXIT LA TABLE DES MATIÈRES DE DROITE (Eric, même dictée : *« exit
-        #    le menu latéral droit »*) — par le mécanisme NATIF de Material
-        #    (`hide: toc`), pas par un display:none qui laisserait sa place.
-        page = f"---\nhide:\n  - toc\n---\n\n# {titre}\n\n{corps}\n"
+        page = f"# {titre}\n\n{corps}\n"
         (CLASSES_DIR / f"{slug_}.md").write_text(page, encoding="utf-8")
 
         menu.append("")
         menu.append(block[0])
-        menu.append("")
-        menu.append('<div class="fh-dalle" markdown>')
         menu.append("")
         menu.append(f"![{name}](../assets/img/class-{slug_}.webp){{ .fh-thumb }}")
         menu.append("")
         menu.append(_lead_paragraph(block))
         menu.append("")
         menu.append(f"[Read the full entry →](classes/{slug_}.md)")
-        menu.append("")
-        menu.append("</div>")
 
     menu += ["", tail, ""]
-    src_.write_text("---\nhide:\n  - toc\n---\n\n" + "\n".join(menu),
-                    encoding="utf-8")
+    src_.write_text("\n".join(menu), encoding="utf-8")
     print(f"  ok  classes.md            -> menu + {len(starts)} pages in chapters/classes/")
 
 

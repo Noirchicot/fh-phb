@@ -1,22 +1,11 @@
----
-hide:
-  - toc
----
-
 # Bard
-
-<div class="fh-dalle" markdown>
 
 A bard bets a song can do what a sword can't, and wins more than skeptics expect. Charisma isn't decoration here—it's the power source, drawn from music, wit, and nerve rather than study or scripture. They can talk down a guard, then fight the next one, barely noticing. Every performance is a small working of magic.
 
 ![Bard](../../assets/img/class-bard.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
-
-</div>
-
 <div class="fh-pcfh">
-<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D8 per Bard level</dd>
 <dt>Primary ability</dt><dd>Charisma</dd>
@@ -26,8 +15,6 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <dt>Tools</dt><dd>Choose 3 Musical Instruments (see “Equipment”)</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Leather Armor, 2 Daggers, Musical Instrument of your choice, Entertainer’s Pack, and 19 GP; or (B) 90 GP</dd>
 </dl>
-</section>
-<section class="fh-dalle">
 <table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -74,8 +61,6 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-words-of-creation">Words of Creation</a></td><td>D12</td><td>4</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>45</td><td>3</td><td>2</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-bardic-inspiration">Level 1: Bardic Inspiration</h3>
 <p>You can supernaturally inspire others through words, music, or dance. This inspiration is represented by your Bardic Inspiration die, which is a d6.</p>
 <p class="fh-pcfh__regle"><strong>Using Bardic Inspiration.</strong> As a Bonus Action, you can inspire another creature within 60 feet of yourself who can see or hear you. That creature gains one of your Bardic Inspiration dice. A creature can have only one Bardic Inspiration die at a time.</p>
@@ -118,8 +103,6 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Spell Recall is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-words-of-creation">Level 20: Words of Creation</h3>
 <p>You have mastered two of the Words of Creation: the words of life and death. You therefore always have the Power Word Heal and Power Word Kill spells prepared. When you cast either spell, you can target a second creature with it if that creature is within 10 feet of the first target.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Bard subclass: College of Lore</h3>
 <p>Plumb the Depths of Magical Knowledge</p>
 <p>Bards of the College of Lore collect spells and secrets from diverse sources, such as scholarly tomes, mystical rites, and peasant tales. The college’s members gather in libraries and universities to share their lore with one another. They also meet at festivals or affairs of state, where they can expose corruption, unravel lies, and poke fun at self-important figures of authority.</p>
@@ -132,7 +115,6 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <p>You always have the chosen spells prepared, and whenever you gain a Bard level, you can replace one of the spells with another spell that meets these requirements.</p>
 <h4 class="fh-pcfh__feature" id="l14-peerless-skill">Level 14: Peerless Skill</h4>
 <p>When you make an ability check or attack roll and fail, you can expend one use of Bardic Inspiration; roll the Bardic Inspiration die, and add the number rolled to the d20, potentially turning a failure into a success. On a failure, the Bardic Inspiration isn’t expended. Cleric</p>
-</section>
 </div>
 
 > [!note] What Fate's Hand changes

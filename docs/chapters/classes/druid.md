@@ -1,22 +1,11 @@
----
-hide:
-  - toc
----
-
 # Druid
-
-<div class="fh-dalle" markdown>
 
 A druid doesn't dominate nature, they petition it—and get answers more often than a king would like. Ask properly, and weather, root, even a wolf's own body can be borrowed a while; the oldest barely bother turning back. Kingdoms trust borders. A druid was loyal to the ground before any line got drawn.
 
 ![Druid](../../assets/img/class-druid.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
-
-</div>
-
 <div class="fh-pcfh">
-<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D8 per Druid level</dd>
 <dt>Primary ability</dt><dd>Wisdom</dd>
@@ -26,8 +15,6 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <dt>Tools</dt><dd>Herbalism Kit</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Leather Armor, Shield, Sickle, Druidic Focus (Quarterstaff), Explorer’s Pack, Herbalism Kit, and 9 GP; or (B) 50 GP</dd>
 </dl>
-</section>
-<section class="fh-dalle">
 <table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -74,8 +61,6 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-archdruid">Archdruid</a></td><td>4</td><td>4</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>22</td><td>2</td><td>1</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>You have learned to cast spells through studying the mystical forces of nature. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Druid spells, which appear on the Druid spell list later in the class’s description.</p>
 <p class="fh-pcfh__regle"><strong>Cantrips.</strong> You know two cantrips of your choice from the Druid spell list. Druidcraft and Produce Flame are recommended.</p>
@@ -136,8 +121,6 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <p class="fh-pcfh__regle"><strong>Evergreen Wild Shape.</strong> Whenever you roll Initiative and have no uses of Wild Shape left, you regain one expended use of it.</p>
 <p class="fh-pcfh__regle"><strong>Nature Magician.</strong> You can convert uses of Wild Shape into a spell slot (no action required). Choose a number of your unexpended uses of Wild Shape and convert them into a single spell slot, with each use contributing 2 spell levels. For example, if you convert two uses of Wild Shape, you produce a level 4 spell slot. Once you use this benefit, you can’t do so again until you finish a Long Rest.</p>
 <p class="fh-pcfh__regle"><strong>Longevity.</strong> The primal magic that you wield causes you to age more slowly. For every ten years that pass, your body ages only one year.</p>
-</section>
-<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Druid subclass: Circle of the Land</h3>
 <p>Celebrate Connection to the Natural World</p>
 <p>The Circle of the Land comprises mystics and sages who safeguard ancient knowledge and rites. These Druids meet within sacred circles of trees or standing stones to whisper primal secrets in Druidic. The circle’s wisest members preside as the chief priests of their communities.</p>
@@ -185,7 +168,6 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <h4 class="fh-pcfh__feature" id="l14-nature-s-sanctuary">Level 14: Nature’s Sanctuary</h4>
 <p>As a Magic action, you can expend a use of your Wild Shape and cause spectral trees and vines to appear in a 15-foot Cube on the ground within 120 feet of yourself. They last there for 1 minute or until you have the Incapacitated condition or die. You and your allies have Half Cover while in that area, and your allies gain the current Resistance of your Nature’s Ward while there.</p>
 <p>As a Bonus Action, you can move the Cube up to 60 feet to ground within 120 feet of yourself. Fighter</p>
-</section>
 </div>
 
 > [!note] What Fate's Hand changes
