@@ -636,7 +636,15 @@ def _srd_spells(lang="en", niveaux=None):
                 d.get("components"), d.get("duration"),
             ] if x)
             classes = d.get("classes")
-            out.append("<dt>%s</dt>" % html.escape(r["name"]))
+            # 🔗 CHAQUE SORT PORTE SON ANCRE (`spell-<slug>`) — Eric, 2026-08-30,
+            #    loi générale : *« dès qu'un skill, feat, trait, feature, spell,
+            #    invocation, training apparaît, il y a un lien vers le site FH
+            #    web »*. Un lien suppose une cible : sans ancre, le builder ne
+            #    peut pointer qu'un chapitre entier. Même patron que `opt-<nom>`
+            #    et `l<niveau>-<nom>` — prévisible, composable sans lire la page.
+            out.append('<dt id="spell-%s">%s</dt>' % (
+                re.sub(r"[^a-z0-9]+", "-", r["name"].lower()).strip("-"),
+                html.escape(r["name"])))
             out.append('<dd><span class="fh-spell-meta">%s</span>%s%s</dd>' % (
                 html.escape(meta),
                 ('<span class="fh-spell-classes">%s</span>' % html.escape(
