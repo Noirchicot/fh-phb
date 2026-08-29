@@ -1240,15 +1240,22 @@ body.fh-home-page .md-header { display: none; }
   --fh-link:       #2f5d7c;
   --fh-link-hover: #1f4e6b;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --fh-link:       #8fb4d0;
-    --fh-link-hover: #b3cee2;
-  }
-}
+/* 🔴 LA GARDE SUIT LA BASCULE, PAS L'OS — mesuré le 2026-08-29 : en JOUR
+   forcé sous un OS réglé sombre, un lien restait bleu-nuit sur fond clair
+   (1,57:1 pour 4,5 exigé). `prefers-color-scheme` dit le réglage de la
+   machine ; `data-md-color-scheme` dit ce que la page AFFICHE. Le média ne
+   sert plus que de filet avant que Material ait posé l'attribut.
+   ⚠️ Cette correction SURVIT au retour arrière sur les dalles (Eric,
+   2026-08-29) : c'est un bug du site entier, pas un choix de décor. */
 [data-md-color-scheme="slate"] {
   --fh-link:       #8fb4d0;
   --fh-link-hover: #b3cee2;
+}
+@media (prefers-color-scheme: dark) {
+  body:not([data-md-color-scheme]) {
+    --fh-link:       #8fb4d0;
+    --fh-link-hover: #b3cee2;
+  }
 }
 
 .md-typeset a.fh-lien,
