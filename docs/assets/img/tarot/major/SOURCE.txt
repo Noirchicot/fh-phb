@@ -1,6 +1,5 @@
-Fate's Hand — Major Arcana, all 22 by Eric Goldman. Published 2026-08-29.
-16 v2 masters from FH-WEB/Ressources/Tarot/01-Master-Archive-v1
-(Pilots: 0, XII, XVI, XIX · Wave A: I-IV · Wave B: V-VIII · Wave C: IX, X, XI, XIII).
-6 v1 cards (XIV, XV, XVII, XVIII, XX, XXI) from _legacy/tarot-major-png-cleaned —
-Eric's earlier set, awaiting their v2 repaint: replace here when the waves close.
-thumbs/ = square crops for the Deck overview (full cards live on card pages).
+Fate's Hand — Major Arcana: Eric Goldman's complete 22-card deck
+(FH-WEB/Ressources/Tarot/_legacy/IMG_57xx-58xx.JPG, 1200x2150 originals),
+published 2026-08-29 at 480px JPEG q80.
+thumbs/ = square crops of each card's art window, for the Deck overview.
+arcana-banner.jpg = four cards (II, 0, XVI, XIX), center-cropped 1600x800.
