@@ -111,6 +111,30 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-arcane-apotheosis">Level 20: Arcane Apotheosis</h3>
 <p>While your Innate Sorcery feature is active, you can use one Metamagic option on each of your turns without spending Sorcery Points on it.</p>
+<h3 class="fh-pcfh__feature" id="metamagic-options">Metamagic Options</h3>
+<h4 class="fh-pcfh__feature" id="opt-careful-spell">Careful Spell</h4>
+<p>When you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell’s full force. To do so, spend 1 Sorcery Point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell, and it takes no damage if it would normally take half damage on a successful save.</p>
+<h4 class="fh-pcfh__feature" id="opt-distant-spell">Distant Spell</h4>
+<p>When you cast a spell that has a range of at least 5 feet, you can spend 1 Sorcery Point to double the spell’s range. Or when you cast a spell that has a range of Touch, you can spend 1 Sorcery Point to make the spell’s range 30 feet.</p>
+<h4 class="fh-pcfh__feature" id="opt-empowered-spell">Empowered Spell</h4>
+<p>When you roll damage for a spell, you can spend 1 Sorcery Point to reroll a number of the damage dice up to your Charisma modifier (minimum of one), and you must use the new rolls.</p>
+<p>You can use Empowered Spell even if you’ve already used a different Metamagic option during the casting of the spell.</p>
+<h4 class="fh-pcfh__feature" id="opt-extended-spell">Extended Spell</h4>
+<p>When you cast a spell that has a duration of 1 minute or longer, you can spend 1 Sorcery Point to double its duration to a maximum duration of 24 hours.</p>
+<p>If the affected spell requires Concentration, you have Advantage on any saving throw you make to maintain that Concentration.</p>
+<h4 class="fh-pcfh__feature" id="opt-heightened-spell">Heightened Spell</h4>
+<p>When you cast a spell that forces a creature to make a saving throw, you can spend 2 Sorcery Points to give one target of the spell Disadvantage on saves against the spell.</p>
+<h4 class="fh-pcfh__feature" id="opt-quickened-spell">Quickened Spell</h4>
+<p>When you cast a spell that has a casting time of an action, you can spend 2 Sorcery Points to change the casting time to a Bonus Action for this casting. You can’t modify a spell in this way if you’ve already cast a level 1+ spell on the current turn, nor can you cast a level 1+ spell on this turn after modifying a spell in this way.</p>
+<h4 class="fh-pcfh__feature" id="opt-seeking-spell">Seeking Spell</h4>
+<p>If you make an attack roll for a spell and miss, you can spend 1 Sorcery Point to reroll the d20, and you must use the new roll.</p>
+<p>You can use Seeking Spell even if you’ve already used a different Metamagic option during the casting of the spell.</p>
+<h4 class="fh-pcfh__feature" id="opt-subtle-spell">Subtle Spell</h4>
+<p>When you cast a spell, you can spend 1 Sorcery Point to cast it without any Verbal, Somatic, or Material components, except Material components that are consumed by the spell or that have a cost specified in the spell.</p>
+<h4 class="fh-pcfh__feature" id="opt-transmuted-spell">Transmuted Spell</h4>
+<p>When you cast a spell that deals a type of damage from the following list, you can spend 1 Sorcery Point to change that damage type to one of the other listed types: Acid, Cold, Fire, Lightning, Poison, Thunder.</p>
+<h4 class="fh-pcfh__feature" id="opt-twinned-spell">Twinned Spell</h4>
+<p>When you cast a spell, such as Charm Person, that can be cast with a higher-level spell slot to target an additional creature, you can spend 1 Sorcery Point to increase the spell’s effective level by 1.</p>
 <h3 class="fh-pcfh__subclass">Sorcerer subclass: Draconic Sorcery</h3>
 <p>Breathe the Magic of Dragons</p>
 <p>Your innate magic comes from the gift of a dragon. Perhaps an ancient dragon facing death bequeathed some of its magical power to you or your ancestor. You might have absorbed magic from a site infused with dragons’ power. Or perhaps you handled a treasure taken from a dragon’s hoard that was steeped in draconic power. Or you might have a dragon for an ancestor.</p>

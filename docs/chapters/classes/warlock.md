@@ -88,6 +88,107 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Fate is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-eldritch-master">Level 20: Eldritch Master</h3>
 <p>When you use your Magical Cunning feature, you regain all your expended Pact Magic spell slots.</p>
+<h3 class="fh-pcfh__feature" id="eldritch-invocation-options">Eldritch Invocation Options</h3>
+<h4 class="fh-pcfh__feature" id="opt-agonizing-blast">Agonizing Blast</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock, a Warlock Cantrip That Deals Damage</em></p>
+<p>Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell’s damage rolls.</p>
+<p class="fh-pcfh__regle"><strong>Repeatable.</strong> You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.</p>
+<h4 class="fh-pcfh__feature" id="opt-armor-of-shadows">Armor of Shadows</h4>
+<p>You can cast Mage Armor on yourself without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-ascendant-step">Ascendant Step</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 5+ Warlock</em></p>
+<p>You can cast Levitate on yourself without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-devil-s-sight">Devil’s Sight</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock</em></p>
+<p>You can see normally in Dim Light and Darkness— both magical and nonmagical—within 120 feet of yourself.</p>
+<h4 class="fh-pcfh__feature" id="opt-devouring-blade">Devouring Blade</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 12+ Warlock, Thirsting Blade Invocation</em></p>
+<p>The Extra Attack of your Thirsting Blade invocation confers two extra attacks rather than one.</p>
+<h4 class="fh-pcfh__feature" id="opt-eldritch-mind">Eldritch Mind</h4>
+<p>You have Advantage on Constitution saving throws that you make to maintain Concentration.</p>
+<h4 class="fh-pcfh__feature" id="opt-eldritch-smite">Eldritch Smite</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 5+ Warlock, Pact of the Blade Invocation</em></p>
+<p>Once per turn when you hit a creature with your pact weapon, you can expend a Pact Magic spell slot to deal an extra 1d8 Force damage to the target, plus another 1d8 per level of the spell slot, and you can give the target the Prone condition if it is Huge or smaller.</p>
+<h4 class="fh-pcfh__feature" id="opt-eldritch-spear">Eldritch Spear</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock, a Warlock Cantrip That Deals Damage</em></p>
+<p>Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.</p>
+<p class="fh-pcfh__regle"><strong>Repeatable.</strong> You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.</p>
+<h4 class="fh-pcfh__feature" id="opt-fiendish-vigor">Fiendish Vigor</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock</em></p>
+<p>You can cast False Life on yourself without expending a spell slot. When you cast the spell with this feature, you don’t roll the die for the Temporary Hit Points; you automatically get the highest number on the die.</p>
+<h4 class="fh-pcfh__feature" id="opt-gaze-of-two-minds">Gaze of Two Minds</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 5+ Warlock</em></p>
+<p>You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don’t maintain it in this way.</p>
+<p>While perceiving through the other creature’s senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature’s space if the two of you are within 60 feet of each other.</p>
+<h4 class="fh-pcfh__feature" id="opt-gift-of-the-depths">Gift of the Depths</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 5+ Warlock</em></p>
+<p>You can breathe underwater, and you gain a Swim Speed equal to your Speed.</p>
+<p>You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.</p>
+<h4 class="fh-pcfh__feature" id="opt-gift-of-the-protectors">Gift of the Protectors</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 9+ Warlock, Pact of the Tome Invocation</em></p>
+<p>A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).</p>
+<p>When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the</p>
+<p>creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest.</p>
+<p>As a Magic action, you can erase a name on the page by touching it.</p>
+<h4 class="fh-pcfh__feature" id="opt-investment-of-the-chain-master">Investment of the Chain Master</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 5+ Warlock, Pact of the Chain Invocation</em></p>
+<p>When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.</p>
+<p class="fh-pcfh__regle"><strong>Aerial or Aquatic.</strong> The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet.</p>
+<p class="fh-pcfh__regle"><strong>Quick Attack.</strong> As a Bonus Action, you can command the familiar to take the Attack action.</p>
+<p class="fh-pcfh__regle"><strong>Necrotic or Radiant Damage.</strong> Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead.</p>
+<p class="fh-pcfh__regle"><strong>Your Save DC.</strong> If the familiar forces a creature to make a saving throw, it uses your spell save DC.</p>
+<p class="fh-pcfh__regle"><strong>Resistance.</strong> When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.</p>
+<h4 class="fh-pcfh__feature" id="opt-lessons-of-the-first-ones">Lessons of the First Ones</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock</em></p>
+<p>You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see “Feats”).</p>
+<p class="fh-pcfh__regle"><strong>Repeatable.</strong> You can gain this invocation more than once. Each time you do so, choose a different Origin feat.</p>
+<h4 class="fh-pcfh__feature" id="opt-lifedrinker">Lifedrinker</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 9+ Warlock, Pact of the Blade Invocation</em></p>
+<p>Once per turn when you hit a creature with your pact weapon, you can deal an extra 1d6 Necrotic, Psychic, or Radiant damage (your choice) to the creature, and you can expend one of your Hit Point Dice to roll it and regain a number of Hit Points equal to the roll plus your Constitution modifier (minimum of 1 Hit Point).</p>
+<h4 class="fh-pcfh__feature" id="opt-mask-of-many-faces">Mask of Many Faces</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock</em></p>
+<p>You can cast Disguise Self without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-master-of-myriad-forms">Master of Myriad Forms</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 5+ Warlock</em></p>
+<p>You can cast Alter Self without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-misty-visions">Misty Visions</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock</em></p>
+<p>You can cast Silent Image without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-one-with-shadows">One with Shadows</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 5+ Warlock</em></p>
+<p>While you’re in an area of Dim Light or Darkness, you can cast Invisibility on yourself without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-otherworldly-leap">Otherworldly Leap</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock</em></p>
+<p>You can cast Jump on yourself without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-pact-of-the-blade">Pact of the Blade</h4>
+<p>As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can’t bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus.</p>
+<p>Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type.</p>
+<p>Your bond with the weapon ends if you use this feature’s Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends.</p>
+<h4 class="fh-pcfh__feature" id="opt-pact-of-the-chain">Pact of the Chain</h4>
+<p>You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot.</p>
+<p>When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Sphinx of Wonder, Sprite, or Venomous Snake (see “Monsters” for the familiar’s stat block).</p>
+<p>Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction.</p>
+<h4 class="fh-pcfh__feature" id="opt-pact-of-the-tome">Pact of the Tome</h4>
+<p>Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The</p>
+<p>book disappears if you conjure another book with this feature or if you die.</p>
+<p class="fh-pcfh__regle"><strong>Cantrips and Rituals.</strong> When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class’s spell list, and they must be spells you don’t already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you.</p>
+<p class="fh-pcfh__regle"><strong>Spellcasting Focus.</strong> You can use the book as a Spellcasting Focus.</p>
+<h4 class="fh-pcfh__feature" id="opt-repelling-blast">Repelling Blast</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll</em></p>
+<p>Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.</p>
+<p class="fh-pcfh__regle"><strong>Repeatable.</strong> You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.</p>
+<h4 class="fh-pcfh__feature" id="opt-thirsting-blade">Thirsting Blade</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 5+ Warlock, Pact of the Blade Invocation</em></p>
+<p>You gain the Extra Attack feature for your pact weapon only. With that feature, you can attack twice with the weapon instead of once when you take the Attack action on your turn.</p>
+<h4 class="fh-pcfh__feature" id="opt-visions-of-distant-realms">Visions of Distant Realms</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 9+ Warlock</em></p>
+<p>You can cast Arcane Eye without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-whispers-of-the-grave">Whispers of the Grave</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 7+ Warlock</em></p>
+<p>You can cast Speak with Dead without expending a spell slot.</p>
+<h4 class="fh-pcfh__feature" id="opt-witch-sight">Witch Sight</h4>
+<p class="fh-pcfh__prereq"><em>Prerequisite: Level 15+ Warlock</em></p>
+<p>You have Truesight with a range of 30 feet.</p>
 <h3 class="fh-pcfh__subclass">Warlock subclass: Fiend Patron</h3>
 <p>Make a Deal with the Lower Planes</p>
 <p>Your pact draws on the Lower Planes, the realms of perdition. You might forge a bargain with a demon lord, an archdevil, or another fiend that is especially mighty. That patron’s aims are evil—the corruption or destruction of all things, ultimately including you—and your path is defined by the extent to which you strive against those aims.</p>

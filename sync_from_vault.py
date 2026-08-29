@@ -1193,6 +1193,40 @@ def _srd_class_full(slug, lang="en"):
         out += _rendu_aptitude(
             _paragraphes_sans_table_plate(f.get("description"), rec["name"]), rec["name"])
 
+    # ── LES OPTIONS DE CLASSE — invocations et metamagic ──────────────────
+    # 🔴 LA PAGE PROMETTAIT UNE SECTION QUE PERSONNE NE FABRIQUAIT. Le texte
+    #    SRD du Warlock dit « described in the “Eldritch Invocation Options”
+    #    section later in this class's description », celui du Sorcerer renvoie
+    #    à « Metamagic Options » — et l'extraction avait rangé ces options dans
+    #    `class-option.json` sans que le rendu de classe ne les rappelle : 28
+    #    invocations et 10 metamagic promis, zéro publié. Eric, 2026-08-29 :
+    #    *« les invocations, si elles sont absentes des SRFH+ rules, il faut
+    #    les écrire »*.
+    # ⭐ C'EST UNE CITATION, PAS UN MANUSCRIT : les records viennent du même
+    #    export SRD que le reste de la fiche, rendus par le même
+    #    `_rendu_aptitude` — une règle publiée s'écrit une fois, ici la source
+    #    est la machine. Le prérequis se rend en tête d'option, en italique,
+    #    comme le SRD le met.
+    # ⛔ ET CHAQUE OPTION PORTE SON ANCRE (`opt-<nom>`), pour la même raison que
+    #    les aptitudes : le builder doit pouvoir ouvrir « Pact of the Tome » à
+    #    la ligne près sans lire la page.
+    for categorie, titre_section in _OPTIONS_DE_CLASSE.get(rec["name"], ()):
+        options = [o for o in _srd_load("class-option", lang)["records"]
+                   if (o.get("data") or {}).get("category") == categorie]
+        if not options:
+            continue
+        out.append('<h3 class="fh-pcfh__feature" id="%s">%s</h3>'
+                   % (_ancre(None, titre_section), html.escape(titre_section)))
+        for o in sorted(options, key=lambda x: x["data"]["name"]):
+            od = o["data"]
+            out.append('<h4 class="fh-pcfh__feature" id="%s">%s</h4>'
+                       % (_ancre(None, "opt-" + od["name"]), html.escape(od["name"])))
+            if od.get("prerequisite"):
+                out.append('<p class="fh-pcfh__prereq"><em>Prerequisite: %s</em></p>'
+                           % html.escape(od["prerequisite"]))
+            out += _rendu_aptitude(
+                _paragraphes_sans_table_plate(od.get("description"), rec["name"]), rec["name"])
+
     # ── LA SOUS-CLASSE ─────────────────────────────────────────────────────
     sc = d.get("subclass")
     if isinstance(sc, dict) and sc.get("name"):
@@ -1212,6 +1246,14 @@ def _srd_class_full(slug, lang="en"):
         out.append('<p class="fh-srd-cite__attr">%s</p>' % html.escape(attr))
     out.append("</div>")
     return "\n".join(out)
+
+
+# Quelles classes portent une section d'options, et sous quel titre — les DEUX
+# seuls cas du SRD 5.2.1 ; une classe absente d'ici n'affiche rien.
+_OPTIONS_DE_CLASSE = {
+    "Warlock":  (("eldritch-invocation", "Eldritch Invocation Options"),),
+    "Sorcerer": (("metamagic", "Metamagic Options"),),
+}
 
 
 def _srd_class_entry(slug, lang="en"):
