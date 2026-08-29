@@ -1875,26 +1875,23 @@ body.fh-classbelt-page :is(#progression, #features, #subclass, #fh-changes,
    aucun autre chapitre ne change. */
 body:has(.fh-dalle) {
   --fhb-surface: #ebe8e1;
-  /* 🔴 50 %, PLUS 35 — Eric, 2026-08-29 : *« passe à 50 % de voile, le texte
-     de couleur pose problème »*. C'est le barreau --voile-inter du builder,
-     dont la définition dit exactement ça : « un peu de texte, pas de
-     couleur » — de l'or et des liens sur du verre demandent le verre moyen. */
-  --fhb-dalle: color-mix(in srgb, var(--fhb-surface) 50%, transparent);
+  /* 🔴 100 % PARCHEMIN — Eric, 2026-08-29, troisième cran du même jour
+     (35 → 50 → 100) : *« dalle à 100 % parchminée »*. C'est le barreau
+     `--voile-majeure` du builder (« opaque — beaucoup de contenu ») : la
+     dalle est du parchemin plein, le fond ne traverse plus, et le texte se
+     lit comme sur les autres pages du livre. */
+  --fhb-dalle: var(--fhb-surface);
   --fhb-lisere: rgba(255, 255, 255, .55);
   background: url("../assets/img/bg-day.jpg") center / cover fixed no-repeat;
 }
-/* 🔴 « LE TEXTE DE COULEUR POSE PROBLÈME » (Eric, 2026-08-29) — MESURÉ : sur le
-   verre de jour à 50 %, l'or de la maison (#7d6535) rend 3,98:1 pour 4,5 exigé.
-   Le lien (5,2) et toute la nuit (7+) tiennent. L'or de CES pages fonce donc
-   d'un cran (#5f4c26 → 5,8:1) — le même mot, dit assez fort pour du verre.
-   C'est la loi du builder : l'accent ne survit pas tel quel sur une dalle. */
-body:has(.fh-dalle) {
-  --fh-gold: #5f4c26;
-}
+/* ⛔ L'OR FONCÉ DU VERRE EST RETIRÉ (même jour) : il compensait un fond qui
+   traversait la dalle à 35/50 %. À 100 % le parchemin est plein — l'or de la
+   maison (#7d6535) y rend 4,6:1, au-dessus du seuil, et CES pages redisent la
+   même couleur que le reste du livre. La correction des LIENS, elle, reste :
+   c'était un bug de garde (média vs bascule), pas un problème de voile. */
 body[data-md-color-scheme="slate"]:has(.fh-dalle) {
   --fhb-surface: #1f1c16;
   --fhb-lisere: rgba(255, 255, 255, .14);
-  --fh-gold: #bfa87e;   /* la nuit garde son or : 7,0 mesuré, rien à forcer */
   background: url("../assets/img/bg-night.jpg") center / cover fixed no-repeat;
 }
 /* le papier du contenu s'efface : c'est le fond qui porte, les dalles flottent */
