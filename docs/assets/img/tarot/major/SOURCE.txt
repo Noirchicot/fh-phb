@@ -1,6 +1,6 @@
-Fate's Hand — Major Arcana: Eric Goldman's complete 22-card deck.
-Source: iCloud Drive Downloads/"Tarot mosaic"/IMG_57xx-58xx.png
-(1200x2150 clean exports; the JPG twins live in the vault Tarot/_legacy).
-Published 2026-08-30 at 480px JPEG q84.
-thumbs/ = square crops of each card's art window, for the Deck overview.
-arcana-banner.jpg = four cards (II, 0, XVI, XIX), center-cropped 1600x800.
+Fate's Hand — Major Arcana: Eric Goldman's finished deck, frames included.
+Source: vault FH-WEB/Ressources/Tarot/06-Cartes-Finies-v1/ (959x1644 PNG,
+deposited 2026-08-30; the bare art masters live in 05-Masters-Nymedes/).
+Published at 480px JPEG q84.
+thumbs/ = square crops of each card's art window (frame and banners excluded),
+for the Deck overview. arcana-banner.jpg = four cards (II, 0, XVI, XIX).
