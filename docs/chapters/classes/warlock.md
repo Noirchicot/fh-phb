@@ -1,11 +1,22 @@
+---
+hide:
+  - toc
+---
+
 # Warlock
+
+<div class="fh-dalle" markdown>
 
 Somewhere past the ordinary rules of magic sits a warlock's patron; what that deal cost is nobody else's business. Invocations are doors that shouldn't exist, forced open once and left unlocked—no study, just payment made. The fine print stays private. What shows is the confidence of someone who no longer asks.
 
 ![Warlock](../../assets/img/class-warlock.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
+
+</div>
+
 <div class="fh-pcfh">
+<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D8 per Warlock level</dd>
 <dt>Primary ability</dt><dd>Charisma</dd>
@@ -14,6 +25,8 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 <dt>Weapons</dt><dd>Simple weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Leather Armor, Sickle, 2 Daggers, Arcane Focus (orb), Book (occult lore), Scholar’s Pack, and 15 GP; or (B) 100 GP</dd>
 </dl>
+</section>
+<section class="fh-dalle">
 <table class="fh-pcfh__table" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -52,6 +65,8 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-eldritch-master">Eldritch Master</a></td><td>10</td><td>4</td><td>15</td><td>4</td><td>5</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-eldritch-invocations">Level 1: Eldritch Invocations</h3>
 <p>You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with an abiding magical ability or other lessons. You gain one invocation of your choice, such as Pact of the Tome. Invocations are described in the “Eldritch Invocation Options” section later in this class’s description.</p>
 <p class="fh-pcfh__regle"><strong>Prerequisites.</strong> If an invocation has a prerequisite, you must meet it to learn that invocation. For example, if an invocation requires you to be a level 5+ Warlock, you can select the invocation once you reach Warlock level 5.</p>
@@ -88,6 +103,8 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Fate is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-eldritch-master">Level 20: Eldritch Master</h3>
 <p>When you use your Magical Cunning feature, you regain all your expended Pact Magic spell slots.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Warlock subclass: Fiend Patron</h3>
 <p>Make a Deal with the Lower Planes</p>
 <p>Your pact draws on the Lower Planes, the realms of perdition. You might forge a bargain with a demon lord, an archdevil, or another fiend that is especially mighty. That patron’s aims are evil—the corruption or destruction of all things, ultimately including you—and your path is defined by the extent to which you strive against those aims.</p>
@@ -109,6 +126,7 @@ Somewhere past the ordinary rules of magic sits a warlock's patron; what that de
 <h4 class="fh-pcfh__feature" id="l14-hurl-through-hell">Level 14: Hurl Through Hell</h4>
 <p>Once per turn when you hit a creature with an attack roll, you can try to instantly transport the target through the Lower Planes. The target must succeed on a Charisma saving throw against your spell save DC, or the target disappears and hurtles through a nightmare landscape. The target takes 8d10 Psychic damage if it isn’t a Fiend, and it has the Incapacitated condition until the end of your next turn, when it returns to the space it previously occupied or the nearest unoccupied space.</p>
 <p>Once you use this feature, you can’t use it again until you finish a Long Rest unless you expend a Pact Magic spell slot (no action required) to restore your use of it. Wizard</p>
+</section>
 </div>
 
 > [!note] What Fate's Hand changes

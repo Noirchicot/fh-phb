@@ -1,11 +1,22 @@
+---
+hide:
+  - toc
+---
+
 # Paladin
+
+<div class="fh-dalle" markdown>
 
 A paladin's magic comes with strings attached—one oath, sworn once, that the power keeps checking against. Keep it, and the strength holds; bend it for convenience, and the paladin feels it first. They walk into fights cautious people avoid, healing hands as practiced as the blade. The oath is the whole engine.
 
 ![Paladin](../../assets/img/class-paladin.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
+
+</div>
+
 <div class="fh-pcfh">
+<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D10 per Paladin level</dd>
 <dt>Primary ability</dt><dd>Strength and Charisma</dd>
@@ -14,6 +25,8 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Chain Mail, Shield, Longsword, 6 Javelins, Holy Symbol, Priest’s Pack, and 9 GP; or (B) 150 GP</dd>
 </dl>
+</section>
+<section class="fh-dalle">
 <table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -55,6 +68,8 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat">Subclass feature</td><td>3</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-lay-on-hands">Level 1: Lay On Hands</h3>
 <p>Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level.</p>
 <p>As a Bonus Action, you can touch a creature (which could be yourself) and draw power from the pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool.</p>
@@ -110,6 +125,8 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <p>Your Aura of Protection is now a 30-foot Emanation.</p>
 <h3 class="fh-pcfh__feature" id="l19-epic-boon">Level 19: Epic Boon</h3>
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Truesight is recommended.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Paladin subclass: Oath of Devotion</h3>
 <p>Uphold the Ideals of Justice and Order</p>
 <p>The Oath of Devotion binds Paladins to the ideals of justice and order. These Paladins meet the archetype of the knight in shining armor. They hold themselves to the highest standards of conduct, and some—for better or worse—hold the rest of the world to the same standards.</p>
@@ -143,6 +160,7 @@ A paladin's magic comes with strings attached—one oath, sworn once, that the p
 <p class="fh-pcfh__regle"><strong>Radiant Damage.</strong> Whenever an enemy starts its turn in the aura, that creature takes Radiant damage equal to your Charisma modifier plus your Proficiency Bonus.</p>
 <p class="fh-pcfh__regle"><strong>Sunlight.</strong> The aura is filled with Bright Light that is sunlight.</p>
 <p>Ranger</p>
+</section>
 </div>
 
 > [!note] What Fate's Hand changes

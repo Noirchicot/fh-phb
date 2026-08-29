@@ -1,11 +1,22 @@
+---
+hide:
+  - toc
+---
+
 # Ranger
+
+<div class="fh-dalle" markdown>
 
 A ranger notices what the ground is trying to hide—a bent stalk, a wrong print, weather an hour before anyone else smells it. Half warrior, half quiet spellcaster, most dangerous at home, oddly at ease around animals that would bolt from anyone else. Rangers walk point, and everyone follows the boot prints.
 
 ![Ranger](../../assets/img/class-ranger.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
+
+</div>
+
 <div class="fh-pcfh">
+<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D10 per Ranger level</dd>
 <dt>Primary ability</dt><dd>Dexterity and Wisdom</dd>
@@ -14,6 +25,8 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Druidic Focus (sprig of mistletoe), Explorer’s Pack, and 7 GP; or (B) 150 GP</dd>
 </dl>
+</section>
+<section class="fh-dalle">
 <table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -55,6 +68,8 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-foe-slayer">Foe Slayer</a></td><td>6</td><td>15</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td>28</td><td>3</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>You have learned to channel the magical essence of nature to cast spells. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Ranger spells, which appear in the Ranger spell list later in the class’s description.</p>
 <p class="fh-pcfh__regle"><strong>Spell Slots.</strong> The <a class="fh-lien" href="#progression">Ranger Features table</a> shows how many spell slots you have to cast your level 1+ spells. You regain all expended slots when you finish a Long Rest.</p>
@@ -105,6 +120,8 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-foe-slayer">Level 20: Foe Slayer</h3>
 <p>The damage die of your Hunter’s Mark is a d10 rather than a d6.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Ranger subclass: Hunter</h3>
 <p>Protect Nature and People from Destruction</p>
 <p>You stalk prey in the wilds and elsewhere, using your abilities as a Hunter to protect nature and people everywhere from forces that would destroy them.</p>
@@ -123,6 +140,7 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <h4 class="fh-pcfh__feature" id="l15-superior-hunter-s-defense">Level 15: Superior Hunter’s Defense</h4>
 <p>When you take damage, you can take a Reaction to give yourself Resistance to that damage and any other damage of the same type until the end of the current turn.</p>
 <p>Rogue</p>
+</section>
 </div>
 
 > [!note] What Fate's Hand changes

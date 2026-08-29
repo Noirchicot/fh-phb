@@ -1851,3 +1851,82 @@ body.fh-classbelt-page { scroll-behavior: smooth; }
 }
 body.fh-classbelt-page :is(#progression, #features, #subclass, #fh-changes,
   .fh-pcfh__feature, .fh-pcfh__subclass) { scroll-margin-top: 6.4rem; }
+
+/* ══ LE DÉCOR DU BUILDER, PORTÉ AU CHAPITRE CLASSES ═════════════════════════
+   Eric, 2026-08-29 : *« le fond du builder, chaque section sera sur une dalle
+   FF transparence 35 %, exit le menu latéral droit — idem pour les tuiles du
+   menu, 35 % »*.
+
+   Les jetons sont COPIÉS du builder (fhpc ui/builder/tokens.css, ratifiés) :
+   surface #ebe8e1 / #1f1c16 · voile léger 35 % (porté de 20 à 35 par Eric le
+   14/08 : « à 20 % une dalle claire ne lisait plus comme du parchemin ») ·
+   liseré de verre .55 jour / .14 nuit · fonds bg-day/bg-night (les mêmes
+   fichiers, copiés).
+
+   ⛔ CIBLAGE PAR `body:has(.fh-dalle)` ET PAS PAR UNE CLASSE POSÉE EN JS :
+   le CSS se résout au premier rendu — aucun éclair de fond blanc avant que le
+   script ne coure. Seules les pages du chapitre Classes portent des dalles ;
+   aucun autre chapitre ne change. */
+body:has(.fh-dalle) {
+  --fhb-surface: #ebe8e1;
+  --fhb-dalle: color-mix(in srgb, var(--fhb-surface) 35%, transparent);
+  --fhb-lisere: rgba(255, 255, 255, .55);
+  background: url("../assets/img/bg-day.jpg") center / cover fixed no-repeat;
+}
+body[data-md-color-scheme="slate"]:has(.fh-dalle) {
+  --fhb-surface: #1f1c16;
+  --fhb-lisere: rgba(255, 255, 255, .14);
+  background: url("../assets/img/bg-night.jpg") center / cover fixed no-repeat;
+}
+/* le papier du contenu s'efface : c'est le fond qui porte, les dalles flottent */
+body:has(.fh-dalle) .md-main,
+body:has(.fh-dalle) .md-content { background: transparent; }
+
+/* ── LA DALLE — le verre léger du builder, en inset jamais en border ──────── */
+.md-typeset .fh-dalle,
+.fh-dalle {
+  background: var(--fhb-dalle);
+  box-shadow: inset 0 0 0 1px var(--fhb-lisere);
+  border-radius: .5rem;
+  padding: 1rem 1.2rem;
+  margin: 1.1em 0;
+}
+/* les dalles générées vivent dans .fh-pcfh, qui gardait ses propres marges */
+.md-typeset .fh-pcfh section.fh-dalle { margin: 1.1em 0; }
+/* l'encadré « What Fate's Hand changes » est déjà une boîte : il prend la
+   MÊME matière que les dalles, pour qu'une seule matière tienne la page */
+/* ⚠️ `!important` assumé : la règle générale du site (ligne ~202) le porte
+   déjà pour battre le thème Material — la surcharger exige la même arme,
+   bornée à ces pages. Le bandeau-titre garde son lavis oxblood : il NOMME
+   l'encadré, c'est le corps qui prend la matière de la dalle. */
+body:has(.fh-dalle) .md-typeset .admonition {
+  background: var(--fhb-dalle) !important;
+  box-shadow: inset 0 0 0 1px var(--fhb-lisere);
+}
+/* la mention légale reste hors dalle, mais lisible sur l'image */
+body:has(.fh-dalle) .md-typeset > .fh-srd-cite__attr,
+body:has(.fh-dalle) .fh-srd-cite__attr {
+  background: var(--fhb-dalle);
+  border-radius: .4rem;
+  padding: .5em .8em;
+  border-top: 0;
+}
+
+/* ── LES TUILES DU BELT PRENNENT LA MÊME RECETTE — « idem pour les tuiles
+   menu, 35 % ». La surface du builder à 35 %, le liseré de verre du jour ou
+   de la nuit : la ceinture et les dalles sont taillées dans le même verre. */
+body:has(.fh-dalle) .fh-classbelt__tuile {
+  background: color-mix(in srgb, #ebe8e1 35%, transparent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .55);
+}
+body[data-md-color-scheme="slate"]:has(.fh-dalle) .fh-classbelt__tuile {
+  background: color-mix(in srgb, #1f1c16 35%, transparent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+}
+body:has(.fh-dalle) .fh-classbelt__tuile:hover {
+  background: color-mix(in srgb, var(--fhb-surface) 50%, transparent);
+}
+body:has(.fh-dalle) .fh-classbelt__tuile[data-status="current"] {
+  background: color-mix(in srgb, var(--fhb-surface) 50%, transparent);
+  box-shadow: inset 0 0 0 1px var(--fhb-lisere);
+}

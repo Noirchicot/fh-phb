@@ -1,11 +1,22 @@
+---
+hide:
+  - toc
+---
+
 # Sorcerer
+
+<div class="fh-dalle" markdown>
 
 A sorcerer's magic showed up before any teacher could claim credit—inherited, inborn, or triggered by something that only happened once. It answers to instinct more than study: faster to reach for than a wizard's spell, harder to leash even after years of aiming it. Ask how it works and watch them shrug: it just does.
 
 ![Sorcerer](../../assets/img/class-sorcerer.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
+
+</div>
+
 <div class="fh-pcfh">
+<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D6 per Sorcerer level</dd>
 <dt>Primary ability</dt><dd>Charisma</dd>
@@ -14,6 +25,8 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <dt>Weapons</dt><dd>Simple weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Spear, 2 Daggers, Arcane Focus (crystal), Dungeoneer’s Pack, and 28 GP; or (B) 50 GP</dd>
 </dl>
+</section>
+<section class="fh-dalle">
 <table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -60,6 +73,8 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-arcane-apotheosis">Arcane Apotheosis</a></td><td>20</td><td>6</td><td>22</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>Drawing from your innate magic, you can cast spells. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Sorcerer spells, which appear in the Sorcerer spell list later in the class’s description.</p>
 <p class="fh-pcfh__regle"><strong>Cantrips.</strong> You know four Sorcerer cantrips of your choice. Light, Prestidigitation, Shocking Grasp, and Sorcerous Burst are recommended. Whenever you gain a Sorcerer level, you can replace one of your cantrips from this feature with another Sorcerer cantrip of your choice.</p>
@@ -111,6 +126,8 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-arcane-apotheosis">Level 20: Arcane Apotheosis</h3>
 <p>While your Innate Sorcery feature is active, you can use one Metamagic option on each of your turns without spending Sorcery Points on it.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Sorcerer subclass: Draconic Sorcery</h3>
 <p>Breathe the Magic of Dragons</p>
 <p>Your innate magic comes from the gift of a dragon. Perhaps an ancient dragon facing death bequeathed some of its magical power to you or your ancestor. You might have absorbed magic from a site infused with dragons’ power. Or perhaps you handled a treasure taken from a dragon’s hoard that was steeped in draconic power. Or you might have a dragon for an ancestor.</p>
@@ -135,6 +152,7 @@ A sorcerer's magic showed up before any teacher could claim credit—inherited, 
 <p>You can cast Summon Dragon without a Material component. You can also cast it once without a spell slot, and you regain the ability to cast it in this way when you finish a Long Rest.</p>
 <p>Whenever you start casting the spell, you can modify it so that it doesn’t require Concentration. If you do so, the spell’s duration becomes 1 minute for that casting.</p>
 <p>Warlock</p>
+</section>
 </div>
 
 > [!note] What Fate's Hand changes

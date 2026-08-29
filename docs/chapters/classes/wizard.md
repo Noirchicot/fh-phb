@@ -1,11 +1,22 @@
+---
+hide:
+  - toc
+---
+
 # Wizard
+
+<div class="fh-dalle" markdown>
 
 Weavers of arcane grammar, wizards bend reality through study, not birth. Spellbooks hold their power—lost pages mean lost magic. They shape fire, bend time, pierce minds, through relentless intellect. Fragile in armor, mighty in will, they trade strength for the universe's deepest secrets, one spell slot at a time.
 
 ![Wizard](../../assets/img/class-wizard.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
+
+</div>
+
 <div class="fh-pcfh">
+<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D6 per Wizard level</dd>
 <dt>Primary ability</dt><dd>Intelligence</dd>
@@ -14,6 +25,8 @@ Weavers of arcane grammar, wizards bend reality through study, not birth. Spellb
 <dt>Weapons</dt><dd>Simple weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) 2 Daggers, Arcane Focus (Quarterstaff), Robe, Spellbook, Scholar’s Pack, and 5 GP; or (B) 55 GP</dd>
 </dl>
+</section>
+<section class="fh-dalle">
 <table class="fh-pcfh__table fh-pcfh__table--dense" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -59,6 +72,8 @@ Weavers of arcane grammar, wizards bend reality through study, not birth. Spellb
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-signature-spells">Signature Spells</a></td><td>5</td><td>25</td><td class="fh-pcfh__slot">4</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">3</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">2</td><td class="fh-pcfh__slot">1</td><td class="fh-pcfh__slot">1</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-spellcasting">Level 1: Spellcasting</h3>
 <p>As a student of arcane magic, you have learned to cast spells. See “Spells” for the rules on spellcasting. The information below details how you use those rules with Wizard spells, which appear in the Wizard spell list later in the class’s description.</p>
 <p class="fh-pcfh__regle"><strong>Cantrips.</strong> You know three Wizard cantrips of your choice. Light, Mage Hand, and Ray of Frost are recommended. Whenever you finish a Long Rest, you can replace one of your cantrips from this feature with another Wizard cantrip of your choice.</p>
@@ -99,6 +114,8 @@ Weavers of arcane grammar, wizards bend reality through study, not birth. Spellb
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Spell Recall is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-signature-spells">Level 20: Signature Spells</h3>
 <p>Choose two level 3 spells in your spellbook as your signature spells. You always have these spells prepared, and you can cast each of them once at level 3 without expending a spell slot. When you do so, you can’t cast them in this way again until you finish a Short or Long Rest. To cast either spell at a higher level, you must expend a spell slot.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Wizard subclass: Evoker</h3>
 <p>Create Explosive Elemental Effects</p>
 <p>Your studies focus on magic that creates powerful elemental effects such as bitter cold, searing flame, rolling thunder, crackling lightning, and burning acid. Some Evokers find employment in military forces, serving as artillery to blast armies from afar. Others use their power to protect others, while some seek their own gain.</p>
@@ -115,6 +132,7 @@ Weavers of arcane grammar, wizards bend reality through study, not birth. Spellb
 <p>You can increase the power of your spells. When you cast a Wizard spell with a spell slot of levels 1–5 that deals damage, you can deal maximum damage with that spell on the turn you cast it.</p>
 <p>The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a Long Rest, you take 2d12 Necrotic damage for each level of the spell slot immediately after you cast it. This damage ignores Resistance and Immunity.</p>
 <p>Each time you use this feature again before finishing a Long Rest, the Necrotic damage per spell level increases by 1d12.</p>
+</section>
 </div>
 
 > [!note] What Fate's Hand changes

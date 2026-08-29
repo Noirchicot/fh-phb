@@ -1,11 +1,22 @@
+---
+hide:
+  - toc
+---
+
 # Rogue
+
+<div class="fh-dalle" markdown>
 
 A rogue doesn't overpower a fight, they end it early—one clean opening turns an ordinary hit into the only hit that mattered. That same eye for the gap shows up in a lock, a lie, a guard's blind spot. Jack of a dozen trades and better at leaving unseen, a rogue survives on a second way out already scouted.
 
 ![Rogue](../../assets/img/class-rogue.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
+
+</div>
+
 <div class="fh-pcfh">
+<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D8 per Rogue level</dd>
 <dt>Primary ability</dt><dd>Dexterity</dd>
@@ -15,6 +26,8 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <dt>Tools</dt><dd>Thieves’ Tools</dd>
 <dt>Starting equipment</dt><dd>Choose A or B: (A) Leather Armor, 2 Daggers, Shortsword, Shortbow, 20 Arrows, Quiver, Thieves’ Tools, Burglar’s Pack, and 8 GP; or (B) 100 GP</dd>
 </dl>
+</section>
+<section class="fh-dalle">
 <table class="fh-pcfh__table" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -49,6 +62,8 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-stroke-of-luck">Stroke of Luck</a></td><td>10d6</td><td>24</td><td>6</td><td>1</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-expertise">Level 1: Expertise</h3>
 <p>You gain Expertise in two of your skill proficiencies of your choice. Sleight of Hand and Stealth are recommended if you have proficiency in them.</p>
 <p>At Rogue level 6, you gain Expertise in two more of your skill proficiencies of your choice.</p>
@@ -98,6 +113,8 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <h3 class="fh-pcfh__feature" id="l20-stroke-of-luck">Level 20: Stroke of Luck</h3>
 <p>You have a marvelous knack for succeeding when you need to. If you fail a D20 Test, you can turn the roll into a 20.</p>
 <p>Once you use this feature, you can’t use it again until you finish a Short or Long Rest.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Rogue subclass: Thief</h3>
 <p>Hunt for Treasure as a Classic Adventurer</p>
 <p>A mix of burglar, treasure hunter, and explorer, you are the epitome of an adventurer. In addition to improving your agility and stealth, you gain abilities useful for delving into ruins and getting maximum benefit from the magic items you find there.</p>
@@ -120,6 +137,7 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <h4 class="fh-pcfh__feature" id="l17-thief-s-reflexes">Level 17: Thief’s Reflexes</h4>
 <p>You are adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your Initiative minus 10.</p>
 <p>Sorcerer</p>
+</section>
 </div>
 
 > [!note] What Fate's Hand changes

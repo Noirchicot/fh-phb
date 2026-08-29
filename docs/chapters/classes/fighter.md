@@ -1,11 +1,22 @@
+---
+hide:
+  - toc
+---
+
 # Fighter
+
+<div class="fh-dalle" markdown>
 
 Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook, no arcane grammar—only muscle and discipline. They are the wall that never breaks. Armor is their skin; courage is the spell. Knight, duelist, veteran—all built by practice, not birth. When magic fails, steel remains.
 
 ![Fighter](../../assets/img/class-fighter.webp){ .fh-pcfh-art }
 
 <!-- GENERATED — SRD 84bc651f48a7c1dd0077f076cd35bf73 + fh-skills. Ne pas éditer. -->
+
+</div>
+
 <div class="fh-pcfh">
+<section class="fh-dalle">
 <dl class="fh-pcfh__id">
 <dt>Hit die</dt><dd>D10 per Fighter level</dd>
 <dt>Primary ability</dt><dd>Strength or Dexterity</dd>
@@ -14,6 +25,8 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <dt>Weapons</dt><dd>Simple and Martial weapons</dd>
 <dt>Starting equipment</dt><dd>Choose A, B, or C: (A) Chain Mail, Greatsword, Flail, 8 Javelins, Dungeoneer’s Pack, and 4 GP; (B) Studded Leather Armor, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Dungeoneer’s Pack, and 11 GP; or (C) 155 GP</dd>
 </dl>
+</section>
+<section class="fh-dalle">
 <table class="fh-pcfh__table" id="progression"><thead>
 <tr>
 <th rowspan="2">Level</th>
@@ -49,6 +62,8 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <tr><td>20</td><td>+6</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l20-three-extra-attacks">Three Extra Attacks</a></td><td>4</td><td>6</td><td>20</td><td>2</td><td>0</td></tr>
 </tbody></table>
 <p class="fh-pcfh__note">The last three columns are Fate's Hand. They show your <b>running total</b> at that level, not the gain — you keep every step you passed through.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__feature" id="l1-fighting-style">Level 1: Fighting Style</h3>
 <p>You have honed your martial prowess and gain a Fighting Style feat of your choice (see “Feats”). Defense is recommended.</p>
 <p>Whenever you gain a Fighter level, you can replace the feat you chose with a different Fighting Style feat.</p>
@@ -85,6 +100,8 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Combat Prowess is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-three-extra-attacks">Level 20: Three Extra Attacks</h3>
 <p>You can attack four times instead of once whenever you take the Attack action on your turn.</p>
+</section>
+<section class="fh-dalle">
 <h3 class="fh-pcfh__subclass">Fighter subclass: Champion</h3>
 <p>Pursue Physical Excellence in Combat</p>
 <p>A Champion focuses on the development of martial prowess in a relentless pursuit of victory. Champions combine rigorous training with physical excellence to deal devastating blows, withstand peril, and garner glory. Whether in athletic contests or bloody battle, Champions strive for the crown of the victor.</p>
@@ -104,6 +121,7 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <p class="fh-pcfh__regle"><strong>Defy Death.</strong> You have Advantage on Death Saving Throws. Moreover, when you roll 18–20 on a Death Saving Throw, you gain the benefit of rolling a 20 on it.</p>
 <p class="fh-pcfh__regle"><strong>Heroic Rally.</strong> At the start of each of your turns, you regain Hit Points equal to 5 plus your Constitution modifier if you are Bloodied and have at least 1 Hit Point.</p>
 <p>Monk</p>
+</section>
 </div>
 
 > [!note] What Fate's Hand changes
