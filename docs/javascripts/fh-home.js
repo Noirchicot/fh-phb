@@ -30,6 +30,11 @@
         ["Level 14", "level-14"],
         ["Level 18", "level-18"]
       ]},
+      { slug: "college-of-heralds", title: "College of Heralds", items: [
+        ["Level 3 — Tactical Precision", "level-3"],
+        ["Level 6 — Extra Attack", "level-6"],
+        ["Level 14 — Steady Voice", "level-14"]
+      ]},
       { slug: "ability-scores", title: "Rolling Ability Scores", items: [
         ["The 3d6 × 10 method", "the-3d6-10-method"],
         ["Why roll?", "why-roll"],
