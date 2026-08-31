@@ -22,7 +22,7 @@
         ["Rogue", "rogue"],
         ["Fighter, Ranger & Paladin", "fighter-ranger-paladin"],
         ["Monk", "monk"],
-        ["Assassin (Rogue)", "assassin-rogue"]
+        ["Rogue — Silent Blade", "rogue"]
       ]},
       { slug: "moonkeeper", title: "Moonkeeper", items: [
         ["Level 3 — Lunar Embodiment", "level-3-lunar-embodiment"],
@@ -34,6 +34,12 @@
         ["Level 3 — Tactical Precision", "level-3"],
         ["Level 6 — Extra Attack", "level-6"],
         ["Level 14 — Steady Voice", "level-14"]
+      ]},
+      { slug: "silent-blade", title: "Silent Blade", items: [
+        ["Level 3 — First Blood", "level-3"],
+        ["Level 9 — Deep Cut", "level-9"],
+        ["Level 13 — Wider Opening", "level-13"],
+        ["Level 17 — One Shot", "level-17"]
       ]},
       { slug: "ability-scores", title: "Rolling Ability Scores", items: [
         ["The 3d6 × 10 method", "the-3d6-10-method"],
