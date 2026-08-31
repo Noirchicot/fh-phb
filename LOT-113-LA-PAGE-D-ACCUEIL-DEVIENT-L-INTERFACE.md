@@ -176,9 +176,38 @@ qui vit aujourd'hui sur l'accueil — **part sur sa propre page**.
 n'est plus qu'une porte n'a pas besoin de navigation latérale — les portes sont
 DANS la page. La page des règles, elle, est une page du livre comme une autre et
 garde tout son cadre.
-⚠️ Reste à confirmer par Eric, en regardant : la barre du HAUT (titre, recherche,
-bascule jour/nuit) sur l'accueil — gardée ou retirée ? Elle porte le retour à la
-maison et la recherche, mais fait doublon avec le hero.
+### 🔴 LA BARRE DU HAUT EST GARDÉE — et il faut la RÉTABLIR, pas la conserver
+
+Eric, 2026-08-31 : *« oui garde la barre. Tout le long. Dégage les doublons, ne
+fais pas sauter le bandeau pour autant. »*
+
+📏 **MESURÉ SUR L'ACCUEIL DÉPLOYÉ, et ça renverse l'hypothèse de départ** :
+la barre n'y est pas. Elle est *masquée*, pas absente du gabarit :
+
+| organe | hauteur rendue sur l'accueil |
+|---|---|
+| `.md-header` (la barre du haut) | **0** |
+| `.md-logo` | **0** |
+| `.md-sidebar--primary` (la nav) | **0** |
+| `.md-sidebar--secondary` (le sommaire) | **0** |
+| `.md-typeset h1` | **1** — présent pour l'ancre, invisible à l'œil |
+| le hero | 284 |
+
+⭐ La décision d'Eric ne conserve donc rien : elle **rétablit** la barre sur
+l'accueil, où elle avait été supprimée. Sur les autres pages elle est déjà là —
+« tout le long » veut dire *y compris ici*.
+
+**Le doublon à traiter, une fois la barre revenue** : le titre s'affiche alors
+DEUX fois — en texte dans la barre, et dans l'image du hero. Eric a tranché le
+sens de la réduction : *« ne fais pas sauter le bandeau pour autant »* — donc le
+bandeau reste, et c'est du côté de la barre que ça se règle.
+⛔ La nav latérale et le sommaire, eux, restent masqués sur l'accueil : les
+portes sont dans la page (voir juste au-dessus).
+
+⚠️ **Et l'accueil déployé ne porte que TROIS boutons aujourd'hui** — *Create a
+character · Open Player Companion · The Dungeon Masters' Secrets* — là où le
+croquis 1 en dessine **six**. Ce n'est pas un ajustement, c'est une refonte de
+la rangée : deux des trois actuels ne figurent pas au croquis.
 
 📌 Mécaniquement simple : `fh-phb` a déjà `custom_dir: overrides`, une page à son
 propre gabarit ne demande aucune machinerie neuve. Et `docs/builder.md`
