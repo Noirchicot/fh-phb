@@ -259,11 +259,26 @@ c'est heureux — mais elles doivent être tenues ENSEMBLE : retirer le
 `data-dock-open` sans que *The DM's table* existe déjà, c'est perdre le Companion
 entre deux lots.
 
-⚠️ **Une chose à relire à tête reposée** : *Player Companion* est un outil de
-JOUEUR — la fiche, l'inventaire, le Soulforge. Le ranger derrière une porte
-appelée *The DM's table* est la décision d'Eric et elle est notée telle quelle ;
-elle mérite juste un second regard le jour où *Your characters* existera, parce
-que c'est peut-être là qu'il vit vraiment.
+✅ **LA RÉSERVE QUE J'AVAIS POSÉE EST LEVÉE — par Eric, et par son propre
+croquis.** J'avais noté que *Player Companion* est un outil de JOUEUR et que le
+ranger derrière une porte de MJ méritait un second regard. Eric, 2026-08-31 :
+*« oui, le Soulforge chez le DM, ou accès via Soulforging. »*
+
+📏 **Et le croquis 2 le montrait déjà** : dans la carte *Magic & Soulforging*,
+l'arbre descend `Soulforging Rules → Party Inventory · Soulforge Workshop`. La
+seconde porte n'est donc pas à inventer, elle est **dessinée**.
+
+⭐ **Deux entrées, deux publics, et c'est cohérent** :
+
+| chemin | pour qui |
+|---|---|
+| **The DM's table** → le Companion | le MJ : le Soulforge est de son côté de la table |
+| **Magic & Soulforging** → *Soulforge Workshop* | le joueur, depuis la règle qu'il est en train de lire |
+
+📌 Ce n'est pas un doublon comme le jeton en était un : le jeton et le bouton
+menaient au même endroit depuis la même page. Ici, deux publics arrivent par
+deux chemins qui leur ressemblent. La loi de la maison vise les organes qu'on
+coderait deux fois — pas les portes qui desservent la même pièce.
 
 ---
 
