@@ -204,34 +204,38 @@ bandeau reste, et c'est du côté de la barre que ça se règle.
 ⛔ La nav latérale et le sommaire, eux, restent masqués sur l'accueil : les
 portes sont dans la page (voir juste au-dessus).
 
-### 🟡 LE JETON JAUNE MONTE DANS LA BARRE
+### 🟡 LE JETON « FH » CHANGE DE MÉTIER — il devient le RETOUR À L'ACCUEIL, dans la barre
 
-Eric, 2026-08-31 : *« plus besoin du jeton jaune, il sera dans la barre. »*
+Eric, 2026-08-31, en trois temps : *« plus besoin du jeton jaune, il sera dans la
+barre »*, *« il dégage »*, puis la forme définitive : **« il devient le retour
+vers home, et il est dans la barre. »**
 
-📏 **Il n'est pas décoratif, et c'est ça qu'il faut savoir avant d'y toucher** :
+📏 **Ce qu'il est AUJOURD'HUI, mesuré avant d'y toucher** :
 
 | | |
 |---|---|
-| ce que c'est | `button.fh-cd-seal-fab`, 46 × 46, en bas à droite, texte « FH » |
+| ce que c'est | `button.fh-cd-seal-fab`, 46 × 46, flottant en bas à droite, texte « FH » |
 | ce qu'il fait | `data-dock-open` — **il ouvre le Player Companion**, le dock v1 |
 | qui le fabrique | `docs/javascripts/fh-player-sheet.js:4985` |
 | qui l'habille | `docs/stylesheets/companion-dock.css:98` |
 
-🔴 **IL DÉGAGE.** Eric, à la relecture : *« il dégage. »* Pas un déplacement du
-jeton — sa **suppression**. Ce qui monte dans la barre, c'est l'**accès au Player
-Companion** ; le rond flottant en bas à droite, lui, disparaît.
+⭐ **Ce n'est donc ni un déplacement ni une suppression : c'est un CHANGEMENT DE
+MÉTIER.** Le sceau garde son identité — le rond doré « FH » — et perd sa
+fonction. Il quitte le coin flottant, entre dans la barre, et n'ouvre plus le
+dock : **il ramène à la maison**.
 
-⚠️ Et comme il n'est pas un ornement, le retirer laisse une porte à rouvrir
-ailleurs : sans entrée dans la barre, le dock devient **injoignable**. Les deux
-gestes vont ensemble, dans le même lot — retirer le jeton sans poser l'entrée
-serait perdre le Companion en silence.
+📌 Mécaniquement, c'est le logo de MkDocs Material qu'il devient : dans ce thème,
+le logo de la barre EST le lien vers l'accueil. Il n'y a donc pas d'organe neuf à
+inventer — un habillage à reprendre et un `data-dock-open` à retirer.
 
-⛔ **Et ça ne rouvre pas le dock v1** — Eric : *« le dock V1, c'est pour plus
-tard »*. On déplace sa poignée, on ne touche pas à ce qu'il y a derrière.
-📌 Cohérent avec la rangée de portes : l'un des trois boutons actuels de
-l'accueil s'appelle littéralement *Open Player Companion*. Le jeton et ce bouton
-désignent la même chose — c'est un doublon de plus, et il se règle au même
-endroit.
+🔴 **ET LA PORTE DU COMPANION RESTE À POSER.** Le jeton était sa seule entrée
+visible. Lui donner un autre métier la referme : sans une entrée ailleurs, le
+dock devient **injoignable**. Ce n'est pas un détail à régler en passant — c'est
+une porte perdue en silence, et c'est exactement la famille de défaut que ce
+mandat passe ses nuits à débusquer.
+⛔ Ça ne rouvre pas le dock v1 pour autant — Eric : *« le dock V1, c'est pour
+plus tard »*. On constate que sa poignée disparaît, on le DIT, et on laisse Eric
+décider où elle repousse.
 
 ⚠️ **Et l'accueil déployé ne porte que TROIS boutons aujourd'hui** — *Create a
 character · Open Player Companion · The Dungeon Masters' Secrets* — là où le
