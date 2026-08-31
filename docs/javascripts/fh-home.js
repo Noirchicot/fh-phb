@@ -30,7 +30,7 @@
         ["Level 14", "level-14"],
         ["Level 18", "level-18"]
       ]},
-      { slug: "college-of-heralds", title: "College of Heralds", items: [
+      { slug: "college-of-banners", title: "College of Banners", items: [
         ["Level 3 — Tactical Precision", "level-3"],
         ["Level 6 — Extra Attack", "level-6"],
         ["Level 14 — Steady Voice", "level-14"]

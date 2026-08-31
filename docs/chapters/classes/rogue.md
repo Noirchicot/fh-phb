@@ -28,7 +28,7 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <th class="fh">Bound<br>Tools</th>
 </tr></thead><tbody>
 <tr><td>1</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l1-expertise">Expertise</a>, <a class="fh-lien" href="#l1-sneak-attack">Sneak Attack</a>, <a class="fh-lien" href="#l1-thieves-cant">Thieves’ Cant</a>, <a class="fh-lien" href="#l1-weapon-mastery">Weapon Mastery</a></td><td>1d6</td><td>14</td><td>6</td><td>1</td></tr>
-<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-cunning-action">Cunning Action</a></td><td>1d6</td><td>14</td><td>6</td><td>1</td></tr>
+<tr><td>2</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l2-cunning-action">Cunning Action</a>, <a class="fh-lien fh" href="#l2-sneak-critical">Sneak Critical</a> <span class="fh-tag">FH</span></td><td>1d6</td><td>14</td><td>6</td><td>1</td></tr>
 <tr><td>3</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l3-rogue-subclass">Rogue Subclass</a>, <a class="fh-lien" href="#l3-steady-aim">Steady Aim</a></td><td>2d6</td><td>14</td><td>6</td><td>1</td></tr>
 <tr><td>4</td><td>+2</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l4-ability-score-improvement">Ability Score Improvement</a></td><td>2d6</td><td>16</td><td>6</td><td>1</td></tr>
 <tr><td>5</td><td>+3</td><td class="fh-pcfh__feat"><a class="fh-lien" href="#l5-cunning-strike">Cunning Strike</a>, <a class="fh-lien" href="#l5-uncanny-dodge">Uncanny Dodge</a></td><td>3d6</td><td>16</td><td>6</td><td>1</td></tr>
@@ -61,6 +61,8 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <h3 class="fh-pcfh__feature" id="l1-weapon-mastery">Level 1: Weapon Mastery</h3>
 <p>Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency, such as Daggers and Shortbows.</p>
 <p>Whenever you finish a Long Rest, you can change the kinds of weapons you chose. For example, you could switch to using the mastery properties of Scimitars and Shortswords.</p>
+<h3 class="fh-pcfh__feature fh" id="l2-sneak-critical">Level 2: Sneak Critical <span class="fh-tag">FH</span></h3>
+<p>+1 critical range <strong>on your Sneak Attacks</strong>. It widens the critical range of the sneak attack itself, not of every attack you make.</p>
 <h3 class="fh-pcfh__feature" id="l2-cunning-action">Level 2: Cunning Action</h3>
 <p>Your quick thinking and agility allow you to move and act quickly. On your turn, you can take one of the following actions as a Bonus Action: Dash, Disengage, or Hide.</p>
 <h3 class="fh-pcfh__feature" id="l3-rogue-subclass">Level 3: Rogue Subclass</h3>
@@ -130,9 +132,6 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 >
 > **Your class list** <span class="fh-tag">FH</span> — Acrobatics · Athletics · Deception · Insight · Intimidation · Investigation · **Delve** · **Vigilance** · **Survival** · Persuasion · Sleight of Hand · Stealth.
 >
-> **Sneak Critical** *(level 2)* <span class="fh-tag">FH</span> — +1 critical range **on your Sneak Attacks**. It widens the
-> critical range of the sneak attack itself, not of every attack you make.
->
 > **Expertise** *(level 1)* <span class="fh-tag">FH</span> — **no free points**. Your expertise is already paid for, inside
 > your six bound points; what the feature hands you is the permission, from level 1. Six is the
 > first bound budget large enough to buy an **Expert** and still have something left, which is why
@@ -141,8 +140,8 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 >
 > **One subclass more than the base game** <span class="fh-tag">FH</span> — beside the roguish archetypes printed above,
 > Fate's Hand adds the **[Silent Blade](../silent-blade.md)**: the rogue who ends it in the first round, with a wire
-> in one hand and a dagger in the other. Like the [College of Heralds](../college-of-heralds.md) it has an entry price —
-> **Adept in Stealth, Adept in Hunting, and expertise with the dagger** — and it is the only subclass
+> in one hand and a dagger in the other. Like the [College of Banners](../college-of-banners.md) it has an entry price —
+> **Adept in Stealth, Adept in Hunting, and Weapon Mastery with the dagger** — and it is the only subclass
 > that hands you a **training**, the [Garrot](../trainings.md#what-is-a-training), for free.
 
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>

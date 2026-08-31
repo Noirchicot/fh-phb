@@ -280,7 +280,7 @@ kinds of weapon, not different ones — and you may swap which ones after a Long
 </div>
 
 **The sixth door** <span class="fh-tag">FH</span> — a **subclass** opens mastery too: the bard of the
-[College of Heralds](college-of-heralds.md) gains it with one kind of weapon at level 3, a second at 6 and a third at 14.
+[College of Banners](college-of-banners.md) gains it with one kind of weapon at level 3, a second at 6 and a third at 14.
 It is the only place where mastery is not handed down by the class itself, and the only way a bard
 reaches it at all.
 

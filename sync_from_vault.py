@@ -881,6 +881,119 @@ def _ancre(niveau, nom):
     return "l%s-%s" % (niveau, base) if niveau not in (None, "") else base
 
 
+# ══ LES APTITUDES FH DE NIVEAU DE CLASSE ════════════════════════════════════
+# 🔴 LE TROU MESURÉ PAR ERIC LE 2026-08-31 : *« au niveau 2 le rogue n'a pas été
+#    édité »*. Vrai — la page rendait la progression du SRD, où le niveau 2 du
+#    roublard ne porte que *Cunning Action*. **Sneak Critical**, l'aptitude FH
+#    qui élargit la plage de critique, ne vivait QUE dans le callout de pied de
+#    page : le lecteur qui lit sa ligne de niveau 2 ne la voyait jamais.
+#
+# ⭐ ERIC CLASSE : *« ça c'est du SRFH+ »*. Donc la réparation ne touche NI la
+#    citation SRD (intouchable) NI le callout : l'aptitude REMONTE dans la
+#    progression, à son niveau, marquée FH — là où les trois colonnes FH sont
+#    déjà.
+#
+# ⛔ ET ELLE REMONTE, ELLE NE SE DUPLIQUE PAS. Une règle publiée s'écrit une
+#    fois : ce qui monte dans la table est RETIRÉ du callout (`_promues()`).
+#
+# ⭐ LA SOURCE EST LE CHAPITRE DU VAULT, pas une seconde vérité : les entrées y
+#    sont déjà écrites dans une forme régulière —
+#    `> **<Nom>** *(level N)* *(FH)* — <texte>`.
+#
+# 🔴 LE FILTRE QUI ÉVITE LE MASSACRE : ne remonte QUE ce que le SRD ne nomme
+#    nulle part dans sa progression. *Expertise*, *Primal Knowledge* et *Deft
+#    Explorer* sont des aptitudes DU SRD que Fate's Hand commente — les remonter
+#    dupliquerait une ligne existante. Mesuré sur les six entrées datées du
+#    chapitre : une seule remonte, **Sneak Critical**. C'est exactement ce
+#    qu'Eric a demandé de réparer, et le filtre dira de lui-même quand une
+#    deuxième arrivera.
+# ⚠️ DEUX FORMES POUR LA MÊME PASTILLE, et le motif doit lire les deux : le
+#    vault écrit `*(FH)*`, le pipeline l'a déjà convertie en `<span…>` quand
+#    `_promues()` passe. Un motif qui n'aurait connu que la première n'aurait
+#    rien retiré du callout — mesuré, la règle s'affichait deux fois.
+_FH_ENTREE = re.compile(
+    r"^>\s*\*\*(?P<nom>[^*]+)\*\*\s*\*\(level (?P<niv>\d+)\)\*\s*"
+    r"(?:\*\(FH\)\*|<span class=\"fh-tag\">FH</span>)\s*—\s*(?P<txt>.*)$")
+
+
+def _md_leger(txt):
+    """Le gras et l'italique d'une entrée FH, rendus — et rien d'autre.
+
+    ⛔ Pas un moteur markdown : ce texte est du NÔTRE (le callout du vault), il
+    n'emploie que `**gras**`, `*italique*` et `code`. Tout est échappé d'abord,
+    donc rien de ce qui arrive ici ne peut injecter de balise.
+    """
+    t = html.escape(str(txt or ""))
+    t = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", t)
+    t = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", t)
+    t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
+    return t
+_FH_FEATURES = {}
+
+
+def _fh_features(nom_classe):
+    """Les aptitudes FH datées d'une classe, lues au chapitre du vault."""
+    if not _FH_FEATURES:
+        src = VAULT / MAP["classes.md"][0]
+        classe, lignes = None, src.read_text(encoding="utf-8").splitlines()
+        i = 0
+        while i < len(lignes):
+            ln = lignes[i]
+            if ln.startswith("## "):
+                classe = ln[3:].strip()
+            m = _FH_ENTREE.match(ln) if classe else None
+            if m:
+                # Le texte d'une entrée court jusqu'à la ligne `>` vide qui suit.
+                txt, j = [m.group("txt").strip()], i + 1
+                while j < len(lignes) and lignes[j].startswith(">") \
+                        and lignes[j].strip() != ">":
+                    txt.append(lignes[j].lstrip("> ").strip())
+                    j += 1
+                _FH_FEATURES.setdefault(classe, []).append({
+                    "name": m.group("nom").strip(),
+                    "level": int(m.group("niv")),
+                    "text": " ".join(x for x in txt if x),
+                })
+                i = j
+                continue
+            i += 1
+        _FH_FEATURES.setdefault("", [])
+    return _FH_FEATURES.get(nom_classe) or []
+
+
+def _fh_a_promouvoir(nom_classe, noms_srd):
+    """Celles que le SRD ne nomme nulle part — les seules à remonter."""
+    connus = {str(n).lower() for n in noms_srd}
+    return [f for f in _fh_features(nom_classe) if f["name"].lower() not in connus]
+
+
+def _promues(texte):
+    """Retire du callout les entrées remontées dans la table.
+
+    Appelé sur `classes.md` APRÈS le rendu des shortcodes : le bloc
+    « What Fate's Hand changes » est du markdown, la table est du HTML.
+    """
+    garde, sortie, i = None, [], 0
+    lignes = texte.splitlines()
+    promues = {f["name"].lower()
+               for c, fs in _FH_FEATURES.items() for f in fs
+               if f.get("promue")}
+    while i < len(lignes):
+        m = _FH_ENTREE.match(lignes[i])
+        if m and m.group("nom").strip().lower() in promues:
+            j = i + 1
+            while j < len(lignes) and lignes[j].startswith(">") \
+                    and lignes[j].strip() != ">":
+                j += 1
+            while j < len(lignes) and lignes[j].strip() == ">":
+                j += 1
+            i = j
+            continue
+        sortie.append(lignes[i])
+        i += 1
+    return "\n".join(sortie)
+
+
 _LEGENDE_RESIDU = re.compile(r"^—+\s*Spell Slots per Spell Level\s*—*\s*")
 
 # Un « lead-in » du SRD : un terme en tête de paragraphe, suivi d'un point, qui
@@ -1124,6 +1237,18 @@ def _srd_class_full(slug, lang="en"):
     for h in ("Free Points", "Bound Skills", "Bound Tools"):
         out.append('<th class="fh">%s</th>' % _empile(h))
     out.append("</tr></thead><tbody>")
+    # ⭐ LES APTITUDES FH QUI REMONTENT (voir `_fh_a_promouvoir`) — calculées
+    #    avant la boucle : la table les cite, le fil des aptitudes les écrit,
+    #    et le callout les perd. Un seul calcul pour les trois.
+    noms_srd = {f.get("name") for f in (d.get("features") or [])}
+    for _l in prog["data"].get("levels") or []:
+        noms_srd |= set(_l.get("features") or [])
+    fh_promues = _fh_a_promouvoir(rec["name"], noms_srd)
+    fh_par_niveau = {}
+    for _f in fh_promues:
+        _f["promue"] = True
+        fh_par_niveau.setdefault(_f["level"], []).append(_f)
+
     # où chaque aptitude est ÉCRITE (son premier niveau de texte)
     niveau_du_texte = {}
     for f in d.get("features") or []:
@@ -1153,6 +1278,13 @@ def _srd_class_full(slug, lang="en"):
                              % (_ancre(cible, nom_f), html.escape(nom_f)))
             else:
                 liees.append(html.escape(nom_f))
+        # ⭐ L'APTITUDE FH SE POSE DANS LA CELLULE, MARQUÉE. Elle n'est pas
+        #    glissée parmi les citations sans le dire : la pastille FH est la
+        #    même que partout ailleurs sur le site.
+        for _f in fh_par_niveau.get(niveau, ()):
+            liees.append('<a class="fh-lien fh" href="#%s">%s</a>'
+                         ' <span class="fh-tag">FH</span>'
+                         % (_ancre(_f["level"], _f["name"]), html.escape(_f["name"])))
         cells = [str(niveau), "+%s" % ligne.get("proficiency_bonus", ""),
                  ", ".join(liees) or "—"]
         res = ligne.get("resources") or {}
@@ -1194,12 +1326,29 @@ def _srd_class_full(slug, lang="en"):
     # ⛔ ET L'ANCRE PORTE LE NIVEAU, PAS SEULEMENT LE NOM : « Improved Brutal
     #    Strike » existe DEUX fois chez le barbare (13 et 17). Un identifiant
     #    par nom seul en aurait écrasé un — et le lien aurait mené au mauvais.
+    # ⚠️ LES BLOCS FH S'INTERCALENT PAR NIVEAU, pas en fin de liste : une
+    #    aptitude de niveau 2 se lit entre le 1 et le 3, sinon la page ment sur
+    #    l'ordre où on la reçoit.
+    restants = sorted(fh_promues, key=lambda x: x["level"])
+
+    def _rendre_fh(jusqua):
+        while restants and restants[0]["level"] <= jusqua:
+            g = restants.pop(0)
+            out.append('<h3 class="fh-pcfh__feature fh" id="%s">'
+                       'Level %s: %s <span class="fh-tag">FH</span></h3>'
+                       % (_ancre(g["level"], g["name"]), g["level"], html.escape(g["name"])))
+            out.append("<p>%s</p>" % _md_leger(g["text"]))
+
     for f in d.get("features") or []:
+        niv_f = f.get("level")
+        if isinstance(niv_f, int):
+            _rendre_fh(niv_f)
         titre = "Level %s: %s" % (f.get("level", "?"), f.get("name", "?"))
         out.append('<h3 class="fh-pcfh__feature" id="%s">%s</h3>'
                    % (_ancre(f.get("level"), f.get("name")), html.escape(titre)))
         out += _rendu_aptitude(
             _paragraphes_sans_table_plate(f.get("description"), rec["name"]), rec["name"])
+    _rendre_fh(20)
 
     # ── LES OPTIONS DE CLASSE — invocations et metamagic ──────────────────
     # 🔴 LA PAGE PROMETTAIT UNE SECTION QUE PERSONNE NE FABRIQUAIT. Le texte
@@ -1821,7 +1970,7 @@ MAP = {
     "ability-scores.md":      ("1. Build a Character/D&D 5+ Character stat generation.md", "Ability Scores"),
     "inheritance.md":         ("1. Build a Character/Inheritance.md",                     "Inheritance"),
     "moonkeeper.md":          ("1. Build a Character/Moonkeeper.md",                "Moonkeeper"),
-    "college-of-heralds.md":  ("1. Build a Character/College of Heralds.md",  "College of Heralds"),
+    "college-of-banners.md":  ("1. Build a Character/College of Banners.md",  "College of Banners"),
     "silent-blade.md":        ("1. Build a Character/Silent Blade.md",          "Silent Blade"),
     "species.md":             ("1. Build a Character/D&D 5+ Races & Species.md",              "Species"),
     "skills-and-tools.md":    ("1. Build a Character/Skills & Tools — Player Guide.md",                       "Skills & Tools"),
@@ -2619,6 +2768,13 @@ def _construire():
         body = ensure_h1(body, title)
         avant_citations = body
         body = inject_srd_citations(body, dest)
+        # ⛔ APRÈS les citations, jamais avant : c'est le rendu des classes qui
+        #    décide quelles aptitudes FH remontent dans la progression, et
+        #    `_promues()` retire du callout exactement celles-là. Inversé,
+        #    l'ordre ne retirerait rien et la page dirait deux fois la même
+        #    règle.
+        if dest == "classes.md":
+            body = _promues(body)
         body = inject_arcana(body, dest)
         body = alleger_labels_repetes(body)
         mesurer_proportion(dest, avant_citations, body)

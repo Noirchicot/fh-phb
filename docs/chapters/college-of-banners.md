@@ -1,7 +1,8 @@
-# College of Heralds
+# College of Banners
 
-*A Fate's Hand Bard subclass — the voice that turns a group of fighters into a line.* A Herald does
-not win the battle personally; they are the reason four other people move at the same moment. Their
+*A Fate's Hand Bard subclass — the voice that turns a group of fighters into a line.* A bard of the
+Banners does not win the battle personally; they are the reason four other people move at the same
+moment. Their
 Inspiration is not handed out as encouragement, it is handed out as an order, and the order arrives
 with the die that carries it out. You gain subclass features at 3rd, 6th and 14th level.
 
@@ -45,7 +46,7 @@ creature. That ally may immediately make one melee attack against the attacker �
 already spent their reaction this round, **you give it back to them** so they can.
 
 > [!warning] One reaction given back, per ally, per round
-> A Herald **returns** a spent reaction; they never hand out a second one. Whichever feature does it
+> A bard of the Banners **returns** a spent reaction; they never hand out a second one. Whichever feature does it
 > — Eagle's Eye or **Steady Voice** — an ally gets their reaction back **once per round**, and so
 > acts at most twice on other people's turns. Nobody ever holds three reactions in a round.
 
@@ -85,8 +86,3 @@ You gain **Weapon Mastery** with a **third** kind of weapon.
 When you issue a Leadership order on your turn, each affected ally who has already spent their
 reaction **gets it back**, to carry out that order and nothing else. As above: once per round, per
 ally, and only a reaction already spent.
-
-### Tactical Precision, perfected
-
-**Tactical Precision** now costs **one** use of Bardic Inspiration in total, and grants a Bardic
-Inspiration die to **every** ally within 30 ft to whom you issued the order.
