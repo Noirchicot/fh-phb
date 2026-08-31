@@ -28,6 +28,11 @@
                                                  Ici : 40 % et 4,7:1. */
   --fh-red:                     #58180d;   /* D&D oxblood */
   --fh-rule:                    rgba(125,101,53,.30);
+  /* ⭐ LE HALO DU SPY — repris du builder (`--spy-halo`, fhpc/tokens.css),
+     réglé par Eric le 2026-08-27 sur les tuiles de Species et Class :
+     « pas assez visible », puis « pas mal mais un peu moins large ».
+     Les deux valeurs sont celles du builder, à l'identique. */
+  --fh-halo:                    rgba(45, 44, 42, 0.45);
 }
 [data-md-color-scheme="slate"] {
   --md-default-bg-color:        #1b1712;   /* dark leather */
@@ -43,6 +48,7 @@
                                                  toujours au-dessus du AAA. */
   --fh-red:                     #c97a5f;   /* lighter brick for dark bg */
   --fh-rule:                    rgba(191,168,126,.28);
+  --fh-halo:                    rgba(255, 255, 255, 0.65);
   --md-code-bg-color:           #2a2018;
 }
 
@@ -668,15 +674,25 @@
    `data-vise` quand l'adresse porte `?resume` — c'est le favori d'Eric qui
    l'apporte. Sans lui, le bouton reste là, discret : il ne crie pas à chaque
    visite. */
-/* ⚠️ `.md-typeset` EN TÊTE, ET C'EST MESURÉ : sans lui, la règle de base
-   `.md-typeset .fh-home-action` (0,2,0) battait celle-ci (0,2,0 mais écrite
-   AVANT dans la feuille), et le bouton restait à son ombre ordinaire. Vu à
-   l'œil, pas au chiffre — `data-vise` était bien posé, et rien ne s'allumait. */
+/* ⭐ LE MÊME HIGHLIGHT QUE LES TUILES DE SPECIES ET CLASS — Eric, 2026-08-31 :
+   « le highlight des tuiles sur Species et Classes est très bien, utilise
+   celui-là. » La recette n'est pas imitée à l'œil, elle est REPRISE :
+   `.catalogue-rail-item[aria-current="true"]` (fhpc/ui/builder/shell.css:1663)
+   pose un fond plus dense, la graisse 600, et un HALO DE LUMINANCE —
+   `0 0 6px 1px` — que ce dépôt-ci porte sous le nom `--fh-halo`.
+   ⛔ UN HALO, PAS UN ANNEAU : ma première écriture posait un cerclé d'or de
+   2 px. Eric a réglé ce halo lui-même le 27/08 (« pas mal mais un peu moins
+   large ») ; un anneau n'est pas « un peu moins large », c'est autre chose.
+   ⚠️ L'ombre portée de la carte est CONSERVÉE sous le halo : la tuile du rail
+   n'en a pas, mais elle est posée sur une dalle, pas sur un fond de page. La
+   retirer aplatirait le bouton — c'est la seule liberté prise sur la recette,
+   et elle est dite.
+   ⚠️ `.md-typeset` en tête, et c'est mesuré : sans lui la règle de base
+   `.md-typeset .fh-home-action` gagnait, et rien ne s'allumait alors que
+   `data-vise` était bien posé. */
 .md-typeset .fh-home-action--resume[data-vise="oui"] {
-  border-color: var(--fh-gold);
-  border-top-width: 3px;
-  box-shadow: 0 0 0 2px var(--fh-gold), 0 10px 28px rgba(0,0,0,.4);
-  background: linear-gradient(145deg, rgba(156,107,22,.28), rgba(156,107,22,.08));
+  font-weight: 600;
+  box-shadow: 0 0 6px 1px var(--fh-halo), 0 5px 16px rgba(31,20,10,.12);
 }
 
 /* ── UNE PORTE PAS ENCORE OUVERTE — « Your characters » attend que la fiche v1
