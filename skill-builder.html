@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fate's Hand — Character Builder</title>
+<style>
+  /* ===== PHB theme (mirrors fh-phb/docs/stylesheets/extra.css) ===== */
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity%20Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity%20Italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
+  @font-face{font-family:"Nodesto Caps Condensed";src:url("fonts/Nodesto%20Caps%20Condensed.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Nodesto Caps Condensed";src:url("fonts/Nodesto%20Caps%20Condensed%20Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+  @font-face{font-family:"Mr Eaves Small Caps";src:url("fonts/Mr%20Eaves%20Small%20Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Scaly Sans";src:url("fonts/Scaly%20Sans.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Scaly Sans";src:url("fonts/Scaly%20Sans%20Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+  @font-face{font-family:"Scaly Sans Caps";src:url("fonts/Scaly%20Sans%20Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+
+  :root{
+    --parchment:#f5edda; --parchment-2:#efe4c9; --ink:#2b2118; --muted:#7a6b55;
+    --leather:#5c4326; --leather-dark:#3f2e18; --gold:#9c6b16; --gold-bright:#c8942a;
+    --oxblood:#58180d; --rule:rgba(92,67,38,.30); --rule-soft:rgba(92,67,38,.16);
+    --good:#3e6b34; --warn:#a05e12; --bad:#8e2318;
+    --half:#3d5a80; --prof:#3e6b34; --exp:#9c6b16;
+    --serif:"Bookinsanity",Georgia,"Iowan Old Style",serif;
+    --caps:"Mr Eaves Small Caps","Cinzel",serif;
+    --title:"Nodesto Caps Condensed","Cinzel",serif;
+    --sans:"Scaly Sans","Gill Sans",system-ui,sans-serif;
+    --capsans:"Scaly Sans Caps","Scaly Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#211910;color:var(--ink);font:15px/1.4 var(--serif)}
+
+  /* ===== hero banner ===== */
+  .hero{position:relative;max-width:1440px;margin:0 auto;overflow:hidden}
+  .hero img{display:block;width:100%;height:190px;object-fit:cover;object-position:center 28%}
+  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,10,5,.25) 0%,rgba(15,10,5,.05) 45%,rgba(33,25,16,.92) 100%)}
+  .hero .t{position:absolute;left:0;right:0;bottom:8px;z-index:2;text-align:center}
+  .hero h1{margin:0;font-family:var(--title);font-weight:700;font-size:52px;line-height:1;color:#f0dfae;text-shadow:0 2px 10px rgba(0,0,0,.85);letter-spacing:.02em}
+  .hero .sub{font-family:var(--caps);font-size:17px;color:#d8b65a;text-shadow:0 1px 6px rgba(0,0,0,.9);letter-spacing:.14em}
+
+  /* ===== app frame ===== */
+  .app{max-width:1440px;margin:0 auto;padding:16px 18px 90px;display:flex;gap:16px;align-items:flex-start}
+  .side{width:330px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow-y:auto;padding-right:2px;transition:width .25s ease}
+  .app[data-step="skills"] .side{width:720px;overflow:hidden}
+  .app[data-step="skills"] .side > *{flex-shrink:0}
+  .app[data-step="skills"] #panel{flex:1 1 auto;min-height:0;overflow-y:auto}
+  .skill-budget{position:sticky;top:-14px;z-index:5;background:var(--parchment);margin:-6px -8px 10px;padding:8px 10px;border-bottom:2px solid var(--rule);font:13px var(--sans);display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;box-shadow:0 4px 8px -6px rgba(0,0,0,.4)}
+  .skill-budget b{font-size:16px}
+  .skill-budget .sb-left{margin-left:auto;font-family:var(--caps);letter-spacing:.06em;font-size:15px}
+  .feat-card.dis{opacity:.45;pointer-events:none}
+  .sheet-col{flex:1;min-width:0}
+  .card{background:var(--parchment);border:1px solid var(--leather-dark);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.45);padding:14px 16px}
+  .card > h2{margin:0 0 10px;font-family:var(--caps);font-size:19px;color:var(--oxblood);letter-spacing:.05em;border-bottom:2px solid var(--rule);padding-bottom:4px;font-weight:400}
+
+  /* ===== step list ===== */
+  .steps{padding:10px 12px}
+  .steps ol{list-style:none;margin:0;padding:0}
+  .steps li{display:flex;align-items:center;gap:9px;padding:5px 7px;border-radius:6px;cursor:pointer;font-family:var(--caps);font-size:16.5px;letter-spacing:.04em;color:var(--ink)}
+  .steps li:hover{background:var(--rule-soft)}
+  .steps li.cur{background:var(--leather);color:#f0dfae}
+  .steps li .dot{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--rule);display:flex;align-items:center;justify-content:center;font:700 11px var(--sans);color:var(--muted);flex-shrink:0;background:var(--parchment-2)}
+  .steps li.cur .dot{border-color:#f0dfae;color:#f0dfae;background:transparent}
+  .steps li.done .dot{background:var(--good);border-color:var(--good);color:#f5edda}
+  .steps li.warn .dot{background:var(--bad);border-color:var(--bad);color:#f5edda}
+  .steps li .hint{margin-left:auto;font:12px var(--sans);color:var(--muted);text-align:right;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .steps li.cur .hint{color:#e2cf9c}
+
+  /* ===== step panel ===== */
+  .pane{display:none}
+  .pane.on{display:block}
+  .pane .lead{font-size:13.5px;color:var(--muted);font-style:italic;margin:0 0 12px}
+  label{font-family:var(--capsans);font-size:12px;color:var(--leather);display:block;margin-bottom:3px;letter-spacing:.05em}
+  input[type=text],input[type=number],select,textarea{background:#fffdf5;color:var(--ink);border:1px solid var(--rule);border-radius:5px;padding:6px 8px;font:13.5px var(--sans);width:100%}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(156,107,22,.22)}
+  textarea{min-height:110px;resize:vertical;font-family:var(--serif);font-size:14px}
+  .fld{margin-bottom:11px}
+  .row2{display:flex;gap:10px}.row2 > *{flex:1}
+  .btn{background:var(--leather);color:#f0dfae;border:1px solid var(--leather-dark);border-radius:6px;padding:9px 16px;font:15px var(--caps);letter-spacing:.06em;cursor:pointer;transition:filter .15s}
+  .btn:hover{filter:brightness(1.18)}
+  .btn.gold{background:var(--gold);border-color:#7a530f;color:#fffbe9}
+  .btn.ghost{background:transparent;color:var(--leather);border:1px solid var(--leather)}
+  .btn.small{padding:4px 10px;font-size:13px}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .pane-nav{display:flex;justify-content:space-between;margin-top:14px;padding-top:10px;border-top:1px solid var(--rule-soft)}
+  .note{font:12.5px var(--sans);margin-top:7px;color:var(--warn)}
+  .note.ok{color:var(--good)}
+  .note.err{color:var(--bad)}
+
+  /* ===== abilities step ===== */
+  .rollzone{background:var(--parchment-2);border:1px solid var(--rule);border-radius:7px;padding:10px 12px;margin-bottom:12px}
+  .setchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{font:700 14px var(--sans);border:1px solid var(--rule);border-radius:6px;padding:4px 0;width:40px;text-align:center;background:#fffdf5;color:var(--muted);position:relative}
+  .chip.kept{background:var(--gold);border-color:#7a530f;color:#fffbe9}
+  .chip .d3{display:block;font:400 9px var(--sans);letter-spacing:.02em;opacity:.8}
+  .reroll-note{font:italic 12.5px var(--serif);color:var(--oxblood);margin-top:8px}
+  .assign{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .assign .ab{display:flex;align-items:center;gap:8px;background:#fffdf5;border:1px solid var(--rule);border-radius:6px;padding:5px 8px}
+  .assign .ab b{font-family:var(--capsans);width:34px;color:var(--leather);font-weight:400;font-size:13px}
+  .assign .ab select{flex:1;padding:3px 4px}
+  .assign .ab .m{font:12px var(--sans);color:var(--muted);width:26px;text-align:right}
+  .manual-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .manual-grid input{text-align:center;font-weight:700}
+  .toggle-line{font:12.5px var(--sans);margin-top:10px;color:var(--muted)}
+  .toggle-line a{color:var(--gold);cursor:pointer;text-decoration:underline}
+
+  /* ===== species cards ===== */
+  .spgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .sp-card{position:relative;border:2px solid var(--rule);border-radius:8px;overflow:hidden;cursor:pointer;padding:0;background:var(--leather-dark);transition:transform .12s,border-color .12s}
+  .sp-card:hover{transform:translateY(-2px);border-color:var(--gold)}
+  .sp-card.sel{border-color:var(--gold);box-shadow:0 0 0 2px rgba(200,148,42,.5),0 4px 14px rgba(0,0,0,.4)}
+  .sp-card img{display:block;width:100%;aspect-ratio:1/1.05;object-fit:cover;object-position:center 18%}
+  .sp-card .nm{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 5px;text-align:center;font-family:var(--caps);font-size:16px;letter-spacing:.08em;color:#f0dfae;background:linear-gradient(to top,rgba(10,7,4,.92),rgba(10,7,4,.4) 65%,transparent);text-shadow:0 1px 3px #000}
+  .sp-card.sel .nm{color:#ffe9a8}
+  .sp-card .badge{position:absolute;top:6px;right:6px;font:700 10px var(--sans);background:rgba(10,7,4,.75);color:#d8b65a;border:1px solid rgba(216,182,90,.5);border-radius:4px;padding:2px 5px}
+
+  /* ===== class list ===== */
+  .clsgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .cls-card{display:flex;justify-content:space-between;align-items:center;border:1.5px solid var(--rule);border-radius:6px;background:#fffdf5;padding:7px 10px;cursor:pointer;font-family:var(--caps);font-size:16px;letter-spacing:.04em;color:var(--ink)}
+  .cls-card:hover{border-color:var(--gold)}
+  .cls-card.sel{background:var(--leather);color:#f0dfae;border-color:var(--leather-dark)}
+  .cls-card .pool{font:700 11.5px var(--sans);color:var(--gold);background:rgba(156,107,22,.1);border:1px solid var(--rule);border-radius:4px;padding:1px 6px}
+  .cls-card.sel .pool{color:#ffe9a8;background:rgba(0,0,0,.25);border-color:rgba(240,223,174,.4)}
+
+  /* ===== background boosts ===== */
+  .boostrow{display:flex;align-items:center;gap:8px;padding:4px 0}
+  .boostrow b{font-family:var(--capsans);width:40px;font-weight:400;color:var(--leather)}
+  .seg{display:flex;gap:4px}
+  .seg button{background:#fffdf5;border:1px solid var(--rule);border-radius:5px;color:var(--muted);font:13px var(--sans);padding:4px 12px;cursor:pointer}
+  .seg button.on{background:var(--gold);color:#fffbe9;border-color:#7a530f;font-weight:700}
+
+  /* ===== destiny ===== */
+  .featpick{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+  .feat-card{border:1.5px solid var(--rule);border-radius:6px;background:#fffdf5;padding:8px 10px;cursor:pointer}
+  .feat-card:hover{border-color:var(--gold)}
+  .feat-card.sel{border-color:var(--gold);background:rgba(156,107,22,.09);box-shadow:0 0 0 1.5px rgba(200,148,42,.4)}
+  .feat-card .fn{font-family:var(--caps);font-size:16px;letter-spacing:.04em;color:var(--oxblood)}
+  .feat-card .fd{font:12px var(--sans);color:var(--muted);margin-top:2px}
+  .arc-detail{background:var(--parchment-2);border:1px solid var(--rule);border-radius:6px;padding:10px 12px;margin-top:10px;font-size:13.5px}
+  .arc-detail .at{font-family:var(--caps);font-size:17px;color:var(--oxblood);margin-bottom:4px}
+  .arc-detail div{padding:2px 0;color:var(--ink)}
+  .arc-detail b{color:var(--leather)}
+  .dest-score-line{display:flex;align-items:baseline;gap:10px;margin-top:12px;flex-wrap:wrap;font-family:var(--sans);font-size:12.5px;color:var(--muted)}
+  .dest-score-line .big{font:700 30px var(--title);color:var(--gold)}
+
+  /* ===== skills grid ===== */
+  .filter{display:flex;gap:8px;margin-bottom:9px;align-items:center}
+  .filter input{flex:1}
+  table.skills{width:100%;border-collapse:collapse;font-family:var(--sans);background:#fffdf5;border:1px solid var(--rule);border-radius:6px}
+  table.skills th{font-family:var(--capsans);text-align:left;font-size:11px;color:#f5edda;background:var(--leather);letter-spacing:.06em;padding:5px 8px;font-weight:400}
+  table.skills td{padding:3px 7px;border-bottom:1px solid var(--rule-soft);font-size:12.5px}
+  table.skills tr:nth-child(even) td{background:rgba(156,107,22,.05)}
+  table.skills tr.locked-warn td{background:rgba(142,35,24,.1)}
+  tr.tool td:first-child .nm{color:var(--muted)}
+  tr.fhonly .nm::after{content:" ◆";color:var(--gold);font-size:10px}
+  .nm{font-weight:700;cursor:default}
+  .dsc{font-size:11px;color:var(--muted);line-height:1.3;margin-top:1px;max-width:330px}
+  .ab-tag{font-size:9.5px;color:var(--muted);border:1px solid var(--rule);border-radius:3px;padding:0 3px;margin-left:5px;vertical-align:1px}
+  .info{display:inline-block;margin-left:4px;cursor:pointer;color:var(--gold);font-weight:700;font-size:12px}
+  .tiers{display:flex;gap:3px}
+  .tiers button{background:#fffdf5;color:var(--muted);border:1px solid var(--rule);border-radius:4px;padding:2.5px 0;width:36px;cursor:pointer;font:11.5px var(--sans)}
+  .tiers button.on[data-t=half]{background:var(--half);color:#fff;border-color:var(--half)}
+  .tiers button.on[data-t=prof]{background:var(--prof);color:#fff;border-color:var(--prof)}
+  .tiers button.on[data-t=exp]{background:var(--exp);color:#fffbe9;border-color:#7a530f;font-weight:700}
+  .tiers button.on[data-t=non]{background:var(--leather);color:#f0dfae;border-color:var(--leather-dark)}
+  td.lockc select{width:58px;padding:2px 3px;font-size:11.5px}
+  .cost{font-size:11.5px;color:var(--muted);width:30px;text-align:right;display:inline-block}
+  .auto-tag{font-size:9.5px;color:var(--gold);border:1px solid var(--rule);border-radius:3px;padding:0 3px;margin-left:4px}
+  .reminders{font:12.5px var(--sans);color:var(--muted)}
+  .reminders summary{font-family:var(--caps);font-size:15px;color:var(--leather);cursor:pointer;letter-spacing:.04em}
+  .reminders div{padding:2.5px 0}
+  .reminders b{color:var(--ink)}
+
+  /* ===== budget mini ===== */
+  .budget-mini{padding:10px 14px}
+  .bm-line{display:flex;gap:14px;align-items:baseline;font-family:var(--sans)}
+  .bm-line .n{font:700 22px var(--title);letter-spacing:.03em}
+  .bm-line .l{font-size:10.5px;color:var(--muted);font-family:var(--capsans);letter-spacing:.06em}
+  .bar{height:10px;background:#fffdf5;border-radius:5px;overflow:hidden;border:1px solid var(--rule);margin-top:7px}
+  .bar > i{display:block;height:100%;background:var(--good);width:0;transition:width .2s,background .2s}
+  .bm-warn{font:12px var(--sans);margin-top:6px;color:var(--warn)}
+  .bm-warn.ok{color:var(--good)}
+  .bm-warn.err{color:var(--bad)}
+
+  /* ===== GM / dice drawers ===== */
+  details.drawer{background:var(--parchment);border:1px solid var(--leather-dark);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.45);padding:9px 14px}
+  details.drawer summary{font-family:var(--caps);font-size:16px;letter-spacing:.05em;color:var(--leather);cursor:pointer}
+  details.drawer[open] summary{border-bottom:1px solid var(--rule-soft);padding-bottom:6px;margin-bottom:9px}
+  .dice-row{display:flex;gap:7px;align-items:flex-end}
+  .dice-row .fld{margin:0}
+  .dice-result{font:700 26px var(--title);color:var(--gold);min-width:48px;text-align:center}
+  .dice-breakdown{font:12px var(--sans);color:var(--muted);margin-top:5px}
+  .dice-log{margin-top:7px;font:11.5px var(--sans);color:var(--muted);max-height:110px;overflow:auto}
+  .dice-log div{padding:2px 0;border-bottom:1px solid var(--rule-soft)}
+
+  /* ===== save step ===== */
+  .recap{font:13px var(--sans);margin-bottom:12px}
+  .recap div{padding:3px 0;display:flex;gap:8px;align-items:baseline}
+  .recap .st{width:14px;text-align:center;flex-shrink:0}
+  .recap .ok{color:var(--good)} .recap .ko{color:var(--bad)} .recap .meh{color:var(--warn)}
+  .code-out{font:11.5px ui-monospace,Menlo,monospace;background:#fffdf5;border:1px solid var(--rule);border-radius:6px;padding:9px;width:100%;min-height:90px;word-break:break-all;white-space:pre-wrap}
+  .saves-list{font:13px var(--sans)}
+  .saves-list div{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--rule-soft)}
+  .saves-list .nm2{font-weight:700;flex:1}
+  .saves-list .dt{color:var(--muted);font-size:11.5px}
+  .saves-list a{color:var(--gold);cursor:pointer;text-decoration:underline;font-size:12px}
+
+  /* ===== character sheet (preview) ===== */
+  .sheet{background:var(--parchment);border:1px solid var(--leather-dark);border-radius:8px;box-shadow:0 6px 26px rgba(0,0,0,.55);padding:26px 32px 34px;position:relative;min-height:600px}
+  .sheet::before{content:"";position:absolute;inset:7px;border:1.5px solid var(--rule);border-radius:5px;pointer-events:none}
+  .sheet-tools{position:absolute;top:14px;right:16px;z-index:3;display:flex;gap:6px}
+  .pv-head{display:flex;gap:18px;align-items:flex-start;border-bottom:3px solid var(--rule);padding-bottom:12px;margin-bottom:14px}
+  .pv-id{flex:1;min-width:0}
+  .pv-name{font-family:var(--title);font-weight:700;font-size:44px;line-height:1;color:var(--oxblood);overflow-wrap:break-word}
+  .pv-name.empty{color:var(--muted);opacity:.55}
+  .pv-sub{font-family:var(--caps);font-size:18px;color:var(--gold);letter-spacing:.07em;margin-top:4px}
+  .pv-camp{font-style:italic;font-size:13.5px;color:var(--muted);margin-top:2px}
+  .pv-portrait{width:130px;flex-shrink:0;border-radius:7px;border:1.5px solid var(--rule);box-shadow:0 4px 12px rgba(0,0,0,.3);aspect-ratio:1/1.18;object-fit:cover;object-position:center 15%}
+  .pv-abilities{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin:4px 0 16px}
+  .pv-ab{background:var(--parchment-2);border:1.5px solid var(--rule);border-radius:8px;text-align:center;padding:7px 2px 6px;position:relative}
+  .pv-ab .l{font-family:var(--capsans);font-size:11px;letter-spacing:.1em;color:var(--leather)}
+  .pv-ab .v{font:700 26px var(--title);color:var(--ink);line-height:1.1}
+  .pv-ab .v .bst{font:700 11px var(--sans);color:var(--good);vertical-align:8px}
+  .pv-ab .mod{font:700 13px var(--sans);color:var(--oxblood)}
+  .pv-h{font-family:var(--caps);font-size:20px;color:var(--gold);letter-spacing:.06em;border-bottom:2px solid var(--rule);padding-bottom:2px;margin:16px 0 7px}
+  .pv-h:first-of-type{margin-top:0}
+  .sheet ul{margin:4px 0 6px;padding-left:20px}
+  .sheet li{margin:2.5px 0;font-size:14px}
+  .sheet li b, .sheet p b{color:var(--oxblood)}
+  .pv-empty{color:var(--muted);font-style:italic;font-size:13px}
+  .pv-skill-cols{columns:2;column-gap:26px;font-family:var(--sans);font-size:13px}
+  .pv-skill-cols p.tierh{font-family:var(--capsans);letter-spacing:.06em;color:var(--leather);margin:4px 0 2px;break-after:avoid}
+  .pv-skill-cols div{padding:1px 0;break-inside:avoid}
+  .pv-skill-cols .abt{color:var(--muted);font-size:10.5px}
+  .pv-status{font:13px var(--sans);border-radius:6px;padding:7px 10px;margin:2px 0 8px;border:1px solid var(--rule)}
+  .pv-status.ok{color:var(--good);background:rgba(62,107,52,.07)}
+  .pv-status.warn{color:var(--warn);background:rgba(160,94,18,.08)}
+  .pv-status.err{color:var(--bad);background:rgba(142,35,24,.08)}
+  .pv-dest{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:4px 0 6px}
+  .pv-dest .ds{font:700 44px var(--title);color:var(--gold);line-height:1}
+  .pv-dest .dd{font-family:var(--sans);font-size:13px;color:var(--ink)}
+  .pv-story{font-size:14px;white-space:pre-wrap;font-style:italic;color:#413326}
+  .pv-foot{margin-top:22px;padding-top:8px;border-top:1px solid var(--rule);text-align:center;font-family:var(--caps);font-size:12.5px;letter-spacing:.16em;color:var(--muted)}
+
+  /* ===== modal ===== */
+  .modal-overlay{position:fixed;inset:0;background:rgba(15,10,5,.7);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .modal-box{background:var(--parchment);border:1.5px solid var(--gold);border-radius:10px;max-width:560px;width:100%;max-height:82vh;overflow:auto;padding:20px 24px;position:relative;font-size:14px;line-height:1.5}
+  .modal-box #modalClose{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+  .modal-box h3{margin:0 0 10px;font-family:var(--caps);font-weight:400;font-size:21px;color:var(--oxblood)}
+  .modal-box ul{margin:8px 0;padding-left:18px}
+  .modal-box li{margin:5px 0}
+
+  /* ===== responsive + print ===== */
+  @media (max-width: 1020px){
+    .app{flex-direction:column}
+    .side, .app[data-step="skills"] .side{width:100%;position:static;max-height:none}
+  }
+  @media print{
+    body{background:#fff}
+    .hero,.side,.sheet-tools{display:none!important}
+    .app{padding:0;display:block;max-width:none}
+    .sheet{box-shadow:none;border:none}
+  }
+</style>
+<link rel="stylesheet" href="stylesheets/tool-ui.css">
+</head>
+<body class="fh-tool-builder">
+
+<nav class="fh-toolbar" aria-label="Player tools">
+  <a class="fh-toolbar__brand" href="./"><span class="fh-toolbar__mark">FH</span>Fate's Hand</a>
+  <div class="fh-toolbar__links">
+    <a href="./">Handbook</a>
+    <a href="player/">Character</a>
+    <a href="skill-builder.html" aria-current="page">Create</a>
+    <a href="party-inventory.html">Inventory</a>
+    <a href="soulforge-tool.html">Soulforge</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <img src="assets/img/species-banner.jpg" alt="Adventurers of every species walking through a city">
+  <div class="t">
+    <h1>Fate's Hand</h1>
+    <div class="sub">CHARACTER BUILDER · LEVEL 1</div>
+  </div>
+</div>
+
+<div class="app" id="app" data-step="identity">
+
+  <!-- ================= LEFT COLUMN ================= -->
+  <aside class="side">
+
+    <nav class="card steps"><ol id="stepList"></ol>
+      <button class="btn ghost small" id="quickReset" style="width:100%;margin-top:8px;color:var(--bad);border-color:var(--bad)">↺ Start a new character</button>
+    </nav>
+
+    <section class="card" id="panel">
+
+      <!-- STEP 1 · IDENTITY -->
+      <div class="pane" data-step="identity">
+        <p class="lead">Who are you, and at whose table do you sit?</p>
+        <div class="fld"><label>Character name</label><input id="charName" type="text" placeholder="Nodren, Loroka…" autocomplete="off"></div>
+        <div class="fld"><label>Campaign</label><input id="campaign" type="text" list="campList" placeholder="e.g. The Guild Path" autocomplete="off">
+          <datalist id="campList"></datalist></div>
+        <p class="note ok" id="restoreNote" style="display:none"></p>
+      </div>
+
+      <!-- STEP 2 · ABILITIES -->
+      <div class="pane" data-step="abilities">
+        <p class="lead">Fate's Hand rule — roll <b>3d6 ten times</b>, keep your <b>six highest</b>. If no result is 15 or higher, the whole set is reforged. At creation an ability can't exceed <b>18, bonuses included</b>; in play the ceiling is <b>20</b>, boons excepted.</p>
+        <div class="rollzone">
+          <button class="btn gold" id="rollSet" style="width:100%">Roll the set — 10 × 3d6</button>
+          <div class="setchips" id="setChips"></div>
+          <div class="reroll-note" id="rerollNote"></div>
+        </div>
+        <div id="assignZone" style="display:none">
+          <label>Assign your six kept scores</label>
+          <div class="assign" id="assignGrid"></div>
+          <div class="note" id="assignNote"></div>
+        </div>
+        <div class="toggle-line">Scores rolled at the table? <a id="manualToggle">Enter them manually</a></div>
+        <div id="manualZone" style="display:none">
+          <div class="manual-grid" id="manualGrid"></div>
+        </div>
+      </div>
+
+      <!-- STEP 3 · SPECIES -->
+      <div class="pane" data-step="species">
+        <p class="lead">Your species' traits appear on the sheet as you choose.</p>
+        <div class="spgrid" id="spGrid"></div>
+      </div>
+
+      <!-- STEP 4 · CLASS -->
+      <div class="pane" data-step="class">
+        <p class="lead">The badge is your level-1 skill-point pool (background included).</p>
+        <div class="clsgrid" id="clsGrid"></div>
+        <p class="note" style="color:var(--muted)">Bard gains +1 point per level from level 2 (Jack of All Trades). Every class gains +2 points at levels 4 and 8.</p>
+      </div>
+
+      <!-- STEP 5 · BACKGROUND & ORIGIN -->
+      <div class="pane" data-step="background">
+        <p class="lead">Your sheet's background is replaced by <b>Blank Background (fh)</b>. It gives your <b>ability bonuses</b>, your <b>Origin feat</b> and your <b>story</b>.</p>
+        <label>Ability bonuses — <b>+2/+1</b> on two abilities, or <b>+1/+1/+1</b> on three</label>
+        <div id="abBoosts"></div>
+        <div class="note" id="abNote"></div>
+        <div class="fld" style="margin-top:14px"><label>Origin feat</label>
+          <div class="featpick" id="featPick"></div>
+          <p class="note" style="color:var(--muted)"><b>Destiny Touched (fh)</b> and Skilled feed directly into character creation (Destiny score / skill points).</p>
+        </div>
+        <div class="fld" id="featPick2Wrap" style="display:none;margin-top:10px"><label>Species bonus — extra Origin feat</label>
+          <div class="featpick" id="featPick2"></div>
+          <p class="note" style="color:var(--muted)" id="featPick2Note"></p>
+        </div>
+        <div class="fld" style="margin-top:10px"><label>Other Origin feat (free text — the GM sets it up on D&amp;D Beyond)</label>
+          <input id="originOther" type="text" placeholder="e.g. Alert, Magic Initiate…" autocomplete="off"></div>
+        <div class="fld" style="margin-top:14px"><label>Backstory</label>
+          <textarea id="story" placeholder="Tell the character's story…"></textarea></div>
+      </div>
+
+      <!-- STEP 6 · DESTINY -->
+      <div class="pane" data-step="destiny">
+        <p class="lead">Destiny is a random draw among the 22 Major Arcana — let fate decide, or set the card you drew at the table.</p>
+        <div class="fld"><label>Major Arcana (drawn at creation)</label>
+          <div class="row2">
+            <select id="arcana" style="flex:1"></select>
+            <button class="btn gold small" id="arcRandom" style="flex:0 0 auto" title="True random draw, 1 in 22">🎲 Draw</button>
+          </div>
+        </div>
+        <div id="arcanaCard" class="arc-detail" style="display:none"></div>
+        <div class="row2">
+          <div class="fld"><label>Glory / Damnation</label><input id="destGlory" type="number" value="0"></div>
+          <div class="fld"><label>Other (item / boon)</label><input id="destOther" type="number" value="0"></div>
+        </div>
+        <div class="dest-score-line"><span style="font-family:var(--capsans);letter-spacing:.08em">DESTINY SCORE</span>
+          <span class="big" id="destScore">?</span><span id="destBreak"></span></div>
+      </div>
+
+      <!-- STEP 7 · SKILLS -->
+      <div class="pane" data-step="skills">
+        <div class="skill-budget" id="skillBudget"></div>
+        <details class="reminders" style="margin-bottom:10px">
+          <summary>Rule reminders</summary>
+          <div>• <b>Starting floor</b> = what you already own (species, imported sheet) — you can never invest below it. <b>Invested tier</b> = where your points go now.</div>
+          <div>• <b>Languages</b>: free at creation. Later levels: 1 point = 1 language (GM options).</div>
+          <div>• <b>Each level</b>: you may move 1 point — keeping at least ½ on every native skill and tool.</div>
+          <div>• <b>Levels 4 and 8</b>: +2 points. Costs — half 1 · proficient 2 · expertise 4 (expertise purchase from level 4).</div>
+          <div>• At least <b>1 tool point</b> at creation. Clear every warning before saving — a silent leftover is how a skill ends up at zero.</div>
+        </details>
+        <div class="filter">
+          <input id="search" type="text" placeholder="Filter (craft, INT, tactics…)">
+          <button class="btn ghost small" id="reset">Reset to floors</button>
+        </div>
+        <table class="skills">
+          <thead><tr><th style="width:48%">Skill / Tool</th><th>Floor</th><th>Invested</th><th style="text-align:right">Cost</th></tr></thead>
+          <tbody id="grid"></tbody>
+        </table>
+        <p class="note" style="color:var(--muted)">◆ = Fate's Hand skill (no native D&D Beyond box) · “Tool - X” = a tool · ⓘ = detailed rule</p>
+      </div>
+
+      <!-- STEP 8 · SAVE -->
+      <div class="pane" data-step="save">
+        <p class="lead">Save your character: your build is stored in this browser <b>and</b> turned into a code you send to your GM — they'll conjure it onto a fresh D&amp;D Beyond sheet in your campaign.</p>
+        <div class="recap" id="saveRecap"></div>
+        <button class="btn gold" id="saveChar" style="width:100%">Save character</button>
+        <div id="saveOut" style="display:none;margin-top:12px">
+          <label>Your build code — send this to your GM</label>
+          <div class="code-out" id="buildCode"></div>
+          <div class="row2" style="margin-top:8px">
+            <button class="btn small" id="copyCode">Copy code</button>
+            <button class="btn ghost small" id="dlUnified">Download .fh.json</button>
+          </div>
+          <p class="note ok" id="saveNote"></p>
+          <div style="margin-top:14px;border-top:1px solid var(--rule-soft);padding-top:12px">
+            <label>Or send it online — straight to your GM's table</label>
+            <div class="row2">
+              <input id="sendPseudo" type="text" placeholder="Your player name" maxlength="40">
+              <input id="sendCampCode" type="text" placeholder="Campaign code (ask your GM)" maxlength="40">
+            </div>
+            <button class="btn small" id="sendGM" style="margin-top:8px;width:100%">Send to GM</button>
+            <p class="note" id="sendNote"></p>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <label>Characters saved in this browser</label>
+          <div class="saves-list" id="savesList"></div>
+        </div>
+        <div style="margin-top:14px">
+          <label>Load a build code</label>
+          <div class="row2">
+            <input id="loadCodeIn" type="text" placeholder="FH1.…">
+            <button class="btn ghost small" id="loadCodeBtn" style="flex:0 0 auto">Load</button>
+          </div>
+          <p class="note" id="loadCodeNote"></p>
+        </div>
+      </div>
+
+      <div class="pane-nav">
+        <button class="btn ghost small" id="navBack">‹ Back</button>
+        <button class="btn small" id="navNext">Next ›</button>
+      </div>
+    </section>
+
+    <div class="card budget-mini">
+      <div class="bm-line">
+        <span><span class="n" style="color:var(--gold)" id="vPool">0</span> <span class="l">POOL</span></span>
+        <span><span class="n" id="vSpent">0</span> <span class="l">SPENT</span></span>
+        <span><span class="n" style="color:var(--good)" id="vLeft">0</span> <span class="l">LEFT</span></span>
+      </div>
+      <div class="bar"><i id="barFill"></i></div>
+      <div class="bm-warn" id="bmWarn"></div>
+      <div style="display:none" id="poolBreak"></div>
+      <div style="display:none" id="warns"></div>
+    </div>
+
+    <details class="drawer">
+      <summary>🎲 Dice roller</summary>
+      <div class="dice-row">
+        <div class="fld" style="width:56px"><label>Count</label><input id="diceCount" type="number" min="1" max="20" value="1"></div>
+        <div class="fld" style="width:70px"><label>Die</label><select id="diceSides">
+          <option value="4">d4</option><option value="6">d6</option><option value="8">d8</option>
+          <option value="10">d10</option><option value="12">d12</option><option value="20" selected>d20</option>
+          <option value="100">d100</option></select></div>
+        <div class="fld" style="width:56px"><label>Mod</label><input id="diceMod" type="number" value="0"></div>
+        <button class="btn small" id="diceRoll">Roll</button>
+        <span class="dice-result" id="diceResult">—</span>
+      </div>
+      <div class="dice-breakdown" id="diceBreakdown"></div>
+      <div class="dice-log" id="diceLog"></div>
+    </details>
+
+    <details class="drawer">
+      <summary>⚙ GM options</summary>
+      <div class="row2">
+        <div class="fld"><label>Level</label><input id="lvl" type="number" min="1" max="8" value="1"></div>
+        <div class="fld"><label>DDB sheet id</label><input id="ddbId" type="number" placeholder="150544157"></div>
+      </div>
+      <div class="row2">
+        <div class="fld"><label>Extra species pts</label><input id="raceP" type="number" min="0" value="0"></div>
+        <div class="fld"><label>Other feat pts</label><input id="featP" type="number" min="0" value="0"></div>
+      </div>
+      <div class="row2">
+        <div class="fld"><label>Purchased languages</label><input id="langPts" type="number" min="0" value="0"></div>
+        <div class="fld"><label>Level-1 bonus</label><input id="bonus1" type="number" min="0" value="0"></div>
+      </div>
+      <div class="fld"><label>Import a seed JSON (ddb-load.mjs)</label><input id="importSeed" type="file" accept=".json,application/json"></div>
+      <div class="note" id="importNote"></div>
+      <div class="row2" style="margin-top:8px">
+        <button class="btn ghost small" id="clearImport">Clear import</button>
+        <button class="btn ghost small" id="dlPayload">Skills payload only</button>
+      </div>
+      <div class="row2" style="margin-top:8px">
+        <button class="btn ghost small" id="genRecap">Text recap → clipboard</button>
+        <button class="btn ghost small" id="fullReset" style="color:var(--bad);border-color:var(--bad)">Reset everything</button>
+      </div>
+      <div class="note" id="ruleNote" style="color:var(--muted)"></div>
+    </details>
+
+  </aside>
+
+  <!-- ================= CHARACTER SHEET ================= -->
+  <main class="sheet-col">
+    <div class="sheet">
+      <div class="sheet-tools"><button class="btn ghost small" onclick="window.print()">Print</button></div>
+      <div id="preview"></div>
+      <div class="pv-foot">FATE'S HAND 5+ · CHARACTER BUILDER</div>
+    </div>
+  </main>
+</div>
+
+<div id="modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <button id="modalClose" aria-label="Close">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<select id="cls" style="display:none"></select>
+<select id="race" style="display:none"></select>
+<select id="originFeat" style="display:none"></select>
+<select id="originFeat2" style="display:none"></select>
+
+<script>
+// ================= DATA — canonical pools, REWORK 2026-07-12 (background included) =================
+// ── LES TROIS BOURSES ───────────────────────────────────────────────────────
+// Le livre (chapitre « Skills & Tools ») porte TROIS totaux, pas un :
+//   free  — la réserve libre : compétences OU outils, indifféremment
+//   skill — points LIÉS, placés dans la liste de classe, palier au choix
+//   tool  — points LIÉS à un outil ; ils ne traversent JAMAIS vers une compétence
+// ⚠️ C'est la règle des « deux bourses » : seuls les points LIBRES circulent.
+//    Un point d'outil lié non placé est PERDU — d'où l'avertissement dédié.
+// 📌 Ces nombres viennent du chapitre publié, source de vérité de la règle.
+//    L'ancienne table de cet outil en contredisait quatre (Bard +1, Monk +2,
+//    Ranger −1, Rogue −2) et portait un Artificier que Fate's Hand n'a pas.
+const CLASS_BUDGET = {
+  Barbarian:{free:10,skill:2,tool:0}, Cleric:{free:10,skill:2,tool:0},
+  Fighter:{free:10,skill:2,tool:0},   Paladin:{free:10,skill:2,tool:0},
+  Sorcerer:{free:10,skill:2,tool:0},  Warlock:{free:10,skill:2,tool:0},
+  Wizard:{free:10,skill:2,tool:0},    Monk:{free:10,skill:2,tool:0},
+  Bard:{free:12,skill:3,tool:2},      Druid:{free:12,skill:2,tool:1},
+  Ranger:{free:12,skill:3,tool:0},    Rogue:{free:14,skill:6,tool:1}
+};
+const CLASS_POOL = Object.fromEntries(
+  Object.entries(CLASS_BUDGET).map(([c,b])=>[c, b.free+b.skill+b.tool]));
+const TIER_LEVELS = [4,8];
+const SPECIES = {
+  "Human":      {destiny:2, skillCreate:0, skillLevels:[]},
+  "Araag":      {destiny:2, skillCreate:0, skillLevels:[3,6]},
+  "Halfling":   {destiny:2, skillCreate:0, skillLevels:[]},
+  "Dragonborn": {destiny:2, skillCreate:0, skillLevels:[]},
+  "Hoddon":     {destiny:2, skillCreate:0, skillLevels:[]},
+  "Goliath":    {destiny:2, skillCreate:0, skillLevels:[]},
+  "Tiefling":   {destiny:2, skillCreate:0, skillLevels:[]},
+  "Elf":        {destiny:2, skillCreate:0, skillLevels:[]},
+  "Dwarf":      {destiny:2, skillCreate:0, skillLevels:[]},
+  "Orc":        {destiny:2, skillCreate:0, skillLevels:[]},
+  "Loroka":     {destiny:2, skillCreate:0, skillLevels:[]},
+  "Elestu":     {destiny:2, skillCreate:0, skillLevels:[3,6]},
+  "—":          {destiny:0, skillCreate:0, skillLevels:[]}
+};
+const SPECIES_IMG = {
+  Human:"assets/img/species-human.jpg", Araag:"assets/img/species-araag.jpg", Halfling:"assets/img/species-halfling.jpg",
+  Dragonborn:"assets/img/species-dragonborn.jpg", Hoddon:"assets/img/species-hoddon.jpg", Goliath:"assets/img/species-goliath.jpg",
+  Tiefling:"assets/img/species-tiefling.jpg", Elf:"assets/img/species-elf.jpg", Dwarf:"assets/img/species-dwarf.jpg",
+  Orc:"assets/img/species-orc.jpg", Loroka:"assets/img/species-loroka.jpg", Elestu:"assets/img/species-elestu.jpg"
+};
+// Species trait lines — verbatim from the canonical "D&D 5+ Races & Species" vault doc.
+const SPECIES_TRAITS = {
+  "—": [],
+  "Human": ["Skillful — +2 skill points at creation (skill tweak: a proficiency of your choice)", "Versatile — gain an extra Origin feat of your choice", "Destiny — Base 2 · human chosen: +1 Destiny Point per day"],
+  "Araag": ["Skillful — +2 skill points at creation (skill tweak: a proficiency of your choice)", "Fast Learner — +2 skill points at levels 3 and 6 (added later on your sheet)", "Soulforged Affinity — Body Forge a Soulgem into your own flesh at no HP cost", "Necrotic Resistance", "Darkvision 60 ft", "Destiny — Base 2"],
+  "Halfling": ["Brave — advantage on saves against being Frightened", "Halfling Nimbleness — move through the space of any larger creature", "Luck — reroll any 1 on a d20 test", "Naturally Stealthy — hide behind anything bigger than you, including people", "Destiny — Base 2 · halfling chosen: advantage on Chaos rolls"],
+  "Dragonborn": ["Draconic Ancestry — choose a dragon type; sets your breath and resistance", "Breath Weapon", "Damage Resistance to your ancestry's type", "Draconic Flight — at level 5, spectral wings for short flights", "Darkvision 60 ft", "Destiny — Base 2"],
+  "Hoddon": ["Hoddon Cunning — advantage on Intelligence, Wisdom and Charisma saves", "Hoddon Lineage — Forest or Rock; a knack of small illusions or small machines", "Darkvision 60 ft", "Destiny — Base 2"],
+  "Goliath": ["Giant Ancestry — choose a giant's boon, a once-per-turn combat knack", "Large Form — at level 5, grow Large for a minute", "Powerful Build — advantage against grapples; carry like a larger creature", "Speed 35 ft", "Destiny — Base 2"],
+  "Tiefling": ["Fiendish Legacy — Abyssal, Chthonic or Infernal; a resistance and a thread of spells", "Otherworldly Presence — know the Thaumaturgy cantrip", "Darkvision 60 ft", "Destiny — Base 2"],
+  "Elf": ["Elven Lineage — Drow, High Elf or Wood Elf; each its own thread of magic", "Fey Ancestry — advantage against being charmed; can't be magically put to sleep", "Trance — 4 hrs light meditation replaces a long rest's sleep", "Keen Senses — proficiency in Survival, Delve, or Vigilance (ability tweak: ½ Vigilance/Survival pre-invested — 2 pts counted in your pool)", "Darkvision 60 ft", "Destiny — Base 2 · elf chosen: +2 to Destiny pool"],
+  "Dwarf": ["Dwarven Resilience — poison resistance, advantage against being Poisoned", "Dwarven Toughness — +1 HP per level", "Stonecunning — Tremorsense 60 ft on stone, a few times/day", "Darkvision 120 ft", "Destiny — Base 2"],
+  "Orc": ["Adrenaline Rush — Dash as a bonus action, gain temporary HP", "Relentless Endurance — once per long rest, drop to 1 HP instead of 0", "Darkvision 120 ft", "Destiny — Base 2"],
+  "Loroka": ["Relentless Endurance — once per long rest, drop to 1 HP instead of 0", "Versatile — gain an extra Origin feat of your choice", "Darkvision 120 ft", "Destiny — Base 2"],
+  "Elestu": ["Fey Ancestry — advantage against being charmed; can't be magically put to sleep", "Trance — 4 hrs light meditation replaces a long rest's sleep", "Keen Senses — proficiency in Survival, Delve, or Vigilance (ability tweak: ½ Vigilance/Survival pre-invested — 2 pts counted in your pool)", "Fast Learner — +2 skill points at levels 3 and 6", "Darkvision 60 ft", "Destiny — Base 2"]
+};
+// Ability Boost (fh) feats — DDB IDs (2026-07-12 roadmap): +1 / +2 per ability.
+const ABILITY_BOOST_FEATS = {
+  STR:{1:2379975,2:2379989}, DEX:{1:2379985,2:2379986}, CON:{1:2379983,2:2379984},
+  INT:{1:2379987,2:2379988}, WIS:{1:2379990,2:2379991}, CHA:{1:2379981,2:2379982}
+};
+// Destiny dice feats (fh) — always all 5, applied unconditionally by ddb-apply.
+const DESTINY_FEATS = {
+  diceFeats: [
+    {name:"Destiny Dice - d4",  id:1927834},
+    {name:"Destiny Dice - d6",  id:1927924},
+    {name:"Destiny Dice - d8",  id:1927926},
+    {name:"Destiny Dice - d10", id:1927927},
+    {name:"Destiny Dice - d12", id:1927928}
+  ]
+};
+// Destiny Touched (fh) is a Fate's Hand feat. A legacy origin key from an older
+// save format falls back to it on load — see mapOrigin below.
+const ORIGIN_FEATS = {
+  destinyTouched: {label:"Destiny Touched (fh)", id:2383104, destiny:2, skillPts:0, desc:"+2 Destiny · fate leans toward you"},
+  skilled:        {label:"Skilled (fh)", id:2383105, destiny:0, skillPts:6, desc:"+6 skill points to spend in the pool"}
+};
+// Species perks around feats & points (Eric 2026-07-17):
+// - extraOrigin : the species grants a SECOND Origin feat slot (Human, Loroka).
+// - tweakPts    : "ability tweak" species feat adding points to the creation pool,
+//                 NOT an Origin feat (Human "Versatile" = +2).
+// - Keen Senses (Elf/Elestu) : 2 points auto-invested (½ Vigilance + ½ Survival) that
+//   now COUNT in the pool total (species +2) and start as spent — no longer "outside the pool".
+// Skillful (Human & Araag) = skill tweak feat: +2 pool at creation (a proficiency of your choice).
+// Versatile (Human & Loroka) = extra Origin feat slot. Fast Learner (Araag/Elestu) = +2 @ levels
+// 3/6 only (skillLevels) — handled later by the player on their sheet, nothing at creation.
+const SPECIES_PERKS = {
+  Human:  { extraOrigin:true, tweakPts:2, tweakName:"Skillful" },
+  Loroka: { extraOrigin:true },
+  Araag:  { tweakPts:2, tweakName:"Skillful" },
+};
+const KEEN_SENSES_SPECIES = new Set(["Elf","Elestu"]);
+const KEEN_SENSES_SKILLS = ["Vigilance","Survival"];
+// 22 Major Arcana (source: "The Major Arcana.md").
+const ARCANA = [
+{id:"0",name:"The Fool",impact:2,meaning:`innocence, beginnings, carefreeness, freedom. Unlimited potential, stepping into the unknown without fear. Exploration without attachments, trust in chance.`,power:`once per long rest, roll 2 Destiny dice at once, take the total of both as a bonus, and pay only the price of the highest.`,vibration:`luck effect (Bless or Guidance depending on level).`},
+{id:"I",name:"The Magician",impact:1,meaning:`ingenuity, creativity, mastery of tools. The intellect shapes reality. The initiator of change through willpower.`,power:`once per long rest, adjust the size of a Destiny die of a willing creature (d4 into d12 or vice-versa).`,vibration:`minor illusion effect (Silent Image).`},
+{id:"II",name:"The High Priestess",impact:1,meaning:`hidden knowledge, intuition, mystery. Inner wisdom, revelation through patient study. Silence and secrets of the soul.`,power:`roll a Destiny die in secret and store it; you may use the result before the end of the next long rest.`,vibration:`divination effect (Detect Evil and Good, Augury).`},
+{id:"III",name:"The Empress",impact:2,meaning:`fertility, abundance, growth, prosperity. Support, harmony, generosity.`,power:`recover an additional Destiny Point after a long rest if you have 2 or less.`,vibration:`healing or reinforcement (Cure Wounds, Heroism).`},
+{id:"IV",name:"The Emperor",impact:1,meaning:`authority, order, stable power. Construction, organization, protection.`,power:`once per long rest, sacrifice a die to obtain the highest possible bonus non-critical result.`,vibration:`defensive effect (Mage Armor, Shield minor effect).`},
+{id:"V",name:"The Hierophant",impact:2,meaning:`tradition, teaching, spiritual guidance. Faith, rituals, sacred order.`,power:`once per short rest, as a reaction within 30 feet, convert one of your Destiny dice into healing and add it to one individual short-rest dice (+ Constitution bonus), with no cost in Destiny Points.`,vibration:`sacred blessing (Bless, Protection from Evil and Good).`},
+{id:"VI",name:"The Lovers",impact:2,meaning:`choice, harmony, relationships, moral dilemmas. Union, sacrifice, cooperation.`,power:`once per long rest, as a reaction, roll a Destiny die to the benefit of one party member within 30 ft of you, while another (including you) suffers the cost.`,vibration:`social charm / inspiration (Charm Person).`},
+{id:"VII",name:"The Chariot",impact:1,meaning:`victory, determination, triumph. Active control, moving toward success.`,power:`once per long rest, you have advantage on a Destiny die. Choose either the lowest or the highest.`,vibration:`acceleration (Longstrider, Expeditious Retreat).`},
+{id:"VIII",name:"Strength",impact:0,meaning:`courage, mastery of instincts, perseverance, moral and physical endurance.`,power:`the critical range of your Destiny dice is doubled (3 or 4 on a d4, 5 or 6 on a d6).`,vibration:`physical enhancement (Enhance Ability — Strength).`},
+{id:"IX",name:"The Hermit",impact:2,meaning:`introspection, solitude, search for truth. Knowledge found in inner calm.`,power:`once per long rest, store the result of your lowest available Destiny die and use it later.`,vibration:`clairvoyance / guidance (e.g. Guidance).`},
+{id:"X",name:"Wheel of Fortune",impact:1,meaning:`change, unstable destiny, opportunity, unpredictability. Embracing the cycle of ups and downs.`,power:`on the first Destiny roll of the day choose advantage or disadvantage, then a cycle is in place. That same day, any individual (including you) within 30 ft rolling a Destiny die rolls with advantage if you chose disadvantage, or the contrary.`,vibration:`random yet beneficial effect (e.g. advantage on the next roll).`},
+{id:"XI",name:"Justice",impact:1,meaning:`fairness, responsibility, moral order. Evaluating, assuming responsibility, restoring balance.`,power:`after a long rest, transfer up to 2 Destiny Points and 2 Destiny dice from the strongest to the weakest. Recipients may be willing or not. You may freely rule on ties. Up to 4 individuals.`,vibration:`restore balance (e.g. Lesser Restoration).`},
+{id:"XII",name:"The Hanged Man",impact:1,meaning:`sacrifice, letting go, new perspective. Renouncing to gain understanding.`,power:`if you invoke Chaos on a natural 1, you do not lose but immediately regain 2 Destiny Points and just roll 1d6 on the Chaos table.`,vibration:`neutralization (e.g. targeted Slow).`},
+{id:"XIII",name:"Death",impact:0,meaning:`transformation, end of a cycle, rebirth. Radical change, not absolute finality.`,power:`you are immune to everything above 6 on the Chaos table, and trigger an Awakening on a 12.`,vibration:`survival / minor necromancy effect (e.g. False Life).`},
+{id:"XIV",name:"Temperance",impact:2,meaning:`moderation, harmony, compromise. Finding balance and the right measure.`,power:`once per long rest, in a 30 ft radius, as a reaction roll a Destiny die that acts as a buffer limiting the Destiny cost.`,vibration:`purification (e.g. Protection from Poison).`},
+{id:"XV",name:"The Devil",impact:0,meaning:`temptation, illusions, voluntary servitude. Power at the cost of freedom.`,power:`once per short rest, roll a Destiny die in advance if you have one, and give it to anyone within 30 ft. It costs the recipient one Destiny Point; you collect this as a temporary Destiny Point, and your die is blocked until they use it or their next long rest ends. When used it acts as their own; your die then resets. An infernal Awakening may have strange consequences.`,vibration:`minor curse (e.g. Bane).`},
+{id:"XVI",name:"The Tower",impact:0,meaning:`shock, collapse, brutal revelation. Destruction to rebuild on truth.`,power:`once per long rest, as a reaction, sacrifice all your Destiny Points to transform any successful roll into a critical failure within 30 ft. Ignore the Chaos Effect.`,vibration:`controlled destruction (e.g. Thunderwave).`},
+{id:"XVII",name:"The Star",impact:2,meaning:`hope, inspiration, celestial guidance. A beacon in the night, trust in the future.`,power:`once per long rest, take the average (rounded up) of a Destiny die instead of rolling.`,vibration:`minor inspiration / healing (e.g. Healing Word, Guidance).`},
+{id:"XVIII",name:"The Moon",impact:2,meaning:`illusions, dreams, nocturnal mysteries. The unconscious mind, distorted perception.`,power:`except for a critical Fail / Success, the Destiny cost is reduced by 1.`,vibration:`illusion (e.g. Silent Image).`},
+{id:"XIX",name:"The Sun",impact:1,meaning:`success, vitality, clarity, joy. Dispels shadows, brings optimism and truth.`,power:`once per short rest, add +2 to the result of a Destiny die without any additional cost.`,vibration:`minor light and healing (e.g. Light + small heal).`},
+{id:"XX",name:"Judgement",impact:0,meaning:`rebirth, higher calling, final reckoning. Weighing the past, offering redemption or judgment.`,power:`once per short rest, spend a Destiny die with no cost in Destiny Points to replace any d20 roll by a 10.`,vibration:`moral command (e.g. Command).`},
+{id:"XXI",name:"The World",impact:1,meaning:`accomplishment, wholeness, unity. The end of one cycle, opening to a new beginning.`,power:`after a long rest, restore one Destiny Point to group members excluding yourself. Roll a die: 1d4 for 1-4 people, 1d6 for 5-6, 1d8 for 7-8, 1d10 for 9-10, 1d12 for 11-12. You pay the price rolled.`,vibration:`versatile beneficial effect (small global buff).`}
+];
+const DDB_SKILLS = new Set(["Acrobatics","Animal Handling","Arcana","Athletics","Deception","History","Insight","Intimidation","Investigation","Medicine","Nature","Performance","Persuasion","Religion","Sleight of Hand","Stealth","Survival"]);
+// 26 skills — canonical Revisited (17 official kept + 9 new; Perception split up)
+const SKILLS = [
+  ["Academics","INT","Formal study & research: decipher a manuscript, consult archives, bookkeeping"],
+  ["Acrobatics","DEX","Balance, tumbling, agility: walk a ledge, roll between enemies"],
+  ["Animal Handling","WIS","Beasts: understanding, training, interaction. Riding = Mount tool; this only adds a synergy."],
+  ["Appraise","INT","Judge value, authenticity, quality: spot a fake gem, price a relic"],
+  ["Arcana","INT","Magical theory: identify a rune, analyze an enchantment. Creatures: Aberrations, Elementals, Fey."],
+  ["Athletics","STR","Agile physical effort: climb, swim, grapple"],
+  ["Deception","CHA","Deceive & fabricate: a false alibi, bluffing a guard"],
+  ["Delve","WIS","Explore built/urban environments, ruins, structures: secret passages, navigating them"],
+  ["History","INT","Recall events, cultures, wars, notable figures. Creatures: Humanoids (lore/cultures)."],
+  ["Hunting","WIS","Track, field-dress, hold still under cover. Synergizes with Stealth on staying hidden."],
+  ["Insight","WIS","Read intentions: spot a lie, sense fear"],
+  ["Intimidation","CHA","Coerce by threat: force a surrender, force a retreat"],
+  ["Investigation","INT","Analyze clues: reconstruct a scene, understand a mechanism. Creatures: Constructs."],
+  ["Leadership","CHA","Coordinate & inspire: rally, give orders. Command rules — see ⓘ."],
+  ["Medicine","WIS","Heal wounds & toxins: stabilize, diagnose a poison. Creatures: Giants, Humanoids, Undead."],
+  ["Might","STR","Brute force: bend bars, break down a door (vs Athletics' agility)"],
+  ["Nature","INT","Flora, fauna, weather: identify a plant, predict a storm. Creatures: Oozes, Plants."],
+  ["Performance","CHA","Entertain & hold attention: a scene, a public speech"],
+  ["Persuasion","CHA","Influence & negotiate: strike a deal, defuse a conflict"],
+  ["Religion","INT","Divine knowledge & rites: identify a ritual, recognize a cult. Creatures: Celestials, Fiends."],
+  ["Sleight of Hand","DEX","Manual finesse: palm a key, swap an object"],
+  ["Stealth","DEX","Discretion on the move: sneak by, slip past a guard. Synergizes with Hunting while still."],
+  ["Streetwise","CHA","Urban survival: find a fence, spot a gang, black market"],
+  ["Survival","WIS","Endurance in the wilds: track, make a fire, forage. Creatures: Beasts, Dragons, Monstrosities."],
+  ["Tactics","INT","Strategic planning: prepare an ambush, gauge a threat. Study action — see ⓘ."],
+  ["Vigilance","WIS","Detect immediate danger: notice an ambush, scan the horizon"]
+];
+// 37 tools (Garrot included) — displayed as "Tool - X"
+const TOOLS = [
+  ["Alchemist's","INT","Alchemical crafting: acid, fire, potions"],["Brewer's","INT","Refine alcohol; detect a poison"],
+  ["Calligrapher's","DEX","Fine writing & parchments (scrolls)"],["Carpenter's","STR","Woodworking: repair, reinforce"],
+  ["Card Set","WIS","Card games: counting, reading tells"],["Cartographer's","WIS","Mapmaking: draw a map"],
+  ["Cobbler's","DEX","Cobbling: repair/modify footwear"],["Cook's","WIS","Cooking & preserving food"],
+  ["Dice Set","WIS","Dice games: loaded dice, calculating odds"],["Disguise Kit","CHA","Disguise: alter your identity"],
+  ["Dragonchess","WIS","Strategic board game"],["Forgery Kit","DEX","Forged documents, seals, contracts"],
+  ["Garrot","—","TRAINING, 1 point — not a tool: it has no tier and no ability. Finesse weapon improving Strangle; surprised target only, fatigue only. Free for the Assassin at level 3."],
+  ["Glassblower's","INT","Glassblowing: flasks, lenses"],["Herbalism Kit","INT","Plant remedies: salves, potions"],
+  ["Inst. (Other)","CHA","Instrument: percussion/keyboard"],["Inst. (Strings)","CHA","String instrument"],
+  ["Inst. (Wind)","CHA","Wind instrument"],["Jeweler's","INT","Jewelcraft: set, inspect a gem"],
+  ["Leatherworker's","INT","Leatherworking: straps, pouches"],["Mason's","INT","Masonry: walls, blocks, structures"],
+  ["Mount (Air)","WIS","Ride a flying creature — the mounted check happens here"],["Mount (Land)","WIS","Ride a land creature — the mounted check happens here"],
+  ["Mount (Water)","WIS","Ride an aquatic creature — the mounted check happens here"],["Navigator's","WIS","Navigation: stars, heading, position"],
+  ["Painter's","WIS","Visual art: heraldry, portrait, fresco"],["Poisoner's","INT","Toxicology: distill, coat a blade"],
+  ["Potter's","WIS","Pottery: throw, fire, repair"],["Smith's","STR","Smithing: weapons, armor, rivets"],
+  ["Soulforging","CHA","Fuses a structure + Soulgem + catalyst into a soulforged item (dark ritual)."],
+  ["Thieves'","DEX","Locks & traps: pick, disarm"],["Three-Dragon","WIS","Strategic gambling game (cards)"],
+  ["Tinker's","INT","Mechanisms: repair, tinker a gadget"],["Veh. (Air)","INT","Pilot an aerial vehicle"],
+  ["Veh. (Land)","DEX","Drive a land vehicle"],["Veh. (Water)","DEX","Pilot a watercraft"],
+  ["Weaver's","DEX","Weaving: clothing, banners"],["Woodcarver's","DEX","Wood carving: figurines, handles"]
+];
+const COST = {non:0, half:1, prof:2, exp:4};
+const TIER_LABEL = {non:"—", half:"½", prof:"Prof", exp:"Exp"};
+const TIER_FULL  = {half:"Half proficiency", prof:"Proficient", exp:"Expertise"};
+
+const DETAILS = {
+"Leadership": `<b>Cost</b>: <b>Utilize</b> action — <b>bonus</b> action in combat with the <i>Battlefield Tactician</i> feat, or if you're an <b>expert</b> in the skill being ordered. Affecting <b>more than one person</b> costs <b>1 Destiny Point</b> per use.
+<ul>
+<li><b>Requirement</b>: both leader AND target must be at least <b>half-proficient</b> in the skill/attack/spell — otherwise it fails.</li>
+<li><b>Check</b>: <b>DC 12</b>, <b>30-foot</b> radius. Targets: 1 at DC 12, then <b>+1 per 2 points</b> above (14→2, 16→3, 18→4…).</li>
+<li><b>On a skill</b>: <b>+2</b> cooperative bonus to all allies affected.</li>
+<li><b>In combat (your turn)</b>: grants allies a <b>reaction</b> to carry out the ordered action (both must be proficient):
+<ul><li><b>Attack</b>: only if the weapon is proficient (for you too), otherwise it fails.</li>
+<li><b>Spell</b>: possible if both know the <b>same spell</b>.</li>
+<li><b>Skill</b>: possible, but <b>without the +2</b>.</li></ul></li>
+<li><b>Mass effect</b> (<i>Battlefield Master</i> feat): command other leaders <b>who are themselves Battlefield Tacticians or experts</b> → a synergy bonus on THEIR Leadership checks → <b>cascade</b> (mass combat).</li>
+<li>Can synergize with <b>Tactics</b>.</li>
+</ul>`,
+"Tactics": `<b>"Study" action</b> (action; <b>bonus action</b> with the <i>Battlefield Tactician</i> feat).
+<ul>
+<li>Reveals the <b>strength of an enemy force</b> (unit/troop scale).</li>
+<li>For the <b>abilities of a specific enemy</b>, use the knowledge skill matching its <b>type</b> instead (Arcana / Survival / Religion / Investigation / Medicine / Nature / History).</li>
+<li>Can support a <b>Leadership</b> check.</li>
+</ul>`,
+"Animal Handling": `<b>Animal Handling ≠ riding</b>
+<ul>
+<li>Animal Handling = <b>understanding, training, interacting</b> with beasts.</li>
+<li>To <b>ride</b> a creature, the check uses the <b>Mount (Air / Land / Water)</b> tool; Animal Handling only adds a <b>synergy</b> (+2).</li>
+</ul>`,
+"Delve": `<b>Perception split</b> — the old Perception is split into 3 depending on context:
+<ul>
+<li><b>Delve</b> (WIS): <b>built/urban</b> environments, ruins, dungeons — terrain, hidden passages.</li>
+<li><b>Survival</b> (WIS): same in <b>natural</b> environments (wilderness, tracks, weather).</li>
+<li><b>Vigilance</b> (WIS): <b>immediate danger</b> (ambush, present threat).</li>
+</ul>`,
+"Hunting": `<b>Synergy with Stealth (while still)</b>
+<ul>
+<li>Moving from cover to cover: <b>Stealth DC 14</b> check — movement gives <b>no bonus</b> (stays 14).</li>
+<li>As soon as you <b>stop</b> under cover: Hunting grants its <b>+2 synergy</b> (camouflage), as long as you don't move.</li>
+<li>Hunting also covers <b>tracking</b> and <b>field-dressing</b>. Stealth alone never gets the +2 while moving.</li>
+</ul>`,
+"History": `<b>Creature knowledge by type</b> (paired with the <b>Study</b> action) — the skill depends on <b>type</b>:
+<ul>
+<li><b>History</b>: Humanoids (lore/cultures).</li>
+<li><b>Arcana</b>: Aberrations, Elementals, Fey · <b>Survival</b>: Beasts, Dragons, Monstrosities · <b>Religion</b>: Celestials, Fiends · <b>Investigation</b>: Constructs · <b>Medicine</b>: Giants, Humanoids (anatomy), Undead · <b>Nature</b>: Oozes, Plants.</li>
+</ul>`,
+"Garrot": `<b>Garrot</b> — a <b>finesse</b> weapon that improves <b>Strangle</b> (see Battlefield Rules). It is a <b>training</b>, not a tool: <b>1 point</b>, no tier and no ability. Free for the <b>Assassin</b> at level 3.
+<ul>
+<li><b>0 damage</b> (unless the Grappler feat) — <b>fatigue</b> only.</li>
+<li>Usable only on a <b>surprised</b> target; no −2 attack penalty.</li>
+<li>Escape DC: <b>10 + STR + PB</b> (DEX for rogues) — harder to break than a bare-handed strangle (8 + STR + PB).</li>
+</ul>`
+};
+DETAILS["Survival"] = DETAILS["Vigilance"] = DETAILS["Delve"];
+
+// ================= STATE =================
+let IMPORTED = null;
+const items = [];
+SKILLS.forEach(([n,a,d])=>items.push({name:n, ability:a, desc:d, type:"skill", ddb:DDB_SKILLS.has(n), fhonly:!DDB_SKILLS.has(n), tier:"non", lock:"non", autoTier:"non"}));
+TOOLS.forEach(([n,a,d])=>items.push({name:n, ability:a, desc:d, type:"tool", ddb:false, fhonly:false, tier:"non", lock:"non", autoTier:"non"}));
+
+const ABILS = ["STR","DEX","CON","INT","WIS","CHA"];
+const AB_STATE = {
+  mode: "roll",                 // "roll" | "manual"
+  set: null,                    // {rolls:[{dice:[a,b,c],total}], keptIdx:[…], kept:[values desc], rerolls:N}
+  assign: {STR:null,DEX:null,CON:null,INT:null,WIS:null,CHA:null},  // ability -> index into set.kept
+  manual: {STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10}
+};
+const visited = new Set(["identity"]);
+const $ = id => document.getElementById(id);
+
+// hidden selects (kept as single source of truth for cls/race/origin)
+Object.keys(CLASS_POOL).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;$('cls').appendChild(o);});
+$('cls').value="Rogue";
+Object.keys(SPECIES).forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;$('race').appendChild(o);});
+$('race').value="—";
+["originFeat","originFeat2"].forEach(id=>{
+  const s=$(id);
+  {const o=document.createElement('option');o.value="";o.textContent="—";s.appendChild(o);}
+  Object.keys(ORIGIN_FEATS).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;s.appendChild(o);});
+});
+const arcanaSel = $('arcana');
+{const o=document.createElement('option');o.value="";o.textContent="— not drawn yet —";arcanaSel.appendChild(o);}
+ARCANA.forEach(a=>{const o=document.createElement('option');o.value=a.id;o.textContent=`${a.id}. ${a.name} (+${a.impact})`;arcanaSel.appendChild(o);});
+
+// ================= STEP MANAGER =================
+const STEP_DEFS = [
+  {id:"identity",  n:1, name:"Identity",
+    done:()=>!!$('charName').value.trim(),
+    hint:()=>$('charName').value.trim()||""},
+  {id:"abilities", n:2, name:"Abilities",
+    done:()=>abilitiesDone(),
+    hint:()=>AB_STATE.mode==="manual" ? "manual" : (AB_STATE.set ? (allAssigned()?"rolled ✓":"assign!") : "")},
+  {id:"species",   n:3, name:"Species",
+    done:()=>$('race').value!=="—",
+    hint:()=>$('race').value==="—"?"":$('race').value},
+  {id:"class",     n:4, name:"Class",
+    done:()=>visited.has("class")||!!IMPORTED,
+    hint:()=>$('cls').value},
+  {id:"background",n:5, name:"Background",
+    done:()=>boostComboValid() && overCapAbilities().length===0 && originCount()>=originNeeded(),
+    warn:()=>overCapAbilities().length>0,
+    hint:()=>{const over=overCapAbilities(); if(over.length) return "cap 18!";
+      if(originCount()<originNeeded()) return boostComboValid()?(originCount()<1?"origin feat!":"2nd origin feat!"):"";
+      const p=readAbilityBoosts();const k=Object.keys(p);return k.length?k.map(a=>a+"+"+p[a]).join(" "):"";}},
+  {id:"destiny",   n:6, name:"Destiny",
+    done:()=>!!currentArcana(),
+    hint:()=>{const a=currentArcana();return a? a.name : "";}},
+  {id:"skills",    n:7, name:"Skills & tools",
+    done:()=>{const {left}=spentLeft(); return left===0 && !items.some(belowLock);},
+    warn:()=>{const {left}=spentLeft(); return left<0 || items.some(belowLock);},
+    hint:()=>{const {left}=spentLeft(); return left===0?"balanced ✓":(left<0?`${-left} over!`:`${left} left`);}},
+  {id:"save",      n:8, name:"Save",
+    done:()=>saved,
+    hint:()=>saved?"saved ✓":""}
+];
+let saved=false;
+let activeStep="identity";
+function stepIndex(id){ return STEP_DEFS.findIndex(s=>s.id===id); }
+function setStep(id){
+  activeStep=id; visited.add(id);
+  $('app').dataset.step=id;
+  document.querySelectorAll('#panel .pane').forEach(p=>p.classList.toggle('on',p.dataset.step===id));
+  const i=stepIndex(id);
+  $('navBack').style.visibility = i===0?"hidden":"visible";
+  $('navNext').style.visibility = i===STEP_DEFS.length-1?"hidden":"visible";
+  if(i<STEP_DEFS.length-1) $('navNext').textContent = "Next · "+STEP_DEFS[i+1].name+" ›";
+  if(i>0) $('navBack').textContent = "‹ "+STEP_DEFS[i-1].name;
+  renderSteps();
+  if(id==="save") renderSaveRecap();
+}
+function renderSteps(){
+  $('stepList').innerHTML = STEP_DEFS.map(s=>{
+    const warn = s.warn && s.warn();
+    const done = !warn && s.done();
+    const cls = (s.id===activeStep?"cur ":"")+(warn?"warn":done?"done":"");
+    const mark = warn?"!":done?"✓":s.n;
+    return `<li class="${cls}" data-go="${s.id}"><span class="dot">${mark}</span>${s.name}<span class="hint">${s.hint?s.hint():""}</span></li>`;
+  }).join("");
+}
+$('stepList').addEventListener('click',e=>{
+  const li=e.target.closest('li[data-go]'); if(li) setStep(li.dataset.go);
+});
+$('navNext').addEventListener('click',()=>{const i=stepIndex(activeStep); if(i<STEP_DEFS.length-1) setStep(STEP_DEFS[i+1].id);});
+$('navBack').addEventListener('click',()=>{const i=stepIndex(activeStep); if(i>0) setStep(STEP_DEFS[i-1].id);});
+
+// ================= POOL MATH =================
+function poolBreakdown(){
+  const c = $('cls').value, lvl = +$('lvl').value||1;
+  const base = (CLASS_BUDGET[c]||{free:10}).free;   // la part de classe de la réserve LIBRE
+  const tierPts = TIER_LEVELS.filter(L=>L<=lvl).length*2;
+  const bardPts = c==="Bard" ? Math.max(0,lvl-1) : 0;
+  const spKey = $('race').value;
+  const sp = SPECIES[spKey]||SPECIES["—"];
+  const perks = SPECIES_PERKS[spKey]||{};
+  const raceLvl = sp.skillCreate + sp.skillLevels.filter(L=>L<=lvl).length*2;
+  const tweak = perks.tweakPts||0;                                   // Human Versatile +2
+  const keen = KEEN_SENSES_SPECIES.has(spKey) ? 2 : 0;               // Keen Senses pre-invested, counted
+  const race = raceLvl + tweak + keen + (+$('raceP').value||0);
+  const skilled = ["originFeat","originFeat2"].reduce((s,id)=>{
+    const k=$(id).value; return s + ((k && ORIGIN_FEATS[k]) ? ORIGIN_FEATS[k].skillPts : 0); },0);
+  const feat = (+$('featP').value||0)+skilled;
+  const exp2 = +$('bonus1').value||0;
+  const bud = CLASS_BUDGET[c] || {free:10,skill:2,tool:0};
+  // Tout ce qui vient des niveaux, de l'espèce et des dons tombe dans la
+  // réserve LIBRE : ces gains ne nomment pas ce sur quoi ils se posent.
+  const free = bud.free+tierPts+bardPts+race+feat+exp2;
+  const boundSkill = bud.skill, boundTool = bud.tool;
+  const total = free+boundSkill+boundTool;
+  return {c,lvl,base,tierPts,bardPts,race,tweak,keen,feat,exp2,
+          free,boundSkill,boundTool,total};
+}
+function spentLeft(){
+  const pb=poolBreakdown();
+  let toolPts=0, skillPts=0;
+  items.forEach(it=>{
+    // Keen Senses auto-½ counts as SPENT (the +2 species points cover it) — no discount.
+    if(it.type==="tool") toolPts+=COST[it.tier]; else skillPts+=COST[it.tier];
+  });
+  const langPts = +$('langPts').value||0;
+  const spent = toolPts+skillPts+langPts;
+
+  // Un personnage importé n'a qu'un total : on ne lui invente pas de bourses.
+  if(IMPORTED){
+    const total = IMPORTED.pool.total;
+    return {total, spent, left: total-spent, toolPts, skillPts, langPts,
+            free: total, freeLeft: total-spent,
+            boundSkill:0, boundSkillLeft:0, boundTool:0, boundToolLeft:0,
+            lvl: IMPORTED.pool.charLevel, pb};
+  }
+
+  // ⭐ L'ORDRE DE DÉBIT EST LA RÈGLE : une dépense épuise d'abord sa bourse
+  //    LIÉE, et ne déborde sur la réserve libre qu'ensuite. L'inverse
+  //    laisserait des points liés orphelins tout en affichant « équilibré ».
+  const boundToolUsed  = Math.min(toolPts,  pb.boundTool);
+  const boundSkillUsed = Math.min(skillPts, pb.boundSkill);
+  const freeUsed = (toolPts-boundToolUsed) + (skillPts-boundSkillUsed) + langPts;
+  return {
+    total: pb.total, spent, left: pb.total-spent, toolPts, skillPts, langPts,
+    free: pb.free, freeLeft: pb.free-freeUsed,
+    boundSkill: pb.boundSkill, boundSkillLeft: pb.boundSkill-boundSkillUsed,
+    boundTool: pb.boundTool,   boundToolLeft: pb.boundTool-boundToolUsed,
+    lvl: pb.lvl, pb};
+}
+function belowLock(it){return COST[it.tier] < COST[it.lock];}
+
+// ================= SKILLS GRID =================
+function renderGrid(){
+  const q = ($('search').value||"").toLowerCase();
+  const g = $('grid'); g.innerHTML="";
+  items.forEach((it,i)=>{
+    const disp = it.type==="tool" ? "Tool - "+it.name : it.name;
+    if(q && !(disp.toLowerCase().includes(q)||it.ability.toLowerCase().includes(q))) return;
+    const tr=document.createElement('tr');
+    tr.className=(it.type==="tool"?"tool ":"")+(it.fhonly?"fhonly ":"")+(belowLock(it)?"locked-warn":"");
+    tr.innerHTML=`
+      <td><span class="nm">${disp}</span><span class="ab-tag">${it.ability}</span>${DETAILS[it.name]?`<span class="info" data-info="${it.name}" title="Detailed rule">ⓘ</span>`:""}${it.desc?`<div class="dsc">${it.desc}</div>`:""}</td>
+      <td class="lockc" title="Starting floor — can't invest below this"><select data-lock="${i}">
+        ${["non","half","prof","exp"].map(t=>`<option value="${t}"${it.lock===t?" selected":""}>${TIER_LABEL[t]}</option>`).join("")}
+      </select></td>
+      <td><div class="tiers">
+        ${["non","half","prof","exp"].map(t=>`<button data-t="${t}" data-i="${i}" class="${it.tier===t?"on":""}">${TIER_LABEL[t]}</button>`).join("")}
+      </div></td>
+      <td style="text-align:right"><span class="cost">${COST[it.tier]}</span>${it.autoTier&&it.autoTier!=="non"?`<span class="auto-tag" title="Species floor, pre-invested — its cost is counted and covered by the species points">auto ${TIER_LABEL[it.autoTier]}</span>`:""}</td>`;
+    g.appendChild(tr);
+  });
+}
+function applyKeenSenses(){
+  const on = KEEN_SENSES_SPECIES.has($('race').value);
+  items.forEach(it=>{
+    if(!KEEN_SENSES_SKILLS.includes(it.name) || it.type!=="skill") return;
+    it.autoTier = on ? "half" : "non";
+    if(on){
+      if(COST[it.tier] < COST["half"]) it.tier = "half";
+      if(COST[it.lock] < COST["half"]) it.lock = "half";
+    }
+  });
+  refresh();
+}
+function computeWarnings(){
+  const {freeLeft, boundSkillLeft, boundToolLeft, boundTool, lvl} = spentLeft();
+  const W=[];
+  if(freeLeft<0) W.push(["err",`Free pool over budget by ${-freeLeft} point(s).`]);
+  // ⚠️ Un point LIÉ non placé ne retombe pas dans la réserve libre : il est
+  //    perdu. C'est le piège que l'ancienne bourse unique cachait.
+  if(boundToolLeft>0) W.push(["err",
+    `${boundToolLeft} bound tool point(s) not placed — they buy tools only, and they are lost if left.`]);
+  if(boundSkillLeft>0) W.push(["err",
+    `${boundSkillLeft} bound skill point(s) not placed — your class already granted them.`]);
+  if(freeLeft>0) W.push(["warn",`${freeLeft} free point(s) still unspent.`]);
+  if(boundTool===0 && lvl>=1) { /* pas de plancher d'outil : le livre n'en impose plus */ }
+  const expEarly = items.filter(it=>it.tier==="exp"&&COST[it.lock]<COST.exp&&lvl<4);
+  if(expEarly.length) W.push(["warn",`Purchased expertise is reserved for level 4+ — ${expEarly.length} row(s) at level ${lvl}.`]);
+  const below = items.filter(belowLock);
+  if(below.length) W.push(["err",`${below.length} row(s) below their starting floor.`]);
+  return W;
+}
+function recalc(){
+  const S = spentLeft();
+  const {total, spent, left, pb} = S;
+  $('vPool').textContent=total;
+  $('vSpent').textContent=spent;
+  const vl=$('vLeft'); vl.textContent=left;
+  vl.style.color = left<0?"var(--bad)":left===0?"var(--muted)":"var(--good)";
+  const fill=$('barFill');
+  fill.style.width=Math.min(100,total?spent/total*100:0)+"%";
+  fill.style.background = spent>total?"var(--bad)":"var(--good)";
+  $('poolBreak').innerHTML= IMPORTED
+    ? `<b>${IMPORTED.name||"DDB"}</b> (imported) — pool ${total} = ${IMPORTED.pool.breakdown}`
+    : `Free = class ${pb.base} (background included) + levels ${pb.tierPts+pb.bardPts} + species ${pb.race} + feats ${pb.feat} + bonus ${pb.exp2} = <b>${pb.free}</b>`
+      + (pb.boundSkill?` · bound skill <b>${pb.boundSkill}</b>`:"")
+      + (pb.boundTool?` · bound tool <b>${pb.boundTool}</b>`:"")
+      + ` · total ${total}`;
+  // Sticky budget strip above the skills grid — live countdown, detailed sources.
+  // Trois compteurs, parce qu'il y a trois bourses. Un seul nombre laissait
+  // croire qu'un point d'outil lié pouvait payer une compétence.
+  const purse = (nom, reste, total) => total
+    ? `<span>${nom} <b style="color:${reste<0?"var(--bad)":reste===0?"var(--good)":"var(--ink)"}">${reste}</b>/${total}</span>`
+    : "";
+  $('skillBudget').innerHTML = IMPORTED
+    ? `<span>pool <b>${total}</b> (imported)</span><span>spent <b>${spent}</b></span><span class="sb-left" style="color:${left<0?"var(--bad)":left===0?"var(--good)":"var(--ink)"}">${left<0?`${-left} OVER!`:left===0?"BALANCED ✓":`${left} LEFT`}</span>`
+    : `${purse("free", S.freeLeft, S.free)}${purse("bound skill", S.boundSkillLeft, S.boundSkill)}${purse("bound tool", S.boundToolLeft, S.boundTool)}<span class="sb-left" style="color:${(S.freeLeft<0||S.boundToolLeft>0||S.boundSkillLeft>0)?"var(--bad)":S.freeLeft===0?"var(--good)":"var(--ink)"}">${S.freeLeft<0?`${-S.freeLeft} OVER!`:(S.boundToolLeft>0||S.boundSkillLeft>0)?"BOUND POINTS LEFT":S.freeLeft===0?"BALANCED ✓":`${S.freeLeft} LEFT`}</span>`;
+  const W=computeWarnings();
+  const bw=$('bmWarn');
+  if(!W.length){ bw.className="bm-warn ok"; bw.textContent="✓ Allocation valid — all points placed."; }
+  else { bw.className="bm-warn "+(W.some(w=>w[0]==="err")?"err":""); bw.textContent=W[0][1]+(W.length>1?` (+${W.length-1} more)`:""); }
+  $('ruleNote').textContent =
+    "Canonical 2026-08-20 — three purses, per the published chapter. Free pool at level 1, background included: Rogue 14 · Bard/Druid/Ranger 12 · others 10. Bound skill points: Rogue 6 · Bard/Ranger 3 · others 2. Bound tool points: Bard 2 · Druid/Rogue 1 · others 0 — these buy tools only and never cross to a skill. Then +2 free at levels 4/8/12/16/20 · Bard +1 per level from 2 · Araag & Elestu +2 at levels 3/6 · purchased expertise from level 4 · languages free at creation.";
+  updateDestiny();
+  renderSteps();
+}
+function refresh(){renderGrid();recalc();}
+
+$('grid').addEventListener('click',e=>{
+  const inf=e.target.closest('.info');
+  if(inf){ $('modalBody').innerHTML = `<h3>${inf.dataset.info}</h3>` + (DETAILS[inf.dataset.info]||""); $('modal').style.display='flex'; return; }
+  const b=e.target.closest('button[data-t]'); if(!b)return;
+  const it=items[+b.dataset.i]; it.tier=b.dataset.t; refresh(); scheduleAutosave();
+});
+$('grid').addEventListener('change',e=>{
+  const s=e.target.closest('select[data-lock]'); if(!s)return;
+  const it=items[+s.dataset.lock]; it.lock=s.value;
+  if(COST[it.tier]<COST[it.lock]) it.tier=it.lock;
+  refresh(); scheduleAutosave();
+});
+$('search').addEventListener('input',renderGrid);
+$('reset').addEventListener('click',()=>{items.forEach(it=>it.tier=it.lock);refresh();scheduleAutosave();});
+$('modalClose').addEventListener('click',()=>$('modal').style.display='none');
+$('modal').addEventListener('click',e=>{ if(e.target===$('modal')) $('modal').style.display='none'; });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') $('modal').style.display='none'; });
+
+// ================= ABILITIES — 3d6 × 10, keep 6, reroll if no 15+ =================
+function rollDie(sides){ return 1+Math.floor(Math.random()*sides); }
+function roll3d6(){ const d=[rollDie(6),rollDie(6),rollDie(6)]; return {dice:d,total:d[0]+d[1]+d[2]}; }
+function rollFullSet(){
+  let attempts=0, set;
+  do{ attempts++; set = Array.from({length:10}, roll3d6); }
+  while(!set.some(r=>r.total>=15) && attempts<200);
+  const order = set.map((r,i)=>i).sort((a,b)=>set[b].total-set[a].total);
+  const keptIdx = order.slice(0,6);
+  return { rolls:set, keptIdx, kept: keptIdx.map(i=>set[i].total).sort((a,b)=>b-a), rerolls: attempts-1 };
+}
+function abilityMod(score){ return Math.floor((score-10)/2); }
+function fmtMod(m){ return (m>=0?"+":"")+m; }
+function allAssigned(){ return ABILS.every(a=>AB_STATE.assign[a]!==null); }
+function abilitiesDone(){
+  if(AB_STATE.mode==="manual") return ABILS.some(a=>AB_STATE.manual[a]!==10) || !!IMPORTED;
+  return !!AB_STATE.set && allAssigned();
+}
+function baseAbilityScores(){
+  const out={};
+  ABILS.forEach(a=>{
+    if(AB_STATE.mode==="manual") out[a]=AB_STATE.manual[a]||10;
+    else out[a] = (AB_STATE.set && AB_STATE.assign[a]!==null) ? AB_STATE.set.kept[AB_STATE.assign[a]] : 10;
+  });
+  return out;
+}
+function finalAbilityScores(){
+  const base=baseAbilityScores(), boosts=readAbilityBoosts(), out={};
+  ABILS.forEach(a=>{ out[a]=base[a]+(boosts[a]||0); });
+  return out;
+}
+function renderSet(){
+  const z=$('setChips'), s=AB_STATE.set;
+  if(!s){ z.innerHTML=""; $('rerollNote').textContent=""; $('assignZone').style.display="none"; return; }
+  const keptSet=new Set(s.keptIdx);
+  z.innerHTML = s.rolls.map((r,i)=>
+    `<span class="chip${keptSet.has(i)?" kept":""}" title="3d6: ${r.dice.join(" + ")}">${r.total}<span class="d3">${r.dice.join("·")}</span></span>`).join("");
+  $('rerollNote').textContent = s.rerolls>0
+    ? `The dice resisted — the set was reforged ${s.rerolls} time${s.rerolls>1?"s":""} (no result of 15+, rule enforced).`
+    : "A worthy set — at least one 15+ on the first forging.";
+  $('assignZone').style.display="block";
+  renderAssign();
+}
+function renderAssign(){
+  const s=AB_STATE.set; if(!s) return;
+  const used = {}; ABILS.forEach(a=>{ if(AB_STATE.assign[a]!==null) used[AB_STATE.assign[a]]=(used[AB_STATE.assign[a]]||0)+1; });
+  $('assignGrid').innerHTML = ABILS.map(a=>{
+    const cur=AB_STATE.assign[a];
+    const opts = ['<option value="">—</option>'].concat(s.kept.map((v,i)=>{
+      const dis = (used[i] && cur!==i) ? " disabled" : "";
+      return `<option value="${i}"${cur===i?" selected":""}${dis}>${v}</option>`;
+    })).join("");
+    const score = cur!==null ? s.kept[cur] : null;
+    return `<div class="ab"><b>${a}</b><select data-assign="${a}">${opts}</select><span class="m">${score!==null?fmtMod(abilityMod(score)):""}</span></div>`;
+  }).join("");
+  $('assignNote').className = allAssigned() ? "note ok" : "note";
+  $('assignNote').textContent = allAssigned() ? "✓ All six scores assigned." : "Assign each kept score to an ability (each die is used once).";
+}
+$('assignGrid').addEventListener('change',e=>{
+  const s=e.target.closest('select[data-assign]'); if(!s) return;
+  AB_STATE.assign[s.dataset.assign] = s.value===""?null:+s.value;
+  renderAssign(); updatePreview(); renderSteps(); scheduleAutosave();
+});
+$('rollSet').addEventListener('click',()=>{
+  AB_STATE.mode="roll";
+  AB_STATE.set = rollFullSet();
+  AB_STATE.assign = {STR:null,DEX:null,CON:null,INT:null,WIS:null,CHA:null};
+  renderSet(); updatePreview(); renderSteps(); scheduleAutosave();
+});
+function renderManual(){
+  $('manualGrid').innerHTML = ABILS.map(a=>`<div><label>${a}</label><input type="number" min="1" max="30" data-man="${a}" value="${AB_STATE.manual[a]}"></div>`).join("");
+}
+$('manualGrid').addEventListener('input',e=>{
+  const i=e.target.closest('input[data-man]'); if(!i) return;
+  AB_STATE.manual[i.dataset.man]=+i.value||10; AB_STATE.mode="manual";
+  updatePreview(); renderSteps(); scheduleAutosave();
+});
+$('manualToggle').addEventListener('click',()=>{
+  const z=$('manualZone');
+  const show = z.style.display==="none";
+  z.style.display = show?"block":"none";
+  if(show){ AB_STATE.mode="manual"; renderManual(); }
+  else if(AB_STATE.set) AB_STATE.mode="roll";
+  updatePreview(); renderSteps(); scheduleAutosave();
+});
+function setAbilityScoresManual(scores){
+  AB_STATE.mode="manual";
+  ABILS.forEach(a=>{ if(scores[a]!=null) AB_STATE.manual[a]=scores[a]; });
+  $('manualZone').style.display="block"; renderManual();
+}
+
+// ================= SPECIES & CLASS PICKERS =================
+function renderSpecies(){
+  const cur=$('race').value;
+  $('spGrid').innerHTML = Object.keys(SPECIES).filter(k=>k!=="—").map(k=>{
+    const sp=SPECIES[k];
+    const badge = sp.skillLevels.length ? `<span class="badge">+2 skill pts @3/6</span>` : "";
+    return `<button class="sp-card${cur===k?" sel":""}" data-sp="${k}">${badge}<img src="${SPECIES_IMG[k]}" alt="${k}" loading="lazy"><span class="nm">${k}</span></button>`;
+  }).join("");
+}
+$('spGrid').addEventListener('click',e=>{
+  const b=e.target.closest('.sp-card'); if(!b) return;
+  $('race').value=b.dataset.sp;
+  renderSpecies(); renderFeatPick(); applyKeenSenses(); updatePreview(); scheduleAutosave();
+});
+function renderClasses(){
+  const cur=$('cls').value;
+  $('clsGrid').innerHTML = Object.keys(CLASS_POOL).map(c=>
+    `<button class="cls-card${cur===c?" sel":""}" data-cls="${c}">${c}<span class="pool">${CLASS_POOL[c]} pts</span></button>`).join("");
+}
+$('clsGrid').addEventListener('click',e=>{
+  const b=e.target.closest('.cls-card'); if(!b) return;
+  $('cls').value=b.dataset.cls;
+  renderClasses(); recalc(); updatePreview(); scheduleAutosave();
+});
+
+// ================= BACKGROUND BOOSTS =================
+function initAbilityBoosts(){
+  $('abBoosts').innerHTML = ABILS.map(a=>`
+    <div class="boostrow"><b>${a}</b><div class="seg" data-ab="${a}">
+      <button data-v="0" class="on">—</button><button data-v="1">+1</button><button data-v="2">+2</button>
+    </div></div>`).join("");
+}
+$('abBoosts').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-v]'); if(!b) return;
+  const seg=b.closest('.seg');
+  seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  updateAbilityBoosts(); scheduleAutosave();
+});
+function readAbilityBoosts(){
+  const picks={};
+  document.querySelectorAll('#abBoosts .seg').forEach(seg=>{
+    const on=seg.querySelector('button.on'); const v=on?+on.dataset.v:0;
+    if(v>0) picks[seg.dataset.ab]=v;
+  });
+  return picks;
+}
+function setAbilityBoosts(picks){
+  document.querySelectorAll('#abBoosts .seg').forEach(seg=>{
+    const v=picks[seg.dataset.ab]||0;
+    seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',+x.dataset.v===v));
+  });
+  updateAbilityBoosts();
+}
+function boostComboValid(){
+  const p=readAbilityBoosts(); const k=Object.keys(p); const v=k.map(a=>p[a]);
+  return (k.length===2 && v.includes(2) && v.includes(1)) || (k.length===3 && v.every(x=>x===1));
+}
+// Creation cap: 18 max per ability, bonuses included. In play the ceiling is 20 (boons excepted).
+const CREATION_CAP=18, PLAY_CEILING=20;
+function overCapAbilities(){
+  const lvl=+$('lvl').value||1;
+  const cap = lvl<=1 ? CREATION_CAP : PLAY_CEILING;
+  const f=finalAbilityScores();
+  return ABILS.filter(a=>f[a]>cap);
+}
+function abilityBoostFeatIds(){
+  const picks=readAbilityBoosts(); const ids=[];
+  for(const a of Object.keys(picks)) ids.push(ABILITY_BOOST_FEATS[a][picks[a]]);
+  return ids;
+}
+function updateAbilityBoosts(){
+  const picks=readAbilityBoosts();
+  const abils=Object.keys(picks); const sum=abils.reduce((s,a)=>s+picks[a],0);
+  const note=$('abNote');
+  const over=overCapAbilities();
+  if(abils.length===0){ note.className="note"; note.textContent="Choose +2/+1 on two abilities, or +1/+1/+1 on three. Creation cap: 18 per ability, bonuses included."; }
+  else if(boostComboValid() && over.length){ note.className="note err"; note.textContent=`⚠ ${over.join(", ")} would exceed the creation cap of 18 (bonuses included) — move the bonus elsewhere.`; }
+  else if(boostComboValid()){ note.className="note ok"; note.textContent=`✓ ${abils.map(a=>a+' +'+picks[a]).join(', ')} → ${abils.length} Ability Boost (fh) feat(s).`; }
+  else { note.className="note err"; note.textContent=`Invalid combination (total ${sum} across ${abils.length}). Expected +2/+1 or +1/+1/+1.`; }
+  updatePreview(); renderSteps();
+}
+
+// ================= DESTINY =================
+function speciesKeyFromName(n){
+  n=(n||"").toLowerCase();
+  if(n.includes("half-orc")||n.includes("half orc")) return "Loroka";
+  if(n.includes("half-elf")||n.includes("half elf")) return "Elestu";
+  if(n.includes("loroka")) return "Loroka";
+  if(n.includes("elestu")) return "Elestu";
+  if(n.includes("gnome")) return "Hoddon";
+  for(const k of Object.keys(SPECIES)){ if(k!=="—" && n.includes(k.toLowerCase())) return k; }
+  return "";
+}
+function currentArcana(){ const v=arcanaSel.value; return v==="" ? null : (ARCANA.find(a=>a.id===v)||null); }
+// Starting Destiny dice = floor(score/2)-1 (floor 0, cap 5), filling d4->d12.
+function startingDice(score){
+  const n = Math.max(0, Math.min(5, Math.floor((score||0)/2) - 1));
+  return DESTINY_FEATS.diceFeats.slice(0, n);
+}
+function computeDestiny(){
+  const lvl = IMPORTED ? (IMPORTED.pool.charLevel||+$('lvl').value||1) : (+$('lvl').value||1);
+  const pb = Math.floor((lvl-1)/4)+2;
+  const spKey = $('race').value;
+  const sp = SPECIES[spKey]||SPECIES["—"];
+  const spName = spKey==="—" ? "Species" : spKey;
+  const arc = currentArcana();
+  const origins = ["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean)
+    .map(k=>ORIGIN_FEATS[k]).filter(Boolean);
+  const glory = +$('destGlory').value||0;
+  const other = +$('destOther').value||0;
+  const rows=[];
+  rows.push(["PB", pb]);
+  rows.push([spName, sp.destiny]);
+  if(arc) rows.push([`Arcana ${arc.id}`, arc.impact]);
+  origins.forEach(o=>{ if(o.destiny) rows.push([o.label, o.destiny]); });
+  if(glory) rows.push([glory>0?"Glory":"Damnation", glory]);
+  if(other) rows.push(["Other", other]);
+  const score = rows.reduce((s,r)=>s+r[1],0);
+  return {score, rows, arc, lvl, pb};
+}
+function destinyNotes(){
+  const {score, rows, arc} = computeDestiny();
+  let t = `DESTINY SCORE : ${score}\n`;
+  t += rows.map(r=>`${r[0]} : ${r[1]}`).join("\n");
+  if(arc){
+    t += `\n\n${arc.id}. ${arc.name}\n`;
+    t += `* Meaning — ${arc.meaning}\n`;
+    t += `* Destiny Impact — +${arc.impact}\n`;
+    t += `* Power — ${arc.power}\n`;
+    t += `* Vibration — ${arc.vibration}`;
+  }
+  return t;
+}
+function updateDestiny(){
+  const {rows, arc, score} = computeDestiny();
+  $('destScore').textContent = score;
+  const dice = startingDice(score).map(f=>f.name.replace("Destiny Dice - ","")).join(", ") || "none";
+  $('destBreak').innerHTML = rows.map(r=>`${r[0]} <b>${r[1]>=0?'+':''}${r[1]}</b>`).join(" · ")
+    + ` · <span style="color:var(--gold)">starting dice: ${dice}</span>`;
+  const box=$('arcanaCard');
+  if(arc){
+    box.style.display='block';
+    box.innerHTML = `<div class="at">${arc.id}. ${arc.name} <span style="font:12px var(--sans);color:var(--muted)">Destiny impact +${arc.impact}</span></div>`
+      + `<div><b>Meaning</b> — ${arc.meaning}</div>`
+      + `<div><b>Power</b> — ${arc.power}</div>`
+      + `<div><b>Vibration</b> — ${arc.vibration}</div>`;
+  } else box.style.display='none';
+  updatePreview();
+}
+function speciesExtraOrigin(){ return !!(SPECIES_PERKS[$('race').value]||{}).extraOrigin; }
+// The free-text "Other Origin feat" counts as a valid Origin choice — a player is never
+// forced to take Destiny Touched or Skilled.
+function originCount(){ return ["originFeat","originFeat2"].filter(id=>$(id).value).length + ((($('originOther')&&$('originOther').value)||"").trim()?1:0); }
+function originNeeded(){ return 1 + (speciesExtraOrigin()?1:0); }
+function renderFeatPick(){
+  const cur=$('originFeat').value, cur2=$('originFeat2').value;
+  const cards=(sel,other)=>Object.entries(ORIGIN_FEATS).map(([k,f])=>
+    `<div class="feat-card${sel===k?" sel":""}${other===k&&sel!==k?" dis":""}" data-feat="${k}"><div class="fn">${f.label}</div><div class="fd">${f.desc}</div></div>`).join("");
+  $('featPick').innerHTML = cards(cur,cur2);
+  const extra=speciesExtraOrigin();
+  $('featPick2Wrap').style.display = extra ? "block" : "none";
+  if(!extra && cur2){ $('originFeat2').value=""; }
+  if(extra){
+    $('featPick2').innerHTML = cards(cur2,cur);
+    $('featPick2Note').textContent = `${$('race').value} (Versatile) grants a second Origin feat — the same feat can't be taken twice.`;
+  }
+}
+function pickOrigin(selId, otherId, key){
+  if($(otherId).value===key) return;                         // no duplicate feat across the two slots
+  $(selId).value = ($(selId).value===key) ? "" : key;
+  renderFeatPick(); recalc(); scheduleAutosave();
+}
+$('featPick').addEventListener('click',e=>{
+  const c=e.target.closest('.feat-card'); if(!c) return;
+  pickOrigin('originFeat','originFeat2',c.dataset.feat);
+});
+$('featPick2').addEventListener('click',e=>{
+  const c=e.target.closest('.feat-card'); if(!c) return;
+  pickOrigin('originFeat2','originFeat',c.dataset.feat);
+});
+$('originOther').addEventListener('input',()=>{renderSteps();updatePreview();scheduleAutosave();});
+// Random Arcana draw — true RNG, 1 in 22.
+$('arcRandom').addEventListener('click',()=>{
+  const u=new Uint32Array(1); crypto.getRandomValues(u);
+  arcanaSel.value = ARCANA[u[0]%ARCANA.length].id;
+  updateDestiny(); renderSteps(); scheduleAutosave();
+});
+arcanaSel.addEventListener('change',()=>{updateDestiny();renderSteps();scheduleAutosave();});
+["destGlory","destOther"].forEach(id=>{ $(id).addEventListener('input',()=>{updateDestiny();scheduleAutosave();}); });
+
+// ================= GENERIC INPUT WIRING =================
+["charName","campaign","lvl","raceP","featP","bonus1","langPts","ddbId"].forEach(id=>{
+  $(id).addEventListener('input',()=>{recalc();updatePreview();scheduleAutosave();});
+});
+$('story').addEventListener('input',()=>{updatePreview();scheduleAutosave();});
+
+// ================= DICE ROLLER =================
+const diceLog = [];
+$('diceRoll').addEventListener('click', ()=>{
+  const count = Math.max(1, Math.min(20, +$('diceCount').value||1));
+  const sides = +$('diceSides').value||20;
+  const mod = +$('diceMod').value||0;
+  const rolls = Array.from({length:count}, ()=>rollDie(sides));
+  const total = rolls.reduce((s,v)=>s+v,0) + mod;
+  $('diceResult').textContent = total;
+  $('diceBreakdown').textContent = `[${rolls.join(", ")}]${mod?` ${mod>=0?'+':''}${mod}`:""}`;
+  diceLog.unshift(`${count}d${sides}${mod?(mod>=0?'+':'')+mod:""} → <b>${total}</b> [${rolls.join(", ")}]`);
+  diceLog.length = Math.min(diceLog.length, 8);
+  $('diceLog').innerHTML = diceLog.map(l=>`<div>${l}</div>`).join("");
+});
+
+// ================= SEED IMPORT (GM) =================
+function applySeed(data){
+  items.forEach(it=>{it.tier="non"; it.lock="non";});
+  const byDisp = {};
+  items.forEach(it=>{ byDisp[it.type==="tool"?"Tool - "+it.name:it.name] = it; });
+  const missing=[];
+  for(const [k,v] of Object.entries(data.seed||{})){
+    const it = byDisp[k] || byDisp["Tool - "+k] || byDisp[k.replace(/^Tool - /,"")];
+    if(it){ it.tier=v.tier||"non"; it.lock=v.lock||"non"; } else missing.push(k);
+  }
+  IMPORTED = data;
+  if(data.name) $('charName').value = data.name.trim();
+  if(data.pool?.charLevel) $('lvl').value = data.pool.charLevel;
+  if(data.pool?.startingClass && CLASS_POOL[data.pool.startingClass]) $('cls').value = data.pool.startingClass;
+  const spKey = speciesKeyFromName(data.race||"");
+  if(spKey) $('race').value = spKey;
+  if(data.abilityScores) setAbilityScoresManual(data.abilityScores);
+  if(data.ddbId) $('ddbId').value = data.ddbId;
+  const um = (data.unmapped||[]).concat(missing.map(m=>`${m} → no matching row in the builder`));
+  $('importNote').innerHTML =
+    `✓ Imported: <b>${(data.name||"DDB").trim()}</b> — ${(data.classes||[]).map(x=>x.name+" "+x.level).join(" / ")} · pool <b>${data.pool?.total}</b>, ${data.invested} invested → ${data.remaining} to place.`
+    + (um.length ? `<br>To resolve by hand:<br>• ${um.join("<br>• ")}` : " Everything mapped.");
+  renderSpecies(); renderClasses(); applyKeenSenses(); updatePreview(); scheduleAutosave();
+}
+$('importSeed').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ applySeed(JSON.parse(r.result)); }catch(err){ alert("Invalid JSON: "+err.message); } };
+  r.readAsText(f);
+});
+$('clearImport').addEventListener('click',()=>{
+  IMPORTED=null; $('importNote').innerHTML=""; $('importSeed').value="";
+  items.forEach(it=>{it.tier="non"; it.lock="non";});
+  applyKeenSenses(); updatePreview(); scheduleAutosave();
+});
+
+// ================= EXPORT CONTRACT (ddb-apply v2) =================
+const STAT_ID={STR:1,DEX:2,CON:3,INT:4,WIS:5,CHA:6};
+const PROF_ID={non:1,half:2,prof:3,exp:4};
+function buildDDBPayload(){
+  const seeded = IMPORTED ? new Set(Object.keys(IMPORTED.seed||{})) : new Set();
+  const skillEntries = items
+    .filter(it => it.type==="skill" && it.fhonly)
+    .map(it => ({ disp: it.name, it }))
+    .filter(x => !seeded.has(x.disp));
+  const toolEntries = items
+    .filter(it => it.type==="tool" && it.tier!=="non")
+    .map(it => ({ disp: "Tool - "+it.name, it }));
+  return [...skillEntries, ...toolEntries]
+    .map(({disp,it}) => ({ name: disp, type:1, statId:STAT_ID[it.ability], proficiencyLevel:PROF_ID[it.tier] }))
+    .sort((a,b) => a.name.localeCompare(b.name));
+}
+function buildUnifiedJSON(){
+  const name=($('charName').value||"").trim();
+  const idField=+$('ddbId').value||0;
+  const ddbId = idField || (IMPORTED&&IMPORTED.ddbId) || null;
+  const {score, rows, arc} = computeDestiny();
+  const originFeats = ["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean)
+    .map(k=>({key:k, label:ORIGIN_FEATS[k].label, id:ORIGIN_FEATS[k].id}));
+  return {
+    character:{ ddbId, name, campaign:($('campaign').value||"").trim(),
+      abilityScores: finalAbilityScores(),
+      abilityScoresRaw: baseAbilityScores() },   // RAW (no boosts) — what ddb-apply writes to DDB
+    destiny:{
+      score,
+      arcana: arc ? {id:arc.id,name:arc.name,impact:arc.impact,power:arc.power,vibration:arc.vibration,meaning:arc.meaning} : null,
+      breakdown: rows.map(r=>({label:r[0],value:r[1]})),
+      notesText: destinyNotes()
+    },
+    background:{
+      replaceWithBlank:true,
+      abilityBoostFeatIds: abilityBoostFeatIds(),
+      originFeats,                                          // 1-2 slots (species may grant a 2nd)
+      otherOriginFeat: ($('originOther').value||"").trim(), // free text — GM sets it up manually
+      story: $('story').value||""
+    },
+    skills: buildDDBPayload(),
+    // Invested tiers on NATIVE skills (typeId 26 mirror on DDB) — every native at half/prof/exp
+    // is exported by name; the rest default to "none" on apply. Fix 2026-07-17 (bug: only the
+    // Keen Senses Survival exception was exported, all other native picks were zeroed on DDB).
+    nativeSkillTiers: (function(){
+      const TIER_EXPORT = { half:"half", prof:"proficient", exp:"expert" };
+      const out = {};
+      items.forEach(it=>{
+        if(it.type==="skill" && it.ddb && TIER_EXPORT[it.tier]) out[it.name] = TIER_EXPORT[it.tier];
+      });
+      return out;
+    })(),
+    destinyFeats:{
+      diceFeats: DESTINY_FEATS.diceFeats,   // ALWAYS all 5 — ddb-apply applies them unconditionally
+      score,
+      originFeatId: originFeats.length ? originFeats[0].id : null,   // legacy single-slot field
+      originFeatIds: originFeats.map(f=>f.id)                        // v3.1 — all slots
+    },
+    meta:{ builder:"fh-builder-v3", savedAt:new Date().toISOString(), species:$('race').value,
+           class:$('cls').value, level:+$('lvl').value||1 },
+    builderState: serializeState()          // lets the builder (or the GM) reload the full session
+  };
+}
+
+// ================= STATE SERIALIZATION / SAVES =================
+function serializeState(){
+  const tiers={};
+  items.forEach(it=>{ if(it.tier!=="non"||it.lock!=="non") tiers[(it.type==="tool"?"Tool - ":"")+it.name]={t:it.tier,l:it.lock}; });
+  return {
+    v:3, name:$('charName').value, campaign:$('campaign').value,
+    cls:$('cls').value, race:$('race').value, lvl:+$('lvl').value||1,
+    ddbId:$('ddbId').value, raceP:$('raceP').value, featP:$('featP').value,
+    langPts:$('langPts').value, bonus1:$('bonus1').value,
+    ab:{mode:AB_STATE.mode, set:AB_STATE.set, assign:AB_STATE.assign, manual:AB_STATE.manual},
+    boosts:readAbilityBoosts(), arcana:arcanaSel.value, origin:$('originFeat').value,
+    origin2:$('originFeat2').value, originOther:$('originOther').value,
+    glory:$('destGlory').value, other:$('destOther').value, story:$('story').value,
+    tiers
+  };
+}
+function applyState(s){
+  if(!s || s.v!==3) return false;
+  $('charName').value=s.name||""; $('campaign').value=s.campaign||"";
+  if(CLASS_POOL[s.cls]) $('cls').value=s.cls;
+  if(SPECIES[s.race]!=null) $('race').value=s.race;
+  $('lvl').value=s.lvl||1; $('ddbId').value=s.ddbId||"";
+  $('raceP').value=s.raceP||0; $('featP').value=s.featP||0;
+  $('langPts').value=s.langPts||0; $('bonus1').value=s.bonus1||0;
+  if(s.ab){
+    AB_STATE.mode=s.ab.mode||"roll"; AB_STATE.set=s.ab.set||null;
+    AB_STATE.assign=Object.assign({STR:null,DEX:null,CON:null,INT:null,WIS:null,CHA:null}, s.ab.assign||{});
+    AB_STATE.manual=Object.assign({STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10}, s.ab.manual||{});
+    if(AB_STATE.mode==="manual"){ $('manualZone').style.display="block"; renderManual(); }
+    renderSet();
+  }
+  setAbilityBoosts(s.boosts||{});
+  arcanaSel.value = s.arcana||"";
+  // Un don d'origine inconnu de la table courante vient d'un format de sauvegarde
+  // plus ancien : on retombe sur Destiny Touched, seul don d'origine FH qui donne
+  // +2 Destinée. Le joueur peut le changer — mieux que perdre son choix en silence.
+  const mapOrigin = k => (!k ? "" : (ORIGIN_FEATS[k] ? k : "destinyTouched"));
+  $('originFeat').value = mapOrigin(s.origin||"");
+  $('originFeat2').value = mapOrigin(s.origin2||"");
+  $('originOther').value = s.originOther||"";
+  $('destGlory').value=s.glory||0; $('destOther').value=s.other||0;
+  $('story').value=s.story||"";
+  items.forEach(it=>{
+    const k=(it.type==="tool"?"Tool - ":"")+it.name;
+    const e=(s.tiers||{})[k];
+    it.tier=e?e.t:"non"; it.lock=e?e.l:"non";
+  });
+  visited.add("class");
+  renderSpecies(); renderClasses(); renderFeatPick();
+  applyKeenSenses(); updateDestiny(); updatePreview(); renderSteps();
+  return true;
+}
+let autosaveT=null;
+function scheduleAutosave(){
+  clearTimeout(autosaveT);
+  autosaveT=setTimeout(()=>{ try{ localStorage.setItem('fh-builder-autosave', JSON.stringify(serializeState())); }catch(e){} }, 600);
+}
+function loadSaves(){ try{ return JSON.parse(localStorage.getItem('fh-builder-saves')||"{}"); }catch(e){ return {}; } }
+function storeSaves(s){ try{ localStorage.setItem('fh-builder-saves', JSON.stringify(s)); }catch(e){} }
+function renderSavesList(){
+  const saves=loadSaves(); const keys=Object.keys(saves).sort();
+  $('savesList').innerHTML = keys.length ? keys.map(k=>
+    `<div><span class="nm2">${k}</span><span class="dt">${(saves[k].savedAt||"").slice(0,16).replace("T"," ")}</span>
+     <a data-load="${k}">Load</a><a data-del="${k}" style="color:var(--bad)">Delete</a></div>`).join("")
+    : `<div class="pv-empty" style="border:none">No saved characters yet.</div>`;
+  const dl=$('campList'); dl.innerHTML="";
+  const camps=new Set(keys.map(k=>saves[k].campaign).filter(Boolean));
+  camps.forEach(c=>{const o=document.createElement('option');o.value=c;dl.appendChild(o);});
+}
+$('savesList').addEventListener('click',e=>{
+  const L=e.target.closest('a[data-load]'), D=e.target.closest('a[data-del]');
+  const saves=loadSaves();
+  if(L && saves[L.dataset.load]){ applyState(saves[L.dataset.load].state); setStep("identity"); }
+  if(D){ if(confirm(`Delete "${D.dataset.del}" from this browser?`)){ delete saves[D.dataset.del]; storeSaves(saves); renderSavesList(); } }
+});
+
+// ================= BUILD CODE (deflate + base64url) =================
+function b64url(u8){ let s=""; u8.forEach(b=>s+=String.fromCharCode(b)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+function unb64url(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; return Uint8Array.from(atob(str), c=>c.charCodeAt(0)); }
+async function encodeBuild(obj){
+  const json=JSON.stringify(obj);
+  if(typeof CompressionStream!=="undefined"){
+    try{
+      const cs=new CompressionStream('deflate-raw');
+      const ab=await new Response(new Blob([json]).stream().pipeThrough(cs)).arrayBuffer();
+      return "FH1."+b64url(new Uint8Array(ab));
+    }catch(e){}
+  }
+  return "FH0."+b64url(new TextEncoder().encode(json));
+}
+async function decodeBuild(code){
+  const m=(code||"").trim().match(/^FH([01])\.([A-Za-z0-9_-]+)$/s);
+  if(!m) throw new Error("Not a build code (expected FH1.… or FH0.…)");
+  const u8=unb64url(m[2]);
+  if(m[1]==="0") return JSON.parse(new TextDecoder().decode(u8));
+  const ds=new DecompressionStream('deflate-raw');
+  const ab=await new Response(new Blob([u8]).stream().pipeThrough(ds)).arrayBuffer();
+  return JSON.parse(new TextDecoder().decode(ab));
+}
+
+// ================= SAVE STEP =================
+function renderSaveRecap(){
+  const scores=finalAbilityScores();
+  const {left,total}=spentLeft();
+  const arc=currentArcana();
+  const origins=["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean).map(k=>ORIGIN_FEATS[k]);
+  const originOK = originCount()>=originNeeded();
+  const parts = origins.map(o=>o.label);
+  if(($('originOther').value||"").trim()) parts.push(`${$('originOther').value.trim()} (GM)`);
+  const originTxt = (parts.join(" + ")||"no origin feat")
+    + (!originOK && originCount()>=1 ? " — species 2nd feat missing!" : "");
+  const lines=[
+    [!!$('charName').value.trim(), "Name", $('charName').value.trim()||"missing"],
+    [!!$('campaign').value.trim(), "Campaign", $('campaign').value.trim()||"none — the GM will ask", "meh"],
+    [abilitiesDone(), "Abilities", abilitiesDone()? ABILS.map(a=>a+" "+scores[a]).join(" · ") : "not rolled / assigned"],
+    [$('race').value!=="—", "Species", $('race').value!=="—"?$('race').value:"not chosen"],
+    [true, "Class", $('cls').value+" · level "+(+$('lvl').value||1)],
+    [boostComboValid() && overCapAbilities().length===0, "Background boosts",
+      overCapAbilities().length ? `${overCapAbilities().join(", ")} over the creation cap of 18!`
+      : boostComboValid()? Object.entries(readAbilityBoosts()).map(([a,v])=>a+" +"+v).join(", ") : "invalid or missing",
+      overCapAbilities().length?"ko":undefined],
+    [originOK, "Origin feat(s)", originTxt],
+    [!!arc, "Destiny", arc?arc.name:"no arcana drawn"],
+    [left===0 && !items.some(belowLock), "Skill points", left===0?`all ${total} placed ✓`:(left<0?`${-left} over budget!`:`${left} left unspent`), left<0?"ko":"meh"]
+  ];
+  $('saveRecap').innerHTML = lines.map(([ok,label,txt,soft])=>{
+    const cls = ok?"ok":(soft==="meh"?"meh":(soft==="ko"?"ko":"ko"));
+    const mark = ok?"✓":(soft==="meh"?"…":"✗");
+    return `<div><span class="st ${cls}">${mark}</span><b style="width:118px;flex-shrink:0">${label}</b><span>${txt}</span></div>`;
+  }).join("");
+}
+$('saveChar').addEventListener('click', async ()=>{
+  const {left}=spentLeft();
+  const over=overCapAbilities();
+  if(over.length){ alert(`${over.join(", ")} exceed the ability cap (18 at creation, bonuses included; 20 in play, boons excepted) — fix before saving.`); setStep("background"); return; }
+  if(left<0){ alert(`Over budget by ${-left} point(s) — fix the skills before saving.`); setStep("skills"); return; }
+  if(left>0 && !confirm(`${left} skill point(s) are still unspent — a silent leftover is how a skill ends up at zero.\n\nSave anyway?`)) return;
+  if(!$('charName').value.trim()){ alert("Give your character a name first."); setStep("identity"); return; }
+  if(originCount()<1){ alert("No Origin feat chosen — the background grants one (step 5). Pick one, or write it in the free-text box."); setStep("background"); return; }
+  if(originCount()<originNeeded() && !confirm(`${$('race').value} grants a SECOND Origin feat (Versatile) — only ${originCount()} chosen.\n\nSave anyway?`)) { setStep("background"); return; }
+  const data=buildUnifiedJSON();
+  const code=await encodeBuild(data);
+  $('buildCode').textContent=code;
+  $('saveOut').style.display="block";
+  const name=$('charName').value.trim();
+  const saves=loadSaves();
+  saves[name]={savedAt:new Date().toISOString(), campaign:($('campaign').value||"").trim(), state:serializeState(), code};
+  storeSaves(saves); renderSavesList();
+  saved=true; renderSteps(); renderSaveRecap();
+  $('saveNote').textContent=`✓ "${name}" saved in this browser and encoded (${code.length} chars). Send the code to your GM — nothing else to do.`;
+});
+$('copyCode').addEventListener('click',()=>{
+  navigator.clipboard.writeText($('buildCode').textContent).then(()=>{ $('copyCode').textContent="Copied ✓"; setTimeout(()=>$('copyCode').textContent="Copy code",1400); });
+});
+
+// ================= SEND TO GM (fh-builds Worker) =================
+// Additive: the FH1 copy-paste code above stays the offline fallback.
+// The campaign code (given by the GM, e.g. "FH1") IS the campaign identifier — one code per table.
+const BUILDS_API="https://fh-builds.noirchicot.workers.dev";
+// mirrors the Worker's `clean()` rule — letters, digits, spaces, - and _ (max 40)
+const validWireId = s => /^[\p{L}\p{N} _-]{1,40}$/u.test(s);
+// The Worker treats a missing revision as 0, so a second send of the same
+// character (which is already at revision 1+) looks stale and gets a 409.
+// Remember the last revision this browser actually received, per campaign+
+// pseudo pair — never reused across a different character or campaign —
+// and default to 0 only when this pair has never been sent before.
+function loadSendRevisions(){ try{ return JSON.parse(localStorage.getItem('fh-send-revisions')||"{}"); }catch(e){ return {}; } }
+function storeSendRevisions(r){ try{ localStorage.setItem('fh-send-revisions', JSON.stringify(r)); }catch(e){} }
+function sendRevisionKey(campCode,pseudo){ return campCode+"::"+pseudo; }
+function knownSendRevision(campCode,pseudo){
+  const value=loadSendRevisions()[sendRevisionKey(campCode,pseudo)];
+  return Number.isSafeInteger(value) ? value : 0;
+}
+function rememberSendRevision(campCode,pseudo,revision){
+  if(!Number.isSafeInteger(revision)) return;
+  const revisions=loadSendRevisions();
+  revisions[sendRevisionKey(campCode,pseudo)]=revision;
+  storeSendRevisions(revisions);
+}
+try{
+  $('sendPseudo').value = localStorage.getItem('fh-send-pseudo')||"";
+  $('sendCampCode').value = localStorage.getItem('fh-send-campcode')||"";
+}catch(e){}
+$('sendGM').addEventListener('click', async ()=>{
+  const note=$('sendNote');
+  const fail=msg=>{ note.className="note err"; note.textContent=msg; };
+  const pseudo=$('sendPseudo').value.trim();
+  const campCode=$('sendCampCode').value.trim();
+  if(!validWireId(pseudo)) return fail("Player name — 1-40 characters: letters, digits, spaces, - or _.");
+  if(!campCode) return fail("Campaign code missing — your GM gives it to you.");
+  if(!validWireId(campCode)) return fail("Campaign code — letters, digits, spaces, - or _ only.");
+  const btn=$('sendGM');
+  btn.disabled=true; btn.textContent="Sending…";
+  try{
+    const r=await fetch(BUILDS_API+"/builds",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({pseudo, campaign:campCode, build:buildUnifiedJSON(), revision:knownSendRevision(campCode,pseudo)})
+    });
+    const res=await r.json().catch(()=>({}));
+    // A 409 means this character was saved elsewhere since our last known
+    // revision. Never retried and never overwritten (§13.13.4) — the player
+    // has to reload before sending again.
+    if(r.status===409){
+      fail("This character was changed elsewhere since your last send — reload it before sending again. Nothing was overwritten.");
+      return;
+    }
+    if(!r.ok) throw new Error(r.status===403 ? "unknown campaign code — ask your GM." : (res.error||("HTTP "+r.status)));
+    rememberSendRevision(campCode,pseudo,res.revision);
+    try{
+      localStorage.setItem('fh-send-pseudo',pseudo);
+      localStorage.setItem('fh-send-campcode',campCode);
+    }catch(e){}
+    note.className="note ok";
+    note.textContent=`✓ Sent — "${pseudo}" @ ${campCode}, ${res.updatedAt.slice(0,16).replace("T"," ")} UTC. Sending again overwrites this build.`;
+  }catch(err){
+    fail("Could not send: "+err.message+" The FH1 code above still works as fallback.");
+  }finally{
+    btn.disabled=false; btn.textContent="Send to GM";
+  }
+});
+$('dlUnified').addEventListener('click',()=>{
+  const data=buildUnifiedJSON();
+  const nm=(($('charName').value||"character").trim().replace(/[^\w-]+/g,"_"))||"character";
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`${nm}.fh.json`; a.click(); URL.revokeObjectURL(a.href);
+});
+$('loadCodeBtn').addEventListener('click', async ()=>{
+  const note=$('loadCodeNote');
+  try{
+    const data=await decodeBuild($('loadCodeIn').value);
+    if(data.builderState && applyState(data.builderState)){ note.className="note ok"; note.textContent=`✓ Loaded "${data.character?.name||"build"}" — full session restored.`; }
+    else { note.className="note err"; note.textContent="Code decoded but no builder state inside (old format?)."; }
+  }catch(err){ note.className="note err"; note.textContent="Could not decode: "+err.message; }
+});
+
+// GM extras
+$('dlPayload').addEventListener('click',()=>{
+  const payload = buildDDBPayload();
+  const name = ($('charName').value||"character").trim().replace(/[^\w-]+/g,"_");
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `payload-${name}.json`; a.click();
+  URL.revokeObjectURL(a.href);
+});
+$('genRecap').addEventListener('click',()=>{
+  const chosen=items.filter(it=>it.tier!=="non");
+  const payload = buildDDBPayload();
+  const asNative = chosen.filter(it => it.type==="skill" && it.ddb && it.tier!=="half");
+  const charName=($('charName').value||"(unnamed)").trim();
+  let out =`// FATE'S HAND → D&D BEYOND — ${charName}\n`;
+  out+=`// ${chosen.length} skills/tools · spent ${chosen.reduce((s,it)=>s+COST[it.tier],0)}\n\n`;
+  out+=`// (1) customProficiencies to CREATE — ${payload.length}\n`;
+  out+=JSON.stringify(payload, null, 2);
+  out+=`\n\n// (2) Native skills to set on DDB — ${asNative.length}\n`;
+  out+= asNative.length ? asNative.map(it=>`${it.name} → ${it.tier==="exp"?"Expertise":"Proficient"} (${it.ability})`).join("\n") : "(none)";
+  navigator.clipboard.writeText(out).then(()=>{ $('genRecap').textContent="Copied ✓"; setTimeout(()=>$('genRecap').textContent="Text recap → clipboard",1400); });
+});
+function resetBuilder(){
+  if(!confirm("Start a new character? The current (unsaved) build is discarded — saved characters are kept.")) return;
+  localStorage.removeItem('fh-builder-autosave');
+  location.reload();
+}
+$('fullReset').addEventListener('click',resetBuilder);
+$('quickReset').addEventListener('click',resetBuilder);
+
+// ================= CHARACTER SHEET (preview) =================
+function updatePreview(){
+  const name = ($('charName').value||"").trim();
+  const speciesKey = $('race').value;
+  const className = $('cls').value;
+  const lvl = IMPORTED ? (IMPORTED.pool.charLevel||+$('lvl').value||1) : (+$('lvl').value||1);
+  const camp = ($('campaign').value||"").trim();
+  const scores = finalAbilityScores();
+  const boosts = readAbilityBoosts();
+  const overCapSet = new Set(overCapAbilities());
+  const {total, spent, left} = spentLeft();
+  const pvOrigins = ["originFeat","originFeat2"].map(id=>$(id).value).filter(Boolean).map(k=>ORIGIN_FEATS[k]);
+  const pvOriginOther = ($('originOther').value||"").trim();
+  const {score:destScore, arc} = computeDestiny();
+  const dice = startingDice(destScore).map(f=>f.name.replace("Destiny Dice - ",""));
+
+  const groups = {exp:[], prof:[], half:[]};
+  items.forEach(it=>{
+    if(it.tier==="non") return;
+    groups[it.tier].push({disp: it.type==="tool" ? "Tool - "+it.name : it.name, ab: it.ability});
+  });
+  Object.values(groups).forEach(a=>a.sort((x,y)=>x.disp.localeCompare(y.disp)));
+
+  const portrait = SPECIES_IMG[speciesKey] ? `<img class="pv-portrait" src="${SPECIES_IMG[speciesKey]}" alt="${speciesKey}">` : "";
+  const head = `
+    <div class="pv-head">
+      <div class="pv-id">
+        <div class="pv-name${name?"":" empty"}">${name||"Unnamed hero"}</div>
+        <div class="pv-sub">Level ${lvl}${speciesKey!=="—"?" · "+speciesKey:""} · ${className}</div>
+        ${camp?`<div class="pv-camp">Campaign — ${camp}</div>`:""}
+      </div>
+      ${portrait}
+    </div>
+    <div class="pv-abilities">
+      ${ABILS.map(a=>{const oc=overCapSet.has(a);return `<div class="pv-ab"${oc?' style="border-color:var(--bad)" title="Over the ability cap (18 at creation, bonuses included)"':''}><div class="l">${a}</div><div class="v"${oc?' style="color:var(--bad)"':''}>${scores[a]}${boosts[a]?`<span class="bst">+${boosts[a]}</span>`:""}</div><div class="mod">${fmtMod(abilityMod(scores[a]))}</div></div>`;}).join("")}
+    </div>`;
+
+  const traits = SPECIES_TRAITS[speciesKey]||[];
+  const tHtml = t => { const i=t.indexOf(" — "); return i<0?`<b>${t}</b>`:`<b>${t.slice(0,i)}</b> — ${t.slice(i+3)}`; };
+  const speciesHtml = speciesKey==="—"
+    ? `<p class="pv-empty">No species chosen yet — step 3.</p>`
+    : `<ul>${traits.map(t=>`<li>${tHtml(t)}</li>`).join("")}</ul>`;
+
+  const featLines = [];
+  if(pvOrigins.length){
+    pvOrigins.forEach((o,n)=>featLines.push(`<b>Origin feat${n>0?" (species bonus)":""}</b> — ${o.label} <span class="pv-skill-cols abt">(${o.desc})</span>`));
+  } else featLines.push(`<b>Origin feat</b> — <span class="pv-empty">none chosen (step 5)</span>`);
+  if(pvOriginOther) featLines.push(`<b>Other Origin feat</b> — ${pvOriginOther.replace(/</g,"&lt;")} <span class="pv-skill-cols abt">(set up by the GM on D&amp;D Beyond)</span>`);
+  const abKeys = Object.keys(boosts);
+  featLines.push(abKeys.length ? `<b>Ability Boost (fh)</b> — ${abKeys.map(a=>a+" +"+boosts[a]).join(", ")}` : `<b>Ability Boost (fh)</b> — <span class="pv-empty">none chosen (step 5)</span>`);
+  featLines.push(dice.length ? `<b>Destiny dice</b> — ${dice.join(", ")}` : `<b>Destiny dice</b> — <span class="pv-empty">none (score too low)</span>`);
+
+  const destinyHtml = `
+    <div class="pv-dest"><span class="ds">${destScore}</span>
+      <span class="dd">${arc?`<b>${arc.id}. ${arc.name}</b> — ${arc.meaning}<br><b>Power</b> — ${arc.power}`:`<span class="pv-empty">No arcana drawn yet — step 6.</span>`}</span>
+    </div>`;
+
+  const skillList = g => g.map(s=>`<div>${s.disp} <span class="abt">${s.ab}</span></div>`).join("");
+  const skillsHtml = (groups.exp.length+groups.prof.length+groups.half.length===0)
+    ? `<p class="pv-empty">No skills or tools invested yet — step 7.</p>`
+    : `<div class="pv-skill-cols">
+      ${groups.exp.length?`<p class="tierh">Expertise</p>${skillList(groups.exp)}`:""}
+      ${groups.prof.length?`<p class="tierh">Proficient</p>${skillList(groups.prof)}`:""}
+      ${groups.half.length?`<p class="tierh">Half proficiency</p>${skillList(groups.half)}`:""}</div>`;
+
+  const status = left<0
+    ? `<div class="pv-status err">⚠ Over budget by ${-left} point(s) — fix before saving.</div>`
+    : left>0
+      ? `<div class="pv-status warn">⚠ ${left} of ${total} skill point(s) not spent yet.</div>`
+      : `<div class="pv-status ok">✓ All ${total} skill points allocated.</div>`;
+
+  const story = ($('story').value||"").trim();
+
+  $('preview').innerHTML = head
+    + `<div class="pv-h">Species traits</div>${speciesHtml}`
+    + `<div class="pv-h">Feats</div><ul><li>${featLines.join("</li><li>")}</li></ul>`
+    + `<div class="pv-h">Destiny — score ${destScore}</div>${destinyHtml}`
+    + `<div class="pv-h">Skills &amp; tools</div>${status}${skillsHtml}`
+    + (story ? `<div class="pv-h">Backstory</div><p class="pv-story">${story.replace(/</g,"&lt;")}</p>` : "");
+}
+
+// ================= INIT =================
+initAbilityBoosts();
+renderSpecies();
+renderClasses();
+renderFeatPick();
+renderSavesList();
+let restored=false;
+try{
+  const auto=localStorage.getItem('fh-builder-autosave');
+  if(auto){ restored=applyState(JSON.parse(auto)); }
+}catch(e){}
+if(restored){
+  const n=$('restoreNote'); n.style.display="block";
+  n.textContent="✓ Your last session was restored. GM options → Reset everything to start fresh.";
+}
+applyKeenSenses();
+updateAbilityBoosts();
+updateDestiny();
+refresh();
+updatePreview();
+setStep("identity");
+</script>
+</body>
+</html>

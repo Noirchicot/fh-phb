@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fate's Hand — Party Inventory</title>
+<style>
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity.woff2") format("woff2");font-display:swap}
+  @font-face{font-family:"Bookinsanity";src:url("fonts/Bookinsanity%20Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+  @font-face{font-family:"Nodesto Caps Condensed";src:url("fonts/Nodesto%20Caps%20Condensed.woff2") format("woff2");font-display:swap}
+  @font-face{font-family:"Mr Eaves Small Caps";src:url("fonts/Mr%20Eaves%20Small%20Caps.woff2") format("woff2");font-display:swap}
+  @font-face{font-family:"Scaly Sans";src:url("fonts/Scaly%20Sans.woff2") format("woff2");font-display:swap}
+  @font-face{font-family:"Scaly Sans";src:url("fonts/Scaly%20Sans%20Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+  :root{
+    --parchment:#f5edda;--parchment-2:#efe4c9;--ink:#2b2118;--muted:#766854;
+    --leather:#5c4326;--leather-dark:#3f2e18;--gold:#9c6b16;--gold-bright:#c8942a;
+    --oxblood:#58180d;--rule:rgba(92,67,38,.30);--rule-soft:rgba(92,67,38,.16);
+    --good:#3e6b34;--bad:#8e2318;--blue:#315f76;
+    --serif:"Bookinsanity",Georgia,serif;--caps:"Mr Eaves Small Caps",serif;
+    --title:"Nodesto Caps Condensed",serif;--sans:"Scaly Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box} body{margin:0;background:#211910;color:var(--ink);font:15px/1.4 var(--serif);min-height:100vh}
+  .wrap{max-width:1040px;margin:0 auto;padding:30px 18px 90px}
+  h1{margin:0 0 2px;font:44px/1 var(--title);color:#f0dfae;text-align:center;letter-spacing:.02em}
+  .sub{font:16px var(--caps);color:#d8b65a;text-align:center;letter-spacing:.14em;margin-bottom:24px}
+  .card{background:var(--parchment);border:1px solid var(--leather-dark);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.45);padding:16px 18px;margin-bottom:14px}
+  .card h2{margin:0 0 10px;font:20px var(--caps);color:var(--oxblood);letter-spacing:.05em;border-bottom:2px solid var(--rule);padding-bottom:4px}
+  .card h3{margin:13px 0 7px;font:16px var(--caps);color:var(--leather)}
+  label{font:12px var(--sans);color:var(--leather);display:block;margin-bottom:3px;letter-spacing:.03em}
+  input,select,textarea{background:#fffdf5;color:var(--ink);border:1px solid var(--rule);border-radius:5px;padding:7px 9px;font:13.5px var(--sans);max-width:100%}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(156,107,22,.22)}
+  textarea{width:100%;min-height:100px;resize:vertical}.row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}.fld{flex:1;min-width:150px}.fld input,.fld select{width:100%}
+  .btn{background:var(--leather);color:#f0dfae;border:1px solid var(--leather-dark);border-radius:6px;padding:8px 15px;font:14px var(--caps);letter-spacing:.04em;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn:hover{filter:brightness(1.15)}.btn:disabled{opacity:.45;cursor:default}.btn.small{padding:4px 9px;font-size:12px}.btn.ghost{background:transparent;color:var(--leather);border-color:var(--rule)}.btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}.btn.soul{background:var(--blue);color:#fff}
+  .note{font:13px var(--sans);margin:8px 0 0}.note.ok{color:var(--good)}.note.err{color:var(--bad)}.hint{font:12.5px var(--sans);color:var(--muted)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.hidden{display:none!important}
+  .item{padding:10px 0;border-bottom:1px solid var(--rule-soft)}.item:last-child{border-bottom:0}.item-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.nm{font:700 15px var(--sans)}.sp{flex:1}.meta{font:12px var(--sans);color:var(--muted);margin-top:3px}.desc{font-size:13px;margin-top:5px;color:#4a3d2d}
+  .pill{display:inline-block;border:1px solid var(--rule);border-radius:12px;padding:1px 7px;font:11px var(--sans);color:var(--muted)}.pill.raw{color:#86541f;border-color:#a66d2e}.pill.part{color:var(--good);border-color:var(--good)}.pill.other{color:var(--blue);border-color:var(--blue)}.pill.pp{color:var(--gold);border-color:var(--gold)}
+  .owner{max-width:155px}.empty{color:var(--muted);font-style:italic;padding:8px 2px}.count{float:right;color:var(--muted);font:12px var(--sans)}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:18px;z-index:30}.modal{background:var(--parchment);border:2px solid var(--gold);border-radius:9px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:20px;position:relative}.modal h2{margin-right:28px}.close{position:absolute;right:10px;top:8px;border:0;background:none;font-size:21px;color:var(--muted);cursor:pointer}
+  .homelink{display:block;text-align:center;margin-top:18px;font:15px var(--caps);color:#d8b65a;text-decoration:none;letter-spacing:.08em}.homelink:hover{color:#f0dfae}
+  @media(max-width:680px){.wrap{padding:14px 9px 86px}h1{font-size:32px}.sub{font-size:13px;margin-bottom:14px}.card{padding:12px;margin-bottom:9px}.item-top{align-items:flex-start}.item-top .sp{display:none}.owner{max-width:120px}.btn{padding:7px 10px}.item{padding:9px 0}.nm{flex-basis:100%;font-size:14px}.desc{font-size:12px}.toolbar{gap:5px}}
+</style>
+<link rel="stylesheet" href="stylesheets/tool-ui.css">
+</head>
+<body class="fh-tool-inventory">
+<nav class="fh-toolbar" aria-label="Player tools">
+  <a class="fh-toolbar__brand" href="./"><span class="fh-toolbar__mark">FH</span>Fate's Hand</a>
+  <div class="fh-toolbar__links">
+    <a href="./">Handbook</a>
+    <a href="player/">Character</a>
+    <a href="skill-builder.html">Create</a>
+    <a href="party-inventory.html" aria-current="page">Inventory</a>
+    <a href="soulforge-tool.html">Soulforge</a>
+  </div>
+</nav>
+<div class="wrap">
+  <h1>Fate's Hand</h1>
+  <div class="sub">PARTY INVENTORY</div>
+
+  <div class="card">
+    <div class="row">
+      <div class="fld"><label>Campaign code</label><input id="code" placeholder="e.g. FH1" autocomplete="off"></div>
+      <button class="btn" id="load">Load</button>
+      <a class="btn ghost" id="forgeLink" href="soulforge-tool.html" target="_top">Go to the Soulforge →</a>
+    </div>
+    <div class="toolbar">
+      <button class="btn small" id="showIngredient" disabled>+ Add ingredient</button>
+      <button class="btn small ghost" id="showCustom" disabled>+ Add custom</button>
+      <button class="btn small ghost" id="refresh" disabled>↻ Refresh</button>
+      <button class="btn small soul hidden" id="importLegacy">Import old Soulforge inventory</button>
+    </div>
+    <p class="note" id="note"></p>
+  </div>
+
+  <div class="card"><h2>Raw ingredients <span class="count" id="rawCount"></span></h2><div id="raw"><div class="empty">Enter your campaign code above.</div></div></div>
+  <div class="card"><h2>Forgable parts <span class="count" id="partCount"></span></h2><div class="hint">Crafted bodies, Soulgems and identified catalysts ready for the Workbench.</div><div id="part"></div></div>
+  <div class="card"><h2>Other equipment <span class="count" id="otherCount"></span></h2><div id="other"></div></div>
+  <a class="homelink" href="./" target="_top">⌂ Back to the Handbook</a>
+</div>
+
+<script src="soulforge-data.js"></script>
+<script src="javascripts/fh-soulforge-core.js"></script>
+<script>
+"use strict";
+const API="https://fh-builds.noirchicot.workers.dev";
+const TYPES=["Aberration","Beast","Celestial","Construct","Dragon","Elemental","Fey","Fiend","Giant","Humanoid","Monstrosity","Ooze","Plant","Undead"];
+const CRS=["0","1/8","1/4","1/2","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"];
+const GEMMIN=[50,100,250,500,750,1000,2500,5000,10000,25000,50000];
+const GEM_CATALOG=[
+  ["Azurite",10],["Banded Agate",10],["Blue Quartz",10],["Eye Agate",10],["Hematite",10],["Lapis Lazuli",10],["Malachite",10],["Moss Agate",10],["Obsidian",10],["Rhodochrosite",10],["Tiger Eye",10],["Turquoise",10],
+  ["Bloodstone",50],["Carnelian",50],["Chalcedony",50],["Chrysoprase",50],["Citrine",50],["Jasper",50],["Moonstone",50],["Onyx",50],["Quartz",50],["Sardonyx",50],["Star Rose Quartz",50],["Zircon",50],
+  ["Amber",100],["Amethyst",100],["Chrysoberyl",100],["Coral",100],["Garnet",100],["Jade",100],["Jet",100],["Pearl",100],["Spinel",100],["Tourmaline",100],
+  ["Alexandrite",500],["Aquamarine",500],["Black Pearl",500],["Blue Spinel",500],["Peridot",500],["Topaz",500],
+  ["Black Opal",1000],["Blue Sapphire",1000],["Emerald",1000],["Fire Opal",1000],["Opal",1000],["Star Ruby",1000],["Star Sapphire",1000],["Yellow Sapphire",1000],
+  ["Black Sapphire",5000],["Diamond",5000],["Jacinth",5000],["Ruby",5000]
+];
+const CATS=(window.SF_DATA&&SF_DATA.catalysts)||[];
+const CREATURES={};
+CATS.forEach(c=>{(CREATURES[c.creature]||={type:c.type,cr:String(c.cr),entries:[]}).entries.push(c)});
+const CREATURE_NAMES=Object.keys(CREATURES).sort();
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;"}[c]));
+let CODE="", PARTY=[], ITEMS=[];
+
+function crNum(cr){const s=String(cr);if(s.includes("/")){const[a,b]=s.split("/");return +a/+b}return +s||0}
+function ppFromCr(cr){return Math.min(11,Math.max(1,Math.floor((crNum(cr)-1)/2)+1))}
+function gp(n){return n>=1e6?(n/1e6)+"M gp":n>=1000?(n/1000)+"k gp":n+" gp"}
+function note(cls,msg){$('note').className="note "+cls;$('note').textContent=msg}
+async function api(path,opts){const r=await fetch(API+path,opts);if(r.status===403)throw new Error("unknown campaign code — ask your GM.");if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||("HTTP "+r.status))}return r.json()}
+async function post(path,body){return api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})}
+
+function legacyPayloads(){
+  let legacy;try{legacy=JSON.parse(localStorage.getItem('fh-soulforge-v1')||'null')}catch(e){return []}
+  if(!legacy||typeof legacy!=="object")return [];
+  const out=[], ownerFor=name=>PARTY.includes(name)?name:null;
+  const addInventory=(inv,owner)=>{
+    if(!inv)return;
+    (inv.parts||[]).forEach(p=>{
+      const partType=String(p.role||"").toLowerCase();if(!["structure","essence","catalyst"].includes(partType))return;
+      const stage=partType==="structure"&&p.crafted?"body":partType==="catalyst"&&p.identified?"identified":"raw";
+      out.push({name:p.name||`${p.creature||"Unknown creature"} ${partType}`,owner,kind:stage==="raw"?"raw":"part",partType,stage,
+        creature:p.creature||"Unknown creature",creatureType:p.ctype||"Unknown",cr:p.cr||"?",pp:p.pp||1,ppCap:p.ppCap||p.pp||1,
+        baseItem:p.baseItem,identified:!!p.identified,power:p.power||null});
+    });
+    (inv.gems||[]).forEach(g=>out.push({name:g.name||"Gem",owner,kind:"other",subtype:"gem",stage:"ready",qty:g.qty||1,valueGp:g.value||0}));
+    (inv.soulgems||[]).forEach(g=>out.push({name:`Soulgem — ${g.gemName||"Gem"}`,owner,kind:"part",partType:"essence",stage:"soulgem",
+      creature:g.creature||"Unknown creature",creatureType:g.ctype||"Unknown",cr:g.cr||"?",pp:g.pp||1,gemName:g.gemName||"Gem",valueGp:g.value||0,upgraded:!!g.upgraded}));
+    (inv.items||[]).forEach(it=>out.push({name:it.name||"Soulforged item",owner:owner||it.attunedTo||null,kind:"other",subtype:"soulforged",stage:"complete",soulforge:it}));
+  };
+  addInventory(legacy.party,null);
+  (legacy.characters||[]).forEach(c=>addInventory(c.inventory,ownerFor(c.name)));
+  return out.slice(0,200);
+}
+function detectLegacy(){const items=legacyPayloads(),b=$('importLegacy');b.classList.toggle('hidden',!items.length);if(items.length)b.textContent=`Import old Soulforge inventory (${items.length})`}
+
+function modal(html){const ov=document.createElement("div");ov.className="modal-overlay";ov.innerHTML=`<div class="modal"><button class="close">✕</button>${html}</div>`;ov.addEventListener("click",e=>{if(e.target===ov||e.target.classList.contains("close"))ov.remove()});document.body.appendChild(ov);return ov}
+function ownerOptions(item){return ['<option value="">Party stash</option>'].concat(PARTY.map(p=>`<option value="${esc(p)}"${item.owner===p?" selected":""}>${esc(p)}</option>`)).join("")}
+function provenance(item){return [item.creature,item.creatureType,item.cr!=null?`CR ${item.cr}`:null,item.pp!=null?`${item.pp} PP`:null].filter(Boolean).map(esc).join(" · ")}
+
+function itemHtml(item){
+  const kind=item.kind||"other";
+  const badge=kind==="raw"?"raw":kind==="part"?"part":"other";
+  const label=kind==="raw"?`Raw ${item.partType||"ingredient"}`:kind==="part"?(item.stage==="body"?"Body":item.stage==="soulgem"?"Soulgem":"Identified catalyst"):(item.subtype==="gem"?"Gemstone":item.subtype==="soulforged"?"Soulforged item":"Equipment");
+  const power=item.power?`<div class="desc"><b>${esc(item.power.name)}</b>${item.power.family==="Flat"?" · passive":` · ${item.power.uses||1}/rest`} — ${esc(item.power.text||"")}</div>`:"";
+  const sf=item.soulforge?`<div class="desc">Frame ${item.soulforge.structure?.pp||"?"} PP · Supply ${(item.soulforge.soulgems||[]).reduce((s,g)=>s+(g.pp||0),0)+(item.soulforge.supplyBonus||0)} PP · ${(item.soulforge.catalysts||[]).length} catalyst(s)</div>`:"";
+  let action="";
+  if(kind==="raw"&&item.partType==="structure")action=`<button class="btn small" data-action="craft">Craft → Body</button>`;
+  if(kind==="raw"&&item.partType==="essence")action=`<button class="btn small" data-action="infuse">Infuse → Soulgem</button>`;
+  if(kind==="raw"&&item.partType==="catalyst")action=`<button class="btn small" data-action="identify">Identify</button>`;
+  if(kind==="part")action=`<a class="btn small soul" href="soulforge-tool.html?campaign=${encodeURIComponent(CODE)}&part=${encodeURIComponent(item.id)}">Send to the Soulforge</a>`;
+  return `<div class="item" data-id="${esc(item.id)}"><div class="item-top"><span class="nm">${esc(item.name)}</span>${item.qty>1?`<span>×${item.qty}</span>`:""}<span class="pill ${badge}">${esc(label)}</span>${item.pp!=null?`<span class="pill pp">${item.pp} PP</span>`:""}<span class="sp"></span><select class="owner" data-owner>${ownerOptions(item)}</select>${action}<button class="btn small danger" data-delete>Delete</button></div><div class="meta">${provenance(item)}${item.valueGp!=null?`${provenance(item)?" · ":""}${gp(item.valueGp)}`:""}${item.note?` · ${esc(item.note)}`:""}</div>${power}${sf}</div>`;
+}
+function render(){
+  const groups=FHSoulforgeCore.groupInventory(ITEMS);
+  for(const key of ["raw","part","other"]){$(key+"Count").textContent=`${groups[key].length} item(s)`;$(key).innerHTML=groups[key].length?groups[key].map(itemHtml).join(""):`<div class="empty">Empty.</div>`}
+}
+async function load(){
+  CODE=$('code').value.trim();if(!CODE)return note("err","Enter your campaign code.");
+  $('load').disabled=true;
+  try{const [party,inv]=await Promise.all([api("/party/"+encodeURIComponent(CODE)),api("/inv/"+encodeURIComponent(CODE))]);PARTY=Array.isArray(party.builds)?party.builds.map(b=>b.pseudo).filter(Boolean).sort():[];ITEMS=Array.isArray(inv.items)?inv.items:[];$('forgeLink').href=`soulforge-tool.html?campaign=${encodeURIComponent(CODE)}`;['showIngredient','showCustom','refresh'].forEach(id=>$(id).disabled=false);try{localStorage.setItem('fh-my-campcode',CODE)}catch(e){}render();detectLegacy();note("ok",`✓ ${ITEMS.length} item(s) · ${PARTY.length} character(s).`)}catch(err){note("err","Could not load: "+err.message)}finally{$('load').disabled=false}
+}
+
+function ingredientModal(){
+  const m=modal(`<h2>Add ingredient</h2><div class="row"><div class="fld"><label>Ingredient type</label><select id="aiRole"><option value="structure">Structure</option><option value="essence">Essence</option><option value="catalyst">Catalyst</option><option value="gem">Gemstone</option></select></div><div class="fld"><label>Owner</label><select id="aiOwner"><option value="">Party stash</option>${PARTY.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join("")}</select></div></div><div id="partFields"><div class="row"><div class="fld"><label>Creature (catalogue or free text)</label><input id="aiCreature" list="aiCreatures" placeholder="e.g. Troll"><datalist id="aiCreatures">${CREATURE_NAMES.map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div><div><label>Creature type</label><select id="aiType">${TYPES.map(t=>`<option value="${t}">${t}</option>`).join("")}</select></div><div><label>CR</label><select id="aiCR">${CRS.map(c=>`<option value="${c}">${c}</option>`).join("")}</select></div></div><div class="row"><div class="fld"><label>Part name (optional)</label><input id="aiName" placeholder="fang, heart, hide…"></div></div><p class="hint" id="aiInfo"></p></div><div id="gemFields" class="hidden"><div class="row"><div class="fld"><label>Gemstone</label><select id="aiGem">${GEM_CATALOG.map(([n,v],i)=>`<option value="${i}">${n} — ${v} gp</option>`).join("")}<option value="custom">Custom gemstone</option></select></div><div class="fld"><label>Name</label><input id="aiGemName"></div><div><label>Value (gp)</label><input id="aiGemValue" type="number" min="0" value="10"></div></div></div><div class="toolbar"><button class="btn" id="aiAdd">Add to inventory</button></div>`);
+  const role=m.querySelector('#aiRole'),creature=m.querySelector('#aiCreature'),type=m.querySelector('#aiType'),cr=m.querySelector('#aiCR');
+  function update(){const gem=role.value==="gem";m.querySelector('#partFields').classList.toggle('hidden',gem);m.querySelector('#gemFields').classList.toggle('hidden',!gem);if(!gem)m.querySelector('#aiInfo').textContent=`Raw ${role.value} · ${ppFromCr(cr.value)} PP. Preparation happens from the inventory.`}
+  creature.oninput=()=>{const hit=CREATURES[creature.value.trim()];if(hit){type.value=hit.type;cr.value=hit.cr}update()};role.onchange=update;cr.onchange=update;
+  const gemSel=m.querySelector('#aiGem'),gemName=m.querySelector('#aiGemName'),gemValue=m.querySelector('#aiGemValue');
+  function setGem(){const selected=gemSel.value||"0";if(selected==="custom"){gemName.value="";gemName.disabled=false}else{const[n,v]=GEM_CATALOG[+selected];gemName.value=n;gemName.disabled=true;gemValue.value=v}}gemSel.onchange=setGem;setGem();update();
+  m.querySelector('#aiAdd').onclick=async()=>{try{let payload;if(role.value==="gem"){payload={name:gemName.value.trim()||"Unique gem",owner:m.querySelector('#aiOwner').value||null,kind:"other",subtype:"gem",stage:"ready",valueGp:+gemValue.value||0}}else{const c=creature.value.trim()||"Unknown creature",pp=ppFromCr(cr.value);payload={name:m.querySelector('#aiName').value.trim()||`${c} ${role.value}`,owner:m.querySelector('#aiOwner').value||null,kind:"raw",partType:role.value,stage:"raw",creature:c,creatureType:type.value,cr:cr.value,pp,ppCap:pp}}await post(`/inv/${encodeURIComponent(CODE)}`,payload);m.remove();await load()}catch(err){alert("Add failed: "+err.message)}};
+}
+
+function customModal(){
+  const m=modal(`<h2>Add custom equipment</h2><p class="hint">Paste a name, free text, or a D&D Beyond item block. It remains ordinary equipment unless you add it through the structured ingredient form.</p><div class="row"><div><label>Quantity</label><input id="acQty" type="number" min="1" max="999" value="1"></div><div class="fld"><label>Owner</label><select id="acOwner"><option value="">Party stash</option>${PARTY.map(p=>`<option>${esc(p)}</option>`).join("")}</select></div></div><label>Item text</label><textarea id="acText" placeholder="Potion of Healing\nConsumable, common…"></textarea><div class="toolbar"><button class="btn" id="acAdd">Add to inventory</button></div>`);
+  m.querySelector('#acAdd').onclick=async()=>{const text=m.querySelector('#acText').value.trim();if(!text)return alert("Paste or type the item first.");const first=text.split(/\n/).map(s=>s.trim()).find(Boolean)||"Custom item";try{await post(`/inv/${encodeURIComponent(CODE)}`,{name:first.slice(0,80),qty:+m.querySelector('#acQty').value||1,note:text.slice(0,1000),owner:m.querySelector('#acOwner').value||null,kind:"other",subtype:"equipment",stage:"ready"});m.remove();await load()}catch(err){alert("Add failed: "+err.message)}};
+}
+
+function infuseModal(item){
+  const gems=ITEMS.filter(i=>i.kind==="other"&&i.subtype==="gem");
+  if(!gems.length)return alert("No gemstone in the campaign inventory. Add one with Add ingredient first.");
+  const min=GEMMIN[Math.max(0,Math.min(10,(item.pp||1)-1))];
+  const m=modal(`<h2>Infuse Essence → Soulgem</h2><p>Cast <b>Transfer Essence</b>. No check. The gemstone is consumed and must be worth at least <b>${gp(min)}</b>.</p><div class="row"><div class="fld"><label>Gemstone</label><select id="ifGem">${gems.map(g=>`<option value="${g.id}"${g.valueGp>=min?"":' disabled'}>${esc(g.name)} — ${gp(g.valueGp||0)}${g.qty>1?` ×${g.qty}`:""}</option>`).join("")}</select></div></div><div class="toolbar"><button class="btn" id="ifGo">Confirm infusion</button></div>`);
+  m.querySelector('#ifGo').onclick=async()=>{const id=m.querySelector('#ifGem').value;if(!id)return alert(`A gemstone worth at least ${gp(min)} is required.`);if(!confirm("Confirm that Transfer Essence was cast? This consumes the raw Essence and one gemstone."))return;try{await post(`/inv/${encodeURIComponent(CODE)}/${item.id}`,{action:"infuse",gemId:id});m.remove();await load()}catch(err){alert("Infusion failed: "+err.message)}};
+}
+
+function identifyModal(item){
+  const hit=CREATURES[item.creature];
+  if(hit){const m=modal(`<h2>Identify catalyst</h2><p><i>Identify</i> reveals which harvested part and power this catalyst carries.</p><div class="fld"><label>Revealed catalyst</label><select id="idPower">${hit.entries.map((e,i)=>`<option value="${i}">${esc(e.catalyst_name)} — ${esc(e.power.name)} (${e.power.pp} PP)</option>`).join("")}</select></div><div class="toolbar"><button class="btn" id="idGo">Confirm Identify</button></div>`);m.querySelector('#idGo').onclick=async()=>{const e=hit.entries[+m.querySelector('#idPower').value];if(!confirm("Confirm that Identify was cast on this catalyst?"))return;try{await post(`/inv/${encodeURIComponent(CODE)}/${item.id}`,{action:"identify",name:e.catalyst_name,power:{name:e.power.name,pp:e.power.pp,uses:e.power.uses||1,family:e.power.family||"Signature",text:e.power.text||""}});m.remove();await load()}catch(err){alert("Identify failed: "+err.message)}};return}
+  const m=modal(`<h2>Identify custom catalyst</h2><p class="hint">This creature is not in the baked catalogue. Enter the power revealed by the GM; it cannot exceed ${item.ppCap||item.pp} PP.</p><div class="row"><div class="fld"><label>Catalyst name</label><input id="icPart"></div><div class="fld"><label>Power name</label><input id="icName"></div><div><label>PP</label><input id="icPP" type="number" min="0" max="${item.ppCap||item.pp}" value="1"></div><div><label>Uses/rest</label><input id="icUses" type="number" min="1" max="3" value="1"></div></div><label>Effect</label><textarea id="icText"></textarea><div class="toolbar"><button class="btn" id="icGo">Confirm Identify</button></div>`);
+  m.querySelector('#icGo').onclick=async()=>{try{await post(`/inv/${encodeURIComponent(CODE)}/${item.id}`,{action:"identify",name:m.querySelector('#icPart').value||item.name,power:{name:m.querySelector('#icName').value||"Unknown power",pp:+m.querySelector('#icPP').value||0,uses:+m.querySelector('#icUses').value||1,family:"Signature",text:m.querySelector('#icText').value||""}});m.remove();await load()}catch(err){alert("Identify failed: "+err.message)}};
+}
+
+document.addEventListener('change',async e=>{const sel=e.target.closest('[data-owner]');if(!sel)return;const row=sel.closest('.item');try{await post(`/inv/${encodeURIComponent(CODE)}/${row.dataset.id}`,{action:"move",owner:sel.value||null});note("ok",`✓ Moved to ${sel.value||"the party stash"}.`);await load()}catch(err){note("err","Move failed: "+err.message)}});
+document.addEventListener('click',async e=>{const row=e.target.closest('.item');if(!row)return;const item=ITEMS.find(i=>i.id===row.dataset.id);if(e.target.closest('[data-delete]')){if(!confirm(`Delete "${item.name}"? This is for consumed, sold or discarded items.`))return;try{await api(`/inv/${encodeURIComponent(CODE)}/${item.id}`,{method:"DELETE"});await load()}catch(err){alert("Delete failed: "+err.message)}return}const action=e.target.closest('[data-action]')?.dataset.action;if(action==="craft"){const base=prompt("What does this Structure become? (longsword, cloak, ring…)",item.baseItem||"");if(!base)return;if(!confirm("Confirm that the crafting check, time and DMG 2024 cost were resolved at the table?"))return;try{await post(`/inv/${encodeURIComponent(CODE)}/${item.id}`,{action:"craft",baseItem:base});await load()}catch(err){alert("Crafting update failed: "+err.message)}}if(action==="infuse")infuseModal(item);if(action==="identify")identifyModal(item)});
+
+$('load').onclick=load;$('refresh').onclick=load;$('code').onkeydown=e=>{if(e.key==="Enter")load()};$('showIngredient').onclick=ingredientModal;$('showCustom').onclick=customModal;
+$('importLegacy').onclick=async()=>{const items=legacyPayloads();if(!items.length)return detectLegacy();if(!confirm(`Import ${items.length} old Soulforge item(s) into campaign ${CODE}? The browser copy will be removed only after the server confirms the whole import.`))return;try{await post(`/inv/${encodeURIComponent(CODE)}/import`,{items});localStorage.removeItem('fh-soulforge-v1');await load();note("ok",`✓ ${items.length} old Soulforge item(s) imported. The browser-only inventory was removed.`)}catch(err){alert("Legacy import failed; the browser copy was kept: "+err.message)}};
+try{$('code').value=new URLSearchParams(location.search).get('campaign')||localStorage.getItem('fh-my-campcode')||""}catch(e){}
+if($('code').value)load();
+</script>
+</body>
+</html>

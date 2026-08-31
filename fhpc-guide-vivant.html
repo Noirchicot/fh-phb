@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>FHPC — Guide vivant de l’architecture · v1.6</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --paper: #fffaf2;
+      --ink: #251d17;
+      --muted: #6d6258;
+      --line: #d8c9b8;
+      --gold: #a56d16;
+      --gold-soft: #f2dfba;
+      --green: #2f7153;
+      --green-soft: #dcefe5;
+      --blue: #315f88;
+      --blue-soft: #dceaf6;
+      --red: #9b403f;
+      --red-soft: #f5dfdd;
+      --violet: #71518c;
+      --violet-soft: #ece1f3;
+      --shadow: 0 16px 44px rgba(57, 36, 18, .11);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161412;
+        --paper: #211e1b;
+        --ink: #f4eadc;
+        --muted: #b9aa9a;
+        --line: #463c33;
+        --gold: #e1aa4a;
+        --gold-soft: #43331d;
+        --green: #7bc5a0;
+        --green-soft: #203c30;
+        --blue: #8db8de;
+        --blue-soft: #20374a;
+        --red: #e28e88;
+        --red-soft: #4a2927;
+        --violet: #c5a2dc;
+        --violet-soft: #3b2d45;
+        --shadow: 0 18px 48px rgba(0, 0, 0, .24);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--gold-soft) 72%, transparent), transparent 34rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    button, select { font: inherit; }
+    button { color: inherit; }
+    a { color: var(--blue); }
+    code {
+      padding: .08rem .32rem;
+      border-radius: .35rem;
+      background: color-mix(in srgb, var(--line) 44%, transparent);
+      font-size: .9em;
+    }
+    .page { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 72px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(26px, 5vw, 58px);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: color-mix(in srgb, var(--paper) 94%, transparent);
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "FH";
+      position: absolute;
+      right: -20px;
+      bottom: -58px;
+      color: color-mix(in srgb, var(--gold) 11%, transparent);
+      font-family: Georgia, serif;
+      font-size: clamp(9rem, 24vw, 20rem);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .kicker { margin: 0 0 8px; color: var(--gold); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .78rem; }
+    h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.12; }
+    h1 { position: relative; max-width: 820px; margin: 0; font-size: clamp(2.4rem, 6.8vw, 5.8rem); font-weight: 500; }
+    h2 { margin: 0 0 10px; font-size: clamp(1.8rem, 4vw, 3.2rem); font-weight: 500; }
+    h3 { margin: 0 0 7px; font-size: 1.25rem; font-weight: 600; }
+    .lede { position: relative; max-width: 760px; margin: 20px 0 0; color: var(--muted); font-size: clamp(1rem, 2vw, 1.18rem); }
+    .hero-meta { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .pill, .evidence, .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      font-size: .76rem;
+      font-weight: 750;
+      letter-spacing: .02em;
+    }
+    .pill { padding: 7px 11px; background: var(--gold-soft); color: var(--ink); }
+    .evidence { padding: 4px 8px; white-space: nowrap; }
+    .ev-code { background: var(--blue-soft); color: var(--blue); }
+    .ev-review { background: var(--red-soft); color: var(--red); }
+    .ev-plan { background: var(--gold-soft); color: var(--gold); }
+    .ev-prop { background: var(--violet-soft); color: var(--violet); }
+    .status { padding: 4px 8px; }
+    .st-live { background: var(--green-soft); color: var(--green); }
+    .st-work { background: var(--blue-soft); color: var(--blue); }
+    .st-warn { background: var(--gold-soft); color: var(--gold); }
+    .st-off { background: var(--red-soft); color: var(--red); }
+    .st-hold { background: var(--red-soft); color: var(--red); }
+    .read-controls {
+      position: sticky;
+      top: 10px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 18px 0 42px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--paper) 92%, transparent);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+    .read-controls strong { font-size: .88rem; }
+    .segmented { display: flex; flex-wrap: wrap; gap: 6px; }
+    .segmented button, .flow-tabs button, .arch-node {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      cursor: pointer;
+    }
+    .segmented button { padding: 7px 11px; font-size: .82rem; }
+    .segmented button[aria-pressed="true"], .flow-tabs button[aria-selected="true"] {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 7px; }
+    section { scroll-margin-top: 94px; margin: 64px 0; }
+    .section-head { display: grid; grid-template-columns: 1fr minmax(240px, 420px); gap: 28px; align-items: end; margin-bottom: 24px; }
+    .section-head p { margin: 0; color: var(--muted); }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
+    .metric {
+      padding: 18px;
+      border-top: 3px solid var(--gold);
+      background: color-mix(in srgb, var(--paper) 82%, transparent);
+    }
+    .metric b { display: block; font-family: Georgia, serif; font-size: 1.75rem; font-weight: 500; }
+    .metric span { display: block; color: var(--muted); font-size: .82rem; }
+    .gate-board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+    }
+    .gate-card { padding: 14px; border-top: 3px solid var(--line); background: color-mix(in srgb, var(--paper) 78%, var(--bg)); }
+    .gate-card.is-pass { border-top-color: var(--green); }
+    .gate-card.is-hold { border-top-color: var(--red); }
+    .gate-card b { display: block; margin: 7px 0 4px; }
+    .gate-card p { margin: 0; color: var(--muted); font-size: .84rem; }
+    .architecture {
+      display: grid;
+      grid-template-columns: 1.05fr 54px 1.15fr 54px 1.15fr;
+      align-items: stretch;
+      gap: 10px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .arch-stack { display: grid; gap: 10px; }
+    .arch-arrow { display: grid; place-items: center; color: var(--gold); font-size: 1.8rem; }
+    .arch-node {
+      display: block;
+      width: 100%;
+      min-height: 108px;
+      padding: 16px;
+      border-radius: 16px;
+      text-align: left;
+      background: color-mix(in srgb, var(--paper) 86%, var(--gold-soft));
+    }
+    .arch-node:hover, .arch-node[aria-pressed="true"] { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+    .arch-node small { display: block; margin-bottom: 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; font-size: .68rem; }
+    .arch-node b { display: block; font-family: Georgia, serif; font-size: 1.16rem; }
+    .arch-node span { display: block; margin-top: 5px; color: var(--muted); font-size: .82rem; }
+    .arch-detail {
+      min-height: 76px;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--gold);
+      background: color-mix(in srgb, var(--gold-soft) 50%, transparent);
+    }
+    .arch-detail p { margin: 0; }
+    .callout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--paper) 78%, transparent);
+    }
+    .callout .mark { color: var(--gold); font-family: Georgia, serif; font-size: 2rem; line-height: 1; }
+    .callout p { margin: 0; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); }
+    table { width: 100%; border-collapse: collapse; min-width: 830px; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; }
+    tr:last-child td { border-bottom: 0; }
+    td strong { display: block; }
+    td small { display: block; margin-top: 4px; color: var(--muted); }
+    .flow-shell {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .flow-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+    .flow-tabs button { padding: 9px 14px; }
+    .flow-panel[hidden] { display: none; }
+    .flow-line { display: grid; grid-template-columns: repeat(5, 1fr); align-items: stretch; gap: 18px; }
+    .flow-step { position: relative; padding: 15px; border-top: 3px solid var(--gold); background: color-mix(in srgb, var(--gold-soft) 38%, transparent); }
+    .flow-step:not(:last-child)::after { content: "→"; position: absolute; right: -15px; top: 42%; color: var(--gold); font-size: 1.2rem; }
+    .flow-step b { display: block; }
+    .flow-step small { color: var(--muted); }
+    .flow-note { margin: 18px 0 0; color: var(--muted); }
+    .state-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+    .state-strip div { padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
+    .state-strip b { display: block; }
+    .state-strip span { color: var(--muted); font-size: .85rem; }
+    .state-live { border-top: 4px solid var(--green) !important; }
+    .state-recent { border-top: 4px solid var(--gold) !important; }
+    .state-off { border-top: 4px solid var(--red) !important; }
+    .decision-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--paper) 82%, transparent);
+    }
+    summary { cursor: pointer; padding: 16px 18px; font-weight: 750; }
+    details > div { padding: 0 18px 18px; color: var(--muted); }
+    details p { margin: 0 0 10px; }
+    details p:last-child { margin-bottom: 0; }
+    .timeline { position: relative; margin-left: 12px; padding-left: 28px; border-left: 2px solid var(--line); }
+    .moment { position: relative; padding: 0 0 28px; }
+    .moment::before { content: ""; position: absolute; left: -36px; top: 4px; width: 14px; height: 14px; border: 3px solid var(--bg); border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+    .moment time { display: block; margin-bottom: 4px; color: var(--gold); font-size: .76rem; font-weight: 750; text-transform: uppercase; letter-spacing: .06em; }
+    .moment p { margin: 5px 0 0; color: var(--muted); }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .card { padding: 18px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); }
+    .card p { margin: 8px 0 0; color: var(--muted); }
+    .next { counter-reset: steps; display: grid; gap: 10px; }
+    .next article { counter-increment: steps; display: grid; grid-template-columns: 44px 1fr auto; gap: 13px; align-items: start; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); }
+    .next article::before { content: counter(steps, decimal-leading-zero); display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--gold-soft); color: var(--gold); font-weight: 800; }
+    .next h3 { margin-top: 2px; }
+    .next p { margin: 5px 0 0; color: var(--muted); }
+    .glossary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .term { padding: 14px 16px; border-left: 3px solid var(--gold); background: color-mix(in srgb, var(--paper) 76%, transparent); }
+    .term dt { font-weight: 800; }
+    .term dd { margin: 4px 0 0; color: var(--muted); }
+    .source-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .source-list ul { margin: 10px 0 0; padding-left: 20px; color: var(--muted); }
+    .source-list li + li { margin-top: 6px; }
+    .provenance {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--gold);
+      border-radius: 18px;
+      background: var(--paper);
+    }
+    .provenance-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+    .provenance-grid div { padding: 12px 14px; background: color-mix(in srgb, var(--gold-soft) 34%, transparent); }
+    .provenance-grid b { display: block; color: var(--muted); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; }
+    .provenance-grid span { display: block; margin-top: 4px; overflow-wrap: anywhere; }
+    footer { margin-top: 54px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: .84rem; }
+    [data-level="overview"] .depth-2, [data-level="overview"] .depth-3 { display: none !important; }
+    [data-level="understand"] .depth-3 { display: none !important; }
+    @media (max-width: 900px) {
+      .metrics, .cards, .gate-board { grid-template-columns: repeat(2, 1fr); }
+      .section-head { grid-template-columns: 1fr; gap: 8px; }
+      .architecture { grid-template-columns: 1fr; }
+      .arch-arrow { transform: rotate(90deg); min-height: 32px; }
+      .flow-line { grid-template-columns: 1fr; }
+      .flow-step:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -21px; }
+      .decision-grid, .source-list { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .page { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .hero { border-radius: 20px; }
+      .read-controls { top: 6px; }
+      .metrics, .cards, .state-strip, .glossary, .gate-board { grid-template-columns: 1fr; }
+      .provenance-grid { grid-template-columns: 1fr; }
+      .next article { grid-template-columns: 42px 1fr; }
+      .next article .evidence { grid-column: 2; justify-self: start; }
+    }
+    @media print {
+      body { background: #fff; color: #111; }
+      .page { width: 100%; padding: 0; }
+      .read-controls { display: none; }
+      .hero, .flow-shell, .architecture { box-shadow: none; }
+      [data-level] .depth-2, [data-level] .depth-3 { display: block !important; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<main class="page" id="guide" data-level="overview">
+  <header class="hero">
+    <p class="kicker">Guide vivant · Version 1.6 · État du 7 août 2026</p>
+    <h1>FHPC, du clic du joueur à la table de jeu</h1>
+    <p class="lede">Une carte évolutive de Fate’s Hand Player Companion&nbsp;: ce qui existe, comment les morceaux coopèrent, pourquoi l’architecture a pris cette forme, et ce qui reste à construire.</p>
+    <div class="hero-meta">
+      <span class="pill"><code>main</code> FHPC&nbsp;: <code>79195ea</code></span>
+      <span class="pill">Code déployé&nbsp;: <code>d947dd7</code> (release 5/6/7)</span>
+      <span class="pill">19 suites FHPC au vert</span>
+      <span class="pill">Dice Tray&nbsp;: sur <code>main</code>, libellés compris</span>
+      <span class="pill">SRD en ligne&nbsp;: <code>noirchicot.github.io/fh-srd</code></span>
+      <span class="pill">🚦 Porte de déploiement&nbsp;: FERMÉE</span>
+    </div>
+  </header>
+
+  <nav class="read-controls" aria-label="Niveau de lecture">
+    <div>
+      <strong>Niveau de lecture</strong>
+      <div class="segmented" role="group" aria-label="Choisir le niveau de détail">
+        <button type="button" data-level-button="overview" aria-pressed="true">Vue d’ensemble</button>
+        <button type="button" data-level-button="understand" aria-pressed="false">Comprendre</button>
+        <button type="button" data-level-button="deep" aria-pressed="false">Approfondir</button>
+      </div>
+    </div>
+    <div class="legend" aria-label="Légende des preuves">
+      <span class="evidence ev-code">✓ vérifié dans le code</span>
+      <span class="evidence ev-review">⚑ validation architecte</span>
+      <span class="evidence ev-plan">◷ documenté dans le plan</span>
+      <span class="evidence ev-prop">◇ proposition</span>
+    </div>
+  </nav>
+
+  <section id="overview">
+    <div class="section-head">
+      <div><p class="kicker">Vue d’ensemble</p><h2>Un théâtre en cinq lieux</h2></div>
+      <p>Le site visible n’est qu’une scène. Les données persistantes vivent dans le cloud, le direct de la partie passe par le Mac du MJ, et AboveVTT reçoit une traduction.</p>
+    </div>
+
+    <div class="metrics" aria-label="Repères rapides">
+      <div class="metric"><b>3&nbsp;790</b><span>lignes dans le cœur actuel du dock</span></div>
+      <div class="metric"><b>7</b><span>onglets dans la ceinture</span></div>
+      <div class="metric"><b>≈&nbsp;57&nbsp;ms</b><span>moyenne mesurée du direct local via WebSocket</span></div>
+      <div class="metric"><b>22–28&nbsp;s</b><span>retard mesuré de l’ancien journal cloud</span></div>
+    </div>
+
+    <div class="gate-board" aria-label="Verdict architectural des trois panneaux V1">
+      <div class="gate-card"><span class="status st-live">SUR MAIN · PASS</span><b>Traits <code>3ecd981</code></b><p>Suivi manuel des traits et cibles tactiles de 44&nbsp;px intégrés.</p></div>
+      <div class="gate-card"><span class="status st-live">SUR MAIN · PASS</span><b>Actions <code>575bfde</code></b><p>Économie du tour et récupération sûre des identifiants intégrées.</p></div>
+      <div class="gate-card"><span class="status st-live">SUR MAIN · PASS</span><b>Spells <code>fd8e635</code></b><p>Stores corrompus, niveaux 1–9 et identifiants extrêmes sont bornés et testés.</p></div>
+      <div class="gate-card"><span class="status st-live">INTÉGRATION PASS</span><b>Merge <code>888a6dd</code></b><p>14/14, build strict, données hostiles et rendu desktop/mobile contre-vérifiés.</p></div>
+    </div>
+
+    <div class="callout">
+      <div class="mark">!</div>
+      <p><strong>Le verdict le plus récent.</strong> Le <em>Dice Tray</em> — la zone 9, la surface partagée de la table — est entré sur <code>main</code> par le merge <code>79195ea</code>&nbsp;: 47 commits, cinq bandes nommées (vivante, courante, profonde, vide), le Dice Pool compté né sur la bande, le tray déployé, et une loupe construite puis délibérément supprimée sur décision d’Eric. Vérifié en clone indépendant (19/19, build strict), fusion à blanc sans conflit, puis rejoué sur l’état fusionné. Il consomme le vocabulaire de jet et hérite des états LIVE/RECENT/OFF. <strong>La porte de déploiement reste fermée</strong>&nbsp;: restent le Roll Builder + Dice Pool, la Console, l’Info Panel, puis la passe typographique globale (échelle T1–T7, <code>UI-TYPOGRAPHY.md</code>) — ajoutée par Eric le 6 août pour que les joueurs ne voient le dock changer qu’une fois. Les joueurs gardent la release 5/6/7, qui fonctionne.</p>
+    </div>
+
+    <div class="architecture" aria-label="Architecture générale de FHPC">
+      <div class="arch-stack">
+        <button class="arch-node" type="button" data-arch="ddb" aria-pressed="false">
+          <small>Source extérieure</small><b>D&amp;D Beyond</b><span>La fiche D&amp;D standard</span>
+        </button>
+        <button class="arch-node" type="button" data-arch="player" aria-pressed="true">
+          <small>Chez chaque joueur</small><b>Site FHPC + dock</b><span>Interface, règles Fate’s Hand, jets privés</span>
+        </button>
+      </div>
+      <div class="arch-arrow" aria-hidden="true">↔</div>
+      <div class="arch-stack">
+        <button class="arch-node" type="button" data-arch="cloud" aria-pressed="false">
+          <small>Toujours disponible</small><b>Worker + KV Cloudflare</b><span>Copies cloud, campagne, rendez-vous, journal récent</span>
+        </button>
+      </div>
+      <div class="arch-arrow" aria-hidden="true">↔</div>
+      <div class="arch-stack">
+        <button class="arch-node" type="button" data-arch="table" aria-pressed="false">
+          <small>Pendant la partie</small><b>Mac du MJ + serveur de table</b><span>Vérité locale, direct, archive, miroir cloud</span>
+        </button>
+        <button class="arch-node" type="button" data-arch="above" aria-pressed="false">
+          <small>Affichage de table</small><b>Extension AboveVTT</b><span>Traduit les événements en lignes exploitables</span>
+        </button>
+      </div>
+    </div>
+    <div class="arch-detail" id="archDetail" aria-live="polite">
+      <p><strong>Site FHPC + dock.</strong> C’est le comptoir du joueur&nbsp;: il charge le personnage, calcule les jets, gère Destiny/Chaos/Arcana et affiche les panneaux. Le site est statique — comme un livre déjà imprimé — puis il appelle les autres services quand il faut lire ou écrire.</p>
+    </div>
+
+    <div class="callout depth-2">
+      <div class="mark">≠</div>
+      <p><strong>Deux sortes de “serveur”.</strong> Le Worker cloud est le bureau ouvert même quand Eric dort. Le serveur de table sur le Mac est la régie du spectacle&nbsp;: il n’existe que pendant la séance, mais il livre les jets presque instantanément.</p>
+    </div>
+  </section>
+
+  <section id="state">
+    <div class="section-head">
+      <div><p class="kicker">En place</p><h2>La photo exacte du chantier</h2></div>
+      <p>Cette photo distingue le code présent sur <code>main</code> du code effectivement déployé. Des tests verts prouvent un socle&nbsp;; la mise en production reste une décision séparée.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Grande partie</th><th>État réel</th><th>Ce qu’Eric peut en attendre</th><th>Preuve</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Manuel + dock FHPC</strong><small>MkDocs sur GitHub Pages</small></td><td><span class="status st-live">En production</span></td><td>Le manuel et le Companion sont servis comme des fichiers web statiques.</td><td><span class="evidence ev-code">✓ code + Git</span></td></tr>
+          <tr><td><strong>Cœur du Companion</strong><small>Jets, Destiny, Chaos, Arcana, état</small></td><td><span class="status st-live">Stable sur <code>main</code></span></td><td>Le moteur commun passe dans l’ensemble intégré de 19 suites, durci par la chasse adversariale du paquet 9 et porteur du vocabulaire de jet.</td><td><span class="evidence ev-code">✓ code + tests</span></td></tr>
+          <tr><td><strong>Ceinture de panneaux</strong><small>Skills · Traits · Actions · Spells · Gear · Craft · Notes</small></td><td><span class="status st-live">En production</span></td><td>Chaque panneau peut évoluer dans son propre fichier sans réécrire tout le moteur.</td><td><span class="evidence ev-code">✓ registre + contrat</span></td></tr>
+          <tr><td><strong>Skills</strong></td><td><span class="status st-live">Complet dans le cœur</span></td><td>Tests de compétence, console avancée et roller partagé.</td><td><span class="evidence ev-code">✓ code</span></td></tr>
+          <tr><td><strong>Notes</strong></td><td><span class="status st-live">Fonctionnel</span></td><td>Texte sauvegardé dans l’état propre au panneau. Le commentaire d’en-tête dit encore “not built”, mais le code est bien actif.</td><td><span class="evidence ev-code">✓ code lu</span></td></tr>
+          <tr><td><strong>Gear et Craft</strong></td><td><span class="status st-warn">Raccourcis seulement</span></td><td>Les onglets ouvrent les outils d’inventaire et de Soulforge déjà existants&nbsp;; leurs panneaux complets restent à faire.</td><td><span class="evidence ev-code">✓ code</span></td></tr>
+          <tr><td><strong>Tarot majeur</strong></td><td><span class="status st-live">En production</span></td><td>22 cartes, art présent, carte distribuée face cachée puis retournée au clic, choix conserver/changer.</td><td><span class="evidence ev-code">✓ données + images</span></td></tr>
+          <tr><td><strong>Worker cloud</strong><small>Campagnes, profils, inventaire, rendez-vous</small></td><td><span class="status st-live">Code opérationnel</span></td><td>La copie cloud reste disponible hors séance. 28 tests Worker rejoués avec succès.</td><td><span class="evidence ev-code">✓ code + tests</span></td></tr>
+          <tr><td><strong>Serveur de table sur le Mac</strong></td><td><span class="status st-live">Sur <code>main</code></span></td><td>Direct WebSocket, archive locale, chargement initial depuis le cloud et miroir des écritures. 56/56 tests.</td><td><span class="evidence ev-code">✓ code + tests</span></td></tr>
+          <tr><td><strong>Propriété des personnages</strong></td><td><span class="status st-live">Validée</span></td><td>Le Mac possède la copie locale pendant la séance&nbsp;; les conflits de révision sont refusés au lieu d’écraser silencieusement.</td><td><span class="evidence ev-code">✓ code</span> <span class="evidence ev-plan">◷ essai réel consigné</span></td></tr>
+          <tr><td><strong>Pont AboveVTT</strong></td><td><span class="status st-live">Fusionné</span></td><td>Le pont est dans le <code>main</code> de <code>fh-table</code> (<code>b36c94a</code>, PR #1) après la porte réelle. Il n’atteint un MJ que si l’extension est installée à la main — la fusion seule ne change rien pour personne.</td><td><span class="evidence ev-code">✓ merge + tests</span> <span class="evidence ev-plan">◷ live gate</span></td></tr>
+          <tr><td><strong>Vocabulaire de jet</strong><small>Sources · badges · Ruling</small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Le langage partagé d’un jet, déclaré une fois&nbsp;: chaque surface lit les mêmes jetons, les mêmes badges et le même verdict au lieu de les recalculer chacune à sa façon.</td><td><span class="evidence ev-review">⚑ merge <code>2e356d2</code> vérifié</span></td></tr>
+          <tr><td><strong>Superposition des zones + zoom</strong></td><td><span class="status st-live">Sur <code>main</code></span></td><td>Zoom 80–150&nbsp;% avec auto-ajustement, référence 425×680&nbsp;; tout grandit ensemble, rien ne peut se plier.</td><td><span class="evidence ev-review">⚑ vérifié en clone (3 août)</span></td></tr>
+          <tr><td><strong>Moteur de jets — chasse adversariale</strong><small>Paquet 9</small></td><td><span class="status st-live">Corrigé sur <code>main</code></span></td><td>Quatre défauts réels trouvés et tenus par 162 lignes de tests — dont un jet marqué « livré » avant de l’être, perdu définitivement sur une panne réseau passagère.</td><td><span class="evidence ev-code">✓ tests adversariaux</span></td></tr>
+          <tr><td><strong>Dice Tray</strong><small>Zone 9 · la surface partagée</small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Cinq bandes nommées (vivante, courante, profonde, vide), le Dice Pool compté sur la bande, le tray déployé pour l’historique des dés en grand. Consomme le vocabulaire de jet, hérite de LIVE/RECENT/OFF. 47 commits, fusion <code>79195ea</code>.</td><td><span class="evidence ev-review">⚑ clone indépendant 19/19 + fusion à blanc</span></td></tr>
+          <tr><td><strong>Base SRD 5.2.1</strong><small>Dépôt public <code>fh-srd</code></small></td><td><span class="status st-live">Complète · EN LIGNE</span></td><td>2&nbsp;553 records, deux langues (1&nbsp;274 EN + 1&nbsp;279 FR, 12 types), descriptions comprises. Le site de référence est public&nbsp;: <code>noirchicot.github.io/fh-srd</code>, une ancre par record, attribution stricte SRD. Le branchement des panneaux attend la fin des lots dock.</td><td><span class="evidence ev-review">⚑ relu byte-identique depuis Pages</span></td></tr>
+          <tr><td><strong>Traits V1</strong><small>head validé <code>3ecd981</code></small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Suivi manual-first des traits, récupération par repos et cibles mobiles d’au moins 44&nbsp;px. Le cœur reste intact.</td><td><span class="evidence ev-code">✓ merge <code>888a6dd</code></span></td></tr>
+          <tr><td><strong>Actions V1</strong><small>head validé <code>575bfde</code></small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Économie Action/Bonus/Réaction et identifiants dupliqués ou réservés réparés. Les données d’armes et d’actions restent manuelles.</td><td><span class="evidence ev-code">✓ merge <code>888a6dd</code></span></td></tr>
+          <tr><td><strong>Spells V1</strong><small>head corrigé <code>fd8e635</code></small></td><td><span class="status st-live">Sur <code>main</code> · PASS</span></td><td>Stores nuls ou corrompus, niveaux 1–9, dédoublonnage et identifiants proches de <code>MAX_SAFE_INTEGER</code> sont bornés. L’import personnage reste limité à <code>{name, level}</code>.</td><td><span class="evidence ev-code">✓ merge <code>888a6dd</code></span></td></tr>
+          <tr><td><strong>Intégration des trois V1</strong></td><td><span class="status st-live">PASS sur <code>main</code></span></td><td>Les trois blocs CSS sont conservés dans l’ordre Traits → Actions → Spells. 14/14, build strict, adversarial et visuel ont été contre-vérifiés au commit intégré.</td><td><span class="evidence ev-review">⚑ porte complète PASS</span></td></tr>
+          <tr><td><strong>Arcanes mineurs + Brick</strong></td><td><span class="status st-off">Pas construit</span></td><td>La règle est décidée&nbsp;: un Brick est une trace narrative, sans mécanique de dépense. L’interface n’existe pas encore.</td><td><span class="evidence ev-plan">◷ plan</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="depth-2" style="color:var(--muted);margin-top:12px"><strong>Nuance de déploiement.</strong> <code>gh-pages</code> sert la release 5/6/7 (“Deployed d947dd7”, 1er août). Depuis, <code>main</code> accumule volontairement des changements non déployés — superposition, zoom, paquet 9, vocabulaire — derrière la porte de déploiement&nbsp;: le bas du dock change comme un tout, et livrer un dock à moitié migré serait pire que ne rien livrer. Cet écart entre <code>main</code> et le site est un choix, pas une alerte.</p>
+  </section>
+
+  <section id="flows">
+    <div class="section-head">
+      <div><p class="kicker">Comment cela fonctionne</p><h2>Trois histoires concrètes</h2></div>
+      <p>Choisis un scénario. Chaque boîte est un lieu ou une responsabilité, pas un détail technique.</p>
+    </div>
+    <div class="flow-shell">
+      <div class="flow-tabs" role="tablist" aria-label="Scénarios">
+        <button type="button" role="tab" data-flow="roll" aria-selected="true">Un joueur lance un dé</button>
+        <button type="button" role="tab" data-flow="profile" aria-selected="false">Une fiche est modifiée</button>
+        <button type="button" role="tab" data-flow="panel" aria-selected="false">Un panneau est ajouté</button>
+      </div>
+
+      <div class="flow-panel" data-flow-panel="roll" role="tabpanel">
+        <div class="flow-line">
+          <div class="flow-step"><b>1 · Préparation privée</b><small>Le joueur règle avantage, bonus, Destiny. Personne ne voit ses hésitations.</small></div>
+          <div class="flow-step"><b>2 · Verdict local</b><small>Le cœur résout le d20, Natural 1/20, Chaos, ajustements et révisions.</small></div>
+          <div class="flow-step"><b>3 · Événement public</b><small>Le résultat devient un paquet <code>fh-event/1</code> avec une face lisible et une face machine.</small></div>
+          <div class="flow-step"><b>4 · Direct de table</b><small>En LIVE, un POST monte vers le Mac et un WebSocket redescend vers tous les docks.</small></div>
+          <div class="flow-step"><b>5 · Traduction</b><small>Le serveur copie vers le cloud et l’extension écrit une ligne résolue dans AboveVTT.</small></div>
+        </div>
+        <p class="flow-note depth-2"><strong>Pourquoi le jet peut être révisé&nbsp;?</strong> Après le résultat, un joueur peut encore ajouter un dé autorisé. Le même <code>rollId</code> reçoit alors <code>rev:1</code> et remplace la ligne précédente au lieu d’en créer une deuxième.</p>
+        <div class="state-strip depth-2">
+          <div class="state-live"><b>LIVE</b><span>Le Mac répond&nbsp;: direct actif, écriture uniquement vers lui.</span></div>
+          <div class="state-recent"><b>RECENT</b><span>Pas de table active&nbsp;: journal cloud étiqueté comme retardé, chargé à la demande.</span></div>
+          <div class="state-off"><b>OFF</b><span>Une table est annoncée mais injoignable&nbsp;: aucun repli silencieux, le problème est montré.</span></div>
+        </div>
+      </div>
+
+      <div class="flow-panel" data-flow-panel="profile" role="tabpanel" hidden>
+        <div class="flow-line">
+          <div class="flow-step"><b>1 · Lecture</b><small>Le dock reçoit le personnage et son numéro de version, par exemple révision 12.</small></div>
+          <div class="flow-step"><b>2 · Modification</b><small>Le joueur change sa CA et renvoie “je pars de la révision 12”.</small></div>
+          <div class="flow-step"><b>3 · Contrôle</b><small>Le serveur compare avec sa version actuelle.</small></div>
+          <div class="flow-step"><b>4 · Accepté ou refusé</b><small>Si 12 correspond, il écrit 13. Sinon, réponse 409&nbsp;: conflit.</small></div>
+          <div class="flow-step"><b>5 · Miroir</b><small>En séance, le Mac pousse aussitôt la nouvelle révision vers le cloud.</small></div>
+        </div>
+        <p class="flow-note depth-2"><strong>Analogie.</strong> C’est le ticket numéroté d’un vestiaire. On ne rend le manteau que si le ticket présenté correspond encore au manteau attendu. Un ancien ticket ne détruit jamais le contenu actuel.</p>
+      </div>
+
+      <div class="flow-panel" data-flow-panel="panel" role="tabpanel" hidden>
+        <div class="flow-line">
+          <div class="flow-step"><b>1 · Fichier dédié</b><small>Actions, Traits ou Spells possède son propre fichier.</small></div>
+          <div class="flow-step"><b>2 · Enregistrement</b><small>Le fichier déclare son nom, son ordre, sa couleur et s’il utilise le roller.</small></div>
+          <div class="flow-step"><b>3 · Petit contrat</b><small>Le cœur fournit personnage, sauvegarde, notes, jet rapide et console.</small></div>
+          <div class="flow-step"><b>4 · Corps indépendant</b><small>Le panneau dessine son contenu et gère ses propres clics.</small></div>
+          <div class="flow-step"><b>5 · Filet de sécurité</b><small>Une erreur dans le panneau est affichée dans sa zone au lieu de faire tomber tout le dock.</small></div>
+        </div>
+        <p class="flow-note depth-2"><strong>Résultat architectural.</strong> Une équipe peut travailler sur Actions pendant qu’une autre travaille sur Spells. Le gros fichier central reste protégé. La feuille de style reste commune&nbsp;: deux conflits CSS additifs sont inévitables à l’intégration. Ils ne demandent pas de choisir un gagnant, mais de conserver explicitement les trois blocs dans l’ordre Traits → Actions → Spells.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="decisions">
+    <div class="section-head">
+      <div><p class="kicker">Pourquoi ces choix</p><h2>Les décisions qui évitent les vieux pièges</h2></div>
+      <p>Ouvre seulement les sujets qui t’intéressent. Chaque choix répond à un problème observé, pas à une préférence abstraite.</p>
+    </div>
+    <div class="decision-grid">
+      <details open><summary>La ceinture comme couture de séparation</summary><div><p>Le cœur actuel fait 3&nbsp;459 lignes. Le découper physiquement aurait risqué de casser un moteur de jets déjà fonctionnel. La ceinture a créé une couture plus petite&nbsp;: les panneaux externes s’enregistrent par un contrat d’environ quelques dizaines de lignes.</p><p><span class="evidence ev-code">✓ <code>allPanels()</code> + <code>panelContext()</code></span></p></div></details>
+      <details><summary>Le direct sur le Mac, le durable dans le cloud</summary><div><p>Le journal cloud reposait sur une liste de clés KV&nbsp;: visibilité mesurée à 22–28&nbsp;secondes et quota gratuit épuisé par le sondage toutes les 3&nbsp;secondes. Le direct a donc été déplacé vers le Mac du MJ, déjà présent pendant toute la séance. Le cloud reste la copie disponible hors partie.</p><p><span class="evidence ev-code">✓ absence de sondage périodique</span> <span class="evidence ev-plan">◷ mesures d’exploitation</span></p></div></details>
+      <details><summary>WebSocket plutôt que SSE</summary><div><p>SSE est une connexion où le serveur parle continuellement au navigateur. Elle fonctionnait en local, mais le Quick Tunnel retenait le corps de la réponse. WebSocket — un tuyau bidirectionnel permanent — a traversé le même tunnel proprement. Le POST ordinaire reste utilisé pour envoyer un jet et obtenir un accusé de réception clair.</p><p><span class="evidence ev-code">✓ client WebSocket + tests</span> <span class="evidence ev-plan">◷ mesure 57&nbsp;ms</span></p></div></details>
+      <details><summary>Deux faces pour chaque résultat</summary><div><p><code>display</code> est la phrase lisible&nbsp;: “d20 avec avantage, 12/18 → 18”. <code>intent</code> est la fiche technique&nbsp;: type de test, total, naturel, DD et verdict. AboveVTT ou un futur outil peut agir sur la seconde sans essayer de deviner le sens de la première.</p><p><span class="evidence ev-code">✓ <code>rollExport()</code> + <code>intentFor()</code></span></p></div></details>
+      <details><summary>Une seule plume à la fois</summary><div><p>Les personnages peuvent être modifiés sur le Mac et dans le cloud. Chaque document porte donc une <em>révision</em>, c’est-à-dire un numéro de version. Une écriture fondée sur une ancienne version est refusée avec un conflit 409. Il n’y a ni écrasement silencieux ni fusion magique.</p><p><span class="evidence ev-code">✓ <code>profileWrite()</code> + tests 409</span></p></div></details>
+      <details><summary>Ne jamais se rabattre en silence</summary><div><p>LIVE, RECENT et OFF ne sont pas de simples couleurs&nbsp;: ils disent explicitement où va un jet. Si une table annoncée devient injoignable, OFF n’envoie pas discrètement vers le cloud. C’est moins confortable, mais personne ne croit que le MJ a vu un résultat qui n’est jamais arrivé.</p><p><span class="evidence ev-code">✓ <code>broadcastEntry()</code> + <code>setTableState()</code></span></p></div></details>
+      <details class="depth-3"><summary>Le texte des règles vient du Vault</summary><div><p>Les chapitres du site sont générés depuis le Vault Obsidian par <code>sync_from_vault.py</code>. Modifier directement les fichiers générés serait comme corriger une photocopie&nbsp;: la prochaine synchronisation réimprimerait l’ancienne version par-dessus.</p><p><span class="evidence ev-plan">◷ règle de projet</span></p></div></details>
+      <details class="depth-3"><summary>La largeur suit le texte</summary><div><p>Le dock change de largeur selon la taille de texte choisie, pas selon la taille de l’écran. Cela évite qu’un grand moniteur crée un panneau énorme et qu’une fenêtre courte écrase la ceinture. Les planchers de taille provoquent du défilement plutôt qu’un effondrement de la mise en page.</p><p><span class="evidence ev-code">✓ CSS + variable <code>--cd-fs-pref</code></span></p></div></details>
+    </div>
+  </section>
+
+  <section id="timeline" class="depth-2">
+    <div class="section-head">
+      <div><p class="kicker">Histoire de l’architecture</p><h2>Les virages importants</h2></div>
+      <p>Le projet avance par preuves&nbsp;: une mesure peut annuler une idée pourtant raisonnable sur le papier.</p>
+    </div>
+    <div class="timeline">
+      <div class="moment"><time>Avant le 28 juillet 2026</time><h3>Un dock puissant mais monolithique</h3><p>Le moteur, l’interface, tous les panneaux et tous les clics vivaient dans un seul grand fichier. Plusieurs chantiers parallèles se gênaient.</p></div>
+      <div class="moment"><time>28 juillet</time><h3>La ceinture devient la couture</h3><p>Le registre de panneaux est figé. Notes sert de premier test et force l’ajout des événements de saisie, de changement et de perte de focus.</p></div>
+      <div class="moment"><time>28–29 juillet</time><h3>Tarot majeur et journal partagé</h3><p>Le retournement de carte arrive. Les jets deviennent des événements de campagne avec une partie lisible et une partie sémantique.</p></div>
+      <div class="moment"><time>29 juillet</time><h3>La mesure invalide le direct cloud</h3><p>KV met 22–28 secondes à rendre les nouvelles clés visibles. Le direct part sur le Mac du MJ. SSE échoue dans Quick Tunnel&nbsp;; WebSocket réussit.</p></div>
+      <div class="moment"><time>30 juillet</time><h3>Un quota tombe en production</h3><p>Le sondage cloud consomme le quota de <code>list()</code>. Correction durable&nbsp;: aucun parcours appelé par minuterie ne doit effectuer une liste KV.</p></div>
+      <div class="moment"><time>31 juillet – 1er août</time><h3>Le Mac devient propriétaire des personnages</h3><p>Eric choisit une copie locale propriétaire et une copie cloud modifiable. Les révisions et les conflits 409 rendent ce double accès sûr. Le test réel CA 15→16→15 est consigné comme réussi.</p></div>
+      <div class="moment"><time>1er août · verdict v1.1</time><h3>La première intégration révèle ses angles morts</h3><p>La revue trouve des identifiants ambigus dans Actions, des entrées nulles dans Spells et des cibles tactiles à reprendre. La fusion est reportée malgré 14/14 et un build strict vert.</p></div>
+      <div class="moment"><time>1er août · mise à jour v1.2</time><h3>Les trois panneaux sont corrigés et requalifiés</h3><p>Traits <code>3ecd981</code>, Actions <code>575bfde</code> et Spells corrigé passent leurs contrôles indépendants. Une porte combinée fraîche confirme ensuite les trois ensembles.</p></div>
+      <div class="moment"><time>1er août · release v1.3</time><h3>Traits, Actions et Spells entrent ensemble sur main</h3><p>Le merge <code>888a6dd</code> conserve les trois blocs CSS et le cœur intact. La preuve finale couvre 14/14, build strict, identifiants extrêmes et vues 1440×900, 390×844 et 360×620. Eric pousse et déploie&nbsp;: les joueurs reçoivent la release 5/6/7.</p></div>
+      <div class="moment"><time>1er–2 août</time><h3>La refonte du dock est nommée avant d’être codée</h3><p>Les dix zones et cinq attributs sont ratifiés depuis la planche d’Eric (<code>UI-TERMINOLOGY.md</code>), puis les dimensions (référence 425×680, zoom en pourcentages) et le vocabulaire de jet reçoivent chacun leur document d’autorité.</p></div>
+      <div class="moment"><time>3 août</time><h3>Deux lots entrent, la porte se ferme</h3><p>Superposition + zoom et la chasse adversariale du paquet 9 fusionnent, vérifiés séparément puis ensemble. Le pont AboveVTT est fusionné dans <code>fh-table</code>. Eric ferme la porte de déploiement&nbsp;: le bas du dock (Info Panel, Dice Pool, Console, Dice Tray, Roll Builder) partira comme un tout.</p></div>
+      <div class="moment"><time>3 août</time><h3>Le vocabulaire précède les surfaces, la base SRD ouvre son dépôt</h3><p>Le merge <code>2e356d2</code> installe jetons de source, badges dérivés et Ruling text — le langage que le Dice Tray, le Roll Builder, le Stream et les Consoles consommeront au lieu de le réinventer. En parallèle, <code>fh-srd</code> importe 339 sorts français de façon déterministe&nbsp;; la revue trouve que le texte descriptif manque, et Eric décide de tout finir en anglais d’abord.</p></div>
+      <div class="moment"><time>4 août</time><h3>Le contenu SRD est complet, deux langues</h3><p>La passe française fusionne&nbsp;: 2&nbsp;553 records, 12 types, descriptions comprises. Trouvaille au passage&nbsp;: la réédition FR de décembre 2025 contient cinq armes magiques absentes du PDF anglais — même numéro de version, contenu différent, exactement ce que le pin par hash existait pour attraper.</p></div>
+      <div class="moment"><time>5 août</time><h3>Le SRD passe en ligne, le dépôt devient public</h3><p>Décisions d’Eric&nbsp;: site Pages propre à <code>fh-srd</code> (la frontière de licence reste la frontière de dépôt), attribution stricte SRD, dépôt rendu public après scan. Le site sert 26 pages, une ancre par record, relu byte-identique depuis Pages. Le contrat d’URL <code>{lang}/{kind}/#{slug}</code> est figé pour les liens du Companion.</p></div>
+      <div class="moment"><time>6 août</time><h3>Les tailles reçoivent des noms, le Dice Tray fusionne</h3><p><code>UI-TYPOGRAPHY.md</code> est ratifié&nbsp;: sept crans T1–T7 (T1 le plus petit), quatre bandes en états nommés, et la leçon payée le jour même — la première échelle avait manqué la taille la plus peuplée du dock en inventoriant par noms de sélecteurs. Le soir, le Dice Tray entre sur <code>main</code> (<code>79195ea</code>, 47 commits)&nbsp;: quatrième des six items de la porte.</p></div>
+      <div class="moment"><time>7 août</time><h3>Les dés reçoivent leurs mots, et la zone récupère son sixième dé</h3><p>Le lot <code>R34-R39</code> entre sur <code>main</code> (<code>90609a4</code>)&nbsp;: trente-trois décisions ratifiées, les libellés de dés tenus à la largeur de leur objet, les deux flancs refaits, et la migration du lexique enfin terminée — l’affichage passe par une table unique (<em>Crit 20 · Fumble 1 · Crit ∞ · Fumble ∞</em>) pendant que les chaînes lues par les machines restent gelées au caractère près. Deux trouvailles de revue&nbsp;: une note de commentaire insérée en milieu de ligne avait <strong>désactivé quatre assertions</strong> — la suite restait verte parce que le garde ne tournait plus&nbsp;; et le budget de largeur du tray était en conflit avec lui-même. Eric a tranché «&nbsp;on reprend ce qu’on peut à gauche et à droite&nbsp;», et chaque côté a été <strong>mesuré au banc, pas calculé</strong>&nbsp;: le flanc droit avait 17&nbsp;px de mou, le gauche n’avait rien (il était trop court pour son propre mot le plus long, qui passait à deux lignes sans le dire). Résultat&nbsp;: une main de six dés, comme annoncé — avec zéro pixel de marge, écrit noir sur blanc dans le code.</p></div>
+    </div>
+  </section>
+
+  <section id="limits">
+    <div class="section-head">
+      <div><p class="kicker">Limites actuelles</p><h2>Ce que le Companion ne prétend pas encore faire</h2></div>
+      <p>Une limite nommée est une protection contre les fausses attentes — et une bonne entrée pour la prochaine décision.</p>
+    </div>
+    <div class="cards">
+      <article class="card"><span class="status st-warn">Données manual-first</span><h3>Traits et Actions ne viennent pas de la fiche structurée</h3><p><code>ctx.character</code> ne fournit ni traits, ni actions, ni armes structurés. Les deux panneaux conservent donc uniquement ce que le joueur saisit, sans inventer de capacité.</p></article>
+      <article class="card"><span class="status st-warn">Actions · tactile</span><h3>Les contrôles compacts restent autour de 32 × 34&nbsp;px</h3><p>Le carrousel mobile et les boutons sont utilisables dans le dock assemblé, mais ils restent plus compacts que la cible 44&nbsp;px de Traits. Cette limite est connue, pas masquée par le PASS.</p></article>
+      <article class="card"><span class="status st-warn">Spells · source minimale</span><h3>Le panneau ne fabrique pas les détails absents</h3><p>La fiche fournit au mieux <code>{name, level}</code>. Préparation, emplacements, attaque, DD, zone et dégâts restent des données manuelles explicites.</p></article>
+      <article class="card"><span class="status st-warn">Source partielle</span><h3>Les sorts ne sont pas totalement absents</h3><p><code>ctx.character.spells</code> fournit une liste minimale <code>{name, level}</code>. Elle est insuffisante pour les emplacements, DD, zones et dégâts, mais doit être reconnue et expliquée correctement.</p></article>
+      <article class="card"><span class="status st-live">CSS intégré</span><h3>La résolution additive est désormais dans main</h3><p>Les deux conflits de fin de fichier ont été résolus en conservant les blocs dans l’ordre Traits → Actions → Spells. Les fusions futures doivent préserver cet ordre.</p></article>
+      <article class="card"><span class="status st-warn">Automatisation</span><h3>Seul l’intent “check” sort du cœur</h3><p>Les formes “damage” et “spell” sont prévues, mais le cœur n’expose pas encore le crochet qui permettrait aux nouveaux panneaux de les publier.</p></article>
+      <article class="card"><span class="status st-warn">AboveVTT</span><h3>Le pont est fusionné, pas distribué</h3><p>Les lignes qu’il affiche restent liées à la session&nbsp;: AboveVTT force <code>persist:false</code>, donc elles disparaissent après rechargement de la page MJ. Et l’extension doit être installée à la main depuis <code>chrome://extensions</code> — le packaging reste une décision de produit.</p></article>
+      <article class="card"><span class="status st-off">Tarot</span><h3>Les 56 Arcanes mineurs manquent</h3><p>Le Brick est défini comme trace narrative sans coût ni bouton “dépenser”, mais ni la pioche mineure ni son carnet d’histoire ne sont construits.</p></article>
+      <article class="card"><span class="status st-warn">Infrastructure</span><h3>Quick Tunnel reste un service de test</h3><p>Le soak de quatre heures a réussi, mais veille/réveil n’a pas été testé. Un tunnel orphelin peut répondre en erreur jusqu’à expiration du rendez-vous.</p></article>
+      <article class="card depth-2"><span class="status st-warn">Récupération</span><h3>Skill Builder sait refuser, pas guider</h3><p>Si sa révision locale est perdue, le serveur protège la fiche avec un 409, mais l’outil ne propose pas encore un parcours clair pour récupérer et remplacer.</p></article>
+      <article class="card depth-2"><span class="status st-off">Multi-MJ</span><h3>Un secret administrateur global</h3><p><code>GM_TOKEN</code> donne actuellement les pleins pouvoirs sur toutes les campagnes d’une même instance Worker. Deux MJ sur la même instance partageraient donc la racine.</p></article>
+      <article class="card depth-3"><span class="status st-warn">Dette documentaire</span><h3>Quelques commentaires sont périmés</h3><p>Le commentaire du panneau Notes le dit encore non construit, et les tailles du grand fichier dans le plan datent d’avant les ajouts. Le guide privilégie les mesures relues dans le code actuel.</p></article>
+    </div>
+  </section>
+
+  <section id="next">
+    <div class="section-head">
+      <div><p class="kicker">Prochaines étapes</p><h2>Une trajectoire proposée, pas une décision cachée</h2></div>
+      <p>Cette séquence part de l’état validé sur <code>main</code> et sépare clairement observation, publication et prochain chantier.</p>
+    </div>
+    <div class="next">
+      <article><div><h3>Reconstruire le bas du dock, dans l’ordre</h3><p>✅ Dice Tray fusionné (<code>79195ea</code>). Restent&nbsp;: Roll Builder fusionné avec le Dice Pool (Destiny &amp; Dice Pool), puis la Console de skills, puis l’Info Panel (ajout au cœur, travail d’architecte). Chaque lot consomme le vocabulaire et l’échelle T au lieu de les réinventer. En dernier, avant l’ouverture de la porte&nbsp;: la passe typographique globale, close par un test qui échoue sur toute taille non nommée.</p></div><span class="evidence ev-review">⚑ ordre ratifié</span></article>
+      <article><div><h3>Rouvrir la porte de déploiement quand les cinq surfaces sont prêtes</h3><p>Rien ne part vers les joueurs avant. <code>main</code> portera des semaines de changements non déployés&nbsp;: c’est voulu.</p></div><span class="evidence ev-review">⚑ décision d’Eric</span></article>
+      <article><div><h3>Rejouer une porte après toute modification</h3><p>Conserver 19/19, le build strict, les stores anciens ou abîmés et les trois tailles de rendu comme filet de non-régression.</p></div><span class="evidence ev-review">⚑ porte architecte</span></article>
+      <article><div><h3>Base SRD&nbsp;: complète et en ligne — reste le branchement</h3><p>✅ Contenu complet deux langues, ✅ site public en ligne. Restent&nbsp;: l’appariement FR↔EN (<code>translation_of</code>), les tables de progression des classes, et le branchement des panneaux du dock sur la base (<code>sync_srd.py</code>) — après les lots dock, quand le panneau Spells pourra réellement la consommer.</p></div><span class="evidence ev-review">⚑ plan ratifié</span></article>
+      <article><div><h3>Observer les panneaux en partie réelle</h3><p>Le PASS couvre le code et le rendu simulé. L’usage prolongé des contrôles Actions compacts et des suivis manuels reste à confirmer autour de la table.</p></div><span class="evidence ev-plan">◷ essai terrain</span></article>
+      <article><div><h3>Actualiser le guide juste après chaque merge</h3><p>Le commit documentaire suivant décrit le SHA du merge qui vient d’entrer sur <code>main</code>. Il ne prétend jamais qu’une branche locale est déjà fusionnée.</p></div><span class="evidence ev-code">✓ règle de provenance</span></article>
+      <article class="depth-2"><div><h3>Ajouter ensuite le petit crochet sémantique au cœur</h3><p>Permettre aux panneaux validés de publier des intents <code>damage</code> et <code>spell</code> sans leur donner accès au gros moteur.</p></div><span class="evidence ev-prop">◇ proposition</span></article>
+      <article class="depth-2"><div><h3>Décider la distribution du pont AboveVTT</h3><p>Fusionné (<code>b36c94a</code>) après la porte réelle. Reste la décision de produit&nbsp;: packaging de l’extension, installation MJ et acceptation de la limitation de persistance.</p></div><span class="evidence ev-prop">◇ proposition</span></article>
+      <article class="depth-2"><div><h3>Poursuivre les zones encore superficielles</h3><p>Gear et Craft complets, Arcanes mineurs + Brick narratif, puis décision sur le prototype de dés. Chacun peut rester un chantier séparé grâce à la ceinture.</p></div><span class="evidence ev-prop">◇ proposition</span></article>
+    </div>
+  </section>
+
+  <section id="maintenance">
+    <div class="section-head">
+      <div><p class="kicker">Guide vivant</p><h2>Comment l’architecte met ce guide à jour</h2></div>
+      <p>Le guide change de statut seulement quand la preuve change de nature.</p>
+    </div>
+    <div class="flow-line">
+      <div class="flow-step"><b>1 · Figer la photo</b><small>Date, version du guide, commits des branches, <code>main</code> et déploiement.</small></div>
+      <div class="flow-step"><b>2 · Noter les tests</b><small>Suites par commit, état combiné et build strict — sans écrire “prêt”.</small></div>
+      <div class="flow-step"><b>3 · Attaquer les angles morts</b><small>Stores corrompus, données partielles, vieux états, tactile et erreurs de réseau.</small></div>
+      <div class="flow-step"><b>4 · Statuer</b><small>PASS ou HOLD par package, puis un verdict séparé pour l’intégration.</small></div>
+      <div class="flow-step"><b>5 · Déplacer la ligne</b><small>Branche → main → production seulement après la preuve correspondante.</small></div>
+    </div>
+    <div class="callout depth-2">
+      <div class="mark">✓</div>
+      <p><strong>Règle de rédaction.</strong> “12/12 vert” décrit le filet automatique. “PASS architecte” signifie que les cas hostiles connus ont aussi été examinés. “Validé en réel” reste réservé à un essai dans l’environnement de jeu. Ces trois phrases ne sont jamais interchangeables.</p>
+    </div>
+  </section>
+
+  <section id="glossary" class="depth-2">
+    <div class="section-head">
+      <div><p class="kicker">Petit dictionnaire</p><h2>Les mots techniques, sans brouillard</h2></div>
+      <p>Un mot peut rester technique, à condition d’être immédiatement rattaché à une image simple.</p>
+    </div>
+    <dl class="glossary">
+      <div class="term"><dt>Site statique</dt><dd>Un livre déjà imprimé&nbsp;: les pages sont prêtes avant la visite. Aucun serveur ne les fabrique à la demande.</dd></div>
+      <div class="term"><dt>Worker</dt><dd>Un petit guichet cloud toujours ouvert. Il reçoit des demandes et lit ou écrit dans KV.</dd></div>
+      <div class="term"><dt>KV</dt><dd>Une armoire à tiroirs “clé → valeur”. Très pratique pour lire un tiroir connu, moins adaptée pour énumérer sans cesse tous les tiroirs.</dd></div>
+      <div class="term"><dt>WebSocket</dt><dd>Une ligne téléphonique laissée ouverte entre navigateur et serveur, idéale pour annoncer immédiatement un nouveau jet.</dd></div>
+      <div class="term"><dt>API</dt><dd>Le guichet et son formulaire&nbsp;: une liste précise de demandes qu’un programme accepte.</dd></div>
+      <div class="term"><dt>Révision</dt><dd>Le numéro de version collé sur une fiche. Il empêche une ancienne copie d’écraser une plus récente.</dd></div>
+      <div class="term"><dt>409 Conflict</dt><dd>La réponse “ta copie est trop ancienne, recharge avant de réessayer”. C’est un refus protecteur.</dd></div>
+      <div class="term"><dt>Intent</dt><dd>La fiche technique d’un résultat, destinée aux machines, à côté de la phrase lisible par les humains.</dd></div>
+      <div class="term"><dt>Branche Git</dt><dd>Un atelier parallèle. Le travail y existe, mais n’entre pas dans la maison principale avant revue et fusion.</dd></div>
+      <div class="term"><dt>Test vert</dt><dd>Les cas écrits à l’avance réussissent. Cela ne prouve pas encore que les cas oubliés, corrompus ou tactiles fonctionnent.</dd></div>
+      <div class="term"><dt>Validation adversariale</dt><dd>Une revue qui cherche volontairement à casser le panneau avec de mauvaises données et des usages réels.</dd></div>
+      <div class="term"><dt>HOLD</dt><dd>Le travail reste dans son atelier. Il peut être prometteur et très testé, mais il n’est pas autorisé à entrer dans le site principal.</dd></div>
+    </dl>
+  </section>
+
+  <section id="sources" class="depth-3">
+    <div class="section-head">
+      <div><p class="kicker">Traçabilité</p><h2>D’où vient chaque certitude</h2></div>
+      <p>Le guide sépare volontairement test automatique, validation architecte, compte rendu d’exploitation et recommandation.</p>
+    </div>
+    <div class="source-list">
+      <article class="card"><span class="evidence ev-code">✓ code et tests automatiques</span><ul><li><code>main</code> décrit au merge <code>90609a4</code> (lot R34-R39&nbsp;; le Dice Tray lui-même est entré par <code>79195ea</code>)</li><li>Zone des dés relue sur la page construite&nbsp;: 268&nbsp;px, six dés pleine taille, régimes 56/56/72/85</li><li>Cinq bandes nommées dans le CSS, Dice Pool compté, tray déployé, <code>tests/dice-tray.test.js</code> (830 lignes) + <code>tray-expanded</code> + <code>dice-pool-resources</code></li><li>19/19 + build strict dans le worktree, un clone indépendant détaché (après <code>npm install</code> — linkedom), et l’état fusionné</li><li>Fusion à blanc sans conflit avant la fusion réelle&nbsp;; <code>launch.json</code> du harnais exclu (discipline skip-worktree)</li><li><code>fh-table</code> <code>main</code> = <code>fc7f287</code> (pont + champs bridge + garde initiative)</li><li><code>fh-srd</code> <code>main</code> = <code>3decd7c</code>, site Pages relu byte-identique</li></ul></article>
+      <article class="card"><span class="evidence ev-review">⚑ validation architecte récente</span><ul><li>Traits <code>3ecd981</code>&nbsp;: tactile 44&nbsp;px et manual-first</li><li>Actions <code>575bfde</code>&nbsp;: identités dupliquées/réservées réparées</li><li>Spells <code>fd8e635</code>&nbsp;: stores corrompus, import minimal et borne <code>MAX_SAFE_INTEGER</code></li><li>Intégration <code>4dca675</code>&nbsp;: PASS</li><li>Merge décrit <code>888a6dd</code>&nbsp;: trois panneaux présents sur <code>main</code></li><li>CSS additif Traits → Actions → Spells et vues desktop/mobile vérifiées</li></ul></article>
+      <article class="card"><span class="evidence ev-plan">◷ documenté, non rejoué en réel ici</span><ul><li>Soak WebSocket de quatre heures</li><li>Mesures 22–28&nbsp;s et ≈57&nbsp;ms</li><li>Live gate AboveVTT 1.58</li><li>Essai Yedrivel CA 15→16→15</li><li>État des déploiements Worker externes</li></ul></article>
+    </div>
+
+    <div class="callout">
+      <div class="mark">↻</div>
+      <p><strong>Principe de preuve.</strong> Un test vert garde son badge code. Un verdict PASS/HOLD reçoit le drapeau de validation architecte. Un essai de terrain reste badge plan tant qu’il n’a pas été rejoué. La version du guide avance dès qu’un de ces trois niveaux change.</p>
+    </div>
+  </section>
+
+  <section id="provenance" class="provenance" aria-labelledby="provenance-title">
+    <p class="kicker">Provenance de cette édition</p>
+    <h2 id="provenance-title">La photographie décrite, sans auto-référence</h2>
+    <p>Ce guide décrit l’état de la branche principale immédiatement après le merge du lot R34-R39 et avant son propre commit documentaire. Il ne prend pas son futur SHA comme preuve de l’état applicatif.</p>
+    <div class="provenance-grid">
+      <div><b>Version du guide</b><span>1.6</span></div>
+      <div><b>Dernière mise à jour</b><span>7 août 2026</span></div>
+      <div><b>Commit décrit</b><span><code>90609a4</code> — merge du lot R34-R39</span></div>
+      <div><b>Branche décrite</b><span><code>main</code></span></div>
+    </div>
+  </section>
+
+  <footer>
+    Guide pédagogique v1.6 · le site sert la release 5/6/7&nbsp;; la porte de déploiement est fermée jusqu’à la reconstruction du bas du dock et la passe typographique.
+  </footer>
+</main>
+
+<script>
+  (function () {
+    var guide = document.getElementById("guide");
+    document.querySelectorAll("[data-level-button]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var level = button.getAttribute("data-level-button");
+        guide.setAttribute("data-level", level);
+        document.querySelectorAll("[data-level-button]").forEach(function (other) {
+          other.setAttribute("aria-pressed", String(other === button));
+        });
+      });
+    });
+
+    var archText = {
+      ddb: "<strong>D&D Beyond.</strong> Il reste la source de la fiche D&D standard. FHPC importe ce qu’il peut, conserve les corrections manuelles, et possède surtout la couche Fate’s Hand.",
+      player: "<strong>Site FHPC + dock.</strong> C’est le comptoir du joueur : il charge le personnage, calcule les jets, gère Destiny/Chaos/Arcana et affiche les panneaux. Le site est statique — comme un livre déjà imprimé — puis il appelle les autres services quand il faut lire ou écrire.",
+      cloud: "<strong>Worker + KV.</strong> C’est le bureau toujours ouvert : personnages accessibles hors séance, inventaire, codes de campagne, adresse temporaire du Mac et journal récent. KV est excellent pour lire une clé connue, mais son ancienne utilisation de listes répétées a provoqué lenteur et quota.",
+      table: "<strong>Mac du MJ.</strong> Pendant la séance, il devient la source autoritaire : il charge la copie cloud avant de se dire prêt, conserve les fichiers locaux, diffuse les jets en direct et miroir chaque écriture vers le cloud.",
+      above: "<strong>Extension AboveVTT.</strong> Elle écoute le direct comme un spectateur privilégié et injecte des lignes déjà résolues. Elle ne relance pas les dés, donc Destiny, Chaos et les naturels restent ceux décidés par FHPC."
+    };
+    var archDetail = document.getElementById("archDetail");
+    document.querySelectorAll("[data-arch]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        document.querySelectorAll("[data-arch]").forEach(function (other) { other.setAttribute("aria-pressed", "false"); });
+        button.setAttribute("aria-pressed", "true");
+        archDetail.innerHTML = "<p>" + archText[button.getAttribute("data-arch")] + "</p>";
+      });
+    });
+
+    document.querySelectorAll("[data-flow]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var target = button.getAttribute("data-flow");
+        document.querySelectorAll("[data-flow]").forEach(function (other) { other.setAttribute("aria-selected", String(other === button)); });
+        document.querySelectorAll("[data-flow-panel]").forEach(function (panel) {
+          panel.hidden = panel.getAttribute("data-flow-panel") !== target;
+        });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

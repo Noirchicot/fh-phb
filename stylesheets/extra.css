@@ -1,0 +1,1857 @@
+/* ===== Fate's Hand PHB — theming ===== */
+/* ---- Self-hosted PHB-clone fonts (Homebrewery 5e set) ---- */
+@font-face{font-family:"Bookinsanity";src:url("../fonts/Bookinsanity.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Bookinsanity";src:url("../fonts/Bookinsanity Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Bookinsanity";src:url("../fonts/Bookinsanity Italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Bookinsanity";src:url("../fonts/Bookinsanity Bold Italic.woff2") format("woff2");font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:"Nodesto Caps Condensed";src:url("../fonts/Nodesto Caps Condensed.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Nodesto Caps Condensed";src:url("../fonts/Nodesto Caps Condensed Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Mr Eaves Small Caps";src:url("../fonts/Mr Eaves Small Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Scaly Sans";src:url("../fonts/Scaly Sans.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Scaly Sans";src:url("../fonts/Scaly Sans Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Scaly Sans Caps";src:url("../fonts/Scaly Sans Caps.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Cinzel Decorative";src:url("../fonts/Cinzel Decorative Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Solbera Imitation";src:url("../fonts/Solbera Imitation Tweak.woff2") format("woff2");font-weight:400;font-display:swap}
+
+/* ---- Palette: parchment + leather + gold ---- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #5c4326;   /* leather brown */
+  --md-primary-fg-color--light: #6b4f2a;
+  --md-primary-fg-color--dark:  #3f2e18;
+  --md-accent-fg-color:         #9c6b16;   /* burnished gold */
+  --md-default-bg-color:        #f5edda;   /* parchment */
+  --md-default-fg-color:        #2b2118;
+  --md-typeset-a-color:         #8a5a1f;
+  --fh-gold:                    #7d6535;   /* or de parchemin — désaturé le 2026-08-21 :
+                                                 #9c6b16 était à 75 % de saturation ET à
+                                                 3,9:1 de contraste, sous le plancher de 4,5.
+                                                 Ici : 40 % et 4,7:1. */
+  --fh-red:                     #58180d;   /* D&D oxblood */
+  --fh-rule:                    rgba(125,101,53,.30);
+  /* ⭐ LE HALO DU SPY — repris du builder (`--spy-halo`, fhpc/tokens.css),
+     réglé par Eric le 2026-08-27 sur les tuiles de Species et Class :
+     « pas assez visible », puis « pas mal mais un peu moins large ».
+     Les deux valeurs sont celles du builder, à l'identique. */
+  --fh-halo:                    rgba(45, 44, 42, 0.45);
+}
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color:        #1b1712;   /* dark leather */
+  --md-default-fg-color:        #e7dcc4;
+  --md-primary-fg-color:        #241c14;
+  --md-accent-fg-color:         #d8b65a;
+  --md-typeset-a-color:         #d8b65a;
+  --fh-gold:                    #bfa87e;   /* Eric : « les couleurs crachent trop, ça fait
+                                                 mal aux yeux ». #d8b65a montait à 62 % de
+                                                 saturation et 9,1:1 sur fond noir — de
+                                                 l'éblouissement sur un h1 de 50 px, répété
+                                                 58 fois dans la feuille. Ici : 34 % et 7,7:1,
+                                                 toujours au-dessus du AAA. */
+  --fh-red:                     #c97a5f;   /* lighter brick for dark bg */
+  --fh-rule:                    rgba(191,168,126,.28);
+  --fh-halo:                    rgba(255, 255, 255, 0.65);
+  --md-code-bg-color:           #2a2018;
+}
+
+/* ---- Fonts ---- */
+.md-typeset, .md-nav { font-family: "Bookinsanity", Georgia, serif; }
+.md-typeset { font-size: var(--t-body); line-height: 1.55; }
+
+/* ── LA MESURE ─────────────────────────────────────────────────────────────
+   Étape ② du mandat « touche de livre », 2026-08-21. Le texte courant plafonne
+   à 65ch (~70 signes rendus) ; au-dessus de 80 la lecture décroche, et la
+   grille du thème laissait la ligne monter à ~82. Les tables, les blocs cités
+   et les grilles gardent TOUTE la colonne : seule la prose est bornée. */
+.md-typeset p,
+.md-typeset li,
+.md-typeset blockquote > p { max-width: 65ch; }
+.md-typeset p { margin: .35em 0; }
+.md-typeset ul, .md-typeset ol { margin: .3em 0; }
+.md-typeset li { margin: 0; }
+.md-typeset table:not([class]) td,
+.md-typeset table:not([class]) th { padding: .45em .7em; line-height: 1.35; }
+.md-header__title, .md-typeset h1, .md-typeset h2 {
+  font-family: "Nodesto Caps Condensed", "Cinzel", serif; letter-spacing: .01em;
+}
+.md-typeset h3, .md-typeset h4, .md-tabs__link {
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif; letter-spacing: .02em;
+}
+
+/* ── L'ÉCHELLE DES TITRES — refaite le 2026-08-21 ────────────────────────────
+   Quatre procédés disaient la même chose : un filet, un saut de corps, une
+   couleur, un changement de fonte. La règle qui gouverne toute la convention
+   l'interdit — « only a small variation is required to establish visual
+   contrast » — et c'est une bonne part du « composite » qu'Eric décrivait :
+   quatre signaux pour une information se lisent comme du bruit avant de se
+   lire comme une hiérarchie.
+   Ce qui reste : le FILET porte le rang, la TAILLE l'accompagne par petits
+   sauts, et la COULEUR ne dit plus le rang — elle identifie le titre de page
+   et de section, elle disparaît en dessous.
+        avant                       après
+   h1   50px · or · filet 3px       40px · or · filet 3px
+   h2   38px · or · filet 2px       27px · or · filet 2px
+   h3   31px · or · filet 1px       22px ·  —  · filet 1px
+   h4   20px · or                   19px ·  —  · petites capitales
+   corps 17px                       17px
+   L'ancien h4→h3 sautait de 1,52 — plus que h3→h2. L'échelle décroît
+   maintenant régulièrement : 1,48 · 1,23 · 1,16 · 1,12. */
+
+.md-typeset h1 {
+  color: var(--fh-gold); font-weight: 700; font-size: var(--t-page);
+  text-align: center; margin-bottom: .6em;
+  border-bottom: 3px solid var(--fh-rule); padding-bottom: .25em;
+}
+.md-typeset h2 {
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+  font-weight: 700; font-size: var(--t-sec);
+  border-bottom: 2px solid var(--fh-rule); padding-bottom: .2em; margin-top: 1.9em;
+}
+[data-md-color-scheme="slate"] .md-typeset h2 { color: var(--fh-gold); }
+.md-typeset h3 {
+  color: inherit; font-weight: 600; font-size: var(--t-sub);
+  margin-top: 1.8em; padding-bottom: .15em;
+  border-bottom: 1px solid color-mix(in srgb, var(--fh-rule) 60%, transparent);
+}
+.md-typeset h4 {
+  color: inherit; opacity: .82;
+  font-weight: 600; font-size: var(--t-lead); margin-top: 1.25em; margin-bottom: .3em;
+}
+
+/* small decorative flourish under each H1 */
+.md-typeset h1::after {
+  content: "✦"; display: block; text-align: center; color: var(--fh-gold);
+  font-size: var(--t-micro); margin-top: .3em; opacity: .8;
+}
+
+/* ---- Tables: bordered, tinted header (rulebook stat-block feel) ---- */
+/* ── LES TABLES ─────────────────────────────────────────────────────────────
+   Refaites le 2026-08-21. Elles portaient une bordure, des coins arrondis et
+   des bandes zébrées : c'est une feuille de calcul, pas un livre. Aucun manuel
+   imprimé ne raye ses lignes une sur deux — il pose un filet sous l'en-tête,
+   des filets fins entre les lignes, et il laisse le blanc faire le reste.
+   Elles suivent maintenant la discipline de `.fh-srd-table`, pour que les
+   tables d'Eric et les tables citées se ressemblent enfin. */
+.md-typeset table:not([class]) {
+  border: 0;
+  border-radius: 0;
+  border-collapse: collapse;
+  font-family: "Scaly Sans", sans-serif;
+  font-size: var(--t-small);
+  font-variant-numeric: tabular-nums;
+}
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  border: 0;
+  border-bottom: 1px solid var(--fh-rule);
+}
+.md-typeset table:not([class]) th {
+  background: none;
+  color: inherit;
+  font-family: "Scaly Sans Caps", "Scaly Sans", sans-serif;
+  font-weight: 600;
+  font-size: var(--t-micro);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .62;
+  border-bottom-width: 2px;
+  white-space: nowrap;
+}
+.md-typeset table:not([class]) tr:last-child td { border-bottom: 0; }
+
+/* ---- Links & emphasis ---- */
+.md-typeset a { text-decoration-color: var(--fh-rule); }
+.md-typeset a:hover { text-decoration-color: currentColor; }
+
+/* ---- Blockquotes as illuminated callouts ---- */
+.md-typeset blockquote {
+  border-left: 3px solid var(--fh-gold);
+  background: rgba(156,107,22,.07); border-radius: 0 6px 6px 0; font-style: italic;
+}
+
+/* ---- Top nav tabs ---- */
+.md-tabs { background: var(--md-primary-fg-color--dark, var(--md-primary-fg-color)); }
+.md-tabs__link { font-family: "Mr Eaves Small Caps", serif; font-size: var(--t-small); letter-spacing: .03em; opacity: .9; }
+.md-tabs__link--active, .md-tabs__link:hover { opacity: 1; }
+
+/* ---- Landing cover title (big, above the banner) ---- */
+.md-typeset h1.fh-cover-title {
+  font-size: 3.4rem; line-height: 1.05;
+  margin: .2rem 0 1rem; padding-bottom: 0;
+  border-bottom: none;
+}
+.md-typeset h1.fh-cover-title::after { content: none; }
+@media screen and (max-width: 44.9em) {
+  .md-typeset h1.fh-cover-title { font-size: 2.3rem; }
+}
+/* 🔴 LA BARRE DU HAUT EST RENDUE À L'ACCUEIL — lot 113, 2026-08-31.
+   Eric : « oui garde la barre. Tout le long. Dégage les doublons, ne fais pas
+   sauter le bandeau pour autant. »
+   📏 MESURÉ AVANT DE TOUCHER : sur l'accueil déployé, `.md-header` rendait une
+   hauteur de 0 — c'est LA règle ci-dessous qui l'effaçait. « Tout le long »
+   veut donc dire « y compris ici », et ce n'est pas une conservation : c'est un
+   rétablissement.
+   ⛔ Le doublon qui reste (le titre en texte dans la barre, et dans l'image du
+   hero) se règle du côté de la BARRE — le bandeau, lui, reste : « ne fais pas
+   sauter le bandeau pour autant ».
+   ⭐ La nav latérale et le sommaire, eux, restent masqués sur l'accueil (par le
+   `hide:` de sa page) : les portes sont DANS la page. */
+.md-header__button.md-logo { display: none; }
+
+/* ---- Landing hero banner ---- */
+.md-typeset .fh-banner {
+  display: block; width: 100%; height: auto;
+  border-radius: 8px; margin: 0 0 1.4rem;
+  border: 1px solid var(--fh-rule);
+  box-shadow: 0 6px 22px rgba(0,0,0,.28);
+}
+
+/* ---- Landing-page hero ---- */
+.fh-hero { text-align: center; margin: 1.5rem 0 2.5rem; }
+.fh-hero .fh-sub { font-style: italic; color: var(--fh-gold); font-size: 1rem; }
+
+/* ---- Callouts / admonitions: classy rulebook aside ---- */
+.md-typeset .admonition,
+.md-typeset details {
+  border: 1px solid var(--fh-red) !important;
+  border-left: 4px solid var(--fh-red) !important;
+  border-radius: 6px;
+  background: rgba(88,24,13,.05) !important;
+  box-shadow: none !important;
+  font-size: var(--t-body);
+}
+.md-typeset .admonition > .admonition-title,
+.md-typeset details > summary {
+  background: rgba(88,24,13,.09) !important;
+  font-family: "Mr Eaves Small Caps", serif;
+  color: var(--fh-red) !important;
+  font-weight: 600; letter-spacing: .02em;
+  border: 0 !important; margin: 0;
+  padding: .45em .9em .35em .9em;
+}
+/* drop the loud per-type icon */
+.md-typeset .admonition-title::before,
+.md-typeset summary::before { display: none !important; }
+.md-typeset .admonition-title::after,
+.md-typeset summary::after { color: var(--fh-red); }
+
+/* ---- Grid cards ---- */
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--fh-rule); border-radius: 8px; background: rgba(156,107,22,.05);
+  transition: border-color .2s, transform .2s;
+}
+.md-typeset .grid.cards > ul > li:hover { border-color: var(--fh-gold); transform: translateY(-2px); }
+
+/* ---- Phase 4: spacing polish ---- */
+/* tame the wide default rule the vault chapters use as separators */
+.md-typeset hr {
+  margin: 1.1em 0;
+  border-bottom: 1px solid var(--fh-rule);
+}
+/* an hr immediately before a bordered heading is redundant — hide it */
+.md-typeset hr + h2,
+.md-typeset hr + h3 { margin-top: .8em; }
+/* tables shouldn't float with big gaps */
+.md-typeset table:not([class]) { margin: .8em 0; }
+/* tighten inside callouts */
+.md-typeset .admonition > :not(.admonition-title),
+.md-typeset details > :not(summary) { margin-top: .4em; margin-bottom: .4em; }
+.md-typeset .admonition > :last-child,
+.md-typeset details > :last-child { margin-bottom: .6em; }
+/* blockquotes a touch tighter */
+.md-typeset blockquote { padding: .2em .9em; margin: .8em 0; }
+/* first heading after H1 flourish shouldn't push down hard */
+.md-typeset h1 + h2 { margin-top: 1em; }
+
+/* ---- Landing contents cartouche ---- */
+.md-typeset .fh-toc.grid.cards > ul > li {
+  background: rgba(156,107,22,.045);
+  border: 1px solid var(--fh-rule);
+  border-top: 3px solid var(--fh-gold);
+  border-radius: 8px;
+  padding: .8rem 1rem .7rem;
+}
+.md-typeset .fh-toc.grid.cards > ul > li > p:first-child {
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: var(--t-sub); letter-spacing: .03em;
+  color: var(--fh-red); margin: 0 0 .2em;
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-toc.grid.cards > ul > li > p:first-child {
+  color: var(--fh-gold);
+}
+.md-typeset .fh-toc.grid.cards > ul > li hr {
+  margin: .3em 0 .45em; border-bottom: 1px solid var(--fh-rule);
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul {
+  list-style: none; margin: 0; padding: 0;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul li {
+  margin: 0; padding: .12em 0;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul li::before {
+  content: "✦"; color: var(--fh-gold); font-size: var(--t-micro);
+  margin-right: .55em; vertical-align: .12em;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul a {
+  color: var(--md-typeset-color); text-decoration: none;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul a:hover {
+  color: var(--fh-red); text-decoration: underline;
+  text-decoration-color: var(--fh-rule);
+}
+
+/* ---- "⌂ Home" breadcrumb on every page ---- */
+.md-typeset .fh-home {
+  display: inline-block;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: var(--t-small); letter-spacing: .04em;
+  color: var(--fh-gold); text-decoration: none;
+  border: 1px solid var(--fh-rule); border-radius: 999px;
+  padding: .05em .75em .1em; margin-bottom: .4em;
+  background: rgba(156,107,22,.05);
+}
+.md-typeset .fh-home:hover {
+  color: var(--fh-red); border-color: var(--fh-gold);
+}
+.md-typeset .fh-home + .fh-home { margin-left: .35em; }
+/* variant injected at the top of the table of contents (right sidebar) */
+.md-nav .fh-home--toc {
+  display: inline-block;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: var(--t-micro); letter-spacing: .04em;
+  color: var(--fh-gold); text-decoration: none;
+  border: 1px solid var(--fh-rule); border-radius: 999px;
+  padding: .02em .7em .08em; margin: 0 0 .45em .2em;
+  background: rgba(156,107,22,.05);
+}
+.md-nav .fh-home--toc:hover { color: var(--fh-red); border-color: var(--fh-gold); }
+
+/* ---- Destiny-group cross TOC (injected by fh-home.js) ---- */
+.md-nav .fh-group { margin-top: .15rem; }
+.md-nav .fh-group__h1 {
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: var(--t-small); letter-spacing: .03em; font-weight: 700;
+  color: var(--fh-red);
+}
+[data-md-color-scheme="slate"] .md-nav .fh-group__h1 { color: var(--fh-gold); }
+.md-nav .fh-group__h1--current {
+  border-bottom: 1px solid var(--fh-rule);
+}
+.md-nav .fh-group__subs { padding-left: .55rem; margin-bottom: .4rem; }
+/* chapter's landing-card title at the top of the TOC */
+.md-nav a.fh-group__card {
+  display: block;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: var(--t-lead); letter-spacing: .04em; font-weight: 700;
+  color: var(--fh-red); text-decoration: none;
+  margin: .25rem 0 .5rem; padding-bottom: .3rem;
+  border-bottom: 2px solid var(--fh-gold);
+}
+[data-md-color-scheme="slate"] .md-nav a.fh-group__card { color: var(--fh-gold); }
+.md-nav a.fh-group__card:hover { color: var(--fh-gold); }
+
+/* ---- Lunar Sorcerer "Roll the sky" widget ---- */
+.md-typeset .fh-sky__roll {
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  letter-spacing: .03em; color: #f5edda;
+  background: var(--md-primary-fg-color); border: 1px solid var(--fh-rule);
+  border-radius: 6px; padding: .4em 1em; cursor: pointer; margin: .4rem 0 .9rem;
+  transition: filter .15s;
+}
+.md-typeset .fh-sky__roll:hover { filter: brightness(1.12); }
+.fh-sky__grid { display: flex; flex-wrap: wrap; gap: 1rem; margin: .2rem 0 1rem; }
+.fh-moon { width: 5rem; text-align: center; }
+.fh-moon__disc {
+  width: 4rem; height: 4rem; margin: 0 auto; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Nodesto Caps Condensed", serif; font-size: 1.9rem; color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.65);
+  border: 2px solid rgba(0,0,0,.25); box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  transition: box-shadow .2s, filter .2s, opacity .2s;
+}
+.fh-moon__name { font-family: "Mr Eaves Small Caps", serif; font-size: .82rem; margin-top: .3em; }
+.fh-moon__state { font-size: .72rem; font-style: italic; opacity: .85; min-height: 1em; }
+.fh-moon--absent .fh-moon__disc { filter: grayscale(.85) brightness(.7); opacity: .4; }
+.fh-moon--absent .fh-moon__state { color: #9a958a; }
+.fh-moon--dominant .fh-moon__disc { box-shadow: 0 0 0 3px var(--fh-gold), 0 0 16px var(--fh-gold); }
+.fh-moon--dominant .fh-moon__state { color: var(--fh-gold); font-weight: 700; font-style: normal; }
+
+/* ---- No boxy inline code: this is a rulebook, not code ---- */
+/* any stray inline `code` blends into the parchment (no white square) */
+.md-typeset :not(pre) > code {
+  background: transparent !important; border: 0 !important;
+  padding: 0 !important; box-shadow: none !important;
+  color: inherit; font-size: inherit; font-family: inherit;
+}
+
+/* ---- Feats: the FH5+ edition tag under each feat heading ---- */
+.md-typeset .fh-edition { color: var(--fh-red); font-style: italic; font-size: .9em; letter-spacing: .01em; }
+[data-md-color-scheme="slate"] .md-typeset .fh-edition { color: var(--fh-gold); }
+
+/* ---- Feats: inline Fate's Hand change + superseded note ---- */
+.md-typeset .fh-add { color: var(--fh-red); font-weight: 700; letter-spacing: .01em; }
+[data-md-color-scheme="slate"] .md-typeset .fh-add { color: var(--fh-gold); }
+.md-typeset .fh-obsolete { opacity: .45; font-style: italic; font-size: .92em; }
+/* a RAW line that Fate's Hand cancels — greyed italic, smaller, ⊘ marker */
+.md-typeset .fh-cancelled { color: #9a958a; font-style: italic; font-size: .88em; }
+[data-md-color-scheme="slate"] .md-typeset .fh-cancelled { color: #6c675c; }
+.md-typeset .fh-cancelled::before {
+  content: "\2298";   /* ⊘ removed/cancelled */
+  font-style: normal; margin-right: .35em; opacity: .85;
+}
+/* collapsible flap that hides the lines Fate's Hand removes */
+.md-typeset details.fh-removed {
+  border: 0 !important; background: transparent !important; box-shadow: none !important;
+  margin: .1em 0 .4em; padding: 0; color: #9a958a;
+}
+[data-md-color-scheme="slate"] .md-typeset details.fh-removed { color: #6c675c; }
+.md-typeset details.fh-removed > summary {
+  background: transparent !important; border: 0 !important; padding: 0 !important;
+  color: inherit; font-family: "Bookinsanity", Georgia, serif !important;
+  font-style: italic; font-weight: 400; font-size: .85em; cursor: pointer; list-style: none;
+}
+.md-typeset details.fh-removed > summary::-webkit-details-marker { display: none; }
+.md-typeset details.fh-removed > summary::before { content: "" !important; margin: 0 !important; }
+.md-typeset details.fh-removed > summary::after { content: "" !important; display: none !important; -webkit-mask-image: none !important; mask-image: none !important; background: none !important; }
+.md-typeset details.fh-removed > summary { text-decoration: underline; text-decoration-color: var(--fh-rule); text-underline-offset: 2px; }
+.md-typeset details.fh-removed > div { font-style: italic; font-size: .88em; margin: .2em 0 0 1.4em; }
+[data-md-color-scheme="slate"] .md-nav a.fh-group__card:hover { color: #f0d98a; }
+
+/* ---- Hide the left navigation sidebar everywhere ---- */
+.md-sidebar--primary { display: none !important; }
+/* reclaim the space so content stays centred */
+.md-header__button.md-icon[for="__drawer"] { display: none; }
+@media screen and (min-width: 76.25em) {
+  .md-content { margin-left: auto; margin-right: auto; }
+}
+
+/* ---- Floating "⌂" button back to the menu (mobile / narrow screens) ---- */
+.fh-home--fab {
+  position: fixed; right: .9rem; bottom: .9rem; z-index: 4;
+  display: none; align-items: center; justify-content: center;
+  width: 2.6rem; height: 2.6rem; border-radius: 50%;
+  font-size: var(--t-sec); line-height: 1; text-decoration: none;
+  color: var(--fh-gold); background: var(--md-default-bg-color);
+  border: 1px solid var(--fh-gold);
+  box-shadow: 0 2px 10px rgba(0,0,0,.45);
+}
+.fh-home--fab:hover { color: var(--fh-red); border-color: var(--fh-red); }
+/* show it only when the right TOC (which carries ⌂ Home) is hidden */
+@media screen and (max-width: 59.9843em) {
+  body:not(.fh-home-page) .fh-home--fab { display: flex; }
+}
+
+/* ---- landing-card banner images & in-chapter illustrations ---- */
+.md-typeset .fh-toc img.fh-card-img {
+  display: block; width: 100%; height: auto;
+  border-radius: 6px; margin: .5rem 0 .2rem;
+  border: 1px solid var(--fh-rule);
+}
+.md-typeset img.fh-illus {
+  display: block; width: 100%; height: auto;
+  border-radius: 8px; margin: .9rem 0 1.2rem;
+  border: 1px solid var(--fh-rule);
+  box-shadow: 0 6px 22px rgba(0,0,0,.28);
+}
+
+/* ---- cover: title overlaid on the banner image ---- */
+.md-typeset .fh-cover { position: relative; margin: 0 0 1.2rem; }
+.md-typeset .fh-cover .fh-banner { margin: 0; }
+.md-typeset .fh-cover::after {
+  content: none;
+}
+.md-typeset .fh-cover h1.fh-cover-title {
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+@media screen and (max-width: 44.9em) {
+
+}
+
+/* ---- landing cards: title overlaid on the card banner ---- */
+.md-typeset .fh-toc .fh-card-hero {
+  display: block; position: relative;
+  margin: -0.8rem -0.8rem .55rem; overflow: hidden;
+  border-radius: .18rem .18rem 0 0;
+}
+.md-typeset .fh-toc .fh-card-hero img {
+  display: block; width: 100%; height: auto; margin: 0;
+}
+.md-typeset .fh-toc .fh-card-hero .fh-card-title {
+  position: absolute; left: 0; right: 0; top: 0; z-index: 2;
+  padding: .3rem .7rem 1.5rem; text-align: center;
+  background: linear-gradient(to bottom, rgba(10,7,4,.88) 0%, rgba(10,7,4,.35) 60%, transparent 100%);
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: var(--t-lead); font-weight: 700; letter-spacing: .06em;
+  color: #f0dfae; text-shadow: 0 1px 4px rgba(0,0,0,.9);
+}
+
+/* --- species portraits — floated beside each species' lore --- */
+.md-typeset .fh-portrait {
+  float: right;
+  width: min(230px, 42%);
+  margin: .3rem 0 .9rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--fh-rule);
+  height: auto;
+  box-shadow: 0 6px 22px rgba(0,0,0,.28);
+}
+.md-typeset h2 { clear: both; }
+
+/* --- species menu: the same portrait, small, beside its blurb ---
+   Eric, 2026-08-17 : « une page de menu résumé identique au blurb (rien de
+   plus, pas de stats) plus petite image + lien vers page complète ». */
+.md-typeset .fh-thumb {
+  float: right;
+  width: min(128px, 30%);
+  margin: .2rem 0 .6rem .9rem;
+  border-radius: 6px;
+  border: 1px solid var(--fh-rule);
+  height: auto;
+  box-shadow: 0 4px 14px rgba(0,0,0,.26);
+}
+
+/* --- le marqueur d'écart FH ---
+   Sur une page fusionnée, le texte NON marqué est du SRD mot pour mot ; la
+   pastille ne signale que ce que Fate's Hand ajoute ou change. Elle est posée
+   par `sync_from_vault.py`, qui convertit le `*(FH)*` de la note du vault —
+   la note reste du markdown propre, lisible dans Obsidian. */
+.md-typeset .fh-tag {
+  display: inline-block;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: .68em; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .05em .4em; margin-left: .15em;
+  vertical-align: .12em;
+  color: var(--fh-gold);
+  border: 1px solid var(--fh-gold);
+  border-radius: 2px;
+  line-height: 1.5;
+}
+
+/* --- species chapter banner: full-bleed under the H1 --- */
+.md-typeset img.fh-banner {
+  margin: .4rem 0 1.4rem;
+}
+
+/* ---- "Create a Character" highlight (home card + left nav) ---- */
+.md-typeset .fh-toc a.fh-hot {
+  color: var(--fh-gold) !important;
+  font-family: "Mr Eaves Small Caps", "Cinzel", serif;
+  font-size: var(--t-sub); letter-spacing: .04em;
+  text-shadow: 0 0 12px rgba(200,148,42,.35);
+}
+.md-typeset .fh-toc a.fh-hot:hover { color: var(--fh-red) !important; }
+.md-nav--primary .md-nav__link[href$="builder/"],
+.md-nav--primary .md-nav__link[href$="../builder/"] {
+  color: var(--fh-gold);
+  font-weight: 700;
+}
+
+/* ---- "My Character" — compact Soulforging cockpit ---- */
+.md-typeset .fh-toc.grid.cards > ul > li.fh-mychar-card {
+  --mc-ink:#f3eee2; --mc-muted:#a9b1b7; --mc-night:#10171d; --mc-panel:#18232b;
+  --mc-panel-2:#202e37; --mc-red:#9d3935; --mc-red-bright:#cc5a50; --mc-gold:#d6aa55;
+  padding:.55rem !important; overflow:visible;
+  background:linear-gradient(155deg,#182229 0%,#0d1419 72%) !important;
+  border:1px solid #71302e !important; border-top:3px solid var(--mc-red) !important;
+  box-shadow:0 9px 25px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.04);
+  transform:none;
+}
+.md-typeset .fh-toc.grid.cards > ul > li.fh-mychar-card:hover { border-color:var(--mc-red-bright) !important; transform:none; }
+.fh-mychar-card > .fh-card-hero { display:none !important; }
+.fh-mychar { display:block; color:var(--mc-ink); font-family:"Scaly Sans",system-ui,sans-serif; }
+.fh-mc-shell,.fh-mc-panel,.fh-mc-setup,.fh-mc-status { display:block; }
+.fh-mc-brand { display:flex; align-items:center; gap:.45rem; margin:.05rem .1rem .5rem; color:var(--mc-gold); font:700 .75rem "Mr Eaves Small Caps",serif; letter-spacing:.15em; }
+.fh-mc-brand i { flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--mc-red)); }
+.fh-mc-brand i:last-child { background:linear-gradient(90deg,var(--mc-red),transparent); }
+.fh-mc-setup { display:grid; grid-template-columns:.9fr 1.25fr; gap:.35rem; margin-bottom:.25rem; }
+.fh-mychar input,.fh-mychar select,.fh-mc-modal input,.fh-mc-modal select,.fh-mc-modal textarea {
+  width:100%; min-width:0; margin:0; color:var(--mc-ink); background:#111a20;
+  border:1px solid #49565e; border-radius:3px; padding:.34rem .42rem;
+  font:500 .63rem "Scaly Sans",system-ui,sans-serif; box-shadow:inset 0 1px 4px rgba(0,0,0,.32);
+}
+.fh-mychar input:focus,.fh-mychar select:focus,.fh-mc-modal input:focus,.fh-mc-modal select:focus,.fh-mc-modal textarea:focus { outline:1px solid var(--mc-gold); border-color:var(--mc-gold); }
+.fh-mc-status { min-height:.9rem; padding:.05rem .1rem .25rem; color:var(--mc-muted); font-size:.56rem; }
+.fh-mc-status.is-err { color:#ff8e83; }.fh-mc-status.is-ok { color:#83d8a0; }
+.fh-mc-empty { display:flex; align-items:center; justify-content:center; min-height:7rem; padding:1rem; border:1px dashed #455159; color:var(--mc-muted); text-align:center; font-size:.63rem; }
+.fh-mc-identity { display:grid; grid-template-columns:2.7rem 1fr auto; gap:.42rem; align-items:center; position:relative; padding:.48rem; border:1px solid #3e4a52; background:linear-gradient(120deg,#24333c,#172128); }
+.fh-mc-identity::before,.fh-mc-identity::after { content:""; position:absolute; width:.7rem; height:.7rem; pointer-events:none; }
+.fh-mc-identity::before { left:-1px; top:-1px; border-left:2px solid var(--mc-red-bright); border-top:2px solid var(--mc-red-bright); }
+.fh-mc-identity::after { right:-1px; bottom:-1px; border-right:2px solid var(--mc-red-bright); border-bottom:2px solid var(--mc-red-bright); }
+.fh-mc-portrait { width:2.7rem; height:2.7rem; object-fit:cover; border-radius:50%; border:2px solid var(--mc-red); box-shadow:0 0 0 2px #10171d,0 0 12px rgba(204,90,80,.28); }
+.fh-mc-person { display:block; min-width:0; line-height:1.12; }
+.fh-mc-person b { display:block; overflow:hidden; text-overflow:ellipsis; color:#fff6e8; font:700 .86rem "Mr Eaves Small Caps",serif; white-space:nowrap; letter-spacing:.025em; }
+.fh-mc-person small,.fh-mc-person i { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fh-mc-person small { margin-top:.12rem; color:#c4cbd0; font-size:.55rem; }.fh-mc-person i { margin-top:.2rem; color:#7f909a; font-size:.48rem; font-style:normal; }
+.fh-mc-badges { display:flex; gap:.24rem; }
+.fh-mc-badges > span { display:flex; flex-direction:column; align-items:center; justify-content:center; width:2rem; height:2.2rem; background:#f4efe3; color:#211c18; border:2px solid var(--mc-red); clip-path:polygon(18% 0,82% 0,100% 18%,100% 82%,82% 100%,18% 100%,0 82%,0 18%); }
+.fh-mc-badges small { font-size:.36rem; line-height:1; letter-spacing:.06em; }.fh-mc-badges b { font-size:.82rem; line-height:1.1; }
+.fh-mc-actions { grid-column:1/-1; display:grid; grid-template-columns:repeat(auto-fit,minmax(0,1fr)); gap:.3rem; margin-top:.1rem; }
+.fh-mc-actions button,.fh-mc-die,.fh-mc-modal button,.fh-mc-pending button { border:1px solid #67534a; border-radius:3px; background:#2b211e; color:#ead9bc; cursor:pointer; font:600 .55rem "Scaly Sans",sans-serif; }
+.fh-mc-actions button { padding:.27rem .4rem; }.fh-mc-actions button:last-child { border-color:#785c29; background:#40301f; color:#f2ce7d; }
+.fh-mc-actions button:hover,.fh-mc-die:hover,.fh-mc-modal button:hover { border-color:var(--mc-gold); filter:brightness(1.15); }.fh-mc-actions button:disabled { opacity:.6; cursor:wait; }
+.fh-mc-abilities { display:grid; grid-template-columns:repeat(6,1fr); gap:.18rem; margin:.35rem 0; }
+.fh-mc-ability { display:grid; grid-template-columns:1fr auto; padding:.25rem .17rem .2rem; background:#f2eee4; color:#211c18; border:1px solid #71302e; text-align:center; clip-path:polygon(12% 0,88% 0,100% 12%,100% 88%,88% 100%,12% 100%,0 88%,0 12%); }
+.fh-mc-ability small { grid-column:1/-1; color:#7d2c29; font-size:.39rem; font-weight:800; letter-spacing:.05em; }.fh-mc-ability b { justify-self:end; font-size:.69rem; line-height:1; }.fh-mc-ability i { justify-self:start; margin-left:.08rem; color:#716961; font-size:.45rem; font-style:normal; }
+.fh-mc-target { display:grid; grid-template-columns:1fr 3.4rem; gap:.32rem; margin-bottom:.38rem; padding:.36rem; background:#131d23; border:1px solid #39464e; }
+.fh-mc-target label,.fh-mc-field,.fh-mc-modal label { display:block; margin:0; }.fh-mc-target label > span,.fh-mc-field > span,.fh-mc-modal label > span { display:block; margin-bottom:.14rem; color:var(--mc-gold); font-size:.48rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+.fh-mc-accordions { display:grid; gap:.26rem; }
+.fh-mc-accordion { display:block; border:1px solid #3d4951; background:#121b21; }
+.fh-mc-accordion.is-open { border-color:#773431; box-shadow:inset 2px 0 var(--mc-red); }
+.fh-mc-accordion-head { display:grid; grid-template-columns:1.55rem 1fr auto; gap:.28rem; align-items:center; width:100%; padding:.32rem .4rem; color:var(--mc-ink); background:transparent; border:0; text-align:left; cursor:pointer; }
+.fh-mc-accordion-head:hover { background:#1d2930; }.fh-mc-step-icon { display:grid; place-items:center; width:1.35rem; height:1.35rem; color:var(--mc-gold); border:1px solid #6f4e2c; border-radius:50%; font-size:.72rem; }
+.fh-mc-accordion-head b { display:block; font:700 .68rem "Mr Eaves Small Caps",serif; letter-spacing:.04em; }.fh-mc-accordion-head small { display:block; margin-top:.03rem; color:var(--mc-muted); font-size:.47rem; }.fh-mc-chevron { color:var(--mc-red-bright); transform:rotate(0); transition:transform .15s; }
+.fh-mc-accordion.is-open .fh-mc-chevron { transform:rotate(180deg); }.fh-mc-accordion-body { display:none; padding:.1rem .4rem .42rem; }.fh-mc-accordion.is-open .fh-mc-accordion-body { display:block; }
+.fh-mc-skill { display:grid; grid-template-columns:.55rem 1fr auto 1.7rem 2.45rem; gap:.24rem; align-items:center; padding:.3rem .18rem; border-top:1px solid #303c43; }
+.fh-mc-skill.is-active { background:linear-gradient(90deg,rgba(204,90,80,.14),transparent); }.fh-mc-star { color:var(--mc-gold); font-size:.58rem; }
+.fh-mc-skill-name { min-width:0; }.fh-mc-skill-name b { display:block; overflow:hidden; text-overflow:ellipsis; color:#fff3df; font-size:.59rem; white-space:nowrap; }.fh-mc-skill-name small { display:block; overflow:hidden; text-overflow:ellipsis; color:var(--mc-muted); font-size:.43rem; white-space:nowrap; }
+.fh-mc-bonus { color:var(--mc-gold); font-size:.7rem; }.fh-mc-die { width:1.65rem; height:1.4rem; padding:0; color:#fff4dd; border-color:var(--mc-red); background:#422321; font-size:.43rem; }.fh-mc-result { color:#e8d8b9; font-size:.48rem; font-weight:700; white-space:nowrap; }.fh-mc-result.is-crit { color:#66e692; }.fh-mc-result.is-fail { color:#ff6d65; }
+.fh-mc-rule { margin:.25rem .18rem 0 !important; color:#92a0a8; font-size:.48rem; line-height:1.32; }
+.fh-mc-dc { display:grid; grid-template-columns:1fr auto; align-items:center; margin-top:.25rem; padding:.35rem .45rem; color:#e8ddc9; background:#1d292f; border-left:2px solid var(--mc-gold); }.fh-mc-dc span { font:700 .58rem "Mr Eaves Small Caps",serif; }.fh-mc-dc strong { grid-row:1/3; grid-column:2; color:var(--mc-gold); font-size:1rem; }.fh-mc-dc small { color:var(--mc-muted); font-size:.43rem; }
+.fh-mc-checks { display:grid; grid-template-columns:1fr 1fr; gap:.3rem; margin:.2rem 0 .35rem; }.fh-mc-checks label { display:flex; align-items:center; gap:.26rem; padding:.3rem; color:#ddd3c3; background:#1b272e; border:1px solid #3c4a52; font-size:.52rem; }.fh-mc-checks input { width:auto; accent-color:var(--mc-red-bright); }
+.fh-mc-field input { margin-bottom:.32rem; }.fh-mc-spells > small { display:block; margin-bottom:.18rem; color:var(--mc-gold); font-size:.47rem; text-transform:uppercase; }.fh-mc-spells > div { display:flex; gap:.2rem; flex-wrap:wrap; }
+.fh-mc-chip { padding:.12rem .3rem; border:1px solid #56636a; border-radius:999px; color:#d9d1c4; background:#1d2930; font-size:.45rem; }.fh-mc-muted { color:#829099; font-size:.48rem; font-style:italic; }
+.fh-mc-footer { display:grid; grid-template-columns:1fr 1.35fr .75fr; gap:.25rem; margin-top:.4rem; }.fh-mc-footer a { padding:.3rem .2rem; color:#d8d3c9 !important; border:1px solid #46535a; border-radius:3px; text-align:center; text-decoration:none !important; font:600 .5rem "Mr Eaves Small Caps",serif; white-space:nowrap; }.fh-mc-footer a:hover { border-color:var(--mc-gold); color:var(--mc-gold) !important; }.fh-mc-footer .is-primary { color:#fff0d1 !important; border-color:#8a5924; background:#4b331e; }.fh-mc-footer .is-off { opacity:.35; cursor:not-allowed; }
+
+/* My Character dialogs live outside the card, so they carry their own palette. */
+.fh-mc-modal-wrap { --mc-ink:#f3eee2; --mc-muted:#a9b1b7; --mc-night:#10171d; --mc-red:#9d3935; --mc-red-bright:#cc5a50; --mc-gold:#d6aa55; position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:1rem; background:rgba(4,7,9,.82); backdrop-filter:blur(4px); }
+.fh-mc-modal { position:relative; width:min(31rem,100%); max-height:90vh; overflow:auto; padding:1rem; color:var(--mc-ink); background:linear-gradient(145deg,#1d2a32,#0f171c); border:1px solid var(--mc-red); border-top:3px solid var(--mc-red-bright); box-shadow:0 20px 70px rgba(0,0,0,.65); font-family:"Scaly Sans",system-ui,sans-serif; }
+.fh-mc-modal::before,.fh-mc-modal::after { content:""; position:absolute; width:1rem; height:1rem; pointer-events:none; }.fh-mc-modal::before { left:.35rem; top:.35rem; border-left:1px solid var(--mc-gold); border-top:1px solid var(--mc-gold); }.fh-mc-modal::after { right:.35rem; bottom:.35rem; border-right:1px solid var(--mc-gold); border-bottom:1px solid var(--mc-gold); }
+.fh-mc-modal h3 { margin:.05rem 0 .6rem; color:#fff2d9; border:0; font:700 1.2rem "Nodesto Caps Condensed",serif; }.fh-mc-modal p { color:#bec5c8; font-size:.68rem; }.fh-mc-modal .fh-mc-modal-kicker { margin:0; color:var(--mc-gold); font-size:.52rem; font-weight:700; letter-spacing:.16em; }.fh-mc-modal label { margin:.52rem 0; }.fh-mc-modal textarea { min-height:4rem; resize:vertical; }.fh-mc-modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }.fh-mc-modal-x { position:absolute; right:.55rem; top:.45rem; width:1.6rem; height:1.6rem; border:0 !important; color:#b9c1c5 !important; background:transparent !important; font-size:1.1rem !important; }.fh-mc-modal-save { width:100%; margin-top:.35rem; padding:.48rem !important; color:#fff1d2 !important; border-color:#8a5924 !important; background:#4b331e !important; }.fh-mc-modal-error { min-height:.8rem; margin:.3rem 0 !important; color:#ff8e83 !important; }.fh-mc-pending { display:flex; flex-wrap:wrap; gap:.25rem; margin:.5rem 0; padding:.45rem; border:1px solid #3f4c53; background:#141e24; }.fh-mc-pending small { flex-basis:100%; color:var(--mc-muted); font-size:.5rem; }.fh-mc-pending span { padding:.12rem .3rem; color:#e4d7bf; border:1px solid #66513b; border-radius:999px; font-size:.5rem; }.fh-mc-pending button { margin-left:auto; padding:.12rem .35rem; color:#ff9a91; border-color:#733a37; background:#291a1a; }
+.fh-mc-modal .fh-mc-modal-note { margin-top:-.15rem; color:#849198; font-size:.56rem; }
+
+@media screen and (max-width:44.9em) {
+  .fh-mc-person b { font-size:.8rem; }.fh-mc-badges > span { width:1.85rem; }.fh-mc-actions button span { display:inline; }
+  .fh-mc-modal-grid { grid-template-columns:1fr; gap:0; }
+}
+
+/* ---- landing grid: LE CARRÉ — deux colonnes, deux rangées (Eric, 2026-08-20).
+   Quatre cartes : Build a Character · At the Table / Magic & Soulforging · World.
+   C'était 3 colonnes du temps où il y en avait six. ---- */
+@media screen and (min-width: 45em) {
+  .md-typeset .fh-toc.grid.cards,
+  .md-typeset .fh-toc.grid.cards > ul {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ========================================================================== */
+/* 2026 player-first home                                                     */
+/* ========================================================================== */
+.fh-home-intro {
+  max-width: 42rem;
+  margin: 0 auto 1.4rem;
+  text-align: center;
+}
+.fh-home-intro .fh-sub {
+  display: block;
+  color: var(--fh-gold);
+  font-style: italic;
+  font-size: var(--t-lead);
+}
+.fh-home-intro p {
+  margin-top: .65rem;
+  color: color-mix(in srgb, var(--md-default-fg-color) 76%, transparent);
+  font: .82rem/1.45 "Scaly Sans", system-ui, sans-serif;
+}
+.fh-home-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .65rem;
+  margin: 1.25rem 0 2.4rem;
+}
+/* ⭐ SIX PORTES, DEUX RANGÉES DE TROIS — croquis 1 d'Eric, 2026-08-31. La
+   grille est déjà en trois colonnes : six enfants la remplissent sur deux
+   lignes, sans une règle de plus. Le sélecteur existe pour NOMMER l'intention,
+   pas pour la produire — un lecteur doit savoir que six est voulu. */
+.fh-home-actions--six { margin-bottom: 1rem; }
+
+/* ── LE BOUTON DE REPRISE — Eric : « avec un gros highlight pour éviter de me
+   disperser ». Il vit SOUS la rangée, seul, parce qu'il ne concurrence pas les
+   portes : il rattrape un travail commencé. */
+.fh-home-resume { margin: 0 0 2.4rem; display: grid; grid-template-columns: 1fr; }
+
+/* 🔴 LE HIGHLIGHT NE S'ALLUME QUE SI ON L'A DEMANDÉ. `fh-widget.js` pose
+   `data-vise` quand l'adresse porte `?resume` — c'est le favori d'Eric qui
+   l'apporte. Sans lui, le bouton reste là, discret : il ne crie pas à chaque
+   visite. */
+/* ⭐ LE MÊME HIGHLIGHT QUE LES TUILES DE SPECIES ET CLASS — Eric, 2026-08-31 :
+   « le highlight des tuiles sur Species et Classes est très bien, utilise
+   celui-là. » La recette n'est pas imitée à l'œil, elle est REPRISE :
+   `.catalogue-rail-item[aria-current="true"]` (fhpc/ui/builder/shell.css:1663)
+   pose un fond plus dense, la graisse 600, et un HALO DE LUMINANCE —
+   `0 0 6px 1px` — que ce dépôt-ci porte sous le nom `--fh-halo`.
+   ⛔ UN HALO, PAS UN ANNEAU : ma première écriture posait un cerclé d'or de
+   2 px. Eric a réglé ce halo lui-même le 27/08 (« pas mal mais un peu moins
+   large ») ; un anneau n'est pas « un peu moins large », c'est autre chose.
+   ⚠️ L'ombre portée de la carte est CONSERVÉE sous le halo : la tuile du rail
+   n'en a pas, mais elle est posée sur une dalle, pas sur un fond de page. La
+   retirer aplatirait le bouton — c'est la seule liberté prise sur la recette,
+   et elle est dite.
+   ⚠️ `.md-typeset` en tête, et c'est mesuré : sans lui la règle de base
+   `.md-typeset .fh-home-action` gagnait, et rien ne s'allumait alors que
+   `data-vise` était bien posé. */
+.md-typeset .fh-home-action--resume[data-vise="oui"] {
+  font-weight: 600;
+  box-shadow: 0 0 6px 1px var(--fh-halo), 0 5px 16px rgba(31,20,10,.12);
+}
+
+/* ── UNE PORTE PAS ENCORE OUVERTE — « Your characters » attend que la fiche v1
+   revienne en ligne. ⛔ On ne la CACHE pas : le croquis la dessine, et une
+   porte annoncée qui manque se remarque plus qu'une porte éteinte. */
+.fh-home-action--soon {
+  opacity: .55;
+  cursor: default;
+  pointer-events: none;
+}
+.md-typeset .fh-dm-button {
+  position: fixed;
+  z-index: 25;
+  right: 1rem;
+  bottom: 1rem;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  color: #f4dda7;
+  background: #28231d;
+  border: 1px solid #a77a28;
+  border-radius: 50%;
+  box-shadow: 0 7px 22px rgba(0,0,0,.3);
+  font: 700 .62rem "Scaly Sans", sans-serif;
+  letter-spacing: .08em;
+  text-decoration: none;
+}
+.md-typeset .fh-dm-button:hover { color: #fff; background: #592529; border-color: #d2a446; }
+.md-typeset .fh-home-action {
+  display: grid;
+  grid-template-columns: 2.3rem 1fr;
+  gap: .65rem;
+  align-items: center;
+  min-height: 4.1rem;
+  padding: .75rem .85rem;
+  color: var(--md-default-fg-color);
+  border: 1px solid var(--fh-rule);
+  border-top: 3px solid var(--fh-gold);
+  border-radius: 7px;
+  background: linear-gradient(145deg, rgba(156,107,22,.11), rgba(156,107,22,.025));
+  box-shadow: 0 5px 16px rgba(31,20,10,.12);
+  text-decoration: none;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.md-typeset .fh-home-action:hover {
+  color: var(--md-default-fg-color);
+  border-color: var(--fh-gold);
+  box-shadow: 0 8px 22px rgba(31,20,10,.2);
+  transform: translateY(-2px);
+}
+.md-typeset .fh-home-action--red { border-top-color: var(--fh-red); }
+.md-typeset .fh-home-action--gold {
+  color: #f8ecd0;
+  border-color: #8f6421;
+  background: linear-gradient(145deg, #6b4b23, #3c2a17);
+}
+.md-typeset .fh-home-action--gold:hover { color: #fff7e7; }
+.fh-home-action__icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: #f0d99c;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: var(--t-lead);
+}
+.fh-home-action b,
+.fh-home-action small { display: block; }
+.fh-home-action b {
+  font: 700 .82rem/1.05 "Mr Eaves Small Caps", serif;
+  letter-spacing: .035em;
+}
+.fh-home-action small {
+  margin-top: .2rem;
+  opacity: .68;
+  font: .57rem/1.2 "Scaly Sans", system-ui, sans-serif;
+}
+.fh-difference {
+  margin: -1rem 0 2rem;
+  padding: 1rem;
+  border: 1px solid var(--fh-rule);
+  border-left: 3px solid var(--fh-red);
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(88,24,13,.07), rgba(156,107,22,.05));
+}
+.fh-difference-kicker {
+  margin: 0 !important;
+  color: var(--fh-gold);
+  font: 700 .52rem "Scaly Sans", system-ui, sans-serif;
+  letter-spacing: .16em;
+}
+.md-typeset .fh-difference h2 {
+  margin: .15rem 0 .7rem;
+  padding: 0;
+  border: 0;
+  font-size: var(--t-sec);
+}
+.md-typeset .fh-difference h2::after { content: none; }
+.fh-difference-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .65rem;
+}
+.fh-difference-grid > div { padding-top: .45rem; border-top: 1px solid var(--fh-rule); }
+.fh-difference-grid b,
+.fh-difference-grid span { display: block; }
+.fh-difference-grid b { color: var(--fh-red); font: 700 .68rem "Mr Eaves Small Caps", serif; }
+.fh-difference-grid span { margin-top: .2rem; font: .56rem/1.35 "Scaly Sans", system-ui, sans-serif; opacity: .76; }
+.md-typeset h2.fh-section-title {
+  margin-top: .4rem;
+  text-align: center;
+}
+.fh-section-lead {
+  margin: -.35rem auto 1.1rem !important;
+  color: color-mix(in srgb, var(--md-default-fg-color) 68%, transparent);
+  text-align: center;
+  font: .7rem "Scaly Sans", system-ui, sans-serif;
+}
+.fh-rules-grid .fh-card-hero img { filter: saturate(.85) contrast(1.04); }
+
+/* ========================================================================== */
+/* Player Companion — designed for a 360–520 px side panel beside a VTT       */
+/* ========================================================================== */
+.fh-player-page {
+  --mc-ink:#f5efe3;
+  --mc-muted:#aeb8bd;
+  --mc-night:#0c1216;
+  --mc-panel:#172129;
+  --mc-panel-2:#202e37;
+  --mc-red:#9f3e38;
+  --mc-red-bright:#da665b;
+  --mc-gold:#dbb35f;
+  position: relative;
+  width: min(76rem, calc(100vw - 2rem));
+  margin: -1.1rem 50% 0;
+  padding: 1.2rem 1rem 6rem;
+  color: var(--mc-ink);
+  background:
+    radial-gradient(circle at 14% 0, rgba(157,57,53,.2), transparent 24rem),
+    radial-gradient(circle at 88% 18%, rgba(214,170,85,.11), transparent 25rem),
+    linear-gradient(155deg, #172129 0%, #090e12 68%);
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 18px 50px rgba(0,0,0,.3);
+  transform: translateX(-50%);
+  font-family: "Scaly Sans", system-ui, sans-serif;
+}
+.fh-player-body .md-header { display: none; }
+.fh-player-body .md-main__inner { margin-top: 0; }
+.fh-player-hero {
+  max-width: 38rem;
+  margin: 0 auto 1.2rem;
+  text-align: center;
+}
+.fh-player-kicker {
+  margin: 0 !important;
+  color: var(--mc-gold);
+  font: 700 .58rem/1.2 "Scaly Sans", system-ui, sans-serif;
+  letter-spacing: .18em;
+}
+.md-typeset .fh-player-hero h1 {
+  margin: .15rem 0 .25rem;
+  padding: 0;
+  color: #f5dfaa;
+  border: 0;
+  font-size: var(--t-page);
+  line-height: 1;
+  text-shadow: 0 2px 20px rgba(0,0,0,.55);
+}
+.md-typeset .fh-player-hero h1::after { content: none; }
+.fh-player-hero > p:last-child {
+  margin: 0 auto !important;
+  color: #aab3b7;
+  font: .68rem/1.4 "Scaly Sans", system-ui, sans-serif;
+}
+.fh-player-layout {
+  display: grid;
+  grid-template-columns: minmax(22rem, 34rem) minmax(17rem, 1fr);
+  gap: 1rem;
+  align-items: start;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+.fh-player-cockpit {
+  padding: .75rem;
+  border: 1px solid #71302e;
+  border-top: 3px solid var(--mc-red-bright);
+  border-radius: 6px;
+  background: linear-gradient(155deg, rgba(24,34,41,.98), rgba(10,15,19,.98));
+  box-shadow: 0 14px 38px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.04);
+}
+.fh-mychar--player { display: block; color: var(--mc-ink); }
+.fh-mychar--player .fh-mc-brand {
+  margin: 0 .15rem .65rem;
+  font-size: .68rem;
+}
+.fh-mychar--player .fh-mc-setup { gap: .5rem; margin-bottom: .2rem; }
+.fh-mychar--player input,
+.fh-mychar--player select {
+  min-height: 2rem;
+  padding: .43rem .55rem;
+  font-size: var(--t-micro);
+}
+.fh-mychar--player .fh-mc-status { min-height: 1.15rem; font-size: .59rem; }
+.fh-mychar--player .fh-mc-empty { min-height: 15rem; font-size: .7rem; }
+.fh-mychar--player .fh-mc-identity {
+  grid-template-columns: 3.5rem minmax(0,1fr) auto;
+  gap: .6rem;
+  padding: .65rem;
+}
+.fh-mychar--player .fh-mc-portrait { width: 3.5rem; height: 3.5rem; }
+.fh-mychar--player .fh-mc-person b { font-size: 1.06rem; }
+.fh-mychar--player .fh-mc-person small { font-size: .62rem; }
+.fh-mychar--player .fh-mc-person i { font-size: .52rem; }
+.fh-mychar--player .fh-mc-badges > span { width: 2.45rem; height: 2.65rem; }
+.fh-mychar--player .fh-mc-badges small { font-size: .42rem; }
+.fh-mychar--player .fh-mc-badges b { font-size: .94rem; }
+.fh-mychar--player .fh-mc-actions {
+  grid-template-columns: repeat(3, 1fr);
+  gap: .38rem;
+  margin-top: .25rem;
+}
+.fh-mychar--player .fh-mc-actions button { min-height: 1.8rem; font-size: .61rem; }
+.fh-mychar--player .fh-mc-abilities { gap: .27rem; margin: .48rem 0; }
+.fh-mychar--player .fh-mc-ability { padding: .34rem .2rem .27rem; }
+.fh-mychar--player .fh-mc-ability small { font-size: .45rem; }
+.fh-mychar--player .fh-mc-ability b { font-size: .84rem; }
+.fh-mychar--player .fh-mc-ability i { font-size: .52rem; }
+.fh-mychar--player .fh-mc-target { gap: .45rem; margin-bottom: .48rem; padding: .48rem; }
+.fh-mychar--player .fh-mc-target label > span,
+.fh-mychar--player .fh-mc-field > span { font-size: .52rem; }
+.fh-mychar--player .fh-mc-accordions { gap: .34rem; }
+.fh-mychar--player .fh-mc-accordion-head { grid-template-columns: 1.9rem 1fr auto; gap: .42rem; padding: .45rem .55rem; }
+.fh-mychar--player .fh-mc-step-icon { width: 1.55rem; height: 1.55rem; font-size: .78rem; }
+.fh-mychar--player .fh-mc-accordion-head b { font-size: .77rem; }
+.fh-mychar--player .fh-mc-accordion-head small { font-size: .53rem; }
+.fh-mychar--player .fh-mc-accordion-body { padding: .12rem .55rem .55rem; }
+.fh-mychar--player .fh-mc-skill { grid-template-columns: .65rem 1fr auto 2.1rem 3rem; gap: .3rem; padding: .42rem .22rem; }
+.fh-mychar--player .fh-mc-skill-name b { font-size: .68rem; }
+.fh-mychar--player .fh-mc-skill-name small { font-size: .49rem; }
+.fh-mychar--player .fh-mc-bonus { font-size: .82rem; }
+.fh-mychar--player .fh-mc-die { width: 2rem; height: 1.65rem; font-size: .5rem; }
+.fh-mychar--player .fh-mc-result { font-size: .54rem; }
+.fh-mychar--player .fh-mc-rule { font-size: .54rem; line-height: 1.4; }
+.fh-mychar--player .fh-mc-dc span { font-size: .68rem; }
+.fh-mychar--player .fh-mc-dc strong { font-size: 1.2rem; }
+.fh-mychar--player .fh-mc-dc small { font-size: .48rem; }
+.fh-mychar--player .fh-mc-checks label { font-size: .59rem; }
+.fh-mychar--player .fh-mc-spells > small { font-size: .52rem; }
+.fh-mychar--player .fh-mc-chip { font-size: .51rem; }
+.fh-mychar--player .fh-mc-footer { grid-template-columns: 1fr 1.2fr; gap: .38rem; margin-top: .55rem; }
+.fh-mychar--player .fh-mc-footer a { padding: .43rem .25rem; font-size: .59rem; }
+.fh-mychar--player .fh-mc-footer .is-off { display: none; }
+
+.fh-player-rules {
+  padding: 1rem;
+  border: 1px solid #39464e;
+  border-radius: 6px;
+  background: rgba(17,25,30,.88);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+.md-typeset .fh-player-rules h2 {
+  margin: .15rem 0 .8rem;
+  padding-bottom: .35rem;
+  color: #f0dfae;
+  border-color: #69312e;
+  font-size: var(--t-sec);
+}
+.fh-player-rules ol {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none;
+  counter-reset: forge-step;
+}
+.fh-player-rules li {
+  counter-increment: forge-step;
+  display: grid;
+  grid-template-columns: 1.65rem 1fr;
+  padding: .5rem 0;
+  border-bottom: 1px solid #303a40;
+}
+.fh-player-rules li::before {
+  content: counter(forge-step);
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: .05rem;
+  color: var(--mc-gold);
+  border: 1px solid #7b5b2f;
+  border-radius: 50%;
+  font: 700 .55rem "Scaly Sans", sans-serif;
+}
+.fh-player-rules li b { color: #f5ead5; font: 700 .68rem "Mr Eaves Small Caps", serif; }
+.fh-player-rules li span { margin-top: .08rem; color: #9eaaaf; font: .56rem/1.35 "Scaly Sans", sans-serif; }
+.fh-player-rulelinks { display: grid; gap: .35rem; margin-top: .75rem; }
+.md-typeset .fh-player-rulelinks a {
+  display: flex;
+  justify-content: space-between;
+  padding: .45rem .55rem;
+  color: #d9d2c4;
+  border: 1px solid #3d494f;
+  border-radius: 3px;
+  font: .59rem "Scaly Sans", sans-serif;
+  text-decoration: none;
+}
+.md-typeset .fh-player-rulelinks a:hover { color: var(--mc-gold); border-color: var(--mc-gold); }
+
+.fh-companion-dock {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: max(.65rem, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: repeat(4, minmax(4.2rem, 1fr));
+  width: min(31rem, calc(100vw - 1.25rem));
+  padding: .28rem;
+  border: 1px solid #6d4134;
+  border-radius: .65rem;
+  background: rgba(12,18,22,.96);
+  box-shadow: 0 12px 36px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.05);
+  backdrop-filter: blur(12px);
+  transform: translateX(-50%);
+}
+.md-typeset .fh-companion-dock a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .08rem;
+  padding: .34rem .2rem;
+  color: #8f9ba1;
+  border-radius: .4rem;
+  font: .52rem "Scaly Sans", sans-serif;
+  text-decoration: none;
+}
+.fh-companion-dock a > span { color: #c9a457; font-size: .78rem; line-height: 1; }
+.md-typeset .fh-companion-dock a:hover,
+.md-typeset .fh-companion-dock a.is-active { color: #fff2d8; background: #2a2020; }
+
+/* Character builder: use the available screen instead of nesting the builder
+   in the normal narrow article column. */
+.fh-builder-lead {
+  max-width: 42rem;
+  margin: -.4rem auto .7rem !important;
+  text-align: center;
+}
+.fh-builder-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+  margin: .6rem auto .8rem;
+  color: color-mix(in srgb, var(--md-default-fg-color) 70%, transparent);
+  font: .57rem "Scaly Sans", sans-serif;
+}
+.fh-builder-steps span { white-space: nowrap; }
+.fh-builder-steps b {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-right: .16rem;
+  color: var(--fh-gold);
+  border: 1px solid var(--fh-gold);
+  border-radius: 50%;
+}
+.fh-builder-steps i { color: var(--fh-rule); font-style: normal; }
+.fh-builder-frame {
+  display: block;
+  width: min(76rem, calc(100vw - 2rem));
+  height: calc(100vh - 12rem);
+  min-height: 42rem;
+  margin: 0 50%;
+  border: 1px solid var(--fh-rule);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  transform: translateX(-50%);
+}
+.fh-builder-fallback { text-align: center; font-size: .68rem; }
+
+@media screen and (max-width: 52em) {
+  .fh-home-actions { grid-template-columns: 1fr; }
+  .fh-difference-grid { grid-template-columns: 1fr 1fr; }
+  .fh-player-page { width: calc(100vw - .75rem); padding-inline: .55rem; }
+  .fh-player-layout { grid-template-columns: 1fr; max-width: 34rem; }
+  .fh-player-rules { order: 2; }
+  .fh-builder-steps i { display: none; }
+  .fh-builder-steps { flex-wrap: wrap; }
+}
+@media screen and (max-width: 32em) {
+  .fh-difference-grid { grid-template-columns: 1fr; }
+  .fh-player-page { margin-top: -.8rem; }
+  .md-typeset .fh-player-hero h1 { font-size: var(--t-page); }
+  .fh-player-hero > p:last-child { font-size: var(--t-micro); }
+  .fh-player-cockpit { padding: .45rem; }
+  .fh-mychar--player .fh-mc-setup { grid-template-columns: .82fr 1.18fr; }
+  .fh-mychar--player .fh-mc-identity { grid-template-columns: 3rem minmax(0,1fr) auto; padding: .52rem; }
+  .fh-mychar--player .fh-mc-portrait { width: 3rem; height: 3rem; }
+  .fh-mychar--player .fh-mc-person b { font-size: .92rem; }
+  .fh-mychar--player .fh-mc-badges > span { width: 2.15rem; height: 2.35rem; }
+  .fh-mychar--player .fh-mc-actions button span { display: none; }
+  .fh-mychar--player .fh-mc-abilities { grid-template-columns: repeat(3, 1fr); }
+  .fh-mychar--player .fh-mc-skill { grid-template-columns: .55rem 1fr auto 2rem; }
+  .fh-mychar--player .fh-mc-result { grid-column: 2 / -1; text-align: right; }
+  .fh-builder-frame { width: calc(100vw - .75rem); }
+}
+
+/* ========================================================================== */
+/* REFONTE 2026-08-20 — le carré, la serrure, l'emboîtement                    */
+/* ========================================================================== */
+
+/* Une page qui vit DANS une autre (Arcana sous Destiny, les deux outils sous
+   Soulforging Rules) : elle s'indente et change de puce. */
+.md-typeset .fh-toc.grid.cards > ul > li ul ul {
+  margin: 0 0 0 1.15em;
+}
+.md-typeset .fh-toc.grid.cards > ul > li ul ul li::before {
+  content: "↳"; color: var(--fh-rule); font-size: var(--t-small);
+  margin-right: .4em; vertical-align: 0;
+}
+
+/* Le troisième bouton : la serrure du MJ, à la place de « Browse the rules ». */
+.md-typeset .fh-home-action--lock {
+  border-top-color: var(--fh-red);
+  border-color: #6d3a2c;
+  background: linear-gradient(145deg, #2a1a15, #1b1210);
+}
+.md-typeset .fh-home-action--lock .fh-home-action__icon {
+  color: #d99b84; border-style: dashed;
+}
+
+/* ---- La couche de base : le lien vers le site SRD, VISIBLE.
+   L'entrée `SRD 5.2.1` de mkdocs.yml vit dans la barre latérale, qui est
+   masquée depuis juin — elle était donc injoignable comme les six autres
+   orphelines réparées le 2026-08-20. ---- */
+.md-typeset .fh-base-layer {
+  margin: 2.6rem 0 .6rem;
+  padding: 1.1rem 1.25rem 1.2rem;
+  border: 1px solid var(--fh-rule);
+  border-left: 3px solid var(--fh-gold);
+  border-radius: 6px;
+  background: rgba(156,107,22,.045);
+}
+.md-typeset .fh-base-layer__kicker {
+  margin: 0 0 .15em;
+  color: var(--fh-gold);
+  font: 700 .62rem/1 "Mr Eaves Small Caps", "Cinzel", serif;
+  letter-spacing: .18em;
+}
+.md-typeset .fh-base-layer h2 {
+  margin: 0 0 .35em;
+  border: 0;
+  font-size: var(--t-sub);
+}
+.md-typeset .fh-base-layer p { margin: .35em 0; }
+.md-typeset .fh-base-layer__go {
+  display: inline-block;
+  margin-top: .35rem;
+  padding: .42rem .85rem;
+  color: var(--fh-gold);
+  border: 1px solid var(--fh-gold);
+  border-radius: 3px;
+  font: 700 .72rem/1 "Mr Eaves Small Caps", serif;
+  letter-spacing: .06em;
+  text-decoration: none;
+}
+.md-typeset .fh-base-layer__go:hover {
+  color: #1b1510;
+  background: var(--fh-gold);
+}
+.md-typeset .fh-base-layer__aside {
+  color: color-mix(in srgb, var(--md-default-fg-color) 62%, transparent);
+  font-size: var(--t-body); font-style: italic;
+}
+
+/* ── Le SRD cité — une troisième voix sur la page ────────────────────────────
+   La page porte désormais trois voix : la prose de Fate's Hand (le corps du
+   texte), ce que FH change (`.fh-edition`, `.fh-removed`), et ICI la règle
+   officielle citée mot pour mot. Il faut donc qu'on VOIE qu'on change de
+   bouche : le bloc est en retrait, sur un fond plus froid que le parchemin,
+   et il ne crie pas — c'est une citation, pas un encadré d'attention.
+   🔴 Ce bloc est GÉNÉRÉ par sync_from_vault.py depuis les exports de fh-srd.
+      Le styler ici est sans risque ; l'éditer dans docs/ est un no-op. */
+:root {
+  /* ── L'ÉCHELLE DU LIVRE — sept échelons nommés, 2026-08-21 ─────────────────
+     La surface de lecture portait 37 valeurs de corps pour 62 déclarations.
+     Ce n'était pas une échelle : c'était une taille re-décidée à chaque règle,
+     exactement ce que `UI-TYPOGRAPHY.md` avait diagnostiqué sur le dock le
+     2026-08-02 et que personne n'avait jamais soigné.
+     Sept échelons suffisent à un livre. Une taille qui a un nom peut être
+     discutée ; une taille anonyme est re-choisie. ⛔ Les outils embarqués
+     (dock, fiche, builder) gardent les leurs — ce sont d'autres produits. */
+  --t-micro: .68rem;   /* mentions, ligne de source, attribution */
+  --t-small: .78rem;   /* tables, légendes */
+  --t-body:  .85rem;   /* le texte */
+  --t-lead:  .95rem;   /* h4, entrées de paragraphe */
+  --t-sub:   1.1rem;   /* h3 */
+  --t-sec:   1.35rem;  /* h2 */
+  --t-page:  2rem;     /* h1 */
+
+  --fh-cite-bg:   rgba(92,67,38,.055);
+  --fh-cite-rule: rgba(125,101,53,.22);
+}
+[data-md-color-scheme="slate"] {
+  --fh-cite-bg:   rgba(216,182,90,.055);
+  --fh-cite-rule: rgba(191,168,126,.22);
+}
+
+/* ── LA CITATION — l'enclos tombe, 2026-08-21 ───────────────────────────────
+   Eric : « on cite, mais on n'est pas obligé de mettre un gros bloc pour bien
+   faire comprendre que ce n'est pas partie intégrante du site. »
+   Il a raison contre le dessin d'origine. La « différence franche » que la
+   recherche demande sert à éviter les demi-teintes, pas à hausser la voix — et
+   le label dit déjà la provenance en toutes lettres. Un livre ne met pas ses
+   citations en cage : il pose une ligne de source, et le texte coule.
+   Reste donc : une ligne de source, du blanc autour, et rien d'autre. */
+.md-typeset .fh-srd-cite {
+  margin: 1.9em 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.md-typeset .fh-srd-cite__label {
+  margin: 0 0 .9em;
+  padding-bottom: .35em;
+  border-bottom: 1px solid var(--fh-rule);
+  font-size: var(--t-micro);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: .45;
+}
+.md-typeset .fh-srd-cite__label strong { letter-spacing: .04em; }
+
+.md-typeset .fh-srd-cite__list { margin: 0; }
+.md-typeset .fh-srd-cite__list dt {
+  font-weight: 700;
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+  margin-top: .85em;
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-srd-cite__list dt { color: var(--fh-gold); }
+.md-typeset .fh-srd-cite__list dt:first-child { margin-top: 0; }
+.md-typeset .fh-srd-cite__list dd {
+  margin: .2em 0 0;
+  padding: 0;
+  font-size: .93em;
+  line-height: 1.65;
+}
+
+/* L'attribution CC-BY. Elle est générée AVEC le bloc, donc elle ne peut pas
+   être oubliée — mais elle n'a pas à disputer la lecture au texte cité. */
+.md-typeset .fh-srd-cite__attr {
+  margin: 1.1em 0 0;
+  padding-top: .7em;
+  border-top: 1px solid var(--fh-cite-rule);
+  font-size: var(--t-micro);
+  line-height: 1.5;
+  opacity: .62;
+}
+/* 🔴 « Ref au SRD rules (en tout petit) » — Eric, 2026-08-28. Sur une page de
+   classe, l'attribution passe en pied, et ce n'est plus un bloc : c'est la
+   mention légale qui ferme la page. Elle reste lisible à qui la cherche, et
+   cesse de couper la lecture juste avant « What Fate's Hand changes ». */
+.md-typeset .fh-pcfh + .admonition + .fh-srd-cite__attr,
+.md-typeset > .fh-srd-cite__attr {
+  margin-top: 2.4em;
+  padding-top: .6em;
+  font-size: .68rem;
+  line-height: 1.45;
+  opacity: .48;
+}
+
+/* ══ LA NORME DU LIEN — une seule, pour tout le site ═══════════════════════
+   Eric, 2026-08-28 : *« peut-on faire des liens (bleu pas souligné) ou (rouge
+   pas souligné) ou un autre format… Il faut que ça reste discret mais
+   suffisamment visible. Une norme unique pour tout le site, visible mais qui
+   ne casse pas le flow de lecture. »*
+
+   ⭐ POURQUOI LE BLEU, ET PAS L'OR NI L'OXBLOOD — la raison est que chaque
+   teinte de ce livre DIT DÉJÀ quelque chose :
+     · l'OR dit « Fate's Hand » (les pastilles, les titres, les colonnes FH) ;
+     · l'OXBLOOD dit « titre de rubrique », c'est la couleur des en-têtes D&D ;
+     · l'ENCRE dit « texte ».
+   Un lien peint dans l'une de ces trois emprunterait un sens qui n'est pas le
+   sien : sur une page de classe, un mot doré se lit « ceci est FH », pas
+   « ceci s'ouvre ». Le bleu est la seule teinte encore libre — et c'est déjà
+   celle qu'Eric a ratifiée dans le builder le 27/08 (*« le texte en bleu, non
+   souligné »*), donc les deux surfaces parlent enfin la même langue.
+
+   📏 CONTRASTES MESURÉS (le texte courant vaut 13,5 le jour et 13,1 la nuit) :
+   #2f5d7c sur parchemin = 6,05 · #8fb4d0 sur cuir = 8,16. Tous deux au-dessus
+   de 4,5 (AA), tous deux SOUS le texte courant — c'est ce qui les rend visibles
+   sans crier : un lien plus contrasté que la phrase qui le porte arrête la
+   lecture au lieu de l'accompagner.
+
+   ⛔ PAS DE SOULIGNEMENT, et pas seulement par goût : le site se lit à l'iPad,
+   où il n'y a PAS de survol. L'état de repos doit donc suffire à lui seul —
+   d'où une teinte franche plutôt qu'un trait qui n'apparaît qu'au pointeur.
+   Le soulignement revient au survol et au focus, pour qui a un clavier. */
+:root {
+  --fh-link:       #2f5d7c;
+  --fh-link-hover: #1f4e6b;
+}
+/* 🔴 LA GARDE SUIT LA BASCULE, PAS L'OS — mesuré le 2026-08-29 : en JOUR
+   forcé sous un OS réglé sombre, un lien restait bleu-nuit sur fond clair
+   (1,57:1 pour 4,5 exigé). `prefers-color-scheme` dit le réglage de la
+   machine ; `data-md-color-scheme` dit ce que la page AFFICHE. Le média ne
+   sert plus que de filet avant que Material ait posé l'attribut.
+   ⚠️ Cette correction SURVIT au retour arrière sur les dalles (Eric,
+   2026-08-29) : c'est un bug du site entier, pas un choix de décor. */
+[data-md-color-scheme="slate"] {
+  --fh-link:       #8fb4d0;
+  --fh-link-hover: #b3cee2;
+}
+@media (prefers-color-scheme: dark) {
+  body:not([data-md-color-scheme]) {
+    --fh-link:       #8fb4d0;
+    --fh-link-hover: #b3cee2;
+  }
+}
+
+.md-typeset a.fh-lien,
+.md-typeset .fh-lien {
+  color: var(--fh-link);
+  text-decoration: none;
+  /* ⚠️ le lien garde la graisse de son voisinage : c'est la TEINTE qui le
+     signale, pas un gras qui trouerait le paragraphe. */
+  font-weight: inherit;
+}
+/* Eric, 28/08 : *« le texte même police, juste variation de couleur »*. Donc le
+   survol lui aussi ne bouge QUE la teinte — pas de soulignement qui viendrait
+   changer la hauteur de ligne d'un mot au passage de la souris. */
+.md-typeset a.fh-lien:hover,
+.md-typeset a.fh-lien:focus-visible {
+  color: var(--fh-link-hover);
+  text-decoration: none;
+}
+.md-typeset a.fh-lien:focus-visible {
+  outline: 2px solid var(--fh-link);
+  outline-offset: 2px;
+}
+
+/* ══ PCFH — LA PAGE D'UNE CLASSE, FAITE POUR ÊTRE LUE ══════════════════════
+   Eric, 2026-08-28 : *« je voudrais avoir sur FH WEB un PCFH joli à lire et
+   complet »*. Ce n'est pas la fiche condensée du builder (SRFH+) : ici on
+   déroule vingt niveaux et le texte entier des aptitudes. La mise en page doit
+   donc servir la LECTURE SUIVIE, pas la consultation rapide. */
+.md-typeset .fh-pcfh { margin: 1.2em 0 2em; }
+
+/* l'illustration : elle ouvre la page, elle ne la coupe pas en deux.
+   ⚠️ Elle vient du MANUSCRIT (markdown), pas du bloc cité — une image FH n'est
+   pas du SRD, et seul le markdown est repointé quand la page descend d'un
+   dossier. */
+.md-typeset img.fh-pcfh-art,
+.md-typeset img.fh-pcfh__art {
+  display: block;
+  width: 100%; max-width: 22rem;
+  margin: 0 auto 1.6em;
+  border-radius: 3px;
+}
+
+/* la carte d'identité — deux colonnes serrées, l'œil y revient sans lire */
+.md-typeset .fh-pcfh__id {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: .3em 1.2em;
+  margin: 0 0 1.6em;
+}
+.md-typeset .fh-pcfh__id dt { font-weight: 700; color: var(--fh-gold); }
+.md-typeset .fh-pcfh__id dd { margin: 0; }
+
+/* ── LA TABLE DE PROGRESSION ───────────────────────────────────────────────
+   ⛔ Elle DÉBORDE plutôt qu'elle ne se replie : neuf colonnes sur un
+   téléphone, c'est un défilement horizontal assumé — le replier ferait perdre
+   la vue d'ensemble, qui est exactement ce qu'Eric demande (« qu'on ait une
+   vue globale et rapide de tout ce qu'il y a d'un coup »). */
+.md-typeset .fh-pcfh__table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  /* 📏 MESURÉ : à .84em et 14rem de colonne d'aptitudes, les TROIS colonnes
+     Fate's Hand tombaient hors champ à 800 px — or ce sont précisément elles
+     qu'Eric veut voir « d'un coup ». Le corps descend et la colonne large
+     cède : ce sont les VIDES et le confort qui reculent, jamais l'information
+     qu'on est venu chercher. */
+  font-size: .76em;
+  margin: 0 0 .5em;
+}
+.md-typeset .fh-pcfh__table th,
+.md-typeset .fh-pcfh__table td {
+  padding: .3em .6em;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--fh-rule);
+}
+.md-typeset .fh-pcfh__table th {
+  font-size: var(--t-micro);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .72;
+  /* 🔴 CADRÉ EN HAUT — Eric, croquis annoté du 28/08. Une en-tête à deux
+     étages dont les libellés seraient centrés ferait flotter les mots à des
+     hauteurs différentes selon qu'ils tiennent sur une ou deux lignes ; cadrés
+     en haut, ils partent tous de la même ligne. */
+  vertical-align: top;
+  line-height: 1.2;
+}
+/* ⭐ UN CHAPEAU DE GROUPE — le seul trait horizontal de l'en-tête, et la seule
+   cellule centrée : elle surplombe ses colonnes, elle se lit au-dessus d'elles.
+   Il y en a deux quand la classe lance des sorts : « Spell Slots per Spell
+   Level » (du SRD, à l'encre) et « Skill Points » (de FH, à l'or). */
+.md-typeset .fh-pcfh__table th.fh-pcfh__group {
+  text-align: center;
+  opacity: 1;
+  border-bottom: 1px solid var(--fh-rule);
+}
+/* les colonnes d'emplacements ne portent qu'un chiffre : elles se serrent */
+.md-typeset .fh-pcfh__table th.fh-pcfh__slot { text-align: center; }
+.md-typeset .fh-pcfh__table th.fh-pcfh__slot,
+.md-typeset .fh-pcfh__table td.fh-pcfh__slot { padding-left: .18em; padding-right: .18em; }
+/* ⛔ AUCUN TRAIT ENTRE LES DEUX ÉTAGES AILLEURS : les cellules qui enjambent
+   les deux rangées (`rowspan`) ne portent leur bordure qu'en bas de l'en-tête,
+   là où le corps commence. */
+.md-typeset .fh-pcfh__table thead th[rowspan] { border-bottom: 1px solid var(--fh-rule); }
+
+/* 🦓 LA VARIATION DE COULEUR DE LIGNE — Eric, même croquis, trois flèches :
+   *« variation de couleur … de ligne »*. Vingt niveaux et neuf colonnes : sans
+   elle, l'œil perd sa ligne entre « Level » et « Bound Tools ». Elle est
+   TRÈS discrète (4 %) — assez pour guider, pas assez pour rayer la page. */
+.md-typeset .fh-pcfh__table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--fh-gold) 7%, transparent);
+}
+/* la colonne des aptitudes est la seule qui respire — c'est elle qu'on lit */
+.md-typeset .fh-pcfh__table td:nth-child(3),
+.md-typeset .fh-pcfh__table td.fh-pcfh__feat { white-space: normal; min-width: 7.5rem; }
+/* 📏 .38 ET NON .45 : mesuré à 1280 px, la table demandait 934 pour 930 — il
+   manquait QUATRE pixels pour que les trois colonnes FH entrent dans le
+   champ. Ce sont les gouttières qui cèdent, pas une colonne. */
+/* 📏 .32 : mesuré sur le SORCIER PACTE, la classe la plus large — douze
+   colonnes (cinq ressources) demandaient 972 pour 930. Ce sont les gouttières
+   qui cèdent, jamais une colonne : la vue d'ensemble est ce qu'Eric est venu
+   chercher. */
+.md-typeset .fh-pcfh__table th, .md-typeset .fh-pcfh__table td { padding: .26em .28em; }
+/* ⭐ LES TROIS DERNIÈRES COLONNES SONT FH, ET ÇA SE VOIT SANS LÉGENDE :
+   elles portent l'or de la maison, le SRD garde l'encre du texte.
+   ⛔ PAR CLASSE, PLUS PAR POSITION. `th:nth-last-child(-n+3)` DÉDUISAIT quelles
+   cellules d'en-tête sont FH — et se trompait : la première rangée d'en-tête ne
+   compte pas les mêmes cellules que le corps (les libellés à `rowspan` y sont
+   suivis du seul chapeau). Mesuré sur la page publiée du magicien : « Cantrips »
+   et « Prepared Spells », deux colonnes DU SRD, portaient l'or sur les douze
+   pages. Une cote donnée bat une cote déduite — le générateur marque `fh` là où
+   c'est FH, et le style ne devine plus rien. */
+.md-typeset .fh-pcfh__table td:nth-last-child(-n+3),
+.md-typeset .fh-pcfh__table th.fh { color: var(--fh-gold); }
+
+/* 📏 LA TABLE D'UN LANCEUR — dix-huit colonnes au lieu de neuf, 1006 px demandés
+   pour 930 chez le barde. Ce qui cède est ce qui ne porte pas d'information :
+   l'interlettrage des titres (décoratif) et le confort de la colonne
+   d'aptitudes. Aucune colonne ne disparaît — la vue d'ensemble est ce qu'on est
+   venu chercher.
+   ⛔ ET CE BLOC VIENT APRÈS LES RÈGLES GÉNÉRALES, PAS AVANT. Placé plus haut, il
+      avait la MÊME spécificité qu'elles (0,3,1) et perdait donc sur l'ordre
+      seul : la classe était bien posée, le style ne s'appliquait pas — 940 px
+      au lieu des 930 attendus, sans qu'aucune erreur ne le dise. */
+/* ══ LE TEXTE D'UNE APTITUDE — respirer, sans qu'un mot bouge ══════════════
+   Eric, 2026-08-28 : *« juste mais mochement présenté ; rends-le plus digeste,
+   aéré »*. Une aptitude est souvent une petite liste de règles nommées
+   (« Damage Resistance. » … « Duration. »), que l'export du SRD nous rend en
+   paragraphes plats et identiques. Le terme reprend son gras et sa règle prend
+   un peu d'air : l'œil retrouve d'un coup ce qu'il cherche.
+   ⛔ Le terme est en ENCRE, pas en or : c'est du SRD. L'or dit « Fate's Hand ». */
+.md-typeset .fh-pcfh__regle {
+  margin: .75em 0 .55em;
+  padding-left: .9em;
+  border-left: 2px solid var(--fh-rule);
+}
+.md-typeset .fh-pcfh__regle strong { letter-spacing: .01em; }
+/* les puces que le SRD écrase sur une seule ligne, rendues à la ligne */
+.md-typeset ul.fh-pcfh__puces { margin: .5em 0 .8em; }
+.md-typeset ul.fh-pcfh__puces li { margin-bottom: .2em; }
+
+.md-typeset .fh-pcfh__table--dense th { letter-spacing: 0; }
+.md-typeset .fh-pcfh__table--dense td.fh-pcfh__feat,
+.md-typeset .fh-pcfh__table--dense td:nth-child(3) { min-width: 6rem; }
+.md-typeset .fh-pcfh__table--dense th,
+.md-typeset .fh-pcfh__table--dense td { padding-left: .2em; padding-right: .2em; }
+.md-typeset .fh-pcfh__note { font-size: var(--t-micro); opacity: .6; margin: 0 0 1.8em; }
+
+/* les aptitudes : un titre par niveau, du texte dessous — rien de plus */
+.md-typeset h3.fh-pcfh__feature,
+.md-typeset h4.fh-pcfh__feature { margin-top: 1.5em; }
+/* Le RANG SECTION d'une page de classe — Eric, 2026-08-29 : *« Eldritch
+   invocations doit être une sous-section, au même titre que Intro / Tableau /
+   Features »*. Une tête de section (options de classe, sous-classe) porte le
+   grand blanc et le filet ; une feature (`fh-pcfh__feature`) n'a que sa marge.
+   Deux rangs, deux habits — et les deux têtes de rang partagent LA règle. */
+.md-typeset .fh-pcfh__subclass,
+.md-typeset .fh-pcfh__section {
+  margin-top: 2.2em;
+  padding-top: .8em;
+  border-top: 1px solid var(--fh-rule);
+}
+
+/* ── LA FICHE D'UNE CLASSE, DANS LE FIL DE SA SECTION ──────────────────────
+   Eric, 2026-08-28 : *« je veux la classe EN ENTIER, SRD inclus »* — la fiche
+   ne vit plus dans un bloc replié en fin de chapitre, elle vit SOUS le titre
+   de sa classe. Elle se lit donc comme du contenu, pas comme une annexe :
+   deux colonnes tant que la page est large, une seule au téléphone.
+   ⭐ Le libellé de provenance reste (la citation se dit toujours), mais il
+   s'efface — sur douze sections, douze rappels criards feraient le composite
+   qu'Eric reproche justement au livre. */
+.md-typeset .fh-srd-cite--entry { margin: 1.2em 0 1.6em; }
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__label { opacity: .34; }
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: .25em 1.1em;
+  align-items: baseline;
+}
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list dt { margin-top: 0; }
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list dd { margin: 0; }
+/* les aptitudes par niveau : le numéro tient la ligne, les noms suivent */
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list dd b {
+  color: var(--fh-gold);
+  font-variant-numeric: tabular-nums;
+  margin-left: .35em;
+}
+.md-typeset .fh-srd-cite--entry .fh-srd-cite__list dd b:first-child { margin-left: 0; }
+@media (max-width: 44em) {
+  /* ⛔ une grille à deux colonnes sur un téléphone coupe les valeurs longues
+     (l'équipement de départ tient en une phrase) : on repasse au fil. */
+  .md-typeset .fh-srd-cite--entry .fh-srd-cite__list {
+    display: block;
+  }
+  .md-typeset .fh-srd-cite--entry .fh-srd-cite__list dt { margin-top: .7em; }
+  .md-typeset .fh-srd-cite--entry .fh-srd-cite__list dt:first-child { margin-top: 0; }
+}
+
+/* ── La table citée ─────────────────────────────────────────────────────────
+   Eric, 2026-08-20 : « la mise en forme plus jolie peut rester de la citation ».
+   Citer contraint les MOTS, pas la PRÉSENTATION — donc la table du SRD peut
+   avoir l'allure de Fate's Hand tant qu'aucune valeur n'est retapée. C'est ce
+   qui permet au joueur de tout trouver au même endroit sans naviguer. */
+.md-typeset .fh-srd-cite--table,
+.md-typeset .fh-srd-cite--index { padding-bottom: 1em; }
+
+.md-typeset .fh-srd-table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: var(--t-small);   /* le corps des tables d'Eric — plus de couture */
+  font-family: "Scaly Sans", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.md-typeset .fh-srd-table th,
+.md-typeset .fh-srd-table td {
+  padding: .45em .7em;   /* la respiration des tables d'Eric */
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--fh-rule);
+}
+.md-typeset .fh-srd-table thead th {
+  font-size: var(--t-micro);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: .62;
+  border-bottom-width: 2px;
+  white-space: nowrap;
+}
+/* Les quatre familles ne sont pas dans les données : elles sont DÉDUITES du
+   plafond de Dextérité. C'est de la mise en page, pas de la règle. */
+.md-typeset .fh-srd-table__group th {
+  padding-top: 1em;
+  font-size: var(--t-small);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+  border-bottom-color: var(--fh-cite-rule);
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-srd-table__group th { color: var(--fh-gold); }
+.md-typeset .fh-srd-table tbody tr:last-child td { border-bottom: 0; }
+.md-typeset .fh-srd-table td:first-child { font-weight: 600; }
+
+/* L'index dérivé : le terme, son compte, puis ses armes. */
+.md-typeset .fh-srd-cite--index dt span { opacity: .5; font-weight: 400; font-size: .85em; }
+
+/* Une table large ne fait jamais défiler la page elle-même. */
+.md-typeset .fh-srd-cite--table { overflow-x: auto; }
+
+@media screen and (max-width: 44em) {
+  .md-typeset .fh-srd-table { font-size: .8em; }
+  .md-typeset .fh-srd-table th,
+  .md-typeset .fh-srd-table td { padding: .34em .45em; }
+}
+
+/* Un sous-titre à l'intérieur d'un bloc cité : il groupe la citation sans
+   prétendre être un titre de la page — la table des matières l'ignore. */
+.md-typeset .fh-srd-cite__group {
+  margin: 1.4em 0 .5em;
+  font-size: var(--t-small);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--fh-gold);
+  border-bottom: 1px solid var(--fh-rule);
+  padding-bottom: .3em;
+}
+.md-typeset .fh-srd-cite__group:first-of-type { margin-top: .4em; }
+
+/* La ligne de forme d'un sort : ce qu'un joueur lit AVANT la description —
+   école, incantation, portée, composantes, durée. Elle doit se distinguer du
+   texte sans lui voler l'œil. */
+.md-typeset .fh-spell-meta,
+.md-typeset .fh-spell-classes {
+  display: block;
+  font-size: .78em;
+  line-height: 1.5;
+  opacity: .72;
+}
+.md-typeset .fh-spell-meta { color: var(--fh-gold); opacity: .9; }
+.md-typeset .fh-spell-classes { font-style: italic; margin-bottom: .35em; }
+.md-typeset .fh-srd-cite--spells dd { margin-bottom: .9em; }
+
+/* ── Le rappel en tête de chapitre ───────────────────────────────────────────
+   Eric, 2026-08-20 : « j'ai un peu peur de voir ma création noyée dans le SRD ».
+   Ce bandeau répond à la crainte AVANT que la page ne commence : il dit ce que
+   Fate's Hand fait ici, et sur onze chapitres il dit que tout est de lui.
+   🔴 GÉNÉRÉ par sync_from_vault.py depuis la table ratifiée. Le styler ici est
+      sans risque ; l'éditer dans docs/ est un no-op. */
+.md-typeset .fh-layer {
+  margin: -.4em 0 2em;
+  padding: .75em 1em .8em;
+  border-left: 3px solid var(--fh-gold);
+  background: var(--fh-cite-bg);
+  border-radius: 0 5px 5px 0;
+  font-size: .84em;
+}
+.md-typeset .fh-layer__label {
+  margin: 0 0 .45em;
+  font-size: var(--t-micro);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fh-gold);
+}
+.md-typeset .fh-layer ul { margin: 0; padding: 0; list-style: none; }
+.md-typeset .fh-layer li { margin: .22em 0; padding: 0; line-height: 1.55; }
+.md-typeset .fh-layer li::before { content: none; }
+.md-typeset .fh-layer__genre {
+  display: inline-block;
+  min-width: 9.5em;
+  font-weight: 700;
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-layer__genre { color: var(--fh-gold); }
+.md-typeset .fh-layer__added   { color: #2f6b3a; font-weight: 700; }
+.md-typeset .fh-layer__patched { color: var(--fh-gold); font-weight: 700; }
+.md-typeset .fh-layer__removed { color: var(--fh-red); font-weight: 700; }
+[data-md-color-scheme="slate"] .md-typeset .fh-layer__added { color: #7fbf8a; }
+.md-typeset .fh-layer__same,
+.md-typeset .fh-layer__unknown { opacity: .55; font-style: italic; }
+
+/* Les onze chapitres que le SRD ne touche pas. C'est le meilleur usage du
+   bandeau : il ne dit pas ce qui a été emprunté, il dit que rien ne l'a été. */
+.md-typeset .fh-layer--own {
+  border-left-color: var(--fh-red);
+  background: color-mix(in srgb, var(--fh-red) 7%, transparent);
+}
+.md-typeset .fh-layer--own p { margin: 0; }
+[data-md-color-scheme="slate"] .md-typeset .fh-layer--own {
+  background: color-mix(in srgb, var(--fh-red) 14%, transparent);
+}
+
+/* Le remplacement d'une entrée entière — « Gnome → Hoddon ». Rangé parmi les
+   modifications, il aurait disparu : c'est la ligne la plus forte du chapitre
+   Species, elle a droit à sa couleur. */
+.md-typeset .fh-layer__renamed { color: var(--fh-red); font-weight: 700; }
+[data-md-color-scheme="slate"] .md-typeset .fh-layer__renamed { color: #e0a08a; }
+
+/* 🔴 Le pied du bandeau. Il dit ce que la mesure NE couvre pas : les règles
+   qu'un chapitre énonce dans sa propre prose, sans record derrière, sont
+   invisibles à `fh-changes.json`. Sans cette ligne, la page des sorts —
+   737 mots d'Eric, zéro record divergent — aurait annoncé « unchanged ». */
+.md-typeset .fh-layer__note {
+  margin: .7em 0 0;
+  padding-top: .55em;
+  border-top: 1px solid var(--fh-cite-rule);
+  font-size: .9em;
+  line-height: 1.55;
+  opacity: .8;
+}
+
+/* « Ce mot ne veut pas dire ça ici. » Posé sous le bandeau, sur les chapitres
+   où un terme retiré par Fate's Hand survit DANS un texte cité. On ne rature
+   pas un mot dans une citation : on dit comment la lire. Généré. */
+.md-typeset .fh-translate {
+  margin: -1.2em 0 1.8em;
+  padding: .75em 1em;
+  border-left: 3px solid var(--fh-red);
+  background: color-mix(in srgb, var(--fh-red) 6%, transparent);
+  border-radius: 0 5px 5px 0;
+  font-size: .86em;
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-translate {
+  background: color-mix(in srgb, var(--fh-red) 13%, transparent);
+}
+.md-typeset .fh-translate__label {
+  margin: 0 0 .45em;
+  font-size: var(--t-micro); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fh-red);
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-translate__label { color: #e0a08a; }
+.md-typeset .fh-translate ul { margin: 0 0 .5em; padding-left: 1.1em; }
+.md-typeset .fh-translate li { margin: .18em 0; line-height: 1.55; }
+.md-typeset .fh-translate > p:last-child { margin: 0; opacity: .75; font-size: .95em; }
+
+/* ── SUBORDINATION VISUELLE DU BLOC CITÉ ────────────────────────────────────
+   Eric, 2026-08-20, après lecture du livre publié : « je vois un composite SRD
+   plus autre chose assez compliqué et chiant à lire […] pour un lecteur c'est
+   moche et chiant à lire ». La cause était mesurable : le bloc cité et sa prose
+   avaient le MÊME poids visuel, et 339 sorts cités écrasaient ses 732 mots.
+   ⭐ Le principe : SA VOIX RESTE LA PAGE, le SRD devient la référence dessous. */
+/* ── LA FLUIDITÉ ────────────────────────────────────────────────────────────
+   Eric, 2026-08-21 : « homogénéiser la typographie entre notre contenu et celui
+   du SRD, afin qu'on ait une sensation de fluidité. »
+   Le texte cité était composé à .92em et à 88 % d'opacité : plus petit ET plus
+   pâle que celui d'Eric. Deux coutures que l'œil sent sans les nommer — la page
+   changeait de matière à chaque bloc. Il prend maintenant exactement le même
+   corps et la même densité que le reste. */
+.md-typeset .fh-srd-cite { font-size: inherit; }
+.md-typeset .fh-srd-cite__list dd { opacity: 1; }
+
+/* Le repli. Rien n'est retiré — tout est à un clic, et la recherche du site
+   continue d'indexer le contenu fermé. */
+.md-typeset details.fh-fold {
+  margin: 1.6em 0;
+  padding: 0;
+  border: 1px solid var(--fh-cite-rule);
+  border-radius: 5px;
+  background: transparent;
+  box-shadow: none;
+}
+.md-typeset details.fh-fold > summary {
+  padding: .6em .95em;
+  background: var(--fh-cite-bg);
+  border-radius: 4px;
+  font-size: .84em;
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+  list-style: none;
+}
+.md-typeset details.fh-fold > summary strong { color: var(--fh-gold); }
+.md-typeset details.fh-fold[open] > summary {
+  border-bottom: 1px solid var(--fh-rule);
+  border-radius: 4px 4px 0 0;
+}
+.md-typeset details.fh-fold > .fh-srd-cite {
+  margin: 0;
+  border-left: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.md-typeset details.fh-fold > summary::after {
+  content: "▸"; float: right; opacity: .5; transition: transform .15s;
+}
+.md-typeset details.fh-fold[open] > summary::after { content: "▾"; }
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset details.fh-fold > summary::after { transition: none; }
+}
+
+/* ── Les trois arcanes d'exemple, côté joueur ────────────────────────────────
+   Eric, 2026-08-20 : « dans Destiny pour les joueurs il peut y avoir une
+   explication sur les arcanes, et justement 3 exemples ». Trois cartes sur
+   vingt-deux : un échange assumé, pour dire ce qu'EST une carte sans livrer la
+   lecture. Les dix-neuf autres se découvrent en les tirant. */
+.md-typeset .fh-arcana-teaser {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.4rem;
+  margin: 1.8em 0;
+}
+.md-typeset .fh-arcana-card {
+  margin: 0;
+  padding: 0 0 .9em;
+  border: 1px solid var(--fh-cite-rule);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--fh-cite-bg);
+}
+.md-typeset .fh-arcana-card img {
+  display: block; width: 100%; height: auto; margin: 0;
+  border-bottom: 1px solid var(--fh-rule);
+}
+.md-typeset .fh-arcana-card figcaption {
+  margin: .7em .9em .5em;
+  font-weight: 700;
+  color: var(--md-primary-fg-color--light, var(--fh-gold));
+}
+[data-md-color-scheme="slate"] .md-typeset .fh-arcana-card figcaption { color: var(--fh-gold); }
+.md-typeset .fh-arcana-num {
+  display: inline-block; min-width: 2.2em;
+  color: var(--fh-gold); opacity: .8;
+  font-variant-numeric: tabular-nums;
+}
+.md-typeset .fh-arcana-card dl { margin: 0 .9em; font-size: .84em; }
+.md-typeset .fh-arcana-card dt {
+  margin-top: .55em; font-size: var(--t-micro); letter-spacing: .07em;
+  text-transform: uppercase; color: var(--fh-gold); opacity: .85;
+}
+.md-typeset .fh-arcana-card dd { margin: .1em 0 0; line-height: 1.55; }
+
+/* Le teaser sans illustration : les 22 cartes d'Eric ne sont pas finies, et
+   les fichiers en place sont un tarot Rider-Waite-Smith de 1909 posé en
+   attendant. Montrer le jeu d'un autre comme exemple du sien serait faux, même
+   si c'est légal. La carte se tient donc sur son texte. */
+.md-typeset .fh-arcana-card--noart { padding-top: .2em; }
+.md-typeset .fh-arcana-card--noart figcaption {
+  border-bottom: 1px solid var(--fh-rule);
+  padding-bottom: .5em;
+}
+.md-typeset .fh-arcana-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: .86em;
+  font-style: italic;
+  opacity: .7;
+}
+
+/* ── LA LIGNE DE FIN DE PAGE ────────────────────────────────────────────────
+   Elle remplace tous les labels par bloc. Une page qui cite le porte une fois,
+   en bas, à voix basse. Formulation d'Eric, 2026-08-21. */
+.md-typeset .fh-srd-note {
+  margin: 3em 0 0;
+  padding-top: .8em;
+  border-top: 1px solid var(--fh-rule);
+  font-size: var(--t-micro);
+  letter-spacing: .04em;
+  opacity: .45;
+}
+
+
+/* ══ La galerie des 22 arcanes (Eric, 2026-08-29 : « toutes les cartes,
+   quelque chose de joli ») — et la carte en grand sur sa page. La vignette
+   EST la carte : l'oeuvre porte la tuile, le texte se tient dessous. ══ */
+
+/* La carte en grand sur sa page (le menu, lui, reprend .fh-thumb de species). */
+.md-typeset img.fh-card-illus {
+  float: right;
+  width: min(300px, 42%);
+  margin: .3rem 0 1rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--fh-rule);
+  box-shadow: 0 8px 26px rgba(0,0,0,.32);
+}
+@media (max-width: 44em) {
+  .md-typeset img.fh-card-illus { float: none; display: block; width: min(300px, 80%); margin: .3rem auto 1rem; }
+}
+
+.md-typeset .fh-clear { clear: both; }
