@@ -237,15 +237,33 @@ mandat passe ses nuits à débusquer.
 plus tard »*. On constate que sa poignée disparaît, on le DIT, et on laisse Eric
 décider où elle repousse.
 
-⚠️ **Et l'accueil déployé ne porte que TROIS boutons aujourd'hui** — *Create a
-character · Open Player Companion · The Dungeon Masters' Secrets* — là où le
-croquis 1 en dessine **six**. Ce n'est pas un ajustement, c'est une refonte de
-la rangée : deux des trois actuels ne figurent pas au croquis.
+### 🚪 LES DEUX PORTES ACTUELLES SE RANGENT DERRIÈRE « THE DM'S TABLE »
 
-📌 Mécaniquement simple : `fh-phb` a déjà `custom_dir: overrides`, une page à son
-propre gabarit ne demande aucune machinerie neuve. Et `docs/builder.md`
-(aujourd'hui une redirection instantanée) devient sans objet — personne ne tape
-l'adresse du builder, on va à la maison et on choisit.
+📏 **Mesuré sur l'accueil déployé** : il porte **trois** boutons aujourd'hui —
+*Create a character · Open Player Companion · The Dungeon Masters' Secrets* — là
+où le croquis 1 en dessine **six**. Ce n'est donc pas un ajustement de la rangée,
+c'est sa refonte : deux des trois actuels ne figurent nulle part au dessin.
+
+Eric, 2026-08-31 : *« oui, mets-les dans DM's Table. »*
+
+| bouton actuel | devient |
+|---|---|
+| **Create a character** | garde sa place au croquis — c'est la porte du builder |
+| **Open Player Companion** | passe derrière **The DM's table** |
+| **The Dungeon Masters' Secrets** | passe derrière **The DM's table** |
+
+⭐ **ET ÇA REFERME LA PORTE QUE LE JETON EMPORTAIT.** Le sceau « FH » cessant
+d'ouvrir le dock (voir juste au-dessus), le Companion se retrouvait sans entrée
+visible. *The DM's table* lui en redonne une. Les deux décisions se répondent, et
+c'est heureux — mais elles doivent être tenues ENSEMBLE : retirer le
+`data-dock-open` sans que *The DM's table* existe déjà, c'est perdre le Companion
+entre deux lots.
+
+⚠️ **Une chose à relire à tête reposée** : *Player Companion* est un outil de
+JOUEUR — la fiche, l'inventaire, le Soulforge. Le ranger derrière une porte
+appelée *The DM's table* est la décision d'Eric et elle est notée telle quelle ;
+elle mérite juste un second regard le jour où *Your characters* existera, parce
+que c'est peut-être là qu'il vit vraiment.
 
 ---
 
