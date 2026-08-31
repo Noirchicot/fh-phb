@@ -37,6 +37,46 @@ reste à côté de lui n'est plus un vide accidentel, c'est **une surface**. Eri
 
 ---
 
+## 1 bis. LA LOI DU PARTAGE — la hauteur décide, la largeur suit
+
+> Eric, 2026-08-31 : *« lorsqu'il est invoqué, le builder prend toute la place
+> qu'il peut EN HAUTEUR, au détriment du site FH web. »*
+
+⭐ **C'est une loi, pas un réglage, et elle est plus simple que tout ce qu'on
+aurait pu inventer.** Le panneau a un ratio sacré (375 × 560, soit 0,670) ; dès
+qu'on lui donne une hauteur, sa largeur n'est plus négociable — elle se déduit.
+La règle d'Eric dit donc : **on lui donne TOUTE la hauteur, et le site paie la
+largeur qui en résulte.**
+
+```
+échelle du builder  =  hauteur de la fenêtre ÷ 560        ← la HAUTEUR seule
+largeur du builder  =  échelle × 375                       ← elle SUIT
+largeur du site     =  ce qui reste                        ← il PAIE
+```
+
+📏 Ce que ça donne, en pixels, sur les fenêtres réelles :
+
+| fenêtre | échelle | builder | site |
+|---|---|---|---|
+| 1366 × 1024 | 1,829 | **686** | 680 |
+| 2560 × 1024 | 1,829 | **686** | 1 874 |
+| 1366 × 700 | 1,250 | **469** | 897 |
+| 1920 × 1440 | 2,571 | **964** | 956 |
+
+⚠️ **CONSÉQUENCE À CONNAÎTRE, ET ELLE SURPREND** : le builder grandit avec la
+HAUTEUR de la fenêtre, jamais avec sa largeur. Élargir l'écran ne lui donne rien
+— tout va au site. Le rendre plus haut le fait grossir, et c'est le site qui
+recule. C'est exactement ce qu'Eric demande, et c'est la suite directe de la
+règle sacrée du lot 112 : *un ratio verrouillé n'a qu'un seul degré de liberté.*
+
+⛔ **Et c'est là que les six paliers d'Eric prendront leur métier** :
+`mini · mobile · small · medium · large · extra` ne diront pas une taille, ils
+diront **de combien le builder renonce à cette hauteur** pour rendre de la
+largeur au site. `extra` = la loi ci-dessus, sans concession. Les seuils
+viendront dans leur lot, en regardant.
+
+---
+
 ## 2. Les DEUX modes, et pourquoi aucun n'est une branche morte
 
 | mode | qui tient le thème | où il vit |
@@ -137,7 +177,10 @@ embarqué serait une seconde source, donc une divergence — la faute que
 1. **Le site encadre-t-il le builder, ou l'inverse ?** Eric a dit « c'est le
    site qui décide » — la lecture la plus simple est *le site est la page, le
    builder est le cadre*. À confirmer, parce que tout le reste en découle.
-2. **Quelle largeur fait apparaître la colonne de gauche ?** En dessous, le
-   site seul, ou le builder seul. C'est une cote d'Eric, pas une déduction.
+2. **Quelle largeur fait apparaître la colonne de gauche ?** La loi §1 bis
+   donne la largeur du builder ; elle ne dit pas à partir de quel reste le site
+   mérite une colonne plutôt que rien. C'est une cote d'Eric, pas une déduction.
+   *(Repère mesuré : à 1366 × 1024 il reste 680 px au site ; à 1024 × 1366, le
+   builder en prend 909 et il n'en reste que 115 — donc rien d'affichable.)*
 3. **Sur téléphone, que voit-on ?** Une seule colonne — laquelle, et comment
    passe-t-on à l'autre ?
