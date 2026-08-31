@@ -114,19 +114,91 @@ mesurés, aucun inventé :
 
 *(la troisième colonne = `PLANCHER_SITE + 375`, le builder à son échelle 1)*
 
-### ⛔ Et en dessous, il n'y a plus deux colonnes — c'est là que « tous les supports » mord
+### ⛔ Et en dessous, le builder S'EN VA — il ne se replie pas
 
-Sous ce seuil, la page ne peut porter qu'**une** surface. Aucune arithmétique ne
-sauve un téléphone : 375 de builder + 480 de site font 855, et aucun téléphone ne
-les a. Le mode à UNE colonne n'est donc pas une dégradation qu'on tolère, c'est
-un **mode à part entière**, et il doit être dessiné :
+> Eric, 2026-08-31 : *« le mode vertical de l'iPad est un mode mobile en plus
+> grand. On ne peut pas décemment afficher les deux. **Le builder s'ouvre dans
+> une nouvelle fenêtre.** »*
 
-- laquelle des deux s'affiche par défaut ?
-- par quel geste passe-t-on à l'autre ?
-- ce geste est-il le même que celui qui « invoque » le builder sur grand écran ?
+⭐ **C'est la décision la plus économe du lot, et elle SUPPRIME un mode au lieu
+d'en dessiner un.** Pas de « une colonne partagée » à inventer, pas de bascule à
+imaginer, pas de geste à apprendre : sous le seuil, le site reste le site, et le
+builder part **ailleurs**.
 
-📌 C'est le cas le plus fréquent de tous — le téléphone est l'appareil sur lequel
-Eric juge — et c'est le seul point du lot qui n'a encore aucun dessin.
+| fenêtre | ce qui se passe | qui tient le thème |
+|---|---|---|
+| ≥ le seuil | site + builder **côte à côte** | le **site**, seul |
+| < le seuil | le site seul ; le builder s'ouvre en **nouvelle fenêtre** | le **builder**, autonome |
+
+📌 **Les deux modes du §2 se referment alors l'un sur l'autre** : le builder qui
+« quitte le site » n'est pas une hypothèse pour plus tard, c'est le comportement
+NORMAL de tout écran debout. Sa page autonome existe déjà, elle est déployée, et
+le lot 112 l'a mesurée sur six formes de fenêtre. Rien à construire de ce côté —
+seulement un lien à poser.
+
+### 🔴 « Automatiquement sur tous les supports ? » — NON, et c'est une limite du web
+
+Eric, 2026-08-31 : *« possible automatiquement sur tous les supports ? »*
+
+**Non.** `window.open` n'est autorisé que depuis un **vrai geste du joueur**.
+Appelé au chargement, sur un `resize` ou dans un `setTimeout`, il est bloqué par
+le bloqueur de fenêtres — silencieusement, et Safari iOS est le plus strict de
+tous. Aucun contournement n'existe, et il n'y en a jamais eu : c'est la
+protection qui a tué les pop-ups.
+
+⛔ **Ne pas confondre avec `window.resizeTo`**, refusé partout et pour toujours :
+on peut OUVRIR une fenêtre sur un geste, on ne dimensionne jamais celle du
+joueur.
+
+⭐ **Ce QUI est automatique, en revanche, et c'est presque tout :**
+
+| | automatique ? |
+|---|---|
+| choisir entre deux colonnes et le site seul | ✅ oui — c'est de la largeur, donc du CSS |
+| adapter la taille du builder à la fenêtre | ✅ oui — le lot 112 le fait déjà |
+| imposer le thème du site au builder embarqué | ✅ oui — même origine |
+| **ouvrir la nouvelle fenêtre** | ⛔ **non — il faut un tap** |
+
+Le seul geste qui reste au joueur est donc **le tap qui invoque le builder**. Ce
+n'est pas une concession : sur un écran debout, ouvrir le builder EST une
+décision, pas une conséquence de la largeur.
+
+### 🔴 « Peut-on contrôler la taille de cette nouvelle fenêtre ? » — sur bureau oui, sur tablette et téléphone NON
+
+Eric, 2026-08-31 : *« peut-on contrôler la taille de cette nouvelle fenêtre ? »*
+
+| support | `window.open(url, nom, "width=…,height=…")` |
+|---|---|
+| **bureau** (Chrome, Firefox, Edge, Safari macOS) | ✅ une vraie fenêtre, à la taille demandée. Bornée à l'écran, avec une taille minimale imposée par le navigateur, et certains joueurs forcent l'ouverture en onglet. |
+| **iPadOS / iOS / Android** | ⛔ la chaîne de dimensions est **ignorée**. Ça ouvre un onglet plein écran, point. |
+
+⚠️ **Et c'est exactement à l'envers du besoin** : la nouvelle fenêtre sert
+surtout sur tablette debout et sur téléphone — précisément là où on ne peut pas
+la dimensionner.
+
+⭐ **Mais ça ne coûte rien, et c'est le lot 112 qui l'a payé d'avance.** Le
+builder n'a besoin d'aucune taille imposée : il prend ce qu'on lui donne et pose
+son panneau 375 × 560 blg au facteur exact, ratio 0,670, sur n'importe quelle
+fenêtre — mesuré sur quatre formes. Un onglet plein écran d'iPad debout est donc
+un cas déjà couvert, pas une dégradation.
+
+📌 **Ce que ça ouvre côté bureau** : une fenêtre dimensionnée et sans onglets,
+c'est très exactement le *« mode widget sur desktop »* qu'Eric a demandé plus
+tôt. Les deux idées n'en font qu'une, et elle ne coûte qu'une chaîne de
+paramètres.
+⚠️ Une fois la fenêtre ouverte PAR NOUS, `resizeTo` y est autorisé — c'est la
+seule fenêtre qu'on ait le droit de dimensionner. Celle du joueur, jamais.
+
+🔬 **À vérifier sur son appareil, pas d'ici** : le comportement iOS est une règle
+de plateforme connue, il n'a pas été mesuré depuis ce banc. Un tap sur l'iPad
+d'Eric tranchera en dix secondes.
+
+⚠️ **Le cas à ne pas oublier — la rotation en cours de route.** Deux colonnes en
+paysage, le joueur couche l'appareil : on ne peut pas ouvrir une fenêtre à sa
+place. Le builder embarqué doit donc SURVIVRE à la rotation là où il est déjà
+ouvert, plutôt que disparaître au profit d'un bouton. À dessiner, et c'est le
+seul reste du mode étroit.
+
 
 ## 2. Les DEUX modes, et pourquoi aucun n'est une branche morte
 
