@@ -138,6 +138,12 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 > first bound budget large enough to buy an **Expert** and still have something left, which is why
 > the Rogue is the only class whose printed layout reaches past Novice. *(The layouts are in
 > [Skills & Tools — Player Guide](../skills-and-tools.md).)*
+>
+> **One subclass more than the base game** <span class="fh-tag">FH</span> — beside the roguish archetypes printed above,
+> Fate's Hand adds the **[Silent Blade](../silent-blade.md)**: the rogue who ends it in the first round, with a wire
+> in one hand and a dagger in the other. Like the [College of Heralds](../college-of-heralds.md) it has an entry price —
+> **Adept in Stealth, Adept in Hunting, and expertise with the dagger** — and it is the only subclass
+> that hands you a **training**, the [Garrot](../trainings.md#what-is-a-training), for free.
 
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 

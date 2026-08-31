@@ -1822,6 +1822,7 @@ MAP = {
     "inheritance.md":         ("1. Build a Character/Inheritance.md",                     "Inheritance"),
     "moonkeeper.md":          ("1. Build a Character/Moonkeeper.md",                "Moonkeeper"),
     "college-of-heralds.md":  ("1. Build a Character/College of Heralds.md",  "College of Heralds"),
+    "silent-blade.md":        ("1. Build a Character/Silent Blade.md",          "Silent Blade"),
     "species.md":             ("1. Build a Character/D&D 5+ Races & Species.md",              "Species"),
     "skills-and-tools.md":    ("1. Build a Character/Skills & Tools — Player Guide.md",                       "Skills & Tools"),
     "feats.md":               ("2. At the Table/Feats.md",                                                "Feats"),
