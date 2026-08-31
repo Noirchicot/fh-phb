@@ -217,9 +217,14 @@ Eric, 2026-08-31 : *« plus besoin du jeton jaune, il sera dans la barre. »*
 | qui le fabrique | `docs/javascripts/fh-player-sheet.js:4985` |
 | qui l'habille | `docs/stylesheets/companion-dock.css:98` |
 
-⭐ **Le retirer n'est donc pas retirer un ornement : c'est DÉPLACER une porte.**
-Elle monte dans la barre — qui, elle, est désormais présente partout (voir
-ci-dessus). Le dock reste atteignable ; c'est son entrée qui change d'endroit.
+🔴 **IL DÉGAGE.** Eric, à la relecture : *« il dégage. »* Pas un déplacement du
+jeton — sa **suppression**. Ce qui monte dans la barre, c'est l'**accès au Player
+Companion** ; le rond flottant en bas à droite, lui, disparaît.
+
+⚠️ Et comme il n'est pas un ornement, le retirer laisse une porte à rouvrir
+ailleurs : sans entrée dans la barre, le dock devient **injoignable**. Les deux
+gestes vont ensemble, dans le même lot — retirer le jeton sans poser l'entrée
+serait perdre le Companion en silence.
 
 ⛔ **Et ça ne rouvre pas le dock v1** — Eric : *« le dock V1, c'est pour plus
 tard »*. On déplace sa poignée, on ne touche pas à ce qu'il y a derrière.
