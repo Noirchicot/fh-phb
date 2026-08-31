@@ -156,19 +156,32 @@ synchroniser.** C'est le plus gros allègement de la soirée.
 
 ---
 
-## 7. À TRANCHER — il n'en reste qu'une
+## 7. DEUX PAGES, ET C'EST LE CROQUIS 2 QUI LE DIT
 
-**Que garde l'accueil du cadre du site ?** MkDocs lui met par défaut une barre du
-haut (titre, recherche, bascule jour/nuit) et une navigation latérale. Sur une
-page qui EST l'interface, la nav latérale n'a plus d'objet — les portes sont dans
-la page. La barre du haut se discute : utile partout ailleurs, elle fait doublon
-avec le hero ici.
+Eric, 2026-08-31, en déposant ses deux dessins :
+*« mon croquis 1 = home page (doit être présent dans MkDocs) · mon croquis 2 =
+une autre page avec les règles. »*
 
-Trois possibilités : tout garder · garder la barre et retirer la nav · un accueil
-nu (image, portes, rien).
+L'accueil **s'allège** : il garde le hero, le pitch, la bande « what makes Fate's
+Hand different » et les portes. Toute la **Rules Reference** — la grille de
+quatre cartes *Build a Character · At the Table · Magic & Soulforging · World*,
+qui vit aujourd'hui sur l'accueil — **part sur sa propre page**.
 
-📌 Mécaniquement c'est simple : `fh-phb` a déjà `custom_dir: overrides`, une page
-à son propre gabarit ne demande aucune machinerie neuve. Et `docs/builder.md`
+| page | ce qu'elle porte |
+|---|---|
+| **l'accueil** (croquis 1) | hero · pitch · la bande du 5+ layer · six portes · le highlight |
+| **la page des règles** (croquis 2) | la grille de quatre cartes, le bloc « the base layer » et le bouton SRD 5.2.1 |
+
+⭐ **Et ça répond mécaniquement à la question du cadre MkDocs** : une page qui
+n'est plus qu'une porte n'a pas besoin de navigation latérale — les portes sont
+DANS la page. La page des règles, elle, est une page du livre comme une autre et
+garde tout son cadre.
+⚠️ Reste à confirmer par Eric, en regardant : la barre du HAUT (titre, recherche,
+bascule jour/nuit) sur l'accueil — gardée ou retirée ? Elle porte le retour à la
+maison et la recherche, mais fait doublon avec le hero.
+
+📌 Mécaniquement simple : `fh-phb` a déjà `custom_dir: overrides`, une page à son
+propre gabarit ne demande aucune machinerie neuve. Et `docs/builder.md`
 (aujourd'hui une redirection instantanée) devient sans objet — personne ne tape
 l'adresse du builder, on va à la maison et on choisit.
 
@@ -209,9 +222,15 @@ replacer : décision d'Eric, hors de ce lot.
 
 ---
 
-## 9. Le croquis fait foi
+## 9. Les croquis font foi
 
-Le dessin d'Eric du 2026-08-31 — hero, deux rangées de trois portes, et
-`TEMP BUTTON → FINISH YOUR CHARACTER` — **prime sur ce texte**. Il est arrivé en
-conversation et **n'est pas encore sur le disque** : à ranger dans
-`fh-phb/croquis/` et `FH-WEB/FHPC/Croquis/` dès qu'Eric le dépose.
+Les deux dessins d'Eric du 2026-08-31 **priment sur ce texte**. Ils sont rangés,
+au dépôt et au vault, sous la même empreinte :
+
+| croquis | fichier | ce qu'il fixe |
+|---|---|---|
+| **1** | `croquis/2026-08-31-home-page-portes.jpg` | l'accueil : hero, six portes, le bouton temporaire |
+| **2** | `croquis/2026-08-31-page-rules-reference.jpg` | la seconde page : la Rules Reference sort de l'accueil |
+
+*(mêmes fichiers dans `FH-WEB/FHPC/Croquis/` du vault — vérifié par empreinte
+SHA-256, pas par ressemblance de nom.)*
