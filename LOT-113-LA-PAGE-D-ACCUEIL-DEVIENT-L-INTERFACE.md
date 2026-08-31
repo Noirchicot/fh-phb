@@ -204,6 +204,30 @@ bandeau reste, et c'est du côté de la barre que ça se règle.
 ⛔ La nav latérale et le sommaire, eux, restent masqués sur l'accueil : les
 portes sont dans la page (voir juste au-dessus).
 
+### 🟡 LE JETON JAUNE MONTE DANS LA BARRE
+
+Eric, 2026-08-31 : *« plus besoin du jeton jaune, il sera dans la barre. »*
+
+📏 **Il n'est pas décoratif, et c'est ça qu'il faut savoir avant d'y toucher** :
+
+| | |
+|---|---|
+| ce que c'est | `button.fh-cd-seal-fab`, 46 × 46, en bas à droite, texte « FH » |
+| ce qu'il fait | `data-dock-open` — **il ouvre le Player Companion**, le dock v1 |
+| qui le fabrique | `docs/javascripts/fh-player-sheet.js:4985` |
+| qui l'habille | `docs/stylesheets/companion-dock.css:98` |
+
+⭐ **Le retirer n'est donc pas retirer un ornement : c'est DÉPLACER une porte.**
+Elle monte dans la barre — qui, elle, est désormais présente partout (voir
+ci-dessus). Le dock reste atteignable ; c'est son entrée qui change d'endroit.
+
+⛔ **Et ça ne rouvre pas le dock v1** — Eric : *« le dock V1, c'est pour plus
+tard »*. On déplace sa poignée, on ne touche pas à ce qu'il y a derrière.
+📌 Cohérent avec la rangée de portes : l'un des trois boutons actuels de
+l'accueil s'appelle littéralement *Open Player Companion*. Le jeton et ce bouton
+désignent la même chose — c'est un doublon de plus, et il se règle au même
+endroit.
+
 ⚠️ **Et l'accueil déployé ne porte que TROIS boutons aujourd'hui** — *Create a
 character · Open Player Companion · The Dungeon Masters' Secrets* — là où le
 croquis 1 en dessine **six**. Ce n'est pas un ajustement, c'est une refonte de
