@@ -176,9 +176,18 @@
 @media screen and (max-width: 44.9em) {
   .md-typeset h1.fh-cover-title { font-size: 2.3rem; }
 }
-/* On the landing page, hide the top header bar (title now sits above the
-   image) and drop the decorative d20 logo everywhere. */
-body.fh-home-page .md-header { display: none; }
+/* 🔴 LA BARRE DU HAUT EST RENDUE À L'ACCUEIL — lot 113, 2026-08-31.
+   Eric : « oui garde la barre. Tout le long. Dégage les doublons, ne fais pas
+   sauter le bandeau pour autant. »
+   📏 MESURÉ AVANT DE TOUCHER : sur l'accueil déployé, `.md-header` rendait une
+   hauteur de 0 — c'est LA règle ci-dessous qui l'effaçait. « Tout le long »
+   veut donc dire « y compris ici », et ce n'est pas une conservation : c'est un
+   rétablissement.
+   ⛔ Le doublon qui reste (le titre en texte dans la barre, et dans l'image du
+   hero) se règle du côté de la BARRE — le bandeau, lui, reste : « ne fais pas
+   sauter le bandeau pour autant ».
+   ⭐ La nav latérale et le sommaire, eux, restent masqués sur l'accueil (par le
+   `hide:` de sa page) : les portes sont DANS la page. */
 .md-header__button.md-logo { display: none; }
 
 /* ---- Landing hero banner ---- */
@@ -643,6 +652,40 @@ body.fh-home-page .md-header { display: none; }
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: .65rem;
   margin: 1.25rem 0 2.4rem;
+}
+/* ⭐ SIX PORTES, DEUX RANGÉES DE TROIS — croquis 1 d'Eric, 2026-08-31. La
+   grille est déjà en trois colonnes : six enfants la remplissent sur deux
+   lignes, sans une règle de plus. Le sélecteur existe pour NOMMER l'intention,
+   pas pour la produire — un lecteur doit savoir que six est voulu. */
+.fh-home-actions--six { margin-bottom: 1rem; }
+
+/* ── LE BOUTON DE REPRISE — Eric : « avec un gros highlight pour éviter de me
+   disperser ». Il vit SOUS la rangée, seul, parce qu'il ne concurrence pas les
+   portes : il rattrape un travail commencé. */
+.fh-home-resume { margin: 0 0 2.4rem; display: grid; grid-template-columns: 1fr; }
+
+/* 🔴 LE HIGHLIGHT NE S'ALLUME QUE SI ON L'A DEMANDÉ. `fh-widget.js` pose
+   `data-vise` quand l'adresse porte `?resume` — c'est le favori d'Eric qui
+   l'apporte. Sans lui, le bouton reste là, discret : il ne crie pas à chaque
+   visite. */
+/* ⚠️ `.md-typeset` EN TÊTE, ET C'EST MESURÉ : sans lui, la règle de base
+   `.md-typeset .fh-home-action` (0,2,0) battait celle-ci (0,2,0 mais écrite
+   AVANT dans la feuille), et le bouton restait à son ombre ordinaire. Vu à
+   l'œil, pas au chiffre — `data-vise` était bien posé, et rien ne s'allumait. */
+.md-typeset .fh-home-action--resume[data-vise="oui"] {
+  border-color: var(--fh-gold);
+  border-top-width: 3px;
+  box-shadow: 0 0 0 2px var(--fh-gold), 0 10px 28px rgba(0,0,0,.4);
+  background: linear-gradient(145deg, rgba(156,107,22,.28), rgba(156,107,22,.08));
+}
+
+/* ── UNE PORTE PAS ENCORE OUVERTE — « Your characters » attend que la fiche v1
+   revienne en ligne. ⛔ On ne la CACHE pas : le croquis la dessine, et une
+   porte annoncée qui manque se remarque plus qu'une porte éteinte. */
+.fh-home-action--soon {
+  opacity: .55;
+  cursor: default;
+  pointer-events: none;
 }
 .md-typeset .fh-dm-button {
   position: fixed;
