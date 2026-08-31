@@ -114,6 +114,51 @@ mesurés, aucun inventé :
 
 *(la troisième colonne = `PLANCHER_SITE + 375`, le builder à son échelle 1)*
 
+### 🔴 « 960, 700, 480 — blg ou px ? » — LA QUESTION QUI DÉCIDE DE TOUT LE LOT
+
+Eric, 2026-08-31, en quatre mots : *« 960, 700, 480 blg ? »*
+
+**Aujourd'hui : des PIXELS.** Le blg n'existe qu'à l'intérieur de `.app`, sous
+`zoom: var(--echelle)` ; le site, lui, n'est pas zoomé — ses largeurs sont des px
+d'écran. La formule §1 ter reste dimensionnellement juste (px ÷ blg = une
+échelle, c'est déjà ainsi que `cranAuto` travaille), mais elle mélange **deux
+règles à graduation différente**, et la question d'Eric le voit avant le banc.
+
+#### Ce que ça donne à l'œil — MESURÉ
+
+| | corps du texte | sur une fenêtre 1366 × 1024 |
+|---|---|---|
+| **site FH web** | 17 px, interligne 26,35, `h2` 27 px | **17 px** |
+| **builder** | `--t4` = 16 **blg** | 16 × 1,829 = **29 px** |
+
+⛔ **Côte à côte, le livre serait écrit 1,7 fois plus petit que le builder.** Les
+deux ne s'accordent qu'à une hauteur de fenêtre d'environ **595 px** (16 × H/560
+= 17) — et divergent d'autant plus que l'écran est haut. Sur un 1440 de haut, le
+builder rend 41 px contre 17.
+
+📌 C'est très exactement la faute que le mandat nomme : *deux mesures faites avec
+deux filtres différents ne comparent rien*. Ici, deux surfaces dessinées avec
+deux unités différentes ne s'accordent pas.
+
+#### Les deux sorties, et c'est à Eric
+
+| | ce que ça veut dire | ce que ça coûte |
+|---|---|---|
+| **A — le site reste en px** | deux typographies côte à côte, celle du livre et celle du builder. Les seuils restent **960 / 700 / 480 px**. | rien à construire, mais l'écart se voit et grandit avec la hauteur de l'écran |
+| **B — le site passe sous la même échelle** | une seule unité pour les deux surfaces : le blg. Les seuils deviennent des **blg**, et l'accord typographique est automatique — par construction, pas par réglage. | il faut coter le site en blg (sa colonne, ses titres), donc toucher le thème MkDocs pour de bon |
+
+⭐ **B est la seule qui tienne la première phrase d'Eric** — *« même lorsque le
+site n'affiche pas le builder, il a les mêmes règles de couleurs »* — poussée
+jusqu'à sa conséquence : les mêmes règles, ce sont aussi les mêmes tailles. Et
+c'est la seule qui donne un sens à sa question : si les seuils sont en blg,
+c'est que le site est dans la même règle graduée.
+⚠️ Mais c'est un lot plus lourd, et ça change le site **hors builder** aussi.
+Ce n'est pas à un architecte de le décider en passant.
+
+📏 Repère chiffré, pour choisir en connaissance : à l'échelle 1,829, les trois
+planchers valent en blg **525 · 383 · 262**. Et la colonne de lecture naturelle
+du site, 930 px, en vaut **508**.
+
 ### ⛔ Et en dessous, le builder S'EN VA — il ne se replie pas
 
 > Eric, 2026-08-31 : *« le mode vertical de l'iPad est un mode mobile en plus
