@@ -77,6 +77,57 @@ viendront dans leur lot, en regardant.
 
 ---
 
+## 1 ter. LE PLANCHER DU SITE — et « ça doit marcher sur tous les supports »
+
+> Eric, 2026-08-31 : *« dans le cas où la page ne peut plus afficher, le builder
+> se réduit suffisamment pour qu'elle y parvienne »*, puis *« il faut que ça
+> marche sur tous les supports »*.
+
+La loi §1 bis devient donc **bornée par le bas** :
+
+```
+échelle  =  min( hauteur ÷ 560 ,  (largeur − PLANCHER_SITE) ÷ 375 )
+```
+
+Le builder prend toute la hauteur — **sauf** si la largeur qui en découle ne
+laisse plus au site de quoi s'afficher. Alors c'est lui qui recule.
+
+### Ce que le site réclame — MESURÉ sur `fh-phb/chapters/identity/`
+
+| fenêtre | colonne de lecture (`.md-typeset`) | sommaire |
+|---|---|---|
+| 1400 | 930 | 242 |
+| **960** | 671 | **242 — dernier palier avec sommaire** |
+| **700** | 668 | **0 — le sommaire disparaît** |
+| 480 | 448 | 0 |
+
+⭐ Le site ne déborde JAMAIS horizontalement, jusqu'à 480 au moins : il rétrécit
+proprement. « Ne peut plus afficher » n'est donc pas une panne technique — c'est
+un jugement de LISIBILITÉ, et il appartient à Eric. Trois candidats, tous
+mesurés, aucun inventé :
+
+| `PLANCHER_SITE` | ce que le site garde | la fenêtre qu'il faut pour DEUX colonnes |
+|---|---|---|
+| **960** | tout, sommaire compris | ≥ 1 335 px |
+| **700** | la colonne à sa largeur naturelle (668), sans sommaire | ≥ 1 075 px |
+| **480** | une colonne étroite, lisible mais serrée | ≥ 855 px |
+
+*(la troisième colonne = `PLANCHER_SITE + 375`, le builder à son échelle 1)*
+
+### ⛔ Et en dessous, il n'y a plus deux colonnes — c'est là que « tous les supports » mord
+
+Sous ce seuil, la page ne peut porter qu'**une** surface. Aucune arithmétique ne
+sauve un téléphone : 375 de builder + 480 de site font 855, et aucun téléphone ne
+les a. Le mode à UNE colonne n'est donc pas une dégradation qu'on tolère, c'est
+un **mode à part entière**, et il doit être dessiné :
+
+- laquelle des deux s'affiche par défaut ?
+- par quel geste passe-t-on à l'autre ?
+- ce geste est-il le même que celui qui « invoque » le builder sur grand écran ?
+
+📌 C'est le cas le plus fréquent de tous — le téléphone est l'appareil sur lequel
+Eric juge — et c'est le seul point du lot qui n'a encore aucun dessin.
+
 ## 2. Les DEUX modes, et pourquoi aucun n'est une branche morte
 
 | mode | qui tient le thème | où il vit |
@@ -174,13 +225,29 @@ embarqué serait une seconde source, donc une divergence — la faute que
 
 ## 7. À TRANCHER avant la première ligne de code
 
-1. **Le site encadre-t-il le builder, ou l'inverse ?** Eric a dit « c'est le
+> Eric, 2026-08-31 : *« il faut que ça marche sur TOUS LES SUPPORTS »*, *« pas
+> que sur mon iPad »*.
+>
+> 📌 C'est une consigne de PORTÉE, et elle se garde comme telle : ce lot ne se
+> juge pas sur l'appareil d'Eric. Le banc devra parcourir au minimum le
+> téléphone (375 × 812), le petit téléphone (360 × 640), la tablette dans ses
+> deux orientations, le portable (1440 × 900), le grand écran (2560 × 1440) et
+> la colonne de VTT (480). C'est la même liste que le lot 112 a mesurée pour le
+> panneau ; elle est reprise ici parce qu'un lot qui ajoute une SECONDE surface
+> ne peut pas s'appuyer sur les mesures de celui qui n'en avait qu'une.
+
+1. **`PLANCHER_SITE` — 960, 700 ou 480 ?** Les trois sont mesurés (§1 ter), et
+   ils décident à partir de quelle fenêtre deux colonnes existent : 1 335 px,
+   1 075 px ou 855 px. Aucun n'est déductible — c'est un jugement de lisibilité.
+2. **Le mode à UNE colonne, qui n'a encore aucun dessin.** Sous le seuil, la
+   page ne porte qu'une surface : laquelle par défaut, par quel geste on passe à
+   l'autre, et ce geste est-il le même que celui qui « invoque » le builder sur
+   grand écran ? C'est le cas le plus fréquent de tous.
+3. **En portrait, même sur tablette, il n'y a pas deux colonnes.** Mesuré :
+   sur un 1024 × 1366, la loi §1 bis donne 909 px au builder et il n'en reste
+   que 115 au site. Le mode à une colonne n'est donc pas réservé au téléphone —
+   il est le mode NORMAL de tout écran debout, et c'est une raison de plus pour
+   qu'il soit dessiné plutôt que subi.
+4. **Le site encadre-t-il le builder, ou l'inverse ?** Eric a dit « c'est le
    site qui décide » — la lecture la plus simple est *le site est la page, le
    builder est le cadre*. À confirmer, parce que tout le reste en découle.
-2. **Quelle largeur fait apparaître la colonne de gauche ?** La loi §1 bis
-   donne la largeur du builder ; elle ne dit pas à partir de quel reste le site
-   mérite une colonne plutôt que rien. C'est une cote d'Eric, pas une déduction.
-   *(Repère mesuré : à 1366 × 1024 il reste 680 px au site ; à 1024 × 1366, le
-   builder en prend 909 et il n'en reste que 115 — donc rien d'affichable.)*
-3. **Sur téléphone, que voit-on ?** Une seule colonne — laquelle, et comment
-   passe-t-on à l'autre ?
