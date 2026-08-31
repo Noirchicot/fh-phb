@@ -6,12 +6,8 @@ one. Their whole craft is the first round: get behind someone, get a hand on the
 there is no second round to plan for.
 
 > [!note] Prerequisite
-> **Adept in Stealth**, **Adept in Hunting**, and **[Weapon Mastery](equipment.md#weapon-mastery) with
-> the dagger** — all three held on the day you take the subclass. Stealth is how you arrive, Hunting
-> is how you knew where to wait, and the dagger is the only thing you actually needed to bring.
->
-> *The rogue opens Weapon Mastery at level 1 and may change which weapons it covers on a Long Rest —
-> so the dagger has to be one of yours on the day you choose this path, and stay one.*
+> **Adept in Stealth** and **Adept in Hunting**, held on the day you take the subclass. Stealth is
+> how you arrive; Hunting is how you knew where to wait.
 >
 > **Where the points came from does not matter** — free pool, species, inheritance, a level-up, a
 > feat. Only the tiers are checked, and they are checked when you choose the subclass. Stealth is on
