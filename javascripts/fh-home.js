@@ -41,6 +41,11 @@
         ["Level 13 — Wider Opening", "level-13"],
         ["Level 17 — One Shot", "level-17"]
       ]},
+      { slug: "spell-rigger", title: "Spell Rigger", items: [
+        ["Level 3 — Spellcasting", "level-3"],
+        ["Level 9 — Quiet Casting", "level-9"],
+        ["Level 17 — Catch the Spell", "level-17"]
+      ]},
       { slug: "ability-scores", title: "Rolling Ability Scores", items: [
         ["The 3d6 × 10 method", "the-3d6-10-method"],
         ["Why roll?", "why-roll"],
