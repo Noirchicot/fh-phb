@@ -1855,3 +1855,16 @@
 }
 
 .md-typeset .fh-clear { clear: both; }
+
+/* ── Bible › Les lois — la ligne d'adresses sous chaque loi ─────────────────
+   Sous chaque loi vient la liste des règles qui la portent. C'est une
+   RÉFÉRENCE, pas du corps de texte : servie au même corps que la loi, elle
+   pèse autant qu'elle et la page devient un mur. On la sert donc en petit et
+   serré, pour que ce qui se lit d'abord reste la phrase. La classe est posée
+   par `docs/bible/lois.md` (attr_list) et ne vit que là. */
+.md-typeset .lois-refs {
+  font-size: .74em;
+  line-height: 1.55;
+  margin-top: -.35rem;
+  opacity: .82;
+}

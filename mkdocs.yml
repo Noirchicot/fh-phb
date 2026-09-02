@@ -162,6 +162,11 @@ nav:
     # d'architecte du 2026-09-02. Cette page est un TIRAGE ; on ne la corrige
     # jamais ici, on corrige la source puis on synchronise (spec en fin de
     # rapport du lot plomberie).
+    # `Les lois` est la couche AU-DESSUS des 310 règles : une trentaine de phrases
+    # qui les résument et les citent. Elle est en PREMIER parce que c'est la page
+    # qu'Eric lit d'abord, et souvent la seule. Elle ne tranche rien : une loi qui
+    # passe sur une zone disputée renvoie à `À trancher`.
+    - Les lois: bible/lois.md
     - Comment lire: bible/index.md
     - Le panneau: bible/panneau.md
     - Les cadres: bible/cadres.md
