@@ -35,7 +35,8 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 
 - **NORMES.md § 1 quater, 26/08** : *« LA LARGEUR CIBLE — 360 px — ⛔ **pas 375**. »* · **§ 1 ter quater, 29/08** : *« Toute mesure de largeur se prend à 360. »*
 - Mais les gabarits ratifiés sont mesurés à 375 : **§ 4 ter** *« mesurés à 375 × 553, iPhone SE »* · **§ 2 ter** *« mesuré à 375 × 553 »* · **CADRES § 3** *« 269 px mesuré à 375 »*, et la carte du rang R est dictée à **269 × 440** — une largeur de colonne qui vient d'un écran de 375.
-- Règles concernées : [`panneau.largeur-cible`](panneau.md#panneau-largeur-cible) · [`panneau.compatibilite-360`](panneau.md#panneau-compatibilite-360) · [`budget.gabarit-du-rang-b`](budget.md#budget-gabarit-du-rang-b) · [`budget.carte-r-est-un-dessin`](budget.md#budget-carte-r-est-un-dessin)
+- Règles concernées : [`panneau.largeur-cible`](panneau.md#panneau-largeur-cible) · [`panneau.compatibilite-360`](panneau.md#panneau-compatibilite-360) — les deux disent « 360 » dans leur énoncé. ⛔ Aucune règle ne porte le camp « 375 » : il ne vit que dans les gabarits mesurés (NORMES § 4 ter, § 2 ter, CADRES § 3).
+- Mentionnée en passant dans : [`budget.gabarit-du-rang-b`](budget.md#budget-gabarit-du-rang-b) · [`budget.carte-r-est-un-dessin`](budget.md#budget-carte-r-est-un-dessin) — leur énoncé ne dit ni 360 ni 375 ; le 375 est dans les cotes qu'elles portent, pas dans ce qu'elles affirment.
 - ⚠️ Le corpus dit lui-même *« Tout budget calculé sur 375 est faux : il donne du mou qui n'existe pas »*, et calcule pourtant deux gabarits sur 375.
 
 ## C5 — Combien la rangée offre-t-elle à 360 : 278, 320 ou 344 ? { #c5 }
@@ -45,7 +46,9 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 - **§ 1 quater** : *« la rangée utile à 360 = **278** — moins deux gouttières de 8 »*.
 - **§ 1 ter ter, 29/08** : *« À 360 la rangée offre **320**, et quatre cases pleines plus leurs gouttières en demandent 372. »* · **§ 1 ter bis** : *« le vivier faisait 277 px, la rangée **320** »*.
 - **CADRES § 0 bis** : *« champ intérieur du pied … **344** (360 − 8 − 8) »*.
-- Règles concernées : [`panneau.largeur-cible`](panneau.md#panneau-largeur-cible) · [`collecteur.quatre-par-ligne`](organes.md#collecteur-quatre-par-ligne) · [`cadre.pied-76`](cadres.md#cadre-pied-76)
+- Règles concernées : **aucune.** Les trois nombres ne sont l'énoncé d'aucune règle : 278, 320 et 344 vivent dans les *Valeur* et les *Pourquoi* des règles qui s'en servent. La contradiction reste entière — elle est dans le corpus, pas dans un énoncé.
+- Mentionnée en passant dans : [`panneau.largeur-cible`](panneau.md#panneau-largeur-cible) · [`collecteur.quatre-par-ligne`](organes.md#collecteur-quatre-par-ligne) · [`cadre.pied-76`](cadres.md#cadre-pied-76) — elles énoncent la cible 360, le maximum de quatre par ligne et la hauteur du pied, pas la largeur utile de la rangée.
+- 👀 Non alertée mais à regarder : [`budget.trois-jetons-a-360`](budget.md#budget-trois-jetons-a-360) énonce *« la rangée dispose de 278 »* et ne porte aucune alerte. À Eric de dire si elle entre dans la dispute.
 - ⚠️ Trois nombres pour la même largeur d'écran, chacun servant de base à un budget différent.
 
 ## C6 — Les chevrons : à gauche/droite, ou en haut/bas ? { #c6 }
@@ -72,7 +75,8 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 
 - **NORMES.md § 6, 26/08** : *« ⛔ **aucune taille de texte n'est déclarée pour un bouton** — `.species-done` porte `font: inherit`. Tant que le corps d'un bouton n'est pas nommé (T-quoi ?), les largeurs de `small` et `medium` ne sont pas calculables. ⏳ À trancher. »*
 - **NORMES.md § 4 ter, 27/08** : *« la porte : 44 px de cible, corps **T3** — c'est un bouton »* · **§ registre des boutons** : *« bouton de PROPOSITION : octogone, **T3** »* · **§ 6** : *« T3 est le corps recommandé »*.
-- Règles concernées : [`bouton.corps-du-texte`](organes.md#bouton-corps-du-texte) · [`bouton.gabarit-des-deux-lignes`](organes.md#bouton-gabarit-des-deux-lignes) · [`bouton.porte-a-deux-ages`](organes.md#bouton-porte-a-deux-ages)
+- Règles concernées : [`bouton.corps-du-texte`](organes.md#bouton-corps-du-texte) · [`bouton.gabarit-des-deux-lignes`](organes.md#bouton-gabarit-des-deux-lignes)
+- Mentionnée en passant dans : [`bouton.porte-a-deux-ages`](organes.md#bouton-porte-a-deux-ages) — son énoncé décrit les deux âges d'une porte, il ne nomme aucun corps de texte.
 - ⚠️ T3 est employé et ratifié pour la porte ; il reste écrit « à trancher » pour la famille des boutons.
 
 ## C9 — Le parcours a-t-il huit étapes ou dix ? { #c9 }
@@ -81,7 +85,9 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 
 - **huit** : *« Elle vaut pour tout token et pour tout collecteur, sur les **huit** étapes »* (§ TAILLE STANDARD) · *« c'est un seuil, pas une étape du **parcours à 8 temps** »* (§ 1 quater) · *« les **huit** écrans rendent 352 dans 360 »* (§ 1 ter quater).
 - **dix** : *« CEINTURE — **dix** étapes, toujours visible »* (CADRES § 3, croquis) · *« La ceinture des **dix** étapes n'est jamais couverte »* (CADRES § 0) · *« `.belt` et ses **dix** crans »* (SOCLE) · *« les **dix** écrans en héritent »*, *« elle est vide sur les **dix** écrans »*, *« cinq écrans sur dix »* (NORMES / CADRES).
-- Règles concernées : [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`socle.ce-qui-ne-se-redessine-jamais`](socle.md#socle-ce-qui-ne-se-redessine-jamais) · [`jeton.cote`](organes.md#jeton-cote)
+- Règles concernées : **aucune.** Ni « huit » ni « dix » n'est l'énoncé d'une règle : les deux comptes ne paraissent que dans des arguments et des valeurs. La contradiction reste entière — c'est le corpus qui compte deux fois, aucune règle ne prend parti.
+- Mentionnée en passant dans : [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`socle.ce-qui-ne-se-redessine-jamais`](socle.md#socle-ce-qui-ne-se-redessine-jamais) · [`jeton.cote`](organes.md#jeton-cote) — elles énoncent respectivement que la ceinture n'est jamais couverte, que cinq nœuds ne se redessinent pas, et qu'un jeton mesure 87 × 48 ; le compte des étapes est dans leur *Valeur* ou leur *Pourquoi*.
+- 👀 Non alertée mais à regarder : [`livre.rangee-encore-vide`](organes.md#livre-rangee-encore-vide) énonce *« les dix écrans »* et *« cinq écrans sur dix »* et ne porte aucune alerte.
 - ⚠️ Les deux comptes servent de base à des budgets et à des gardes.
 
 ## C10 — La ceinture est-elle vraiment TOUJOURS visible ? { #c10 }
@@ -91,7 +97,8 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 - **CADRES.md § 0** : *« BELT IS ALWAYS VISIBLE »* · *« La ceinture des dix étapes n'est jamais couverte, **par aucun cadre**. »*
 - **CADRES.md § 2** : *« **FS** — plein écran : ni belt ni menu, **ça recouvre tout** »*.
 - **NORMES.md § 1 quater** : *« elle n'est PAS sur tous les écrans — ⛔ **Entrée › R n'en a pas** … 60 px récupérés »* · **§ 1 sexies** : le Seuil est un `FS`, *« ni ceinture ni menu latéral »*.
-- Règles concernées : [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`cadre.fs-sortie-nommee`](cadres.md#cadre-fs-sortie-nommee) · [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) · [`cadre.seuil-est-un-fs`](cadres.md#cadre-seuil-est-un-fs)
+- Règles concernées : [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) · [`cadre.seuil-est-un-fs`](cadres.md#cadre-seuil-est-un-fs)
+- Mentionnée en passant dans : [`cadre.fs-sortie-nommee`](cadres.md#cadre-fs-sortie-nommee) — son énoncé exige une sortie nommée ; que le FS recouvre la ceinture est dans son argument.
 - ⚠️ La constante « au-dessus de tout » a au moins deux exceptions écrites, aucune n'étant nommée comme telle dans CADRES § 0.
 
 ## C11 — Le corps d'une fiche suit-il l'échelle de sa dalle ? { #c11 }
@@ -136,7 +143,8 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 
 - **NORMES.md § 4** : *« Identity réservait **60 px** là où Destiny et Skills en réservent **52** (la grandeur étroite) »* — présenté comme un défaut.
 - **NORMES.md § LA RÉSERVE EST SYMÉTRIQUE** : mesuré après correction, *« Identity **60/60** … Species, Inheritance, Class **44/44** »* — présenté comme correct, avec l'argument *« ce qui compte n'est pas le chiffre, c'est qu'il soit LE MÊME à gauche et à droite »*.
-- Règles concernées : [`cadre.regle-par-ressemblance-nomme-sa-source`](cadres.md#cadre-regle-par-ressemblance-nomme-sa-source) · [`bouton.reserve-symetrique`](organes.md#bouton-reserve-symetrique)
+- Règles concernées : [`bouton.reserve-symetrique`](organes.md#bouton-reserve-symetrique) — seule règle dont l'énoncé porte la réserve. ⛔ L'autre camp (le 60 d'Identity présenté comme un défaut) ne vit que dans NORMES § 4.
+- Mentionnée en passant dans : [`cadre.regle-par-ressemblance-nomme-sa-source`](cadres.md#cadre-regle-par-ressemblance-nomme-sa-source) — le 60 contre 52 y est l'EXEMPLE d'une règle écrite par ressemblance, pas son énoncé.
 - ⚠️ Le 60 d'Identity est décrit comme une faute dans un paragraphe et comme la mesure juste dans l'autre. Le 52 (la « grandeur étroite ») n'existe plus depuis que `data-grandeur` a remplacé les `@media`.
 
 ## C16 — `Done` fait-il avancer ? { #c16 }
@@ -173,7 +181,8 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 
 - **NORMES.md § 1 quater** : *« écart entre rangées : **8** — la gouttière, la même qu'en largeur »* · **CADRES § 2 bis** : marge = `--sp-8` / `--sp-16`.
 - **CADRES.md § 2 et § 7** : l'écart d'une tuile est **4**, *« et c'est l'arithmétique de 360 qui l'a imposé »* · les chevrons emploient `--sp-4`.
-- Règles concernées : [`budget.table-des-hauteurs`](budget.md#budget-table-des-hauteurs) · [`cadre.tuile-ecart-4`](cadres.md#cadre-tuile-ecart-4) · [`chevron.cout-en-largeur`](organes.md#chevron-cout-en-largeur)
+- Règles concernées : [`cadre.tuile-ecart-4`](cadres.md#cadre-tuile-ecart-4) — seule règle dont l'énoncé porte un écart de 4. ⛔ La gouttière de 8 n'est l'énoncé d'aucune règle : elle vit dans NORMES § 1 quater et CADRES § 2 bis.
+- Mentionnée en passant dans : [`budget.table-des-hauteurs`](budget.md#budget-table-des-hauteurs) · [`chevron.cout-en-largeur`](organes.md#chevron-cout-en-largeur) — l'écart de 8 et le `--sp-4` des chevrons sont dans leurs *Valeur*, pas dans leur énoncé.
 - ⚠️ L'exception de la tuile est argumentée et mesurée ; celle de `--sp-4` autour des chevrons ne l'est nulle part.
 
 ## C20 — 440 : px ou blg ? { #c20 }

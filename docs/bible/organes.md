@@ -8,8 +8,6 @@ Cette page décrit les pièces qu'on touche : le jeton et son collecteur, le bou
 
 **Un jeton mesure 87 × 48 blg.**
 
-⚠️ En contradiction avec [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`socle.ce-qui-ne-se-redessine-jamais`](socle.md#socle-ce-qui-ne-se-redessine-jamais) — voir [C9](a-trancher.md#c9).
-
 ??? note "Pourquoi, et depuis quand"
     mesuré et écrit dans `tokens.css:228` — *« à 360 px la rangée dispose de 278, moins deux gouttières de 8, soit 87,3 pour trois ; 87 est donc la cote qui tient la promesse à la largeur cible, et un pixel de plus et on retombe à deux par ligne »*. Eric, en quatre messages : *« tous les tokens et leurs collecteurs, taille standard »* · *« Identity : taille token = taille collecteur ! »*
 
@@ -348,8 +346,6 @@ Cette page décrit les pièces qu'on touche : le jeton et son collecteur, le bou
 
 **Les collecteurs ne dépassent jamais quatre par ligne ; au-delà on passe à la ligne, et une ligne incomplète se centre.**
 
-⚠️ En contradiction avec [`panneau.largeur-cible`](panneau.md#panneau-largeur-cible) · [`cadre.pied-76`](cadres.md#cadre-pied-76) — voir [C5](a-trancher.md#c5).
-
 ??? note "Pourquoi, et depuis quand"
     ⚠️ *« LES DEUX RÈGLES DE LARGEUR SE CONTREDISENT SI ON LES ÉCRIT EN NOMBRES. À 360 la rangée offre 320, et quatre cases pleines plus leurs gouttières en demandent 372. »* C'est la cote déduite qui les réconcilie — *« sur un grand écran le socle plafonne, à l'étroit le quart gagne et le vide cède, jamais l'organe »*.
 
@@ -484,7 +480,7 @@ Cette page décrit les pièces qu'on touche : le jeton et son collecteur, le bou
 
 **Aucun corps de texte n'est déclaré pour un bouton, donc les largeurs de small et medium ne sont pas calculables.**
 
-⚠️ En contradiction avec [`bouton.gabarit-des-deux-lignes`](#bouton-gabarit-des-deux-lignes) · [`bouton.porte-a-deux-ages`](#bouton-porte-a-deux-ages) — voir [C8](a-trancher.md#c8).
+⚠️ En contradiction avec [`bouton.gabarit-des-deux-lignes`](#bouton-gabarit-des-deux-lignes) — voir [C8](a-trancher.md#c8).
 
 ??? note "Pourquoi, et depuis quand"
     *« À T4, `medium` n'a plus que 8 px — un mot un peu large déborde, et le déficit ne se verrait que sur ce gabarit-là. »* T3 est le corps **recommandé**.
@@ -652,8 +648,6 @@ Cette page décrit les pièces qu'on touche : le jeton et son collecteur, le bou
 
 **Le bouton de menu de création est UN bouton à deux âges : proposition tant que la condition n'est pas remplie, résolution dès qu'elle l'est.**
 
-⚠️ En contradiction avec [`bouton.corps-du-texte`](#bouton-corps-du-texte) · [`bouton.gabarit-des-deux-lignes`](#bouton-gabarit-des-deux-lignes) — voir [C8](a-trancher.md#c8).
-
 ??? note "Pourquoi, et depuis quand"
     *« C'EST LE BOUTON LE PLUS FRÉQUENT DU BUILDER, ET IL MANQUAIT À CE REGISTRE. »* ⛔ *« Ne pas en faire deux composants : le jour où ils divergeraient, un menu montrerait une proposition résolue. »*
 
@@ -690,7 +684,7 @@ Cette page décrit les pièces qu'on touche : le jeton et son collecteur, le bou
 
 **Une porte porte sa résolution en T3 et sa proposition dessous en T1 italique.**
 
-⚠️ En contradiction avec [`bouton.corps-du-texte`](#bouton-corps-du-texte) · [`bouton.porte-a-deux-ages`](#bouton-porte-a-deux-ages) — voir [C8](a-trancher.md#c8).
+⚠️ En contradiction avec [`bouton.corps-du-texte`](#bouton-corps-du-texte) — voir [C8](a-trancher.md#c8).
 
 ??? note "Pourquoi, et depuis quand"
     *« la résolution : c'est elle qu'on vient lire »* · la proposition porte *« le même habit que « drop it here » dans un collecteur vide — l'italique dit « je ne suis pas une donnée » »*.
@@ -800,7 +794,7 @@ Cette page décrit les pièces qu'on touche : le jeton et son collecteur, le bou
 
 **La rangée réserve `--touch` de chaque côté et se centre sur ce qui reste : c'est l'arithmétique, pas un arbitrage.**
 
-⚠️ En contradiction avec [`cadre.regle-par-ressemblance-nomme-sa-source`](cadres.md#cadre-regle-par-ressemblance-nomme-sa-source) — voir [C15](a-trancher.md#c15).
+⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C15](a-trancher.md#c15).
 
 ??? note "Pourquoi, et depuis quand"
     *« Tant qu'un seul bout était occupé, le centrage était FAUX par construction »* — `Done` tombait 26 px à gauche du milieu. ⚠️ *« DEUX PIEDS, UNE SEULE LOI »* : `.sortie` (Identity, Destiny, Skills) et `.parcours-pied` (Species, Inheritance, Class) *« sont deux pieds nés séparément qui font le même métier ; ils avaient divergé sans que rien ne le dise »*. Les deux chiffres diffèrent et c'est argumenté (`.sortie` réserve `--sp-16 + --touch` au bas de la SCÈNE, `.parcours-pied` réserve `--touch` seul car il vit dans une dalle qui porte son rembourrage) — *« ce qui compte n'est pas le chiffre, c'est qu'il soit LE MÊME à gauche et à droite »*.
@@ -964,8 +958,6 @@ Cette page décrit les pièces qu'on touche : le jeton et son collecteur, le bou
 ### Le coût en largeur : 96 { #chevron-cout-en-largeur }
 
 **Une paire de chevrons coûte 96 px de largeur à la rangée.**
-
-⚠️ En contradiction avec [`budget.table-des-hauteurs`](budget.md#budget-table-des-hauteurs) · [`cadre.tuile-ecart-4`](cadres.md#cadre-tuile-ecart-4) — voir [C19](a-trancher.md#c19).
 
 ??? note "Pourquoi, et depuis quand"
     c'est ce qui fait tomber la case de 87 à 62 dans un vivier paginé.

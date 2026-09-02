@@ -133,8 +133,6 @@ Cette page porte le mécanisme — `socle.mjs`, ses quatre fonctions, ses trois 
 
 **Cinq nœuds ne se redessinent jamais.**
 
-⚠️ En contradiction avec [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`jeton.cote`](organes.md#jeton-cote) — voir [C9](a-trancher.md#c9).
-
 ??? note "Pourquoi, et depuis quand"
     c'est la règle B appliquée : « On y écrit des attributs, jamais des nœuds » — c'est ce qui fait survivre le défilement, les minuteurs et les écouteurs à chaque mise à jour.
 

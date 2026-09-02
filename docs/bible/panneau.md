@@ -8,9 +8,7 @@ Cette page porte l'écran de référence du builder — 360 blg de large, deux h
 
 **La largeur cible du builder est 360, pas 375.**
 
-⚠️ En contradiction avec [`panneau.compatibilite-360`](#panneau-compatibilite-360) · [`budget.gabarit-du-rang-b`](budget.md#budget-gabarit-du-rang-b) · [`budget.carte-r-est-un-dessin`](budget.md#budget-carte-r-est-un-dessin) — voir [C4](a-trancher.md#c4).
-
-⚠️ En contradiction avec [`collecteur.quatre-par-ligne`](organes.md#collecteur-quatre-par-ligne) · [`cadre.pied-76`](cadres.md#cadre-pied-76) — voir [C5](a-trancher.md#c5).
+⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C4](a-trancher.md#c4).
 
 ??? note "Pourquoi, et depuis quand"
     *« 🔴 LA LARGEUR CIBLE — 360 px — ⛔ pas 375. C'est la base sur laquelle tout est dessiné. »* Et ce n'est pas une préférence : c'est ce qui a fabriqué la cote du jeton (`tokens.css:228`). *« Changer la cible change le jeton. Tout budget calculé sur 375 est faux : il donne du mou qui n'existe pas. »* Le « mou » de 58 px annoncé un jour venait d'un calcul à 375 — *« il n'existe pas »*.
@@ -21,7 +19,7 @@ Cette page porte l'écran de référence du builder — 360 blg de large, deux h
 
 **Toute mesure de largeur se prend à 360, et les grands écrans sont normalisés sur une largeur max.**
 
-⚠️ En contradiction avec [`panneau.largeur-cible`](#panneau-largeur-cible) · [`budget.gabarit-du-rang-b`](budget.md#budget-gabarit-du-rang-b) · [`budget.carte-r-est-un-dessin`](budget.md#budget-carte-r-est-un-dessin) — voir [C4](a-trancher.md#c4).
+⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C4](a-trancher.md#c4).
 
 ??? note "Pourquoi, et depuis quand"
     Eric : *« on vise toujours la compatibilité avec 360 sur tout le site »* · *« que ça tienne toujours en largeur sur 360, et que les grands écrans soient normalisés sur une largeur max »*. Un garde vérifie la largeur du banc — *« si le banc changeait de largeur en silence, toutes les mesures du dépôt parleraient d'un autre écran »*.

@@ -35,8 +35,6 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **Un plein écran (FS) DOIT porter une sortie nommée.**
 
-⚠️ En contradiction avec [`cadre.belt-toujours-visible`](#cadre-belt-toujours-visible) · [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) · [`cadre.seuil-est-un-fs`](#cadre-seuil-est-un-fs) — voir [C10](a-trancher.md#c10).
-
 ??? note "Pourquoi, et depuis quand"
     il recouvre tout, belt comprise — sans sortie explicite, on ne peut plus revenir.
 
@@ -95,7 +93,7 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **L'écart entre tuiles est de 4, et c'est l'arithmétique de 360 qui l'impose.**
 
-⚠️ En contradiction avec [`budget.table-des-hauteurs`](budget.md#budget-table-des-hauteurs) · [`chevron.cout-en-largeur`](organes.md#chevron-cout-en-largeur) — voir [C19](a-trancher.md#c19).
+⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C19](a-trancher.md#c19).
 
 ??? note "Pourquoi, et depuis quand"
     à 8, l'îlot vaut 50,7 et son dé 42 — *« deux pixels sous `--touch` (44) »*. Et ce n'est pas rattrapable : six cases de 52 plus cinq écarts de 8 demandent 352 px pour 344 disponibles.
@@ -228,9 +226,7 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **La ceinture n'est jamais couverte par aucun cadre : elle n'est pas un cadre, c'est la coquille, et un cadre commence sous elle.**
 
-⚠️ En contradiction avec [`socle.ce-qui-ne-se-redessine-jamais`](socle.md#socle-ce-qui-ne-se-redessine-jamais) · [`jeton.cote`](organes.md#jeton-cote) — voir [C9](a-trancher.md#c9).
-
-⚠️ En contradiction avec [`cadre.fs-sortie-nommee`](#cadre-fs-sortie-nommee) · [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) · [`cadre.seuil-est-un-fs`](#cadre-seuil-est-un-fs) — voir [C10](a-trancher.md#c10).
+⚠️ En contradiction avec [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) · [`cadre.seuil-est-un-fs`](#cadre-seuil-est-un-fs) — voir [C10](a-trancher.md#c10).
 
 ??? note "Pourquoi, et depuis quand"
     elle n'est pas un cadre : c'est la coquille, et « un cadre commence sous elle ». La constante est écrite en tête de CADRES sous le titre « LA CONSTANTE, ET ELLE EST AU-DESSUS DE TOUT ».
@@ -320,8 +316,6 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 ### Le pied fait 76 { #cadre-pied-76 }
 
 **Le pied fait 76 blg de haut, et cette cote ne bouge pas tant que la paire tient sur UNE ligne.**
-
-⚠️ En contradiction avec [`panneau.largeur-cible`](panneau.md#panneau-largeur-cible) · [`collecteur.quatre-par-ligne`](organes.md#collecteur-quatre-par-ligne) — voir [C5](a-trancher.md#c5).
 
 ??? note "Pourquoi, et depuis quand"
     *« Deux boutons côte à côte coûtent ce qu'un seul coûtait. »* Le budget est de **24 caractères de libellé** contre 8 aujourd'hui. ⛔ *« Un troisième bouton coûterait en plus son propre rembourrage (42 px), donc c'est LUI le vrai risque, pas la longueur d'un mot. »* Gardé par `tests/shell-wiring.test.mjs` — *« une condition que personne ne teste est une condition qui rouille »*.
@@ -447,8 +441,6 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **Une règle écrite par ressemblance doit NOMMER sa source, jamais recopier sa valeur.**
 
-⚠️ En contradiction avec [`bouton.reserve-symetrique`](organes.md#bouton-reserve-symetrique) — voir [C15](a-trancher.md#c15).
-
 ??? note "Pourquoi, et depuis quand"
     *« CETTE RÈGLE N'ÉTAIT PAS FAUSSE LE JOUR OÙ ELLE A ÉTÉ ÉCRITE, C'EST TOUT LE PIÈGE. »* Le 20/08 « les autres » étaient opaques ; depuis v298 ils sont à 50 %. *« La règle a continué de dire la même chose pendant que son référent bougeait. »* **La parade est de ne rien écrire du tout.** La même faute a été refaite trois minutes plus tard sur la colonne du `?` : Identity réservait 60 là où Destiny et Skills réservent 52.
 
@@ -478,7 +470,7 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **Le Seuil est un FS : plein écran, ni ceinture ni menu latéral, et son titre EST sa sortie.**
 
-⚠️ En contradiction avec [`cadre.belt-toujours-visible`](#cadre-belt-toujours-visible) · [`cadre.fs-sortie-nommee`](#cadre-fs-sortie-nommee) · [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) — voir [C10](a-trancher.md#c10).
+⚠️ En contradiction avec [`cadre.belt-toujours-visible`](#cadre-belt-toujours-visible) · [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) — voir [C10](a-trancher.md#c10).
 
 ??? note "Pourquoi, et depuis quand"
     Eric : *« Le titre est la sortie = économie d'espace, donc OK. »* Il **ouvre une autre fenêtre**, il ne quitte pas le Companion — *« Un joueur qui va lire une règle sur FH Web ne perd pas son personnage à moitié créé. »*

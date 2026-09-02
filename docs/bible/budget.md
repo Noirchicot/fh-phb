@@ -37,8 +37,6 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 
 **La table des hauteurs permet de calculer un budget sans rien mesurer.**
 
-⚠️ En contradiction avec [`cadre.tuile-ecart-4`](cadres.md#cadre-tuile-ecart-4) · [`chevron.cout-en-largeur`](organes.md#chevron-cout-en-largeur) — voir [C19](a-trancher.md#c19).
-
 ??? note "Pourquoi, et depuis quand"
     *« Un budget se compte donc en multiples de 44 et 48, et il se calcule de tête. »* Exemple : bande basse d'un écran d'équipement = collecteurs 48 + écart 8 + boutons 44 = **100 px**, toujours.
 
@@ -57,7 +55,7 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 
 **Entrée › R n'a pas de ceinture : c'est un seuil, pas une étape du parcours — 60 px récupérés.**
 
-⚠️ En contradiction avec [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`cadre.fs-sortie-nommee`](cadres.md#cadre-fs-sortie-nommee) · [`cadre.seuil-est-un-fs`](cadres.md#cadre-seuil-est-un-fs) — voir [C10](a-trancher.md#c10).
+⚠️ En contradiction avec [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`cadre.seuil-est-un-fs`](cadres.md#cadre-seuil-est-un-fs) — voir [C10](a-trancher.md#c10).
 
 ??? note "Pourquoi, et depuis quand"
     « c'est un SEUIL, pas une étape du parcours à 8 temps » — la ceinture nomme les étapes ; un écran qui n'en est pas une n'a rien à y montrer, et récupère ses 60 px.
@@ -163,8 +161,6 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 
 **Le gabarit du rang B (le menu d'étape) est dicté cote par cote, mais c'est une PREUVE DE CONCEPT, pas une cote gravée.**
 
-⚠️ En contradiction avec [`panneau.largeur-cible`](panneau.md#panneau-largeur-cible) · [`panneau.compatibilite-360`](panneau.md#panneau-compatibilite-360) · [`budget.carte-r-est-un-dessin`](#budget-carte-r-est-un-dessin) — voir [C4](a-trancher.md#c4).
-
 ??? note "Pourquoi, et depuis quand"
     *« LA CLEF DE CE GABARIT EST À LA LIGNE 5 : tout ce qui est resserré au-dessus va à la fenêtre »* — Eric : *« on fait de l'espace pour la fenêtre, laisse ceux du bas où ils sont »*. 📏 Mesuré : **78 px au départ, 184 à l'arrivée**. ⛔ Ne pas le citer comme ratifié tant que l'épreuve n'est pas faite (une espèce sans lignage, une espèce à `skill_points`, Class).
 
@@ -213,8 +209,6 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 ### La carte du rang R est un dessin { #budget-carte-r-est-un-dessin }
 
 **La carte du rang R est un DESSIN proportionnel, pas une somme de cotes.**
-
-⚠️ En contradiction avec [`panneau.largeur-cible`](panneau.md#panneau-largeur-cible) · [`panneau.compatibilite-360`](panneau.md#panneau-compatibilite-360) · [`budget.gabarit-du-rang-b`](#budget-gabarit-du-rang-b) — voir [C4](a-trancher.md#c4).
 
 ⚠️ En contradiction avec [`ecriture.corps-de-lecture-ne-se-met-pas-a-l-echelle`](ecriture.md#ecriture-corps-de-lecture-ne-se-met-pas-a-l-echelle) — voir [C11](a-trancher.md#c11).
 
