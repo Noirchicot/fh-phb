@@ -156,18 +156,20 @@ nav:
     # découvre une carte en la tirant. ⏳ Un teaser de 3 cartes est prévu côté
     # joueur — lesquelles n'est pas tranché, donc il n'est pas posé.
   - The Bible:
-    # Squelette posé le 2026-09-02 (lot plomberie). Source = dépôt `fhpc`
+    # Squelette posé le 2026-09-02 (lot plomberie), rempli le 2026-09-02 (lot
+    # contenu) : 310 règles atomiques + 21 contradictions. Source = dépôt `fhpc`
     # (`ui/builder/NORMES.md`, `CADRES.md`, `SOCLE.md`), PAS le vault — décision
     # d'architecte du 2026-09-02. Cette page est un TIRAGE ; on ne la corrige
     # jamais ici, on corrige la source puis on synchronise (spec en fin de
-    # rapport du lot). Seules « Comment lire » et « Les organes » sont
-    # remplies pour de vrai ; les six autres attendent le lot de contenu.
+    # rapport du lot plomberie).
     - Comment lire: bible/index.md
     - Le panneau: bible/panneau.md
     - Les cadres: bible/cadres.md
+    - Le budget: bible/budget.md
     - Les organes: bible/organes.md
     - Les listes: bible/listes.md
     - L'écriture: bible/ecriture.md
     - Les gestes: bible/gestes.md
     - Le socle: bible/socle.md
+    - À trancher: bible/a-trancher.md
   - SRD 5.2.1: https://noirchicot.github.io/fh-srd/
