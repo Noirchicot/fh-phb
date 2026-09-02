@@ -668,7 +668,13 @@
 /* ── LE BOUTON DE REPRISE — Eric : « avec un gros highlight pour éviter de me
    disperser ». Il vit SOUS la rangée, seul, parce qu'il ne concurrence pas les
    portes : il rattrape un travail commencé. */
-.fh-home-resume { margin: 0 0 2.4rem; display: grid; grid-template-columns: 1fr; }
+/* ⚖️ Eric, 2026-09-02 : « Finish building your character prend toute la
+   largeur — il pourrait diminuer en taille non ? » Il ne concurrence pas les
+   six portes, il rattrape un travail commencé : il se centre au tiers de la
+   grille (une colonne sur trois, la même que les tuiles), au lieu des trois. */
+.fh-home-resume { margin: 0 auto 2.4rem; display: grid; grid-template-columns: 1fr;
+  max-width: calc((100% - 1.3rem) / 3); }
+@media (max-width: 59.9em) { .fh-home-resume { max-width: none; } }
 
 /* 🔴 LE HIGHLIGHT NE S'ALLUME QUE SI ON L'A DEMANDÉ. `fh-widget.js` pose
    `data-vise` quand l'adresse porte `?resume` — c'est le favori d'Eric qui
@@ -1868,3 +1874,19 @@
   margin-top: -.35rem;
   opacity: .82;
 }
+
+/* ── LA BIBLE DE L'INTERFACE — Eric, 2026-09-02 : « je ne vois toujours pas le
+   lien vers la bible sur le site web ». L'accueil CACHE la navigation
+   (`hide: navigation`), donc la section « The Bible » du menu latéral n'y est
+   pas atteignable : depuis l'accueil, aucun chemin n'y menait.
+   ⛔ PAS une septième tuile : six portes en deux rangées de trois est le
+   croquis 1 d'Eric du 31/08, et sept en casserait la grille. Une ligne franche
+   sous les tuiles, au-dessus de « What makes Fate's Hand different ». */
+.fh-home-bible {
+  margin: -1.4rem 0 2.4rem;
+  font-size: .82rem;
+  text-align: center;
+  opacity: .9;
+}
+.fh-home-bible a { text-decoration: none; border-bottom: 1px solid currentColor; }
+.fh-home-bible b { font-weight: 600; }
