@@ -48,7 +48,7 @@
   var CRANS = [
     { depuis: 0,    part: 1 },
     { depuis: 768,  part: 2 },
-    { depuis: 1367, part: 3 },
+    { depuis: 1440, part: 3 },
     { depuis: 1680, part: 4 },
     { depuis: 2200, part: 5 },
     { depuis: 3000, part: 6 }
