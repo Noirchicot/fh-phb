@@ -1868,3 +1868,19 @@
   margin-top: -.35rem;
   opacity: .82;
 }
+
+/* ── LA BIBLE DE L'INTERFACE — Eric, 2026-09-02 : « je ne vois toujours pas le
+   lien vers la bible sur le site web ». L'accueil CACHE la navigation
+   (`hide: navigation`), donc la section « The Bible » du menu latéral n'y est
+   pas atteignable : depuis l'accueil, aucun chemin n'y menait.
+   ⛔ PAS une septième tuile : six portes en deux rangées de trois est le
+   croquis 1 d'Eric du 31/08, et sept en casserait la grille. Une ligne franche
+   sous les tuiles, au-dessus de « What makes Fate's Hand different ». */
+.fh-home-bible {
+  margin: -1.4rem 0 2.4rem;
+  font-size: .82rem;
+  text-align: center;
+  opacity: .9;
+}
+.fh-home-bible a { text-decoration: none; border-bottom: 1px solid currentColor; }
+.fh-home-bible b { font-weight: 600; }
