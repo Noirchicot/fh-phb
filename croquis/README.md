@@ -16,6 +16,43 @@ réel, elle ne se force pas en `.png`.
 
 ## Les croquis
 
+### Les trois planches de **DESTINY** ✅ *dessinées le 2026-08-30, rangées le 2026-09-02*
+
+| fichier | ce qu'il dessine |
+|---|---|
+| `2026-08-30-destiny-planche-generale.jpg` | la vue d'ensemble : le **R**, puis **B.1** et **B2** côte à côte |
+| `2026-08-30-destiny-B1-ceremonie.jpg` | **B.1** en détail — les trois **FS** du tirage, puis l'écran final |
+| `2026-08-30-destiny-B2-catalogue-et-final.jpg` | **B2** en détail — ⓐ le catalogue des 22, ⓑ l'écran final |
+
+⚠️ **ELLES ONT VÉCU DEUX JOURS DANS LE DROP** pendant que les lots 109, 116 et
+121 travaillaient dessus de mémoire. Le code les citait déjà (*« planches B.1 et
+B2 »*) sans qu'aucune ne soit sur le disque : une planche qu'on cite sans
+pouvoir la rouvrir n'est plus une source, c'est un souvenir.
+
+🔴 **CE QU'ELLES RATIFIENT**
+
+| | |
+|---|---|
+| **le R** | un **FF** : une explication d'ambiance, et deux portes au pied — `DRAW` → B.1 · `CHOOSE` → B2 |
+| **les trois séquences** | **FS**, fond noir · ① frappe caractère par caractère, 3 s · ② mélange 3 s puis grossissement 2 s, de 50 % à 100 % · ③ dos seul zoom max, **aucun texte** ; le tap retourne, 3 s, puis dézoom à 50 % |
+| **l'écran final** | **FF**, le **voyant vert** au milieu du bord haut, et le pied `I changed my mind` / `Next` — annotés par Eric **« RETOUR VERS R »** et **« FIN »** |
+| **la fiche du catalogue** | elle porte son propre **`CHOOSE`** |
+
+⚖️ **UN POINT OÙ LA DICTÉE CORRIGE LE DESSIN, ET C'EST DÉJÀ CÂBLÉ** : la planche
+B2 écrit **FS** au-dessus du catalogue, mais Eric a dit le même jour *« c'est F
+pas FS, il y a un scrollspy avec les cartes de tarot »*. Le rail est d'ailleurs
+dessiné **hors** du cadre sur la planche. C'est **F**, et `destiny-step.mjs` le
+note déjà.
+
+🔴 **ET UN POINT OÙ LE CODE S'ÉCARTE DU DESSIN, OUVERT** — les **trois** planches
+dessinent l'écran final en **DEUX COLONNES**, `TAROT` à gauche et `TEXTE
+EXPLICATIF` à droite. Le **lot 116** l'a ramené à **une seule colonne**, la carte
+au-dessus et le texte dessous, sur une mesure : à 375 blg de panneau, la colonne
+de texte tombait à **~40 blg** — un mot par ligne, avec une barre de défilement
+horizontale. **Un croquis d'Eric prime sur le texte**, donc l'écart est une dette
+et non une correction ; Eric l'a lui-même mise en attente — *« on y reviendra de
+manière spécifique »*. ⏳ **Rien d'autre du dessin de cet écran n'est ratifié.**
+
 ### `2026-08-26-gabarit-ecran-trois-bandes.jpg` ✅ *déposé le 2026-08-26*
 
 **Le gabarit d'un écran, vu de dessus.** Trois bandes, et ses annotations à lui :
