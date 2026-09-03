@@ -42,26 +42,6 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 
     Valeur : rangée de jetons 48 · écart 8 · collecteur 48 · bouton un étage 44 · bouton deux étages 48 (T3) / 56 (T4) · `+`/`−` 44 de cible · dropdown 44 · zone d'écriture 44 · ceinture ≈60 (déduite) · titre + consigne ≈40 (déduit) · Source : NORMES.md § « LA TABLE DES HAUTEURS », 2026-08-26 · Statut : ratifié
 
-### La ceinture se déduit { #budget-ceinture-deduite }
-
-**La ceinture n'a ni hauteur ni jeton : elle se déduit, et son ≈60 est un relevé, pas une constante.**
-
-??? note "Pourquoi, et depuis quand"
-    *« il bouge si un libellé change »*.
-
-    Valeur : ≈ **60** au réglage d'aujourd'hui · Source : NORMES.md § « 1 quater — La ceinture », 2026-08-26 · Statut : ratifié
-
-### Entrée › R n'a pas de ceinture { #budget-entree-r-sans-ceinture }
-
-**Entrée › R n'a pas de ceinture : c'est un seuil, pas une étape du parcours — 60 px récupérés.**
-
-⚠️ En contradiction avec [`cadre.belt-toujours-visible`](cadres.md#cadre-belt-toujours-visible) · [`cadre.seuil-est-un-fs`](cadres.md#cadre-seuil-est-un-fs) — voir [C10](a-trancher.md#c10).
-
-??? note "Pourquoi, et depuis quand"
-    « c'est un SEUIL, pas une étape du parcours à 8 temps » — la ceinture nomme les étapes ; un écran qui n'en est pas une n'a rien à y montrer, et récupère ses 60 px.
-
-    Valeur : 60 px · Source : NORMES.md § « 1 quater — La ceinture », 2026-08-26 · Statut : ratifié (⚠️ voir contradiction [C10](a-trancher.md#c10))
-
 ### Le budget d'une page de jetons { #budget-page-de-jetons }
 
 **Une page de 15 jetons pèse 508 sur 553 — il reste 45.**
@@ -70,6 +50,8 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
     *« 45 px, c'est mince — une ligne de plus les mange, et la réponse n'est JAMAIS un défilement. »*
 
     Valeur : ceinture 60 · titre + consigne 40 · 15 jetons (5 × 48 + 4 × 8) = 272 · collecteurs 48 · boutons 44 · 4 écarts + marge basse 44 · Source : NORMES.md § « Le budget d'une page de jetons », 2026-08-26 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — la barre de budget d'une page de 15 jetons — 508 empilés sur 553, les 45 qui restent en clair -->
 
 ### Trois jetons à 360 { #budget-trois-jetons-a-360 }
 
@@ -86,12 +68,14 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 
 **Entrée › R pèse ≈380 sur 553 — il reste 173, et 125 dans le cas le plus étroit.**
 
-⚠️ Cette règle se contredit elle-même dans le corpus — voir [C21](a-trancher.md#c21).
+⚠️ Cette règle se contredit elle-même dans le corpus — voir [C21](../a-trancher.md#c21).
 
 ??? note "Pourquoi, et depuis quand"
     *« Il ne peut que descendre. »* ⚠️ Et depuis que le Seuil défile, ce 380 *« cesse d'être une contrainte dure : il devient la hauteur du premier écran vu »* — ⏳ ce qui doit tenir au-dessus de la ligne de flottaison n'est pas tranché.
 
     Valeur : plafond **prudent**, pas une mesure : les sept blocs sont comptés à `--touch` 44 alors que quatre n'en sont pas · Source : NORMES.md § « Le budget de Entrée › R », 2026-08-26 · Statut : ratifié (le budget) / à trancher (la ligne de flottaison)
+
+<!-- DESSIN À FAIRE — la même barre pour Entrée › R — ≈380 sur 553, et le cas le plus étroit à 125 -->
 
 ## Ce qui cède quand ça déborde
 
@@ -166,6 +150,8 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 
     Valeur : rembourrage de dalle 4 haut / 16 côtés / 4 bas · titre T5 à 4 du haut · saignée collée sous le titre, 8 avant la suite · portes 8 entre elles, écart interne 4 · bloc sans porte 0 avant, 9 avant son texte · fenêtre = tout le reste, elle défile · bande d'aiguilleur 12 avant, 3 lignes T1, 8 après · pied 8 dessous · Source : NORMES.md § « 4 ter », Eric 2026-08-27 : *« note bien aussi toutes les cotes de ce niveau B : tout Species va en hériter »* · *« c'est proof of concept À METTRE À L'ÉPREUVE »* · Statut : à trancher (preuve de concept)
 
+<!-- DESSIN À FAIRE — le gabarit du rang B coté poste par poste -->
+
 ### Ce qui ne se négocie pas dans le B { #budget-gabarit-b-non-negociable }
 
 **Trois choses du gabarit B ne se négocient pas : la porte (44 de cible, T3), le `?` et le livre (22 dans 44), la fenêtre (elle défile, elle ne se tronque pas).**
@@ -183,6 +169,8 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
     *« chacune juste de son côté. On ne les voit qu'en décomposant l'écart : « 32 = 16 + 16 ». »*
 
     Valeur : saignée 17 → **8** (*« 17 px pour un trait »*) · tête d'un bloc sans porte 44 → **auto** (*« `--touch` protégeait un bouton ABSENT »*) · rembourrage bas de dalle 16 → 4 · marge du titre 8 → 0 · Source : NORMES.md § « 4 ter — Les postes qui ont payé », 2026-08-27 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — les trois postes du B où deux marges légitimes s'additionnaient, mesurées côte à côte -->
 
 ### Le gabarit du SB { #budget-gabarit-du-sb }
 
@@ -210,7 +198,7 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 
 **La carte du rang R est un DESSIN proportionnel, pas une somme de cotes.**
 
-⚠️ En contradiction avec [`ecriture.corps-de-lecture-ne-se-met-pas-a-l-echelle`](ecriture.md#ecriture-corps-de-lecture-ne-se-met-pas-a-l-echelle) — voir [C11](a-trancher.md#c11).
+⚠️ En contradiction avec [`ecriture.corps-de-lecture-ne-se-met-pas-a-l-echelle`](ecriture.md#ecriture-corps-de-lecture-ne-se-met-pas-a-l-echelle) — voir [C11](../a-trancher.md#c11).
 
 ??? note "Pourquoi, et depuis quand"
     *« Le nombre de caractères par ligne est constant, donc les retours à la ligne — et les proportions — sont les mêmes de 375 à 1920. »* Avec la police embarquée, *« le rendu cesse aussi de dépendre de la machine : c'est ce qui a fermé le débordement des blocs 2/3 vu sur le PC d'un ami d'Eric »*.
@@ -221,12 +209,14 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
 
 **La carte du rang R fait 440 blg : 396 de dessin + 44 de rangée tactile, et la loi dit « jamais moins », pas « fixe ».**
 
-⚠️ En contradiction avec [`cadre.carte-hauteur-imposee`](cadres.md#cadre-carte-hauteur-imposee) — voir [C20](a-trancher.md#c20).
+⚠️ En contradiction avec [`cadre.carte-hauteur-imposee`](cadres.md#cadre-carte-hauteur-imposee) — voir [C20](../a-trancher.md#c20).
 
 ??? note "Pourquoi, et depuis quand"
     *« la hauteur s'écrivait `396u + 44px` parce que l'échelle locale pouvait rétrécir ; le zoom global ne descend jamais sous 1, donc 44 blg valent toujours ≥ 44 px. Même promesse au doigt, un seul nombre. »*
 
     Valeur : `height = 440 blg` · Source : NORMES.md § « 4 quater », 2026-08-30 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — la carte du rang R en paysage coté — 220 image | bloc | 200 texte | 16 respiration, et 396 + 44 = 440 -->
 
 ### Pas de seconde échelle { #budget-pas-de-seconde-echelle }
 
@@ -265,6 +255,8 @@ Cette page dit qui porte sa cote et qui la déduit, puis donne les budgets déj�
     *« sans bande, la rangée `auto → 0` volait un gap au bloc voisin. La symétrie revient par construction. »*
 
     Valeur : 11 px d'asymétrie mesurés (les 7 « bloc 3 mal centré » de l'audit d'Eric) · parade `grid-row: n / m` · Source : NORMES.md § « 4 quater — Deux pièges de géométrie », 2026-08-27 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — avant / après — le voisin qui ENJAMBE la rangée vide sans manger ses deux gouttières -->
 
 ### Une règle d'habit se borne à son media { #budget-une-regle-d-habit-se-borne-a-son-media }
 

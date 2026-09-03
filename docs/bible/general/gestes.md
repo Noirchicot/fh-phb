@@ -69,6 +69,8 @@ Cette page dit ce que le doigt et la souris font, et surtout ce qui défile et c
 
     Valeur : titre collé en haut · flux · contrôles collés en bas · Source : NORMES.md § « CE QUE LE DÉFILEMENT DU SEUIL IMPOSE », 2026-08-26 · Statut : ratifié
 
+<!-- DESSIN À FAIRE — les trois bandes d'un écran qui défile — les deux du dehors fixes, celle du milieu qui bouge -->
+
 ### Le défilement aimanté { #geste-defilement-aimante }
 
 **Le défilement aimanté n'est honnête que parce qu'une fiche fait un écran.**

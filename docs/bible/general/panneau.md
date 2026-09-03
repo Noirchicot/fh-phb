@@ -4,11 +4,72 @@ Cette page porte l'écran de référence du builder — 360 blg de large, deux h
 
 ## L'écran de référence
 
+<style>
+.fh-croquis { margin: 1.2em 0; overflow-x: auto; }
+.fh-croquis svg { max-width: 100%; height: auto; display: block; }
+.fh-croquis .trait  { fill: none; stroke: var(--md-default-fg-color); stroke-width: 1.5; }
+.fh-croquis .creux  { fill: var(--md-default-fg-color--lightest);
+                      stroke: var(--md-default-fg-color--light); stroke-width: 1.5; }
+.fh-croquis .plein  { fill: var(--md-default-fg-color--lighter);
+                      stroke: var(--md-default-fg-color); stroke-width: 1.5; }
+.fh-croquis .cote   { fill: none; stroke: var(--md-default-fg-color--light);
+                      stroke-width: 1; }
+.fh-croquis .fuite  { fill: none; stroke: var(--md-default-fg-color--lighter);
+                      stroke-width: 1; stroke-dasharray: 3 3; }
+.fh-croquis text    { fill: var(--md-default-fg-color); font-size: 11px;
+                      font-family: system-ui, sans-serif; }
+.fh-croquis .mou    { fill: var(--md-default-fg-color--light); font-size: 10px; }
+.fh-croquis .gras   { font-weight: 700; }
+</style>
+<div class="fh-croquis">
+<svg viewBox="0 0 490 640" role="img"
+     aria-label="L'écran de référence du builder : 360 blg de large, 553 ou 667 de haut,
+                 avec la ceinture de 60 en haut et le pied de 76 en bas.">
+  <!-- la fenêtre jusqu'à 667 -->
+  <rect class="fuite" x="132" y="56" width="288.0" height="533.6" rx="10"/>
+  <!-- l'écran témoin 553 -->
+  <rect class="trait" x="132" y="56" width="288.0" height="442.40000000000003" rx="10"/>
+  <!-- ceinture -->
+  <rect class="plein" x="132" y="56" width="288.0" height="48.0"/>
+  <text x="276.0" y="84.0" text-anchor="middle" class="gras">ceinture ≈60</text>
+  <!-- pied -->
+  <rect class="plein" x="132" y="437.6" width="288.0" height="60.800000000000004"/>
+  <text x="276.0" y="472.00000000000006" text-anchor="middle" class="gras">pied 76</text>
+  <!-- contenu -->
+  <text x="276.0" y="270.8" text-anchor="middle">le cadre d'écran</text>
+  <text x="276.0" y="286.8" text-anchor="middle" class="mou">
+    il commence SOUS la ceinture</text>
+  <text x="276.0" y="304.8" text-anchor="middle" class="mou">
+    ⛔ ne défile jamais</text>
+
+  <!-- cote de largeur -->
+  <line class="cote" x1="132" y1="40" x2="420.0" y2="40"/>
+  <line class="cote" x1="132" y1="35" x2="132" y2="45"/>
+  <line class="cote" x1="420.0" y1="35" x2="420.0" y2="45"/>
+  <text x="276.0" y="32" text-anchor="middle" class="gras">360 blg</text>
+  <text x="428.0" y="36" class="mou">⚠️ C4 : 375 ?</text>
+
+  <!-- cotes de hauteur -->
+  <line class="cote" x1="114" y1="56" x2="114" y2="498.40000000000003"/>
+  <line class="cote" x1="109" y1="56" x2="119" y2="56"/>
+  <line class="cote" x1="109" y1="498.40000000000003" x2="119" y2="498.40000000000003"/>
+  <text x="106" y="277.20000000000005" text-anchor="end" class="gras">553</text>
+  <text x="106" y="291.20000000000005" text-anchor="end" class="mou">Safari</text>
+  <line class="fuite" x1="80" y1="56" x2="80" y2="589.6"/>
+  <text x="76" y="583.6" text-anchor="end" class="gras">667</text>
+  <text x="76" y="597.6" text-anchor="end" class="mou">plein écran</text>
+  <line class="fuite" x1="76" y1="589.6" x2="420.0" y2="589.6"/>
+</svg>
+</div>
+
+*Le croquis ne tranche rien : il montre les cotes telles que le corpus les écrit, ⚠️ [C4](../a-trancher.md#c4) comprise.*
+
+
 ### La largeur cible : 360 { #panneau-largeur-cible }
 
 **La largeur cible du builder est 360, pas 375.**
 
-⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C4](a-trancher.md#c4).
+⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C4](../a-trancher.md#c4).
 
 ??? note "Pourquoi, et depuis quand"
     *« 🔴 LA LARGEUR CIBLE — 360 px — ⛔ pas 375. C'est la base sur laquelle tout est dessiné. »* Et ce n'est pas une préférence : c'est ce qui a fabriqué la cote du jeton (`tokens.css:228`). *« Changer la cible change le jeton. Tout budget calculé sur 375 est faux : il donne du mou qui n'existe pas. »* Le « mou » de 58 px annoncé un jour venait d'un calcul à 375 — *« il n'existe pas »*.
@@ -19,7 +80,7 @@ Cette page porte l'écran de référence du builder — 360 blg de large, deux h
 
 **Toute mesure de largeur se prend à 360, et les grands écrans sont normalisés sur une largeur max.**
 
-⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C4](a-trancher.md#c4).
+⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C4](../a-trancher.md#c4).
 
 ??? note "Pourquoi, et depuis quand"
     Eric : *« on vise toujours la compatibilité avec 360 sur tout le site »* · *« que ça tienne toujours en largeur sur 360, et que les grands écrans soient normalisés sur une largeur max »*. Un garde vérifie la largeur du banc — *« si le banc changeait de largeur en silence, toutes les mesures du dépôt parleraient d'un autre écran »*.
@@ -104,7 +165,7 @@ Cette page porte l'écran de référence du builder — 360 blg de large, deux h
 
 **Le reflux survit, le redimensionnement meurt : une rangée peut passer de 4 cases à 3, une cote ne peut pas doubler sur grand écran.**
 
-⚠️ En contradiction avec [`jeton.trois-colonnes-toujours`](organes.md#jeton-trois-colonnes-toujours) · [`liste.trois-par-rangee-etait-un-accident`](listes.md#liste-trois-par-rangee-etait-un-accident) — voir [C17](a-trancher.md#c17).
+⚠️ En contradiction avec [`jeton.trois-colonnes-toujours`](../porteurs/jeton.md#jeton-trois-colonnes-toujours) · [`liste.trois-par-rangee-etait-un-accident`](listes.md#liste-trois-par-rangee-etait-un-accident) — voir [C17](../a-trancher.md#c17).
 
 ??? note "Pourquoi, et depuis quand"
     *« une rangée qui passe de 4 cases à 3 ne change aucun rapport (loi du 19/08, « si on peut faire 4, on fait 4 »). Une cote qui double sur grand écran, si. »*

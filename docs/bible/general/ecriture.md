@@ -13,6 +13,8 @@ Cette page porte les tailles T1 à T7, les trois états d'un texte qui change, e
 
     Valeur : `--t1` 10 · `--t3` 14 · `--t4` 16 · `--t6` 22 (blg) · Source : NORMES.md § « 1. LES QUATRE VOCABULAIRES », 2026-08-26 · Statut : ratifié
 
+<!-- DESSIN À FAIRE — l'échelle des sept corps T1 à T7, chacun à sa taille réelle avec sa cote -->
+
 ### Aucun texte sous T1 { #ecriture-aucun-texte-sous-t1 }
 
 **Aucun texte ne peut passer sous T1.**
@@ -175,12 +177,12 @@ Cette page porte les tailles T1 à T7, les trois états d'un texte qui change, e
 
 **Un corps de texte est une taille de LECTURE : il vaut 16 sur les deux écrans, il ne se met pas à l'échelle avec sa dalle.**
 
-⚠️ En contradiction avec [`budget.carte-r-est-un-dessin`](budget.md#budget-carte-r-est-un-dessin) — voir [C11](a-trancher.md#c11).
+⚠️ En contradiction avec [`budget.carte-r-est-un-dessin`](budget.md#budget-carte-r-est-un-dessin) — voir [C11](../a-trancher.md#c11).
 
 ??? note "Pourquoi, et depuis quand"
     *« Une boîte de texte proportionnelle voudrait dire un texte proportionnel, donc illisible en bas d'échelle ou ridicule en haut. »*
 
-    Valeur : mesuré — 16 px à 375 × 553 comme à 1280 × 800, hauteurs de bloc identiques au pixel (126 = 126, 14 = 14) · Source : CADRES.md § « 8 », 2026-08-16 · Statut : ⚠️ **renversé pour la carte du rang R seulement** (NORMES § 4 quater, 27/08) — voir [C11](a-trancher.md#c11)
+    Valeur : mesuré — 16 px à 375 × 553 comme à 1280 × 800, hauteurs de bloc identiques au pixel (126 = 126, 14 = 14) · Source : CADRES.md § « 8 », 2026-08-16 · Statut : ⚠️ **renversé pour la carte du rang R seulement** (NORMES § 4 quater, 27/08) — voir [C11](../a-trancher.md#c11)
 
 ## La mise en mots
 

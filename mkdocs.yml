@@ -168,13 +168,58 @@ nav:
     # passe sur une zone disputée renvoie à `À trancher`.
     - Les lois: bible/lois.md
     - Comment lire: bible/index.md
-    - Le panneau: bible/panneau.md
-    - Les cadres: bible/cadres.md
-    - Le budget: bible/budget.md
-    - Les organes: bible/organes.md
-    - Les listes: bible/listes.md
-    - L'écriture: bible/ecriture.md
-    - Les gestes: bible/gestes.md
-    - Le socle: bible/socle.md
+    # ① ce qui vaut partout · ② par catégorie · ③ par objet (design · mesures ·
+    # fonctions) · ④ par section. Arborescence dictée par Eric le 2026-09-03 et
+    # posée par le lot 141 : ⛔ ne pas re-aplatir en menu de onze pages.
+    - Les règles générales:
+      - Les règles générales: bible/general/index.md
+      - Le panneau: bible/general/panneau.md
+      - Les cadres: bible/general/cadres.md
+      - Le budget: bible/general/budget.md
+      - Les listes: bible/general/listes.md
+      - L'écriture: bible/general/ecriture.md
+      - Les gestes: bible/general/gestes.md
+      - Le socle: bible/general/socle.md
+    - Les commandes:
+      - Les commandes: bible/commandes/index.md
+      - Le bouton:
+        - Le bouton: bible/commandes/bouton/index.md
+        - Design: bible/commandes/bouton/design.md
+        - Mesures: bible/commandes/bouton/mesures.md
+        - Fonctions: bible/commandes/bouton/fonctions.md
+      - L'interrupteur: bible/commandes/interrupteur.md
+      - Le dropdown: bible/commandes/dropdown.md
+    - Les porteurs:
+      - Les porteurs: bible/porteurs/index.md
+      - Le jeton: bible/porteurs/jeton.md
+      - Le collecteur: bible/porteurs/collecteur.md
+      - La saisie: bible/porteurs/saisie.md
+    - Les portes:
+      - Les portes: bible/portes/index.md
+      - Le popup: bible/portes/popup.md
+      - L'aide « ? »: bible/portes/aide.md
+      - Le livre: bible/portes/livre.md
+    - Les signaux:
+      - Les signaux: bible/signaux/index.md
+      - Le voyant: bible/signaux/voyant.md
+    - La conduite:
+      - La conduite: bible/conduite/index.md
+      - La ceinture: bible/conduite/ceinture.md
+      - Le menu latéral: bible/conduite/rail.md
+      - Le chevron: bible/conduite/chevron.md
+    # ④ à ÉCRIRE, pas à recouper : le corpus des 310 n'en contient presque rien
+    # (mesuré : Identity 14 mentions, Species 10, Equipment 0). Un autre lot.
+    - Les sections:
+      - Les sections: bible/sections/index.md
+      - Le Menu: bible/sections/menu.md
+      - 1 · Identity: bible/sections/1-identity.md
+      - 2 · Species: bible/sections/2-species.md
+      - 3 · Inheritance: bible/sections/3-inheritance.md
+      - 4 · Destiny & Arcana: bible/sections/4-destiny.md
+      - 5 · Class: bible/sections/5-class.md
+      - 6 · Abilities: bible/sections/6-abilities.md
+      - 7 · Skills & Tools: bible/sections/7-skills.md
+      - 8 · Equipment: bible/sections/8-equipment.md
+      - La feuille: bible/sections/sheet.md
     - À trancher: bible/a-trancher.md
   - SRD 5.2.1: https://noirchicot.github.io/fh-srd/

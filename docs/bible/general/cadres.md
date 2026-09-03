@@ -13,6 +13,8 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
     Valeur : `data-ecran="F|FF|FS"` posé par `paintAside` (shell.mjs) · Source : CADRES.md § « 2. LE MODÈLE RATIFIÉ », Eric 2026-08-19 · Statut : ratifié
 
+<!-- DESSIN À FAIRE — les trois écrans F / FF / FS côte à côte — ce que chacun porte (ceinture, menu latéral, colonne) et ce qu'il n'a pas -->
+
 ### Les trois objets : carte, dalle, tuile { #cadre-trois-objets }
 
 **Il y a trois objets — carte, dalle, tuile — et aucun ne porte jamais de lettre.**
@@ -21,6 +23,8 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
     les trois défauts qui ont tué la grille sont tous nés de la confusion : *« le chapeau de chapitre déclarait FF3 sur les huit chapitres et était un F3 sur quatre »* · *« deux F1 portaient deux mesures »* · *« le guide général déclaré F1 faisait 275 px au lieu de 440 »*.
 
     Valeur : `data-objet="carte|dalle|tuile"` · Source : CADRES.md § « 2 — Deux niveaux, deux mots », 2026-08-19 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — carte, dalle, tuile empilées à l'échelle — la carte à hauteur imposée 440, la dalle à hauteur de contenu, la tuile qui n'a que des marges -->
 
 ### La traduction de l'ancien vocabulaire { #cadre-traduction-ancien-vocabulaire }
 
@@ -46,7 +50,7 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **Une carte a une hauteur IMPOSÉE : `--fiche-h` = 440.**
 
-⚠️ En contradiction avec [`budget.carte-r-hauteur`](budget.md#budget-carte-r-hauteur) — voir [C20](a-trancher.md#c20).
+⚠️ En contradiction avec [`budget.carte-r-hauteur`](budget.md#budget-carte-r-hauteur) — voir [C20](../a-trancher.md#c20).
 
 ??? note "Pourquoi, et depuis quand"
     *« une fiche fait un écran, ni plus ni moins »*. C'est ce qui rend le défilement aimanté honnête (`scroll-snap-type: y mandatory`, gardé par `snap.test.mjs`).
@@ -93,12 +97,14 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **L'écart entre tuiles est de 4, et c'est l'arithmétique de 360 qui l'impose.**
 
-⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C19](a-trancher.md#c19).
+⚠️ En contradiction avec le corpus — aucune autre règle ne porte l'autre camp — voir [C19](../a-trancher.md#c19).
 
 ??? note "Pourquoi, et depuis quand"
     à 8, l'îlot vaut 50,7 et son dé 42 — *« deux pixels sous `--touch` (44) »*. Et ce n'est pas rattrapable : six cases de 52 plus cinq écarts de 8 demandent 352 px pour 344 disponibles.
 
     Valeur : écart `4` → îlot 54, dé 46 · Source : CADRES.md § « 7 », mesuré 2026-08-16 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — l'arithmétique de 360 qui impose l'écart de 4 — une bande cotée, colonnes et écarts additionnés -->
 
 ### La taille du dé se déduit { #cadre-tuile-taille-du-de-deduite }
 
@@ -115,23 +121,25 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **`--measure` vaut 62ch, c'est un plafond et il n'y en a qu'un.**
 
-⚠️ En contradiction avec [`cadre.trois-largeurs`](#cadre-trois-largeurs) — voir [C12](a-trancher.md#c12).
+⚠️ En contradiction avec [`cadre.trois-largeurs`](#cadre-trois-largeurs) — voir [C12](../a-trancher.md#c12).
 
 ??? note "Pourquoi, et depuis quand"
     Eric : *« 62 fonctionne sur le plus petit comme le plus grand, avec et sans rail »*. Un `--measure-f` a vécu une heure avant d'être tué : *« deux noms pour une valeur, c'est la divergence garantie au premier réglage »*.
 
-    Valeur : `--measure: 62ch` · Source : CADRES.md § « 2 », Eric 2026-08-19 · Statut : ratifié (⚠️ voir contradiction [C12](a-trancher.md#c12) — « il n'y a pas une mesure, il y en a trois »)
+    Valeur : `--measure: 62ch` · Source : CADRES.md § « 2 », Eric 2026-08-19 · Statut : ratifié (⚠️ voir contradiction [C12](../a-trancher.md#c12) — « il n'y a pas une mesure, il y en a trois »)
 
 ### Les trois largeurs max { #cadre-trois-largeurs }
 
 **Trois largeurs max cohabitent : carte 625, panneau 625, grille 605 — leur nature diffère (carte, contrôles, grille).**
 
-⚠️ En contradiction avec [`cadre.measure-unique`](#cadre-measure-unique) — voir [C12](a-trancher.md#c12).
+⚠️ En contradiction avec [`cadre.measure-unique`](#cadre-measure-unique) — voir [C12](../a-trancher.md#c12).
 
 ??? note "Pourquoi, et depuis quand"
     *« une grille de compétences n'est pas un paragraphe, une rangée de caractéristiques non plus. Le cadre dit la marge ; c'est l'ÉCRAN qui dit de quelle nature est sa largeur. »*
 
     Valeur : `--card-w` 625 blg · `--panel-w` 625 blg · `--grid-w` 605 blg (60 ch de raison) · Source : CADRES.md § « 2 bis. LES COTES, EN CHIFFRES », 2026-08-30 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — les trois largeurs max superposées — carte 625, panneau 625, grille 605 -->
 
 ### Une seule colonne de cotes { #cadre-une-seule-colonne }
 
@@ -173,6 +181,8 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
     Valeur : `--sp-8` = 8 blg · `--sp-16` = 16 blg · Source : CADRES.md § « 2 bis », 2026-08-16 · Statut : ratifié
 
+<!-- DESSIN À FAIRE — un cadre coté sur ses quatre côtés, avec la zone où RIEN n'a le droit d'être -->
+
 ### La gouttière cède la dernière { #cadre-marge-cede-la-derniere }
 
 **La gouttière ne cède que si un organe ne rentre pas sans elle — et à 360 la mesure dit qu'elle reste.**
@@ -200,11 +210,13 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
     Valeur : `--saignee-debord` = −16 · `data-saigne="oui"` · Source : CADRES.md § « 2 », 2026-08-19 · Statut : ratifié
 
+<!-- DESSIN À FAIRE — le filet débordant de −16 d'une dalle `saignante`, et la dernière dalle qui ne le porte pas -->
+
 ### Le cadre d'écran est nu { #cadre-cadre-d-ecran-nu }
 
 **Le cadre d'écran ne porte ni fond, ni liseré, ni rembourrage — il ne garde que sa marge.**
 
-⚠️ En contradiction avec [`cadre.data-bleed`](#cadre-data-bleed) — voir [C14](a-trancher.md#c14).
+⚠️ En contradiction avec [`cadre.data-bleed`](#cadre-data-bleed) — voir [C14](../a-trancher.md#c14).
 
 ??? note "Pourquoi, et depuis quand"
     Eric devant v298 : *« le cadre en blanc pourquoi ? derrière la dalle que fait-il là ? »* — **Rien.** *« Il dessinait une boîte autour du vide. »* La marge reste, et c'est sa phrase du 17/08 : *« sans elle, les dalles toucheraient les bords de l'écran. C'est la carte qui s'efface, pas ses gouttières. »* ⛔ *« UN CONTOUR EST UNE PEINTURE »* — appliquer la règle à moitié (retirer le fond, garder `border` et `padding`) *« donne la confiance de l'avoir appliquée »*.
@@ -219,57 +231,6 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
     *« RIEN ne doit jamais être dans la marge !!! »* · *« à part des dalles et des tuiles »*. *« La marge est une RESPIRATION, pas une réserve de place. Le jour où un contrôle y déborde, c'est que la page porte quelque chose en trop. »* ⛔ Cette loi annule *« le chevron apparaît dans une marge si possible »*, corrigé par Eric le jour même.
 
     Valeur : ⛔ bouton · jeton · chevron · `?` · popup · texte · Source : NORMES.md § « 1 bis », Eric 2026-08-26 en majuscules · Statut : ratifié — annule toute formulation antérieure
-
-## La ceinture et le menu latéral
-
-### La ceinture est toujours visible { #cadre-belt-toujours-visible }
-
-**La ceinture n'est jamais couverte par aucun cadre : elle n'est pas un cadre, c'est la coquille, et un cadre commence sous elle.**
-
-⚠️ En contradiction avec [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) · [`cadre.seuil-est-un-fs`](#cadre-seuil-est-un-fs) — voir [C10](a-trancher.md#c10).
-
-??? note "Pourquoi, et depuis quand"
-    elle n'est pas un cadre : c'est la coquille, et « un cadre commence sous elle ». La constante est écrite en tête de CADRES sous le titre « LA CONSTANTE, ET ELLE EST AU-DESSUS DE TOUT ».
-
-    Valeur : hauteur mesurée **60** (375 × 553, 2026-08-16) · Source : CADRES.md § « 0. LA CONSTANTE », première ligne du croquis : *« BELT IS ALWAYS VISIBLE »* · Statut : ratifié (⚠️ voir contradiction [C10](a-trancher.md#c10) — FS recouvre tout, et Entrée › R n'a pas de ceinture)
-
-### Le menu latéral : 90 blg { #cadre-rail }
-
-**Le menu latéral vaut 90 blg partout, et n'existe que là où il y a une liste à suivre.**
-
-??? note "Pourquoi, et depuis quand"
-    les douze classes, les douze espèces, les 22 arcanes. Il valait 90 à l'étroit et 120 en grandeur Large jusqu'au 30/08 : *« c'était un rapport qui changeait avec la place — 11,25 fois `--sp-8` d'un côté, 15 de l'autre »*. Sur un 1920 au cran 2 le rail rend 180 pixels, bien au-delà des 120 que le desktop obtenait.
-
-    Valeur : `--rail-w: 90` blg · `.stage-aside` · Source : CADRES.md § « 1. LES DEUX FAMILLES », 2026-08-30 · Statut : ratifié (le 120 en Large est renversé le 2026-08-30)
-
-### Qui porte le menu latéral { #cadre-qui-porte-le-rail }
-
-**Portent le menu (F) : Species, Class, le don d'origine panneau ouvert, Destiny en mode choix. Tout le reste est FF.**
-
-??? note "Pourquoi, et depuis quand"
-    *« la famille F N'A QU'UN SEUL FORMAT EN SERVICE, ET C'EST F1 : tout ce qui porte le menu est une fiche de catalogue. »* C'est Eric qui l'a relevé — *« Concept c'est du FF1 car pas de barre latérale »* — et le code lui donne raison.
-
-    Valeur : relevé dans `catalogueCourant` (shell.mjs), 2026-08-16 · Source : CADRES.md § « 3 bis » · Statut : ratifié
-
-### Le menu de Destiny en mode choix { #cadre-destiny-menu-en-mode-choix }
-
-⏳ **À trancher.**
-
-**Destiny n'a de menu qu'en mode choix ; le mettre en FF reviendrait à retirer le menu du mode qui en a le plus besoin.**
-
-??? note "Pourquoi, et depuis quand"
-    *« À trancher avant de le faire. »*
-
-    Valeur : 22 arcanes · Source : CADRES.md § « 5 », 2026-08-16 · Statut : à trancher
-
-### La dalle en écran F, place réservée { #cadre-f2-place-reservee }
-
-**La dalle dans un écran F (ex-F2) n'a aucun utilisateur et rien ne l'implémente : c'est une place réservée.**
-
-??? note "Pourquoi, et depuis quand"
-    *« aucun écran du builder ne pose sa hauteur aujourd'hui »*.
-
-    Valeur : `--card-w` = `--measure` · Source : CADRES.md § « 4 », 2026-08-16 · Statut : ratifié (place réservée)
 
 ## Le budget d'une fenêtre et le pied
 
@@ -370,12 +331,14 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **`data-bleed` efface la carte pour faire passer le fond entre deux dalles.**
 
-⚠️ En contradiction avec [`cadre.cadre-d-ecran-nu`](#cadre-cadre-d-ecran-nu) — voir [C14](a-trancher.md#c14).
+⚠️ En contradiction avec [`cadre.cadre-d-ecran-nu`](#cadre-cadre-d-ecran-nu) — voir [C14](../a-trancher.md#c14).
 
 ??? note "Pourquoi, et depuis quand"
     Eric : *« démerde-toi comme tu veux mais je veux voir du background entre ces deux dalles »*, puis *« un truc important à retenir, ce data-bleed, à noter pour faire des séparations »*. ⛔ *« AUCUNE MARGE NE PEUT RÉPARER ÇA »* — mesuré sur Abilities : à 12 px comme à 24 le résultat est identique, *« le problème n'est pas la TAILLE de l'intervalle, c'est CE QU'ON VOIT DEDANS »*. Employeurs : Class, Species (palier 1), Skills.
 
     Valeur : `data-bleed="true"` sur `.decision-card` — fond, bordure et rembourrage retirés · Source : CADRES.md § « 8 bis », Eric 2026-08-16 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — avant / après `data-bleed` — la surface de la carte disparaît, les 8 px de gouttière restent -->
 
 ### `data-bleed` porte aussi la hauteur { #cadre-data-bleed-porte-aussi-la-hauteur }
 
@@ -401,12 +364,14 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **La norme du site est un voile de 50 % sur la dalle.**
 
-⚠️ En contradiction avec [`cadre.voile-des-blocs-interieurs`](#cadre-voile-des-blocs-interieurs) — voir [C13](a-trancher.md#c13).
+⚠️ En contradiction avec [`cadre.voile-des-blocs-interieurs`](#cadre-voile-des-blocs-interieurs) — voir [C13](../a-trancher.md#c13).
 
 ??? note "Pourquoi, et depuis quand"
     Eric : *« voilà c'est ça la norme du site en terme de transparence : 50 % (c'est pas 35 %) »*. Et c'est mesuré, pas un goût : la **fiche d'espèce** — la carte que le joueur regarde le plus longtemps — porte 50 % depuis toujours, et Eric l'a désignée : *« on part de ça, état actuel »*. Le document affirmait *« 50 % → aucun organe aujourd'hui »* : c'était faux, et c'est le document qui a été corrigé, pas la fiche.
 
     Valeur : `--voile-inter` → `--dalle-inter` · Source : NORMES.md § « 4. LES VOILES », Eric 2026-08-26 devant v299 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — l'échelle des voiles — fond 0 %, dalle 50 %, bloc intérieur 35 % — et l'empilement interdit montré barré -->
 
 ### Le fond ne porte aucun voile { #cadre-voile-du-fond }
 
@@ -421,7 +386,7 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **35 % est le voile des petits blocs posés DANS une dalle.**
 
-⚠️ En contradiction avec [`cadre.voile-de-la-dalle`](#cadre-voile-de-la-dalle) — voir [C13](a-trancher.md#c13).
+⚠️ En contradiction avec [`cadre.voile-de-la-dalle`](#cadre-voile-de-la-dalle) — voir [C13](../a-trancher.md#c13).
 
 ??? note "Pourquoi, et depuis quand"
     *« Un bloc intérieur plus léger que sa dalle se lit comme un creux ; l'inverse ferait une tache. »* 35 *« n'est ni mort ni gardé au cas où »*.
@@ -470,7 +435,7 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
 **Le Seuil est un FS : plein écran, ni ceinture ni menu latéral, et son titre EST sa sortie.**
 
-⚠️ En contradiction avec [`cadre.belt-toujours-visible`](#cadre-belt-toujours-visible) · [`budget.entree-r-sans-ceinture`](budget.md#budget-entree-r-sans-ceinture) — voir [C10](a-trancher.md#c10).
+⚠️ En contradiction avec [`cadre.belt-toujours-visible`](../conduite/ceinture.md#cadre-belt-toujours-visible) · [`budget.entree-r-sans-ceinture`](../conduite/ceinture.md#budget-entree-r-sans-ceinture) — voir [C10](../a-trancher.md#c10).
 
 ??? note "Pourquoi, et depuis quand"
     Eric : *« Le titre est la sortie = économie d'espace, donc OK. »* Il **ouvre une autre fenêtre**, il ne quitte pas le Companion — *« Un joueur qui va lire une règle sur FH Web ne perd pas son personnage à moitié créé. »*
@@ -486,6 +451,8 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
 
     Valeur : option ② du 26/08 · Source : NORMES.md § « 1 sexies — L'ORDRE DES BLOCS », tranché 2026-08-26 · Statut : ratifié (le point faible reste ⏳)
 
+<!-- DESSIN À FAIRE — la pile du Seuil dans son ordre, sortie collée en haut -->
+
 ### La pastille de coffre { #cadre-pastille-de-coffre }
 
 **Le bloc coffre du Seuil porte une pastille de 8 px + le mot de l'état + « depuis quand ».**
@@ -494,16 +461,3 @@ Cette page dit dans quelle BOÎTE un écran est rendu : les trois écrans F / FF
     *« la date seule est muette sur l'état ; la pastille seule est muette sur le temps »*. La pastille signale, la date explique.
 
     Valeur : `🟢 Vivant · vu il y a 3 jours` · `🔴 Injoignable` · `🟠 Changé` · Source : NORMES.md § « LE TROISIÈME SENS DU VERT », Eric 2026-08-26 : *« C — la pastille et la date »* · Statut : ratifié
-
-## Le `?` sur la dalle
-
-### Le `?` en haut à droite { #cadre-question-en-haut-a-droite }
-
-**Le `?` est sur la dalle, tout à droite, au même niveau que le titre.**
-
-⚠️ En contradiction avec [`aide.bas-a-droite`](organes.md#aide-bas-a-droite) · [`aide.entre-dans-la-rangee`](organes.md#aide-entre-dans-la-rangee) — voir [C1](a-trancher.md#c1).
-
-??? note "Pourquoi, et depuis quand"
-    Eric, après l'avoir vu à gauche : *« le ? est sur la dalle tout à droite au même niveau que le titre »*. Il est **posé par la coquille**, une fois, sur toutes les étapes — *« jamais par un écran, qui pourrait l'oublier »*. C'est le filet de sécurité de `Turn tutorials off` : *« sans lui ce bouton serait irréversible »*.
-
-    Valeur : le coin haut-droit lui appartient · Source : CADRES.md § « 2 quinquies », Eric 2026-08-19 · Statut : ⚠️ **contredit** par `aide.bas-a-droite` (NORMES, 26/08) — voir [C1](a-trancher.md#c1)

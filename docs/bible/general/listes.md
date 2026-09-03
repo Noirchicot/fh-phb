@@ -13,6 +13,8 @@ Cette page dit comment un paquet de jetons se sert au joueur : quinze par page, 
 
     Valeur : `LISTE_PAR_PAGE = 15` dans `ui/builder/normes.mjs` · `pageDeListe()` · garde `tests/listes.test.mjs` · Source : NORMES.md § « 5. LES LISTES », 2026-08-26 · Statut : ratifié
 
+<!-- DESSIN À FAIRE — la page de 15 — cinq rangées de trois, cotées -->
+
 ### Le quinze est un défaut { #liste-quinze-est-un-defaut }
 
 **Le 15 est un DÉFAUT : un écran qui dévie passe explicitement son nombre à `pageDeListe(objets, page, N)`.**
@@ -30,6 +32,8 @@ Cette page dit comment un paquet de jetons se sert au joueur : quinze par page, 
     ⛔ « la grille ne s'étire pas, ne se recompose pas pour combler le vide » — c'est la même raison que « une case qui s'étire ne laisse RIEN à centrer » : la position d'un objet doit rester stable d'un écran à l'autre.
 
     Valeur : on centre le dernier ou les deux derniers · Source : NORMES.md § « 5. LES LISTES », 2026-08-26 · Statut : ratifié
+
+<!-- DESSIN À FAIRE — avant / après — la ligne incomplète centrée, contre la grille qui s'étire (barré) -->
 
 ### Une liste pagine, elle ne défile pas { #liste-pagination-jamais-defilement }
 
@@ -131,7 +135,7 @@ Cette page dit comment un paquet de jetons se sert au joueur : quinze par page, 
 
 **Le « 3 par rangée » qu'on observait dans un `flex-wrap` sans pagination était un accident d'arithmétique, pas une règle.**
 
-⚠️ En contradiction avec [`jeton.trois-colonnes-toujours`](organes.md#jeton-trois-colonnes-toujours) · [`panneau.reflux-oui-redimensionnement-non`](panneau.md#panneau-reflux-oui-redimensionnement-non) — voir [C17](a-trancher.md#c17).
+⚠️ En contradiction avec [`jeton.trois-colonnes-toujours`](../porteurs/jeton.md#jeton-trois-colonnes-toujours) · [`panneau.reflux-oui-redimensionnement-non`](panneau.md#panneau-reflux-oui-redimensionnement-non) — voir [C17](../a-trancher.md#c17).
 
 ??? note "Pourquoi, et depuis quand"
     « Le quatrième ne rentre pas, voilà tout. » — c'est pour ça que la règle a dû être écrite ailleurs (« trois colonnes, toujours ») : un comportement obtenu par accident ne survit pas au premier changement de cote.

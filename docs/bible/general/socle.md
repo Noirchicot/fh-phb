@@ -185,6 +185,8 @@ Cette page porte le mécanisme — `socle.mjs`, ses quatre fonctions, ses trois 
 
     Valeur : `data-visible`, `data-more`, `disabled` · `:focus-visible` — *« un focus de clic ne retient pas, mesuré gelé sinon »* · rend `{ step, settle }` : `settle()` relit la géométrie après un remplacement, `settle(true)` annonce une surface neuve qui défile (B0.22b, l'indicateur iOS qui flashe) · Source : SOCLE.md § « Les quatre fonctions », lot 70 · Statut : ratifié
 
+<!-- DESSIN À FAIRE — la machine à états de `mountChevrons` — pas de mou, bout de course, souris posée -->
+
 ### Rien sans un écran qui en a besoin { #socle-rien-sans-un-ecran-qui-en-a-besoin }
 
 **On n'ajoute rien au socle sans un écran qui en a besoin AUJOURD'HUI.**
@@ -231,17 +233,6 @@ Cette page porte le mécanisme — `socle.mjs`, ses quatre fonctions, ses trois 
     *« aucun écran n'a donc à mentir sur des paliers qu'il n'a pas »*.
 
     Valeur : lu par `shell.mjs` · Source : SOCLE.md § « Le contrat d'un écran », lot 58 · Statut : ratifié
-
-### Le rail est vertical seulement { #socle-rail-vertical-seulement }
-
-⏳ **À trancher.**
-
-**Le rail existe dans sa forme VERTICALE ; la forme horizontale (la molette de catégories de Compétences) n'est pas construite.**
-
-??? note "Pourquoi, et depuis quand"
-    *« elle demandera son propre slot, et ce lot ne l'invente pas d'avance »*.
-
-    Valeur : `.stage-aside` (B0.19) · forme horizontale = B7.1 · Source : SOCLE.md § « Le contrat d'un écran » · Statut : à trancher
 
 ### `data-snap` { #socle-data-snap }
 
