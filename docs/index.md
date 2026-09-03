@@ -4,12 +4,17 @@ hide:
   - toc
 ---
 
-<div class="fh-cover" markdown>
-
-![Fate's Hand — a hand of fate over the Demon Forest](assets/img/cover-fates-hand.jpg){ .fh-banner }
-
-# Fate's Hand — Player's Handbook { .fh-cover-title }
-
+<!-- ⛔ PAS d'attribut `markdown` sur ce bloc, et c'est la correction du 2026-09-04.
+     Avec `markdown`, l'image écrite en syntaxe Markdown est enveloppée dans un `<p>`,
+     et le `<p>` porte la mesure de lisibilité de la PROSE — `.md-typeset p { max-width: 65ch }`,
+     soit 639 px à 17 px. Le bandeau sortait donc à 639 px dans 1188 disponibles, collé à
+     gauche. Une image n'est pas de la prose : elle n'a rien à faire dans la mesure du texte.
+     🔴 C'est exactement le défaut du LOT 113 (le bouton de reprise, 639 px pour 1188), même
+     cause et même remède — l'attribut `markdown` retiré, l'élément redevient lui-même. -->
+<div class="fh-cover">
+  <img class="fh-banner" src="assets/img/cover-fates-hand.jpg"
+       alt="Fate's Hand — a hand of fate over the Demon Forest">
+  <h1 class="fh-cover-title">Fate's Hand — Player's Handbook</h1>
 </div>
 
 <div class="fh-home-intro" markdown>

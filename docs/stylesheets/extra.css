@@ -50,6 +50,38 @@
   --fh-rule:                    rgba(191,168,126,.28);
   --fh-halo:                    rgba(255, 255, 255, 0.65);
   --md-code-bg-color:           #2a2018;
+
+  /* 🔴 LE TEXTE DE LA BARRE DU HAUT — corrigé le 2026-09-04, Eric : « la barre de
+     navigation est trop sombre on ne la voit pas ».
+     Elle n'était pas trop sombre : elle était ÉCRITE EN NOIR SUR DU NOIR, mesuré
+     à 1,25 : 1. Le fond (`--md-primary-fg-color`) a été repeint ici en cuir
+     sombre ; le TEXTE (`--md-primary-bg-color`) n'a jamais été déclaré — nulle
+     part dans le site, vérifié. Il restait donc au `#000000de` que Material
+     associe à `primary: amber`, parce qu'amber est une couleur CLAIRE.
+     ⚠️ C'est une absence, pas une erreur de valeur : personne ne pouvait la voir
+     en relisant la feuille, puisqu'il n'y a rien à relire. En clair ça passe par
+     accident — `primary: brown` est sombre, donc Material y met du blanc.
+     ⛔ Ne pas « corriger » en changeant `primary:` dans mkdocs.yml : ça ferait
+     dépendre la lisibilité de la table d'appariement de Material au lieu de la
+     déclarer. Une cote donnée bat une cote déduite. */
+  --md-primary-bg-color:        #e7dcc4;              /* 12,3 : 1 sur #241c14 */
+  --md-primary-bg-color--light: rgba(231,220,196,.72);
+}
+
+/* ── ET LA BARRE A UN BORD ──────────────────────────────────────────────────
+   Second grief du même message : la barre ne se DÉTACHE pas de la page. Mesuré,
+   `#241c14` sur `#1b1712` = 1,06 : 1, quand une frontière d'interface demande
+   3 : 1.
+   ⭐ ET LE CHIFFRE TRANCHE CONTRE L'INTUITION. Repeindre la barre en cuir plus
+      clair ne marche PAS : `#2e2519` monte à 1,18, `#403425` à 1,47, `#4a3c2b`
+      à 1,67 — du sombre sur du sombre ne fabrique pas de frontière, quelle que
+      soit la nuance. Seul un trait franc y arrive.
+   ⛔ Et surtout PAS `var(--fh-rule)` : à .28 il sort à 1,75 : 1, c'est-à-dire
+      qu'on croirait avoir posé une frontière sans en avoir posé une. `--fh-rule`
+      est le filet des tableaux et des encarts, il n'a pas à porter le cadre du
+      site — l'opacité est donc écrite ici, pour cet usage, et mesurée. */
+[data-md-color-scheme="slate"] .md-header {
+  border-bottom: 1px solid rgba(191,168,126,.55);   /* 3,23 : 1 sur #1b1712 */
 }
 
 /* ---- Fonts ---- */
