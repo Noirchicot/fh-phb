@@ -187,6 +187,10 @@ nav:
         - Design: bible/commandes/bouton/design.md
         - Mesures: bible/commandes/bouton/mesures.md
         - Fonctions: bible/commandes/bouton/fonctions.md
+        # ⓐ lot 142 : les règles qui NOMMENT un bouton sortent de `fonctions.md`,
+        # qui redevient la loi générale. ⛔ Aucune ancre renommée : un déplacement
+        # reste un déplacement (310 règles avant, 310 après).
+        - Boutons spéciaux: bible/commandes/bouton/speciaux.md
       - L'interrupteur: bible/commandes/interrupteur.md
       - Le dropdown: bible/commandes/dropdown.md
     - Les porteurs:
@@ -207,8 +211,11 @@ nav:
       - La ceinture: bible/conduite/ceinture.md
       - Le menu latéral: bible/conduite/rail.md
       - Le chevron: bible/conduite/chevron.md
-    # ④ à ÉCRIRE, pas à recouper : le corpus des 310 n'en contient presque rien
-    # (mesuré : Identity 14 mentions, Species 10, Equipment 0). Un autre lot.
+    # ④ ÉCRITES au lot 142 : 80 règles d'écran tirées des MESSAGES DE COMMIT du dépôt
+    # `fhpc`, du logbook et des commentaires de code — ⚠️ AUCUNE ne vient du corpus des
+    # 310 (NORMES/CADRES/SOCLE), qui reste à 310 exactement. La Bible compte donc 390
+    # règles au total : 310 de corpus + 80 de section. Chaque page ne porte que
+    # l'EXCEPTION de son écran, et rien n'y est tranché.
     - Les sections:
       - Les sections: bible/sections/index.md
       - Le Menu: bible/sections/menu.md

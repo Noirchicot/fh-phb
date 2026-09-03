@@ -1,6 +1,9 @@
 # Le bouton — Fonctions
 
-Ce qu'un bouton fait et ce qu'il interdit : les trois verbes, les portes, le verrou, le gendarme.
+La **loi générale** du bouton : ce qu'un bouton fait et ce qu'il interdit — les deux axes, les
+trois verbes, la famille DÉFAIRE, les portes, le verrou et le gendarme. ⚠️ Ce qui vaut pour
+**un** bouton nommé — `Done`, `Back`, `Next`, `Cancel`, `I changed my mind` — vit sur
+[Boutons spéciaux](speciaux.md), avec la table qui dit ce que chacun EST.
 
 ## Fonctions
 
@@ -46,77 +49,12 @@ Ce qu'un bouton fait et ce qu'il interdit : les trois verbes, les portes, le ver
 
 **Trois familles, trois verbes, aucun recouvrement : `Back`/`Next` NAVIGUENT (bleu), `Done` VALIDE (vert), `Cancel`/`I changed my mind` DÉFAIT (rouge + popup).**
 
-⚠️ En contradiction avec [`bouton.done-signe`](#bouton-done-signe) — voir [C16](../../a-trancher.md#c16).
+⚠️ En contradiction avec [`bouton.done-signe`](speciaux.md#bouton-done-signe) — voir [C16](../../a-trancher.md#c16).
 
 ??? note "Pourquoi, et depuis quand"
     *« Un bouton qui fait deux de ces choses est un bouton mal nommé — c'est la discipline qu'Eric applique depuis le 17/08 : il ne règle pas le cas ambigu, il sépare les mots. »*
 
     Source : NORMES.md § « LES TROIS VERBES », Eric 2026-08-26 : *« `Done` valide les choix · `I changed my mind` les annule · `Next` : navigation »* · *« back et next = navigation uniquement »* · *« done = validation »* · Statut : ratifié
-
-### `Back` et `Next` n'écrivent jamais { #bouton-back-next-n-ecrivent-jamais }
-
-**Un `Back` ou un `Next` ne modifie jamais le document : ni valider, ni écrire, ni effacer, ni signer.**
-
-??? note "Pourquoi, et depuis quand"
-    *« Ce n'est pas une préférence de dessin : c'est ce que ces deux mots ont le droit de faire. Un `Back` ne coûte rien, par définition. S'il coûte, ce n'est pas un `Back`. »*
-
-    Valeur : vérifiable mécaniquement · Source : NORMES.md § « BACK ET NEXT NE FONT QUE NAVIGUER », Eric 2026-08-26 · Statut : ratifié
-
-### `Back` en sous-menu seulement { #bouton-back-dans-les-sous-menus-seulement }
-
-**`Back` n'existe qu'en sous-menu ; il ne paraît jamais à l'entrée d'une étape (rang R).**
-
-??? note "Pourquoi, et depuis quand"
-    *« Au rang R, on ne revient de nulle part : la ceinture d'étapes EST la navigation de ce niveau. »* La norme *« nomme ce que le code faisait déjà sans que ce soit écrit, ce qui est exactement ce qui permet à un lot de ne pas le défaire par erreur »*.
-
-    Valeur : `renderSortieEtape` ne produit un retour que si `state.palier > 1` ou dans un item de parcours · Source : NORMES.md § « LES TROIS VERBES », Eric 2026-08-26 : *« le back c'est uniquement dans les sous-menus »* · Statut : ratifié
-
-### `Done` et `Next` jamais ensemble { #bouton-done-et-next-jamais-ensemble }
-
-**`Done` et `Next` ne coexistent jamais : c'est le même moment vu avant et après.**
-
-??? note "Pourquoi, et depuis quand"
-    *« Tant que les choix ne sont pas validés, la rangée offre de VALIDER ; une fois validés, il n'y a plus rien à valider et elle offre de NAVIGUER. »* ⚠️ `I changed my mind` ne bouge pas entre les deux : *« c'est la seule porte ouverte dans tous les états, celle qui défait »*.
-
-    Valeur : rang R en cours → `I changed my mind` · `Done` · rang R validé → `I changed my mind` · `Next` · sous-menu → `Back` · `Done` · Source : NORMES.md § « LES TROIS VERBES », 2026-08-26 · Statut : ratifié
-
-### `I changed my mind` n'est jamais seul { #bouton-i-changed-my-mind-jamais-seul }
-
-**`I changed my mind` n'est jamais seul dans sa rangée : `Next` si l'étape est réglée, `Done` sinon.**
-
-??? note "Pourquoi, et depuis quand"
-    ⛔ *« CE QUI MANQUAIT ÉTAIT UN QUATRIÈME ÉTAT, ET IL NE SE VOYAIT PAS »* — le cas `acheve && conclu`, *« celui où le joueur REVIENT sur un chapitre fini »*, ne tombait dans aucune branche : *« La seule porte offerte à qui relit une étape achevée était de la démolir. »* Leçon : *« un `else if` sans `else` ne prévient jamais qu'il ne couvre pas tout. Il rend simplement moins que prévu, et se tait. »*
-
-    Valeur : le garde **refuse le trou** (`if/else` complet), il ne compte pas les boutons · Source : NORMES.md § « I CHANGED MY MIND N'EST JAMAIS SEUL », Eric 2026-08-26 : *« la bonne chose à faire, toujours un Next à côté de I changed my mind »* · Statut : ratifié
-
-### Un `Done` inachevé est gris { #bouton-done-gris-inacheve }
-
-**Un `Done` sur une étape inachevée est GRIS, jamais bleu, et il passe au vert quand elle est achevée.**
-
-??? note "Pourquoi, et depuis quand"
-    *« L'argument est de sens, pas de lisibilité : le bleu veut dire « mouvement non impactant » — or un `Done` sur une étape inachevée ne bouge pas, il attend. Le peindre en bleu lui prêterait une activité qu'il n'a pas. »* ⭐ *« Un bouton gris doit rester LISIBLE : « rien n'est fait » n'est pas « désactivé au point d'être illisible ». »* Aucune teinte n'a été inventée.
-
-    Valeur : `--text-muted` — contraste **6,06** jour / **5,59** nuit, dans la bande des autres boutons (5,6–6,1) · ⛔ pas `--border-strong` (4,09 / 3,73, hors bande) · Source : NORMES.md § « LE GRIS EST `--text-muted` », Eric 2026-08-26 : *« gris c'est mieux, le bleu impliquerait un mouvement »* · Statut : ratifié
-
-### `Back` bleu, `Done` vert { #bouton-back-bleu-done-vert }
-
-**`Back` est bleu et `Done` est vert — le commentaire « aucune couleur dans back et done » du 17/08 est renversé.**
-
-??? note "Pourquoi, et depuis quand"
-    *« le 17/08, l'échelle des quatre couleurs n'existait pas — « aucune couleur » était alors la seule façon de ne pas mentir. Depuis qu'une échelle dit ce que chaque teinte signifie, une couleur n'est plus du bruit : c'est une information. »* ⛔ Mais le 17/08 **survit** sur l'INTERRUPTEUR. 📌 Leçon pour les prochains renversements : *« une règle ancienne ne tombe pas en bloc. Elle tombe là où la raison qui la fondait a disparu, et tient partout ailleurs. »*
-
-    Valeur : `shell.css` porte encore le commentaire daté du 2026-08-17 · Source : NORMES.md § « BACK ET DONE PRENNENT LEUR COULEUR », Eric 2026-08-26 : *« back bleu, done vert »* · Statut : renverse le 2026-08-17 (pour ces deux boutons seulement)
-
-### `Done` signe { #bouton-done-signe }
-
-**`Done` signe ce qui est là, puis remonte d'un cran.**
-
-⚠️ En contradiction avec [`bouton.trois-verbes`](#bouton-trois-verbes) — voir [C16](../../a-trancher.md#c16).
-
-??? note "Pourquoi, et depuis quand"
-    ⚠️ **amende une ligne gravée le matin même** — *« J'avais écrit : « `Done` ne signe rien, c'est la TUILE qui signe », en m'appuyant sur `shell.mjs:600`. J'avais sur-lu : ce commentaire dit que le PALIER avance par la tuile — il ne dit pas que `Done` ne valide pas. »* Leçon : *« Un commentaire de code dit comment ça marche, pas ce que ça veut dire. »*
-
-    Source : NORMES.md § « LES TROIS VERBES », 2026-08-26 ; phrase d'Eric du 20/08 citée dans `catalogue.mjs:573` : *« si je dis à BS Done, direction R POUR VALIDER la… »* · Statut : ratifié (⚠️ voir contradiction [C16](../../a-trancher.md#c16) — « il ne fait pas avancer »)
 
 ### La porte à deux âges { #bouton-porte-a-deux-ages }
 

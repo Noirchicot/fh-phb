@@ -1,6 +1,6 @@
 # À trancher
 
-Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qui sont tous les deux écrits comme vrais, et qui servent tous les deux de base à un budget, à une garde ou à un écran. Rien n'est tranché ici — cette page pose les deux citations avec leurs dates et la question, c'est Eric qui décide.
+Vingt-deux contradictions vivantes : chacune oppose deux passages écrits tous les deux comme vrais, et qui servent tous les deux de base à un budget, à une garde ou à un écran. Rien n'est tranché ici — cette page pose les deux citations avec leurs dates et la question, c'est Eric qui décide.
 
 ## C1 — Où vit le `?` : en haut à droite, ou en bas à droite ? { #c1 }
 
@@ -153,7 +153,7 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 
 - **NORMES.md § LES TROIS VERBES, table** : *« **`Done`** — valide les choix de l'étape · ⛔ **il ne fait pas avancer** »*.
 - **NORMES.md § 6, table des couleurs** et **§ LES TROIS VERBES, seconde table** : *« `done` : il **valide** ce qui est là, **puis remonte d'un cran** »* · *« il signe ce qui est là, puis remonte d'un cran »*.
-- Règles concernées : [`bouton.trois-verbes`](commandes/bouton/fonctions.md#bouton-trois-verbes) · [`bouton.done-signe`](commandes/bouton/fonctions.md#bouton-done-signe)
+- Règles concernées : [`bouton.trois-verbes`](commandes/bouton/fonctions.md#bouton-trois-verbes) · [`bouton.done-signe`](commandes/bouton/speciaux.md#bouton-done-signe)
 - ⚠️ « Remonter d'un cran » est un mouvement ; la table qui l'interdit et celle qui le décrit sont à quelques lignes l'une de l'autre.
 
 ## C17 — La règle A du vivier : accident ou loi ? { #c17 }
@@ -215,9 +215,18 @@ Vingt-et-une contradictions vivantes : chacune oppose deux passages du corpus qu
 - | `budget` | 27 | 4 | 1 | 0 | 1 |
 - | `socle` | 33 | 2 | 0 | 0 | 0 |
 - | **TOTAL** | **310** | **26** | **13** | **5** | **14** |
-- **Contradictions vivantes relevées : 21** (`C1` à `C21`), dont une (`C18`) explicitement laissée ouverte par le corpus lui-même.
+- **Contradictions vivantes relevées : 22** (`C1` à `C22`), dont une (`C18`) explicitement laissée ouverte par le corpus lui-même. ⚠️ `C22` est la première qui ne vienne pas du corpus mais du **code et des commits**.
 - > Les colonnes se recoupent : une entrée peut être ratifiée et porter un délai borné, et les
 - > entrées marquées « renversé » gardent leur énoncé d'origine avec ce qui les remplace.
 - > Les 14 statuts marqués d'un avertissement sont ceux qui pointent vers une contradiction `C*`.
 - Règles concernées : [`budget.entree-r`](general/budget.md#budget-entree-r)
 - ⚠️ Le budget reste écrit comme une contrainte dans la section budget, et comme caduc dans la section du Seuil.
+
+## C22 — Les `50` PO s'ajoutent au kit de classe, ou le remplacent ? { #c22 }
+
+**Question : Le personnage reçoit-il le paquet de sa classe **plus** une bourse de `50` PO, ou doit-il choisir entre les deux ?**
+
+- **Règle FH du 2026-08-13**, citée dans `equipment-step.mjs` : *« Le paquet de la CLASSE, plus une bourse de 50 PO. »* — et le même commentaire précise que le paquet de classe porte SON or (*« le Barbare option A : … and 15 GP »*) et que *« les deux s'ADDITIONNENT — aucune collision »*.
+- **Eric, 2026-08-24** : *« la fenêtre doit lui dire qu'il a son équipement **ou** 50 po à débourser »* — câblé en aiguilleur **exclusif** (`kit` | `purse`), et la coquille écrit en toutes lettres « kit de classe OU 50 po ».
+- Règles concernées : [`equipement.depart-kit-ou-bourse`](sections/8-equipment.md#equipement-depart-kit-ou-bourse)
+- ⚠️ Le module porte **encore les deux lectures** : la règle additive dans son commentaire de tête, la règle exclusive dans son code. Aucune des deux n'a été retirée. ⛔ Cette contradiction ne vient pas du corpus des 310 — elle vient du code et des commits, et c'est la première de cette origine.
