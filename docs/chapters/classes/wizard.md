@@ -99,7 +99,7 @@ Weavers of arcane grammar, wizards bend reality through study, not birth. Spellb
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Spell Recall is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-signature-spells">Level 20: Signature Spells</h3>
 <p>Choose two level 3 spells in your spellbook as your signature spells. You always have these spells prepared, and you can cast each of them once at level 3 without expending a spell slot. When you do so, you can’t cast them in this way again until you finish a Short or Long Rest. To cast either spell at a higher level, you must expend a spell slot.</p>
-<h3 class="fh-pcfh__subclass">Wizard subclass: Evoker</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-evoker">Wizard subclass: Evoker</h3>
 <p>Create Explosive Elemental Effects</p>
 <p>Your studies focus on magic that creates powerful elemental effects such as bitter cold, searing flame, rolling thunder, crackling lightning, and burning acid. Some Evokers find employment in military forces, serving as artillery to blast armies from afar. Others use their power to protect others, while some seek their own gain.</p>
 <h4 class="fh-pcfh__feature" id="l3-evocation-savant">Level 3: Evocation Savant</h4>

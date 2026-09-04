@@ -1391,8 +1391,15 @@ def _srd_class_full(slug, lang="en"):
     # ── LA SOUS-CLASSE ─────────────────────────────────────────────────────
     sc = d.get("subclass")
     if isinstance(sc, dict) and sc.get("name"):
-        out.append('<h3 class="fh-pcfh__subclass">%s subclass: %s</h3>'
-                   % (html.escape(rec["name"]), html.escape(sc["name"])))
+        # 🔴 CE TITRE ÉTAIT LE SEUL DU GÉNÉRATEUR SANS ANCRE — corrigé le
+        #    2026-09-04. Tous ses voisins passent par `_ancre()` ; celui-ci
+        #    avait été oublié, donc les 12 sous-classes du livre n'étaient
+        #    atteignables par aucun lien : mesuré 12 titres, 0 ancre.
+        #    ⛔ Rien ne pouvait rougir : une ancre absente ne casse pas une
+        #       page, elle rend seulement une destination inatteignable.
+        out.append('<h3 class="fh-pcfh__subclass" id="%s">%s subclass: %s</h3>'
+                   % (_ancre(None, "subclass-" + sc["name"]),
+                      html.escape(rec["name"]), html.escape(sc["name"])))
         out += _rendu_aptitude(
             _paragraphes_sans_table_plate(sc.get("description"), rec["name"]), rec["name"])
         for f in sc.get("features") or []:
@@ -3575,6 +3582,24 @@ def build_species_lore():
                 f"({faits} espèces, {blocs_total} sections)"))
 
 
+# ══ L'ARBRE DU MENU, DÉRIVÉ ════════════════════════════════════════════════
+# ⛔ PAS UN TROISIÈME GESTE. La doctrine dit deux gestes — sync puis déploiement.
+#    Un `build_nav.py` qu'on lancerait à la main serait oublié un jour, et le
+#    menu vieillirait sans que rien ne le dise : exactement le défaut qu'il
+#    répare. Il entre donc DANS la passe.
+# ⚠️ Il a besoin de `yaml` et de `markdown`, que le python système n'a pas —
+#    on l'exécute avec l'interpréteur du venv, celui qui construit le site.
+def build_nav():
+    import subprocess, sys
+    py = ROOT / ".venv" / "bin" / "python"
+    if not py.exists():
+        print("  !! .venv absent — arbre du menu NON régénéré, il vieillit")
+        return
+    r = subprocess.run([str(py), str(ROOT / "build_nav.py")],
+                       capture_output=True, text=True)
+    print((r.stdout or "").rstrip() or f"  !! build_nav a échoué : {r.stderr.strip()[:200]}")
+
+
 if __name__ == "__main__":
     print("Syncing FH PHB chapters from vault…")
     preambule()
@@ -3583,5 +3608,6 @@ if __name__ == "__main__":
     build_arcana()
     split_arcana()
     build_species_lore()
+    build_nav()
     recapitulatif()
     print("Done.")

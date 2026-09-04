@@ -111,7 +111,7 @@ Rage isn't losing control—it's the only control a barbarian trusts. Pain fades
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-primal-champion">Level 20: Primal Champion</h3>
 <p>You embody primal power. Your Strength and Constitution scores increase by 4, to a maximum of 25.</p>
-<h3 class="fh-pcfh__subclass">Barbarian subclass: Path of the Berserker</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-path-of-the-berserker">Barbarian subclass: Path of the Berserker</h3>
 <p>Channel Rage into Violent Fury</p>
 <p>Barbarians who walk the Path of the Berserker direct their Rage primarily toward violence. Their path is one of untrammeled fury, and they thrill in the chaos of battle as they allow their Rage to seize and empower them.</p>
 <h4 class="fh-pcfh__feature" id="l3-frenzy">Level 3: Frenzy</h4>

@@ -100,7 +100,7 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 <h3 class="fh-pcfh__feature" id="l20-stroke-of-luck">Level 20: Stroke of Luck</h3>
 <p>You have a marvelous knack for succeeding when you need to. If you fail a D20 Test, you can turn the roll into a 20.</p>
 <p>Once you use this feature, you can’t use it again until you finish a Short or Long Rest.</p>
-<h3 class="fh-pcfh__subclass">Rogue subclass: Thief</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-thief">Rogue subclass: Thief</h3>
 <p>Hunt for Treasure as a Classic Adventurer</p>
 <p>A mix of burglar, treasure hunter, and explorer, you are the epitome of an adventurer. In addition to improving your agility and stealth, you gain abilities useful for delving into ruins and getting maximum benefit from the magic items you find there.</p>
 <h4 class="fh-pcfh__feature" id="l3-fast-hands">Level 3: Fast Hands</h4>

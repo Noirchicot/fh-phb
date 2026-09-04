@@ -103,7 +103,7 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Spell Recall is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-words-of-creation">Level 20: Words of Creation</h3>
 <p>You have mastered two of the Words of Creation: the words of life and death. You therefore always have the Power Word Heal and Power Word Kill spells prepared. When you cast either spell, you can target a second creature with it if that creature is within 10 feet of the first target.</p>
-<h3 class="fh-pcfh__subclass">Bard subclass: College of Lore</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-college-of-lore">Bard subclass: College of Lore</h3>
 <p>Plumb the Depths of Magical Knowledge</p>
 <p>Bards of the College of Lore collect spells and secrets from diverse sources, such as scholarly tomes, mystical rites, and peasant tales. The college’s members gather in libraries and universities to share their lore with one another. They also meet at festivals or affairs of state, where they can expose corruption, unravel lies, and poke fun at self-important figures of authority.</p>
 <h4 class="fh-pcfh__feature" id="l3-bonus-proficiencies">Level 3: Bonus Proficiencies</h4>

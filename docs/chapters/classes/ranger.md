@@ -105,7 +105,7 @@ A ranger notices what the ground is trying to hide—a bent stalk, a wrong print
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Dimensional Travel is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-foe-slayer">Level 20: Foe Slayer</h3>
 <p>The damage die of your Hunter’s Mark is a d10 rather than a d6.</p>
-<h3 class="fh-pcfh__subclass">Ranger subclass: Hunter</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-hunter">Ranger subclass: Hunter</h3>
 <p>Protect Nature and People from Destruction</p>
 <p>You stalk prey in the wilds and elsewhere, using your abilities as a Hunter to protect nature and people everywhere from forces that would destroy them.</p>
 <h4 class="fh-pcfh__feature" id="l3-hunter-s-lore">Level 3: Hunter’s Lore</h4>

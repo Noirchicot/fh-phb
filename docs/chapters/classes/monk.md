@@ -117,7 +117,7 @@ A monk spent years turning an empty hand into a weapon nobody had to hand them, 
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Irresistible Offense is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-body-and-mind">Level 20: Body and Mind</h3>
 <p>You have developed your body and mind to new heights. Your Dexterity and Wisdom scores increase by 4, to a maximum of 25.</p>
-<h3 class="fh-pcfh__subclass">Monk subclass: Warrior of the Open Hand</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-warrior-of-the-open-hand">Monk subclass: Warrior of the Open Hand</h3>
 <p>Master Unarmed Combat Techniques</p>
 <p>Warriors of the Open Hand are masters of unarmed combat. They learn techniques to push and trip their opponents and manipulate their own energy to protect themselves from harm.</p>
 <h4 class="fh-pcfh__feature" id="l3-open-hand-technique">Level 3: Open Hand Technique</h4>

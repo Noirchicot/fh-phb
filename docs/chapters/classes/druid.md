@@ -121,7 +121,7 @@ A druid doesn't dominate nature, they petition it—and get answers more often t
 <p class="fh-pcfh__regle"><strong>Evergreen Wild Shape.</strong> Whenever you roll Initiative and have no uses of Wild Shape left, you regain one expended use of it.</p>
 <p class="fh-pcfh__regle"><strong>Nature Magician.</strong> You can convert uses of Wild Shape into a spell slot (no action required). Choose a number of your unexpended uses of Wild Shape and convert them into a single spell slot, with each use contributing 2 spell levels. For example, if you convert two uses of Wild Shape, you produce a level 4 spell slot. Once you use this benefit, you can’t do so again until you finish a Long Rest.</p>
 <p class="fh-pcfh__regle"><strong>Longevity.</strong> The primal magic that you wield causes you to age more slowly. For every ten years that pass, your body ages only one year.</p>
-<h3 class="fh-pcfh__subclass">Druid subclass: Circle of the Land</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-circle-of-the-land">Druid subclass: Circle of the Land</h3>
 <p>Celebrate Connection to the Natural World</p>
 <p>The Circle of the Land comprises mystics and sages who safeguard ancient knowledge and rites. These Druids meet within sacred circles of trees or standing stones to whisper primal secrets in Druidic. The circle’s wisest members preside as the chief priests of their communities.</p>
 <h4 class="fh-pcfh__feature" id="l3-circle-of-the-land-spells">Level 3: Circle of the Land Spells</h4>

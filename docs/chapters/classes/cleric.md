@@ -103,7 +103,7 @@ A cleric's power isn't borrowed, it's granted—proof something answered the pra
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Fate is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-greater-divine-intervention">Level 20: Greater Divine Intervention</h3>
 <p>You can call on even more powerful divine intervention. When you use your Divine Intervention feature, you can choose Wish when you select a spell. If you do so, you can’t use Divine Intervention again until you finish 2d4 Long Rests.</p>
-<h3 class="fh-pcfh__subclass">Cleric subclass: Life Domain</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-life-domain">Cleric subclass: Life Domain</h3>
 <p>Soothe the Hurts of the World</p>
 <p>The Life Domain focuses on the positive energy that helps sustain all life in the multiverse. Clerics who tap into this domain are masters of healing, using that life force to cure many hurts.</p>
 <p>Existence itself relies on the positive energy associated with this domain, so a Cleric of almost any religious tradition might choose it. This domain is particularly associated with agricultural deities, gods of healing or endurance, and gods of home and community. Religious orders of healing also seek the magic of this domain.</p>

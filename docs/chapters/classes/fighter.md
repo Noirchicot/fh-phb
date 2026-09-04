@@ -85,7 +85,7 @@ Steel remembers what flesh forgets. Ten thousand strikes forge it. No spellbook,
 <p>You gain an Epic Boon feat (see “Feats”) or another feat of your choice for which you qualify. Boon of Combat Prowess is recommended.</p>
 <h3 class="fh-pcfh__feature" id="l20-three-extra-attacks">Level 20: Three Extra Attacks</h3>
 <p>You can attack four times instead of once whenever you take the Attack action on your turn.</p>
-<h3 class="fh-pcfh__subclass">Fighter subclass: Champion</h3>
+<h3 class="fh-pcfh__subclass" id="subclass-champion">Fighter subclass: Champion</h3>
 <p>Pursue Physical Excellence in Combat</p>
 <p>A Champion focuses on the development of martial prowess in a relentless pursuit of victory. Champions combine rigorous training with physical excellence to deal devastating blows, withstand peril, and garner glory. Whether in athletic contests or bloody battle, Champions strive for the crown of the victor.</p>
 <h4 class="fh-pcfh__feature" id="l3-improved-critical">Level 3: Improved Critical</h4>
