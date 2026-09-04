@@ -29,7 +29,7 @@ hide:
     - [2 · Species](chapters/species.md)
     - [3 · Inheritance](chapters/inheritance.md)
     - [4 · Destiny](chapters/fates-hand-mechanic.md)
-    - [5 · Class](chapters/classes.md)
+    - [5 · Classes & Subclasses](chapters/classes.md)
         - [Moonkeeper](chapters/moonkeeper.md)
     - [6 · Abilities](chapters/ability-scores.md)
     - [7 · Skills](chapters/skills-and-tools.md)
