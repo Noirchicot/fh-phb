@@ -503,6 +503,17 @@
   margin: 0 calc(50% - 50vw) 1.2rem;
   max-width: none;
 }
+/* 🔴 ET LE RISQUE S'EST PRODUIT, le jour même. Sur une fenêtre à barre de
+   défilement CLASSIQUE (Windows, Linux, et le panneau de prévisualisation),
+   `100vw` compte la barre : mesuré `left: -7px` et un débordement horizontal
+   réel. Sur macOS avec des barres flottantes, il n'y en avait aucun — la
+   première mesure était juste ET incomplète, parce que la machine qui mesurait
+   n'avait pas le cas.
+   ⭐ `clip` et NON `hidden` : `hidden` fabrique un conteneur de défilement, ce
+      qui casserait le collage `sticky` de la barre du haut. `clip` coupe sans
+      créer de conteneur — le bandeau déborde toujours sous la barre de
+      défilement, il est simplement rogné là où l'œil ne va pas. */
+body { overflow-x: clip; }
 /* Au bord de l'écran, l'arrondi et les filets latéraux n'ont plus de bord où se
    poser — ils dessineraient un cadre coupé. Le filet du bas reste : il sépare
    l'image du texte. */
