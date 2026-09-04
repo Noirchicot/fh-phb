@@ -140,5 +140,11 @@ A bard bets a song can do what a sword can't, and wins more than skeptics expect
 > **Expertise** *(level 2)* <span class="fh-tag">FH</span> — **+4 free points**, and permission to buy **Expert** from
 > level 2. The +1 of your own ladder lands at the same level and is not the same gain.
 
+>
+> **One college more than the base game** <span class="fh-tag">FH</span> — beside the bardic colleges printed above, Fate's
+> Hand adds the **[College of Banners](../college-of-banners.md)**: the bard who fights as the voice of a line, hands their
+> Bardic Inspiration out as orders, and carries steel to back them. It is the only college with an
+> entry price — **Adept in Leadership and Adept in Vigilance**, bought from your free pool.
+
 <p class="fh-srd-cite__attr">This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 
