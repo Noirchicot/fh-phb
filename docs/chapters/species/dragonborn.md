@@ -1,4 +1,4 @@
-# Dragonborn](https://www.dndbeyond.com/species/1751435-dragonborn)
+# [Dragonborn](https://www.dndbeyond.com/species/1751435-dragonborn)
 
 ![Dragonborn](../../assets/img/species-dragonborn.jpg){ .fh-portrait }
 

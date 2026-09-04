@@ -1,4 +1,4 @@
-# Orc](https://www.dndbeyond.com/species/1751442-orc)
+# [Orc](https://www.dndbeyond.com/species/1751442-orc)
 
 ![Orc](../../assets/img/species-orc.jpg){ .fh-portrait }
 

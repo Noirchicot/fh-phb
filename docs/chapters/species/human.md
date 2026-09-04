@@ -1,4 +1,4 @@
-# uman
+# Human
 
 ![Human](../../assets/img/species-human.jpg){ .fh-portrait }
 

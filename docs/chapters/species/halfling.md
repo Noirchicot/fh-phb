@@ -1,4 +1,4 @@
-# Halfling](https://www.dndbeyond.com/species/1751440-halfling)
+# [Halfling](https://www.dndbeyond.com/species/1751440-halfling)
 
 ![Halfling](../../assets/img/species-halfling.jpg){ .fh-portrait }
 

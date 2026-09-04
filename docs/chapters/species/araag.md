@@ -1,4 +1,4 @@
-# raag
+# Araag
 
 ![Araag](../../assets/img/species-araag.jpg){ .fh-portrait }
 

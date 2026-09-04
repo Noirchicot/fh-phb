@@ -1,4 +1,4 @@
-# Dwarf](https://www.dndbeyond.com/species/1751436-dwarf)
+# [Dwarf](https://www.dndbeyond.com/species/1751436-dwarf)
 
 ![Dwarf](../../assets/img/species-dwarf.jpg){ .fh-portrait }
 

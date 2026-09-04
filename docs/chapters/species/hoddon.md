@@ -1,4 +1,4 @@
-# oddon
+# Hoddon
 
 ![Hoddon](../../assets/img/species-hoddon.jpg){ .fh-portrait }
 

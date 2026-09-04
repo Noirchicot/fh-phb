@@ -2566,7 +2566,20 @@ def split_species():
     for n, (i, slug_, name) in enumerate(starts):
         block = lines[i:bornes[n + 1]]
         # ── la page complète ───────────────────────────────────────────────
-        titre = block[0][4:].strip()          # `## [Elf](…)` -> `[Elf](…)`
+        # 🔴 CORRIGÉ LE 2026-09-04 — CETTE LIGNE MANGEAIT UNE LETTRE.
+        #    Elle disait `block[0][4:]` : quatre caractères coupés, alors que
+        #    `## ` en fait trois. Le quatrième retiré était la PREMIÈRE LETTRE
+        #    du titre. Mesuré en production sur les douze pages d'espèce :
+        #      `## Araag`         ->  `# raag`     ->  <h1 id="raag">raag
+        #      `## [Elf](…)`      ->  `# Elf](…)`  ->  le crochet avalé
+        #    ⚠️ Et le commentaire d'origine annonçait `[Elf](…)`, c'est-à-dire
+        #       le résultat VOULU, pas le résultat obtenu. Un commentaire qui
+        #       décrit l'intention se relit comme une preuve — il a couvert le
+        #       défaut aussi longtemps que le défaut a vécu.
+        #    ⛔ On ne recompte pas : on retire les dièses et l'espace par motif.
+        #       Un décompte de caractères se retrouve faux le jour où la forme
+        #       du titre change d'un cran.
+        titre = re.sub(r"^#+\s*", "", block[0]).strip()
         corps = "\n".join(block[1:]).strip()
         # Une page d'espèce vit un cran plus profond : ../assets -> ../../assets
         corps = descendre_dun_cran(corps)

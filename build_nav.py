@@ -103,6 +103,17 @@ def _page(chemin_md, nom):
                            "titres": t})
         if filles:
             noeud["filles"] = filles
+            # 🔴 UNE PAGE-MENU NOMME SES FILLES DEUX FOIS. `classes.md` porte un
+            #    `## Barbarian` par classe — l'entrée de son sommaire — ET un
+            #    dossier `classes/barbarian.md`. Rendus tels quels, les douze
+            #    classes paraissent deux fois dans le menu : une fois en ancre,
+            #    une fois en page. Mesuré à la première livraison.
+            # ⭐ La PAGE l'emporte sur l'ancre : elle mène plus loin. On retire
+            #    donc les titres qui ne font que redire un nom de fille — par
+            #    comparaison des noms, pas par position ni par un compte.
+            noms = {f["titre"].strip().lower() for f in filles}
+            noeud["titres"] = [t for t in noeud["titres"]
+                               if t["titre"].strip().lower() not in noms]
     return noeud
 
 
