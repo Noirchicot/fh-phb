@@ -97,8 +97,14 @@ def _page(chemin_md, nom):
                 continue
             t = _titres(f)
             h1 = re.search(r"^#\s+(.+)$", f.read_text(encoding="utf-8"), re.M)
+            # ⛔ Le H1 passe par le MÊME rendu que les titres. Sans lui, une page
+            #    dont le titre est un lien — `# [Dragonborn](https://…)`, ce que
+            #    le manuscrit écrit pour six espèces — entrerait au menu avec sa
+            #    syntaxe crue. Et son nom ne correspondrait plus à celui du
+            #    sommaire de la page-menu, donc le dédoublonnage le raterait :
+            #    une seule omission produisait DEUX défauts à deux endroits.
             filles.append({"rang": "SB",
-                           "titre": (h1.group(1).strip() if h1 else f.stem.title()),
+                           "titre": (_texte_rendu(h1.group(1)) if h1 else f.stem.title()),
                            "url": f"{slug}/{f.stem}/",
                            "titres": t})
         if filles:
