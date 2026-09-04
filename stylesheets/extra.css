@@ -740,9 +740,19 @@ body { overflow-x: clip; }
    largeur — il pourrait diminuer en taille non ? » Il ne concurrence pas les
    six portes, il rattrape un travail commencé : il se centre au tiers de la
    grille (une colonne sur trois, la même que les tuiles), au lieu des trois. */
-.fh-home-resume { margin: 0 auto 2.4rem; display: grid; grid-template-columns: 1fr;
-  max-width: calc((100% - 1.3rem) / 3); }
-@media (max-width: 59.9em) { .fh-home-resume { max-width: none; } }
+/* ⭐ DEUX COLONNES, AU GABARIT DES PORTES. La rangée du dessus est
+   `repeat(3, 1fr)` avec `gap: .65rem` ; une de ses colonnes vaut donc
+   `(100% - 1.3rem) / 3` — c'est la largeur qu'avait le bouton de reprise seul.
+   Deux boutons prennent DEUX de ces colonnes plus l'espace entre : la paire
+   s'aligne exactement sur les portes au lieu d'inventer sa propre mesure.
+   ⛔ Aucun chiffre n'est recopié : si la rangée du haut passe un jour à quatre
+      colonnes, c'est cette formule-ci qu'on change, au même endroit. */
+.fh-home-resume { margin: 0 auto 2.4rem; display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem;
+  max-width: calc(((100% - 1.3rem) / 3) * 2 + .65rem); }
+@media (max-width: 59.9em) {
+  .fh-home-resume { max-width: none; grid-template-columns: 1fr; }
+}
 
 /* 🔴 LE HIGHLIGHT NE S'ALLUME QUE SI ON L'A DEMANDÉ. `fh-widget.js` pose
    `data-vise` quand l'adresse porte `?resume` — c'est le favori d'Eric qui

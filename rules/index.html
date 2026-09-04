@@ -3479,13 +3479,26 @@
 
   <h1>Rules Reference</h1>
 
+<!-- 🔴 LES CHEMINS D'IMAGE PORTENT `../`, ET CE N'EST PAS DÉCORATIF.
+     Corrigé le 2026-09-04, Eric : « répare les images, qui ne sont plus connectées ».
+     ⚠️ MkDocs réécrit les chemins relatifs des images écrites en MARKDOWN, jamais
+        ceux d'un `src=` en HTML brut. Ces quatre cartes vivaient sur `index.md`
+        (servi à `/`, donc `assets/…` tombait juste) ; le LOT 113 les a déplacées
+        ici, sur une page servie à `/rules/` — et `assets/…` y cherchait
+        `/rules/assets/…`. Mesuré en ligne avant réparation : HTTP 404 sur les
+        quatre, HTTP 200 sur le même fichier à la racine.
+     ⛔ Un déplacement de bloc ne déplace pas ce qui rendait ses chemins justes.
+        Aucun test n'a rougi : le fichier existait, la page se construisait, le
+        lien était simplement résolu ailleurs.
+     📌 Si cette page change un jour de profondeur, ces `../` changent avec elle. -->
+
 <h2 class="fh-section-title" id="rules-reference">Rules Reference<a class="headerlink" href="#rules-reference" title="Permanent link">&para;</a></h2>
 <p class="fh-section-lead">Everything is grouped by the question a player is trying to answer — not by where the rule happens to live.</p>
 
 <div class="grid cards fh-toc fh-rules-grid">
 <ul>
 <li>
-<p><span class="fh-card-hero"><img src="assets/img/card-playing.jpg" alt="Build a Character"><span class="fh-card-title">Build a Character</span></span></p>
+<p><span class="fh-card-hero"><img src="../assets/img/card-playing.jpg" alt="Build a Character"><span class="fh-card-title">Build a Character</span></span></p>
 <ul>
 <li><a class="fh-hot" data-fh-widget="data-fh-widget" href="https://noirchicot.github.io/fhpc/ui/builder/"><strong>Guided Character Builder</strong></a></li>
 <li><a href="../chapters/identity/">1 · Identity</a></li>
@@ -3502,7 +3515,7 @@
 </ul>
 </li>
 <li>
-<p><span class="fh-card-hero"><img src="assets/img/card-tools.jpg" alt="At the Table"><span class="fh-card-title">At the Table</span></span></p>
+<p><span class="fh-card-hero"><img src="../assets/img/card-tools.jpg" alt="At the Table"><span class="fh-card-title">At the Table</span></span></p>
 <ul>
 <li><a class="fh-hot" href="../player/"><strong>Player Companion</strong></a></li>
 <li><a href="../chapters/leveling-up/">Leveling up</a></li>
@@ -3515,7 +3528,7 @@
 </ul>
 </li>
 <li>
-<p><span class="fh-card-hero"><img src="assets/img/card-magic.jpg" alt="Magic and Soulforging"><span class="fh-card-title">Magic &amp; Soulforging</span></span></p>
+<p><span class="fh-card-hero"><img src="../assets/img/card-magic.jpg" alt="Magic and Soulforging"><span class="fh-card-title">Magic &amp; Soulforging</span></span></p>
 <ul>
 <li><a href="../chapters/magic/">Magic</a></li>
 <li><a href="../chapters/spells/">Spells</a></li>
@@ -3530,7 +3543,7 @@
 </ul>
 </li>
 <li>
-<p><span class="fh-card-hero"><img src="assets/img/card-world.jpg" alt="World"><span class="fh-card-title">World</span></span></p>
+<p><span class="fh-card-hero"><img src="../assets/img/card-world.jpg" alt="World"><span class="fh-card-title">World</span></span></p>
 <ul>
 <li><a href="../chapters/primordial-forces/">Primordial Forces</a></li>
 </ul>
