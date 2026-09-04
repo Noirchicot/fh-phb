@@ -485,7 +485,32 @@
 }
 
 /* ---- cover: title overlaid on the banner image ---- */
-.md-typeset .fh-cover { position: relative; margin: 0 0 1.2rem; }
+/* ── LE BANDEAU PREND TOUTE LA LARGEUR DE L'ÉCRAN ──────────────────────────
+   Eric, 2026-09-04 : « prends tout l'écran en largeur ». Il remplissait déjà la
+   colonne de contenu (1188) depuis la correction du `<p>` ; ici il sort des
+   conteneurs de Material et va d'un bord à l'autre de la fenêtre.
+   ⭐ `50%` se mesure sur le PARENT, `50vw` sur la FENÊTRE : leur différence annule
+      exactement toutes les marges empilées du thème, quelle que soit la profondeur
+      et le point de rupture. Aucun chiffre de gabarit n'est recopié ici — donc rien
+      à remettre à jour le jour où Material change ses marges. Une cote calculée par
+      la page bat une cote relevée à la main.
+   ⚠️ Une barre de défilement CLASSIQUE (Windows, Linux) rend `100vw` plus large que
+      la zone visible. Mesuré à 375 et à 1280 : débordement horizontal nul. Si ça
+      déborde un jour, la parade est `overflow-x: clip` sur `body` — ⛔ jamais
+      `hidden`, qui casserait les collages `sticky` du thème. */
+.md-typeset .fh-cover {
+  position: relative;
+  margin: 0 calc(50% - 50vw) 1.2rem;
+  max-width: none;
+}
+/* Au bord de l'écran, l'arrondi et les filets latéraux n'ont plus de bord où se
+   poser — ils dessineraient un cadre coupé. Le filet du bas reste : il sépare
+   l'image du texte. */
+.md-typeset .fh-cover .fh-banner {
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+}
 .md-typeset .fh-cover .fh-banner { margin: 0; }
 .md-typeset .fh-cover::after {
   content: none;
