@@ -1,11 +1,18 @@
-# Classes
+# Classes & Subclasses
 
 
 Your class is the training your character carries: what they reached for when
 things went wrong, and got good at. You choose it once, at the start, and it
-grows with you for twenty levels. Everything else about your character — where
-they came from, what they own, what they believe — is decided elsewhere. This
-chapter is only the training.
+grows with you for twenty levels.
+
+Around level 3 it asks you a second question. Not *what did you train in* — that
+is settled — but *what did you become inside it*. Your **subclass** is that
+answer: a smaller set of features laid over the ones you already have, and the
+reason two characters of the same class stop looking alike at the table. It
+lives at the end of its class page, so you meet it at the level you need it.
+
+Everything else about your character — where they came from, what they own, what
+they believe — is decided elsewhere. This chapter is only the training.
 
 ### What you will find on a class page
 
