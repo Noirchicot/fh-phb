@@ -18,7 +18,7 @@
         ["4. The Chaos Effect", "4-the-chaos-effect"],
         ["5. Arcane Awakening", "5-arcane-awakening"]
       ]},
-      { slug: "classes", title: "Class Modifications", items: [
+      { slug: "classes", title: "Classes & Subclasses", items: [
         ["Rogue", "rogue"],
         ["Fighter, Ranger & Paladin", "fighter-ranger-paladin"],
         ["Monk", "monk"],
