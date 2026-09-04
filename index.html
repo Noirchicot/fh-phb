@@ -89,11 +89,6 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
-        
-        <a href="#fates-hand-players-handbook" class="md-skip">
-          Skip to content
-        </a>
-      
     </div>
     <div data-md-component="announce">
       
@@ -257,8 +252,6 @@
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
-      
-        
       
       
       <a href="." class="md-nav__link md-nav__link--active">
@@ -3394,8 +3387,6 @@
   
   
   
-    
-  
   
 </nav>
                   </div>
@@ -3414,10 +3405,19 @@
 
 
 
+<!-- ⛔ PAS d'attribut `markdown` sur ce bloc, et c'est la correction du 2026-09-04.
+     Avec `markdown`, l'image écrite en syntaxe Markdown est enveloppée dans un `<p>`,
+     et le `<p>` porte la mesure de lisibilité de la PROSE — `.md-typeset p { max-width: 65ch }`,
+     soit 639 px à 17 px. Le bandeau sortait donc à 639 px dans 1188 disponibles, collé à
+     gauche. Une image n'est pas de la prose : elle n'a rien à faire dans la mesure du texte.
+     🔴 C'est exactement le défaut du LOT 113 (le bouton de reprise, 639 px pour 1188), même
+     cause et même remède — l'attribut `markdown` retiré, l'élément redevient lui-même. -->
 <div class="fh-cover">
-<p><img alt="Fate's Hand — a hand of fate over the Demon Forest" class="fh-banner" src="assets/img/cover-fates-hand.jpg" /></p>
-<h1 class="fh-cover-title" id="fates-hand-players-handbook">Fate's Hand — Player's Handbook<a class="headerlink" href="#fates-hand-players-handbook" title="Permanent link">&para;</a></h1>
+  <img class="fh-banner" src="assets/img/cover-fates-hand.jpg"
+       alt="Fate's Hand — a hand of fate over the Demon Forest">
+  <h1 class="fh-cover-title">Fate's Hand — Player's Handbook</h1>
 </div>
+
 <div class="fh-home-intro">
 <p><span class="fh-sub">House rules for the Fate's Hand 5+ system — an expansion of <strong>D&amp;D 2024</strong>.</span></p>
 <p>A fast rules reference at the table, a guided character builder, and one compact place for the Fate's Hand systems that D&amp;D Beyond does not track.</p>
