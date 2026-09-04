@@ -3,6 +3,18 @@ title: Rules Reference
 hide:
   - toc
 ---
+<!-- 🔴 LES CHEMINS D'IMAGE PORTENT `../`, ET CE N'EST PAS DÉCORATIF.
+     Corrigé le 2026-09-04, Eric : « répare les images, qui ne sont plus connectées ».
+     ⚠️ MkDocs réécrit les chemins relatifs des images écrites en MARKDOWN, jamais
+        ceux d'un `src=` en HTML brut. Ces quatre cartes vivaient sur `index.md`
+        (servi à `/`, donc `assets/…` tombait juste) ; le LOT 113 les a déplacées
+        ici, sur une page servie à `/rules/` — et `assets/…` y cherchait
+        `/rules/assets/…`. Mesuré en ligne avant réparation : HTTP 404 sur les
+        quatre, HTTP 200 sur le même fichier à la racine.
+     ⛔ Un déplacement de bloc ne déplace pas ce qui rendait ses chemins justes.
+        Aucun test n'a rougi : le fichier existait, la page se construisait, le
+        lien était simplement résolu ailleurs.
+     📌 Si cette page change un jour de profondeur, ces `../` changent avec elle. -->
 
 ## Rules Reference { #rules-reference .fh-section-title }
 
@@ -10,7 +22,7 @@ hide:
 
 <div class="grid cards fh-toc fh-rules-grid" markdown>
 
--   <span class="fh-card-hero"><img src="assets/img/card-playing.jpg" alt="Build a Character"><span class="fh-card-title">Build a Character</span></span>
+-   <span class="fh-card-hero"><img src="../assets/img/card-playing.jpg" alt="Build a Character"><span class="fh-card-title">Build a Character</span></span>
 
     - [**Guided Character Builder**](https://noirchicot.github.io/fhpc/ui/builder/){ .fh-hot data-fh-widget }
     - [1 · Identity](chapters/identity.md)
@@ -23,7 +35,7 @@ hide:
     - [7 · Skills](chapters/skills-and-tools.md)
     - [8 · Equipment](chapters/equipment.md)
 
--   <span class="fh-card-hero"><img src="assets/img/card-tools.jpg" alt="At the Table"><span class="fh-card-title">At the Table</span></span>
+-   <span class="fh-card-hero"><img src="../assets/img/card-tools.jpg" alt="At the Table"><span class="fh-card-title">At the Table</span></span>
 
     - [**Player Companion**](player.md){ .fh-hot }
     - [Leveling up](chapters/leveling-up.md)
@@ -34,7 +46,7 @@ hide:
     - [Combat & Battlefield](chapters/battlefield.md)
     - [Exploration](chapters/dungeoneering.md)
 
--   <span class="fh-card-hero"><img src="assets/img/card-magic.jpg" alt="Magic and Soulforging"><span class="fh-card-title">Magic &amp; Soulforging</span></span>
+-   <span class="fh-card-hero"><img src="../assets/img/card-magic.jpg" alt="Magic and Soulforging"><span class="fh-card-title">Magic &amp; Soulforging</span></span>
 
     - [Magic](chapters/magic.md)
     - [Spells](chapters/spells.md)
@@ -45,7 +57,7 @@ hide:
         - [Soulforge Workshop](soulforge.md)
     - [Magic Items](chapters/magic-items.md)
 
--   <span class="fh-card-hero"><img src="assets/img/card-world.jpg" alt="World"><span class="fh-card-title">World</span></span>
+-   <span class="fh-card-hero"><img src="../assets/img/card-world.jpg" alt="World"><span class="fh-card-title">World</span></span>
 
     - [Primordial Forces](chapters/primordial-forces.md)
 
