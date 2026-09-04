@@ -836,7 +836,12 @@
   font: .57rem/1.2 "Scaly Sans", system-ui, sans-serif;
 }
 .fh-difference {
-  margin: -1rem 0 2rem;
+  /* ⚠️ Le `-1rem` d'avant n'était pas un réglage esthétique : il rattrapait la
+     marge du paragraphe qui le PRÉCÉDAIT en bas de page. Le bloc a remonté sous
+     le bandeau le 2026-09-04 ; la raison du chiffre est restée en bas avec sa
+     place. Une valeur qui compense un voisin déménage avec ce voisin, ou elle
+     ment. Ici, plus rien à rattraper : le bandeau porte déjà sa marge basse. */
+  margin: 0 0 2rem;
   padding: 1rem;
   border: 1px solid var(--fh-rule);
   border-left: 3px solid var(--fh-red);
