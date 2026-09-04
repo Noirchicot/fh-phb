@@ -3,150 +3,87 @@
    2. Destiny-group cross TOC: on the three Destiny System pages, the TOC
       lists all three chapter H1s with their key H2s; the current page's
       native TOC is nested under its own H1. */
+/* Fate's Hand — le menu de la marge droite.
+
+   🔴 CE QUI A ÉTÉ RETIRÉ ICI, ET POURQUOI. Ce fichier portait une table `GROUPS`
+      écrite à la main qui doublait l'arborescence du site : chaque page, chacun
+      de ses titres, chacune de ses ancres, recopiés. Audit du 2026-09-04 contre
+      les ancres du site CONSTRUIT : 12 ancres mortes sur 26 entrées, dont les
+      CINQ du groupe Destiny, et un libellé périmé. Rien ne rougissait — une
+      ancre morte ne casse pas une page, elle mène ailleurs.
+
+   ⭐ CE QUI LA REMPLACE. `window.FH_NAV`, écrit par `build_nav.py`, dérivé du
+      `nav:` de mkdocs.yml et des titres de `docs/`. Aucun nom n'est recopié,
+      aucune ancre n'est devinée : un titre Markdown passe par le `slugify` de
+      Python-Markdown (celui que MkDocs emploie), un titre HTML porte déjà son
+      `id`. Épreuve à la génération : 586 ancres confrontées au site construit,
+      zéro introuvable.
+
+   📐 LES RANGS SONT CEUX D'ERIC (2026-09-04) : `R` un menu racine, `B` une page,
+      `SB` une page-fille, et les titres d'une page en dessous. ⛔ Un rang dit une
+      PROFONDEUR, jamais le nom d'une page.
+
+   ⭐ CE QU'ON VOIT AU PREMIER COUP D'ŒIL : les menus racine, repliés. Seul celui
+      où l'on se trouve s'ouvre, et dedans seule la page courante détaille ses
+      titres. Eric : « ne présenter au premier coup d'oeil que les menus non
+      developpés du dessus, en dessous un détail de ce qui est dans chaque page ». */
 (function () {
-  /* Each entry is one nav group: its pages' H1s + their key H2s, so the TOC
-     of any page lets you jump to every H1/H2 in the group. */
-  var GROUPS = [
-    [ /* Build a Character */
-      { slug: "identity", title: "Identity", items: [] },
-      { slug: "species", title: "Species", items: [] },
-      { slug: "inheritance", title: "Inheritance", items: [] },
-      { slug: "fates-hand-mechanic", title: "Destiny System", items: [
-        ["1. Destiny Score, Points & Dice", "1-destiny-score-points-dice"],
-        ["2. Recovery & Erosion", "2-recovery-erosion"],
-        ["3. Using Destiny Dice", "3-using-destiny-dice"],
-        ["4. The Chaos Effect", "4-the-chaos-effect"],
-        ["5. Arcane Awakening", "5-arcane-awakening"]
-      ]},
-      { slug: "classes", title: "Classes & Subclasses", items: [
-        ["Rogue", "rogue"],
-        ["Fighter, Ranger & Paladin", "fighter-ranger-paladin"],
-        ["Monk", "monk"],
-        ["Rogue — Silent Blade", "rogue"]
-      ]},
-      { slug: "moonkeeper", title: "Moonkeeper", items: [
-        ["Level 3 — Lunar Embodiment", "level-3-lunar-embodiment"],
-        ["Level 6", "level-6"],
-        ["Level 14", "level-14"],
-        ["Level 18", "level-18"]
-      ]},
-      { slug: "college-of-banners", title: "College of Banners", items: [
-        ["Level 3 — Tactical Precision", "level-3"],
-        ["Level 6 — Extra Attack", "level-6"],
-        ["Level 14 — Steady Voice", "level-14"]
-      ]},
-      { slug: "silent-blade", title: "Silent Blade", items: [
-        ["Level 3 — First Blood", "level-3"],
-        ["Level 9 — Deep Cut", "level-9"],
-        ["Level 13 — Wider Opening", "level-13"],
-        ["Level 17 — One Shot", "level-17"]
-      ]},
-      { slug: "spell-rigger", title: "Spell Rigger", items: [
-        ["Level 3 — Spellcasting", "level-3"],
-        ["Level 9 — Quiet Casting", "level-9"],
-        ["Level 17 — Catch the Spell", "level-17"]
-      ]},
-      { slug: "ability-scores", title: "Rolling Ability Scores", items: [
-        ["The 3d6 × 10 method", "the-3d6-10-method"],
-        ["Why roll?", "why-roll"],
-        ["3d6 probability", "3d6-probability"]
-      ]},
-      { slug: "skills-and-tools", title: "Skills & Tools", items: [
-        ["1. The quick version", "1-the-quick-version"],
-        ["2. Building at character creation", "2-building-at-character-creation"],
-        ["3. Levelling up & evolution", "3-levelling-up-evolution"],
-        ["4. The 26 Skills", "4-the-26-skills"],
-        ["5. The Tools", "5-the-tools"],
-        ["6. Key reminders", "6-key-reminders"],
-        ["7. Detailed notes on complex skills", "7-detailed-notes-on-complex-skills"]
-      ]},
-      { slug: "equipment", title: "Equipment", items: [] }
-    ],
-    [ /* At the Table */
-      { slug: "leveling-up", title: "Leveling up", items: [] },
-      { slug: "feats", title: "Feats", items: [
-        ["Skill feats", "skill-feats"],
-        ["Combat feats", "combat-feats"],
-        ["Command feats", "command-feats"],
-        ["Soulforge feats", "soulforge-feats"]
-      ]},
-      { slug: "trainings", title: "Trainings", items: [] },
-      { slug: "skills-synergies", title: "Synergies", items: [
-        ["Overview", "overview"],
-        ["How Much You Get", "how-much-you-get"],
-        ["Examples", "examples"],
-        ["Tips for Players", "tips-for-players"]
-      ]},
-      { slug: "battlefield", title: "Battlefield", items: [
-        ["Combat ranges", "combat-ranges"],
-        ["Surprise", "surprise"],
-        ["Strategy", "strategy"],
-        ["Fatigue", "fatigue"],
-        ["Falling in combat or Dying", "falling-in-combat-or-dying"],
-        ["Grappling-range maneuvers", "grappling-range-maneuvers"]
-      ]},
-      { slug: "dungeoneering", title: "Dungeoneering", items: [] }
-    ],
-    [ /* Magic & Soulforging */
-      { slug: "magic", title: "Magic", items: [] },
-      { slug: "spells", title: "New Spells", items: [
-        ["Bless", "bless"],
-        ["Guidance", "guidance"],
-        ["Appease the Chaos", "appease-the-chaos"],
-        ["Devil-Vision", "devil-vision"],
-        ["Consecration", "consecration"],
-        ["Transfer Essence", "transfer-essence"],
-        ["Identify", "identify"],
-        ["Gentle Repose", "gentle-repose"]
-      ]},
-      { slug: "dark-rituals", title: "Dark Rituals", items: [
-        ["How a ritual resolves", "1-how-a-ritual-resolves-the-template"],
-        ["The Rituals", "2-the-rituals"]
-      ]},
-      { slug: "crafting", title: "Crafting", items: [] },
-      { slug: "soulforge-crafting", title: "Soulforging", items: [
-        ["Power Budget & Item Equilibrium", "power-budget-item-equilibrium"],
-        ["The four phases", "the-four-phases"],
-        ["Soulforge mishaps & boons", "soulforge-mishaps-boons"],
-        ["Growing an item", "growing-an-item-evolve-never-replace"],
-        ["Attunement & reanimation", "attunement-reanimation"],
-        ["Body Forging", "body-forging-fuse-a-gem-into-your-flesh"],
-        ["Appendix — components", "appendix-components-by-creature-type"]
-      ]},
-      { slug: "magic-items", title: "Magic Items", items: [
-        ["Harvest Chalice", "harvest-chalice"]
-      ]}
-    ],
-    [ /* World */
-      { slug: "primordial-forces", title: "Primordial Forces", items: [
-        ["Part 1 — The White Void", "part-1-the-white-void"],
-        ["Part 2 — The Crimson Shroud", "part-2-the-crimson-shroud"]
-      ]}
-    ],
-    [ /* The Dungeon Masters' Secrets */
-      { slug: "chaos-tables", title: "Chaos Tables", items: [
-        ["The Chaos Tables", "the-chaos-tables"]
-      ]}
-    ]
-  ];
-  /* landing-card title for each group (shown under the TOC) */
-  GROUPS[0].name = "Build a Character";
-  GROUPS[1].name = "At the Table";
-  GROUPS[2].name = "Magic & Soulforging";
-  GROUPS[3].name = "World";
-  GROUPS[4].name = "The Dungeon Masters' Secrets";
+  var NAV = window.FH_NAV || [];
+
+  function elt(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+
+  /* La racine du site, lue sur le logo : le livre vit sous /fh-phb/, jamais à
+     la racine du domaine. ⛔ Ne pas écrire ce préfixe en dur — il changerait le
+     jour d'un domaine propre, et personne ne se souviendrait de ce fichier. */
+  function base() {
+    var logo = document.querySelector(".md-header__button.md-logo");
+    return logo ? logo.href.replace(/[^/]*$/, "") : "/";
+  }
+
+  /* Où sommes-nous ? On compare les URL de l'arbre au chemin courant, et on
+     garde la PLUS LONGUE qui corresponde : `chapters/classes/` et
+     `chapters/classes/sorcerer/` matchent tous deux la seconde. */
+  function situer(path) {
+    var trouve = null;
+    NAV.forEach(function (r) {
+      r.pages.forEach(function (p) {
+        if (p.url && path.indexOf("/" + p.url) !== -1)
+          if (!trouve || p.url.length > trouve.page.url.length) trouve = {racine: r, page: p, fille: null};
+        (p.filles || []).forEach(function (sb) {
+          if (sb.url && path.indexOf("/" + sb.url) !== -1)
+            if (!trouve || sb.url.length > (trouve.fille ? trouve.fille.url.length : trouve.page.url.length))
+              trouve = {racine: r, page: p, fille: sb};
+        });
+      });
+    });
+    return trouve;
+  }
+
+  function listeTitres(url, titres, limite) {
+    if (!titres || !titres.length) return null;
+    var ul = elt("ul", "md-nav__list fh-group__subs");
+    titres.forEach(function (t) {
+      if (limite && t.n > limite) return;
+      var li = elt("li", "md-nav__item");
+      var a = elt("a", "md-nav__link fh-nav__t" + t.n, t.titre);
+      a.href = base() + url + "#" + t.ancre;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    return ul.children.length ? ul : null;
+  }
 
   document.addEventListener("DOMContentLoaded", function () {
-    /* landing page (has the contents cartouche) → hide the header bar */
-    if (document.querySelector(".fh-toc")) {
-      document.body.classList.add("fh-home-page");
-    }
+    if (document.querySelector(".fh-toc")) document.body.classList.add("fh-home-page");
 
-    /* floating ⌂ button back to the menu — mobile, where the TOC is hidden */
     var logoBtn = document.querySelector(".md-header__button.md-logo");
     if (!document.querySelector(".fh-toc")) {
-      var fab = document.createElement("a");
-      fab.className = "fh-home--fab";
+      var fab = elt("a", "fh-home--fab");
       fab.href = logoBtn ? logoBtn.href : "/";
       fab.setAttribute("aria-label", "Home");
       fab.innerHTML = "&#8962;";
@@ -156,71 +93,69 @@
     var toc = document.querySelector(".md-sidebar--secondary .md-nav--secondary");
     if (!toc) return;
 
-    /* 1 — ⌂ Home pill. A page-level breadcrumb already provides the same
-       action on the few utility pages that define one explicitly. */
-    var logo = document.querySelector(".md-header__button.md-logo");
     if (!document.querySelector("main .fh-home")) {
-      var homeLink = document.createElement("a");
-      homeLink.className = "fh-home fh-home--toc";
-      homeLink.href = logo ? logo.href : "/";
+      var homeLink = elt("a", "fh-home fh-home--toc");
+      homeLink.href = logoBtn ? logoBtn.href : "/";
       homeLink.innerHTML = "&#8962; Home";
       toc.insertBefore(homeLink, toc.firstChild);
     }
 
-    /* 2 — group cross TOC (lists every sibling H1 + its H2s) */
-    var path = window.location.pathname;
-    var GROUP = null, current = null;
-    GROUPS.forEach(function (g) {
-      g.forEach(function (p) {
-        if (path.indexOf("/" + p.slug + "/") !== -1) { GROUP = g; current = p; }
-      });
-    });
-    if (!current) return;
+    var ici = situer(window.location.pathname);
+    if (!ici) return;
 
-    var nativeList = toc.querySelector("ul.md-nav__list");
-    var group = document.createElement("ul");
-    group.className = "md-nav__list fh-group";
+    var natif = toc.querySelector("ul.md-nav__list");
+    if (natif) natif.remove();          /* l'arbre le remplace entièrement */
 
-    GROUP.forEach(function (p) {
-      var li = document.createElement("li");
-      li.className = "md-nav__item";
-      var a = document.createElement("a");
-      a.className = "md-nav__link fh-group__h1" +
-                    (p === current ? " fh-group__h1--current" : "");
-      a.href = (p === current) ? "#" : "../" + p.slug + "/";
-      a.textContent = p.title;
-      li.appendChild(a);
+    var arbre = elt("ul", "md-nav__list fh-nav");
 
-      if (p === current && nativeList) {
-        nativeList.classList.add("fh-group__subs");
-        li.appendChild(nativeList);           /* full native TOC nests here */
-      } else {
-        var ul = document.createElement("ul");
-        ul.className = "md-nav__list fh-group__subs";
-        p.items.forEach(function (it) {
-          var sli = document.createElement("li");
-          sli.className = "md-nav__item";
-          var sa = document.createElement("a");
-          sa.className = "md-nav__link";
-          sa.href = "../" + p.slug + "/#" + it[1];
-          sa.textContent = it[0];
-          sli.appendChild(sa);
-          ul.appendChild(sli);
+    NAV.forEach(function (r) {
+      if (!r.pages.length) return;
+      var courante = (r === ici.racine);
+      var liR = elt("li", "md-nav__item fh-nav__r" + (courante ? " fh-nav__r--ouvert" : ""));
+      var aR = elt("a", "md-nav__link fh-group__h1", r.titre);
+      aR.href = base() + (r.pages[0].url || "");
+      liR.appendChild(aR);
+
+      /* ⛔ UN MENU REPLIÉ NE REND PAS SES ENFANTS. Les masquer en CSS les
+         laisserait dans le document — lus par la recherche du navigateur et par
+         un lecteur d'écran, alors qu'ils ne sont pas là pour l'œil. */
+      if (courante) {
+        var ulB = elt("ul", "md-nav__list fh-group__subs");
+        r.pages.forEach(function (p) {
+          var estIci = (p === ici.page);
+          var liB = elt("li", "md-nav__item fh-nav__b" + (estIci ? " fh-nav__b--ici" : ""));
+          var aB = elt("a", "md-nav__link fh-nav__lien" + (estIci ? " fh-group__h1--current" : ""), p.titre);
+          aB.href = base() + p.url;
+          liB.appendChild(aB);
+
+          if (estIci) {
+            var t = listeTitres(p.url, p.titres, 3);
+            if (t) liB.appendChild(t);
+            if (p.filles && p.filles.length) {
+              var ulSB = elt("ul", "md-nav__list fh-group__subs");
+              p.filles.forEach(function (sb) {
+                var estFille = (ici.fille === sb);
+                var liSB = elt("li", "md-nav__item fh-nav__sb" + (estFille ? " fh-nav__b--ici" : ""));
+                var aSB = elt("a", "md-nav__link fh-nav__lien" + (estFille ? " fh-group__h1--current" : ""), sb.titre);
+                aSB.href = base() + sb.url;
+                liSB.appendChild(aSB);
+                if (estFille) {
+                  var ts = listeTitres(sb.url, sb.titres, 4);
+                  if (ts) liSB.appendChild(ts);
+                }
+                ulSB.appendChild(liSB);
+              });
+              liB.appendChild(ulSB);
+            }
+          }
+          ulB.appendChild(liB);
         });
-        li.appendChild(ul);
+        liR.appendChild(ulB);
       }
-      group.appendChild(li);
+      arbre.appendChild(liR);
     });
-    toc.appendChild(group);
 
-    /* chapter's landing-card title, at the top of the TOC (under ⌂ Home) */
-    if (GROUP.name) {
-      var cap = document.createElement("a");
-      cap.className = "fh-group__card";
-      cap.href = (logo ? logo.href : "/");
-      cap.textContent = GROUP.name;
-      toc.insertBefore(cap, group);
-    }
+    toc.appendChild(arbre);
   });
 
   /* Fast rules lookup during play: / and Ctrl/Cmd+K open and focus Material's

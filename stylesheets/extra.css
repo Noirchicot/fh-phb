@@ -1973,3 +1973,29 @@ body { overflow-x: clip; }
 }
 .fh-home-bible a { text-decoration: none; border-bottom: 1px solid currentColor; }
 .fh-home-bible b { font-weight: 600; }
+
+/* ══ LE MENU DE MARGE, ARBRE DÉRIVÉ — 2026-09-04 ═══════════════════════════
+   Rangs d'Eric : `R` un menu racine · `B` une page · `SB` une page-fille · puis
+   les titres de la page. Le rang se lit à l'indentation et au poids, pas à une
+   étiquette : ⛔ « R » et « B » ne s'écrivent JAMAIS à l'écran, ce sont des
+   profondeurs, pas des noms.
+   ⭐ Au premier coup d'œil : les menus racine, repliés. Seul celui où l'on est
+      s'ouvre. Le repli est fait en JS (les enfants ne sont pas rendus), pas en
+      CSS — un `display:none` les laisserait dans le document, trouvables par la
+      recherche du navigateur et lus par un lecteur d'écran. */
+.md-nav .fh-nav { margin: .2rem 0 0; }
+.md-nav .fh-nav > .fh-nav__r > .fh-group__h1 {
+  font-family: "Mr Eaves", var(--md-text-font-family), sans-serif;
+  font-variant: small-caps; letter-spacing: .04em;
+  font-size: var(--t-small); font-weight: 600;
+  padding: .18rem 0; opacity: .72;
+}
+.md-nav .fh-nav > .fh-nav__r--ouvert > .fh-group__h1 { opacity: 1; color: var(--fh-gold); }
+.md-nav .fh-nav .fh-group__subs { margin-left: .55rem; border-left: 1px solid var(--fh-rule); padding-left: .5rem; }
+.md-nav .fh-nav .fh-nav__lien { font-size: var(--t-small); padding: .12rem 0; }
+.md-nav .fh-nav .fh-nav__b > .fh-nav__lien { font-weight: 500; }
+.md-nav .fh-nav .fh-nav__sb > .fh-nav__lien { opacity: .88; }
+/* les titres DANS une page : plus discrets à mesure qu'on descend */
+.md-nav .fh-nav .fh-nav__t2 { font-size: var(--t-micro); opacity: .9; }
+.md-nav .fh-nav .fh-nav__t3 { font-size: var(--t-micro); opacity: .72; }
+.md-nav .fh-nav .fh-nav__t4 { font-size: var(--t-micro); opacity: .6; }
