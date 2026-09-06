@@ -254,8 +254,8 @@ itself — Push sends it back, Topple puts it down.
 
 ### Who gets to use them
 
-Mastery is granted by a class feature, and Fate's Hand does not change it.
-Five classes open it. Which five, how many weapons each covers at a time, and what each may
+Mastery is granted by a class feature, and Fate's Hand changes it in exactly one place, named at
+the end of this section. Five classes open it. Which five, how many weapons each covers at a time, and what each may
 choose from are not Fate's Hand decisions, and all of it is
 below rather than in another book.
 
@@ -278,6 +278,11 @@ kinds of weapon, not different ones — and you may swap which ones after a Long
 <dd><em>19 weapons to choose from</em> — Club, Dagger, Dart, Greatclub, Hand Crossbow, Handaxe, Javelin, Light Crossbow, Light Hammer, Mace, Quarterstaff, Rapier, Scimitar, Shortbow, Shortsword, Sickle, Sling, Spear, Whip</dd>
 </dl>
 </div>
+
+**The sixth door** <span class="fh-tag">FH</span> — a **subclass** opens mastery too: the bard of the
+[College of Banners](college-of-banners.md) gains it with one kind of weapon at level 3, a second at 6 and a third at 14.
+It is the only place where mastery is not handed down by the class itself, and the only way a bard
+reaches it at all.
 
 ## What you start with
 

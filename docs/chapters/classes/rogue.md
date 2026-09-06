@@ -137,6 +137,16 @@ A rogue doesn't overpower a fight, they end it early—one clean opening turns a
 > first bound budget large enough to buy an **Expert** and still have something left, which is why
 > the Rogue is the only class whose printed layout reaches past Novice. *(The layouts are in
 > [Skills & Tools — Player Guide](../skills-and-tools.md).)*
+>
+> **Two subclasses more than the base game** <span class="fh-tag">FH</span> — beside the roguish archetypes printed above,
+> Fate's Hand adds two, and both carry an entry price:
+>
+> - the **[Silent Blade](../silent-blade.md)** — the rogue who ends it in the first round, with a wire in one hand and
+>   a dagger in the other. **Adept in Stealth and Adept in Hunting**, and it is the only subclass
+>   that hands you a **training**, the [Garrot](../trainings.md#what-is-a-training), for free.
+> - the **[Spell Rigger](../spell-rigger.md)** — the rogue who scribed what they stole, and casts it from behind.
+>   **Novice with Calligrapher's supplies, Adept in Arcana, Novice in Academics**, and it is the only
+>   subclass that turns a spell into a Sneak Attack.
 
 >
 > **Two subclasses more than the base game** <span class="fh-tag">FH</span> — beside the roguish archetypes printed above,

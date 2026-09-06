@@ -59,7 +59,7 @@ purse replaces what a background used to hand out.
 > The 50 gp ADD to the gold already in your kit. A Barbarian taking option A ends up with
 > 65 gp, not 50.
 
-## Late Bloomer — the trait the dice can grant you ⏳ *(name under review)*
+## Late Bloomer — the trait the dice can grant you
 
 If no natural roll reached 14 when you generated your abilities — the high floor had to step
 in, which happens to 17 % of characters — your Inheritance carries **Late Bloomer**:

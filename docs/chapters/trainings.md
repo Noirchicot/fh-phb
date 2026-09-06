@@ -24,7 +24,7 @@ found it.
 | Training | Cost when bought | |
 |---|---|---|
 | **A language** | 1 point | Free at level 1 *inside your species*. Any language learned afterwards is bought like anything else. |
-| **The Garrot** | 1 point | Free for an Assassin at level 3 — a class feature, so the level-4 gate does not apply. |
+| **The Garrot** | 1 point | Free for a [Silent Blade](silent-blade.md) at level 3 — a class feature, so the level-4 gate does not apply. |
 | **Certain exotic weapons** | — | ⏳ Announced, not yet in the inventory. |
 
 A training is not a tool. Thieves' tools are a *tool*: you have a tier in them and you
