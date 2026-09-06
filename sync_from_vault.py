@@ -1556,6 +1556,55 @@ CHAPTER_GENRES = {
 # 🔴 SON ABSENCE NE SE DÉDUIT PAS EN SILENCE — c'est la leçon du 20/08. Tant
 #    qu'il manque, le menu dit ce qu'il PEUT prouver et ne prétend rien sur ce
 #    que FH change ; la passe l'annonce à l'écran.
+# ── LE TROISIÈME ÉTAT : LE CHAPITRE MIXTE, DÉCLARÉ FAUTE D'ÊTRE MESURABLE ───
+# Eric, 2026-09-06 : « on récrit à notre sauce et on cite en pied de page, as
+# usual, ce qui change du SRD, et les refs habituelles tout en bas. »
+#
+# 🔴 CE QUI S'EST CASSÉ. `ability-scores.md` portait `[]`, donc « entirely
+#    Fate's Hand ». Le 06/09 le chapitre a reçu `4d6` et le tableau standard —
+#    DEUX méthodes du jeu de base (SRD 5.2.1, p. 21, relu dans le PDF source le
+#    même jour). Le bandeau annonçait donc, noir sur blanc, une chose fausse.
+#
+# ⛔ ET LA MESURE NE PEUT PAS LE RATTRAPER. `fh-changes.json` compte des
+#    RECORDS, par genre — et une caractéristique n'est pas un genre : les
+#    exports du SRD n'en portent aucun (`skill`, `feat`, `spell`, `tool`… ;
+#    aucun `ability`, vérifié). Glisser un genre voisin dans `CHAPTER_GENRES`
+#    pour faire taire le bandeau lui ferait annoncer un nombre qui ne parle pas
+#    du sujet de la page. Un chiffre faux est pire qu'une case vide.
+#
+# ⭐ D'OÙ LE TROISIÈME ÉTAT : ce que la mesure ne peut pas prouver, le chapitre
+#    le DÉCLARE — ici, dans la machinerie, à un seul endroit, et le pied du
+#    bandeau dit franchement que c'est déclaré et non mesuré. Ce n'est pas le
+#    retour du rappel écrit à la main condamné le 20/08 : ce qui pourrissait,
+#    c'est un rappel qui PRÉTENDAIT refléter des données changeantes. Ces
+#    lignes-ci ne bougent que si Eric change une règle de sa propre page.
+#
+# 📌 Format d'une ligne : (sujet, classe du verdict, verdict, détail) — c'est
+#    exactement le <li> du bandeau mesuré, donc le même rendu que `crafting` et
+#    `feats`. Aucune classe CSS nouvelle : le format ne se négocie pas.
+# ⛔ Ce qui n'est PAS ici et qui n'y entrera pas sans un mot d'Eric : le
+#    Point Cost du jeu de base. Le builder ne l'offre pas, et son propre
+#    commentaire dit pourquoi — « question posée à Eric, toujours ouverte ».
+#    Un pied de page qui l'annoncerait « retiré » trancherait à sa place.
+CHAPTER_STATED = {
+    "ability-scores.md": [
+        ("3d6 × 10", "added", "Fate’s Hand only",
+         "ten rolls, six kept, two floors and no reroll, plus the Late Bloomer trait "
+         "that hangs off the high floor. The base game has no such method."),
+        ("free assignment", "added", "Fate’s Hand only",
+         "sixteen values, 3 to 18, in a pool that never empties. "
+         "The base game has no such method."),
+        ("4d6 drop lowest", "same", "borrowed as-is",
+         "the base game’s random option, dice untouched — SRD 5.2.1, p. 21."),
+        ("standard array", "same", "borrowed as-is",
+         "the base game’s six numbers, 15, 14, 13, 12, 10, 8 — SRD 5.2.1, p. 21."),
+        ("around those two", "patched", "changes 2",
+         "Inheritance points go on <b>any</b> abilities, where the base game’s background "
+         "increases name three · at creation an ability tops out at <b>18</b>, all bonuses "
+         "included, where the base game allows 20."),
+    ],
+}
+
 FH_CHANGES = SRD_ROOT.parent / "fhpc" / "exports" / "fh-changes.json"
 _CHANGES_CACHE = {}
 
@@ -1585,7 +1634,11 @@ def chapter_banner(dest):
     if dest not in CHAPTER_GENRES:
         return ""
     genres = CHAPTER_GENRES[dest]
-    if not genres:
+    declare = CHAPTER_STATED.get(dest) or []
+    # ⭐ « — » ET RIEN DE DÉCLARÉ : alors seulement le chapitre est tout entier
+    #    d'Eric. Une déclaration suffit à retirer cette phrase, et c'est le
+    #    point : elle ne se dit plus que là où elle est encore vraie.
+    if not genres and not declare:
         return (
             '<nav class="fh-layer fh-layer--own">\n'
             '<p><strong>Entirely Fate\u2019s Hand.</strong> The base game says nothing about this '
@@ -1593,6 +1646,10 @@ def chapter_banner(dest):
         )
     changes = _fh_changes()
     lignes, mesures, tout_vide = [], 0, True
+    for sujet, classe, verdict, detail in declare:
+        lignes.append('<li><span class="fh-layer__genre">%s</span> '
+                      '<span class="fh-layer__%s">%s</span> — %s</li>'
+                      % (html.escape(sujet), classe, html.escape(verdict), detail))
     for g in genres:
         info = (changes or {}).get(g)
         libelle = html.escape(g.replace("-", " "))
@@ -1636,6 +1693,13 @@ def chapter_banner(dest):
     elif mesures:
         out.append('<p class="fh-layer__note">Measured against the base game\u2019s data. Rules this '
                    "chapter states in its own words are not counted here.</p>")
+    if declare:
+        # 🔴 La phrase la plus importante du troisième état : le lecteur doit
+        #    savoir que ces lignes n'ont pas été comptées, mais écrites.
+        out.append('<p class="fh-layer__note"><strong>Stated with the chapter, not measured.</strong> '
+                   "Ability scores are not a kind of record, so the comparison that runs on the other "
+                   "chapters has nothing to weigh here — these lines are declared alongside the rules "
+                   "they describe, and change with them.</p>")
     out.append("</nav>")
     return "\n".join(out) + "\n"
 

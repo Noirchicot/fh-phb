@@ -45,15 +45,19 @@ In Fate's Hand, rolling is the house method: you roll your ability scores, kept 
 > The three sections below describe the `4D6`, `ARRAY` and `FREE` buttons of the character
 > builder. They were written on 2026-09-06 **from the builder's implementation**, because no
 > dictated rule existed for them: every line marked ⚠️ was read in the code and nowhere else.
-> Two calls are Eric's alone, and neither is made here:
-> - `4d6` and the standard array are the **base game's own** methods, while this chapter is
->   declared *entirely Fate's Hand* — they may not belong in this chapter at all;
-> - the opening line above says Fate's Hand rolls *"rather than using Point Buy or the Standard
->   Array"*, and the builder now offers the array.
+>
+> **Settled on 2026-09-06.** `4d6` and the standard array are the **base game's own** methods, and
+> they stay in this chapter: they are retold here in Fate's Hand's words, never copied, and what
+> Fate's Hand changes around them is listed at the foot of the page. The page no longer claims to
+> be entirely Fate's Hand — that claim was true until these sections were written, and is not now.
+>
+> **Still Eric's alone, and not decided here:** whether `FREE` may be offered to anyone, or needs a
+> condition; and whether the base game's **Point Cost** — the one method with no button — should be
+> named on this page at all.
 
 ## The 4d6 method
 
-The builder's `4D6` button. The roll is the base game's own random option (SRD 5.2.1, *Generate Your Scores* — *Random Generation*), and Fate's Hand does not change it.
+The builder's `4D6` button. The roll is the base game's own random option, and Fate's Hand does not change it — the foot of this page says where it comes from and what changes around it.
 
 1. Roll 4d6 and drop the lowest die; the three that remain are your score.
 2. Do this six times — six rolls, six scores. Nothing is set aside, so there is nothing to keep or discard.
@@ -81,7 +85,7 @@ The builder's `4D6` button. The roll is the base game's own random option (SRD 5
 
 ## The standard array
 
-The builder's `ARRAY` button. The six numbers are the base game's standard array (SRD 5.2.1, *Generate Your Scores*), unchanged: **15, 14, 13, 12, 10, 8**.
+The builder's `ARRAY` button. The six numbers are the base game's standard array, unchanged: **15, 14, 13, 12, 10, 8**. The foot of this page says where they come from.
 
 1. You are handed those six scores. Nothing is rolled.
 2. Assign them to whichever abilities you like.
@@ -159,6 +163,14 @@ A single 3d6 roll lands a 17 about 1.39 % of the time and an 18 about 0.46 % —
 
 ---
 
-<nav class="fh-layer fh-layer--own">
-<p><strong>Entirely Fate’s Hand.</strong> The base game says nothing about this subject — every rule on this page is Eric's.</p>
+<nav class="fh-layer">
+<p class="fh-layer__label">What Fate’s Hand does here</p>
+<ul>
+<li><span class="fh-layer__genre">3d6 × 10</span> <span class="fh-layer__added">Fate’s Hand only</span> — ten rolls, six kept, two floors and no reroll, plus the Late Bloomer trait that hangs off the high floor. The base game has no such method.</li>
+<li><span class="fh-layer__genre">free assignment</span> <span class="fh-layer__added">Fate’s Hand only</span> — sixteen values, 3 to 18, in a pool that never empties. The base game has no such method.</li>
+<li><span class="fh-layer__genre">4d6 drop lowest</span> <span class="fh-layer__same">borrowed as-is</span> — the base game’s random option, dice untouched — SRD 5.2.1, p. 21.</li>
+<li><span class="fh-layer__genre">standard array</span> <span class="fh-layer__same">borrowed as-is</span> — the base game’s six numbers, 15, 14, 13, 12, 10, 8 — SRD 5.2.1, p. 21.</li>
+<li><span class="fh-layer__genre">around those two</span> <span class="fh-layer__patched">changes 2</span> — Inheritance points go on <b>any</b> abilities, where the base game’s background increases name three · at creation an ability tops out at <b>18</b>, all bonuses included, where the base game allows 20.</li>
+</ul>
+<p class="fh-layer__note"><strong>Stated with the chapter, not measured.</strong> Ability scores are not a kind of record, so the comparison that runs on the other chapters has nothing to weigh here — these lines are declared alongside the rules they describe, and change with them.</p>
 </nav>
