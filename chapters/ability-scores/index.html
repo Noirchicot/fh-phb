@@ -739,6 +739,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-4d6-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 4d6 method
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-standard-array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The standard array
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#free-assignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Free assignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-roll" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3483,6 +3516,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-4d6-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 4d6 method
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-standard-array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The standard array
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#free-assignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Free assignment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-roll" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3522,7 +3588,7 @@
 
 
 <h1 id="ability-scores">Ability Scores<a class="headerlink" href="#ability-scores" title="Permanent link">&para;</a></h1>
-<p>In Fate's Hand you roll your ability scores rather than using Point Buy or the Standard Array — kept fair by a floor rule, but with the thrill of a possible 17 or 18 at level 1.</p>
+<p>In Fate's Hand, rolling is the house method: you roll your ability scores, kept fair by a floor rule, with the thrill of a possible 17 or 18 at level 1. The builder also offers the base game's own ways — 4d6 drop lowest, and the standard array — plus a free assignment of its own; they are described below.</p>
 <h2 id="the-3d6-10-method">The 3d6 × 10 method<a class="headerlink" href="#the-3d6-10-method" title="Permanent link">&para;</a></h2>
 <div class="admonition tip">
 <p class="admonition-title">Try it live</p>
@@ -3564,6 +3630,108 @@ gives two things:</p>
 Late Bloomer pays for an Expertise if you already hold the skill at <strong>Adept</strong>. Spend them elsewhere
 and stay Adept everywhere — that is yours to decide.</p>
 </div>
+<div class="admonition danger">
+<p class="admonition-title">Draft — the other three methods, awaiting ratification</p>
+<p>The three sections below describe the <code>4D6</code>, <code>ARRAY</code> and <code>FREE</code> buttons of the character
+builder. They were written on 2026-09-06 <strong>from the builder's implementation</strong>, because no
+dictated rule existed for them: every line marked ⚠️ was read in the code and nowhere else.
+Two calls are Eric's alone, and neither is made here:</p>
+<ul>
+<li>
+<p><code>4d6</code> and the standard array are the <strong>base game's own</strong> methods, while this chapter is
+  declared <em>entirely Fate's Hand</em> — they may not belong in this chapter at all;</p>
+</li>
+<li>
+<p>the opening line above says Fate's Hand rolls <em>"rather than using Point Buy or the Standard
+  Array"</em>, and the builder now offers the array.</p>
+</li>
+</ul>
+</div>
+<h2 id="the-4d6-method">The 4d6 method<a class="headerlink" href="#the-4d6-method" title="Permanent link">&para;</a></h2>
+<p>The builder's <code>4D6</code> button. The roll is the base game's own random option (SRD 5.2.1, <em>Generate Your Scores</em> — <em>Random Generation</em>), and Fate's Hand does not change it.</p>
+<ol>
+<li>Roll 4d6 and drop the lowest die; the three that remain are your score.</li>
+<li>Do this six times — six rolls, six scores. Nothing is set aside, so there is nothing to keep or discard.</li>
+<li>Assign the six scores to whichever abilities you like.</li>
+<li>Add your <strong>Inheritance</strong> points — the same step as above.</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">No floors here, and no Late Bloomer</p>
+<p>The two floors belong to the 3d6 × 10 method and to it alone. Your highest is <strong>not</strong> raised to
+14, your lowest is <strong>not</strong> brought down to 8, and an unlucky set stays unlucky.
+Late Bloomer follows the high floor, so this method never grants it.
+⚠️ Read in the implementation, not ratified.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">What Fate's Hand still changes around it</p>
+<p>The dice are the base game's; the two rules that surround them are not.</p>
+<ul>
+<li>
+<p>Your Inheritance points go on <strong>any</strong> abilities you choose — the base game confines its
+  background increases to three named abilities.</p>
+</li>
+<li>
+<p>At creation an ability tops out at <strong>18, all bonuses included</strong> — the base game caps those
+  increases at 20 instead.</p>
+</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">What it averages</p>
+<p>One 4d6-drop-lowest score averages <strong>12.24</strong>, so six of them average <strong>73.5</strong> before Inheritance
+— a shade above the 3d6 × 10 method (<strong>71.8</strong>) and above the standard array (<strong>72</strong>). It pays
+for that with risk: <strong>48.6 %</strong> of sets contain a score of 8 or lower, and in <strong>7.2 %</strong> of sets no
+roll reaches 14 — with no floor to catch either one.</p>
+</div>
+<h2 id="the-standard-array">The standard array<a class="headerlink" href="#the-standard-array" title="Permanent link">&para;</a></h2>
+<p>The builder's <code>ARRAY</code> button. The six numbers are the base game's standard array (SRD 5.2.1, <em>Generate Your Scores</em>), unchanged: <strong>15, 14, 13, 12, 10, 8</strong>.</p>
+<ol>
+<li>You are handed those six scores. Nothing is rolled.</li>
+<li>Assign them to whichever abilities you like.</li>
+<li>Add your <strong>Inheritance</strong> points — the same step as above.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">What it gives</p>
+<p>72 points across six abilities — exactly <strong>12</strong> each on average, and the same total for every
+character at the table. No floor is needed, because nothing can go wrong. Set against <strong>71.8</strong>
+for the 3d6 × 10 method and <strong>73.5</strong> for 4d6, the three sit within two points of one another;
+what separates them is the spread, not the sum.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">No Late Bloomer</p>
+<p>Late Bloomer is handed out by the high floor of the 3d6 × 10 method. Nothing is rolled here, so
+nothing can fall short of 14, and the trait is never granted.
+⚠️ Read in the implementation, not ratified.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">What Fate's Hand still changes around it</p>
+<p>The same two, and only those two: Inheritance points on <strong>any</strong> abilities rather than three
+named ones, and a creation ceiling of <strong>18 all-in</strong> rather than 20.</p>
+</div>
+<h2 id="free-assignment">Free assignment<a class="headerlink" href="#free-assignment" title="Permanent link">&para;</a></h2>
+<p>The builder's <code>FREE</code> button. This one has no counterpart in the base game — no roll, no array, no budget. It is Fate's Hand's own, and it is the only method that guarantees nothing and costs nothing.</p>
+<ol>
+<li>Sixteen values sit in front of you, <strong>3 to 18</strong> — the whole span a base score may take at creation.</li>
+<li>Take any value and place it on any ability. The pool never empties: you may take 14 six times over.</li>
+<li>Add your <strong>Inheritance</strong> points — the same step as above.</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Nothing here holds it back</p>
+<p>Nothing is rolled, no floor applies, no budget is spent, and nothing stops six 18s. Late Bloomer
+is never granted here either — there is no roll to fall short.
+⚠️ Read in the implementation, not ratified: the builder offers <code>FREE</code> to anyone, with no
+condition attached. Whether it needs one — a GM's permission, a table agreement, or nothing
+at all — has not been decided, and this page does not decide it.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Why the span stops at 3 and 18</p>
+<p>3 and 18 are the lowest and the highest a <strong>base</strong> score may be at creation, before Inheritance
+(Eric, 2026-08-15). The chapter's ceiling then applies to the result: at creation an ability
+reaches at most 18, all bonuses included — so a base 18 taken from the pool leaves no room for
+an Inheritance point on that ability.
+⚠️ That last consequence is drawn from the <em>Caps</em> rule above, not dictated — and the builder
+does not enforce it today.</p>
+</div>
 <h2 id="why-roll">Why roll?<a class="headerlink" href="#why-roll" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -3579,11 +3747,11 @@ and stay Adept everywhere — that is yours to decide.</p>
 </tr>
 <tr>
 <td>Fate's Hand 3d6 × 10 (+3 Inheritance points)</td>
-<td>~11.7–12</td>
+<td>~12.5</td>
 </tr>
 </tbody>
 </table>
-<p>The two land in the same ballpark — but rolling can spike high (or low), which static methods can't. The two floors guard against an all-low set — your best is never under 14, your worst is always 8 — so you get fairness <em>and</em> the excitement of a standout score.</p>
+<p>The two land in the same place — 12.46 against 12.5 — but rolling can spike high (or low), which static methods can't. The two floors guard against an all-low set — your best is never under 14, your worst is always 8 — so you get fairness <em>and</em> the excitement of a standout score.</p>
 <h2 id="3d6-probability">3d6 probability<a class="headerlink" href="#3d6-probability" title="Permanent link">&para;</a></h2>
 <p>A single 3d6 roll lands a 17 about 1.39 % of the time and an 18 about 0.46 % — small odds, but across ten rolls there's a real chance of a high result.</p>
 <table>
