@@ -20,7 +20,24 @@ Cette page porte le mécanisme — `socle.mjs`, ses quatre fonctions, ses trois 
 ??? note "Pourquoi, et depuis quand"
     *« L'étendre est une décision d'Eric, pas une conséquence de ce paragraphe. »*
 
+    📖 **ET SA FEUILLE A UN NOM DEPUIS LE 2026-09-06 : LA [FH WEB BIBLE](../../bible-web/index.md).** Eric : *« crée un fil qui construit une Bible pour le site web — FH WEB Bible, différente de la Builder Bible. **Cite quand même dans le builder que quand on parle du site il faut visiter l'autre Bible.** »* ➡️ Dès qu'un lot parle du LIVRE — le bouton 📖 et sa cible, la loi des liens, les ancres de `sync_from_vault.py`, la voix du texte publié — il va la lire.
+
+    ⚠️ **Trois règles au moins débordent cette portée** et la contradiction est posée, non tranchée : voir [W4](../../bible-web/a-trancher.md#w4).
+
     Source : en-tête commun aux trois fichiers, 2026-08-29 · Statut : ratifié
+
+### 📖 La loi des Bibles { #socle-une-bible-se-demande-avant-de-rendre }
+
+**Tout lot qui change quelque chose se demande, AVANT de rendre : « est-ce qu'une Bible doit être éditée ? » — et il RÉPOND dans son rapport, même si la réponse est non.**
+
+??? note "Pourquoi, et depuis quand"
+    Eric, 2026-09-06 : *« et **dès qu'on change des choses, on se pose la question d'éditer une Bible**. »* ⛔ *« Je n'y ai pas pensé »* cesse d'être possible : la question est **au programme**, et son absence dans un rapport est **elle-même un défaut**.
+
+    🔴 **L'incident, et il n'est pas de ce dépôt.** Le 2026-09-06, la ligne éditoriale d'Eric a été violée **six fois dans un seul chapitre du livre** : trois sièges y avaient écrit ce jour-là, et **aucun n'avait de corpus à lire**. Le builder en avait un — 493 adresses *(mesuré le 06/09 à 20:33)* et un garde qui refuse une section sans adresse, donc une règle mal écrite y **rougit** ; le livre n'avait rien, donc une règle violée y **passe**. ⭐ *« Une règle violée deux fois n'est pas une règle mal suivie : c'est une règle mal rangée. »*
+
+    Valeur : un lot qui touche un organe, une cote, un geste ou un écran édite **cette Bible** · un lot qui touche un chapitre publié, une citation du SRD, un bandeau de pied ou une sortie 📖 édite la **[FH WEB Bible](../../bible-web/index.md)** · un lot qui touche aux deux les édite **toutes les deux**. ⛔ *« Aucune »* est une réponse légitime — **écrite**, jamais tue · Source : SOCLE.md § « LA LOI DES BIBLES », dictée d'Eric du 2026-09-06 · Statut : ratifié
+
+    ⚠️ **Jumeau assumé** : la FH WEB Bible porte le même énoncé sous `bible-question-avant-de-rendre`. Une loi qui ne vit que dans le corpus qu'on ne lit pas ne s'applique jamais — **modifier l'une oblige l'autre**.
 
 ### Une norme est un défaut { #socle-norme-est-un-defaut }
 

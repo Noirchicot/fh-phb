@@ -113,6 +113,8 @@ Cette page porte les tailles T1 à T7, les trois états d'un texte qui change, e
 
     Valeur : cantrips = spells · table de navigation dans `ui/builder/liens-fh.mjs` · Source : NORMES.md § « 7 ter — LA LOI GÉNÉRALE DES LIENS », loi-mère dictée le 2026-08-30 · Statut : ratifié
 
+    📖 **CETTE LOI TRAVERSE LA FRONTIÈRE.** Ses cibles vivent sur **FH WEB**, et l'ancre qu'elle exige est fabriquée par `fh-phb/sync_from_vault.py`, pas ici. ➡️ Côté livre, elle se lit dans la **[FH WEB Bible](../../bible-web/fabrique.md#fabrique-ce-qui-vit-chez-le-voisin)**. ⚠️ Sa tension avec [`socle.portee-builder`](socle.md#socle-portee-builder) est posée telle quelle, non tranchée : [W4](../../bible-web/a-trancher.md#w4).
+
 ### L'ancre avant le lien { #ecriture-ancre-avant-lien }
 
 **L'ancre se fabrique AVANT le lien : une famille sans ancre est une famille qu'on ne peut pas lier.**
@@ -121,6 +123,8 @@ Cette page porte les tailles T1 à T7, les trois états d'un texte qui change, e
     « Un lien suppose une CIBLE : le livre fabrique des ancres prévisibles. Une famille sans ancre est une famille qu'on ne peut pas lier : l'ancre se fabrique AVANT le lien. »
 
     Valeur : `l<niveau>-<nom>` (feature) · `opt-<nom>` (option de classe) · `spell-<slug>` (sort — 339 sorts ancrés depuis le 30/08) · `chapters/classes/<classe>/#l<niveau>-<nom>` · ancres fabriquées par `sync_from_vault.py` · Source : NORMES.md § « 7 ter », 2026-08-30 · Statut : ratifié
+
+    📖 **Les ancres ne sont pas fabriquées ici** : c'est `fh-phb/sync_from_vault.py` qui les pose. Ce que le livre doit à cette règle est cité dans la **[FH WEB Bible](../../bible-web/fabrique.md#fabrique-ce-qui-vit-chez-le-voisin)**.
 
 ### Pas de faux lien { #ecriture-pas-de-faux-lien }
 

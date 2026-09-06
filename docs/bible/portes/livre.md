@@ -3,6 +3,13 @@
 Le livre est le jumeau gauche du `?` : même cote, bord opposé. Il mène à la règle quand le `?`
 mène au guide. Il est dessiné, il existe, il n'est pas encore câblé.
 
+📖 **ET CE QU'IL Y A DE L'AUTRE CÔTÉ DE LA PORTE N'EST PAS RÉGI ICI.** Le chapitre où le livre
+atterrit — sa voix, ce qu'il a le droit de citer du SRD, son bandeau de pied, l'ancre sur laquelle
+il ouvre — obéit à la **[FH WEB Bible](../../bible-web/index.md)**. ⛔ Choisir une cible sans la
+lire, c'est ce qui a coûté six phrases le 2026-09-06. ➡️ Lire en particulier
+[`citation-declare-la-substitution`](../../bible-web/citation.md#citation-declare-la-substitution)
+et [`fabrique-code-n-est-pas-la-source`](../../bible-web/fabrique.md#fabrique-code-n-est-pas-la-source).
+
 ## Design
 
 *à quoi il ressemble : forme, habit, couleur, relief.*

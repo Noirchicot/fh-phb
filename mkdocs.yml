@@ -158,7 +158,12 @@ nav:
     # chapitre — dans le DM vault ». La lecture des 22 est au MJ ; le joueur
     # découvre une carte en la tirant. ⏳ Un teaser de 3 cartes est prévu côté
     # joueur — lesquelles n'est pas tranché, donc il n'est pas posé.
-  - The Bible:
+  # 🔴 DEUX BIBLES, ET AUCUNE NE SUPPRIME L'AUTRE (Eric, 2026-09-06). Celle-ci
+  #    couvre le BUILDER (source `fhpc/ui/builder/*.md`) ; « The FH WEB Bible »,
+  #    juste dessous, couvre LE LIVRE — ce site. ⛔ L'ordre de suppression du
+  #    05/09 est périmé : la mesure du 06/09 (44 pages, 5 045 lignes, zéro page
+  #    sur le livre) montre qu'elle ne doublonne rien.
+  - The Builder Bible:
     # Squelette posé le 2026-09-02 (lot plomberie), rempli le 2026-09-02 (lot
     # contenu) : 310 règles atomiques + 21 contradictions. Source = dépôt `fhpc`
     # (`ui/builder/NORMES.md`, `CADRES.md`, `SOCLE.md`), PAS le vault — décision
@@ -232,4 +237,20 @@ nav:
       - 8 · Equipment: bible/sections/8-equipment.md
       - La feuille: bible/sections/sheet.md
     - À trancher: bible/a-trancher.md
+  # ── LA FH WEB BIBLE — le corpus du LIVRE ────────────────────────────────
+  # Écrite le 2026-09-06 après que la ligne éditoriale d'Eric ait été violée six
+  # fois dans un seul chapitre, faute de corpus à lire. ⛔ Elle n'a AUCUN amont :
+  # son sujet est ce dépôt, donc elle est sa propre source — contrairement à la
+  # Builder Bible ci-dessus, qui est un TIRAGE de `fhpc/ui/builder/*.md`.
+  # ⚠️ Elle vit dans `docs/bible-web/`, HORS de la table `MAP` de
+  # `sync_from_vault.py` : ⛔ ne jamais la déplacer sous `docs/chapters/`, qui est
+  # généré et l'écraserait à la synchro suivante.
+  - The FH WEB Bible:
+    - Comment lire: bible-web/index.md
+    - La loi des Bibles: bible-web/loi-des-bibles.md
+    - ① La voix: bible-web/voix.md
+    - ② La citation: bible-web/citation.md
+    - ③ La fabrique: bible-web/fabrique.md
+    - ④ L'appareil: bible-web/appareil.md
+    - À trancher: bible-web/a-trancher.md
   - SRD 5.2.1: https://noirchicot.github.io/fh-srd/

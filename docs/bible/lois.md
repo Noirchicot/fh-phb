@@ -255,7 +255,7 @@ C'est la règle de rendu B : le cadre n'est jamais remplacé, on y pose des attr
 
 ## On n'ajoute rien sans un écran qui en a besoin aujourd'hui
 
-Le socle ne grossit que sur demande d'un écran réel, et une branche jamais parcourue est une branche jamais testée : le code mort est interdit. Un module d'écran rend un nœud et ne connaît ni la coquille ni les verbes du moteur. Les trois fichiers de norme sont un seul corpus — aucune règle n'est vraie « seulement dans son fichier » — et leur portée est le builder, pas le site du livre.
+Le socle ne grossit que sur demande d'un écran réel, et une branche jamais parcourue est une branche jamais testée : le code mort est interdit. Un module d'écran rend un nœud et ne connaît ni la coquille ni les verbes du moteur. Les trois fichiers de norme sont un seul corpus — aucune règle n'est vraie « seulement dans son fichier » — et leur portée est le builder, pas le site du livre — qui a **sa propre Bible**, la [FH WEB Bible](../bible-web/index.md), et à laquelle on va dès qu'un lot parle d'un chapitre publié.
 
 [`socle.rien-sans-un-ecran-qui-en-a-besoin`](general/socle.md#socle-rien-sans-un-ecran-qui-en-a-besoin) · [`socle.pas-de-code-mort`](general/socle.md#socle-pas-de-code-mort) · [`socle.quatre-fonctions`](general/socle.md#socle-quatre-fonctions) · [`socle.contrat-d-un-ecran`](general/socle.md#socle-contrat-d-un-ecran) · [`socle.corpus-unique`](general/socle.md#socle-corpus-unique) · [`socle.portee-builder`](general/socle.md#socle-portee-builder)
 { .lois-refs }

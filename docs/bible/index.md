@@ -1,4 +1,4 @@
-# The Bible — Comment lire
+# La Builder Bible — Comment lire
 
 La Bible rassemble les normes d'interface du builder FHPC — les cotes, les organes, les
 gestes — dans un seul endroit lisible, pour qu'Eric puisse citer une règle par son adresse
@@ -27,3 +27,18 @@ partout : **ce sont ces pages d'entrée qui servent de menu**, pas un arbre qui 
 
 ⭐ **Une rubrique vide est une information, pas un trou** : quand un objet n'a aucune règle de
 mesure ou aucune règle de dessin, la page l'écrit et dit où la valeur vit, si elle vit ailleurs.
+
+## 📖 Ceci couvre le BUILDER — le LIVRE a sa propre Bible
+
+⛔ **Cette Bible ne dit rien du site publié.** 📏 Mesuré le 2026-09-06 : **44 pages, 5 045 lignes**,
+et **aucune** sur le livre. Eric, le même jour : *« la Bible ne couvre peut-être pas le site FH
+WEB »* — elle ne le couvre pas — *« et c'est peut-être mieux que le site ait la sienne »*.
+
+➡️ **Dès qu'un travail parle du site** — le livre 📖 et où il mène, `LIVRE_ARCANES` et les autres
+sorties vers un chapitre, la [loi des liens](general/ecriture.md#ecriture-loi-des-liens), les ancres
+que `sync_from_vault.py` fabrique, la voix du texte publié — **va lire la
+[FH WEB Bible](../bible-web/index.md)**. Elle renvoie ici de son côté : ⛔ un lien à sens unique ne
+vaut rien.
+
+🔴 **Et la loi qui vaut pour les deux** : *« dès qu'on change des choses, on se pose la question
+d'éditer une Bible »* — [`socle.une-bible-se-demande-avant-de-rendre`](general/socle.md#socle-une-bible-se-demande-avant-de-rendre).
